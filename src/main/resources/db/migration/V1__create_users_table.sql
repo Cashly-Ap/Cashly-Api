@@ -1,0 +1,14 @@
+CREATE TABLE users (
+    id BINARY(16) PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    user_name VARCHAR(100) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    commission_deduction_percentage DECIMAL(5,2) NOT NULL DEFAULT 1.00,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_users_email ON users (email);
+CREATE INDEX idx_users_active ON users (active);
