@@ -1,0 +1,34 @@
+# Test Dockerfile - Configured for running all types of tests
+# Includes Testcontainers support for integration tests
+
+FROM maven:3.9.9-amazoncorretto-24
+
+WORKDIR /app
+
+# Install Docker CLI and required tools for Testcontainers support
+RUN yum install -y docker wget tar gzip && \
+    yum clean all
+
+# Copy Maven configuration files
+COPY pom.xml ./
+COPY .mvn .mvn
+COPY mvnw ./
+
+# Download dependencies (this layer will be cached)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code and test resources
+COPY src ./src
+
+# Set permissions
+RUN chmod +x ./mvnw
+
+# Set test profile
+ENV SPRING_PROFILES_ACTIVE=test
+
+# Environment variables for Testcontainers
+ENV TESTCONTAINERS_RYUK_DISABLED=false
+ENV TESTCONTAINERS_CHECKS_DISABLE=false
+
+# Default command runs all tests
+CMD ["./mvnw", "clean", "test"]

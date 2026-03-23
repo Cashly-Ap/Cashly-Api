@@ -1,0 +1,32 @@
+# Development Dockerfile - Optimized for development workflow
+FROM maven:3.9.9-amazoncorretto-24
+
+WORKDIR /app
+
+# Install development tools
+RUN yum update -y && yum install -y wget vim git tar && yum clean all
+
+# Copy Maven wrapper and configuration
+COPY mvnw ./
+COPY .mvn .mvn
+COPY pom.xml ./
+
+# Make Maven wrapper executable
+RUN chmod +x ./mvnw
+
+# Download dependencies (cached layer)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Expose application and debug ports
+EXPOSE 8080 5005
+
+# Development environment variables
+ENV SPRING_PROFILES_ACTIVE=dev
+ENV SPRING_DEVTOOLS_RESTART_ENABLED=true
+
+# Run with hot reload and debug support
+ENTRYPOINT ["./mvnw", "spring-boot:run", \
+    "-Dspring-boot.run.jvmArguments=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]

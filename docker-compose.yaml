@@ -1,0 +1,166 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-app
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:mysql://mysql:3306/mydatabase}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}
+      - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
+      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
+      - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+      - CORS_ALLOWED_METHODS=${CORS_ALLOWED_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
+      - CORS_ALLOWED_HEADERS=${CORS_ALLOWED_HEADERS:-*}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS:-true}
+      - CORS_MAX_AGE=${CORS_MAX_AGE:-3600}
+      - STORAGE_LOCATION=${STORAGE_LOCATION:-/app/uploads}
+      - STORAGE_TYPE=${STORAGE_TYPE:-s3}
+      - STORAGE_S3_ENDPOINT=${STORAGE_S3_ENDPOINT:-http://minio:9000}
+      - STORAGE_S3_ACCESS_KEY=${STORAGE_S3_ACCESS_KEY:-minioadmin}
+      - STORAGE_S3_SECRET_KEY=${STORAGE_S3_SECRET_KEY:-minioadmin}
+      - STORAGE_S3_BUCKET=${STORAGE_S3_BUCKET:-parsun-files}
+      - STORAGE_S3_REGION=${STORAGE_S3_REGION:-us-east-1}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    networks:
+      - parsun-network
+
+  mysql:
+    image: 'mysql:8.0'
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-mydatabase}
+      - MYSQL_USER=${DB_USER:-myuser}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-secret}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-verysecret}
+    ports:
+      - '${DB_PORT:-3306}:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-verysecret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - parsun-network
+
+  mysql-test:
+    image: 'mysql:8.0'
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-mysql-test
+    environment:
+      - MYSQL_DATABASE=${TEST_DB_NAME:-parsun_test}
+      - MYSQL_USER=${TEST_DB_USER:-testuser}
+      - MYSQL_PASSWORD=${TEST_DB_PASSWORD:-testpass}
+      - MYSQL_ROOT_PASSWORD=${TEST_DB_ROOT_PASSWORD:-testroot}
+    ports:
+      - '${TEST_DB_PORT:-3307}:3306'
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${TEST_DB_ROOT_PASSWORD:-testroot}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    networks:
+      - parsun-network
+    profiles:
+      - ${TEST_PROFILE:-test}
+
+  app-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-app-test
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${TEST_DB_HOST:-mysql-test}:3306/${TEST_DB_NAME:-parsun_test}
+      - SPRING_DATASOURCE_USERNAME=${TEST_DB_USER:-testuser}
+      - SPRING_DATASOURCE_PASSWORD=${TEST_DB_PASSWORD:-testpass}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_PROFILES_ACTIVE=test
+      - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
+      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
+      - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
+      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - TESTCONTAINERS_RYUK_DISABLED=false
+    depends_on:
+      mysql-test:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - maven_cache:/root/.m2
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - parsun-network
+    profiles:
+      - ${TEST_PROFILE:-test}
+    command: ["./mvnw", "test"]
+
+  minio:
+    image: minio/minio:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-minio
+    restart: unless-stopped
+    ports:
+      - '${MINIO_API_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - parsun-network
+
+  minio-init:
+    image: minio/minio:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+      - STORAGE_S3_BUCKET=${STORAGE_S3_BUCKET:-parsun-files}
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
+        mc mb --ignore-existing local/$$STORAGE_S3_BUCKET &&
+        echo 'Bucket $$STORAGE_S3_BUCKET ready.'
+      "
+    networks:
+      - parsun-network
+    restart: on-failure
+
+volumes:
+  mysql_data:
+  maven_cache:
+  uploads_data:
+  minio_data:
+
+networks:
+  parsun-network:
+    driver: bridge
