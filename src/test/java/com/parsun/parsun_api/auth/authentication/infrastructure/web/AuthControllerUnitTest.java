@@ -11,6 +11,7 @@ import com.parsun.parsun_api.auth.token.application.usecases.RefreshTokenUseCase
 import com.parsun.parsun_api.auth.token.application.dto.request.LogoutRequest;
 import com.parsun.parsun_api.auth.token.application.usecases.LogoutUserUseCase;
 import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import com.parsun.parsun_api.auth.authentication.application.dto.response.AuthenticatedEntityResponse;
 import com.parsun.parsun_api.auth.authentication.application.dto.response.AuthenticationResponse;
 import com.parsun.parsun_api.auth.authentication.domain.entities.AuthenticableType;
@@ -80,6 +81,7 @@ class AuthControllerUnitTest {
             "user-id",
             "test@example.com",
             "Test User",
+            UserRole.CUSTOMER,
             true,
             false,
             new java.math.BigDecimal("1.00"),

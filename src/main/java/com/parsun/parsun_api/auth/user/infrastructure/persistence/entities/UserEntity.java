@@ -6,6 +6,7 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -18,7 +19,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "users", indexes = {
     @Index(name = "idx_email", columnList = "email"),
-    @Index(name = "idx_active", columnList = "active")
+    @Index(name = "idx_active", columnList = "active"),
+    @Index(name = "idx_role", columnList = "role")
 })
 @Getter
 @Setter
@@ -41,6 +43,10 @@ public class UserEntity {
 
     @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 20, nullable = false)
+    private UserRole role = UserRole.CUSTOMER;
 
     @Column(name = "active", nullable = false)
     private boolean active;
@@ -67,6 +73,7 @@ public class UserEntity {
         entity.email = user.getEmail().getValue();
         entity.userName = user.getUserName().getValue();
         entity.passwordHash = user.getPassword().getHashedValue();
+        entity.role = user.getRole();
         entity.active = user.isActive();
         entity.emailVerified = user.isEmailVerified();
         entity.commissionDeductionPercentage = user.getCommissionDeductionPercentage().value();
@@ -83,6 +90,7 @@ public class UserEntity {
 
         this.userName = user.getUserName().getValue();
         this.passwordHash = user.getPassword().getHashedValue();
+        this.role = user.getRole();
         this.active = user.isActive();
         this.emailVerified = user.isEmailVerified();
         this.commissionDeductionPercentage = user.getCommissionDeductionPercentage().value();
@@ -95,7 +103,7 @@ public class UserEntity {
         UserName domainUserName = new UserName(this.userName);
         Password domainPassword = Password.fromHash(this.passwordHash);
 
-        User user = new User(userId, domainEmail, domainUserName, domainPassword);
+        User user = new User(userId, domainEmail, domainUserName, domainPassword, this.role);
 
         try {
             java.lang.reflect.Field activeField = User.class.getDeclaredField("active");

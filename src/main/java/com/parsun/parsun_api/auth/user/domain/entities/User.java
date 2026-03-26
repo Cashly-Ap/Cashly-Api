@@ -5,6 +5,7 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,6 +15,7 @@ public class User {
     private final Email email;
     private UserName userName;
     private Password password;
+    private UserRole role;
     private boolean active;
     private boolean emailVerified;
     private CommissionDeductionPercentage commissionDeductionPercentage;
@@ -21,12 +23,17 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User(UserId id, Email email, UserName userName, Password password) {
+        this(id, email, userName, password, UserRole.CUSTOMER);
+    }
+
+    public User(UserId id, Email email, UserName userName, Password password, UserRole role) {
         validateParameters(id, email, userName, password);
 
         this.id = id;
         this.email = email;
         this.userName = userName;
         this.password = password;
+        this.role = role != null ? role : UserRole.CUSTOMER;
         this.active = true;
         this.emailVerified = false;
         this.commissionDeductionPercentage = CommissionDeductionPercentage.defaultValue();
@@ -123,6 +130,41 @@ public class User {
         return emailVerified;
     }
 
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        if (role == null) {
+            throw new IllegalArgumentException("Role cannot be null");
+        }
+        this.role = role;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean hasRole(UserRole role) {
+        if (role == null) {
+            return false;
+        }
+        return this.role == role;
+    }
+
+    public boolean isSuperAdmin() {
+        return this.role == UserRole.SUPER_ADMIN;
+    }
+
+    public boolean isAdmin() {
+        return this.role == UserRole.ADMIN;
+    }
+
+    public boolean isOperator() {
+        return this.role == UserRole.OPERATOR;
+    }
+
+    public boolean isCustomer() {
+        return this.role == UserRole.CUSTOMER;
+    }
+
     public CommissionDeductionPercentage getCommissionDeductionPercentage() {
         return commissionDeductionPercentage;
     }
@@ -155,6 +197,7 @@ public class User {
                 ", email=" + email +
                 ", userName=" + userName +
                 ", password=***" +
+                ", role=" + role +
                 ", active=" + active +
                 ", emailVerified=" + emailVerified +
                 ", createdAt=" + createdAt +

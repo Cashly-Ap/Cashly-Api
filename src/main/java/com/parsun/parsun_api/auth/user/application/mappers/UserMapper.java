@@ -12,6 +12,7 @@ public class UserMapper {
             user.getId().getValue().toString(),
             user.getEmail().getValue(),
             user.getUserName().getValue(),
+            user.getRole(),
             user.isActive(),
             user.isEmailVerified(),
             user.getCommissionDeductionPercentage().value(),
