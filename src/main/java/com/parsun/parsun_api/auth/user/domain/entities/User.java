@@ -1,6 +1,5 @@
 package com.parsun.parsun_api.auth.user.domain.entities;
 
-import com.parsun.parsun_api.auth.user.domain.valueobjects.CommissionDeductionPercentage;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
@@ -18,7 +17,6 @@ public class User {
     private UserRole role;
     private boolean active;
     private boolean emailVerified;
-    private CommissionDeductionPercentage commissionDeductionPercentage;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -36,7 +34,6 @@ public class User {
         this.role = role != null ? role : UserRole.CUSTOMER;
         this.active = true;
         this.emailVerified = false;
-        this.commissionDeductionPercentage = CommissionDeductionPercentage.defaultValue();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -87,14 +84,6 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateCommissionDeduction(CommissionDeductionPercentage newDeduction) {
-        if (newDeduction == null) {
-            throw new IllegalArgumentException("Commission deduction percentage cannot be null");
-        }
-        this.commissionDeductionPercentage = newDeduction;
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public boolean canAuthenticate() {
         return active;
     }
@@ -142,6 +131,11 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public boolean hasRole(UserRole role) {
         if (role == null) {
             return false;
@@ -163,10 +157,6 @@ public class User {
 
     public boolean isCustomer() {
         return this.role == UserRole.CUSTOMER;
-    }
-
-    public CommissionDeductionPercentage getCommissionDeductionPercentage() {
-        return commissionDeductionPercentage;
     }
 
     public LocalDateTime getCreatedAt() {

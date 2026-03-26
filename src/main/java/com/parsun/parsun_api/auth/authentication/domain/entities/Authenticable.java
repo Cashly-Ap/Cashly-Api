@@ -1,7 +1,8 @@
 package com.parsun.parsun_api.auth.authentication.domain.entities;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 public interface Authenticable {
 
@@ -11,7 +12,7 @@ public interface Authenticable {
 
     String getHashedPassword();
 
-    String getDisplayName();
+    String getUserName();
 
     AuthenticableType getType();
 
@@ -21,7 +22,11 @@ public interface Authenticable {
 
     LocalDateTime getCreatedAt();
 
-    default BigDecimal getCommissionDeductionPercentage() {
+    default LocalDateTime getUpdatedAt() {
+        return null;
+    }
+
+    default UserRole getRole() {
         return null;
     }
 }

@@ -11,8 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("UserMapper Unit Tests")
@@ -41,11 +39,10 @@ class UserMapperUnitTest {
         assertNotNull(response);
         assertEquals(testUser.getId().getValue().toString(), response.id());
         assertEquals(testUser.getEmail().getValue(), response.email());
-        assertEquals(testUser.getUserName().getValue(), response.displayName());
+        assertEquals(testUser.getUserName().getValue(), response.userName());
         assertEquals(testUser.isActive(), response.active());
         assertEquals(testUser.isEmailVerified(), response.emailVerified());
         assertEquals(testUser.getCreatedAt(), response.createdAt());
-        assertEquals(0, response.commissionDeductionPercentage().compareTo(new BigDecimal("1.00")));
     }
 
     @Test
@@ -53,9 +50,9 @@ class UserMapperUnitTest {
     void should_IncludeUserName_When_Mapping() {
         UserResponse response = userMapper.toResponse(testUser);
 
-        assertNotNull(response.displayName());
-        assertEquals("Test User", response.displayName());
-        assertEquals(testUser.getUserName().getValue(), response.displayName());
+        assertNotNull(response.userName());
+        assertEquals("Test User", response.userName());
+        assertEquals(testUser.getUserName().getValue(), response.userName());
     }
 
     @Test
@@ -130,11 +127,10 @@ class UserMapperUnitTest {
         assertNotNull(response);
         assertNotNull(response.id());
         assertNotNull(response.email());
-        assertNotNull(response.displayName());
+        assertNotNull(response.userName());
         assertNotNull(response.createdAt());
+        assertNotNull(response.updatedAt());
         assertFalse(response.emailVerified());
         assertTrue(response.active());
-        assertNotNull(response.commissionDeductionPercentage());
-        assertEquals(0, response.commissionDeductionPercentage().compareTo(new BigDecimal("1.00")));
     }
 }

@@ -1,11 +1,11 @@
 package com.parsun.parsun_api.auth.authentication.infrastructure.adapters;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.parsun.parsun_api.auth.authentication.domain.entities.Authenticable;
 import com.parsun.parsun_api.auth.authentication.domain.entities.AuthenticableType;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 public class UserAuthenticableAdapter implements Authenticable {
 
@@ -34,13 +34,18 @@ public class UserAuthenticableAdapter implements Authenticable {
     }
 
     @Override
-    public String getDisplayName() {
+    public String getUserName() {
         return user.getUserName().getValue();
     }
 
     @Override
     public AuthenticableType getType() {
         return AuthenticableType.USER;
+    }
+
+    @Override
+    public UserRole getRole() {
+        return user.getRole();
     }
 
     @Override
@@ -59,8 +64,8 @@ public class UserAuthenticableAdapter implements Authenticable {
     }
 
     @Override
-    public BigDecimal getCommissionDeductionPercentage() {
-        return user.getCommissionDeductionPercentage().value();
+    public LocalDateTime getUpdatedAt() {
+        return user.getUpdatedAt();
     }
 
     public User getUser() {

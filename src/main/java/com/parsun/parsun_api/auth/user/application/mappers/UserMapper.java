@@ -15,8 +15,8 @@ public class UserMapper {
             user.getRole(),
             user.isActive(),
             user.isEmailVerified(),
-            user.getCommissionDeductionPercentage().value(),
-            user.getCreatedAt()
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.auth.authentication.infrastructure.web;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.parsun.parsun_api.auth.authentication.application.exceptions.InvalidCredentialsException;
 import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenException;
 import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
@@ -7,16 +8,18 @@ import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailExce
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice(basePackages = "com.parsun.parsun_api.auth")
+@ControllerAdvice
+@ResponseBody
 public class AuthExceptionHandler {
 
     @ExceptionHandler(DuplicateEmailException.class)
@@ -95,8 +98,36 @@ public class AuthExceptionHandler {
         return ResponseEntity.badRequest().body(errorDetails);
     }
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(
+            org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        String message = "Invalid request body";
+        Throwable cause = ex.getMostSpecificCause();
+        if (cause != null) {
+            message = cause.getMessage();
+        }
+        
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            "Invalid value",
+            message
+        );
+        return ResponseEntity.badRequest().body(errorDetails);
+    }
+
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidFormat(InvalidFormatException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            "Invalid value",
+            ex.getMessage()
+        );
+        return ResponseEntity.badRequest().body(errorDetails);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        ex.printStackTrace();
         Map<String, Object> errorDetails = createErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "Internal server error",

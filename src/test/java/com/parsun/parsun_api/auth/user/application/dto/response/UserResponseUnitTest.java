@@ -3,7 +3,6 @@ package com.parsun.parsun_api.auth.user.application.dto.response;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,19 +20,19 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo("1");
         assertThat(response.email()).isEqualTo("john@example.com");
-        assertThat(response.displayName()).isEqualTo("John Doe");
+        assertThat(response.userName()).isEqualTo("John Doe");
         assertThat(response.role()).isEqualTo(UserRole.CUSTOMER);
         assertThat(response.active()).isTrue();
         assertThat(response.emailVerified()).isFalse();
-        assertThat(response.commissionDeductionPercentage()).isEqualByComparingTo("1.00");
         assertThat(response.createdAt()).isEqualTo(now);
+        assertThat(response.updatedAt()).isEqualTo(now);
     }
 
     @Test
@@ -47,7 +46,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -58,7 +57,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -77,7 +76,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -88,7 +87,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -106,7 +105,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -117,7 +116,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -135,7 +134,7 @@ class UserResponseUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new BigDecimal("1.00"),
+            now,
             now
         );
 
@@ -144,4 +143,3 @@ class UserResponseUnitTest {
         assertThat(response.toString()).contains("John Doe");
     }
 }
-

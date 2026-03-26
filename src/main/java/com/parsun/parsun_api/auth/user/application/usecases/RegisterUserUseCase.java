@@ -37,7 +37,7 @@ public class RegisterUserUseCase {
         String hashedPassword = passwordEncoder.encode(request.password());
         Password password = Password.fromHash(hashedPassword);
 
-        User user = new User(UserId.generate(), email, userName, password);
+        User user = new User(UserId.generate(), email, userName, password, request.role());
 
         User savedUser = userRepository.save(user);
 

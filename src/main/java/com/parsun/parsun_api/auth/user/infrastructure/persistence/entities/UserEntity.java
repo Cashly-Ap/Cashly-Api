@@ -1,7 +1,6 @@
 package com.parsun.parsun_api.auth.user.infrastructure.persistence.entities;
 
 import com.parsun.parsun_api.auth.user.domain.entities.User;
-import com.parsun.parsun_api.auth.user.domain.valueobjects.CommissionDeductionPercentage;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
@@ -12,7 +11,6 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -54,9 +52,6 @@ public class UserEntity {
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
 
-    @Column(name = "commission_deduction_percentage", nullable = false, precision = 5, scale = 2)
-    private BigDecimal commissionDeductionPercentage;
-
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -76,7 +71,6 @@ public class UserEntity {
         entity.role = user.getRole();
         entity.active = user.isActive();
         entity.emailVerified = user.isEmailVerified();
-        entity.commissionDeductionPercentage = user.getCommissionDeductionPercentage().value();
         entity.createdAt = user.getCreatedAt();
         entity.updatedAt = user.getUpdatedAt();
 
@@ -93,7 +87,6 @@ public class UserEntity {
         this.role = user.getRole();
         this.active = user.isActive();
         this.emailVerified = user.isEmailVerified();
-        this.commissionDeductionPercentage = user.getCommissionDeductionPercentage().value();
         this.updatedAt = user.getUpdatedAt();
     }
 
@@ -108,23 +101,16 @@ public class UserEntity {
         try {
             java.lang.reflect.Field activeField = User.class.getDeclaredField("active");
             java.lang.reflect.Field emailVerifiedField = User.class.getDeclaredField("emailVerified");
-            java.lang.reflect.Field commissionDeductionField = User.class.getDeclaredField("commissionDeductionPercentage");
             java.lang.reflect.Field createdAtField = User.class.getDeclaredField("createdAt");
             java.lang.reflect.Field updatedAtField = User.class.getDeclaredField("updatedAt");
 
             activeField.setAccessible(true);
             emailVerifiedField.setAccessible(true);
-            commissionDeductionField.setAccessible(true);
             createdAtField.setAccessible(true);
             updatedAtField.setAccessible(true);
 
             activeField.set(user, this.active);
             emailVerifiedField.set(user, this.emailVerified);
-            commissionDeductionField.set(user, new CommissionDeductionPercentage(
-                this.commissionDeductionPercentage != null
-                    ? this.commissionDeductionPercentage
-                    : new BigDecimal("1.00")
-            ));
             createdAtField.set(user, this.createdAt);
             updatedAtField.set(user, this.updatedAt);
 

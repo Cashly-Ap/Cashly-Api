@@ -1,8 +1,6 @@
 package com.parsun.parsun_api.auth.authentication.infrastructure.web;
 
-import com.parsun.parsun_api.auth.user.application.dto.request.ChangeCommissionDeductionRequest;
 import com.parsun.parsun_api.auth.user.application.dto.request.RegisterUserRequest;
-import com.parsun.parsun_api.auth.user.application.usecases.ChangeCommissionDeductionUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.RegisterUserUseCase;
 import com.parsun.parsun_api.auth.authentication.application.dto.request.LoginRequest;
 import com.parsun.parsun_api.auth.authentication.application.usecases.LoginUserUseCase;
@@ -24,12 +22,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,9 +44,6 @@ class AuthControllerUnitTest {
     @Mock
     private LogoutUserUseCase logoutUserUseCase;
 
-    @Mock
-    private ChangeCommissionDeductionUseCase changeCommissionDeductionUseCase;
-
     @InjectMocks
     private AuthController authController;
 
@@ -66,7 +59,8 @@ class AuthControllerUnitTest {
         registerRequest = new RegisterUserRequest(
             "test@example.com",
             "Test User",
-            "SecurePassword123!"
+            "SecurePassword123!",
+            UserRole.CUSTOMER
         );
 
         loginRequest = new LoginRequest(
@@ -77,6 +71,7 @@ class AuthControllerUnitTest {
         refreshTokenRequest = new RefreshTokenRequest("refresh-token");
         logoutRequest = new LogoutRequest("refresh-token");
 
+        LocalDateTime now = LocalDateTime.now();
         userResponse = new UserResponse(
             "user-id",
             "test@example.com",
@@ -84,8 +79,8 @@ class AuthControllerUnitTest {
             UserRole.CUSTOMER,
             true,
             false,
-            new java.math.BigDecimal("1.00"),
-            LocalDateTime.now()
+            now,
+            now
         );
 
         AuthenticatedEntityResponse entityResponse = new AuthenticatedEntityResponse(
@@ -93,9 +88,10 @@ class AuthControllerUnitTest {
             "test@example.com",
             "Test User",
             AuthenticableType.USER,
+            UserRole.CUSTOMER,
             true,
-            new BigDecimal("1.00"),
-            LocalDateTime.now()
+            now,
+            now
         );
 
         authenticationResponse = new AuthenticationResponse(
@@ -246,47 +242,5 @@ class AuthControllerUnitTest {
         authController.logout(logoutRequest);
 
         verify(logoutUserUseCase, times(1)).execute(logoutRequest);
-    }
-
-    @Test
-    @DisplayName("should_ChangeCommissionDeduction_When_ValidRequest")
-    void should_ChangeCommissionDeduction_When_ValidRequest() {
-        String userId = "user-id";
-        ChangeCommissionDeductionRequest request = new ChangeCommissionDeductionRequest(new BigDecimal("5.00"));
-        when(changeCommissionDeductionUseCase.execute(eq(userId), any(ChangeCommissionDeductionRequest.class)))
-            .thenReturn(userResponse);
-
-        ResponseEntity<UserResponse> response = authController.changeCommissionDeduction(userId, request);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(userResponse, response.getBody());
-        verify(changeCommissionDeductionUseCase, times(1)).execute(userId, request);
-    }
-
-    @Test
-    @DisplayName("should_ReturnOkStatus_When_CommissionDeductionChanged")
-    void should_ReturnOkStatus_When_CommissionDeductionChanged() {
-        String userId = "user-id";
-        ChangeCommissionDeductionRequest request = new ChangeCommissionDeductionRequest(new BigDecimal("10.00"));
-        when(changeCommissionDeductionUseCase.execute(eq(userId), any(ChangeCommissionDeductionRequest.class)))
-            .thenReturn(userResponse);
-
-        ResponseEntity<UserResponse> response = authController.changeCommissionDeduction(userId, request);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("should_UseJwtUserId_When_ChangingCommissionDeduction")
-    void should_UseJwtUserId_When_ChangingCommissionDeduction() {
-        String userId = "jwt-extracted-user-id";
-        ChangeCommissionDeductionRequest request = new ChangeCommissionDeductionRequest(new BigDecimal("3.00"));
-        when(changeCommissionDeductionUseCase.execute(eq(userId), any(ChangeCommissionDeductionRequest.class)))
-            .thenReturn(userResponse);
-
-        authController.changeCommissionDeduction(userId, request);
-
-        verify(changeCommissionDeductionUseCase, times(1)).execute(eq(userId), any());
     }
 }

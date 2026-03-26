@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.auth.user.infrastructure.persistence.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import com.parsun.parsun_api.auth.user.infrastructure.persistence.entities.UserEntity;
 
 
@@ -76,5 +78,23 @@ public class JpaUserRepository implements UserRepository {
         }
 
         springDataUserRepository.deleteById(user.getId().getValue());
+    }
+
+    @Override
+    public List<User> findAll() {
+        return springDataUserRepository.findAll().stream()
+            .map(UserEntity::toDomain)
+            .toList();
+    }
+
+    @Override
+    public List<User> findByRole(UserRole role) {
+        if (role == null) {
+            throw new IllegalArgumentException("Role cannot be null");
+        }
+
+        return springDataUserRepository.findByRole(role).stream()
+            .map(UserEntity::toDomain)
+            .toList();
     }
 }

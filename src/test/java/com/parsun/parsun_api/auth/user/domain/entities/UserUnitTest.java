@@ -1,6 +1,5 @@
 package com.parsun.parsun_api.auth.user.domain.entities;
 
-import com.parsun.parsun_api.auth.user.domain.valueobjects.CommissionDeductionPercentage;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
@@ -208,35 +207,6 @@ class UserUnitTest {
             () -> user.updateUserName(null)
         );
         assertEquals("User name cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void should_HaveDefaultCommissionDeductionPercentage_When_UserCreated() {
-        User user = new User(userId, email, new UserName("Test User"), password);
-
-        assertNotNull(user.getCommissionDeductionPercentage());
-        assertEquals(0, user.getCommissionDeductionPercentage().value().compareTo(new BigDecimal("1.00")));
-    }
-
-    @Test
-    void should_UpdateCommissionDeduction_When_ValidValueProvided() {
-        User user = new User(userId, email, new UserName("Test User"), password);
-        CommissionDeductionPercentage newDeduction = CommissionDeductionPercentage.of(new BigDecimal("2.50"));
-
-        user.updateCommissionDeduction(newDeduction);
-
-        assertEquals(0, user.getCommissionDeductionPercentage().value().compareTo(new BigDecimal("2.50")));
-    }
-
-    @Test
-    void should_ThrowException_When_NullCommissionDeductionProvided() {
-        User user = new User(userId, email, new UserName("Test User"), password);
-
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> user.updateCommissionDeduction(null)
-        );
-        assertEquals("Commission deduction percentage cannot be null", exception.getMessage());
     }
 
     @Test

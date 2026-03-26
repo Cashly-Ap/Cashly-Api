@@ -1,9 +1,12 @@
 package com.parsun.parsun_api.auth.user.application.dto.request;
 
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
+
 public record RegisterUserRequest(
     String email,
     String userName,
-    String password
+    String password,
+    UserRole role
 ) {
     public RegisterUserRequest {
         if (email == null || email.trim().isEmpty()) {
@@ -15,5 +18,18 @@ public record RegisterUserRequest(
         if (password == null || password.isEmpty()) {
             throw new IllegalArgumentException("Password is required");
         }
+        if (role == null) {
+            throw new IllegalArgumentException("Role is required");
+        }
+        validateRole(role);
+    }
+
+    private static void validateRole(UserRole role) {
+        for (UserRole validRole : UserRole.values()) {
+            if (validRole == role) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Invalid role: " + role);
     }
 }

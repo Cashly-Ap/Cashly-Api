@@ -8,6 +8,7 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -61,7 +62,7 @@ class JwtAuthenticationFilterUnitTest {
         testUserId = UserId.generate();
         Email email = new Email("test@example.com");
         Password password = Password.fromHash("$2a$10$hashedPassword");
-        testUser = new User(testUserId, email, new UserName("Test User"), password);
+        testUser = new User(testUserId, email, new UserName("Test User"), password, UserRole.ADMIN);
 
         validToken = "valid-jwt-token";
     }
@@ -99,7 +100,7 @@ class JwtAuthenticationFilterUnitTest {
 
             assertNotNull(SecurityContextHolder.getContext().getAuthentication());
             assertTrue(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER")));
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
         }
 
         @Test

@@ -6,6 +6,7 @@ import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +41,8 @@ class RegisterUserUseCaseUnitTest {
         validRequest = new RegisterUserRequest(
             "test@example.com",
             "Test User",
-            "SecurePass123!"
+            "SecurePass123!",
+            UserRole.CUSTOMER
         );
     }
 
@@ -85,7 +87,8 @@ class RegisterUserUseCaseUnitTest {
         RegisterUserRequest invalidRequest = new RegisterUserRequest(
             "invalid-email",
             "Test User",
-            "SecurePass123!"
+            "SecurePass123!",
+            UserRole.CUSTOMER
         );
 
         assertThrows(
@@ -104,7 +107,8 @@ class RegisterUserUseCaseUnitTest {
         RegisterUserRequest weakPasswordRequest = new RegisterUserRequest(
             "test@example.com",
             "Test User",
-            "weak"
+            "weak",
+            UserRole.CUSTOMER
         );
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
@@ -161,7 +165,8 @@ class RegisterUserUseCaseUnitTest {
         RegisterUserRequest upperCaseEmailRequest = new RegisterUserRequest(
             "TEST@EXAMPLE.COM",
             "Test User",
-            "SecurePass123!"
+            "SecurePass123!",
+            UserRole.CUSTOMER
         );
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);

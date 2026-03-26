@@ -2,24 +2,20 @@ package com.parsun.parsun_api.auth.authentication.infrastructure.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.parsun.parsun_api.auth.authentication.application.dto.response.AuthenticationResponse;
 import com.parsun.parsun_api.auth.authentication.application.dto.request.LoginRequest;
 import com.parsun.parsun_api.auth.token.application.dto.request.LogoutRequest;
 import com.parsun.parsun_api.auth.token.application.dto.request.RefreshTokenRequest;
-import com.parsun.parsun_api.auth.user.application.dto.request.ChangeCommissionDeductionRequest;
 import com.parsun.parsun_api.auth.user.application.dto.request.RegisterUserRequest;
 import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
 import com.parsun.parsun_api.auth.authentication.application.usecases.LoginUserUseCase;
 import com.parsun.parsun_api.auth.token.application.usecases.LogoutUserUseCase;
 import com.parsun.parsun_api.auth.token.application.usecases.RefreshTokenUseCase;
-import com.parsun.parsun_api.auth.user.application.usecases.ChangeCommissionDeductionUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.RegisterUserUseCase;
 
 import jakarta.validation.Valid;
@@ -32,20 +28,17 @@ public class AuthController {
     private final LoginUserUseCase loginUserUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUserUseCase logoutUserUseCase;
-    private final ChangeCommissionDeductionUseCase changeCommissionDeductionUseCase;
 
     public AuthController(
         RegisterUserUseCase registerUserUseCase,
         LoginUserUseCase loginUserUseCase,
         RefreshTokenUseCase refreshTokenUseCase,
-        LogoutUserUseCase logoutUserUseCase,
-        ChangeCommissionDeductionUseCase changeCommissionDeductionUseCase
+        LogoutUserUseCase logoutUserUseCase
     ) {
         this.registerUserUseCase = registerUserUseCase;
         this.loginUserUseCase = loginUserUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUserUseCase = logoutUserUseCase;
-        this.changeCommissionDeductionUseCase = changeCommissionDeductionUseCase;
     }
 
     @PostMapping("/register")
@@ -70,14 +63,5 @@ public class AuthController {
     public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
         logoutUserUseCase.execute(request);
         return ResponseEntity.noContent().build();
-    }
-
-    @RequestMapping(value = "/change-commission-deduction", method = {RequestMethod.PUT, RequestMethod.PATCH})
-    public ResponseEntity<UserResponse> changeCommissionDeduction(
-        @AuthenticationPrincipal String userId,
-        @Valid @RequestBody ChangeCommissionDeductionRequest request
-    ) {
-        UserResponse response = changeCommissionDeductionUseCase.execute(userId, request);
-        return ResponseEntity.ok(response);
     }
 }
