@@ -15,7 +15,8 @@ public class CustomerMapper {
             customer.getLegalName().getValue(),
             customer.getRif().getValue(),
             customer.getType().name(),
-            customer.isActive()
+            customer.isActive(),
+            customer.getPaymentType()
         );
     }
 
@@ -30,6 +31,7 @@ public class CustomerMapper {
             customer.getCreditDays().getValue(),
             customer.getCreditLimit().getValue(),
             customer.isActive(),
+            customer.getPaymentType(),
             customer.getCreatedAt(),
             toEmailResponses(customer),
             toPhoneResponses(customer),
@@ -48,6 +50,7 @@ public class CustomerMapper {
             customer.getCreditDays().getValue(),
             customer.getCreditLimit().getValue(),
             customer.isActive(),
+            customer.getPaymentType(),
             customer.getCreatedAt(),
             toEmailResponses(customer),
             toPhoneResponses(customer),

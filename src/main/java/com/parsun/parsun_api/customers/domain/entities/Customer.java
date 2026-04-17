@@ -148,6 +148,12 @@ public class Customer {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public PaymentType getPaymentType() {
+        return creditLimit.getValue().compareTo(java.math.BigDecimal.ZERO) > 0
+            ? PaymentType.CREDIT
+            : PaymentType.CASH;
+    }
+
     public CustomerId getId() { return id; }
     public CustomerCode getCode() { return code; }
     public LegalName getLegalName() { return legalName; }

@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.customers.application.dto.response;
 
+import com.parsun.parsun_api.customers.domain.valueobjects.PaymentType;
+
 public record CustomerListResponse(
     String id,
     Long code,
@@ -7,5 +9,6 @@ public record CustomerListResponse(
     String legalName,
     String rif,
     String type,
-    boolean active
+    boolean active,
+    PaymentType paymentType
 ) {}
