@@ -1,0 +1,16 @@
+package com.parsun.parsun_api.customers.domain.repositories;
+
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface CustomerRepository {
+    Customer save(Customer customer);
+    Optional<Customer> findById(CustomerId id);
+    List<Customer> findAll();
+    void delete(CustomerId id);
+    boolean existsById(CustomerId id);
+    long getNextCode();
+}

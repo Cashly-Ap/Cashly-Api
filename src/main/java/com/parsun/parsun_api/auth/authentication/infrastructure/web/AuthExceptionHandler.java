@@ -6,6 +6,7 @@ import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenExcep
 import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
 import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -70,6 +71,16 @@ public class AuthExceptionHandler {
             ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetails);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomerNotFound(CustomerNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Customer not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
