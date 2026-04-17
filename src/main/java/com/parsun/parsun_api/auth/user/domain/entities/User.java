@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class User {
     private final UserId id;
-    private final Email email;
+    private Email email;
     private UserName userName;
     private Password password;
     private UserRole role;
@@ -52,7 +52,6 @@ public class User {
             throw new IllegalArgumentException("Password cannot be null");
         }
     }
-
     public void changePassword(Password newPassword) {
         if (newPassword == null) {
             throw new IllegalArgumentException("New password cannot be null");
@@ -60,6 +59,15 @@ public class User {
         this.password = newPassword;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateEmail(Email newEmail) {
+        if (newEmail == null) {
+            throw new IllegalArgumentException("Email cannot be null");
+        }
+        this.email = newEmail;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 
     public void updateUserName(UserName newUserName) {
         if (newUserName == null) {

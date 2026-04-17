@@ -60,7 +60,7 @@ class AuthControllerUnitTest {
             "test@example.com",
             "Test User",
             "SecurePassword123!",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         loginRequest = new LoginRequest(
@@ -76,7 +76,7 @@ class AuthControllerUnitTest {
             "user-id",
             "test@example.com",
             "Test User",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -88,7 +88,7 @@ class AuthControllerUnitTest {
             "test@example.com",
             "Test User",
             AuthenticableType.USER,
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             now,
             now

@@ -82,6 +82,7 @@ public class UserEntity {
             throw new IllegalArgumentException("User cannot be null");
         }
 
+        this.email = user.getEmail().getValue();
         this.userName = user.getUserName().getValue();
         this.passwordHash = user.getPassword().getHashedValue();
         this.role = user.getRole();

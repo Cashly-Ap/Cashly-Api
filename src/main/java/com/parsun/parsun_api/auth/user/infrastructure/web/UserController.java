@@ -1,10 +1,14 @@
 package com.parsun.parsun_api.auth.user.infrastructure.web;
 
+import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserEmailRequest;
+import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserPasswordRequest;
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserRequest;
 import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
 import com.parsun.parsun_api.auth.user.application.usecases.GetAllUsersUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.GetUserByIdUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.RegisterUserUseCase;
+import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserEmailUseCase;
+import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserPasswordUseCase;
 import com.parsun.parsun_api.auth.user.application.dto.request.RegisterUserRequest;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
@@ -13,6 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,23 +30,29 @@ public class UserController {
     private final GetAllUsersUseCase getAllUsersUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
     private final RegisterUserUseCase registerUserUseCase;
+    private final UpdateUserEmailUseCase updateUserEmailUseCase;
+    private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
     private final UserRepository userRepository;
 
     public UserController(
             GetAllUsersUseCase getAllUsersUseCase,
             GetUserByIdUseCase getUserByIdUseCase,
             RegisterUserUseCase registerUserUseCase,
+            UpdateUserEmailUseCase updateUserEmailUseCase,
+            UpdateUserPasswordUseCase updateUserPasswordUseCase,
             UserRepository userRepository) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
+        this.updateUserEmailUseCase = updateUserEmailUseCase;
+        this.updateUserPasswordUseCase = updateUserPasswordUseCase;
         this.userRepository = userRepository;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAll() {
-        List<UserResponse> users = getAllUsersUseCase.execute();
+    public ResponseEntity<List<UserResponse>> getAll(Authentication authentication) {
+        List<UserResponse> users = getAllUsersUseCase.execute(authentication.getName());
         return ResponseEntity.ok(users);
     }
 
@@ -108,5 +119,21 @@ public class UserController {
         
         userRepository.delete(user);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/email")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<UserResponse> updateEmail(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserEmailRequest request) {
+        return ResponseEntity.ok(updateUserEmailUseCase.execute(id, request));
+    }
+
+    @PutMapping("/{id}/password")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<UserResponse> updatePassword(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserPasswordRequest request) {
+        return ResponseEntity.ok(updateUserPasswordUseCase.execute(id, request));
     }
 }

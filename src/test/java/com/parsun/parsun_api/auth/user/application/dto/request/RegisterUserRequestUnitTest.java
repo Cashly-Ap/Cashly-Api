@@ -14,68 +14,68 @@ class RegisterUserRequestUnitTest {
             "user@example.com",
             "John Doe",
             "password123",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         assertThat(request).isNotNull();
         assertThat(request.email()).isEqualTo("user@example.com");
         assertThat(request.userName()).isEqualTo("John Doe");
         assertThat(request.password()).isEqualTo("password123");
-        assertThat(request.role()).isEqualTo(UserRole.CUSTOMER);
+        assertThat(request.role()).isEqualTo(UserRole.OPERATOR);
     }
 
     @Test
     void should_ThrowException_When_EmailIsNull() {
-        assertThatThrownBy(() -> new RegisterUserRequest(null, "John Doe", "password123", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest(null, "John Doe", "password123", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Email is required");
     }
 
     @Test
     void should_ThrowException_When_EmailIsEmpty() {
-        assertThatThrownBy(() -> new RegisterUserRequest("", "John Doe", "password123", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("", "John Doe", "password123", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Email is required");
     }
 
     @Test
     void should_ThrowException_When_EmailIsBlank() {
-        assertThatThrownBy(() -> new RegisterUserRequest("   ", "John Doe", "password123", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("   ", "John Doe", "password123", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Email is required");
     }
 
     @Test
     void should_ThrowException_When_UserNameIsNull() {
-        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", null, "password123", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", null, "password123", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("User name is required");
     }
 
     @Test
     void should_ThrowException_When_UserNameIsEmpty() {
-        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "", "password123", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "", "password123", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("User name is required");
     }
 
     @Test
     void should_ThrowException_When_UserNameIsBlank() {
-        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "   ", "password123", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "   ", "password123", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("User name is required");
     }
 
     @Test
     void should_ThrowException_When_PasswordIsNull() {
-        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "John Doe", null, UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "John Doe", null, UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Password is required");
     }
 
     @Test
     void should_ThrowException_When_PasswordIsEmpty() {
-        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "John Doe", "", UserRole.CUSTOMER))
+        assertThatThrownBy(() -> new RegisterUserRequest("user@example.com", "John Doe", "", UserRole.OPERATOR))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Password is required");
     }
@@ -93,14 +93,14 @@ class RegisterUserRequestUnitTest {
             "user@example.com",
             "John Doe",
             "password123",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         RegisterUserRequest request2 = new RegisterUserRequest(
             "user@example.com",
             "John Doe",
             "password123",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         assertThat(request1).isEqualTo(request2);
@@ -113,14 +113,14 @@ class RegisterUserRequestUnitTest {
             "user1@example.com",
             "John Doe",
             "password123",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         RegisterUserRequest request2 = new RegisterUserRequest(
             "user2@example.com",
             "John Doe",
             "password123",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         assertThat(request1).isNotEqualTo(request2);

@@ -42,7 +42,7 @@ class RegisterUserUseCaseUnitTest {
             "test@example.com",
             "Test User",
             "SecurePass123!",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
     }
 
@@ -88,7 +88,7 @@ class RegisterUserUseCaseUnitTest {
             "invalid-email",
             "Test User",
             "SecurePass123!",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         assertThrows(
@@ -108,7 +108,7 @@ class RegisterUserUseCaseUnitTest {
             "test@example.com",
             "Test User",
             "weak",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
@@ -166,7 +166,7 @@ class RegisterUserUseCaseUnitTest {
             "TEST@EXAMPLE.COM",
             "Test User",
             "SecurePass123!",
-            UserRole.CUSTOMER
+            UserRole.OPERATOR
         );
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);

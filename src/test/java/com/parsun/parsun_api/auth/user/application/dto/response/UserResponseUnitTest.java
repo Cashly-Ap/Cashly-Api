@@ -17,7 +17,7 @@ class UserResponseUnitTest {
             "1",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -28,7 +28,7 @@ class UserResponseUnitTest {
         assertThat(response.id()).isEqualTo("1");
         assertThat(response.email()).isEqualTo("john@example.com");
         assertThat(response.userName()).isEqualTo("John Doe");
-        assertThat(response.role()).isEqualTo(UserRole.CUSTOMER);
+        assertThat(response.role()).isEqualTo(UserRole.OPERATOR);
         assertThat(response.active()).isTrue();
         assertThat(response.emailVerified()).isFalse();
         assertThat(response.createdAt()).isEqualTo(now);
@@ -43,7 +43,7 @@ class UserResponseUnitTest {
             "1",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -54,7 +54,7 @@ class UserResponseUnitTest {
             "1",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -73,7 +73,7 @@ class UserResponseUnitTest {
             "1",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -84,7 +84,7 @@ class UserResponseUnitTest {
             "2",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -102,7 +102,7 @@ class UserResponseUnitTest {
             "1",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -113,7 +113,7 @@ class UserResponseUnitTest {
             "1",
             "jane@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
@@ -131,7 +131,7 @@ class UserResponseUnitTest {
             "1",
             "john@example.com",
             "John Doe",
-            UserRole.CUSTOMER,
+            UserRole.OPERATOR,
             true,
             false,
             now,
