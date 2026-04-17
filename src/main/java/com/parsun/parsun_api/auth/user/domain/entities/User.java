@@ -21,7 +21,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User(UserId id, Email email, UserName userName, Password password) {
-        this(id, email, userName, password, UserRole.CUSTOMER);
+        this(id, email, userName, password, UserRole.OPERATOR);
     }
 
     public User(UserId id, Email email, UserName userName, Password password, UserRole role) {
@@ -31,7 +31,7 @@ public class User {
         this.email = email;
         this.userName = userName;
         this.password = password;
-        this.role = role != null ? role : UserRole.CUSTOMER;
+        this.role = role != null ? role : UserRole.OPERATOR;
         this.active = true;
         this.emailVerified = false;
         this.createdAt = LocalDateTime.now();
@@ -153,10 +153,6 @@ public class User {
 
     public boolean isOperator() {
         return this.role == UserRole.OPERATOR;
-    }
-
-    public boolean isCustomer() {
-        return this.role == UserRole.CUSTOMER;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -3,6 +3,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     user_name VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'OPERATOR',
     active BOOLEAN NOT NULL DEFAULT TRUE,
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     commission_deduction_percentage DECIMAL(5,2) NOT NULL DEFAULT 1.00,
@@ -12,3 +13,4 @@ CREATE TABLE users (
 
 CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_active ON users (active);
+CREATE INDEX idx_users_role ON users (role);

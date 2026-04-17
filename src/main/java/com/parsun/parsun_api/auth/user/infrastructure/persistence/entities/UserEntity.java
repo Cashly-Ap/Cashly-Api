@@ -44,7 +44,7 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20, nullable = false)
-    private UserRole role = UserRole.CUSTOMER;
+    private UserRole role = UserRole.OPERATOR;
 
     @Column(name = "active", nullable = false)
     private boolean active;
