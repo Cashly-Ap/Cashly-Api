@@ -8,6 +8,9 @@ CREATE TABLE customers (
     credit_days INT NOT NULL DEFAULT 0,
     credit_limit DECIMAL(15,2) NOT NULL DEFAULT 0.00,
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    portal_access BOOLEAN NOT NULL DEFAULT FALSE,
+    portal_email VARCHAR(255) NULL,
+    portal_password VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
@@ -41,6 +44,9 @@ CREATE TABLE customer_addresses (
     address TEXT NOT NULL,
     billing BOOLEAN NOT NULL DEFAULT FALSE,
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    state VARCHAR(100) NULL,
+    municipality VARCHAR(100) NULL,
+    postal_code VARCHAR(10) NULL,
     CONSTRAINT fk_customer_addresses_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
 

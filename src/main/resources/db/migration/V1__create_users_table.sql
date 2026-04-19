@@ -14,3 +14,13 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_active ON users (active);
 CREATE INDEX idx_users_role ON users (role);
+
+CREATE TABLE user_module_permissions (
+    id BINARY(16) PRIMARY KEY,
+    user_id BINARY(16) NOT NULL,
+    module VARCHAR(30) NOT NULL,
+    CONSTRAINT fk_ump_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT uq_ump_user_module UNIQUE (user_id, module)
+);
+
+CREATE INDEX idx_ump_user_id ON user_module_permissions (user_id);
