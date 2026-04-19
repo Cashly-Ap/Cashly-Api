@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.customers.infrastructure.web;
 
+import com.parsun.parsun_api.customers.application.dto.request.ChangeCustomerPortalPasswordRequest;
 import com.parsun.parsun_api.customers.application.dto.request.CreateCustomerRequest;
 import com.parsun.parsun_api.customers.application.dto.request.UpdateCustomerRequest;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerCreateResponse;
@@ -23,42 +24,53 @@ public class CustomerController {
     private final ListCustomersUseCase listCustomersUseCase;
     private final UpdateCustomerUseCase updateCustomerUseCase;
     private final DeleteCustomerUseCase deleteCustomerUseCase;
+    private final ChangeCustomerPortalPasswordUseCase changeCustomerPortalPasswordUseCase;
 
     public CustomerController(RegisterCustomerUseCase registerCustomerUseCase,
                                GetCustomerUseCase getCustomerUseCase,
                                ListCustomersUseCase listCustomersUseCase,
                                UpdateCustomerUseCase updateCustomerUseCase,
-                               DeleteCustomerUseCase deleteCustomerUseCase) {
+                               DeleteCustomerUseCase deleteCustomerUseCase,
+                               ChangeCustomerPortalPasswordUseCase changeCustomerPortalPasswordUseCase) {
         this.registerCustomerUseCase = registerCustomerUseCase;
         this.getCustomerUseCase = getCustomerUseCase;
         this.listCustomersUseCase = listCustomersUseCase;
         this.updateCustomerUseCase = updateCustomerUseCase;
         this.deleteCustomerUseCase = deleteCustomerUseCase;
+        this.changeCustomerPortalPasswordUseCase = changeCustomerPortalPasswordUseCase;
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<CustomerCreateResponse> create(@Valid @RequestBody CreateCustomerRequest request) {
         CustomerCreateResponse response = registerCustomerUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR')")
-    public ResponseEntity<List<CustomerListResponse>> getAll() {
-        List<CustomerListResponse> customers = listCustomersUseCase.execute();
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<List<CustomerListResponse>> getAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String rif,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) Boolean portalAccess,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) String municipality,
+            @RequestParam(required = false) String postalCode) {
+        List<CustomerListResponse> customers = listCustomersUseCase.execute(search, rif, type, active, portalAccess, state, municipality, postalCode);
         return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<CustomerDetailResponse> getById(@PathVariable String id) {
         CustomerDetailResponse customer = getCustomerUseCase.execute(id);
         return ResponseEntity.ok(customer);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<CustomerDetailResponse> update(@PathVariable String id,
                                                           @Valid @RequestBody UpdateCustomerRequest request) {
         CustomerDetailResponse customer = updateCustomerUseCase.execute(id, request);
@@ -66,9 +78,17 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteCustomerUseCase.execute(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/portal-password")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<Void> changePortalPassword(@PathVariable String id,
+                                                      @Valid @RequestBody ChangeCustomerPortalPasswordRequest request) {
+        changeCustomerPortalPasswordUseCase.execute(id, request);
         return ResponseEntity.noContent().build();
     }
 }

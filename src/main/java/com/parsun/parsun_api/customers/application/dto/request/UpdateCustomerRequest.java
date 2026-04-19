@@ -34,14 +34,16 @@ public record UpdateCustomerRequest(
     Boolean active,
 
     @Valid
-    @NotEmpty(message = "At least one email is required")
     List<EmailRequest> emails,
 
     @Valid
-    @NotEmpty(message = "At least one phone is required")
     List<PhoneRequest> phones,
 
     @Valid
     @NotEmpty(message = "At least one address is required")
-    List<AddressRequest> addresses
+    List<AddressRequest> addresses,
+
+    Boolean portalAccess,
+
+    String portalEmail
 ) {}

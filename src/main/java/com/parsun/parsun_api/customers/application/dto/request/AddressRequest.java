@@ -11,5 +11,9 @@ public record AddressRequest(
     Boolean billing,
 
     @NotNull(message = "Active flag is required")
-    Boolean active
+    Boolean active,
+
+    String state,
+    String municipality,
+    String postalCode
 ) {}

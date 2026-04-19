@@ -39,4 +39,13 @@ public class CustomerAddressEntity {
 
     @Column(name = "active", nullable = false)
     private boolean active;
+
+    @Column(name = "state", length = 100)
+    private String state;
+
+    @Column(name = "municipality", length = 100)
+    private String municipality;
+
+    @Column(name = "postal_code", length = 10)
+    private String postalCode;
 }

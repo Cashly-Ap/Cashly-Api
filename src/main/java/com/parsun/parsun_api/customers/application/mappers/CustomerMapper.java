@@ -16,7 +16,8 @@ public class CustomerMapper {
             customer.getRif().getValue(),
             customer.getType().name(),
             customer.isActive(),
-            customer.getPaymentType()
+            customer.getPaymentType(),
+            customer.isPortalAccess()
         );
     }
 
@@ -35,7 +36,9 @@ public class CustomerMapper {
             customer.getCreatedAt(),
             toEmailResponses(customer),
             toPhoneResponses(customer),
-            toAddressResponses(customer)
+            toAddressResponses(customer),
+            customer.isPortalAccess(),
+            customer.getPortalEmail()
         );
     }
 
@@ -54,7 +57,9 @@ public class CustomerMapper {
             customer.getCreatedAt(),
             toEmailResponses(customer),
             toPhoneResponses(customer),
-            toAddressResponses(customer)
+            toAddressResponses(customer),
+            customer.isPortalAccess(),
+            customer.getPortalEmail()
         );
     }
 
@@ -85,7 +90,10 @@ public class CustomerMapper {
                 a.getCustomerId().toString(),
                 a.getAddress(),
                 a.isBilling(),
-                a.isActive()
+                a.isActive(),
+                a.getState(),
+                a.getMunicipality(),
+                a.getPostalCode()
             ))
             .toList();
     }

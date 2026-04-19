@@ -10,5 +10,6 @@ public record CustomerListResponse(
     String rif,
     String type,
     boolean active,
-    PaymentType paymentType
+    PaymentType paymentType,
+    boolean portalAccess
 ) {}

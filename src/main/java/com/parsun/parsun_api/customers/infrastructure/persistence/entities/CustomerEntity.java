@@ -65,6 +65,15 @@ public class CustomerEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "portal_access", nullable = false)
+    private boolean portalAccess;
+
+    @Column(name = "portal_email", length = 200)
+    private String portalEmail;
+
+    @Column(name = "portal_password", length = 255)
+    private String portalPassword;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private List<CustomerEmailEntity> emails = new ArrayList<>();
@@ -90,6 +99,9 @@ public class CustomerEntity {
         entity.active = customer.isActive();
         entity.createdAt = customer.getCreatedAt();
         entity.updatedAt = customer.getUpdatedAt();
+        entity.portalAccess = customer.isPortalAccess();
+        entity.portalEmail = customer.getPortalEmail();
+        entity.portalPassword = customer.getPortalPassword();
 
         entity.emails = customer.getEmails().stream().map(e -> {
             CustomerEmailEntity emailEntity = new CustomerEmailEntity();
@@ -114,6 +126,9 @@ public class CustomerEntity {
             addressEntity.setAddress(a.getAddress());
             addressEntity.setBilling(a.isBilling());
             addressEntity.setActive(a.isActive());
+            addressEntity.setState(a.getState());
+            addressEntity.setMunicipality(a.getMunicipality());
+            addressEntity.setPostalCode(a.getPostalCode());
             return addressEntity;
         }).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
 
@@ -129,6 +144,9 @@ public class CustomerEntity {
         this.creditLimit = customer.getCreditLimit().getValue();
         this.active = customer.isActive();
         this.updatedAt = customer.getUpdatedAt();
+        this.portalAccess = customer.isPortalAccess();
+        this.portalEmail = customer.getPortalEmail();
+        this.portalPassword = customer.getPortalPassword();
 
         this.emails.clear();
         customer.getEmails().forEach(e -> {
@@ -156,6 +174,9 @@ public class CustomerEntity {
             addressEntity.setAddress(a.getAddress());
             addressEntity.setBilling(a.isBilling());
             addressEntity.setActive(a.isActive());
+            addressEntity.setState(a.getState());
+            addressEntity.setMunicipality(a.getMunicipality());
+            addressEntity.setPostalCode(a.getPostalCode());
             this.addresses.add(addressEntity);
         });
     }
@@ -183,7 +204,10 @@ public class CustomerEntity {
                 new CustomerId(a.getCustomerId()),
                 a.getAddress(),
                 a.isBilling(),
-                a.isActive()
+                a.isActive(),
+                a.getState(),
+                a.getMunicipality(),
+                a.getPostalCode()
             ))
             .toList();
 
@@ -201,7 +225,10 @@ public class CustomerEntity {
             this.updatedAt,
             domainEmails,
             domainPhones,
-            domainAddresses
+            domainAddresses,
+            this.portalAccess,
+            this.portalEmail,
+            this.portalPassword
         );
     }
 }

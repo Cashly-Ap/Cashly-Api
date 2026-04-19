@@ -7,16 +7,21 @@ import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UpdateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UpdateCustomerUseCase(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    public UpdateCustomerUseCase(CustomerRepository customerRepository,
+                                  CustomerMapper customerMapper,
+                                  PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -45,7 +50,17 @@ public class UpdateCustomerUseCase {
 
         request.emails().forEach(e -> customer.addEmail(new EmailAddress(e.email())));
         request.phones().forEach(p -> customer.addPhone(new PhoneNumber(p.phone())));
-        request.addresses().forEach(a -> customer.addAddress(a.address(), a.billing(), a.active()));
+        request.addresses().forEach(a -> customer.addAddress(
+            a.address(), a.billing(), a.active(),
+            a.state(), a.municipality(), a.postalCode()
+        ));
+
+        if (Boolean.TRUE.equals(request.portalAccess()) && request.portalEmail() != null) {
+            String encoded = passwordEncoder.encode(request.portalEmail());
+            customer.enablePortalAccess(request.portalEmail(), encoded);
+        } else if (Boolean.FALSE.equals(request.portalAccess())) {
+            customer.disablePortalAccess();
+        }
 
         Customer saved = customerRepository.save(customer);
         return customerMapper.toDetailResponse(saved);

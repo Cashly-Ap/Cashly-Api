@@ -48,6 +48,15 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
+    public List<Customer> findAllWithFilters(String search, String rif, String type, Boolean active,
+                                              Boolean portalAccess, String state, String municipality, String postalCode) {
+        return springDataRepository.findAllWithFilters(search, rif, type, active, portalAccess, state, municipality, postalCode)
+            .stream()
+            .map(CustomerEntity::toDomain)
+            .toList();
+    }
+
+    @Override
     public void delete(CustomerId id) {
         springDataRepository.deleteById(id.getValue());
     }

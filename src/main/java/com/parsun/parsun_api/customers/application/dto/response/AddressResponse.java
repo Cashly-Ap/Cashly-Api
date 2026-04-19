@@ -5,5 +5,8 @@ public record AddressResponse(
     String customerId,
     String address,
     boolean billing,
-    boolean active
+    boolean active,
+    String state,
+    String municipality,
+    String postalCode
 ) {}

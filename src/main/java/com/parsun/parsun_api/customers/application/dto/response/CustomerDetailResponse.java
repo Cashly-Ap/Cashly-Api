@@ -20,5 +20,7 @@ public record CustomerDetailResponse(
     LocalDateTime createdAt,
     List<EmailResponse> emails,
     List<PhoneResponse> phones,
-    List<AddressResponse> addresses
+    List<AddressResponse> addresses,
+    boolean portalAccess,
+    String portalEmail
 ) {}
