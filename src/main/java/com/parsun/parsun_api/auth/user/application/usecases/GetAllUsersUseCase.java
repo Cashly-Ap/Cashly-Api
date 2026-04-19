@@ -4,6 +4,7 @@ import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +21,13 @@ public class GetAllUsersUseCase {
         this.userRepository = userRepository;
     }
 
-    public List<UserResponse> execute(String authenticatedUserId) {
+    public List<UserResponse> execute(String authenticatedUserId, UserRole role, Boolean active) {
         UserId excludedId = new UserId(UUID.fromString(authenticatedUserId));
         List<User> users = userRepository.findAll();
         return users.stream()
             .filter(user -> !user.getId().equals(excludedId))
+            .filter(user -> role == null || user.getRole() == role)
+            .filter(user -> active == null || user.isActive() == active)
             .map(UserResponse::from)
             .toList();
     }

@@ -1,9 +1,11 @@
 package com.parsun.parsun_api.auth.user.application.dto.response;
 
 import com.parsun.parsun_api.auth.user.domain.entities.User;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record UserResponse(
     String id,
@@ -12,6 +14,7 @@ public record UserResponse(
     UserRole role,
     boolean active,
     boolean emailVerified,
+    Set<BusinessModule> modulePermissions,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
@@ -23,6 +26,7 @@ public record UserResponse(
             user.getRole(),
             user.isActive(),
             user.isEmailVerified(),
+            user.getModulePermissions(),
             user.getCreatedAt(),
             user.getUpdatedAt()
         );

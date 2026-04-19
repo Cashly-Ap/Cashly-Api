@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.auth.user.infrastructure.web;
 
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserEmailRequest;
+import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserModulePermissionsRequest;
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserPasswordRequest;
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserRequest;
 import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
@@ -8,11 +9,13 @@ import com.parsun.parsun_api.auth.user.application.usecases.GetAllUsersUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.GetUserByIdUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.RegisterUserUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserEmailUseCase;
+import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserModulePermissionsUseCase;
 import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserPasswordUseCase;
 import com.parsun.parsun_api.auth.user.application.dto.request.RegisterUserRequest;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,7 @@ public class UserController {
     private final RegisterUserUseCase registerUserUseCase;
     private final UpdateUserEmailUseCase updateUserEmailUseCase;
     private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
+    private final UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase;
     private final UserRepository userRepository;
 
     public UserController(
@@ -40,19 +44,24 @@ public class UserController {
             RegisterUserUseCase registerUserUseCase,
             UpdateUserEmailUseCase updateUserEmailUseCase,
             UpdateUserPasswordUseCase updateUserPasswordUseCase,
+            UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase,
             UserRepository userRepository) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
         this.updateUserEmailUseCase = updateUserEmailUseCase;
         this.updateUserPasswordUseCase = updateUserPasswordUseCase;
+        this.updateUserModulePermissionsUseCase = updateUserModulePermissionsUseCase;
         this.userRepository = userRepository;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAll(Authentication authentication) {
-        List<UserResponse> users = getAllUsersUseCase.execute(authentication.getName());
+    public ResponseEntity<List<UserResponse>> getAll(
+            Authentication authentication,
+            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false) Boolean active) {
+        List<UserResponse> users = getAllUsersUseCase.execute(authentication.getName(), role, active);
         return ResponseEntity.ok(users);
     }
 
@@ -135,5 +144,13 @@ public class UserController {
             @PathVariable String id,
             @Valid @RequestBody UpdateUserPasswordRequest request) {
         return ResponseEntity.ok(updateUserPasswordUseCase.execute(id, request));
+    }
+
+    @PutMapping("/{id}/module-permissions")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<UserResponse> updateModulePermissions(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserModulePermissionsRequest request) {
+        return ResponseEntity.ok(updateUserModulePermissionsUseCase.execute(id, request));
     }
 }

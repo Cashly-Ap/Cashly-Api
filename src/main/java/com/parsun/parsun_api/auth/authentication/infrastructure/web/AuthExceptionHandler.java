@@ -9,6 +9,7 @@ import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundExcept
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -134,6 +135,16 @@ public class AuthExceptionHandler {
             ex.getMessage()
         );
         return ResponseEntity.badRequest().body(errorDetails);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.FORBIDDEN,
+            "Access denied",
+            "You do not have permission to access this resource"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
     }
 
     @ExceptionHandler(Exception.class)

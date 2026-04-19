@@ -1,11 +1,13 @@
 package com.parsun.parsun_api.auth.authentication.infrastructure.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -16,7 +18,9 @@ import com.parsun.parsun_api.auth.authentication.domain.entities.AuthenticableTy
 import com.parsun.parsun_api.auth.token.domain.services.TokenService;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -77,12 +81,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setUserAuthentication(HttpServletRequest request, User user) {
-        String roleAuthority = "ROLE_" + user.getRole().name();
-        
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
+        if (user.getRole() == UserRole.SUPER_ADMIN) {
+            for (BusinessModule module : BusinessModule.values()) {
+                authorities.add(new SimpleGrantedAuthority("MODULE_" + module.name()));
+            }
+        } else {
+            for (BusinessModule module : user.getModulePermissions()) {
+                authorities.add(new SimpleGrantedAuthority("MODULE_" + module.name()));
+            }
+        }
+
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             user.getId().getValue().toString(),
             null,
-            List.of(new SimpleGrantedAuthority(roleAuthority))
+            authorities
         );
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

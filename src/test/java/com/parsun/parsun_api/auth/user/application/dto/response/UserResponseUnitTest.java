@@ -4,6 +4,7 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,6 +21,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -46,6 +48,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -57,6 +60,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -76,6 +80,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -87,6 +92,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -105,6 +111,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -116,6 +123,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );
@@ -134,6 +142,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            Set.of(),
             now,
             now
         );

@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.auth.user.domain.entities;
 
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
@@ -7,7 +8,10 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class User {
     private final UserId id;
@@ -17,6 +21,7 @@ public class User {
     private UserRole role;
     private boolean active;
     private boolean emailVerified;
+    private Set<BusinessModule> modulePermissions;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -34,6 +39,7 @@ public class User {
         this.role = role != null ? role : UserRole.OPERATOR;
         this.active = true;
         this.emailVerified = false;
+        this.modulePermissions = EnumSet.noneOf(BusinessModule.class);
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -163,6 +169,37 @@ public class User {
         return this.role == UserRole.OPERATOR;
     }
 
+    public Set<BusinessModule> getModulePermissions() {
+        return Collections.unmodifiableSet(modulePermissions);
+    }
+
+    public void grantPermission(BusinessModule module) {
+        if (module == null) {
+            throw new IllegalArgumentException("Module cannot be null");
+        }
+        this.modulePermissions.add(module);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void revokePermission(BusinessModule module) {
+        if (module == null) {
+            throw new IllegalArgumentException("Module cannot be null");
+        }
+        this.modulePermissions.remove(module);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void setModulePermissions(Set<BusinessModule> permissions) {
+        this.modulePermissions = (permissions != null && !permissions.isEmpty())
+                ? EnumSet.copyOf(permissions)
+                : EnumSet.noneOf(BusinessModule.class);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean hasModulePermission(BusinessModule module) {
+        return modulePermissions.contains(module);
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -194,6 +231,7 @@ public class User {
                 ", role=" + role +
                 ", active=" + active +
                 ", emailVerified=" + emailVerified +
+                ", modulePermissions=" + modulePermissions +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
