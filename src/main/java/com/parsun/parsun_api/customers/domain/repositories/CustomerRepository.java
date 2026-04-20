@@ -2,6 +2,7 @@ package com.parsun.parsun_api.customers.domain.repositories;
 
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,7 @@ public interface CustomerRepository {
     Customer save(Customer customer);
     Optional<Customer> findById(CustomerId id);
     List<Customer> findAll();
-    List<Customer> findAllWithFilters(String search, String rif, String type, Boolean active, Boolean portalAccess, String state, String municipality, String postalCode);
+    PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active, Boolean portalAccess, String state, String municipality, String postalCode, int page, int size, String orderBy, String orderDir);
     void delete(CustomerId id);
     boolean existsById(CustomerId id);
     long getNextCode();

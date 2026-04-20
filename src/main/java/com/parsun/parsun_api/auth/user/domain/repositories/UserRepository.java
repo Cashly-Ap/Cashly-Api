@@ -4,6 +4,7 @@ import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +24,7 @@ public interface UserRepository {
     List<User> findAll();
 
     List<User> findByRole(UserRole role);
+
+    PageResponse<User> findAllWithFilters(String search, UserRole role, Boolean active, String excludeId, int page, int size, String orderBy, String orderDir);
 }
+

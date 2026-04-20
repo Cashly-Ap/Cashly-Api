@@ -16,6 +16,7 @@ import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -57,11 +57,17 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAll(
+    public ResponseEntity<PageResponse<UserResponse>> getAll(
             Authentication authentication,
             @RequestParam(required = false) UserRole role,
-            @RequestParam(required = false) Boolean active) {
-        List<UserResponse> users = getAllUsersUseCase.execute(authentication.getName(), role, active);
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "userName") String orderBy,
+            @RequestParam(defaultValue = "asc") String orderDir) {
+        PageResponse<UserResponse> users = getAllUsersUseCase.execute(
+            authentication.getName(), role, active, search, page, size, orderBy, orderDir);
         return ResponseEntity.ok(users);
     }
 
@@ -112,7 +118,6 @@ public class UserController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         
-        // Prevent SUPER_ADMIN from deleting themselves
         if (id.equals(java.util.UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd20a215").toString())) {
             throw new IllegalArgumentException("Cannot delete the super admin user");
         }
@@ -121,7 +126,6 @@ public class UserController {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
         
-        // Prevent deletion of other SUPER_ADMIN users
         if (user.getRole() == com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole.SUPER_ADMIN) {
             throw new IllegalArgumentException("Cannot delete another SUPER_ADMIN user");
         }

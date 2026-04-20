@@ -4,13 +4,20 @@ import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.customers.infrastructure.persistence.entities.CustomerEntity;
+import com.parsun.parsun_api.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class JpaCustomerRepository implements CustomerRepository {
+
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("legalName", "code", "rif", "alias", "type");
 
     private final SpringDataCustomerRepository springDataRepository;
 
@@ -48,12 +55,19 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
-    public List<Customer> findAllWithFilters(String search, String rif, String type, Boolean active,
-                                              Boolean portalAccess, String state, String municipality, String postalCode) {
-        return springDataRepository.findAllWithFilters(search, rif, type, active, portalAccess, state, municipality, postalCode)
-            .stream()
-            .map(CustomerEntity::toDomain)
-            .toList();
+    public PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active,
+                                                      Boolean portalAccess, String state, String municipality,
+                                                      String postalCode, int page, int size,
+                                                      String orderBy, String orderDir) {
+        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "legalName";
+        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        PageRequest pageable = PageRequest.of(page, size, sort);
+
+        Page<CustomerEntity> result = springDataRepository.findAllWithFilters(
+            search, rif, type, active, portalAccess, state, municipality, postalCode, pageable);
+
+        Page<Customer> mapped = result.map(CustomerEntity::toDomain);
+        return PageResponse.from(mapped);
     }
 
     @Override

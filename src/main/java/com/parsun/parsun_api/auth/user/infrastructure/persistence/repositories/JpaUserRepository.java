@@ -2,7 +2,12 @@ package com.parsun.parsun_api.auth.user.infrastructure.persistence.repositories;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
@@ -11,10 +16,13 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import com.parsun.parsun_api.auth.user.infrastructure.persistence.entities.UserEntity;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 
 
 @Component
 public class JpaUserRepository implements UserRepository {
+
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("userName", "email", "role", "createdAt");
 
     private final SpringDataUserRepository springDataUserRepository;
 
@@ -97,4 +105,18 @@ public class JpaUserRepository implements UserRepository {
             .map(UserEntity::toDomain)
             .toList();
     }
+
+    @Override
+    public PageResponse<User> findAllWithFilters(String search, UserRole role, Boolean active, String excludeId,
+                                                  int page, int size, String orderBy, String orderDir) {
+        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "userName";
+        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        PageRequest pageable = PageRequest.of(page, size, sort);
+
+        UUID excludeUuid = excludeId != null ? UUID.fromString(excludeId) : null;
+        Page<UserEntity> result = springDataUserRepository.findAllWithFilters(search, role, active, excludeUuid, pageable);
+        Page<User> mapped = result.map(UserEntity::toDomain);
+        return PageResponse.from(mapped);
+    }
 }
+

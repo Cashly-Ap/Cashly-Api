@@ -4,6 +4,7 @@ import com.parsun.parsun_api.customers.application.dto.response.CustomerListResp
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,17 +20,29 @@ public class ListCustomersUseCase {
     }
 
     @Transactional(readOnly = true)
-    public List<CustomerListResponse> execute(String search, String rif, String type, Boolean active,
-                                               Boolean portalAccess, String state, String municipality, String postalCode) {
-        boolean hasFilters = search != null || rif != null || type != null || active != null
-            || portalAccess != null || state != null || municipality != null || postalCode != null;
+    public PageResponse<CustomerListResponse> execute(String search, String rif, String type, Boolean active,
+                                                       Boolean portalAccess, String state, String municipality,
+                                                       String postalCode, int page, int size,
+                                                       String orderBy, String orderDir) {
+        Boolean effectiveActive = active != null ? active : true;
+        PageResponse<Customer> customerPage = customerRepository.findAllWithFilters(
+            search, rif, type, effectiveActive, portalAccess, state, municipality, postalCode,
+            page, size, orderBy, orderDir);
 
-        List<Customer> customers = hasFilters
-            ? customerRepository.findAllWithFilters(search, rif, type, active, portalAccess, state, municipality, postalCode)
-            : customerRepository.findAll();
-
-        return customers.stream()
+        List<CustomerListResponse> content = customerPage.content().stream()
             .map(customerMapper::toListResponse)
             .toList();
+
+        return new PageResponse<>(
+            content,
+            customerPage.totalElements(),
+            customerPage.totalPages(),
+            customerPage.size(),
+            customerPage.number(),
+            customerPage.first(),
+            customerPage.last(),
+            customerPage.empty()
+        );
     }
 }
+

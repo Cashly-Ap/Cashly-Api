@@ -1,11 +1,12 @@
 package com.parsun.parsun_api.customers.infrastructure.persistence.repositories;
 
 import com.parsun.parsun_api.customers.infrastructure.persistence.entities.CustomerEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,8 +16,7 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
     Optional<Long> findMaxCode();
 
     @Query("""
-        SELECT DISTINCT c FROM CustomerEntity c
-        LEFT JOIN FETCH c.addresses a
+        SELECT c FROM CustomerEntity c
         WHERE (:search IS NULL OR LOWER(c.legalName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(c.rif) LIKE LOWER(CONCAT('%', :search, '%')))
         AND (:rif IS NULL OR LOWER(c.rif) LIKE LOWER(CONCAT('%', :rif, '%')))
         AND (:type IS NULL OR c.type = :type)
@@ -32,7 +32,7 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
             SELECT 1 FROM CustomerAddressEntity ca WHERE ca.customerId = c.id AND ca.postalCode = :postalCode
         ))
         """)
-    List<CustomerEntity> findAllWithFilters(
+    Page<CustomerEntity> findAllWithFilters(
         @Param("search") String search,
         @Param("rif") String rif,
         @Param("type") String type,
@@ -40,6 +40,8 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
         @Param("portalAccess") Boolean portalAccess,
         @Param("state") String state,
         @Param("municipality") String municipality,
-        @Param("postalCode") String postalCode
+        @Param("postalCode") String postalCode,
+        Pageable pageable
     );
 }
+

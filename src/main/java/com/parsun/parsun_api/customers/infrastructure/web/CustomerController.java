@@ -7,13 +7,12 @@ import com.parsun.parsun_api.customers.application.dto.response.CustomerCreateRe
 import com.parsun.parsun_api.customers.application.dto.response.CustomerDetailResponse;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerListResponse;
 import com.parsun.parsun_api.customers.application.usecases.*;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -49,7 +48,7 @@ public class CustomerController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<List<CustomerListResponse>> getAll(
+    public ResponseEntity<PageResponse<CustomerListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String rif,
             @RequestParam(required = false) String type,
@@ -57,8 +56,14 @@ public class CustomerController {
             @RequestParam(required = false) Boolean portalAccess,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) String municipality,
-            @RequestParam(required = false) String postalCode) {
-        List<CustomerListResponse> customers = listCustomersUseCase.execute(search, rif, type, active, portalAccess, state, municipality, postalCode);
+            @RequestParam(required = false) String postalCode,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "legalName") String orderBy,
+            @RequestParam(defaultValue = "asc") String orderDir) {
+        PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
+            search, rif, type, active, portalAccess, state, municipality, postalCode,
+            page, size, orderBy, orderDir);
         return ResponseEntity.ok(customers);
     }
 
