@@ -1,0 +1,50 @@
+package com.parsun.parsun_api.warehouses.application.usecases;
+
+import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.shared.dto.PageResponse;
+import com.parsun.parsun_api.warehouses.application.dto.response.WarehouseStockResponse;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
+
+import java.util.UUID;
+
+public class GetWarehouseStockUseCase {
+
+    private final WarehouseRepository warehouseRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final ProductRepository productRepository;
+
+    public GetWarehouseStockUseCase(WarehouseRepository warehouseRepository,
+                                     WarehouseStockRepository warehouseStockRepository,
+                                     ProductRepository productRepository) {
+        this.warehouseRepository = warehouseRepository;
+        this.warehouseStockRepository = warehouseStockRepository;
+        this.productRepository = productRepository;
+    }
+
+    public PageResponse<WarehouseStockResponse> execute(UUID warehouseId, int page, int size) {
+        warehouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
+
+        PageResponse<WarehouseStock> result =
+                warehouseStockRepository.findByWarehouseIdPaged(warehouseId, page, size);
+
+        return new PageResponse<>(
+                result.content().stream().map(stock -> {
+                    var product = productRepository.findById(stock.getProductId());
+                    String code = product.map(p -> p.getCode()).orElse("UNKNOWN");
+                    String name = product.map(p -> p.getName()).orElse("Unknown");
+                    return WarehouseStockResponse.from(stock, code, name);
+                }).toList(),
+                result.totalElements(),
+                result.totalPages(),
+                result.size(),
+                result.number(),
+                result.first(),
+                result.last(),
+                result.empty()
+        );
+    }
+}

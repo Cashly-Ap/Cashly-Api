@@ -1,0 +1,98 @@
+package com.parsun.parsun_api.warehouses.application.usecases;
+
+import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
+import com.parsun.parsun_api.products.domain.entities.Product;
+import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.warehouses.application.dto.request.TransferStockRequest;
+import com.parsun.parsun_api.warehouses.application.dto.response.StockMovementResponse;
+import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStockException;
+import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWarehouseException;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
+import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
+import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+public class TransferStockUseCase {
+
+    private final WarehouseRepository warehouseRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final StockMovementRepository stockMovementRepository;
+    private final ProductRepository productRepository;
+
+    public TransferStockUseCase(WarehouseRepository warehouseRepository,
+                                 WarehouseStockRepository warehouseStockRepository,
+                                 StockMovementRepository stockMovementRepository,
+                                 ProductRepository productRepository) {
+        this.warehouseRepository = warehouseRepository;
+        this.warehouseStockRepository = warehouseStockRepository;
+        this.stockMovementRepository = stockMovementRepository;
+        this.productRepository = productRepository;
+    }
+
+    @Transactional
+    public List<StockMovementResponse> execute(UUID sourceWarehouseId, TransferStockRequest request) {
+        Warehouse source = warehouseRepository.findById(sourceWarehouseId)
+                .orElseThrow(() -> new WarehouseNotFoundException(sourceWarehouseId));
+        if (!source.isActive()) throw new WarehouseNotActiveException(sourceWarehouseId);
+
+        Warehouse destination = warehouseRepository.findById(request.destinationWarehouseId())
+                .orElseThrow(() -> new WarehouseNotFoundException(request.destinationWarehouseId()));
+        if (!destination.isActive()) throw new WarehouseNotActiveException(request.destinationWarehouseId());
+
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new ProductNotFoundException(request.productId()));
+
+        // Deduct from source
+        WarehouseStock sourceStock = warehouseStockRepository
+                .findByWarehouseIdAndProductId(sourceWarehouseId, product.getId())
+                .orElseThrow(() -> new ProductNotInWarehouseException(product.getId(), sourceWarehouseId));
+
+        if (sourceStock.getQuantity() < request.quantity()) {
+            throw new InsufficientStockException(product.getId(), sourceWarehouseId,
+                    sourceStock.getQuantity(), request.quantity());
+        }
+
+        String batchId = UUID.randomUUID().toString();
+
+        int sourcePrev = sourceStock.getQuantity();
+        sourceStock.removeStock(request.quantity());
+        WarehouseStock savedSource = warehouseStockRepository.save(sourceStock);
+
+        StockMovement outMovement = StockMovement.create(
+                sourceWarehouseId, product.getId(), MovementType.TRANSFER_OUT,
+                request.quantity(), sourcePrev, savedSource.getQuantity(),
+                null, batchId, request.notes()
+        );
+        StockMovement savedOut = stockMovementRepository.save(outMovement);
+
+        // Add to destination
+        WarehouseStock destStock = warehouseStockRepository
+                .findByWarehouseIdAndProductId(request.destinationWarehouseId(), product.getId())
+                .orElseGet(() -> WarehouseStock.create(request.destinationWarehouseId(), product.getId()));
+
+        int destPrev = destStock.getQuantity();
+        destStock.addStock(request.quantity());
+        WarehouseStock savedDest = warehouseStockRepository.save(destStock);
+
+        StockMovement inMovement = StockMovement.create(
+                request.destinationWarehouseId(), product.getId(), MovementType.TRANSFER_IN,
+                request.quantity(), destPrev, savedDest.getQuantity(),
+                savedOut.getId(), batchId, request.notes()
+        );
+        StockMovement savedIn = stockMovementRepository.save(inMovement);
+
+        return List.of(
+                StockMovementResponse.from(savedOut, product.getCode(), product.getName()),
+                StockMovementResponse.from(savedIn, product.getCode(), product.getName())
+        );
+    }
+}
