@@ -1,150 +1,25 @@
 -- =============================================================================
--- Parsun API - Seed Data
--- Run manually: docker compose exec -T mysql mysql -umyuser -psecret mydatabase < db/seed.sql
+-- Parsun API - Master Seed File
+-- Loads all seed files in order.
+--
+-- Run manually:
+--   docker compose exec -T mysql mysql -umyuser -psecret mydatabase < db/seed.sql
+--
+-- Individual seeds are in db/seeds/:
+--   01_users.sql       - Users and module permissions
+--   02_customers.sql   - Customers, emails, phones, addresses
+--   03_categories.sql  - Product categories
+--   04_warehouses.sql  - Warehouses and customer warehouse access
+--   05_products.sql    - Simple/composite products, stock, movements
 -- =============================================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-DELETE FROM user_module_permissions;
-DELETE FROM users;
-DELETE FROM customer_addresses;
-DELETE FROM customer_phones;
-DELETE FROM customer_emails;
-DELETE FROM customers;
+-- Order matters: respect foreign key dependencies
+SOURCE /seeds/01_users.sql;
+SOURCE /seeds/02_customers.sql;
+SOURCE /seeds/03_categories.sql;
+SOURCE /seeds/04_warehouses.sql;
+SOURCE /seeds/05_products.sql;
 
 SET FOREIGN_KEY_CHECKS = 1;
-
--- -----------------------------------------------------------------------------
--- USERS
--- Password for all: 49510561Gabriel.
--- Gabriel hash:  $2b$10$2NDNdbsCpA0YM67X0YeANetvWwraxOrFSzSlNnMoYpbMkI3z1B4rm
--- Others hash:   $2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.
--- -----------------------------------------------------------------------------
-INSERT INTO users (id, email, user_name, password_hash, role, active, email_verified, commission_deduction_percentage, created_at, updated_at)
-VALUES
-    (UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'gabriel@gmail.com',     'Gabriel',        '$2b$10$2NDNdbsCpA0YM67X0YeANetvWwraxOrFSzSlNnMoYpbMkI3z1B4rm', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'superadmin@parsun.com', 'Super Admin',    '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'admin@parsun.com',      'Admin User',     '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', 'ADMIN',       TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'operator@parsun.com',   'Operator User',  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'sales@parsun.com',      'Sales User',     '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@parsun.com',    'No Sales User',  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW());
-
--- -----------------------------------------------------------------------------
--- USER MODULE PERMISSIONS
--- gabriel + superadmin: all 7 modules
--- admin: all except CUSTOMER_PORTAL
--- operator: INVENTORY, SALES, PURCHASES
--- sales: SALES only
--- nosales: INVENTORY, PURCHASES (no SALES)
--- -----------------------------------------------------------------------------
-INSERT INTO user_module_permissions (id, user_id, module)
-VALUES
-    (UNHEX('aa000000000000000000000000000001'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'USERS'),
-    (UNHEX('aa000000000000000000000000000002'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'INVENTORY'),
-    (UNHEX('aa000000000000000000000000000003'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'SALES'),
-    (UNHEX('aa000000000000000000000000000004'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'FINANCE'),
-    (UNHEX('aa000000000000000000000000000005'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'PURCHASES'),
-    (UNHEX('aa000000000000000000000000000006'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'CUSTOMER_PORTAL'),
-    (UNHEX('aa000000000000000000000000000007'), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'DOCUMENT_ADMIN'),
-
-    (UNHEX('bb000000000000000000000000000001'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'USERS'),
-    (UNHEX('bb000000000000000000000000000002'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'INVENTORY'),
-    (UNHEX('bb000000000000000000000000000003'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'SALES'),
-    (UNHEX('bb000000000000000000000000000004'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'FINANCE'),
-    (UNHEX('bb000000000000000000000000000005'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'PURCHASES'),
-    (UNHEX('bb000000000000000000000000000006'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'CUSTOMER_PORTAL'),
-    (UNHEX('bb000000000000000000000000000007'), UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'DOCUMENT_ADMIN'),
-
-    (UNHEX('cc000000000000000000000000000001'), UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'USERS'),
-    (UNHEX('cc000000000000000000000000000002'), UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'INVENTORY'),
-    (UNHEX('cc000000000000000000000000000003'), UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'SALES'),
-    (UNHEX('cc000000000000000000000000000004'), UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'FINANCE'),
-    (UNHEX('cc000000000000000000000000000005'), UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'PURCHASES'),
-    (UNHEX('cc000000000000000000000000000006'), UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'DOCUMENT_ADMIN'),
-
-    (UNHEX('dd000000000000000000000000000001'), UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'INVENTORY'),
-    (UNHEX('dd000000000000000000000000000002'), UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'SALES'),
-    (UNHEX('dd000000000000000000000000000003'), UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'PURCHASES'),
-
-    (UNHEX('ee000000000000000000000000000001'), UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'SALES'),
-
-    (UNHEX('ff000000000000000000000000000001'), UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'INVENTORY'),
-    (UNHEX('ff000000000000000000000000000002'), UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'PURCHASES');
-
--- -----------------------------------------------------------------------------
--- CUSTOMERS (10 ficticios con variaciones)
--- portal_password BCrypt of: 49510561Gabriel.
--- $2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.
--- -----------------------------------------------------------------------------
-INSERT INTO customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, portal_access, portal_email, portal_password, created_at, updated_at)
-VALUES
-    (UNHEX('c1000000000000000000000000000001'), 1001, 'Distribuidora Caracas C.A.',        'BUSINESS',  'J-30123456-7', 'DistCaracas',  30,  5000.00, TRUE,  TRUE,  'portal@distcaracas.com',  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000002'), 1002, 'Importaciones del Sur C.A.',        'BUSINESS',  'J-20987654-3', 'ImpSur',       60, 10000.00, TRUE,  TRUE,  'ventas@impsur.com',       '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000003'), 1003, 'Comercializadora Norte S.R.L.',     'BUSINESS',  'J-10555444-1', 'ComNorte',     15,  2500.00, TRUE,  FALSE, NULL,                      NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000004'), 1004, 'Carlos Eduardo Mendoza',            'INDIVIDUAL','V-12345678-9', 'CMendoza',      0,     0.00, TRUE,  FALSE, NULL,                      NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000005'), 1005, 'Suministros Industriales Zulia C.A.','BUSINESS', 'J-40234567-8', 'SumZulia',     45,  7500.00, TRUE,  TRUE,  'compras@sumzulia.com',    '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000006'), 1006, 'Maria Alejandra Torres',            'INDIVIDUAL','V-09876543-2', 'MTorres',       0,     0.00, FALSE, FALSE, NULL,                      NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000007'), 1007, 'Tecnologia y Soluciones C.A.',      'BUSINESS',  'J-50345678-9', 'TecSol',       90, 20000.00, TRUE,  TRUE,  'admin@tecsol.com',        '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000008'), 1008, 'Agropecuaria Los Llanos S.R.L.',    'BUSINESS',  'J-11456789-0', 'AgroLlanos',   30,  3000.00, TRUE,  FALSE, NULL,                      NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000009'), 1009, 'Roberto Jose Perez',                'INDIVIDUAL','V-15678901-3', 'RPerez',        0,     0.00, TRUE,  FALSE, NULL,                      NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000010'), 1010, 'Constructora Andina C.A.',          'BUSINESS',  'J-60456789-1', 'ConstruAndina',60, 15000.00, FALSE, FALSE, NULL,                      NULL,                                                           NOW(), NOW());
-
--- -----------------------------------------------------------------------------
--- CUSTOMER EMAILS
--- -----------------------------------------------------------------------------
-INSERT INTO customer_emails (id, customer_id, email)
-VALUES
-    (UNHEX('ce000000000000000000000000000001'), UNHEX('c1000000000000000000000000000001'), 'contacto@distcaracas.com'),
-    (UNHEX('ce000000000000000000000000000002'), UNHEX('c1000000000000000000000000000001'), 'gerencia@distcaracas.com'),
-    (UNHEX('ce000000000000000000000000000003'), UNHEX('c1000000000000000000000000000002'), 'ventas@impsur.com'),
-    (UNHEX('ce000000000000000000000000000004'), UNHEX('c1000000000000000000000000000002'), 'administracion@impsur.com'),
-    (UNHEX('ce000000000000000000000000000005'), UNHEX('c1000000000000000000000000000003'), 'info@comnorte.com'),
-    (UNHEX('ce000000000000000000000000000006'), UNHEX('c1000000000000000000000000000004'), 'cmendoza@gmail.com'),
-    (UNHEX('ce000000000000000000000000000007'), UNHEX('c1000000000000000000000000000005'), 'compras@sumzulia.com'),
-    (UNHEX('ce000000000000000000000000000008'), UNHEX('c1000000000000000000000000000005'), 'gerencia@sumzulia.com'),
-    (UNHEX('ce000000000000000000000000000009'), UNHEX('c1000000000000000000000000000006'), 'matorres@hotmail.com'),
-    (UNHEX('ce000000000000000000000000000010'), UNHEX('c1000000000000000000000000000007'), 'admin@tecsol.com'),
-    (UNHEX('ce000000000000000000000000000011'), UNHEX('c1000000000000000000000000000007'), 'soporte@tecsol.com'),
-    (UNHEX('ce000000000000000000000000000012'), UNHEX('c1000000000000000000000000000008'), 'agrollanos@gmail.com'),
-    (UNHEX('ce000000000000000000000000000013'), UNHEX('c1000000000000000000000000000009'), 'rjperez@gmail.com'),
-    (UNHEX('ce000000000000000000000000000014'), UNHEX('c1000000000000000000000000000010'), 'licitaciones@construandina.com'),
-    (UNHEX('ce000000000000000000000000000015'), UNHEX('c1000000000000000000000000000010'), 'pagos@construandina.com');
-
--- -----------------------------------------------------------------------------
--- CUSTOMER PHONES
--- -----------------------------------------------------------------------------
-INSERT INTO customer_phones (id, customer_id, phone)
-VALUES
-    (UNHEX('b0000000000000000000000000000001'), UNHEX('c1000000000000000000000000000001'), '0212-5551234'),
-    (UNHEX('b0000000000000000000000000000002'), UNHEX('c1000000000000000000000000000001'), '0414-1234567'),
-    (UNHEX('b0000000000000000000000000000003'), UNHEX('c1000000000000000000000000000002'), '0212-5555678'),
-    (UNHEX('b0000000000000000000000000000004'), UNHEX('c1000000000000000000000000000003'), '0261-5559012'),
-    (UNHEX('b0000000000000000000000000000005'), UNHEX('c1000000000000000000000000000004'), '0416-7654321'),
-    (UNHEX('b0000000000000000000000000000006'), UNHEX('c1000000000000000000000000000005'), '0261-4441122'),
-    (UNHEX('b0000000000000000000000000000007'), UNHEX('c1000000000000000000000000000005'), '0424-9876543'),
-    (UNHEX('b0000000000000000000000000000008'), UNHEX('c1000000000000000000000000000006'), '0412-3456789'),
-    (UNHEX('b0000000000000000000000000000009'), UNHEX('c1000000000000000000000000000007'), '0212-3334455'),
-    (UNHEX('b0000000000000000000000000000010'), UNHEX('c1000000000000000000000000000007'), '0426-1122334'),
-    (UNHEX('b0000000000000000000000000000011'), UNHEX('c1000000000000000000000000000008'), '0247-6667788'),
-    (UNHEX('b0000000000000000000000000000012'), UNHEX('c1000000000000000000000000000009'), '0418-5544332'),
-    (UNHEX('b0000000000000000000000000000013'), UNHEX('c1000000000000000000000000000010'), '0274-2223344'),
-    (UNHEX('b0000000000000000000000000000014'), UNHEX('c1000000000000000000000000000010'), '0416-8899001');
-
--- -----------------------------------------------------------------------------
--- CUSTOMER ADDRESSES
--- -----------------------------------------------------------------------------
-INSERT INTO customer_addresses (id, customer_id, address, billing, active, state, municipality, postal_code)
-VALUES
-    (UNHEX('a0000000000000000000000000000001'), UNHEX('c1000000000000000000000000000001'), 'Av. Libertador, Edificio Centro, Piso 5, Of. 5-B',         TRUE,  TRUE,  'Distrito Capital', 'Libertador',    '1010'),
-    (UNHEX('a0000000000000000000000000000002'), UNHEX('c1000000000000000000000000000001'), 'Zona Industrial La Yaguara, Galpón 12',                    FALSE, TRUE,  'Distrito Capital', 'Libertador',    '1020'),
-    (UNHEX('a0000000000000000000000000000003'), UNHEX('c1000000000000000000000000000002'), 'Calle 72, Edif. Las Americas, Local 3, Maracaibo',         TRUE,  TRUE,  'Zulia',            'Maracaibo',     '4001'),
-    (UNHEX('a0000000000000000000000000000004'), UNHEX('c1000000000000000000000000000003'), 'Carrera 19, Centro Comercial Norte, Local 8, Barquisimeto',TRUE,  TRUE,  'Lara',             'Iribarren',     '3001'),
-    (UNHEX('a0000000000000000000000000000005'), UNHEX('c1000000000000000000000000000004'), 'Urb. Las Mercedes, Calle 4, Casa 22, Caracas',             TRUE,  TRUE,  'Distrito Capital', 'Baruta',        '1060'),
-    (UNHEX('a0000000000000000000000000000006'), UNHEX('c1000000000000000000000000000005'), 'Av. 5 de Julio, Edif. Industrial, Piso 2, Maracaibo',      TRUE,  TRUE,  'Zulia',            'Maracaibo',     '4002'),
-    (UNHEX('a0000000000000000000000000000007'), UNHEX('c1000000000000000000000000000005'), 'Zona Franca Industrial, Galpón 7, Maracaibo',              FALSE, TRUE,  'Zulia',            'San Francisco',  '4004'),
-    (UNHEX('a0000000000000000000000000000008'), UNHEX('c1000000000000000000000000000006'), 'Urb. El Paraiso, Calle 3, Qta. Rosa, Caracas',             TRUE,  TRUE,  'Distrito Capital', 'Libertador',    '1030'),
-    (UNHEX('a0000000000000000000000000000009'), UNHEX('c1000000000000000000000000000007'), 'Av. Francisco de Miranda, Torre Parque Cristal, Piso 8',   TRUE,  TRUE,  'Miranda',          'Chacao',        '1060'),
-    (UNHEX('a0000000000000000000000000000010'), UNHEX('c1000000000000000000000000000008'), 'Carretera Nacional, Km 12, Finca Los Llanos, Calabozo',    TRUE,  TRUE,  'Guarico',          'Mellado',       '2312'),
-    (UNHEX('a0000000000000000000000000000011'), UNHEX('c1000000000000000000000000000009'), 'Av. Bolivar Norte, Res. El Bosque, Apto 3-B, Valencia',    TRUE,  TRUE,  'Carabobo',         'Valencia',      '2001'),
-    (UNHEX('a0000000000000000000000000000012'), UNHEX('c1000000000000000000000000000010'), 'Av. Las Delicias, Edif. Andino, Piso 3, Maracay',          TRUE,  TRUE,  'Aragua',           'Girardot',      '2101'),
-    (UNHEX('a0000000000000000000000000000013'), UNHEX('c1000000000000000000000000000010'), 'Zona Industrial Sur, Galpón 3, Maracay',                   FALSE, FALSE, 'Aragua',           'Girardot',      '2103');
