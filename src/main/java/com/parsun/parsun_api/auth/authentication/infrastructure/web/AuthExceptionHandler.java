@@ -6,7 +6,20 @@ import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenExcep
 import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
 import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
+import com.parsun.parsun_api.categories.application.exceptions.CategoryHasActiveProductsException;
+import com.parsun.parsun_api.categories.application.exceptions.CategoryNotFoundException;
+import com.parsun.parsun_api.categories.application.exceptions.DuplicateCategoryNameException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
+import com.parsun.parsun_api.products.application.exceptions.CompositeProductCannotBeComponentException;
+import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCodeException;
+import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
+import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessNotFoundException;
+import com.parsun.parsun_api.warehouses.application.exceptions.DuplicateWarehouseCodeException;
+import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStockException;
+import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWarehouseException;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -79,6 +92,139 @@ public class AuthExceptionHandler {
         Map<String, Object> errorDetails = createErrorResponse(
             HttpStatus.NOT_FOUND,
             "Customer not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryNotFound(CategoryNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Category not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(DuplicateCategoryNameException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateCategoryName(DuplicateCategoryNameException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Duplicate category name",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(CategoryHasActiveProductsException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryHasActiveProducts(CategoryHasActiveProductsException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Category has active products",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleProductNotFound(ProductNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Product not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(DuplicateProductCodeException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateProductCode(DuplicateProductCodeException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Duplicate product code",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(CompositeProductCannotBeComponentException.class)
+    public ResponseEntity<Map<String, Object>> handleCompositeProductCannotBeComponent(
+            CompositeProductCannotBeComponentException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Invalid component",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(WarehouseNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleWarehouseNotFound(WarehouseNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Warehouse not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(DuplicateWarehouseCodeException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateWarehouseCode(DuplicateWarehouseCodeException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Duplicate warehouse code",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<Map<String, Object>> handleInsufficientStock(InsufficientStockException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Insufficient stock",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(ProductNotInWarehouseException.class)
+    public ResponseEntity<Map<String, Object>> handleProductNotInWarehouse(ProductNotInWarehouseException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Product not in warehouse",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(WarehouseNotActiveException.class)
+    public ResponseEntity<Map<String, Object>> handleWarehouseNotActive(WarehouseNotActiveException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            "Warehouse not active",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorDetails);
+    }
+
+    @ExceptionHandler(CustomerWarehouseAccessAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomerWarehouseAccessAlreadyExists(
+            CustomerWarehouseAccessAlreadyExistsException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Access already granted",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(CustomerWarehouseAccessNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomerWarehouseAccessNotFound(
+            CustomerWarehouseAccessNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Warehouse access not found",
             ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
