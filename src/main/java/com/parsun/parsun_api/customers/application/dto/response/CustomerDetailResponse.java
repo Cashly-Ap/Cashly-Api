@@ -21,6 +21,5 @@ public record CustomerDetailResponse(
     List<EmailResponse> emails,
     List<PhoneResponse> phones,
     List<AddressResponse> addresses,
-    boolean portalAccess,
-    String portalEmail
+    boolean portalAccess
 ) {}

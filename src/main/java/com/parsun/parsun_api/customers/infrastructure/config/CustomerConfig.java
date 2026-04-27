@@ -3,8 +3,10 @@ package com.parsun.parsun_api.customers.infrastructure.config;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.application.usecases.*;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.customers.domain.services.CustomerCodeGenerator;
 import com.parsun.parsun_api.customers.infrastructure.services.SequentialCustomerCodeGenerator;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,5 +61,27 @@ public class CustomerConfig {
             CustomerRepository customerRepository,
             PasswordEncoder passwordEncoder) {
         return new ChangeCustomerPortalPasswordUseCase(customerRepository, passwordEncoder);
+    }
+
+    @Bean
+    public GrantWarehouseAccessUseCase grantWarehouseAccessUseCase(
+            CustomerWarehouseAccessRepository accessRepository,
+            CustomerRepository customerRepository,
+            WarehouseRepository warehouseRepository) {
+        return new GrantWarehouseAccessUseCase(accessRepository, customerRepository, warehouseRepository);
+    }
+
+    @Bean
+    public RevokeWarehouseAccessUseCase revokeWarehouseAccessUseCase(
+            CustomerWarehouseAccessRepository accessRepository) {
+        return new RevokeWarehouseAccessUseCase(accessRepository);
+    }
+
+    @Bean
+    public ListCustomerWarehousesUseCase listCustomerWarehousesUseCase(
+            CustomerWarehouseAccessRepository accessRepository,
+            CustomerRepository customerRepository,
+            WarehouseRepository warehouseRepository) {
+        return new ListCustomerWarehousesUseCase(accessRepository, customerRepository, warehouseRepository);
     }
 }

@@ -43,7 +43,5 @@ public record CreateCustomerRequest(
     @NotEmpty(message = "At least one address is required")
     List<AddressRequest> addresses,
 
-    Boolean portalAccess,
-
-    String portalEmail
+    Boolean portalAccess
 ) {}

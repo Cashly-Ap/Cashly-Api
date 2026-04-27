@@ -10,6 +10,8 @@ import com.parsun.parsun_api.customers.domain.valueobjects.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 public class RegisterCustomerUseCase {
 
     private final CustomerRepository customerRepository;
@@ -52,9 +54,9 @@ public class RegisterCustomerUseCase {
             a.state(), a.municipality(), a.postalCode()
         ));
 
-        if (Boolean.TRUE.equals(request.portalAccess()) && request.portalEmail() != null) {
-            String encoded = passwordEncoder.encode(request.portalEmail());
-            customer.enablePortalAccess(request.portalEmail(), encoded);
+        if (Boolean.TRUE.equals(request.portalAccess())) {
+            String encoded = passwordEncoder.encode(UUID.randomUUID().toString());
+            customer.enablePortalAccess(encoded);
         }
 
         Customer saved = customerRepository.save(customer);

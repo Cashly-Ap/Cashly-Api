@@ -68,9 +68,6 @@ public class CustomerEntity {
     @Column(name = "portal_access", nullable = false)
     private boolean portalAccess;
 
-    @Column(name = "portal_email", length = 200)
-    private String portalEmail;
-
     @Column(name = "portal_password", length = 255)
     private String portalPassword;
 
@@ -100,7 +97,6 @@ public class CustomerEntity {
         entity.createdAt = customer.getCreatedAt();
         entity.updatedAt = customer.getUpdatedAt();
         entity.portalAccess = customer.isPortalAccess();
-        entity.portalEmail = customer.getPortalEmail();
         entity.portalPassword = customer.getPortalPassword();
 
         entity.emails = customer.getEmails().stream().map(e -> {
@@ -145,7 +141,6 @@ public class CustomerEntity {
         this.active = customer.isActive();
         this.updatedAt = customer.getUpdatedAt();
         this.portalAccess = customer.isPortalAccess();
-        this.portalEmail = customer.getPortalEmail();
         this.portalPassword = customer.getPortalPassword();
 
         this.emails.clear();
@@ -227,7 +222,6 @@ public class CustomerEntity {
             domainPhones,
             domainAddresses,
             this.portalAccess,
-            this.portalEmail,
             this.portalPassword
         );
     }
