@@ -12,10 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public record CreateProductRequest(
-    @NotBlank(message = "Code is required")
-    @Size(max = 50, message = "Code cannot exceed 50 characters")
-    String code,
-
     @NotBlank(message = "Name is required")
     @Size(max = 200, message = "Name cannot exceed 200 characters")
     String name,

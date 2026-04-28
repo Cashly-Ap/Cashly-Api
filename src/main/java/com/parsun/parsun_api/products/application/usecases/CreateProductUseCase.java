@@ -5,7 +5,7 @@ import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.products.application.dto.request.CreateProductRequest;
 import com.parsun.parsun_api.products.application.dto.response.ProductDetailResponse;
 import com.parsun.parsun_api.products.application.exceptions.CompositeProductCannotBeComponentException;
-import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCodeException;
+import com.parsun.parsun_api.products.application.exceptions.DuplicateProductComponentException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.domain.entities.Product;
@@ -13,8 +13,10 @@ import com.parsun.parsun_api.products.domain.entities.ProductComponent;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,14 +36,12 @@ public class CreateProductUseCase {
 
     @Transactional
     public ProductDetailResponse execute(CreateProductRequest request) {
-        if (productRepository.existsByCode(request.code().trim().toUpperCase())) {
-            throw new DuplicateProductCodeException(request.code());
-        }
-
         var category = categoryRepository.findById(request.categoryId())
             .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
 
-        Product product = Product.create(request.code(), request.name(), request.description(),
+        String code = productRepository.generateNextCode();
+
+        Product product = Product.create(code, request.name(), request.description(),
                 request.categoryId(), Boolean.TRUE.equals(request.composite()),
                 request.basePrice(), request.purchasePrice(), request.profitMargin());
 
@@ -59,13 +59,17 @@ public class CreateProductUseCase {
 
     private List<ProductComponent> buildComponents(UUID parentId,
             List<CreateProductRequest.ComponentRequest> requests) {
+        Set<UUID> seen = new HashSet<>();
         return requests.stream().map(r -> {
+            if (!seen.add(r.componentProductId())) {
+                throw new DuplicateProductComponentException(r.componentProductId());
+            }
             Product comp = productRepository.findById(r.componentProductId())
                 .orElseThrow(() -> new ProductNotFoundException(r.componentProductId()));
             if (comp.isComposite()) {
                 throw new CompositeProductCannotBeComponentException(r.componentProductId());
             }
-            return new ProductComponent(null, parentId, r.componentProductId(), r.quantity());
+            return new ProductComponent(UUID.randomUUID(), parentId, r.componentProductId(), r.quantity());
         }).toList();
     }
 

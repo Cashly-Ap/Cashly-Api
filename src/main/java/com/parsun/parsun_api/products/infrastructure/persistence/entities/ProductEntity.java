@@ -67,8 +67,7 @@ public class ProductEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_product_id")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProductComponentEntity> components = new ArrayList<>();
 
     public static ProductEntity fromDomain(Product product) {
@@ -86,7 +85,7 @@ public class ProductEntity {
         entity.createdAt = product.getCreatedAt();
         entity.updatedAt = product.getUpdatedAt();
         entity.components = product.getComponents().stream()
-            .map(ProductComponentEntity::fromDomain)
+            .map(c -> ProductComponentEntity.fromDomain(c, entity))
             .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
         return entity;
     }
@@ -95,13 +94,14 @@ public class ProductEntity {
         this.name = product.getName();
         this.description = product.getDescription();
         this.categoryId = product.getCategoryId();
+        this.composite = product.isComposite();
         this.active = product.isActive();
         this.basePrice = product.getBasePrice();
         this.purchasePrice = product.getPurchasePrice();
         this.profitMargin = product.getProfitMargin();
         this.updatedAt = product.getUpdatedAt();
         this.components.clear();
-        product.getComponents().forEach(c -> this.components.add(ProductComponentEntity.fromDomain(c)));
+        product.getComponents().forEach(c -> this.components.add(ProductComponentEntity.fromDomain(c, this)));
     }
 
     public Product toDomain() {

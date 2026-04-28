@@ -20,9 +20,9 @@ public class ProductComponentEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID id;
 
-    @Column(name = "parent_product_id", nullable = false, columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(SqlTypes.BINARY)
-    private UUID parentProductId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_product_id", nullable = false)
+    private ProductEntity product;
 
     @Column(name = "component_product_id", nullable = false, columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)
@@ -31,16 +31,16 @@ public class ProductComponentEntity {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    public static ProductComponentEntity fromDomain(ProductComponent component) {
+    public static ProductComponentEntity fromDomain(ProductComponent component, ProductEntity parent) {
         ProductComponentEntity entity = new ProductComponentEntity();
         entity.id = component.getId();
-        entity.parentProductId = component.getParentProductId();
+        entity.product = parent;
         entity.componentProductId = component.getComponentProductId();
         entity.quantity = component.getQuantity();
         return entity;
     }
 
     public ProductComponent toDomain() {
-        return new ProductComponent(id, parentProductId, componentProductId, quantity);
+        return new ProductComponent(id, product.getId(), componentProductId, quantity);
     }
 }

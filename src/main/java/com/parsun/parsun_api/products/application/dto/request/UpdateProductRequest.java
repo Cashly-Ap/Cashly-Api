@@ -32,6 +32,8 @@ public record UpdateProductRequest(
     @DecimalMax(value = "100.0", message = "Profit margin must be between 0 and 100")
     BigDecimal profitMargin,
 
+    Boolean composite,
+
     @Valid
     List<ComponentRequest> components
 ) {

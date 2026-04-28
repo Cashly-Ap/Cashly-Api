@@ -5,6 +5,7 @@ import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.products.application.dto.request.UpdateProductRequest;
 import com.parsun.parsun_api.products.application.dto.response.ProductDetailResponse;
 import com.parsun.parsun_api.products.application.exceptions.CompositeProductCannotBeComponentException;
+import com.parsun.parsun_api.products.application.exceptions.DuplicateProductComponentException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.domain.entities.Product;
@@ -12,8 +13,10 @@ import com.parsun.parsun_api.products.domain.entities.ProductComponent;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,14 +45,22 @@ public class UpdateProductUseCase {
         product.update(request.name(), request.description(), request.categoryId(),
                 request.basePrice(), request.purchasePrice(), request.profitMargin());
 
+        if (Boolean.TRUE.equals(request.composite()) && !product.isComposite()) {
+            product.makeComposite();
+        }
+
         if (product.isComposite() && request.components() != null) {
+            Set<UUID> seen = new HashSet<>();
             List<ProductComponent> components = request.components().stream().map(r -> {
+                if (!seen.add(r.componentProductId())) {
+                    throw new DuplicateProductComponentException(r.componentProductId());
+                }
                 Product comp = productRepository.findById(r.componentProductId())
                     .orElseThrow(() -> new ProductNotFoundException(r.componentProductId()));
                 if (comp.isComposite()) {
                     throw new CompositeProductCannotBeComponentException(r.componentProductId());
                 }
-                return new ProductComponent(null, id, r.componentProductId(), r.quantity());
+                return new ProductComponent(UUID.randomUUID(), id, r.componentProductId(), r.quantity());
             }).toList();
             product.setComponents(components);
         }

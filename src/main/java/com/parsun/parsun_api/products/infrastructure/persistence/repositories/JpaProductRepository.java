@@ -2,6 +2,7 @@ package com.parsun.parsun_api.products.infrastructure.persistence.repositories;
 
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.products.infrastructure.persistence.entities.ProductCodeSequenceEntity;
 import com.parsun.parsun_api.products.infrastructure.persistence.entities.ProductEntity;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
@@ -17,11 +18,16 @@ import java.util.UUID;
 public class JpaProductRepository implements ProductRepository {
 
     private static final Set<String> ALLOWED_ORDER_BY = Set.of("name", "code", "createdAt", "updatedAt");
+    private static final String CODE_PREFIX = "PRD-";
+    private static final String CODE_FORMAT = CODE_PREFIX + "%05d";
 
     private final SpringDataProductRepository springDataRepository;
+    private final SpringDataProductCodeSequenceRepository codeSequenceRepository;
 
-    public JpaProductRepository(SpringDataProductRepository springDataRepository) {
+    public JpaProductRepository(SpringDataProductRepository springDataRepository,
+                                 SpringDataProductCodeSequenceRepository codeSequenceRepository) {
         this.springDataRepository = springDataRepository;
+        this.codeSequenceRepository = codeSequenceRepository;
     }
 
     @Override
@@ -29,6 +35,8 @@ public class JpaProductRepository implements ProductRepository {
         if (product.getId() != null) {
             return springDataRepository.findWithComponentsById(product.getId())
                 .map(entity -> {
+                    entity.getComponents().clear();
+                    springDataRepository.saveAndFlush(entity);
                     entity.updateFromDomain(product);
                     return springDataRepository.save(entity).toDomain();
                 })
@@ -78,5 +86,11 @@ public class JpaProductRepository implements ProductRepository {
     @Override
     public void delete(UUID id) {
         springDataRepository.deleteById(id);
+    }
+
+    @Override
+    public String generateNextCode() {
+        ProductCodeSequenceEntity sequence = codeSequenceRepository.save(new ProductCodeSequenceEntity());
+        return String.format(CODE_FORMAT, sequence.getId());
     }
 }

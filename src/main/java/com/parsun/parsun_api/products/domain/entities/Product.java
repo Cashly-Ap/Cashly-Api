@@ -74,6 +74,11 @@ public class Product {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void makeComposite() {
+        this.composite = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void activate() {
         this.active = true;
         this.updatedAt = LocalDateTime.now();

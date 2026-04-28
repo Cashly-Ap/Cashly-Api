@@ -31,3 +31,8 @@ CREATE TABLE product_components (
     CONSTRAINT fk_pc_parent    FOREIGN KEY (parent_product_id)    REFERENCES products(id),
     CONSTRAINT fk_pc_component FOREIGN KEY (component_product_id) REFERENCES products(id)
 );
+
+CREATE TABLE product_code_sequence (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id)
+);
