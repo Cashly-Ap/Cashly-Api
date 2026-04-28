@@ -9,6 +9,7 @@ CREATE TABLE customers (
     credit_limit DECIMAL(15,2) NOT NULL DEFAULT 0.00,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     portal_access BOOLEAN NOT NULL DEFAULT FALSE,
+    portal_password VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );

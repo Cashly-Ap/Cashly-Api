@@ -43,6 +43,6 @@ public class GrantWarehouseAccessUseCase {
         CustomerWarehouseAccess access = CustomerWarehouseAccess.create(customerId, warehouseId, grantedBy);
         CustomerWarehouseAccess saved = accessRepository.save(access);
 
-        return CustomerWarehouseAccessResponse.from(saved, warehouse.getName(), warehouse.getCode());
+        return CustomerWarehouseAccessResponse.from(saved, warehouse.getName());
     }
 }

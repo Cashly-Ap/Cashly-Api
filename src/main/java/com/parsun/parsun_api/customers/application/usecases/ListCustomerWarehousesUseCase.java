@@ -37,8 +37,7 @@ public class ListCustomerWarehousesUseCase {
                     Warehouse warehouse = warehouseRepository.findById(access.getWarehouseId())
                             .orElse(null);
                     String name = warehouse != null ? warehouse.getName() : "Unknown";
-                    String code = warehouse != null ? warehouse.getCode() : "Unknown";
-                    return CustomerWarehouseAccessResponse.from(access, name, code);
+                    return CustomerWarehouseAccessResponse.from(access, name);
                 })
                 .toList();
     }

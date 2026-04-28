@@ -3,7 +3,7 @@
 -- Loads all seed files in order.
 --
 -- Run manually:
---   docker compose exec -T mysql mysql -umyuser -psecret mydatabase < db/seed.sql
+--   docker compose exec -T mysql mysql -umyuser -psecret --default-character-set=utf8mb4 mydatabase < db/seed.sql
 --
 -- Individual seeds are in db/seeds/:
 --   01_users.sql       - Users and module permissions
@@ -13,6 +13,7 @@
 --   05_products.sql    - Simple/composite products, stock, movements
 -- =============================================================================
 
+SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Order matters: respect foreign key dependencies
