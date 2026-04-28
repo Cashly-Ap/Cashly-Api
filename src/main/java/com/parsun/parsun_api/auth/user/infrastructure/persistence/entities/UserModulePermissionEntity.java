@@ -24,18 +24,18 @@ public class UserModulePermissionEntity {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(name = "user_id", columnDefinition = "BINARY(16)", nullable = false)
-    @JdbcTypeCode(SqlTypes.BINARY)
-    private UUID userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "module", length = 30, nullable = false)
     private BusinessModule module;
 
-    public static UserModulePermissionEntity of(UUID userId, BusinessModule module) {
+    public static UserModulePermissionEntity of(UserEntity user, BusinessModule module) {
         UserModulePermissionEntity entity = new UserModulePermissionEntity();
         entity.id = UUID.randomUUID();
-        entity.userId = userId;
+        entity.user = user;
         entity.module = module;
         return entity;
     }

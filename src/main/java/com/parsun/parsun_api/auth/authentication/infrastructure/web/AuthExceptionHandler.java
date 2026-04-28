@@ -12,6 +12,7 @@ import com.parsun.parsun_api.categories.application.exceptions.DuplicateCategory
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
 import com.parsun.parsun_api.products.application.exceptions.CompositeProductCannotBeComponentException;
 import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCodeException;
+import com.parsun.parsun_api.products.application.exceptions.DuplicateProductComponentException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessNotFoundException;
@@ -153,6 +154,16 @@ public class AuthExceptionHandler {
         Map<String, Object> errorDetails = createErrorResponse(
             HttpStatus.CONFLICT,
             "Invalid component",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(DuplicateProductComponentException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateProductComponent(DuplicateProductComponentException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Duplicate component",
             ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);

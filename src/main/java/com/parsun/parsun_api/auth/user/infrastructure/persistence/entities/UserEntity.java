@@ -63,8 +63,7 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserModulePermissionEntity> modulePermissions = new HashSet<>();
 
     public static UserEntity fromDomain(User user) {
@@ -83,7 +82,7 @@ public class UserEntity {
         entity.createdAt = user.getCreatedAt();
         entity.updatedAt = user.getUpdatedAt();
         entity.modulePermissions = user.getModulePermissions().stream()
-                .map(module -> UserModulePermissionEntity.of(entity.id, module))
+                .map(module -> UserModulePermissionEntity.of(entity, module))
                 .collect(Collectors.toCollection(HashSet::new));
 
         return entity;
@@ -112,7 +111,7 @@ public class UserEntity {
 
         incoming.stream()
                 .filter(module -> !existing.contains(module))
-                .map(module -> UserModulePermissionEntity.of(this.id, module))
+                .map(module -> UserModulePermissionEntity.of(this, module))
                 .forEach(this.modulePermissions::add);
     }
 
