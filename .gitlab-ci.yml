@@ -49,7 +49,6 @@ test:docker:
   only:
     - merge_requests
     - main
-    - develop
 
 build:compile:
   <<: *maven_template
