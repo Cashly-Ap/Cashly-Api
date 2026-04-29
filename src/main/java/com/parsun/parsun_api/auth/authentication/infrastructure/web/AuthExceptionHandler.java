@@ -16,6 +16,9 @@ import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCom
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessNotFoundException;
+import com.parsun.parsun_api.price_types.application.exceptions.DuplicatePriceTypeNameException;
+import com.parsun.parsun_api.price_types.application.exceptions.PriceTypeInUseException;
+import com.parsun.parsun_api.price_types.application.exceptions.PriceTypeNotFoundException;
 import com.parsun.parsun_api.warehouses.application.exceptions.DuplicateWarehouseCodeException;
 import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStockException;
 import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWarehouseException;
@@ -164,6 +167,36 @@ public class AuthExceptionHandler {
         Map<String, Object> errorDetails = createErrorResponse(
             HttpStatus.CONFLICT,
             "Duplicate component",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(PriceTypeNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handlePriceTypeNotFound(PriceTypeNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Price type not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(DuplicatePriceTypeNameException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicatePriceTypeName(DuplicatePriceTypeNameException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Duplicate price type name",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
+    @ExceptionHandler(PriceTypeInUseException.class)
+    public ResponseEntity<Map<String, Object>> handlePriceTypeInUse(PriceTypeInUseException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "Price type in use",
             ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
