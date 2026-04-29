@@ -1,8 +1,10 @@
 package com.parsun.parsun_api.warehouses.application.usecases;
 
 import com.parsun.parsun_api.products.domain.entities.Product;
+import com.parsun.parsun_api.products.domain.entities.ProductComponent;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
+import com.parsun.parsun_api.warehouses.application.dto.request.StockBatchItem;
 import com.parsun.parsun_api.warehouses.application.dto.request.StockEntryRequest;
 import com.parsun.parsun_api.warehouses.application.dto.response.StockMovementResponse;
 import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStockException;
@@ -21,14 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Handles stock entry for a warehouse.
- *
- * IMPORTANT: If the product is composite (composite=true), the entry does NOT add stock
- * for the parent product. Instead, it deducts the required components from the warehouse
- * stock and creates COMPONENT_EXIT movements for each. If any component has insufficient
- * stock, InsufficientStockException is thrown.
- */
 public class StockEntryUseCase {
 
     private final WarehouseRepository warehouseRepository;
@@ -54,55 +48,69 @@ public class StockEntryUseCase {
             throw new WarehouseNotActiveException(warehouseId);
         }
 
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ProductNotFoundException(request.productId()));
+        for (StockBatchItem item : request.items()) {
+            Product product = productRepository.findById(item.productId())
+                    .orElseThrow(() -> new ProductNotFoundException(item.productId()));
+
+            if (product.isComposite()) {
+                for (ProductComponent component : product.getComponents()) {
+                    int required = component.getQuantity() * item.quantity();
+                    WarehouseStock componentStock = warehouseStockRepository
+                            .findByWarehouseIdAndProductId(warehouseId, component.getComponentProductId())
+                            .orElseThrow(() -> new InsufficientStockException(
+                                    component.getComponentProductId(), warehouseId, 0, required));
+                    if (componentStock.getQuantity() < required) {
+                        throw new InsufficientStockException(
+                                component.getComponentProductId(), warehouseId,
+                                componentStock.getQuantity(), required);
+                    }
+                }
+            }
+        }
 
         List<StockMovementResponse> movements = new ArrayList<>();
 
-        if (product.isComposite()) {
-            // Composite: deduct each component from warehouse stock
-            for (var component : product.getComponents()) {
-                int needed = component.getQuantity() * request.quantity();
-                UUID componentId = component.getComponentProductId();
+        for (StockBatchItem item : request.items()) {
+            Product product = productRepository.findById(item.productId())
+                    .orElseThrow(() -> new ProductNotFoundException(item.productId()));
 
-                WarehouseStock compStock = warehouseStockRepository
-                        .findByWarehouseIdAndProductId(warehouseId, componentId)
-                        .orElseGet(() -> WarehouseStock.create(warehouseId, componentId));
+            if (product.isComposite()) {
+                for (ProductComponent component : product.getComponents()) {
+                    int required = component.getQuantity() * item.quantity();
+                    WarehouseStock componentStock = warehouseStockRepository
+                            .findByWarehouseIdAndProductId(warehouseId, component.getComponentProductId())
+                            .orElseThrow(() -> new ProductNotFoundException(component.getComponentProductId()));
 
-                if (compStock.getQuantity() < needed) {
-                    throw new InsufficientStockException(componentId, warehouseId,
-                            compStock.getQuantity(), needed);
+                    int prevComponentQty = componentStock.getQuantity();
+                    componentStock.removeStock(required);
+                    WarehouseStock savedComponent = warehouseStockRepository.save(componentStock);
+
+                    Product componentProduct = productRepository.findById(component.getComponentProductId())
+                            .orElseThrow(() -> new ProductNotFoundException(component.getComponentProductId()));
+
+                    StockMovement componentMovement = StockMovement.create(
+                            warehouseId, component.getComponentProductId(), MovementType.COMPONENT_EXIT,
+                            required, prevComponentQty, savedComponent.getQuantity(),
+                            null, null, "Component consumed for: " + product.getName()
+                    );
+                    StockMovement savedComponentMovement = stockMovementRepository.save(componentMovement);
+                    movements.add(StockMovementResponse.from(savedComponentMovement,
+                            componentProduct.getCode(), componentProduct.getName()));
                 }
-
-                int prevQty = compStock.getQuantity();
-                compStock.removeStock(needed);
-                WarehouseStock savedStock = warehouseStockRepository.save(compStock);
-
-                Product compProduct = productRepository.findById(componentId)
-                        .orElseThrow(() -> new ProductNotFoundException(componentId));
-
-                StockMovement movement = StockMovement.create(
-                        warehouseId, componentId, MovementType.COMPONENT_EXIT,
-                        needed, prevQty, savedStock.getQuantity(),
-                        null, null, request.notes()
-                );
-                StockMovement saved = stockMovementRepository.save(movement);
-                movements.add(StockMovementResponse.from(saved, compProduct.getCode(), compProduct.getName()));
             }
-        } else {
-            // Simple product: add stock directly
+
             WarehouseStock stock = warehouseStockRepository
                     .findByWarehouseIdAndProductId(warehouseId, product.getId())
                     .orElseGet(() -> WarehouseStock.create(warehouseId, product.getId()));
 
             int prevQty = stock.getQuantity();
-            stock.addStock(request.quantity());
+            stock.addStock(item.quantity());
             WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
             StockMovement movement = StockMovement.create(
                     warehouseId, product.getId(), MovementType.ENTRY,
-                    request.quantity(), prevQty, savedStock.getQuantity(),
-                    null, null, request.notes()
+                    item.quantity(), prevQty, savedStock.getQuantity(),
+                    null, null, item.notes()
             );
             StockMovement saved = stockMovementRepository.save(movement);
             movements.add(StockMovementResponse.from(saved, product.getCode(), product.getName()));

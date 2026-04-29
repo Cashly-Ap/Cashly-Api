@@ -3,6 +3,7 @@ package com.parsun.parsun_api.warehouses.application.usecases;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.warehouses.application.dto.request.StockBatchItem;
 import com.parsun.parsun_api.warehouses.application.dto.request.StockExitRequest;
 import com.parsun.parsun_api.warehouses.application.dto.response.StockMovementResponse;
 import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStockException;
@@ -18,6 +19,8 @@ import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class StockExitUseCase {
@@ -38,35 +41,50 @@ public class StockExitUseCase {
     }
 
     @Transactional
-    public StockMovementResponse execute(UUID warehouseId, StockExitRequest request) {
+    public List<StockMovementResponse> execute(UUID warehouseId, StockExitRequest request) {
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
         if (!warehouse.isActive()) {
             throw new WarehouseNotActiveException(warehouseId);
         }
 
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ProductNotFoundException(request.productId()));
+        for (StockBatchItem item : request.items()) {
+            Product product = productRepository.findById(item.productId())
+                    .orElseThrow(() -> new ProductNotFoundException(item.productId()));
 
-        WarehouseStock stock = warehouseStockRepository
-                .findByWarehouseIdAndProductId(warehouseId, product.getId())
-                .orElseThrow(() -> new ProductNotInWarehouseException(product.getId(), warehouseId));
+            WarehouseStock stock = warehouseStockRepository
+                    .findByWarehouseIdAndProductId(warehouseId, product.getId())
+                    .orElseThrow(() -> new ProductNotInWarehouseException(product.getId(), warehouseId));
 
-        if (stock.getQuantity() < request.quantity()) {
-            throw new InsufficientStockException(product.getId(), warehouseId,
-                    stock.getQuantity(), request.quantity());
+            if (stock.getQuantity() < item.quantity()) {
+                throw new InsufficientStockException(product.getId(), warehouseId,
+                        stock.getQuantity(), item.quantity());
+            }
         }
 
-        int prevQty = stock.getQuantity();
-        stock.removeStock(request.quantity());
-        WarehouseStock savedStock = warehouseStockRepository.save(stock);
+        List<StockMovementResponse> movements = new ArrayList<>();
 
-        StockMovement movement = StockMovement.create(
-                warehouseId, product.getId(), MovementType.EXIT,
-                request.quantity(), prevQty, savedStock.getQuantity(),
-                null, null, request.notes()
-        );
-        StockMovement saved = stockMovementRepository.save(movement);
-        return StockMovementResponse.from(saved, product.getCode(), product.getName());
+        for (StockBatchItem item : request.items()) {
+            Product product = productRepository.findById(item.productId())
+                    .orElseThrow(() -> new ProductNotFoundException(item.productId()));
+
+            WarehouseStock stock = warehouseStockRepository
+                    .findByWarehouseIdAndProductId(warehouseId, product.getId())
+                    .orElseThrow(() -> new ProductNotInWarehouseException(product.getId(), warehouseId));
+
+            int prevQty = stock.getQuantity();
+            stock.removeStock(item.quantity());
+            WarehouseStock savedStock = warehouseStockRepository.save(stock);
+
+            StockMovement movement = StockMovement.create(
+                    warehouseId, product.getId(), MovementType.EXIT,
+                    item.quantity(), prevQty, savedStock.getQuantity(),
+                    null, null, item.notes()
+            );
+            StockMovement saved = stockMovementRepository.save(movement);
+            movements.add(StockMovementResponse.from(saved, product.getCode(), product.getName()));
+        }
+
+        return movements;
     }
 }

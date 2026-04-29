@@ -15,7 +15,6 @@ public class WarehouseStock {
 
     public WarehouseStock(UUID id, UUID warehouseId, UUID productId, int quantity,
                           LocalDateTime lastMovementAt, LocalDateTime updatedAt) {
-        if (quantity < 0) throw new IllegalArgumentException("Stock quantity cannot be negative");
         Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
         Objects.requireNonNull(productId, "Product ID cannot be null");
         this.id = id;

@@ -7,6 +7,7 @@ import com.parsun.parsun_api.products.application.usecases.*;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,5 +71,12 @@ public class ProductConfig {
     public RemoveProductPhotoUseCase removeProductPhotoUseCase(ProductRepository productRepository,
                                                                 FileStorageService fileStorageService) {
         return new RemoveProductPhotoUseCase(productRepository, fileStorageService);
+    }
+
+    @Bean
+    public GetProductStockUseCase getProductStockUseCase(ProductRepository productRepository,
+                                                          WarehouseStockRepository warehouseStockRepository,
+                                                          WarehouseRepository warehouseRepository) {
+        return new GetProductStockUseCase(productRepository, warehouseStockRepository, warehouseRepository);
     }
 }

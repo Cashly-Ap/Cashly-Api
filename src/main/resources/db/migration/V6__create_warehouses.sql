@@ -24,7 +24,6 @@ CREATE TABLE warehouse_stock (
     UNIQUE KEY uk_warehouse_product (warehouse_id, product_id),
     INDEX idx_ws_warehouse (warehouse_id),
     INDEX idx_ws_product   (product_id),
-    CONSTRAINT chk_ws_quantity CHECK (quantity >= 0),
     CONSTRAINT fk_ws_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
     CONSTRAINT fk_ws_product   FOREIGN KEY (product_id)   REFERENCES products(id)
 );
@@ -49,7 +48,6 @@ CREATE TABLE stock_movements (
     INDEX idx_sm_created           (created_at),
     INDEX idx_sm_warehouse_product (warehouse_id, product_id),
     CONSTRAINT chk_sm_quantity CHECK (quantity > 0),
-    CONSTRAINT chk_sm_stocks   CHECK (previous_stock >= 0 AND new_stock >= 0),
     CONSTRAINT fk_sm_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
     CONSTRAINT fk_sm_product   FOREIGN KEY (product_id)   REFERENCES products(id)
 );

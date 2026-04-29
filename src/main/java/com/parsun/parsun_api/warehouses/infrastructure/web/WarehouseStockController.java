@@ -58,8 +58,8 @@ public class WarehouseStockController {
     @PostMapping("/exit")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public StockMovementResponse exit(@PathVariable UUID warehouseId,
-                                       @Valid @RequestBody StockExitRequest request) {
+    public List<StockMovementResponse> exit(@PathVariable UUID warehouseId,
+                                             @Valid @RequestBody StockExitRequest request) {
         return stockExitUseCase.execute(warehouseId, request);
     }
 

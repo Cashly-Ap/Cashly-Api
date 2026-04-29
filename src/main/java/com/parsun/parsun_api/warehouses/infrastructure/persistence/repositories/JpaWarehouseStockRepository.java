@@ -55,6 +55,12 @@ public class JpaWarehouseStockRepository implements WarehouseStockRepository {
     }
 
     @Override
+    public List<WarehouseStock> findByProductId(UUID productId) {
+        return springDataRepository.findByProductId(productId)
+                .stream().map(WarehouseStockEntity::toDomain).toList();
+    }
+
+    @Override
     public boolean existsByProductId(UUID productId) {
         return springDataRepository.existsByProductId(productId);
     }

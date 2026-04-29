@@ -4,6 +4,7 @@ import com.parsun.parsun_api.products.application.dto.request.CreateProductReque
 import com.parsun.parsun_api.products.application.dto.request.UpdateProductRequest;
 import com.parsun.parsun_api.products.application.dto.response.ProductDetailResponse;
 import com.parsun.parsun_api.products.application.dto.response.ProductListResponse;
+import com.parsun.parsun_api.products.application.dto.response.ProductStockByWarehouseResponse;
 import com.parsun.parsun_api.products.application.usecases.*;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +31,7 @@ public class ProductController {
     private final DeleteProductUseCase deleteProductUseCase;
     private final UploadProductPhotoUseCase uploadProductPhotoUseCase;
     private final RemoveProductPhotoUseCase removeProductPhotoUseCase;
+    private final GetProductStockUseCase getProductStockUseCase;
     private final FileStorageService fileStorageService;
 
     public ProductController(CreateProductUseCase createProductUseCase,
@@ -38,6 +41,7 @@ public class ProductController {
                               DeleteProductUseCase deleteProductUseCase,
                               UploadProductPhotoUseCase uploadProductPhotoUseCase,
                               RemoveProductPhotoUseCase removeProductPhotoUseCase,
+                              GetProductStockUseCase getProductStockUseCase,
                               FileStorageService fileStorageService) {
         this.createProductUseCase = createProductUseCase;
         this.getProductUseCase = getProductUseCase;
@@ -46,6 +50,7 @@ public class ProductController {
         this.deleteProductUseCase = deleteProductUseCase;
         this.uploadProductPhotoUseCase = uploadProductPhotoUseCase;
         this.removeProductPhotoUseCase = removeProductPhotoUseCase;
+        this.getProductStockUseCase = getProductStockUseCase;
         this.fileStorageService = fileStorageService;
     }
 
@@ -88,6 +93,12 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteProductUseCase.execute(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/stock")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    public ResponseEntity<List<ProductStockByWarehouseResponse>> getStock(@PathVariable UUID id) {
+        return ResponseEntity.ok(getProductStockUseCase.execute(id));
     }
 
     @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
