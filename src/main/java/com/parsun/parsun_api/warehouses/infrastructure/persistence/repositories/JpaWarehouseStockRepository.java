@@ -58,4 +58,9 @@ public class JpaWarehouseStockRepository implements WarehouseStockRepository {
     public boolean existsByProductId(UUID productId) {
         return springDataRepository.existsByProductId(productId);
     }
+
+    @Override
+    public void deleteByProductId(UUID productId) {
+        springDataRepository.deleteByProductId(productId);
+    }
 }

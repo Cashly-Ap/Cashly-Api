@@ -41,4 +41,9 @@ public class JpaStockMovementRepository implements StockMovementRepository {
         Page<StockMovementEntity> result = springDataRepository.findByWarehouseId(warehouseId, pageable);
         return PageResponse.from(result.map(StockMovementEntity::toDomain));
     }
+
+    @Override
+    public void deleteByProductId(UUID productId) {
+        springDataRepository.deleteByProductId(productId);
+    }
 }

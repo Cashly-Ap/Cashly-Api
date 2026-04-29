@@ -13,4 +13,5 @@ public interface WarehouseStockRepository {
     List<WarehouseStock> findByWarehouseId(UUID warehouseId);
     PageResponse<WarehouseStock> findByWarehouseIdPaged(UUID warehouseId, int page, int size);
     boolean existsByProductId(UUID productId);
+    void deleteByProductId(UUID productId);
 }

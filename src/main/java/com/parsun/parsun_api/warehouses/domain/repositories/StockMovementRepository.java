@@ -10,4 +10,5 @@ public interface StockMovementRepository {
     PageResponse<StockMovement> findByWarehouseIdAndProductId(UUID warehouseId, UUID productId,
                                                                int page, int size);
     PageResponse<StockMovement> findByWarehouseId(UUID warehouseId, int page, int size);
+    void deleteByProductId(UUID productId);
 }
