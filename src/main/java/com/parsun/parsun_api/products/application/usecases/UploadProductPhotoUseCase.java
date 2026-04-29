@@ -5,8 +5,10 @@ import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundExce
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.products.domain.valueobjects.ProductPrice;
 import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
+import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
@@ -18,15 +20,18 @@ public class UploadProductPhotoUseCase {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final PriceTypeRepository priceTypeRepository;
     private final FileStorageService fileStorageService;
     private final ProductMapper productMapper;
 
     public UploadProductPhotoUseCase(ProductRepository productRepository,
                                       CategoryRepository categoryRepository,
+                                      PriceTypeRepository priceTypeRepository,
                                       FileStorageService fileStorageService,
                                       ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.priceTypeRepository = priceTypeRepository;
         this.fileStorageService = fileStorageService;
         this.productMapper = productMapper;
     }
@@ -54,8 +59,16 @@ public class UploadProductPhotoUseCase {
         Map<UUID, Product> componentProducts = saved.getComponents().stream()
                 .map(c -> productRepository.findById(c.getComponentProductId()).orElse(null))
                 .filter(p -> p != null)
-                .collect(Collectors.toMap(Product::getId, p -> p));
+                .collect(Collectors.toMap(Product::getId, p -> p, (a, b) -> a));
 
-        return productMapper.toDetailResponse(saved, categoryName, componentProducts);
+        Map<UUID, String> priceTypeNames = saved.getProductPrices().stream()
+                .collect(Collectors.toMap(
+                    ProductPrice::getPriceTypeId,
+                    pp -> priceTypeRepository.findById(pp.getPriceTypeId())
+                        .map(pt -> pt.getName())
+                        .orElse("")
+                ));
+
+        return productMapper.toDetailResponse(saved, categoryName, componentProducts, priceTypeNames);
     }
 }

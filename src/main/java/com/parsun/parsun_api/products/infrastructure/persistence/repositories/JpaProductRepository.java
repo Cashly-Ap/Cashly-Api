@@ -1,7 +1,10 @@
 package com.parsun.parsun_api.products.infrastructure.persistence.repositories;
 
+import com.parsun.parsun_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
+import com.parsun.parsun_api.price_types.infrastructure.persistence.repositories.SpringDataPriceTypeRepository;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.products.domain.valueobjects.ProductPrice;
 import com.parsun.parsun_api.products.infrastructure.persistence.entities.ProductCodeSequenceEntity;
 import com.parsun.parsun_api.products.infrastructure.persistence.entities.ProductEntity;
 import com.parsun.parsun_api.shared.dto.PageResponse;
@@ -10,9 +13,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JpaProductRepository implements ProductRepository {
@@ -23,11 +30,14 @@ public class JpaProductRepository implements ProductRepository {
 
     private final SpringDataProductRepository springDataRepository;
     private final SpringDataProductCodeSequenceRepository codeSequenceRepository;
+    private final SpringDataPriceTypeRepository springDataPriceTypeRepository;
 
     public JpaProductRepository(SpringDataProductRepository springDataRepository,
-                                 SpringDataProductCodeSequenceRepository codeSequenceRepository) {
+                                 SpringDataProductCodeSequenceRepository codeSequenceRepository,
+                                 SpringDataPriceTypeRepository springDataPriceTypeRepository) {
         this.springDataRepository = springDataRepository;
         this.codeSequenceRepository = codeSequenceRepository;
+        this.springDataPriceTypeRepository = springDataPriceTypeRepository;
     }
 
     @Override
@@ -36,14 +46,24 @@ public class JpaProductRepository implements ProductRepository {
             return springDataRepository.findWithComponentsById(product.getId())
                 .map(entity -> {
                     entity.getComponents().clear();
+                    entity.getProductPrices().clear();
                     springDataRepository.saveAndFlush(entity);
-                    entity.updateFromDomain(product);
+                    Map<UUID, PriceTypeEntity> priceTypeMap = resolvePriceTypeMap(product.getProductPrices());
+                    entity.updateFromDomain(product, priceTypeMap);
                     return springDataRepository.save(entity).toDomain();
                 })
-                .orElseGet(() -> springDataRepository.save(ProductEntity.fromDomain(product)).toDomain());
+                .orElseGet(() -> {
+                    ProductEntity entity = ProductEntity.fromDomain(product);
+                    entity.setId(UUID.randomUUID());
+                    Map<UUID, PriceTypeEntity> priceTypeMap = resolvePriceTypeMap(product.getProductPrices());
+                    entity.applyPrices(product.getProductPrices(), priceTypeMap);
+                    return springDataRepository.save(entity).toDomain();
+                });
         }
         ProductEntity entity = ProductEntity.fromDomain(product);
         entity.setId(UUID.randomUUID());
+        Map<UUID, PriceTypeEntity> priceTypeMap = resolvePriceTypeMap(product.getProductPrices());
+        entity.applyPrices(product.getProductPrices(), priceTypeMap);
         return springDataRepository.save(entity).toDomain();
     }
 
@@ -89,8 +109,25 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
+    public void deleteComponentReferencesByProductId(UUID productId) {
+        springDataRepository.deleteByComponentProductId(productId);
+    }
+
+    @Override
     public String generateNextCode() {
         ProductCodeSequenceEntity sequence = codeSequenceRepository.save(new ProductCodeSequenceEntity());
         return String.format(CODE_FORMAT, sequence.getId());
+    }
+
+    private Map<UUID, PriceTypeEntity> resolvePriceTypeMap(List<ProductPrice> prices) {
+        if (prices == null || prices.isEmpty()) {
+            return Map.of();
+        }
+        List<UUID> priceTypeIds = prices.stream()
+            .map(ProductPrice::getPriceTypeId)
+            .distinct()
+            .toList();
+        return springDataPriceTypeRepository.findAllById(priceTypeIds).stream()
+            .collect(Collectors.toMap(PriceTypeEntity::getId, Function.identity()));
     }
 }

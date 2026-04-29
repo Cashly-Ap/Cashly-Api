@@ -1,11 +1,13 @@
 package com.parsun.parsun_api.products.application.usecases;
 
 import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
+import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
 import com.parsun.parsun_api.products.application.dto.response.ProductDetailResponse;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.products.domain.valueobjects.ProductPrice;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -16,13 +18,16 @@ public class GetProductUseCase {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final PriceTypeRepository priceTypeRepository;
     private final ProductMapper productMapper;
 
     public GetProductUseCase(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
+                              PriceTypeRepository priceTypeRepository,
                               ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.priceTypeRepository = priceTypeRepository;
         this.productMapper = productMapper;
     }
 
@@ -37,8 +42,16 @@ public class GetProductUseCase {
         Map<UUID, Product> componentProducts = product.getComponents().stream()
             .map(c -> productRepository.findById(c.getComponentProductId()).orElse(null))
             .filter(p -> p != null)
-            .collect(Collectors.toMap(Product::getId, p -> p));
+            .collect(Collectors.toMap(Product::getId, p -> p, (a, b) -> a));
 
-        return productMapper.toDetailResponse(product, categoryName, componentProducts);
+        Map<UUID, String> priceTypeNames = product.getProductPrices().stream()
+            .collect(Collectors.toMap(
+                ProductPrice::getPriceTypeId,
+                pp -> priceTypeRepository.findById(pp.getPriceTypeId())
+                    .map(pt -> pt.getName())
+                    .orElse("")
+            ));
+
+        return productMapper.toDetailResponse(product, categoryName, componentProducts, priceTypeNames);
     }
 }

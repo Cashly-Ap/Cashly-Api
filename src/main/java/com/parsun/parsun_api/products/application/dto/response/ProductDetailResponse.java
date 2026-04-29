@@ -18,6 +18,7 @@ public record ProductDetailResponse(
     BigDecimal purchasePrice,
     BigDecimal profitMargin,
     List<ComponentResponse> components,
+    List<ProductPriceDetailResponse> productPrices,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {

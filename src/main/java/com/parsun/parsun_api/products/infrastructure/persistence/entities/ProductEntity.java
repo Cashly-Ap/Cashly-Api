@@ -1,6 +1,8 @@
 package com.parsun.parsun_api.products.infrastructure.persistence.entities;
 
+import com.parsun.parsun_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
 import com.parsun.parsun_api.products.domain.entities.Product;
+import com.parsun.parsun_api.products.domain.valueobjects.ProductPrice;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -9,8 +11,12 @@ import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Entity
 @Table(
@@ -73,6 +79,9 @@ public class ProductEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProductComponentEntity> components = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<ProductPriceEntity> productPrices = new HashSet<>();
+
     public static ProductEntity fromDomain(Product product) {
         ProductEntity entity = new ProductEntity();
         entity.id = product.getId();
@@ -94,7 +103,17 @@ public class ProductEntity {
         return entity;
     }
 
-    public void updateFromDomain(Product product) {
+    public void applyPrices(List<ProductPrice> prices, Map<UUID, PriceTypeEntity> priceTypeMap) {
+        this.productPrices.clear();
+        prices.forEach(p -> {
+            PriceTypeEntity priceTypeEntity = priceTypeMap.get(p.getPriceTypeId());
+            if (priceTypeEntity != null) {
+                this.productPrices.add(ProductPriceEntity.fromDomain(p, this, priceTypeEntity));
+            }
+        });
+    }
+
+    public void updateFromDomain(Product product, Map<UUID, PriceTypeEntity> priceTypeMap) {
         this.name = product.getName();
         this.description = product.getDescription();
         this.categoryId = product.getCategoryId();
@@ -107,14 +126,24 @@ public class ProductEntity {
         this.updatedAt = product.getUpdatedAt();
         this.components.clear();
         product.getComponents().forEach(c -> this.components.add(ProductComponentEntity.fromDomain(c, this)));
+        this.productPrices.clear();
+        product.getProductPrices().forEach(p -> {
+            PriceTypeEntity priceTypeEntity = priceTypeMap.get(p.getPriceTypeId());
+            if (priceTypeEntity != null) {
+                this.productPrices.add(ProductPriceEntity.fromDomain(p, this, priceTypeEntity));
+            }
+        });
     }
 
     public Product toDomain() {
         var domainComponents = this.components.stream()
             .map(ProductComponentEntity::toDomain)
             .toList();
+        var domainPrices = this.productPrices.stream()
+            .map(ProductPriceEntity::toDomain)
+            .toList();
         return Product.reconstitute(id, code, name, description, categoryId,
                 composite, active, photo, basePrice, purchasePrice, profitMargin,
-                domainComponents, createdAt, updatedAt);
+                domainComponents, domainPrices, createdAt, updatedAt);
     }
 }

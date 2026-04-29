@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.products.domain.entities;
 
+import com.parsun.parsun_api.products.domain.valueobjects.ProductPrice;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,13 +24,15 @@ public class Product {
     private BigDecimal purchasePrice;
     private BigDecimal profitMargin;
     private List<ProductComponent> components;
+    private List<ProductPrice> productPrices;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     private Product(UUID id, String code, String name, String description, UUID categoryId,
                     boolean composite, boolean active, String photo,
                     BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin,
-                    List<ProductComponent> components, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                    List<ProductComponent> components, List<ProductPrice> productPrices,
+                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateCode(code);
         validateName(name);
         this.id = id;
@@ -43,6 +47,7 @@ public class Product {
         this.purchasePrice = purchasePrice;
         this.profitMargin = profitMargin;
         this.components = new ArrayList<>(components != null ? components : List.of());
+        this.productPrices = new ArrayList<>(productPrices != null ? productPrices : List.of());
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -52,7 +57,7 @@ public class Product {
                                   BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin) {
         LocalDateTime now = LocalDateTime.now();
         return new Product(null, code, name, description, categoryId, composite,
-                true, null, basePrice, purchasePrice, profitMargin, List.of(), now, now);
+                true, null, basePrice, purchasePrice, profitMargin, List.of(), List.of(), now, now);
     }
 
     public static Product reconstitute(UUID id, String code, String name, String description,
@@ -60,9 +65,10 @@ public class Product {
                                         boolean active, String photo,
                                         BigDecimal basePrice, BigDecimal purchasePrice,
                                         BigDecimal profitMargin, List<ProductComponent> components,
+                                        List<ProductPrice> productPrices,
                                         LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Product(id, code, name, description, categoryId, composite,
-                active, photo, basePrice, purchasePrice, profitMargin, components, createdAt, updatedAt);
+                active, photo, basePrice, purchasePrice, profitMargin, components, productPrices, createdAt, updatedAt);
     }
 
     public void update(String name, String description, UUID categoryId,
@@ -91,6 +97,11 @@ public class Product {
 
     public void deactivate() {
         this.active = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void setProductPrices(List<ProductPrice> productPrices) {
+        this.productPrices = new ArrayList<>(productPrices != null ? productPrices : List.of());
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -142,6 +153,7 @@ public class Product {
     public BigDecimal getPurchasePrice() { return purchasePrice; }
     public BigDecimal getProfitMargin() { return profitMargin; }
     public List<ProductComponent> getComponents() { return Collections.unmodifiableList(components); }
+    public List<ProductPrice> getProductPrices() { return Collections.unmodifiableList(productPrices); }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 

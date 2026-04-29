@@ -37,6 +37,9 @@ public record UpdateProductRequest(
     @Valid
     List<ComponentRequest> components,
 
+    @Valid
+    List<ProductPriceRequest> productPrices,
+
     Boolean active
 ) {
     public record ComponentRequest(

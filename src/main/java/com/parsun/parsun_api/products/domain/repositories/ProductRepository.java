@@ -16,5 +16,6 @@ public interface ProductRepository {
                                               Boolean composite, int page, int size,
                                               String orderBy, String orderDir);
     void delete(UUID id);
+    void deleteComponentReferencesByProductId(UUID productId);
     String generateNextCode();
 }

@@ -1,10 +1,13 @@
 package com.parsun.parsun_api.products.infrastructure.config;
 
 import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
+import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.application.usecases.*;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,15 +22,17 @@ public class ProductConfig {
     @Bean
     public CreateProductUseCase createProductUseCase(ProductRepository productRepository,
                                                       CategoryRepository categoryRepository,
+                                                      PriceTypeRepository priceTypeRepository,
                                                       ProductMapper productMapper) {
-        return new CreateProductUseCase(productRepository, categoryRepository, productMapper);
+        return new CreateProductUseCase(productRepository, categoryRepository, priceTypeRepository, productMapper);
     }
 
     @Bean
     public GetProductUseCase getProductUseCase(ProductRepository productRepository,
-                                                CategoryRepository categoryRepository,
-                                                ProductMapper productMapper) {
-        return new GetProductUseCase(productRepository, categoryRepository, productMapper);
+                                               CategoryRepository categoryRepository,
+                                               PriceTypeRepository priceTypeRepository,
+                                               ProductMapper productMapper) {
+        return new GetProductUseCase(productRepository, categoryRepository, priceTypeRepository, productMapper);
     }
 
     @Bean
@@ -40,21 +45,25 @@ public class ProductConfig {
     @Bean
     public UpdateProductUseCase updateProductUseCase(ProductRepository productRepository,
                                                       CategoryRepository categoryRepository,
+                                                      PriceTypeRepository priceTypeRepository,
                                                       ProductMapper productMapper) {
-        return new UpdateProductUseCase(productRepository, categoryRepository, productMapper);
+        return new UpdateProductUseCase(productRepository, categoryRepository, priceTypeRepository, productMapper);
     }
 
     @Bean
-    public DeleteProductUseCase deleteProductUseCase(ProductRepository productRepository) {
-        return new DeleteProductUseCase(productRepository);
+    public DeleteProductUseCase deleteProductUseCase(ProductRepository productRepository,
+                                                      StockMovementRepository stockMovementRepository,
+                                                      WarehouseStockRepository warehouseStockRepository) {
+        return new DeleteProductUseCase(productRepository, stockMovementRepository, warehouseStockRepository);
     }
 
     @Bean
     public UploadProductPhotoUseCase uploadProductPhotoUseCase(ProductRepository productRepository,
                                                                 CategoryRepository categoryRepository,
+                                                                PriceTypeRepository priceTypeRepository,
                                                                 FileStorageService fileStorageService,
                                                                 ProductMapper productMapper) {
-        return new UploadProductPhotoUseCase(productRepository, categoryRepository, fileStorageService, productMapper);
+        return new UploadProductPhotoUseCase(productRepository, categoryRepository, priceTypeRepository, fileStorageService, productMapper);
     }
 
     @Bean

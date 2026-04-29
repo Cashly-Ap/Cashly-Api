@@ -13,11 +13,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ProductComponentEntity {
 
     @Id
     @Column(name = "id", columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

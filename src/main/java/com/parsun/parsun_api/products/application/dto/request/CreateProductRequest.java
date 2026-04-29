@@ -36,7 +36,10 @@ public record CreateProductRequest(
     BigDecimal profitMargin,
 
     @Valid
-    List<ComponentRequest> components
+    List<ComponentRequest> components,
+
+    @Valid
+    List<ProductPriceRequest> productPrices
 ) {
     public record ComponentRequest(
         @NotNull(message = "Component product ID is required")
