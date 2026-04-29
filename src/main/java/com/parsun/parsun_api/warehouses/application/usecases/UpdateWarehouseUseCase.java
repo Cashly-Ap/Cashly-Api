@@ -25,7 +25,7 @@ public class UpdateWarehouseUseCase {
 
         warehouse.update(
                 request.name(), request.address(),
-                request.state(), request.municipality(), request.postalCode()
+                request.state(), request.municipality(), request.postalCode(), request.active()
         );
 
         Warehouse saved = warehouseRepository.save(warehouse);

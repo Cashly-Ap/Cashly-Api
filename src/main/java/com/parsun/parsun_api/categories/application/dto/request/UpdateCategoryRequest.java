@@ -9,5 +9,7 @@ public record UpdateCategoryRequest(
     String name,
 
     @Size(max = 300, message = "Description cannot exceed 300 characters")
-    String description
+    String description,
+
+    Boolean active
 ) {}

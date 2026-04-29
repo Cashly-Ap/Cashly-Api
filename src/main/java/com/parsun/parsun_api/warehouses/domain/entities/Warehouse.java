@@ -46,13 +46,14 @@ public class Warehouse {
         return new Warehouse(id, code, name, address, state, municipality, postalCode, active, createdAt, updatedAt);
     }
 
-    public void update(String name, String address, String state, String municipality, String postalCode) {
+    public void update(String name, String address, String state, String municipality, String postalCode, Boolean active) {
         validateName(name);
         this.name = name.trim();
         this.address = address;
         this.state = state;
         this.municipality = municipality;
         this.postalCode = postalCode;
+        if (active != null) this.active = active;
         this.updatedAt = LocalDateTime.now();
     }
 

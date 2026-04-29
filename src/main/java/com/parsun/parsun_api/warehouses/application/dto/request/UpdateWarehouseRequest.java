@@ -18,5 +18,7 @@ public record UpdateWarehouseRequest(
         String municipality,
 
         @Size(max = 10, message = "Postal code cannot exceed 10 characters")
-        String postalCode
+        String postalCode,
+
+        Boolean active
 ) {}

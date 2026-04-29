@@ -34,10 +34,11 @@ public class Category {
         return new Category(id, name, description, active, createdAt, updatedAt);
     }
 
-    public void update(String name, String description) {
+    public void update(String name, String description, Boolean active) {
         validateName(name);
         this.name = name;
         this.description = validateDescription(description);
+        if (active != null) this.active = active;
         this.updatedAt = LocalDateTime.now();
     }
 

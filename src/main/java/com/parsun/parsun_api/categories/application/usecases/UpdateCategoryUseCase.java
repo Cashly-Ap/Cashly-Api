@@ -30,7 +30,7 @@ public class UpdateCategoryUseCase {
             throw new DuplicateCategoryNameException(request.name());
         }
 
-        category.update(request.name().trim(), request.description());
+        category.update(request.name().trim(), request.description(), request.active());
         Category saved = categoryRepository.save(category);
         return categoryMapper.toDetailResponse(saved, 0L);
     }
