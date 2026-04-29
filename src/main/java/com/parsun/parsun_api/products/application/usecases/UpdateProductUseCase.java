@@ -43,7 +43,7 @@ public class UpdateProductUseCase {
             .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
 
         product.update(request.name(), request.description(), request.categoryId(),
-                request.basePrice(), request.purchasePrice(), request.profitMargin());
+                request.basePrice(), request.purchasePrice(), request.profitMargin(), request.active());
 
         if (Boolean.TRUE.equals(request.composite()) && !product.isComposite()) {
             product.makeComposite();

@@ -17,6 +17,7 @@ public class Product {
     private UUID categoryId;
     private boolean composite;
     private boolean active;
+    private String photo;
     private BigDecimal basePrice;
     private BigDecimal purchasePrice;
     private BigDecimal profitMargin;
@@ -25,7 +26,7 @@ public class Product {
     private LocalDateTime updatedAt;
 
     private Product(UUID id, String code, String name, String description, UUID categoryId,
-                    boolean composite, boolean active,
+                    boolean composite, boolean active, String photo,
                     BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin,
                     List<ProductComponent> components, LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateCode(code);
@@ -37,6 +38,7 @@ public class Product {
         this.categoryId = categoryId;
         this.composite = composite;
         this.active = active;
+        this.photo = photo;
         this.basePrice = basePrice;
         this.purchasePrice = purchasePrice;
         this.profitMargin = profitMargin;
@@ -50,20 +52,22 @@ public class Product {
                                   BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin) {
         LocalDateTime now = LocalDateTime.now();
         return new Product(null, code, name, description, categoryId, composite,
-                true, basePrice, purchasePrice, profitMargin, List.of(), now, now);
+                true, null, basePrice, purchasePrice, profitMargin, List.of(), now, now);
     }
 
     public static Product reconstitute(UUID id, String code, String name, String description,
                                         UUID categoryId, boolean composite,
-                                        boolean active, BigDecimal basePrice, BigDecimal purchasePrice,
+                                        boolean active, String photo,
+                                        BigDecimal basePrice, BigDecimal purchasePrice,
                                         BigDecimal profitMargin, List<ProductComponent> components,
                                         LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Product(id, code, name, description, categoryId, composite,
-                active, basePrice, purchasePrice, profitMargin, components, createdAt, updatedAt);
+                active, photo, basePrice, purchasePrice, profitMargin, components, createdAt, updatedAt);
     }
 
     public void update(String name, String description, UUID categoryId,
-                       BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin) {
+                       BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin,
+                       Boolean active) {
         validateName(name);
         this.name = name.trim();
         this.description = description;
@@ -71,6 +75,7 @@ public class Product {
         this.basePrice = basePrice;
         this.purchasePrice = purchasePrice;
         this.profitMargin = profitMargin;
+        if (active != null) this.active = active;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -94,6 +99,16 @@ public class Product {
             throw new IllegalStateException("Cannot set components on a non-composite product");
         }
         this.components = new ArrayList<>(components);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void assignPhoto(String photoPath) {
+        this.photo = photoPath;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void removePhoto() {
+        this.photo = null;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -122,6 +137,7 @@ public class Product {
     public UUID getCategoryId() { return categoryId; }
     public boolean isComposite() { return composite; }
     public boolean isActive() { return active; }
+    public String getPhoto() { return photo; }
     public BigDecimal getBasePrice() { return basePrice; }
     public BigDecimal getPurchasePrice() { return purchasePrice; }
     public BigDecimal getProfitMargin() { return profitMargin; }

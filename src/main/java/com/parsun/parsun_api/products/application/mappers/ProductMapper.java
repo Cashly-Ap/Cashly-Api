@@ -36,6 +36,7 @@ public class ProductMapper {
             product.getId().toString(), product.getCode(), product.getName(), product.getDescription(),
             product.getCategoryId().toString(), categoryName,
             product.isComposite(), product.isActive(),
+            product.getPhoto(),
             product.getBasePrice(), product.getPurchasePrice(), product.getProfitMargin(),
             components, product.getCreatedAt(), product.getUpdatedAt()
         );

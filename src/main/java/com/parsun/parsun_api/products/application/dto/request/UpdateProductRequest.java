@@ -35,7 +35,9 @@ public record UpdateProductRequest(
     Boolean composite,
 
     @Valid
-    List<ComponentRequest> components
+    List<ComponentRequest> components,
+
+    Boolean active
 ) {
     public record ComponentRequest(
         @NotNull(message = "Component product ID is required")

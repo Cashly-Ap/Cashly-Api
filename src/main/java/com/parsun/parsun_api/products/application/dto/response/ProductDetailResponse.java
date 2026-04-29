@@ -13,6 +13,7 @@ public record ProductDetailResponse(
     String categoryName,
     boolean composite,
     boolean active,
+    String photo,
     BigDecimal basePrice,
     BigDecimal purchasePrice,
     BigDecimal profitMargin,

@@ -52,6 +52,9 @@ public class ProductEntity {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Column(name = "photo", length = 500)
+    private String photo;
+
     @Column(name = "base_price")
     private BigDecimal basePrice;
 
@@ -79,6 +82,7 @@ public class ProductEntity {
         entity.categoryId = product.getCategoryId();
         entity.composite = product.isComposite();
         entity.active = product.isActive();
+        entity.photo = product.getPhoto();
         entity.basePrice = product.getBasePrice();
         entity.purchasePrice = product.getPurchasePrice();
         entity.profitMargin = product.getProfitMargin();
@@ -96,6 +100,7 @@ public class ProductEntity {
         this.categoryId = product.getCategoryId();
         this.composite = product.isComposite();
         this.active = product.isActive();
+        this.photo = product.getPhoto();
         this.basePrice = product.getBasePrice();
         this.purchasePrice = product.getPurchasePrice();
         this.profitMargin = product.getProfitMargin();
@@ -109,7 +114,7 @@ public class ProductEntity {
             .map(ProductComponentEntity::toDomain)
             .toList();
         return Product.reconstitute(id, code, name, description, categoryId,
-                composite, active, basePrice, purchasePrice, profitMargin,
+                composite, active, photo, basePrice, purchasePrice, profitMargin,
                 domainComponents, createdAt, updatedAt);
     }
 }

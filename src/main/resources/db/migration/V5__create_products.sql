@@ -9,6 +9,7 @@ CREATE TABLE products (
     purchase_price DECIMAL(15, 2) NULL,
     profit_margin  DECIMAL(5, 2)  NULL,
     active         BOOLEAN NOT NULL DEFAULT TRUE,
+    photo          VARCHAR(500) NULL,
     created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_product_code      (code),

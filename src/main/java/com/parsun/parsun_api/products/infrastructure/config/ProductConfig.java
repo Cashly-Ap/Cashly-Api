@@ -4,6 +4,7 @@ import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.application.usecases.*;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,5 +47,19 @@ public class ProductConfig {
     @Bean
     public DeleteProductUseCase deleteProductUseCase(ProductRepository productRepository) {
         return new DeleteProductUseCase(productRepository);
+    }
+
+    @Bean
+    public UploadProductPhotoUseCase uploadProductPhotoUseCase(ProductRepository productRepository,
+                                                                CategoryRepository categoryRepository,
+                                                                FileStorageService fileStorageService,
+                                                                ProductMapper productMapper) {
+        return new UploadProductPhotoUseCase(productRepository, categoryRepository, fileStorageService, productMapper);
+    }
+
+    @Bean
+    public RemoveProductPhotoUseCase removeProductPhotoUseCase(ProductRepository productRepository,
+                                                                FileStorageService fileStorageService) {
+        return new RemoveProductPhotoUseCase(productRepository, fileStorageService);
     }
 }
