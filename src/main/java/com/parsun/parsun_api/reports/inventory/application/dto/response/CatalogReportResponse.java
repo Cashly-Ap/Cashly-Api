@@ -1,17 +1,17 @@
 package com.parsun.parsun_api.reports.inventory.application.dto.response;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record CatalogReportResponse(
-        Long productId,
+        UUID productId,
         String productName,
         String sku,
-        Long categoryId,
+        UUID categoryId,
         String categoryName,
         Boolean composite,
-        Long warehouseId,
+        UUID warehouseId,
         String warehouseName,
         BigDecimal quantity,
-        BigDecimal minStock,
         Boolean active
 ) {}

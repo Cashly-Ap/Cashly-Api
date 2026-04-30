@@ -1,9 +1,11 @@
 package com.parsun.parsun_api.reports.inventory.application.query;
 
+import java.util.UUID;
+
 public record CatalogReportQuery(
         String search,
-        Long categoryId,
-        Long warehouseId,
+        UUID categoryId,
+        UUID warehouseId,
         Boolean composite,
         Boolean withStock,
         Boolean lowStock,

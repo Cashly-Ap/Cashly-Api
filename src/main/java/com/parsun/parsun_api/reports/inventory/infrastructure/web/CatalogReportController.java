@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/reports/inventory/catalog")
 @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
@@ -33,8 +35,8 @@ public class CatalogReportController {
     @GetMapping
     public PageResponse<CatalogReportResponse> getCatalog(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long warehouseId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) Boolean composite,
             @RequestParam(required = false) Boolean withStock,
             @RequestParam(required = false) Boolean lowStock,
@@ -48,8 +50,8 @@ public class CatalogReportController {
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> getCatalogPdf(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long warehouseId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) Boolean composite,
             @RequestParam(required = false) Boolean withStock,
             @RequestParam(required = false) Boolean lowStock) {

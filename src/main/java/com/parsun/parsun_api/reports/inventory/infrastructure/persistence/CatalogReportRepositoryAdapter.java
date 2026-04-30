@@ -7,6 +7,8 @@ import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.UUID;
+
 public class CatalogReportRepositoryAdapter implements CatalogReportRepositoryPort {
 
     private final CatalogReportJpaRepository catalogReportJpaRepository;
@@ -20,11 +22,10 @@ public class CatalogReportRepositoryAdapter implements CatalogReportRepositoryPo
         PageRequest pageable = PageRequest.of(query.page(), query.size());
         Page<CatalogReportProjection> page = catalogReportJpaRepository.findCatalog(
                 query.search(),
-                query.categoryId(),
-                query.warehouseId(),
+                query.categoryId() != null ? query.categoryId().toString() : null,
+                query.warehouseId() != null ? query.warehouseId().toString() : null,
                 query.composite(),
                 query.withStock(),
-                query.lowStock(),
                 pageable
         );
         Page<CatalogReportResponse> mapped = page.map(this::toResponse);
@@ -33,16 +34,15 @@ public class CatalogReportRepositoryAdapter implements CatalogReportRepositoryPo
 
     private CatalogReportResponse toResponse(CatalogReportProjection p) {
         return new CatalogReportResponse(
-                p.getProductId(),
+                UUID.fromString(p.getProductId()),
                 p.getProductName(),
                 p.getSku(),
-                p.getCategoryId(),
+                UUID.fromString(p.getCategoryId()),
                 p.getCategoryName(),
                 p.getComposite(),
-                p.getWarehouseId(),
+                UUID.fromString(p.getWarehouseId()),
                 p.getWarehouseName(),
                 p.getQuantity(),
-                p.getMinStock(),
                 p.getActive()
         );
     }

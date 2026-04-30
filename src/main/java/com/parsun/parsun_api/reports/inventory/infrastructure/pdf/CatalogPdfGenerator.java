@@ -67,11 +67,11 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
             document.add(title);
             document.add(subtitle);
 
-            float[] columnWidths = {3f, 2f, 2f, 2f, 1.5f, 1.5f, 1.5f, 1.5f};
+            float[] columnWidths = {3f, 2f, 2f, 2f, 1.5f, 1.5f, 1.5f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
-            String[] headers = {"Producto", "SKU", "Categoría", "Almacén", "Tipo", "Stock", "Stock Mínimo", "Estado"};
+            String[] headers = {"Producto", "SKU", "Categoría", "Almacén", "Tipo", "Stock", "Estado"};
             for (String h : headers) {
                 Cell headerCell = new Cell()
                         .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -92,7 +92,6 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
                 addCell(table, item.warehouseName() != null ? item.warehouseName() : "-", regular, rowColor, TextAlignment.LEFT);
                 addCell(table, Boolean.TRUE.equals(item.composite()) ? "Compuesto" : "Simple", regular, rowColor, TextAlignment.CENTER);
                 addCell(table, item.quantity() != null ? item.quantity().toPlainString() : "0", regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, item.minStock() != null ? item.minStock().toPlainString() : "0", regular, rowColor, TextAlignment.RIGHT);
                 addCell(table, Boolean.TRUE.equals(item.active()) ? "Activo" : "Inactivo", regular, rowColor, TextAlignment.CENTER);
             }
 
