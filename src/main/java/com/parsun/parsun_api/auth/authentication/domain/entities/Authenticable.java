@@ -1,7 +1,9 @@
 package com.parsun.parsun_api.auth.authentication.domain.entities;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 public interface Authenticable {
@@ -28,5 +30,9 @@ public interface Authenticable {
 
     default UserRole getRole() {
         return null;
+    }
+
+    default Set<BusinessModule> getModulePermissions() {
+        return Set.of();
     }
 }

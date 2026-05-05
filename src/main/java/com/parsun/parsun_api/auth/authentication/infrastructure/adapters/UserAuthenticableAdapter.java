@@ -1,10 +1,12 @@
 package com.parsun.parsun_api.auth.authentication.infrastructure.adapters;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.parsun.parsun_api.auth.authentication.domain.entities.Authenticable;
 import com.parsun.parsun_api.auth.authentication.domain.entities.AuthenticableType;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 public class UserAuthenticableAdapter implements Authenticable {
@@ -66,6 +68,11 @@ public class UserAuthenticableAdapter implements Authenticable {
     @Override
     public LocalDateTime getUpdatedAt() {
         return user.getUpdatedAt();
+    }
+
+    @Override
+    public Set<BusinessModule> getModulePermissions() {
+        return user.getModulePermissions();
     }
 
     public User getUser() {
