@@ -9,11 +9,13 @@ import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundExcept
 import com.parsun.parsun_api.categories.application.exceptions.CategoryHasActiveProductsException;
 import com.parsun.parsun_api.categories.application.exceptions.CategoryNotFoundException;
 import com.parsun.parsun_api.categories.application.exceptions.DuplicateCategoryNameException;
-import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
+import com.parsun.parsun_api.orders.domain.exceptions.OrderCannotBeDeletedException;
+import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
 import com.parsun.parsun_api.products.application.exceptions.CompositeProductCannotBeComponentException;
 import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCodeException;
 import com.parsun.parsun_api.products.application.exceptions.DuplicateProductComponentException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessNotFoundException;
 import com.parsun.parsun_api.price_types.application.exceptions.DuplicatePriceTypeNameException;
@@ -99,6 +101,26 @@ public class AuthExceptionHandler {
             ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleOrderNotFound(OrderNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Order not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(OrderCannotBeDeletedException.class)
+    public ResponseEntity<Map<String, Object>> handleOrderCannotBeDeleted(OrderCannotBeDeletedException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            "Order cannot be deleted",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorDetails);
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
