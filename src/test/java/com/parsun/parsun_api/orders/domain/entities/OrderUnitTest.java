@@ -49,7 +49,7 @@ class OrderUnitTest {
         assertEquals(CUSTOMER_RIF, order.getCustomerRif());
         assertEquals(CREATED_BY, order.getCreatedBy());
         assertEquals(CREATED_BY_NAME, order.getCreatedByName());
-        assertEquals(OrderStatus.PENDING, order.getStatus());
+        assertEquals(OrderStatus.DRAFT, order.getStatus());
         assertEquals(futureDate, order.getDeliveryDate());
         assertEquals("Notas", order.getNotes());
         assertEquals(new BigDecimal("20.00"), order.getSubtotal());
@@ -212,7 +212,7 @@ class OrderUnitTest {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
                 order.update(futureDate, null, validLines));
 
-        assertEquals("Only PENDING orders can be updated", exception.getMessage());
+        assertEquals("Only DRAFT orders can be updated", exception.getMessage());
     }
 
     @Test
@@ -259,7 +259,7 @@ class OrderUnitTest {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
                 order.cancel("Segunda cancelación"));
 
-        assertEquals("Only PENDING orders can be cancelled", exception.getMessage());
+        assertEquals("Only DRAFT or CONFIRMED orders can be cancelled", exception.getMessage());
     }
 
     @Test
@@ -308,7 +308,7 @@ class OrderUnitTest {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
                 order.markAsInvoiced(UUID.randomUUID(), "FAC-2026-00001"));
 
-        assertEquals("Only PENDING orders can be invoiced", exception.getMessage());
+        assertEquals("Only CONFIRMED orders can be invoiced", exception.getMessage());
     }
 
     @Test

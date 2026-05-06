@@ -91,6 +91,7 @@ class AuthControllerUnitTest {
             AuthenticableType.USER,
             UserRole.OPERATOR,
             true,
+            java.util.Set.of(),
             now,
             now
         );
