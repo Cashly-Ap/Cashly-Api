@@ -88,14 +88,14 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @PatchMapping("/{id}/confirm")
+    @PutMapping("/{id}/confirm")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<OrderDetailResponse> confirm(@PathVariable UUID id) {
         OrderDetailResponse order = confirmOrderUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
-    @PatchMapping("/{id}/cancel")
+    @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<OrderDetailResponse> cancel(@PathVariable UUID id,
                                                        @Valid @RequestBody CancelOrderRequest request) {
