@@ -4,10 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 public record UpdateCustomerRequest(
     @NotBlank(message = "Legal name is required")
@@ -17,6 +19,7 @@ public record UpdateCustomerRequest(
     String type,
 
     @NotBlank(message = "RIF is required")
+    @Pattern(regexp = "^[JVGEPjvgep]-\\d{8}-\\d$", message = "RIF format is invalid. Expected format: J-12345678-9")
     String rif,
 
     @NotBlank(message = "Alias is required")
@@ -43,5 +46,9 @@ public record UpdateCustomerRequest(
     @NotEmpty(message = "At least one address is required")
     List<AddressRequest> addresses,
 
-    Boolean portalAccess
+    Boolean portalAccess,
+
+    String notes,
+
+    UUID priceTypeId
 ) {}

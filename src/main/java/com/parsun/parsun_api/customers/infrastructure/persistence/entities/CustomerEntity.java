@@ -71,6 +71,13 @@ public class CustomerEntity {
     @Column(name = "portal_password", length = 255)
     private String portalPassword;
 
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "price_type_id", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID priceTypeId;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private List<CustomerEmailEntity> emails = new ArrayList<>();
@@ -98,6 +105,8 @@ public class CustomerEntity {
         entity.updatedAt = customer.getUpdatedAt();
         entity.portalAccess = customer.isPortalAccess();
         entity.portalPassword = customer.getPortalPassword();
+        entity.notes = customer.getNotes();
+        entity.priceTypeId = customer.getPriceTypeId();
 
         entity.emails = customer.getEmails().stream().map(e -> {
             CustomerEmailEntity emailEntity = new CustomerEmailEntity();
@@ -142,6 +151,8 @@ public class CustomerEntity {
         this.updatedAt = customer.getUpdatedAt();
         this.portalAccess = customer.isPortalAccess();
         this.portalPassword = customer.getPortalPassword();
+        this.notes = customer.getNotes();
+        this.priceTypeId = customer.getPriceTypeId();
 
         this.emails.clear();
         customer.getEmails().forEach(e -> {
@@ -222,7 +233,9 @@ public class CustomerEntity {
             domainPhones,
             domainAddresses,
             this.portalAccess,
-            this.portalPassword
+            this.portalPassword,
+            this.notes,
+            this.priceTypeId
         );
     }
 }

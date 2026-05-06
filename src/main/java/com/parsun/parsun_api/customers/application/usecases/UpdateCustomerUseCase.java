@@ -39,6 +39,8 @@ public class UpdateCustomerUseCase {
         customer.updateAlias(new CustomerAlias(request.alias()));
         customer.updateCreditDays(new CreditDays(request.creditDays()));
         customer.updateCreditLimit(new CreditLimit(request.creditLimit()));
+        customer.updateNotes(request.notes());
+        customer.updatePriceTypeId(request.priceTypeId());
 
         if (request.active()) {
             customer.activate();

@@ -14,16 +14,16 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, portal_access, portal_password, created_at, updated_at)
 VALUES
-    (UNHEX('c1000000000000000000000000000001'), 1001, 'Distribuidora Caracas C.A.',          'JURIDICA', 'J-30123456-7', 'DistCaracas',   30,  5000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000002'), 1002, 'Importaciones del Sur C.A.',          'JURIDICA', 'J-20987654-3', 'ImpSur',        60, 10000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000003'), 1003, 'Comercializadora Norte S.R.L.',       'JURIDICA', 'J-10555444-1', 'ComNorte',      15,  2500.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000004'), 1004, 'Carlos Eduardo Mendoza',              'NATURAL',  'V-12345678-9', 'CMendoza',       0,     0.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000005'), 1005, 'Suministros Industriales Zulia C.A.', 'JURIDICA', 'J-40234567-8', 'SumZulia',      45,  7500.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000006'), 1006, 'Maria Alejandra Torres',              'NATURAL',  'V-09876543-2', 'MTorres',        0,     0.00, FALSE, FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000007'), 1007, 'Tecnologia y Soluciones C.A.',        'JURIDICA', 'J-50345678-9', 'TecSol',        90, 20000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000008'), 1008, 'Agropecuaria Los Llanos S.R.L.',      'JURIDICA', 'J-11456789-0', 'AgroLlanos',    30,  3000.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000009'), 1009, 'Roberto Jose Perez',                  'NATURAL',  'V-15678901-3', 'RPerez',         0,     0.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000010'), 1010, 'Constructora Andina C.A.',            'JURIDICA', 'J-60456789-1', 'ConstruAndina', 60, 15000.00, FALSE, FALSE, NULL,                                                           NOW(), NOW());
+    (UNHEX('c1000000000000000000000000000001'), 1001, 'Distribuidora Caracas C.A.',          'BUSINESS',  'J-30123456-7', 'DistCaracas',   30,  5000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000002'), 1002, 'Importaciones del Sur C.A.',          'BUSINESS',  'J-20987654-3', 'ImpSur',        60, 10000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000003'), 1003, 'Comercializadora Norte S.R.L.',       'BUSINESS',  'J-10555444-1', 'ComNorte',      15,  2500.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000004'), 1004, 'Carlos Eduardo Mendoza',              'INDIVIDUAL','V-12345678-9', 'CMendoza',       0,     0.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000005'), 1005, 'Suministros Industriales Zulia C.A.', 'BUSINESS',  'J-40234567-8', 'SumZulia',      45,  7500.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000006'), 1006, 'Maria Alejandra Torres',              'INDIVIDUAL','V-09876543-2', 'MTorres',        0,     0.00, FALSE, FALSE, NULL,                                                           NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000007'), 1007, 'Tecnologia y Soluciones C.A.',        'BUSINESS',  'J-50345678-9', 'TecSol',        90, 20000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000008'), 1008, 'Agropecuaria Los Llanos S.R.L.',      'BUSINESS',  'J-11456789-0', 'AgroLlanos',    30,  3000.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000009'), 1009, 'Roberto Jose Perez',                  'INDIVIDUAL','V-15678901-3', 'RPerez',         0,     0.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000010'), 1010, 'Constructora Andina C.A.',            'BUSINESS',  'J-60456789-1', 'ConstruAndina', 60, 15000.00, FALSE, FALSE, NULL,                                                           NOW(), NOW());
 
 INSERT INTO customer_emails (id, customer_id, email)
 VALUES

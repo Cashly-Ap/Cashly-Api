@@ -5,6 +5,7 @@ import com.parsun.parsun_api.customers.domain.valueobjects.PaymentType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record CustomerCreateResponse(
     String id,
@@ -21,5 +22,7 @@ public record CustomerCreateResponse(
     List<EmailResponse> emails,
     List<PhoneResponse> phones,
     List<AddressResponse> addresses,
-    boolean portalAccess
+    boolean portalAccess,
+    String notes,
+    UUID priceTypeId
 ) {}

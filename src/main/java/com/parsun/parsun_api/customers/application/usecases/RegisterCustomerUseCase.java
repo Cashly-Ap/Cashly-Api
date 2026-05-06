@@ -47,6 +47,9 @@ public class RegisterCustomerUseCase {
             customer.deactivate();
         }
 
+        customer.updateNotes(request.notes());
+        customer.updatePriceTypeId(request.priceTypeId());
+
         request.emails().forEach(e -> customer.addEmail(new EmailAddress(e.email())));
         request.phones().forEach(p -> customer.addPhone(new PhoneNumber(p.phone())));
         request.addresses().forEach(a -> customer.addAddress(

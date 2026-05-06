@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Customer {
     private final CustomerId id;
@@ -26,12 +27,14 @@ public class Customer {
     private List<CustomerAddress> addresses;
     private boolean portalAccess;
     private String portalPassword;
+    private String notes;
+    private UUID priceTypeId;
 
     private Customer(CustomerId id, CustomerCode code, LegalName legalName, CustomerType type,
                      Rif rif, CustomerAlias alias, CreditDays creditDays, CreditLimit creditLimit,
                      boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
                      List<CustomerEmail> emails, List<CustomerPhone> phones, List<CustomerAddress> addresses,
-                     boolean portalAccess, String portalPassword) {
+                     boolean portalAccess, String portalPassword, String notes, UUID priceTypeId) {
         this.id = id;
         this.code = code;
         this.legalName = legalName;
@@ -48,6 +51,8 @@ public class Customer {
         this.addresses = new ArrayList<>(addresses != null ? addresses : List.of());
         this.portalAccess = portalAccess;
         this.portalPassword = portalPassword;
+        this.notes = notes;
+        this.priceTypeId = priceTypeId;
     }
 
     public static Customer create(CustomerCode code, LegalName legalName, CustomerType type,
@@ -58,7 +63,7 @@ public class Customer {
             CustomerId.generate(), code, legalName, type, rif, alias,
             creditDays, creditLimit, true, now, now,
             new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-            false, null
+            false, null, null, null
         );
     }
 
@@ -68,9 +73,11 @@ public class Customer {
                                          boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
                                          List<CustomerEmail> emails, List<CustomerPhone> phones,
                                          List<CustomerAddress> addresses,
-                                         boolean portalAccess, String portalPassword) {
+                                         boolean portalAccess, String portalPassword,
+                                         String notes, UUID priceTypeId) {
         return new Customer(id, code, legalName, type, rif, alias, creditDays, creditLimit,
-            active, createdAt, updatedAt, emails, phones, addresses, portalAccess, portalPassword);
+            active, createdAt, updatedAt, emails, phones, addresses, portalAccess, portalPassword,
+            notes, priceTypeId);
     }
 
     public void updateLegalName(LegalName legalName) {
@@ -106,6 +113,16 @@ public class Customer {
     public void updateType(CustomerType type) {
         if (type == null) throw new IllegalArgumentException("Customer type cannot be null");
         this.type = type;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateNotes(String notes) {
+        this.notes = notes;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updatePriceTypeId(UUID priceTypeId) {
+        this.priceTypeId = priceTypeId;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -178,6 +195,8 @@ public class Customer {
     public List<CustomerAddress> getAddresses() { return Collections.unmodifiableList(addresses); }
     public boolean isPortalAccess() { return portalAccess; }
     public String getPortalPassword() { return portalPassword; }
+    public String getNotes() { return notes; }
+    public UUID getPriceTypeId() { return priceTypeId; }
 
     public void enablePortalAccess(String encodedPassword) {
         this.portalAccess = true;

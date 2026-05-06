@@ -37,7 +37,9 @@ public class CustomerMapper {
             toEmailResponses(customer),
             toPhoneResponses(customer),
             toAddressResponses(customer),
-            customer.isPortalAccess()
+            customer.isPortalAccess(),
+            customer.getNotes(),
+            customer.getPriceTypeId()
         );
     }
 
@@ -57,7 +59,9 @@ public class CustomerMapper {
             toEmailResponses(customer),
             toPhoneResponses(customer),
             toAddressResponses(customer),
-            customer.isPortalAccess()
+            customer.isPortalAccess(),
+            customer.getNotes(),
+            customer.getPriceTypeId()
         );
     }
 
