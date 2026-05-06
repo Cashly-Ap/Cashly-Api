@@ -284,9 +284,10 @@ class OrderUnitTest {
     // --- markAsInvoiced ---
 
     @Test
-    void should_MarkAsInvoiced_When_StatusIsPending() throws InterruptedException {
+    void should_MarkAsInvoiced_When_StatusIsConfirmed() throws InterruptedException {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, futureDate, null, validLines);
+        order.confirm();
         UUID invoiceId = UUID.randomUUID();
         LocalDateTime beforeInvoice = order.getUpdatedAt();
 
@@ -315,6 +316,7 @@ class OrderUnitTest {
     void should_ThrowException_When_InvoiceIdIsNull() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, futureDate, null, validLines);
+        order.confirm();
 
         assertThrows(NullPointerException.class, () ->
                 order.markAsInvoiced(null, "FAC-2026-00001"));
@@ -324,6 +326,7 @@ class OrderUnitTest {
     void should_ThrowException_When_InvoiceNumberIsNull() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, futureDate, null, validLines);
+        order.confirm();
 
         assertThrows(NullPointerException.class, () ->
                 order.markAsInvoiced(UUID.randomUUID(), null));
