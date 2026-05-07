@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
-    @EntityGraph(attributePaths = {"lines"})
+    @EntityGraph(attributePaths = {"lines", "lines.allocations"})
     Optional<OrderEntity> findWithLinesById(UUID id);
 
     @Query("""

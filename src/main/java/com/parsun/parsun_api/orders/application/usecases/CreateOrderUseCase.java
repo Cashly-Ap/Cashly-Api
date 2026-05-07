@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.orders.application.usecases;
 
+import java.math.BigDecimal;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
@@ -11,6 +12,7 @@ import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse
 import com.parsun.parsun_api.orders.application.mappers.OrderMapper;
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
+import com.parsun.parsun_api.orders.domain.entities.OrderLineAllocation;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.products.domain.entities.Product;
@@ -62,14 +64,15 @@ public class CreateOrderUseCase {
                     Product product = productRepository.findById(lineRequest.productId())
                             .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
 
-                    applyStockAllocations(lineRequest, product.getId());
+                    List<OrderLineAllocation> allocations = applyStockAllocations(lineRequest, product.getId());
 
                     return OrderLine.create(
                             product.getId(),
                             product.getName(),
                             product.getCode(),
                             lineRequest.quantity(),
-                            lineRequest.unitPrice()
+                            lineRequest.unitPrice(),
+                            allocations
                     );
                 })
                 .toList();
@@ -93,7 +96,8 @@ public class CreateOrderUseCase {
         return OrderMapper.toDetailResponse(saved);
     }
 
-    private void applyStockAllocations(CreateOrderRequest.OrderLineRequest lineRequest, UUID productId) {
+    private List<OrderLineAllocation> applyStockAllocations(CreateOrderRequest.OrderLineRequest lineRequest, UUID productId) {
+        List<OrderLineAllocation> allocations = new java.util.ArrayList<>();
         for (CreateOrderRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
             WarehouseStock stock = warehouseStockRepository
                     .findByWarehouseIdAndProductId(allocation.warehouseId(), productId)
@@ -118,6 +122,9 @@ public class CreateOrderUseCase {
                     "Pedido"
             );
             stockMovementRepository.save(movement);
+
+            allocations.add(OrderLineAllocation.create(allocation.warehouseId(), BigDecimal.valueOf(allocation.allocated())));
         }
+        return allocations;
     }
 }

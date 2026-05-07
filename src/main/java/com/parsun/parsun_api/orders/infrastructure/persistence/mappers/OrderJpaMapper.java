@@ -2,14 +2,17 @@ package com.parsun.parsun_api.orders.infrastructure.persistence.mappers;
 
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
+import com.parsun.parsun_api.orders.domain.entities.OrderLineAllocation;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderLineId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderEntity;
+import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderLineAllocationEntity;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderLineEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 public class OrderJpaMapper {
 
@@ -78,17 +81,39 @@ public class OrderJpaMapper {
         entity.setQuantity(line.getQuantity());
         entity.setUnitPrice(line.getUnitPrice());
         entity.setLineTotal(line.getLineTotal());
+
+        List<OrderLineAllocationEntity> allocationEntities = line.getAllocations().stream()
+                .map(a -> toAllocationEntity(a, entity))
+                .toList();
+        entity.getAllocations().clear();
+        entity.getAllocations().addAll(allocationEntities);
+
+        return entity;
+    }
+
+    private static OrderLineAllocationEntity toAllocationEntity(OrderLineAllocation allocation,
+                                                                 OrderLineEntity lineEntity) {
+        OrderLineAllocationEntity entity = new OrderLineAllocationEntity();
+        entity.setId(allocation.getId());
+        entity.setOrderLine(lineEntity);
+        entity.setWarehouseId(allocation.getWarehouseId());
+        entity.setAllocated(allocation.getAllocated());
         return entity;
     }
 
     private static OrderLine toLineDomain(OrderLineEntity entity) {
+        List<OrderLineAllocation> allocations = entity.getAllocations().stream()
+                .map(a -> OrderLineAllocation.reconstitute(a.getId(), a.getWarehouseId(), a.getAllocated()))
+                .toList();
+
         return OrderLine.reconstitute(
                 OrderLineId.of(entity.getId()),
                 entity.getProductId(),
                 entity.getProductName(),
                 entity.getProductCode(),
                 entity.getQuantity(),
-                entity.getUnitPrice()
+                entity.getUnitPrice(),
+                allocations
         );
     }
 }

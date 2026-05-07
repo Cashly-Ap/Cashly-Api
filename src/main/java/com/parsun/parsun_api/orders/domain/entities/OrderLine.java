@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.orders.domain.entities;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,9 +16,10 @@ public class OrderLine {
     private final BigDecimal quantity;
     private final BigDecimal unitPrice;
     private final BigDecimal lineTotal;
+    private final List<OrderLineAllocation> allocations;
 
     private OrderLine(OrderLineId id, UUID productId, String productName, String productCode,
-                      BigDecimal quantity, BigDecimal unitPrice) {
+                      BigDecimal quantity, BigDecimal unitPrice, List<OrderLineAllocation> allocations) {
         Objects.requireNonNull(id, "OrderLine id cannot be null");
         Objects.requireNonNull(productId, "Product id cannot be null");
         Objects.requireNonNull(productName, "Product name cannot be null");
@@ -39,18 +41,20 @@ public class OrderLine {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.lineTotal = quantity.multiply(unitPrice);
+        this.allocations = allocations != null ? List.copyOf(allocations) : List.of();
     }
 
     public static OrderLine create(UUID productId, String productName, String productCode,
-                                   BigDecimal quantity, BigDecimal unitPrice) {
+                                   BigDecimal quantity, BigDecimal unitPrice,
+                                   List<OrderLineAllocation> allocations) {
         return new OrderLine(OrderLineId.generate(), productId, productName, productCode,
-                quantity, unitPrice);
+                quantity, unitPrice, allocations);
     }
 
     public static OrderLine reconstitute(OrderLineId id, UUID productId, String productName,
                                          String productCode, BigDecimal quantity,
-                                         BigDecimal unitPrice) {
-        return new OrderLine(id, productId, productName, productCode, quantity, unitPrice);
+                                         BigDecimal unitPrice, List<OrderLineAllocation> allocations) {
+        return new OrderLine(id, productId, productName, productCode, quantity, unitPrice, allocations);
     }
 
     public OrderLineId getId() { return id; }
@@ -60,4 +64,5 @@ public class OrderLine {
     public BigDecimal getQuantity() { return quantity; }
     public BigDecimal getUnitPrice() { return unitPrice; }
     public BigDecimal getLineTotal() { return lineTotal; }
+    public List<OrderLineAllocation> getAllocations() { return allocations; }
 }

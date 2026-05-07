@@ -30,7 +30,7 @@ class OrderUnitTest {
     void setUp() {
         validLines = List.of(
                 OrderLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"))
+                        new BigDecimal("2"), new BigDecimal("10.00"), List.of())
         );
     }
 
@@ -70,9 +70,9 @@ class OrderUnitTest {
     void should_CalculateSubtotal_When_MultipleLines() {
         List<OrderLine> lines = List.of(
                 OrderLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00")),
+                        new BigDecimal("2"), new BigDecimal("10.00"), List.of()),
                 OrderLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
-                        new BigDecimal("3"), new BigDecimal("5.00"))
+                        new BigDecimal("3"), new BigDecimal("5.00"), List.of())
         );
 
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
@@ -160,7 +160,7 @@ class OrderUnitTest {
 
         List<OrderLine> newLines = List.of(
                 OrderLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
-                        new BigDecimal("5"), new BigDecimal("3.00"))
+                        new BigDecimal("5"), new BigDecimal("3.00"), List.of())
         );
 
         Thread.sleep(10);

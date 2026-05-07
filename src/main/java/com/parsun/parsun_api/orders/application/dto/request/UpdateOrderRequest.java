@@ -25,6 +25,18 @@ public record UpdateOrderRequest(
             BigDecimal quantity,
 
             @NotNull(message = "Unit price is required")
-            BigDecimal unitPrice
+            BigDecimal unitPrice,
+
+            @NotEmpty(message = "At least one warehouse allocation is required")
+            @Valid
+            List<WarehouseAllocationRequest> warehouseAllocations
+    ) {}
+
+    public record WarehouseAllocationRequest(
+            @NotNull(message = "Warehouse is required")
+            UUID warehouseId,
+
+            @NotNull(message = "Allocated quantity is required")
+            BigDecimal allocated
     ) {}
 }

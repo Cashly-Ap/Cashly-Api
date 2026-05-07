@@ -28,8 +28,10 @@ public class OrderConfig {
     }
 
     @Bean
-    public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository) {
-        return new GetOrderByIdUseCase(orderRepository);
+    public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository,
+                                                    WarehouseStockRepository warehouseStockRepository,
+                                                    WarehouseRepository warehouseRepository) {
+        return new GetOrderByIdUseCase(orderRepository, warehouseStockRepository, warehouseRepository);
     }
 
     @Bean
@@ -39,8 +41,11 @@ public class OrderConfig {
 
     @Bean
     public UpdateOrderUseCase updateOrderUseCase(OrderRepository orderRepository,
-                                                   ProductRepository productRepository) {
-        return new UpdateOrderUseCase(orderRepository, productRepository);
+                                                   ProductRepository productRepository,
+                                                   WarehouseStockRepository warehouseStockRepository,
+                                                   StockMovementRepository stockMovementRepository) {
+        return new UpdateOrderUseCase(orderRepository, productRepository,
+                warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean
@@ -49,8 +54,10 @@ public class OrderConfig {
     }
 
     @Bean
-    public CancelOrderUseCase cancelOrderUseCase(OrderRepository orderRepository) {
-        return new CancelOrderUseCase(orderRepository);
+    public CancelOrderUseCase cancelOrderUseCase(OrderRepository orderRepository,
+                                                  WarehouseStockRepository warehouseStockRepository,
+                                                  StockMovementRepository stockMovementRepository) {
+        return new CancelOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean
@@ -59,8 +66,10 @@ public class OrderConfig {
     }
 
     @Bean
-    public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository) {
-        return new DeleteOrderUseCase(orderRepository);
+    public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository,
+                                                  WarehouseStockRepository warehouseStockRepository,
+                                                  StockMovementRepository stockMovementRepository) {
+        return new DeleteOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean

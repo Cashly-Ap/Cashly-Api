@@ -6,6 +6,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -44,4 +46,7 @@ public class OrderLineEntity {
 
     @Column(name = "line_total", nullable = false, precision = 15, scale = 2)
     private BigDecimal lineTotal;
+
+    @OneToMany(mappedBy = "orderLine", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<OrderLineAllocationEntity> allocations = new HashSet<>();
 }

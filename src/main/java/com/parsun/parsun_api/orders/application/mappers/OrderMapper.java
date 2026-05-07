@@ -6,14 +6,21 @@ import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class OrderMapper {
 
+    public record WarehouseProductKey(UUID warehouseId, UUID productId) {}
+
+    public record WarehouseEnrichment(String code, String name, int availableStock) {}
+
     private OrderMapper() {}
 
-    public static OrderDetailResponse toDetailResponse(Order order) {
+    public static OrderDetailResponse toDetailResponse(Order order,
+                                                        Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap) {
         List<OrderDetailResponse.OrderLineDetailResponse> lineResponses = order.getLines().stream()
-                .map(OrderMapper::toLineDetailResponse)
+                .map(line -> toLineDetailResponse(line, enrichmentMap))
                 .toList();
 
         return new OrderDetailResponse(
@@ -37,6 +44,10 @@ public class OrderMapper {
         );
     }
 
+    public static OrderDetailResponse toDetailResponse(Order order) {
+        return toDetailResponse(order, Map.of());
+    }
+
     public static OrderListResponse toListResponse(Order order) {
         return new OrderListResponse(
                 order.getId().value(),
@@ -51,7 +62,27 @@ public class OrderMapper {
         );
     }
 
-    private static OrderDetailResponse.OrderLineDetailResponse toLineDetailResponse(OrderLine line) {
+    private static OrderDetailResponse.OrderLineDetailResponse toLineDetailResponse(
+            OrderLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap) {
+
+        List<OrderDetailResponse.OrderLineDetailResponse.AllocationDetail> allocationDetails =
+                line.getAllocations().stream()
+                        .map(a -> {
+                            WarehouseProductKey key = new WarehouseProductKey(a.getWarehouseId(), line.getProductId());
+                            WarehouseEnrichment enrichment = enrichmentMap.get(key);
+                            String code = enrichment != null ? enrichment.code() : null;
+                            String name = enrichment != null ? enrichment.name() : null;
+                            int availableStock = enrichment != null ? enrichment.availableStock() : 0;
+                            return new OrderDetailResponse.OrderLineDetailResponse.AllocationDetail(
+                                    a.getWarehouseId(),
+                                    code,
+                                    name,
+                                    a.getAllocated(),
+                                    availableStock
+                            );
+                        })
+                        .toList();
+
         return new OrderDetailResponse.OrderLineDetailResponse(
                 line.getId().value(),
                 line.getProductId(),
@@ -59,7 +90,8 @@ public class OrderMapper {
                 line.getProductCode(),
                 line.getQuantity(),
                 line.getUnitPrice(),
-                line.getLineTotal()
+                line.getLineTotal(),
+                allocationDetails
         );
     }
 }
