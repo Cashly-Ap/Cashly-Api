@@ -5,7 +5,6 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +22,6 @@ public class Order {
     private final UUID createdBy;
     private final String createdByName;
     private OrderStatus status;
-    private LocalDate deliveryDate;
     private String notes;
     private BigDecimal subtotal;
     private UUID invoiceId;
@@ -36,7 +34,7 @@ public class Order {
 
     private Order(OrderId id, OrderNumber orderNumber, UUID customerId, String customerName,
                   String customerRif, UUID createdBy, String createdByName,
-                  OrderStatus status, LocalDate deliveryDate, String notes,
+                  OrderStatus status, String notes,
                   UUID invoiceId, String invoiceNumber,
                   LocalDateTime cancelledAt, String cancelledReason,
                   List<OrderLine> lines, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -48,7 +46,6 @@ public class Order {
         this.createdBy = createdBy;
         this.createdByName = createdByName;
         this.status = status;
-        this.deliveryDate = deliveryDate;
         this.notes = notes;
         this.invoiceId = invoiceId;
         this.invoiceNumber = invoiceNumber;
@@ -62,54 +59,45 @@ public class Order {
 
     public static Order create(OrderNumber orderNumber, UUID customerId, String customerName,
                                String customerRif, UUID createdBy, String createdByName,
-                               LocalDate deliveryDate, String notes, List<OrderLine> lines) {
+                               String notes, List<OrderLine> lines) {
         Objects.requireNonNull(orderNumber, "Order number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
         Objects.requireNonNull(customerRif, "Customer RIF cannot be null");
         Objects.requireNonNull(createdBy, "Created by cannot be null");
         Objects.requireNonNull(createdByName, "Created by name cannot be null");
-        Objects.requireNonNull(deliveryDate, "Delivery date cannot be null");
 
-        if (deliveryDate.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Delivery date must be today or in the future");
-        }
         if (lines == null || lines.isEmpty()) {
             throw new IllegalArgumentException("Order must have at least one line");
         }
 
         LocalDateTime now = LocalDateTime.now();
         return new Order(OrderId.generate(), orderNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, OrderStatus.DRAFT, deliveryDate, notes,
+                createdBy, createdByName, OrderStatus.DRAFT, notes,
                 null, null, null, null, lines, now, now);
     }
 
     public static Order reconstitute(OrderId id, OrderNumber orderNumber, UUID customerId,
                                      String customerName, String customerRif,
                                      UUID createdBy, String createdByName,
-                                     OrderStatus status, LocalDate deliveryDate, String notes,
+                                     OrderStatus status, String notes,
                                      UUID invoiceId, String invoiceNumber,
                                      LocalDateTime cancelledAt, String cancelledReason,
                                      List<OrderLine> lines, LocalDateTime createdAt,
                                      LocalDateTime updatedAt) {
         return new Order(id, orderNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, status, deliveryDate, notes,
+                createdBy, createdByName, status, notes,
                 invoiceId, invoiceNumber, cancelledAt, cancelledReason,
                 lines, createdAt, updatedAt);
     }
 
-    public void update(LocalDate deliveryDate, String notes, List<OrderLine> lines) {
+    public void update(String notes, List<OrderLine> lines) {
         if (this.status != OrderStatus.DRAFT) {
             throw new IllegalStateException("Only DRAFT orders can be updated");
-        }
-        Objects.requireNonNull(deliveryDate, "Delivery date cannot be null");
-        if (deliveryDate.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Delivery date must be today or in the future");
         }
         if (lines == null || lines.isEmpty()) {
             throw new IllegalArgumentException("Order must have at least one line");
         }
-        this.deliveryDate = deliveryDate;
         this.notes = notes;
         this.lines.clear();
         this.lines.addAll(lines);
@@ -176,7 +164,6 @@ public class Order {
     public UUID getCreatedBy() { return createdBy; }
     public String getCreatedByName() { return createdByName; }
     public OrderStatus getStatus() { return status; }
-    public LocalDate getDeliveryDate() { return deliveryDate; }
     public String getNotes() { return notes; }
     public BigDecimal getSubtotal() { return subtotal; }
     public UUID getInvoiceId() { return invoiceId; }

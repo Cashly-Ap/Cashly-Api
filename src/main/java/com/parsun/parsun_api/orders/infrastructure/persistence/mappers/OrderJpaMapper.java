@@ -25,7 +25,6 @@ public class OrderJpaMapper {
         entity.setCreatedBy(order.getCreatedBy());
         entity.setCreatedByName(order.getCreatedByName());
         entity.setStatus(order.getStatus().name());
-        entity.setDeliveryDate(order.getDeliveryDate());
         entity.setNotes(order.getNotes());
         entity.setSubtotal(order.getSubtotal());
         entity.setInvoiceId(order.getInvoiceId());
@@ -58,7 +57,6 @@ public class OrderJpaMapper {
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
                 OrderStatus.valueOf(entity.getStatus()),
-                entity.getDeliveryDate(),
                 entity.getNotes(),
                 entity.getInvoiceId(),
                 entity.getInvoiceNumber(),

@@ -45,7 +45,7 @@ public class UpdateOrderUseCase {
                 })
                 .toList();
 
-        order.update(request.deliveryDate(), request.notes(), lines);
+        order.update(request.notes(), lines);
 
         Order saved = orderRepository.save(order);
         return OrderMapper.toDetailResponse(saved);

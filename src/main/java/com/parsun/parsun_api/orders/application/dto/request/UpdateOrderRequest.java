@@ -6,29 +6,25 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public record UpdateOrderRequest(
-        @NotNull(message = "La fecha de entrega es requerida")
-        LocalDate deliveryDate,
-
-        @Size(max = 1000, message = "Las notas deben tener maximo 1000 caracteres")
+        @Size(max = 1000, message = "Notes must be at most 1000 characters")
         String notes,
 
-        @NotEmpty(message = "Se requiere al menos una linea de pedido")
+        @NotEmpty(message = "At least one order line is required")
         @Valid
         List<OrderLineRequest> lines
 ) {
     public record OrderLineRequest(
-            @NotNull(message = "El producto es requerido")
+            @NotNull(message = "Product is required")
             UUID productId,
 
-            @NotNull(message = "La cantidad es requerida")
+            @NotNull(message = "Quantity is required")
             BigDecimal quantity,
 
-            @NotNull(message = "El precio es requerido")
+            @NotNull(message = "Unit price is required")
             BigDecimal unitPrice
     ) {}
 }

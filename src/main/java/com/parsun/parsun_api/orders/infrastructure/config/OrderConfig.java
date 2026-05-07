@@ -7,6 +7,7 @@ import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAcce
 import com.parsun.parsun_api.orders.application.usecases.*;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +20,11 @@ public class OrderConfig {
     public CreateOrderUseCase createOrderUseCase(OrderRepository orderRepository,
                                                    CustomerRepository customerRepository,
                                                    ProductRepository productRepository,
-                                                   UserRepository userRepository) {
-        return new CreateOrderUseCase(orderRepository, customerRepository, productRepository, userRepository);
+                                                   UserRepository userRepository,
+                                                   WarehouseStockRepository warehouseStockRepository,
+                                                   StockMovementRepository stockMovementRepository) {
+        return new CreateOrderUseCase(orderRepository, customerRepository, productRepository,
+                userRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean

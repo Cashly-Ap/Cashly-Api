@@ -10,6 +10,7 @@ import com.parsun.parsun_api.orders.infrastructure.persistence.mappers.OrderJpaM
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,7 +45,9 @@ public class OrderRepositoryAdapter implements OrderRepository {
                                           LocalDate fromDate, LocalDate toDate,
                                           UUID createdBy) {
         String statusStr = status != null ? status.name() : null;
-        return jpaRepository.findAllWithFilters(customerId, statusStr, fromDate, toDate, createdBy)
+        LocalDateTime from = fromDate != null ? fromDate.atStartOfDay() : null;
+        LocalDateTime to = toDate != null ? toDate.atTime(23, 59, 59) : null;
+        return jpaRepository.findAllWithFilters(customerId, statusStr, from, to, createdBy)
                 .stream()
                 .map(OrderJpaMapper::toDomain)
                 .toList();

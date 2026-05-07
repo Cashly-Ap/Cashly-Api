@@ -6,7 +6,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +47,6 @@ public class OrderEntity {
 
     @Column(name = "status", length = 20, nullable = false)
     private String status;
-
-    @Column(name = "delivery_date", nullable = false)
-    private LocalDate deliveryDate;
 
     @Column(name = "notes", length = 1000)
     private String notes;

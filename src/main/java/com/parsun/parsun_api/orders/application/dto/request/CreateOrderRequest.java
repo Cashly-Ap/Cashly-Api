@@ -1,37 +1,47 @@
 package com.parsun.parsun_api.orders.application.dto.request;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public record CreateOrderRequest(
-        @NotNull(message = "El cliente es requerido")
+        @NotNull(message = "Customer is required")
         UUID customerId,
 
-        @NotNull(message = "La fecha de entrega es requerida")
-        LocalDate deliveryDate,
-
-        @Size(max = 1000, message = "Las notas deben tener maximo 1000 caracteres")
+        @Size(max = 1000, message = "Notes must be at most 1000 characters")
         String notes,
 
-        @NotEmpty(message = "Se requiere al menos una linea de pedido")
+        @NotEmpty(message = "At least one order line is required")
         @Valid
         List<OrderLineRequest> lines
 ) {
     public record OrderLineRequest(
-            @NotNull(message = "El producto es requerido")
+            @NotNull(message = "Product is required")
             UUID productId,
 
-            @NotNull(message = "La cantidad es requerida")
+            @NotNull(message = "Quantity is required")
             BigDecimal quantity,
 
-            @NotNull(message = "El precio es requerido")
-            BigDecimal unitPrice
+            @NotNull(message = "Unit price is required")
+            BigDecimal unitPrice,
+
+            @NotEmpty(message = "At least one warehouse allocation is required")
+            @Valid
+            List<WarehouseAllocationRequest> warehouseAllocations
+    ) {}
+
+    public record WarehouseAllocationRequest(
+            @NotNull(message = "Warehouse is required")
+            UUID warehouseId,
+
+            @NotNull(message = "Allocated quantity is required")
+            @Min(value = 1, message = "Allocated quantity must be greater than zero")
+            Integer allocated
     ) {}
 }

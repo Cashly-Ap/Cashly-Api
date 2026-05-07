@@ -15,8 +15,14 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +32,21 @@ public class CreateOrderUseCase {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final StockMovementRepository stockMovementRepository;
 
     public CreateOrderUseCase(OrderRepository orderRepository,
                                CustomerRepository customerRepository,
                                ProductRepository productRepository,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               WarehouseStockRepository warehouseStockRepository,
+                               StockMovementRepository stockMovementRepository) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.warehouseStockRepository = warehouseStockRepository;
+        this.stockMovementRepository = stockMovementRepository;
     }
 
     @Transactional
@@ -49,8 +61,11 @@ public class CreateOrderUseCase {
                 .map(lineRequest -> {
                     Product product = productRepository.findById(lineRequest.productId())
                             .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+
+                    applyStockAllocations(lineRequest, product.getId());
+
                     return OrderLine.create(
-                            product.getId(), // UUID directly
+                            product.getId(),
                             product.getName(),
                             product.getCode(),
                             lineRequest.quantity(),
@@ -59,7 +74,7 @@ public class CreateOrderUseCase {
                 })
                 .toList();
 
-        int year = request.deliveryDate().getYear();
+        int year = LocalDate.now().getYear();
         int sequence = orderRepository.getNextSequenceForYear(year);
         OrderNumber orderNumber = OrderNumber.of(year, sequence);
 
@@ -70,12 +85,39 @@ public class CreateOrderUseCase {
                 customer.getRif().getValue(),
                 user.getId().getValue(),
                 user.getUserName().getValue(),
-                request.deliveryDate(),
                 request.notes(),
                 lines
         );
 
         Order saved = orderRepository.save(order);
         return OrderMapper.toDetailResponse(saved);
+    }
+
+    private void applyStockAllocations(CreateOrderRequest.OrderLineRequest lineRequest, UUID productId) {
+        for (CreateOrderRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
+            WarehouseStock stock = warehouseStockRepository
+                    .findByWarehouseIdAndProductId(allocation.warehouseId(), productId)
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Stock not found for warehouse=" + allocation.warehouseId() + " product=" + productId));
+
+            int previousStock = stock.getQuantity();
+            stock.removeStock(allocation.allocated());
+            int newStock = stock.getQuantity();
+
+            warehouseStockRepository.save(stock);
+
+            StockMovement movement = StockMovement.create(
+                    allocation.warehouseId(),
+                    productId,
+                    MovementType.EXIT,
+                    allocation.allocated(),
+                    previousStock,
+                    newStock,
+                    null,
+                    null,
+                    "Pedido"
+            );
+            stockMovementRepository.save(movement);
+        }
     }
 }
