@@ -6,8 +6,10 @@ import com.parsun.parsun_api.orders.application.dto.request.UpdateOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.application.dto.response.OrderListResponse;
+import com.parsun.parsun_api.orders.application.dto.response.OrderProductResponse;
 import com.parsun.parsun_api.orders.application.usecases.*;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,7 @@ public class OrderController {
     private final CancelOrderUseCase cancelOrderUseCase;
     private final ConvertToInvoiceUseCase convertToInvoiceUseCase;
     private final DeleteOrderUseCase deleteOrderUseCase;
+    private final GetProductsForOrderUseCase getProductsForOrderUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase,
                             GetOrderByIdUseCase getOrderByIdUseCase,
@@ -40,7 +43,8 @@ public class OrderController {
                             ConfirmOrderUseCase confirmOrderUseCase,
                             CancelOrderUseCase cancelOrderUseCase,
                             ConvertToInvoiceUseCase convertToInvoiceUseCase,
-                            DeleteOrderUseCase deleteOrderUseCase) {
+                            DeleteOrderUseCase deleteOrderUseCase,
+                            GetProductsForOrderUseCase getProductsForOrderUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.getOrderByIdUseCase = getOrderByIdUseCase;
         this.getOrdersUseCase = getOrdersUseCase;
@@ -49,6 +53,7 @@ public class OrderController {
         this.cancelOrderUseCase = cancelOrderUseCase;
         this.convertToInvoiceUseCase = convertToInvoiceUseCase;
         this.deleteOrderUseCase = deleteOrderUseCase;
+        this.getProductsForOrderUseCase = getProductsForOrderUseCase;
     }
 
     @PostMapping
@@ -115,5 +120,17 @@ public class OrderController {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteOrderUseCase.execute(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/products")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<PageResponse<OrderProductResponse>> getProductsForOrder(
+            @RequestParam UUID customerId,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        PageResponse<OrderProductResponse> response =
+                getProductsForOrderUseCase.execute(customerId, search, page, size);
+        return ResponseEntity.ok(response);
     }
 }

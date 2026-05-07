@@ -1,10 +1,14 @@
 package com.parsun.parsun_api.orders.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.orders.application.usecases.*;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,5 +57,22 @@ public class OrderConfig {
     @Bean
     public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository) {
         return new DeleteOrderUseCase(orderRepository);
+    }
+
+    @Bean
+    public GetProductsForOrderUseCase getProductsForOrderUseCase(
+            CustomerRepository customerRepository,
+            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
+            ProductRepository productRepository,
+            CategoryRepository categoryRepository,
+            WarehouseStockRepository warehouseStockRepository,
+            WarehouseRepository warehouseRepository) {
+        return new GetProductsForOrderUseCase(
+                customerRepository,
+                customerWarehouseAccessRepository,
+                productRepository,
+                categoryRepository,
+                warehouseStockRepository,
+                warehouseRepository);
     }
 }
