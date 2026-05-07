@@ -23,7 +23,7 @@ public class OrderLineAllocationEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_line_id", nullable = false)
+    @JoinColumn(name = "order_line_id", nullable = false, columnDefinition = "BINARY(16)")
     private OrderLineEntity orderLine;
 
     @Column(name = "warehouse_id", columnDefinition = "BINARY(16)", nullable = false)

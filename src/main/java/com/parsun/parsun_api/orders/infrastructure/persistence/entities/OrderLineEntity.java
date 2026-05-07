@@ -6,8 +6,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +25,7 @@ public class OrderLineEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false, columnDefinition = "BINARY(16)")
     private OrderEntity order;
 
     @Column(name = "product_id", columnDefinition = "BINARY(16)", nullable = false)
@@ -48,5 +48,5 @@ public class OrderLineEntity {
     private BigDecimal lineTotal;
 
     @OneToMany(mappedBy = "orderLine", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<OrderLineAllocationEntity> allocations = new HashSet<>();
+    private List<OrderLineAllocationEntity> allocations = new ArrayList<>();
 }

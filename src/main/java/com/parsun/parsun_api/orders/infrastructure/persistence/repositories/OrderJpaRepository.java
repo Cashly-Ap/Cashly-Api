@@ -1,7 +1,7 @@
 package com.parsun.parsun_api.orders.infrastructure.persistence.repositories;
 
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderEntity;
-import org.springframework.data.jpa.repository.EntityGraph;
+import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderLineEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,8 +13,19 @@ import java.util.UUID;
 
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
-    @EntityGraph(attributePaths = {"lines", "lines.allocations"})
-    Optional<OrderEntity> findWithLinesById(UUID id);
+    @Query("""
+            SELECT DISTINCT o FROM OrderEntity o
+            LEFT JOIN FETCH o.lines
+            WHERE o.id = :id
+            """)
+    Optional<OrderEntity> findWithLinesById(@Param("id") UUID id);
+
+    @Query("""
+            SELECT DISTINCT l FROM OrderLineEntity l
+            LEFT JOIN FETCH l.allocations
+            WHERE l.order.id = :orderId
+            """)
+    List<OrderLineEntity> findWithAllocationsForOrder(@Param("orderId") UUID orderId);
 
     @Query("""
             SELECT o FROM OrderEntity o LEFT JOIN FETCH o.lines
