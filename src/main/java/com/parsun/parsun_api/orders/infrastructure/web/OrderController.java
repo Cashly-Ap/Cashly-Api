@@ -127,10 +127,13 @@ public class OrderController {
     public ResponseEntity<PageResponse<OrderProductResponse>> getProductsForOrder(
             @RequestParam UUID customerId,
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Boolean composite,
+            @RequestParam(required = false, defaultValue = "true") Boolean withStock,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         PageResponse<OrderProductResponse> response =
-                getProductsForOrderUseCase.execute(customerId, search, page, size);
+                getProductsForOrderUseCase.execute(customerId, search, categoryId, composite, withStock, page, size);
         return ResponseEntity.ok(response);
     }
 }

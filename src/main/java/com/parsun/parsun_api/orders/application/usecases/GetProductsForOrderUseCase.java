@@ -50,7 +50,8 @@ public class GetProductsForOrderUseCase {
 
     @Transactional(readOnly = true)
     public PageResponse<OrderProductResponse> execute(UUID customerId, String search,
-                                                       int page, int size) {
+                                                       UUID categoryId, Boolean composite,
+                                                       Boolean withStock, int page, int size) {
         Customer customer = customerRepository.findById(new CustomerId(customerId))
                 .orElseThrow(() -> new CustomerNotFoundException("Cliente no encontrado: " + customerId));
 
@@ -65,8 +66,8 @@ public class GetProductsForOrderUseCase {
                 .map(opt -> opt.get())
                 .collect(Collectors.toMap(Warehouse::getId, Function.identity()));
 
-        PageResponse<Product> productsPage = productRepository.findAllWithFilters(
-                search, null, true, null, page, size, "name", "asc");
+        PageResponse<Product> productsPage = productRepository.findAllForOrder(
+                search, categoryId, composite, withStock, allowedWarehouseIds, page, size);
 
         List<OrderProductResponse> content = productsPage.content().stream()
                 .map(product -> toResponse(product, customer, warehouseMap))

@@ -104,6 +104,20 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
+    public PageResponse<Product> findAllForOrder(String search, UUID categoryId, Boolean composite,
+                                                  Boolean withStock, Set<UUID> allowedWarehouseIds,
+                                                  int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        boolean filterByStock = Boolean.TRUE.equals(withStock);
+
+        Page<ProductEntity> result = springDataRepository.findAllForOrder(
+                search, categoryId, composite, filterByStock, allowedWarehouseIds, pageable);
+
+        Page<Product> mapped = result.map(ProductEntity::toDomain);
+        return PageResponse.from(mapped);
+    }
+
+    @Override
     public void delete(UUID id) {
         springDataRepository.deleteById(id);
     }
