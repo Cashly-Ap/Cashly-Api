@@ -1,0 +1,63 @@
+package com.parsun.parsun_api.reports.orders.infrastructure.web;
+
+import com.parsun.parsun_api.orders.application.dto.response.OrderListResponse;
+import com.parsun.parsun_api.orders.application.usecases.GetOrdersUseCase;
+import com.parsun.parsun_api.reports.orders.application.usecases.GenerateOrderPdfUseCase;
+import com.parsun.parsun_api.reports.orders.application.usecases.GenerateOrdersReportPdfUseCase;
+import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/reports/orders")
+@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+public class OrdersReportController {
+
+    private final GenerateOrderPdfUseCase generateOrderPdfUseCase;
+    private final GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase;
+    private final GetOrdersUseCase getOrdersUseCase;
+
+    public OrdersReportController(GenerateOrderPdfUseCase generateOrderPdfUseCase,
+                                   GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase,
+                                   GetOrdersUseCase getOrdersUseCase) {
+        this.generateOrderPdfUseCase = generateOrderPdfUseCase;
+        this.generateOrdersReportPdfUseCase = generateOrdersReportPdfUseCase;
+        this.getOrdersUseCase = getOrdersUseCase;
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getOrderPdf(@PathVariable UUID id) {
+        byte[] pdf = generateOrderPdfUseCase.execute(id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"pedido-" + id + ".pdf\"")
+                .body(pdf);
+    }
+
+    @GetMapping("/pdf")
+    public ResponseEntity<byte[]> getOrdersReportPdf(
+            @RequestParam(required = false) UUID customerId,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(required = false) UUID createdBy,
+            @RequestParam(defaultValue = "simple") String mode) {
+
+        List<OrderListResponse> orders = getOrdersUseCase.execute(customerId, status, fromDate, toDate, createdBy);
+        byte[] pdf = generateOrdersReportPdfUseCase.execute(orders, mode);
+
+        String filename = "reporte-pedidos-" + LocalDate.now().toString() + ".pdf";
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .body(pdf);
+    }
+}
