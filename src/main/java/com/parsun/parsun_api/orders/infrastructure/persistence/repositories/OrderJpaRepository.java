@@ -28,20 +28,24 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
     List<OrderLineEntity> findWithAllocationsForOrder(@Param("orderId") UUID orderId);
 
     @Query("""
-            SELECT o FROM OrderEntity o LEFT JOIN FETCH o.lines
-            WHERE (:customerId IS NULL OR o.customerId = :customerId)
+            SELECT DISTINCT o FROM OrderEntity o
+            LEFT JOIN FETCH o.lines l
+            LEFT JOIN l.product p
+            WHERE (:dateFrom IS NULL OR o.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR o.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR o.customerId = :customerId)
             AND (:status IS NULL OR o.status = :status)
-            AND (:fromDate IS NULL OR o.createdAt >= :fromDate)
-            AND (:toDate IS NULL OR o.createdAt <= :toDate)
-            AND (:createdBy IS NULL OR o.createdBy = :createdBy)
+            AND (:productId IS NULL OR l.productId = :productId)
+            AND (:categoryId IS NULL OR p.categoryId = :categoryId)
             ORDER BY o.createdAt DESC
             """)
     List<OrderEntity> findAllWithFilters(
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId,
             @Param("status") String status,
-            @Param("fromDate") LocalDateTime fromDate,
-            @Param("toDate") LocalDateTime toDate,
-            @Param("createdBy") UUID createdBy
+            @Param("productId") UUID productId,
+            @Param("categoryId") UUID categoryId
     );
 
 }

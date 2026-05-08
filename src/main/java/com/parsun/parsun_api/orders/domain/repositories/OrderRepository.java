@@ -12,9 +12,9 @@ import java.util.UUID;
 public interface OrderRepository {
     Order save(Order order);
     Optional<Order> findById(OrderId id);
-    List<Order> findAllWithFilters(UUID customerId, OrderStatus status,
-                                   LocalDate fromDate, LocalDate toDate,
-                                   UUID createdBy);
+    List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
+                                   UUID customerId, String status,
+                                   UUID productId, UUID categoryId);
     int getNextSequenceForYear(int year);
     void deleteById(OrderId id);
 }

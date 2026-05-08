@@ -17,10 +17,10 @@ public class GetOrdersUseCase {
         this.orderRepository = orderRepository;
     }
 
-    public List<OrderListResponse> execute(UUID customerId, OrderStatus status,
-                                           LocalDate fromDate, LocalDate toDate,
-                                           UUID createdBy) {
-        return orderRepository.findAllWithFilters(customerId, status, fromDate, toDate, createdBy)
+    public List<OrderListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
+                                           UUID customerId, String status,
+                                           UUID productId, UUID categoryId) {
+        return orderRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId)
                 .stream()
                 .map(OrderMapper::toListResponse)
                 .toList();

@@ -42,13 +42,12 @@ public class OrderRepositoryAdapter implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAllWithFilters(UUID customerId, OrderStatus status,
-                                          LocalDate fromDate, LocalDate toDate,
-                                          UUID createdBy) {
-        String statusStr = status != null ? status.name() : null;
-        LocalDateTime from = fromDate != null ? fromDate.atStartOfDay() : null;
-        LocalDateTime to = toDate != null ? toDate.atTime(23, 59, 59) : null;
-        return jpaRepository.findAllWithFilters(customerId, statusStr, from, to, createdBy)
+    public List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
+                                           UUID customerId, String status,
+                                           UUID productId, UUID categoryId) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        return jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId)
                 .stream()
                 .map(OrderJpaMapper::toDomain)
                 .toList();

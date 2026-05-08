@@ -44,14 +44,16 @@ public class OrdersReportController {
 
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> getOrdersReportPdf(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
-            @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-            @RequestParam(required = false) UUID createdBy,
-            @RequestParam(defaultValue = "simple") String mode) {
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        List<OrderListResponse> orders = getOrdersUseCase.execute(customerId, status, fromDate, toDate, createdBy);
+        List<OrderListResponse> orders = getOrdersUseCase.execute(
+                dateFrom, dateTo, customerId, status, productId, categoryId);
         byte[] pdf = generateOrdersReportPdfUseCase.execute(orders, mode);
 
         String filename = "reporte-pedidos-" + LocalDate.now().toString() + ".pdf";
