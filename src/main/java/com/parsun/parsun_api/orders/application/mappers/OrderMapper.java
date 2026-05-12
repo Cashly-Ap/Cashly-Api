@@ -4,6 +4,7 @@ import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse
 import com.parsun.parsun_api.orders.application.dto.response.OrderListResponse;
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
+import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,10 @@ public class OrderMapper {
     private OrderMapper() {}
 
     public static OrderDetailResponse toDetailResponse(Order order,
-                                                        Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap) {
+                                                         Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                         Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
         List<OrderDetailResponse.OrderLineDetailResponse> lineResponses = order.getLines().stream()
-                .map(line -> toLineDetailResponse(line, enrichmentMap))
+                .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks))
                 .toList();
 
         return new OrderDetailResponse(
@@ -45,7 +47,7 @@ public class OrderMapper {
     }
 
     public static OrderDetailResponse toDetailResponse(Order order) {
-        return toDetailResponse(order, Map.of());
+        return toDetailResponse(order, Map.of(), Map.of());
     }
 
     public static OrderListResponse toListResponse(Order order) {
@@ -63,7 +65,8 @@ public class OrderMapper {
     }
 
     private static OrderDetailResponse.OrderLineDetailResponse toLineDetailResponse(
-            OrderLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap) {
+            OrderLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
 
         List<OrderDetailResponse.OrderLineDetailResponse.AllocationDetail> allocationDetails =
                 line.getAllocations().stream()
@@ -83,6 +86,21 @@ public class OrderMapper {
                         })
                         .toList();
 
+        List<OrderDetailResponse.WarehouseStockDetail> stockDetails =
+                productStocks.getOrDefault(line.getProductId(), List.of()).stream()
+                        .map(s -> {
+                            WarehouseProductKey key = new WarehouseProductKey(s.warehouseId(), line.getProductId());
+                            WarehouseEnrichment enrichment = enrichmentMap.get(key);
+                            int quantity = enrichment != null ? enrichment.availableStock() : s.quantity();
+                            return new OrderDetailResponse.WarehouseStockDetail(
+                                    s.warehouseId(),
+                                    s.warehouseCode(),
+                                    s.warehouseName(),
+                                    quantity
+                            );
+                        })
+                        .toList();
+
         return new OrderDetailResponse.OrderLineDetailResponse(
                 line.getId().value(),
                 line.getProductId(),
@@ -91,7 +109,8 @@ public class OrderMapper {
                 line.getQuantity(),
                 line.getUnitPrice(),
                 line.getLineTotal(),
-                allocationDetails
+                allocationDetails,
+                stockDetails
         );
     }
 }

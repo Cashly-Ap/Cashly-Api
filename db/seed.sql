@@ -11,6 +11,7 @@
 --   03_categories.sql  - Product categories
 --   04_warehouses.sql  - Warehouses and customer warehouse access
 --   05_products.sql    - Simple/composite products, stock, movements
+--   06_price_types.sql - Price types (Base, Mayor, Especial)
 -- =============================================================================
 
 SET NAMES utf8mb4;
@@ -22,5 +23,6 @@ SOURCE /seeds/02_customers.sql;
 SOURCE /seeds/03_categories.sql;
 SOURCE /seeds/04_warehouses.sql;
 SOURCE /seeds/05_products.sql;
+SOURCE /seeds/06_price_types.sql;
 
 SET FOREIGN_KEY_CHECKS = 1;

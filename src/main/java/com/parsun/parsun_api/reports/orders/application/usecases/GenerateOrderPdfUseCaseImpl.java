@@ -46,7 +46,7 @@ public class GenerateOrderPdfUseCaseImpl implements GenerateOrderPdfUseCase {
         Map<OrderMapper.WarehouseProductKey, OrderMapper.WarehouseEnrichment> enrichmentMap =
                 buildEnrichmentMap(order);
 
-        OrderDetailResponse orderDetail = OrderMapper.toDetailResponse(order, enrichmentMap);
+        OrderDetailResponse orderDetail = OrderMapper.toDetailResponse(order, enrichmentMap, Map.of());
 
         return orderPdfPort.generatePdf(orderDetail);
     }

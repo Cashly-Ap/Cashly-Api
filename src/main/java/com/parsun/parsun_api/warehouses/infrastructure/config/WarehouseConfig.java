@@ -1,6 +1,8 @@
 package com.parsun.parsun_api.warehouses.infrastructure.config;
 
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 import com.parsun.parsun_api.warehouses.application.usecases.*;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
@@ -81,8 +83,16 @@ public class WarehouseConfig {
 
     @Bean
     public GetStockMovementsUseCase getStockMovementsUseCase(WarehouseRepository warehouseRepository,
-                                                              StockMovementRepository stockMovementRepository,
-                                                              ProductRepository productRepository) {
+                                                               StockMovementRepository stockMovementRepository,
+                                                               ProductRepository productRepository) {
         return new GetStockMovementsUseCase(warehouseRepository, stockMovementRepository, productRepository);
+    }
+
+    @Bean
+    public StockEnrichmentService stockEnrichmentService(WarehouseStockRepository warehouseStockRepository,
+                                                           WarehouseRepository warehouseRepository,
+                                                           CustomerWarehouseAccessRepository customerWarehouseAccessRepository) {
+        return new StockEnrichmentService(warehouseStockRepository, warehouseRepository,
+                customerWarehouseAccessRepository);
     }
 }

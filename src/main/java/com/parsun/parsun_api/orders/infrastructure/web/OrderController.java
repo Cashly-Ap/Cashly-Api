@@ -8,7 +8,6 @@ import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse
 import com.parsun.parsun_api.orders.application.dto.response.OrderListResponse;
 import com.parsun.parsun_api.orders.application.dto.response.OrderProductResponse;
 import com.parsun.parsun_api.orders.application.usecases.*;
-import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -69,12 +68,13 @@ public class OrderController {
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<List<OrderListResponse>> getAll(
-            @RequestParam(required = false) UUID customerId,
-            @RequestParam(required = false) OrderStatus status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-            @RequestParam(required = false) UUID createdBy) {
-        List<OrderListResponse> orders = getOrdersUseCase.execute(customerId, status, fromDate, toDate, createdBy);
+            @RequestParam(required = false) UUID customerId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) UUID categoryId) {
+        List<OrderListResponse> orders = getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId);
         return ResponseEntity.ok(orders);
     }
 
@@ -110,8 +110,10 @@ public class OrderController {
 
     @PostMapping("/{id}/convert-to-invoice")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(@PathVariable UUID id) {
-        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id);
+    public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(@PathVariable UUID id,
+                                                                      Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id, userId);
         return ResponseEntity.ok(response);
     }
 

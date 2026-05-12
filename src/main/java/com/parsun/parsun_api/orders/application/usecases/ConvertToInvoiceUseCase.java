@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.orders.application.usecases;
 
+import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
+import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
+import com.parsun.parsun_api.invoices.application.usecases.CreateInvoiceUseCase;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
@@ -12,28 +15,39 @@ import java.util.UUID;
 public class ConvertToInvoiceUseCase {
 
     private final OrderRepository orderRepository;
+    private final CreateInvoiceUseCase createInvoiceUseCase;
 
-    public ConvertToInvoiceUseCase(OrderRepository orderRepository) {
+    public ConvertToInvoiceUseCase(OrderRepository orderRepository,
+                                    CreateInvoiceUseCase createInvoiceUseCase) {
         this.orderRepository = orderRepository;
+        this.createInvoiceUseCase = createInvoiceUseCase;
     }
 
     @Transactional
-    public ConvertToInvoiceResponse execute(UUID orderId) {
+    public ConvertToInvoiceResponse execute(UUID orderId, UUID authenticatedUserId) {
         Order order = orderRepository.findById(OrderId.of(orderId))
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
-        UUID invoiceId = UUID.randomUUID();
-        String invoiceNumber = "INV-STUB-" + invoiceId.toString().substring(0, 8).toUpperCase();
+        CreateInvoiceRequest request = new CreateInvoiceRequest(
+                order.getId().value(),
+                null,
+                null,
+                "CASH",
+                null,
+                null
+        );
 
-        order.markAsInvoiced(invoiceId, invoiceNumber);
+        InvoiceDetailResponse invoice = createInvoiceUseCase.execute(request, authenticatedUserId);
+
+        order.markAsInvoiced(invoice.id(), invoice.invoiceNumber());
         orderRepository.save(order);
 
         return new ConvertToInvoiceResponse(
                 order.getId().value(),
                 order.getOrderNumber().value(),
                 order.getStatus().name(),
-                invoiceId,
-                invoiceNumber
+                invoice.id(),
+                invoice.invoiceNumber()
         );
     }
 }

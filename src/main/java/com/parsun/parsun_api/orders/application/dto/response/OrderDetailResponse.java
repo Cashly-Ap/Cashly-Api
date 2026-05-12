@@ -32,7 +32,8 @@ public record OrderDetailResponse(
             BigDecimal quantity,
             BigDecimal unitPrice,
             BigDecimal lineTotal,
-            List<AllocationDetail> warehouseAllocations
+            List<AllocationDetail> warehouseAllocations,
+            List<WarehouseStockDetail> warehouseStocks
     ) {
         public record AllocationDetail(
                 UUID warehouseId,
@@ -42,4 +43,11 @@ public record OrderDetailResponse(
                 int availableStock
         ) {}
     }
+
+    public record WarehouseStockDetail(
+            UUID warehouseId,
+            String warehouseCode,
+            String warehouseName,
+            int quantity
+    ) {}
 }

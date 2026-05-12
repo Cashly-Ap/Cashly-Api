@@ -4,10 +4,12 @@ import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.parsun.parsun_api.invoices.application.usecases.CreateInvoiceUseCase;
 import com.parsun.parsun_api.orders.application.usecases.*;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
@@ -29,9 +31,8 @@ public class OrderConfig {
 
     @Bean
     public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository,
-                                                    WarehouseStockRepository warehouseStockRepository,
-                                                    WarehouseRepository warehouseRepository) {
-        return new GetOrderByIdUseCase(orderRepository, warehouseStockRepository, warehouseRepository);
+                                                     StockEnrichmentService stockEnrichmentService) {
+        return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService);
     }
 
     @Bean
@@ -61,8 +62,9 @@ public class OrderConfig {
     }
 
     @Bean
-    public ConvertToInvoiceUseCase convertToInvoiceUseCase(OrderRepository orderRepository) {
-        return new ConvertToInvoiceUseCase(orderRepository);
+    public ConvertToInvoiceUseCase convertToInvoiceUseCase(OrderRepository orderRepository,
+                                                            CreateInvoiceUseCase createInvoiceUseCase) {
+        return new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase);
     }
 
     @Bean

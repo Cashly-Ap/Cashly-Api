@@ -1,0 +1,115 @@
+package com.parsun.parsun_api.invoices.application.usecases;
+
+import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
+import com.parsun.parsun_api.invoices.domain.entities.Invoice;
+import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
+import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("GetInvoicesUseCase Unit Tests")
+class GetInvoicesUseCaseUnitTest {
+
+    @Mock
+    private InvoiceRepository invoiceRepository;
+
+    @InjectMocks
+    private GetInvoicesUseCase getInvoicesUseCase;
+
+    @Test
+    void should_ReturnAllInvoices_When_NoFiltersProvided() {
+        Invoice invoice1 = buildInvoice(UUID.randomUUID());
+        Invoice invoice2 = buildInvoice(UUID.randomUUID());
+
+        when(invoiceRepository.findAllWithFilters(null, null, null, null))
+                .thenReturn(List.of(invoice1, invoice2));
+
+        List<InvoiceListResponse> result = getInvoicesUseCase.execute(null, null, null, null);
+
+        assertEquals(2, result.size());
+        verify(invoiceRepository).findAllWithFilters(null, null, null, null);
+    }
+
+    @Test
+    void should_ReturnEmptyList_When_NoInvoicesMatch() {
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any()))
+                .thenReturn(List.of());
+
+        List<InvoiceListResponse> result = getInvoicesUseCase.execute(
+                LocalDate.now(), LocalDate.now(), UUID.randomUUID(), "DRAFT");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void should_PassFiltersToRepository_When_FiltersProvided() {
+        LocalDate dateFrom = LocalDate.of(2026, 1, 1);
+        LocalDate dateTo = LocalDate.of(2026, 12, 31);
+        UUID customerId = UUID.randomUUID();
+        String status = "PAID";
+
+        when(invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, status))
+                .thenReturn(List.of());
+
+        getInvoicesUseCase.execute(dateFrom, dateTo, customerId, status);
+
+        verify(invoiceRepository).findAllWithFilters(dateFrom, dateTo, customerId, status);
+    }
+
+    @Test
+    void should_MapEachInvoiceToListResponse_When_InvoicesReturned() {
+        Invoice invoice = buildInvoice(UUID.randomUUID());
+
+        when(invoiceRepository.findAllWithFilters(null, null, null, null))
+                .thenReturn(List.of(invoice));
+
+        List<InvoiceListResponse> result = getInvoicesUseCase.execute(null, null, null, null);
+
+        assertEquals(1, result.size());
+        assertNotNull(result.get(0).id());
+        assertNotNull(result.get(0).invoiceNumber());
+    }
+
+    private Invoice buildInvoice(UUID id) {
+        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A", "PROD-001",
+                BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Invoice.reconstitute(
+                InvoiceId.of(id),
+                InvoiceNumber.of(2026, 1),
+                UUID.randomUUID(),
+                "Customer Name",
+                "J-12345678-9",
+                UUID.randomUUID(),
+                "User Name",
+                null,
+                null,
+                InvoiceStatus.DRAFT,
+                PaymentType.CASH,
+                null,
+                null,
+                null,
+                List.of(line),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+}

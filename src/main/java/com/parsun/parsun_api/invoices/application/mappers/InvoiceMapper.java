@@ -1,0 +1,121 @@
+package com.parsun.parsun_api.invoices.application.mappers;
+
+import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
+import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
+import com.parsun.parsun_api.invoices.domain.entities.Invoice;
+import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
+import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
+import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+public class InvoiceMapper {
+
+    public record WarehouseProductKey(UUID warehouseId, UUID productId) {}
+
+    public record WarehouseEnrichment(String code, String name, int availableStock) {}
+
+    private InvoiceMapper() {}
+
+    public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
+                                                          Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+        List<InvoiceDetailResponse.InvoiceLineDetailResponse> lineResponses = invoice.getLines().stream()
+                .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks))
+                .toList();
+
+        return new InvoiceDetailResponse(
+                invoice.getId().value(),
+                invoice.getInvoiceNumber().value(),
+                invoice.getCustomerId(),
+                invoice.getCustomerName(),
+                invoice.getCustomerRif(),
+                invoice.getCreatedBy(),
+                invoice.getCreatedByName(),
+                invoice.getOrderId(),
+                invoice.getOrderNumber(),
+                invoice.getStatus().name(),
+                invoice.getPaymentType().name(),
+                invoice.getNotes(),
+                invoice.getSubtotal(),
+                invoice.getCancelledAt(),
+                invoice.getCancelledReason(),
+                invoice.getCreatedAt(),
+                invoice.getUpdatedAt(),
+                lineResponses
+        );
+    }
+
+    public static InvoiceDetailResponse toDetailResponse(Invoice invoice) {
+        return toDetailResponse(invoice, Map.of(), Map.of());
+    }
+
+    public static InvoiceListResponse toListResponse(Invoice invoice) {
+        return new InvoiceListResponse(
+                invoice.getId().value(),
+                invoice.getInvoiceNumber().value(),
+                invoice.getCustomerId(),
+                invoice.getCustomerName(),
+                invoice.getStatus().name(),
+                invoice.getPaymentType().name(),
+                invoice.getSubtotal(),
+                invoice.getLines().size(),
+                invoice.getOrderId(),
+                invoice.getOrderNumber(),
+                invoice.getCreatedAt()
+        );
+    }
+
+    private static InvoiceDetailResponse.InvoiceLineDetailResponse toLineDetailResponse(
+            InvoiceLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+
+        List<InvoiceDetailResponse.WarehouseAllocationResponse> allocationDetails =
+                line.getAllocations().stream()
+                        .map(a -> {
+                            WarehouseProductKey key = new WarehouseProductKey(a.getWarehouseId(), line.getProductId());
+                            WarehouseEnrichment enrichment = enrichmentMap.get(key);
+                            String code = enrichment != null ? enrichment.code() : null;
+                            String name = enrichment != null ? enrichment.name() : null;
+                            int availableStock = enrichment != null ? enrichment.availableStock() : 0;
+                            return new InvoiceDetailResponse.WarehouseAllocationResponse(
+                                    a.getId(),
+                                    a.getWarehouseId(),
+                                    code,
+                                    name,
+                                    availableStock,
+                                    a.getAllocated()
+                            );
+                        })
+                        .toList();
+
+        List<InvoiceDetailResponse.WarehouseStockDetail> stockDetails =
+                productStocks.getOrDefault(line.getProductId(), List.of()).stream()
+                        .map(s -> {
+                            WarehouseProductKey key = new WarehouseProductKey(s.warehouseId(), line.getProductId());
+                            WarehouseEnrichment enrichment = enrichmentMap.get(key);
+                            int quantity = enrichment != null ? enrichment.availableStock() : s.quantity();
+                            return new InvoiceDetailResponse.WarehouseStockDetail(
+                                    s.warehouseId(),
+                                    s.warehouseCode(),
+                                    s.warehouseName(),
+                                    quantity
+                            );
+                        })
+                        .toList();
+
+        return new InvoiceDetailResponse.InvoiceLineDetailResponse(
+                line.getId().value(),
+                line.getProductId(),
+                line.getProductName(),
+                line.getProductCode(),
+                line.getQuantity(),
+                line.getUnitPrice(),
+                line.getLineTotal(),
+                allocationDetails,
+                stockDetails
+        );
+    }
+}
