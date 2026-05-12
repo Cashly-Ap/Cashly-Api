@@ -78,15 +78,15 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             // Table
             float[] columnWidths = detailed
-                    ? new float[]{2f, 3f, 2f, 1.5f, 2f, 2f, 1.5f}
-                    : new float[]{2f, 3f, 2f, 2f, 2f};
+                    ? new float[]{2f, 3f, 1.5f, 2f, 2f, 1.5f}
+                    : new float[]{2f, 3f, 2f, 2f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
             // Headers
             String[] headers = detailed
-                    ? new String[]{"N° Pedido", "Cliente", "Estado", "Líneas", "Factura", "Total", "Fecha"}
-                    : new String[]{"N° Pedido", "Cliente", "Estado", "Total", "Fecha"};
+                    ? new String[]{"N° Pedido", "Cliente", "Líneas", "Factura", "Total", "Fecha"}
+                    : new String[]{"N° Pedido", "Cliente", "Total", "Fecha"};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
@@ -105,7 +105,6 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
                 addCell(table, order.orderNumber(), regular, rowColor, TextAlignment.LEFT);
                 addCell(table, order.customerName(), regular, rowColor, TextAlignment.LEFT);
-                addCell(table, order.status(), regular, rowColor, getStatusAlignment(order.status()));
 
                 if (detailed) {
                     addCell(table, String.valueOf(order.lineCount()), regular, rowColor, TextAlignment.CENTER);
