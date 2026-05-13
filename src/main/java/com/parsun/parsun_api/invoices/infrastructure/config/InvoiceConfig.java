@@ -63,6 +63,11 @@ public class InvoiceConfig {
     }
 
     @Bean
+    public ConfirmInvoiceUseCase confirmInvoiceUseCase(InvoiceRepository invoiceRepository) {
+        return new ConfirmInvoiceUseCase(invoiceRepository);
+    }
+
+    @Bean
     public DeleteInvoiceUseCase deleteInvoiceUseCase(InvoiceRepository invoiceRepository,
                                                       WarehouseStockRepository warehouseStockRepository,
                                                       StockMovementRepository stockMovementRepository) {

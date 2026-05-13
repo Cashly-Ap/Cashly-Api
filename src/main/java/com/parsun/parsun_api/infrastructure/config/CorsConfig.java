@@ -13,7 +13,7 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${cors.allowed-origins:http://localhost:4200}")
+    @Value("${cors.allowed-origins:}")
     private String allowedOrigins;
 
     @Value("${cors.allowed-methods:GET,POST,PUT,DELETE,PATCH,OPTIONS}")
@@ -32,8 +32,26 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
-        configuration.setAllowedOrigins(origins);
+        // Always allow common localhost origins with wildcard patterns
+        // This covers http://localhost:4200, http://localhost:8080, http://127.0.0.1:*, etc.
+        configuration.addAllowedOriginPattern("http://localhost:*");
+        configuration.addAllowedOriginPattern("http://127.0.0.1:*");
+        configuration.addAllowedOriginPattern("http://[::1]:*");
+        
+        // Also add any specific origins configured via property/env var
+        if (allowedOrigins != null && !allowedOrigins.isBlank()) {
+            List<String> origins = Arrays.asList(allowedOrigins.split(","));
+            for (String origin : origins) {
+                String trimmed = origin.trim();
+                if (!trimmed.isEmpty()) {
+                    if (trimmed.contains("*")) {
+                        configuration.addAllowedOriginPattern(trimmed);
+                    } else {
+                        configuration.addAllowedOrigin(trimmed);
+                    }
+                }
+            }
+        }
         
         List<String> methods = Arrays.asList(allowedMethods.split(","));
         configuration.setAllowedMethods(methods);

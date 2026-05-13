@@ -27,7 +27,9 @@ import com.parsun.parsun_api.reports.orders.application.port.OrderPdfPort;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class OrderPdfGenerator implements OrderPdfPort {
 
@@ -154,9 +156,9 @@ public class OrderPdfGenerator implements OrderPdfPort {
 
             addTableCell(table, line.productCode() != null ? line.productCode() : "-", regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, line.productName(), regular, rowBg, TextAlignment.LEFT);
-            addTableCell(table, line.quantity().toPlainString(), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, "$ " + line.unitPrice().toPlainString(), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + line.lineTotal().toPlainString(), regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table, formatDecimal(line.quantity()), regular, rowBg, TextAlignment.CENTER);
+            addTableCell(table, "$ " + formatDecimal(line.unitPrice()), regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(line.lineTotal()), regular, rowBg, TextAlignment.RIGHT);
         }
 
         return table;
@@ -170,9 +172,9 @@ public class OrderPdfGenerator implements OrderPdfPort {
         table.setMarginTop(8);
         table.setBorder(new SolidBorder(BORDER_COLOR, 1));
 
-        addTotalsRow(table, "SUBTOTAL:", "$ " + order.subtotal().toPlainString(), bold, regular, null);
+        addTotalsRow(table, "SUBTOTAL:", "$ " + formatDecimal(order.subtotal()), bold, regular, null);
         addTotalsRow(table, "TOTAL PAGADO:", "$ 0,00", bold, regular, COLOR_GREEN);
-        addTotalsRow(table, "SALDO PENDIENTE:", "$ " + order.subtotal().toPlainString(), bold, regular, COLOR_RED);
+        addTotalsRow(table, "SALDO PENDIENTE:", "$ " + formatDecimal(order.subtotal()), bold, regular, COLOR_RED);
 
         return table;
     }
@@ -192,6 +194,10 @@ public class OrderPdfGenerator implements OrderPdfPort {
                 .setPadding(6)
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.RIGHT));
+    }
+
+    private static String formatDecimal(BigDecimal value) {
+        return String.format(Locale.US, "%.2f", value);
     }
 
     private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {

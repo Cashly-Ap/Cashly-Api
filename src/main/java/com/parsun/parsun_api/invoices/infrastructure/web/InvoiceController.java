@@ -28,21 +28,24 @@ public class InvoiceController {
     private final CancelInvoiceUseCase cancelInvoiceUseCase;
     private final DuplicateInvoiceUseCase duplicateInvoiceUseCase;
     private final UpdateInvoiceUseCase updateInvoiceUseCase;
+    private final ConfirmInvoiceUseCase confirmInvoiceUseCase;
     private final DeleteInvoiceUseCase deleteInvoiceUseCase;
 
     public InvoiceController(CreateInvoiceUseCase createInvoiceUseCase,
                               GetInvoiceByIdUseCase getInvoiceByIdUseCase,
                               GetInvoicesUseCase getInvoicesUseCase,
-                              CancelInvoiceUseCase cancelInvoiceUseCase,
-                              DuplicateInvoiceUseCase duplicateInvoiceUseCase,
-                              UpdateInvoiceUseCase updateInvoiceUseCase,
-                              DeleteInvoiceUseCase deleteInvoiceUseCase) {
+                               CancelInvoiceUseCase cancelInvoiceUseCase,
+                               DuplicateInvoiceUseCase duplicateInvoiceUseCase,
+                               UpdateInvoiceUseCase updateInvoiceUseCase,
+                               ConfirmInvoiceUseCase confirmInvoiceUseCase,
+                               DeleteInvoiceUseCase deleteInvoiceUseCase) {
         this.createInvoiceUseCase = createInvoiceUseCase;
         this.getInvoiceByIdUseCase = getInvoiceByIdUseCase;
         this.getInvoicesUseCase = getInvoicesUseCase;
         this.cancelInvoiceUseCase = cancelInvoiceUseCase;
         this.duplicateInvoiceUseCase = duplicateInvoiceUseCase;
         this.updateInvoiceUseCase = updateInvoiceUseCase;
+        this.confirmInvoiceUseCase = confirmInvoiceUseCase;
         this.deleteInvoiceUseCase = deleteInvoiceUseCase;
     }
 
@@ -94,6 +97,13 @@ public class InvoiceController {
     public ResponseEntity<InvoiceDetailResponse> update(@PathVariable UUID id,
                                                          @Valid @RequestBody UpdateInvoiceRequest request) {
         InvoiceDetailResponse response = updateInvoiceUseCase.execute(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/confirm")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<InvoiceDetailResponse> confirm(@PathVariable UUID id) {
+        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 

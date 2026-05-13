@@ -24,9 +24,11 @@ import com.parsun.parsun_api.reports.orders.application.port.OrdersReportPdfPort
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
@@ -111,7 +113,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
                     addCell(table, order.invoiceId() != null ? "Sí" : "-", regular, rowColor, TextAlignment.CENTER);
                 }
 
-                addCell(table, "$" + order.subtotal().toPlainString(), regular, rowColor, TextAlignment.RIGHT);
+                addCell(table, "$" + formatDecimal(order.subtotal()), regular, rowColor, TextAlignment.RIGHT);
                 addCell(table, order.createdAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), regular, rowColor, TextAlignment.CENTER);
             }
 
@@ -154,6 +156,10 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
             throw new RuntimeException("Error generating orders report PDF", e);
         }
         return baos.toByteArray();
+    }
+
+    private static String formatDecimal(BigDecimal value) {
+        return String.format(Locale.US, "%.2f", value);
     }
 
     private TextAlignment getStatusAlignment(String status) {
