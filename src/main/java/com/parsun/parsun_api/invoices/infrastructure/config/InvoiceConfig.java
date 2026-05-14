@@ -21,10 +21,9 @@ public class InvoiceConfig {
                                                        CustomerRepository customerRepository,
                                                        UserRepository userRepository,
                                                        ProductRepository productRepository,
-                                                       WarehouseStockRepository warehouseStockRepository,
-                                                       StockMovementRepository stockMovementRepository) {
+                                                       WarehouseStockRepository warehouseStockRepository) {
         return new CreateInvoiceUseCase(invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository, stockMovementRepository);
+                userRepository, productRepository, warehouseStockRepository);
     }
 
     @Bean
@@ -56,22 +55,22 @@ public class InvoiceConfig {
     public UpdateInvoiceUseCase updateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                                        ProductRepository productRepository,
                                                        WarehouseStockRepository warehouseStockRepository,
-                                                       StockMovementRepository stockMovementRepository,
                                                        StockEnrichmentService stockEnrichmentService) {
         return new UpdateInvoiceUseCase(invoiceRepository, productRepository, warehouseStockRepository,
-                stockMovementRepository, stockEnrichmentService);
+                stockEnrichmentService);
     }
 
     @Bean
-    public ConfirmInvoiceUseCase confirmInvoiceUseCase(InvoiceRepository invoiceRepository) {
-        return new ConfirmInvoiceUseCase(invoiceRepository);
+    public ConfirmInvoiceUseCase confirmInvoiceUseCase(InvoiceRepository invoiceRepository,
+                                                        WarehouseStockRepository warehouseStockRepository,
+                                                        StockMovementRepository stockMovementRepository) {
+        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean
     public DeleteInvoiceUseCase deleteInvoiceUseCase(InvoiceRepository invoiceRepository,
                                                        OrderRepository orderRepository,
-                                                       WarehouseStockRepository warehouseStockRepository,
-                                                       StockMovementRepository stockMovementRepository) {
-        return new DeleteInvoiceUseCase(invoiceRepository, orderRepository, warehouseStockRepository, stockMovementRepository);
+                                                       WarehouseStockRepository warehouseStockRepository) {
+        return new DeleteInvoiceUseCase(invoiceRepository, orderRepository, warehouseStockRepository);
     }
 }

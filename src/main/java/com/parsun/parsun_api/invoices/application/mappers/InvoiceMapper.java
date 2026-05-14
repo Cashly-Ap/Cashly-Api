@@ -4,7 +4,6 @@ import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResp
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
-import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 
 import java.util.List;
@@ -21,9 +20,10 @@ public class InvoiceMapper {
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                          Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
         List<InvoiceDetailResponse.InvoiceLineDetailResponse> lineResponses = invoice.getLines().stream()
-                .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks))
+                .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks, thisInvoiceAllocations))
                 .toList();
 
         return new InvoiceDetailResponse(
@@ -48,8 +48,14 @@ public class InvoiceMapper {
         );
     }
 
+    public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
+                                                          Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+        return toDetailResponse(invoice, enrichmentMap, productStocks, Map.of());
+    }
+
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice) {
-        return toDetailResponse(invoice, Map.of(), Map.of());
+        return toDetailResponse(invoice, Map.of(), Map.of(), Map.of());
     }
 
     public static InvoiceListResponse toListResponse(Invoice invoice) {
@@ -70,7 +76,8 @@ public class InvoiceMapper {
 
     private static InvoiceDetailResponse.InvoiceLineDetailResponse toLineDetailResponse(
             InvoiceLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+            Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
 
         List<InvoiceDetailResponse.WarehouseAllocationResponse> allocationDetails =
                 line.getAllocations().stream()
@@ -95,13 +102,14 @@ public class InvoiceMapper {
                 productStocks.getOrDefault(line.getProductId(), List.of()).stream()
                         .map(s -> {
                             WarehouseProductKey key = new WarehouseProductKey(s.warehouseId(), line.getProductId());
-                            WarehouseEnrichment enrichment = enrichmentMap.get(key);
-                            int quantity = enrichment != null ? enrichment.availableStock() : s.quantity();
+                            int thisAllocation = thisInvoiceAllocations.getOrDefault(key, 0);
                             return new InvoiceDetailResponse.WarehouseStockDetail(
                                     s.warehouseId(),
                                     s.warehouseCode(),
                                     s.warehouseName(),
-                                    quantity
+                                    s.quantity(),
+                                    Math.max(0, s.reserved() - thisAllocation),
+                                    s.available() + thisAllocation
                             );
                         })
                         .toList();

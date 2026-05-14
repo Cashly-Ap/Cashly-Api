@@ -4,7 +4,6 @@ import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResp
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
-import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
@@ -39,6 +38,12 @@ public class GetInvoiceByIdUseCase {
                         )))
                 .toList();
 
+        Map<InvoiceMapper.WarehouseProductKey, Integer> thisInvoiceAllocations = new HashMap<>();
+        for (StockEnrichmentService.AllocationData ad : allocations) {
+            InvoiceMapper.WarehouseProductKey key = new InvoiceMapper.WarehouseProductKey(ad.warehouseId(), ad.productId());
+            thisInvoiceAllocations.merge(key, ad.allocated(), Integer::sum);
+        }
+
         List<StockEnrichmentService.EnrichedStock> enriched = stockEnrichmentService.enrich(allocations);
 
         Map<InvoiceMapper.WarehouseProductKey, InvoiceMapper.WarehouseEnrichment> enrichmentMap = new HashMap<>();
@@ -55,6 +60,6 @@ public class GetInvoiceByIdUseCase {
         Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks =
                 stockEnrichmentService.getAllStockByProducts(invoice.getCustomerId(), productIds);
 
-        return InvoiceMapper.toDetailResponse(invoice, enrichmentMap, productStocks);
+        return InvoiceMapper.toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations);
     }
 }

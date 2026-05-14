@@ -21,10 +21,7 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
-import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
-import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
@@ -42,22 +39,19 @@ public class CreateInvoiceUseCase {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
 
     public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  OrderRepository orderRepository,
                                  CustomerRepository customerRepository,
                                  UserRepository userRepository,
                                  ProductRepository productRepository,
-                                 WarehouseStockRepository warehouseStockRepository,
-                                 StockMovementRepository stockMovementRepository) {
+                                 WarehouseStockRepository warehouseStockRepository) {
         this.invoiceRepository = invoiceRepository;
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
     }
 
     @Transactional
@@ -170,23 +164,8 @@ public class CreateInvoiceUseCase {
                     .orElseThrow(() -> new IllegalArgumentException(
                             "Stock not found for warehouse=" + allocation.warehouseId() + " product=" + productId));
 
-            int previousStock = stock.getQuantity();
-            stock.removeStock(allocation.allocated());
-            int newStock = stock.getQuantity();
-
+            stock.reserve(allocation.allocated());
             warehouseStockRepository.save(stock);
-
-            stockMovementRepository.save(StockMovement.create(
-                    allocation.warehouseId(),
-                    productId,
-                    MovementType.EXIT,
-                    allocation.allocated(),
-                    previousStock,
-                    newStock,
-                    null,
-                    null,
-                    "Factura"
-            ));
 
             allocations.add(InvoiceLineAllocation.create(allocation.warehouseId(), BigDecimal.valueOf(allocation.allocated())));
         }

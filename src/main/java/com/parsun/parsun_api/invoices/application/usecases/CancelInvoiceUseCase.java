@@ -9,6 +9,7 @@ import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
@@ -36,34 +37,42 @@ public class CancelInvoiceUseCase {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
 
+        InvoiceStatus previousStatus = invoice.getStatus();
         invoice.cancel(request.reason());
-        revertStockAllocations(invoice);
+        revertStockAllocations(invoice, previousStatus);
 
         Invoice saved = invoiceRepository.save(invoice);
         return InvoiceMapper.toDetailResponse(saved);
     }
 
-    private void revertStockAllocations(Invoice invoice) {
+    private void revertStockAllocations(Invoice invoice, InvoiceStatus previousStatus) {
+        boolean wasConfirmed = previousStatus != InvoiceStatus.DRAFT;
+
         for (InvoiceLine line : invoice.getLines()) {
             for (InvoiceLineAllocation allocation : line.getAllocations()) {
                 warehouseStockRepository
                         .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
                         .ifPresent(stock -> {
-                            int previous = stock.getQuantity();
-                            stock.addStock(allocation.getAllocated().intValue());
-                            warehouseStockRepository.save(stock);
+                            if (wasConfirmed) {
+                                int previous = stock.getQuantity();
+                                stock.addStock(allocation.getAllocated().intValue());
+                                warehouseStockRepository.save(stock);
 
-                            stockMovementRepository.save(StockMovement.create(
-                                    allocation.getWarehouseId(),
-                                    line.getProductId(),
-                                    MovementType.ENTRY,
-                                    allocation.getAllocated().intValue(),
-                                    previous,
-                                    stock.getQuantity(),
-                                    null,
-                                    null,
-                                    "Invoice cancelled"
-                            ));
+                                stockMovementRepository.save(StockMovement.create(
+                                        allocation.getWarehouseId(),
+                                        line.getProductId(),
+                                        MovementType.ENTRY,
+                                        allocation.getAllocated().intValue(),
+                                        previous,
+                                        stock.getQuantity(),
+                                        null,
+                                        null,
+                                        "Invoice cancelled"
+                                ));
+                            } else {
+                                stock.releaseReserved(allocation.getAllocated().intValue());
+                                warehouseStockRepository.save(stock);
+                            }
                         });
             }
         }

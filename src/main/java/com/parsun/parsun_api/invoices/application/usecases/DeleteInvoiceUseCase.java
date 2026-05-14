@@ -10,9 +10,6 @@ import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
-import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
-import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
@@ -23,16 +20,13 @@ public class DeleteInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final OrderRepository orderRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
 
     public DeleteInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  OrderRepository orderRepository,
-                                 WarehouseStockRepository warehouseStockRepository,
-                                 StockMovementRepository stockMovementRepository) {
+                                 WarehouseStockRepository warehouseStockRepository) {
         this.invoiceRepository = invoiceRepository;
         this.orderRepository = orderRepository;
         this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
     }
 
     @Transactional
@@ -62,21 +56,8 @@ public class DeleteInvoiceUseCase {
                 warehouseStockRepository
                         .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
                         .ifPresent(stock -> {
-                            int previous = stock.getQuantity();
-                            stock.addStock(allocation.getAllocated().intValue());
+                            stock.releaseReserved(allocation.getAllocated().intValue());
                             warehouseStockRepository.save(stock);
-
-                            stockMovementRepository.save(StockMovement.create(
-                                    allocation.getWarehouseId(),
-                                    line.getProductId(),
-                                    MovementType.ENTRY,
-                                    allocation.getAllocated().intValue(),
-                                    previous,
-                                    stock.getQuantity(),
-                                    null,
-                                    null,
-                                    "Invoice deleted"
-                            ));
                         });
             }
         }
