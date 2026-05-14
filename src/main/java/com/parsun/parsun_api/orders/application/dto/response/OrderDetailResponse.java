@@ -48,6 +48,8 @@ public record OrderDetailResponse(
             UUID warehouseId,
             String warehouseCode,
             String warehouseName,
-            int quantity
+            int quantity,
+            int reserved,
+            int available
     ) {}
 }

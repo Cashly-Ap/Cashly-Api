@@ -24,7 +24,7 @@ public class ConvertToInvoiceUseCase {
     }
 
     @Transactional
-    public ConvertToInvoiceResponse execute(UUID orderId, UUID authenticatedUserId) {
+    public ConvertToInvoiceResponse execute(UUID orderId, String paymentType, UUID authenticatedUserId) {
         Order order = orderRepository.findById(OrderId.of(orderId))
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
@@ -32,7 +32,7 @@ public class ConvertToInvoiceUseCase {
                 order.getId().value(),
                 null,
                 null,
-                "CASH",
+                paymentType,
                 null,
                 null
         );

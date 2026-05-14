@@ -92,7 +92,12 @@ public class CreateInvoiceUseCase {
                             ol.getProductCode(),
                             ol.getQuantity(),
                             ol.getUnitPrice(),
-                            List.of()
+                            ol.getAllocations().stream()
+                                    .map(a -> InvoiceLineAllocation.create(
+                                            a.getWarehouseId(),
+                                            a.getAllocated()
+                                    ))
+                                    .toList()
                     ))
                     .toList();
         } else {
@@ -148,6 +153,12 @@ public class CreateInvoiceUseCase {
         );
 
         Invoice saved = invoiceRepository.save(invoice);
+
+        if (orderId != null) {
+            saved.confirm();
+            saved = invoiceRepository.save(saved);
+        }
+
         return InvoiceMapper.toDetailResponse(saved);
     }
 

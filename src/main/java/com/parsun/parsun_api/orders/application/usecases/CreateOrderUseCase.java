@@ -1,6 +1,5 @@
 package com.parsun.parsun_api.orders.application.usecases;
 
-import java.math.BigDecimal;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
@@ -17,13 +16,11 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
-import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
-import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -35,20 +32,17 @@ public class CreateOrderUseCase {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
 
     public CreateOrderUseCase(OrderRepository orderRepository,
                                CustomerRepository customerRepository,
                                ProductRepository productRepository,
                                UserRepository userRepository,
-                               WarehouseStockRepository warehouseStockRepository,
-                               StockMovementRepository stockMovementRepository) {
+                               WarehouseStockRepository warehouseStockRepository) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
     }
 
     @Transactional
@@ -104,24 +98,8 @@ public class CreateOrderUseCase {
                     .orElseThrow(() -> new IllegalArgumentException(
                             "Stock not found for warehouse=" + allocation.warehouseId() + " product=" + productId));
 
-            int previousStock = stock.getQuantity();
-            stock.removeStock(allocation.allocated());
-            int newStock = stock.getQuantity();
-
+            stock.reserve(allocation.allocated());
             warehouseStockRepository.save(stock);
-
-            StockMovement movement = StockMovement.create(
-                    allocation.warehouseId(),
-                    productId,
-                    MovementType.EXIT,
-                    allocation.allocated(),
-                    previousStock,
-                    newStock,
-                    null,
-                    null,
-                    "Pedido"
-            );
-            stockMovementRepository.save(movement);
 
             allocations.add(OrderLineAllocation.create(allocation.warehouseId(), BigDecimal.valueOf(allocation.allocated())));
         }

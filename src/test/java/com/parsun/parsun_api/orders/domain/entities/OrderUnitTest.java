@@ -176,6 +176,7 @@ class OrderUnitTest {
     void should_ThrowException_When_UpdatingNonPendingOrder() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
         order.cancel("Motivo válido");
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
@@ -196,7 +197,7 @@ class OrderUnitTest {
     // --- cancel ---
 
     @Test
-    void should_CancelOrder_When_StatusIsPending() throws InterruptedException {
+    void should_CancelOrder_When_StatusIsDraft() throws InterruptedException {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, validLines);
         LocalDateTime beforeCancel = order.getUpdatedAt();
@@ -211,7 +212,36 @@ class OrderUnitTest {
     }
 
     @Test
-    void should_ThrowException_When_CancellingNonPendingOrder() {
+    void should_CancelOrder_When_StatusIsConfirmed() throws InterruptedException {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
+        LocalDateTime beforeCancel = order.getUpdatedAt();
+
+        Thread.sleep(10);
+        order.cancel("Cliente solicitó cancelación");
+
+        assertEquals(OrderStatus.CANCELLED, order.getStatus());
+        assertNotNull(order.getCancelledAt());
+        assertEquals("Cliente solicitó cancelación", order.getCancelledReason());
+        assertTrue(order.getUpdatedAt().isAfter(beforeCancel));
+    }
+
+    @Test
+    void should_ThrowException_When_CancellingInvoicedOrder() {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
+        order.markAsInvoiced(UUID.randomUUID(), "FAC-001");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                order.cancel("Razón de cancelación"));
+
+        assertTrue(exception.getMessage().contains("Only DRAFT or CONFIRMED orders can be cancelled"));
+    }
+
+    @Test
+    void should_ThrowException_When_CancellingAlreadyCancelledOrder() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.cancel("Primera cancelación");
@@ -219,13 +249,14 @@ class OrderUnitTest {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
                 order.cancel("Segunda cancelación"));
 
-        assertEquals("Only DRAFT or CONFIRMED orders can be cancelled", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Only DRAFT or CONFIRMED orders can be cancelled"));
     }
 
     @Test
     void should_ThrowException_When_CancelReasonIsNull() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
 
         assertThrows(NullPointerException.class, () -> order.cancel(null));
     }
@@ -234,6 +265,7 @@ class OrderUnitTest {
     void should_ThrowException_When_CancelReasonIsBlank() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 order.cancel("   "));
@@ -264,6 +296,7 @@ class OrderUnitTest {
     void should_ThrowException_When_InvoicingNonPendingOrder() {
         Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
         order.cancel("Cancelado");
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
@@ -290,6 +323,62 @@ class OrderUnitTest {
 
         assertThrows(NullPointerException.class, () ->
                 order.markAsInvoiced(UUID.randomUUID(), null));
+    }
+
+    // --- revertFromInvoiced ---
+
+    @Test
+    void should_RevertFromInvoiced_When_StatusIsInvoiced() throws InterruptedException {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
+        UUID invoiceId = UUID.randomUUID();
+        order.markAsInvoiced(invoiceId, "FAC-2026-00001");
+        LocalDateTime beforeRevert = order.getUpdatedAt();
+
+        Thread.sleep(10);
+        order.revertFromInvoiced();
+
+        assertEquals(OrderStatus.CONFIRMED, order.getStatus());
+        assertNull(order.getInvoiceId());
+        assertNull(order.getInvoiceNumber());
+        assertTrue(order.getUpdatedAt().isAfter(beforeRevert));
+    }
+
+    @Test
+    void should_ThrowException_When_RevertingDraftOrder() {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, validLines);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                order::revertFromInvoiced);
+
+        assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
+    }
+
+    @Test
+    void should_ThrowException_When_RevertingConfirmedOrder() {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                order::revertFromInvoiced);
+
+        assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
+    }
+
+    @Test
+    void should_ThrowException_When_RevertingCancelledOrder() {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        order.confirm();
+        order.cancel("Cancelado");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                order::revertFromInvoiced);
+
+        assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
     }
 
     // --- isOwnedBy ---

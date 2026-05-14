@@ -115,7 +115,7 @@ public class Order {
 
     public void cancel(String reason) {
         if (this.status != OrderStatus.DRAFT && this.status != OrderStatus.CONFIRMED) {
-            throw new IllegalStateException("Only DRAFT or CONFIRMED orders can be cancelled");
+            throw new IllegalStateException("Only DRAFT or CONFIRMED orders can be cancelled, current: " + this.status);
         }
         Objects.requireNonNull(reason, "Cancellation reason cannot be null");
         if (reason.isBlank()) {
@@ -136,6 +136,16 @@ public class Order {
         this.status = OrderStatus.INVOICED;
         this.invoiceId = invoiceId;
         this.invoiceNumber = invoiceNumber;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void revertFromInvoiced() {
+        if (this.status != OrderStatus.INVOICED) {
+            throw new IllegalStateException("Only INVOICED orders can be reverted from invoiced");
+        }
+        this.status = OrderStatus.CONFIRMED;
+        this.invoiceId = null;
+        this.invoiceNumber = null;
         this.updatedAt = LocalDateTime.now();
     }
 

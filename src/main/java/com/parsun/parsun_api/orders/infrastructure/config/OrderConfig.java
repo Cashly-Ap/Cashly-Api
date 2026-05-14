@@ -20,18 +20,17 @@ public class OrderConfig {
 
     @Bean
     public CreateOrderUseCase createOrderUseCase(OrderRepository orderRepository,
-                                                   CustomerRepository customerRepository,
-                                                   ProductRepository productRepository,
-                                                   UserRepository userRepository,
-                                                   WarehouseStockRepository warehouseStockRepository,
-                                                   StockMovementRepository stockMovementRepository) {
+                                                    CustomerRepository customerRepository,
+                                                    ProductRepository productRepository,
+                                                    UserRepository userRepository,
+                                                    WarehouseStockRepository warehouseStockRepository) {
         return new CreateOrderUseCase(orderRepository, customerRepository, productRepository,
-                userRepository, warehouseStockRepository, stockMovementRepository);
+                userRepository, warehouseStockRepository);
     }
 
     @Bean
     public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository,
-                                                     StockEnrichmentService stockEnrichmentService) {
+                                                      StockEnrichmentService stockEnrichmentService) {
         return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService);
     }
 
@@ -42,36 +41,36 @@ public class OrderConfig {
 
     @Bean
     public UpdateOrderUseCase updateOrderUseCase(OrderRepository orderRepository,
-                                                   ProductRepository productRepository,
-                                                   WarehouseStockRepository warehouseStockRepository,
-                                                   StockMovementRepository stockMovementRepository) {
+                                                    ProductRepository productRepository,
+                                                    WarehouseStockRepository warehouseStockRepository) {
         return new UpdateOrderUseCase(orderRepository, productRepository,
-                warehouseStockRepository, stockMovementRepository);
+                warehouseStockRepository);
     }
 
     @Bean
-    public ConfirmOrderUseCase confirmOrderUseCase(OrderRepository orderRepository) {
-        return new ConfirmOrderUseCase(orderRepository);
+    public ConfirmOrderUseCase confirmOrderUseCase(OrderRepository orderRepository,
+                                                     WarehouseStockRepository warehouseStockRepository,
+                                                     StockMovementRepository stockMovementRepository) {
+        return new ConfirmOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean
     public CancelOrderUseCase cancelOrderUseCase(OrderRepository orderRepository,
-                                                  WarehouseStockRepository warehouseStockRepository,
-                                                  StockMovementRepository stockMovementRepository) {
+                                                   WarehouseStockRepository warehouseStockRepository,
+                                                   StockMovementRepository stockMovementRepository) {
         return new CancelOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean
     public ConvertToInvoiceUseCase convertToInvoiceUseCase(OrderRepository orderRepository,
-                                                            CreateInvoiceUseCase createInvoiceUseCase) {
+                                                             CreateInvoiceUseCase createInvoiceUseCase) {
         return new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase);
     }
 
     @Bean
     public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository,
-                                                  WarehouseStockRepository warehouseStockRepository,
-                                                  StockMovementRepository stockMovementRepository) {
-        return new DeleteOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
+                                                   WarehouseStockRepository warehouseStockRepository) {
+        return new DeleteOrderUseCase(orderRepository, warehouseStockRepository);
     }
 
     @Bean

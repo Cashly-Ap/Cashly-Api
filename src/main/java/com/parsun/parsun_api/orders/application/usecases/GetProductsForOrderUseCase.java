@@ -95,7 +95,9 @@ public class GetProductsForOrderUseCase {
                             stock.getWarehouseId().toString(),
                             warehouse.getCode(),
                             warehouse.getName(),
-                            stock.getQuantity()
+                            stock.getQuantity(),
+                            stock.getReserved(),
+                            stock.getAvailableQuantity()
                     );
                 })
                 .toList();

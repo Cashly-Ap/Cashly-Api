@@ -44,6 +44,9 @@ public class WarehouseStockEntity {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
+    @Column(name = "reserved", nullable = false)
+    private int reserved;
+
     @Column(name = "last_movement_at")
     private LocalDateTime lastMovementAt;
 
@@ -56,6 +59,7 @@ public class WarehouseStockEntity {
         e.warehouseId = s.getWarehouseId();
         e.productId = s.getProductId();
         e.quantity = s.getQuantity();
+        e.reserved = s.getReserved();
         e.lastMovementAt = s.getLastMovementAt();
         e.updatedAt = s.getUpdatedAt();
         return e;
@@ -63,11 +67,12 @@ public class WarehouseStockEntity {
 
     public void updateFromDomain(WarehouseStock s) {
         this.quantity = s.getQuantity();
+        this.reserved = s.getReserved();
         this.lastMovementAt = s.getLastMovementAt();
         this.updatedAt = s.getUpdatedAt();
     }
 
     public WarehouseStock toDomain() {
-        return new WarehouseStock(id, warehouseId, productId, quantity, lastMovementAt, updatedAt);
+        return new WarehouseStock(id, warehouseId, productId, quantity, reserved, lastMovementAt, updatedAt);
     }
 }

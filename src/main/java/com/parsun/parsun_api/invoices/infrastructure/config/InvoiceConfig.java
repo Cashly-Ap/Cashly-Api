@@ -69,8 +69,9 @@ public class InvoiceConfig {
 
     @Bean
     public DeleteInvoiceUseCase deleteInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                                      WarehouseStockRepository warehouseStockRepository,
-                                                      StockMovementRepository stockMovementRepository) {
-        return new DeleteInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository);
+                                                       OrderRepository orderRepository,
+                                                       WarehouseStockRepository warehouseStockRepository,
+                                                       StockMovementRepository stockMovementRepository) {
+        return new DeleteInvoiceUseCase(invoiceRepository, orderRepository, warehouseStockRepository, stockMovementRepository);
     }
 }

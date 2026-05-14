@@ -56,19 +56,25 @@ public interface SpringDataProductRepository extends JpaRepository<ProductEntity
                OR LOWER(p.code) LIKE LOWER(CONCAT('%', :search, '%')))
         AND (:categoryId IS NULL OR p.categoryId = :categoryId)
         AND (:composite IS NULL OR p.composite = :composite)
-        AND (:withStock = false
-               OR EXISTS (
+        AND (:withStock IS NULL
+               OR (:withStock = true AND EXISTS (
                    SELECT s FROM WarehouseStockEntity s
                    WHERE s.productId = p.id
                    AND s.warehouseId IN :allowedWarehouseIds
-                   AND s.quantity > 0
+                   AND (s.quantity - s.reserved) > 0
                ))
+               OR (:withStock = false AND NOT EXISTS (
+                   SELECT s FROM WarehouseStockEntity s
+                   WHERE s.productId = p.id
+                   AND s.warehouseId IN :allowedWarehouseIds
+                   AND (s.quantity - s.reserved) > 0
+               )))
         """)
     Page<ProductEntity> findAllForOrder(
             @Param("search") String search,
             @Param("categoryId") UUID categoryId,
             @Param("composite") Boolean composite,
-            @Param("withStock") boolean withStock,
+            @Param("withStock") Boolean withStock,
             @Param("allowedWarehouseIds") Collection<UUID> allowedWarehouseIds,
             Pageable pageable);
 }

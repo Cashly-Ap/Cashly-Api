@@ -104,10 +104,10 @@ class CreateInvoiceUseCaseUnitTest {
         InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
 
         assertNotNull(response);
-        assertEquals("DRAFT", response.status());
+        assertEquals("PAID", response.status());
         assertEquals(orderId, response.orderId());
         assertNotNull(response.invoiceNumber());
-        verify(invoiceRepository).save(any(Invoice.class));
+        verify(invoiceRepository, times(2)).save(any(Invoice.class));
     }
 
     @Test
@@ -303,7 +303,7 @@ class CreateInvoiceUseCaseUnitTest {
     }
 
     @Test
-    void should_SaveExactlyOnce_When_InvoiceIsCreated() {
+    void should_SaveTwice_When_InvoiceIsCreatedFromOrder() {
         UUID orderId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
         Order order = buildOrder(orderId);
@@ -320,6 +320,76 @@ class CreateInvoiceUseCaseUnitTest {
 
         createInvoiceUseCase.execute(request, authenticatedUserId);
 
+        verify(invoiceRepository, times(2)).save(any(Invoice.class));
+    }
+
+    @Test
+    void should_AutoConfirmCashInvoiceAsPaid_When_CreatedFromOrder() {
+        UUID orderId = UUID.randomUUID();
+        UUID authenticatedUserId = UUID.randomUUID();
+        Order order = buildOrder(orderId);
+        User user = buildUser(authenticatedUserId);
+
+        CreateInvoiceRequest request = new CreateInvoiceRequest(
+                orderId, null, null, "CASH", null, List.of()
+        );
+
+        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
+        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
+
+        assertEquals("PAID", response.status());
+    }
+
+    @Test
+    void should_AutoConfirmCreditInvoiceAsPendingPayment_When_CreatedFromOrder() {
+        UUID orderId = UUID.randomUUID();
+        UUID authenticatedUserId = UUID.randomUUID();
+        Order order = buildOrder(orderId);
+        User user = buildUser(authenticatedUserId);
+
+        CreateInvoiceRequest request = new CreateInvoiceRequest(
+                orderId, null, null, "CREDIT", null, List.of()
+        );
+
+        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
+        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
+
+        assertEquals("PENDING_PAYMENT", response.status());
+    }
+
+    @Test
+    void should_RemainDraft_When_CreatedWithoutOrderId() {
+        UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        UUID authenticatedUserId = UUID.randomUUID();
+        Customer customer = buildCustomer(customerId);
+        User user = buildUser(authenticatedUserId);
+        Product product = buildProduct(productId);
+
+        CreateInvoiceRequest.InvoiceLineRequest lineRequest =
+                new CreateInvoiceRequest.InvoiceLineRequest(productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+
+        CreateInvoiceRequest request = new CreateInvoiceRequest(
+                null, customerId, null, "CASH", null, List.of(lineRequest)
+        );
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
+        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
+
+        assertEquals("DRAFT", response.status());
         verify(invoiceRepository, times(1)).save(any(Invoice.class));
     }
 

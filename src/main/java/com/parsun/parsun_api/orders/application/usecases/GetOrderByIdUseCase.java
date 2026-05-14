@@ -38,6 +38,12 @@ public class GetOrderByIdUseCase {
                         )))
                 .toList();
 
+        Map<OrderMapper.WarehouseProductKey, Integer> thisOrderAllocations = new HashMap<>();
+        for (StockEnrichmentService.AllocationData ad : allocations) {
+            OrderMapper.WarehouseProductKey key = new OrderMapper.WarehouseProductKey(ad.warehouseId(), ad.productId());
+            thisOrderAllocations.merge(key, ad.allocated(), Integer::sum);
+        }
+
         List<StockEnrichmentService.EnrichedStock> enriched = stockEnrichmentService.enrich(allocations);
 
         Map<OrderMapper.WarehouseProductKey, OrderMapper.WarehouseEnrichment> enrichmentMap = new HashMap<>();
@@ -54,6 +60,6 @@ public class GetOrderByIdUseCase {
         Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks =
                 stockEnrichmentService.getAllStockByProducts(order.getCustomerId(), productIds);
 
-        return OrderMapper.toDetailResponse(order, enrichmentMap, productStocks);
+        return OrderMapper.toDetailResponse(order, enrichmentMap, productStocks, thisOrderAllocations);
     }
 }

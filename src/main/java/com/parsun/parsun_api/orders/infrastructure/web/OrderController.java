@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.orders.infrastructure.web;
 
 import com.parsun.parsun_api.orders.application.dto.request.CancelOrderRequest;
+import com.parsun.parsun_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.parsun.parsun_api.orders.application.dto.request.CreateOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.request.UpdateOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
@@ -111,9 +112,10 @@ public class OrderController {
     @PostMapping("/{id}/convert-to-invoice")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(@PathVariable UUID id,
+                                                                      @Valid @RequestBody ConvertToInvoiceRequest request,
                                                                       Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id, userId);
+        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id, request.paymentType(), userId);
         return ResponseEntity.ok(response);
     }
 

@@ -31,7 +31,8 @@ public class StockEnrichmentService {
                                  int availableStock) {}
 
     public record WarehouseStockInfo(UUID warehouseId, String warehouseCode,
-                                      String warehouseName, int quantity) {}
+                                      String warehouseName, int quantity,
+                                      int reserved, int available) {}
 
     public Map<UUID, List<WarehouseStockInfo>> getAllStockByProducts(UUID customerId, List<UUID> productIds) {
         Set<UUID> uniqueProductIds = new HashSet<>(productIds);
@@ -61,7 +62,9 @@ public class StockEnrichmentService {
                         stock.getWarehouseId(),
                         warehouse.getCode(),
                         warehouse.getName(),
-                        stock.getQuantity()
+                        stock.getQuantity(),
+                        stock.getReserved(),
+                        stock.getAvailableQuantity()
                 ));
             }
 
