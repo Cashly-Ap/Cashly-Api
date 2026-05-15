@@ -25,7 +25,7 @@ public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID>
             WHERE (:dateFrom IS NULL OR i.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR i.createdAt <= :dateTo)
             AND (:customerId IS NULL OR i.customerId = :customerId)
-            AND (:status IS NULL OR i.status = :status)
+            AND ((:status IS NULL AND i.status != 'PAID') OR (:status IS NOT NULL AND i.status = :status))
             ORDER BY i.createdAt DESC
             """)
     List<InvoiceEntity> findAllWithFilters(
