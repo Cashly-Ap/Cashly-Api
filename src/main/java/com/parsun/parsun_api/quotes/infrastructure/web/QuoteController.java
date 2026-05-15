@@ -7,12 +7,14 @@ import com.parsun.parsun_api.quotes.application.dto.response.*;
 import com.parsun.parsun_api.quotes.application.usecases.*;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -66,8 +68,16 @@ public class QuoteController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<List<QuoteListResponse>> list() {
-        List<QuoteListResponse> quotes = getQuotesUseCase.execute();
+    public ResponseEntity<List<QuoteListResponse>> list(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
+            @RequestParam(required = false) UUID customerId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        List<QuoteListResponse> quotes = getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(quotes);
     }
 

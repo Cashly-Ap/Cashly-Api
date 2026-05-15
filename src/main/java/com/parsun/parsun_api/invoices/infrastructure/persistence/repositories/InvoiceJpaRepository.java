@@ -25,12 +25,22 @@ public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID>
             WHERE (:dateFrom IS NULL OR i.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR i.createdAt <= :dateTo)
             AND (:customerId IS NULL OR i.customerId = :customerId)
-            AND ((:status IS NULL AND i.status != 'PAID') OR (:status IS NOT NULL AND i.status = :status))
+            AND (:status IS NULL OR i.status = :status)
+            AND (:productId IS NULL OR EXISTS (
+                SELECT 1 FROM InvoiceLineEntity il WHERE il.invoice = i AND il.productId = :productId
+            ))
+            AND (:categoryId IS NULL OR EXISTS (
+                SELECT 1 FROM InvoiceLineEntity il2 WHERE il2.invoice = i AND il2.productId IN (
+                    SELECT p.id FROM ProductEntity p WHERE p.categoryId = :categoryId
+                )
+            ))
             """)
     List<InvoiceEntity> findAllWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status
+            @Param("status") String status,
+            @Param("productId") UUID productId,
+            @Param("categoryId") UUID categoryId
     );
 }

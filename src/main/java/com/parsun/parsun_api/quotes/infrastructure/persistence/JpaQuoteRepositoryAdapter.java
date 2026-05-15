@@ -6,6 +6,9 @@ import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +43,35 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
     @Override
     public List<Quote> findAll() {
         return jpaRepository.findAll().stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Quote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
+                                           UUID customerId, String status,
+                                           UUID productId, UUID categoryId,
+                                           String orderBy, String orderDir) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+
+        List<QuoteJpaEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId);
+
+        boolean desc = "desc".equalsIgnoreCase(orderDir);
+        Comparator<QuoteJpaEntity> comparator = switch (orderBy) {
+            case "quoteNumber" -> Comparator.comparing(QuoteJpaEntity::getQuoteNumber);
+            case "customerName" -> Comparator.comparing(QuoteJpaEntity::getCustomerName);
+            case "status" -> Comparator.comparing(QuoteJpaEntity::getStatus);
+            case "subtotal" -> Comparator.comparing(QuoteJpaEntity::getSubtotal);
+            default -> Comparator.comparing(QuoteJpaEntity::getCreatedAt);
+        };
+
+        if (desc) {
+            comparator = comparator.reversed();
+        }
+
+        return entities.stream()
+                .sorted(comparator)
                 .map(mapper::toDomain)
                 .toList();
     }

@@ -47,10 +47,12 @@ public class InvoicesReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
         List<InvoiceListResponse> invoices = getInvoicesUseCase.execute(
-                dateFrom, dateTo, customerId, status, "createdAt", "desc");
+                dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
         byte[] pdf = generateInvoicesReportPdfUseCase.execute(invoices, mode);
 
         String filename = "reporte-facturas-" + LocalDate.now().toString() + ".pdf";

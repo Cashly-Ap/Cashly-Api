@@ -13,6 +13,7 @@ public interface InvoiceRepository {
     Optional<Invoice> findById(InvoiceId id);
     List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                      UUID customerId, String status,
+                                     UUID productId, UUID categoryId,
                                      String orderBy, String orderDir);
     void deleteById(InvoiceId id);
     int getNextSequenceForYear(int year);
