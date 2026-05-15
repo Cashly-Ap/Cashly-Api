@@ -1,11 +1,11 @@
-package com.lexand.lexand_api.auth.user.infrastructure.persistence;
+package com.parsun.parsun_api.auth.user.infrastructure.persistence;
 
-import com.lexand.lexand_api.auth.user.domain.entities.User;
-import com.lexand.lexand_api.auth.user.domain.valueobjects.Email;
-import com.lexand.lexand_api.auth.user.domain.valueobjects.Password;
-import com.lexand.lexand_api.auth.user.domain.valueobjects.UserId;
-import com.lexand.lexand_api.auth.user.domain.valueobjects.UserName;
-import com.lexand.lexand_api.auth.user.infrastructure.persistence.entities.UserEntity;
+import com.parsun.parsun_api.auth.user.domain.entities.User;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
+import com.parsun.parsun_api.auth.user.infrastructure.persistence.entities.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
