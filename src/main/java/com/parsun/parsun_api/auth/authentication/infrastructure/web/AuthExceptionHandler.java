@@ -26,6 +26,8 @@ import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStock
 import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWarehouseException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
+import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
+import com.parsun.parsun_api.quotes.domain.exceptions.QuoteStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -357,6 +359,26 @@ public class AuthExceptionHandler {
             ex.getMessage()
         );
         return ResponseEntity.badRequest().body(errorDetails);
+    }
+
+    @ExceptionHandler(QuoteNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleQuoteNotFound(QuoteNotFoundException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Quote not found",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(QuoteStateException.class)
+    public ResponseEntity<Map<String, Object>> handleQuoteState(QuoteStateException ex) {
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            "Invalid quote state",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorDetails);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
