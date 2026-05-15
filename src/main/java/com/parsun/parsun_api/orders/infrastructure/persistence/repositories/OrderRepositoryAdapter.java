@@ -21,7 +21,7 @@ import java.util.UUID;
 public class OrderRepositoryAdapter implements OrderRepository {
 
     private static final Set<String> ALLOWED_ORDER_BY = Set.of(
-        "createdAt", "orderNumber", "customerAlias", "status", "totalAmount"
+        "createdAt", "orderNumber", "customerName", "status", "subtotal"
     );
 
     private final OrderJpaRepository jpaRepository;
