@@ -46,9 +46,9 @@ public class InvoiceConfig {
 
     @Bean
     public DuplicateInvoiceUseCase duplicateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                                            WarehouseStockRepository warehouseStockRepository,
-                                                            StockMovementRepository stockMovementRepository) {
-        return new DuplicateInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository);
+                                                             WarehouseStockRepository warehouseStockRepository,
+                                                             ProductRepository productRepository) {
+        return new DuplicateInvoiceUseCase(invoiceRepository, warehouseStockRepository, productRepository);
     }
 
     @Bean

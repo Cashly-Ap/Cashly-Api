@@ -9,10 +9,9 @@ import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
-import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
-import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
+import com.parsun.parsun_api.products.domain.entities.Product;
+import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
@@ -26,14 +25,14 @@ public class DuplicateInvoiceUseCase {
 
     private final InvoiceRepository invoiceRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
+    private final ProductRepository productRepository;
 
     public DuplicateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                     WarehouseStockRepository warehouseStockRepository,
-                                    StockMovementRepository stockMovementRepository) {
+                                    ProductRepository productRepository) {
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
+        this.productRepository = productRepository;
     }
 
     @Transactional
@@ -47,13 +46,20 @@ public class DuplicateInvoiceUseCase {
 
         List<InvoiceLine> copiedLines = original.getLines().stream()
                 .map(line -> {
+                    Product product = productRepository.findById(line.getProductId())
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    "Product not found: " + line.getProductId()));
+
+                    BigDecimal currentPrice = product.getBasePrice();
+
                     List<InvoiceLineAllocation> copiedAllocations = applyStockAllocations(line);
+
                     return InvoiceLine.create(
                             line.getProductId(),
-                            line.getProductName(),
-                            line.getProductCode(),
+                            product.getName(),
+                            product.getCode(),
                             line.getQuantity(),
-                            line.getUnitPrice(),
+                            currentPrice,
                             copiedAllocations
                     );
                 })
@@ -83,25 +89,11 @@ public class DuplicateInvoiceUseCase {
             WarehouseStock stock = warehouseStockRepository
                     .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "Stock not found for warehouse=" + allocation.getWarehouseId() + " product=" + line.getProductId()));
+                            "Stock not found for warehouse=" + allocation.getWarehouseId()
+                                    + " product=" + line.getProductId()));
 
-            int previousStock = stock.getQuantity();
-            stock.removeStock(allocation.getAllocated().intValue());
-            int newStock = stock.getQuantity();
-
+            stock.reserve(allocation.getAllocated().intValue());
             warehouseStockRepository.save(stock);
-
-            stockMovementRepository.save(StockMovement.create(
-                    allocation.getWarehouseId(),
-                    line.getProductId(),
-                    MovementType.EXIT,
-                    allocation.getAllocated().intValue(),
-                    previousStock,
-                    newStock,
-                    null,
-                    null,
-                    "Invoice duplicated"
-            ));
 
             allocations.add(InvoiceLineAllocation.create(allocation.getWarehouseId(), allocation.getAllocated()));
         }
