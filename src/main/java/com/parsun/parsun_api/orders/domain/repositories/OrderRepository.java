@@ -14,7 +14,8 @@ public interface OrderRepository {
     Optional<Order> findById(OrderId id);
     List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                    UUID customerId, String status,
-                                   UUID productId, UUID categoryId);
+                                   UUID productId, UUID categoryId,
+                                   String orderBy, String orderDir);
     int getNextSequenceForYear(int year);
     void deleteById(OrderId id);
 }

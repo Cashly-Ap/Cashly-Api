@@ -17,8 +17,9 @@ public class GetInvoicesUseCase {
     }
 
     public List<InvoiceListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId, String status) {
-        return invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, status)
+                                              UUID customerId, String status,
+                                              String orderBy, String orderDir) {
+        return invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, orderBy, orderDir)
                 .stream()
                 .map(InvoiceMapper::toListResponse)
                 .toList();

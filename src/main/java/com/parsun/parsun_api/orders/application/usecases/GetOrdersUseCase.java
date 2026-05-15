@@ -19,8 +19,9 @@ public class GetOrdersUseCase {
 
     public List<OrderListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                            UUID customerId, String status,
-                                           UUID productId, UUID categoryId) {
-        return orderRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId)
+                                           UUID productId, UUID categoryId,
+                                           String orderBy, String orderDir) {
+        return orderRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir)
                 .stream()
                 .map(OrderMapper::toListResponse)
                 .toList();

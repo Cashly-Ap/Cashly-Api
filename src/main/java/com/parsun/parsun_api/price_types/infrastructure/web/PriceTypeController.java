@@ -63,7 +63,9 @@ public class PriceTypeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
-    public List<PriceTypeResponse> listAll() {
-        return listPriceTypesUseCase.execute();
+    public List<PriceTypeResponse> listAll(
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        return listPriceTypesUseCase.execute(orderBy, orderDir);
     }
 }

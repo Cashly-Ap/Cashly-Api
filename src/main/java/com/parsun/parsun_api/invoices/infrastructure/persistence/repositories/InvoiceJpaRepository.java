@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.invoices.infrastructure.persistence.repositories;
 
 import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,12 +27,12 @@ public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID>
             AND (:dateTo IS NULL OR i.createdAt <= :dateTo)
             AND (:customerId IS NULL OR i.customerId = :customerId)
             AND ((:status IS NULL AND i.status != 'PAID') OR (:status IS NOT NULL AND i.status = :status))
-            ORDER BY i.createdAt DESC
             """)
     List<InvoiceEntity> findAllWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status
+            @Param("status") String status,
+            Sort sort
     );
 }

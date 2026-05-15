@@ -13,8 +13,8 @@ public class ListPriceTypesUseCase {
         this.priceTypeRepository = priceTypeRepository;
     }
 
-    public List<PriceTypeResponse> execute() {
-        return priceTypeRepository.findAll().stream()
+    public List<PriceTypeResponse> execute(String orderBy, String orderDir) {
+        return priceTypeRepository.findAll(orderBy, orderDir).stream()
             .map(PriceTypeResponse::from)
             .toList();
     }

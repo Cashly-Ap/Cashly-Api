@@ -3,14 +3,20 @@ package com.parsun.parsun_api.price_types.infrastructure.persistence.repositorie
 import com.parsun.parsun_api.price_types.domain.entities.PriceType;
 import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
 import com.parsun.parsun_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
 public class JpaPriceTypeRepository implements PriceTypeRepository {
+
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of(
+        "name", "active", "createdAt", "updatedAt"
+    );
 
     private final SpringDataPriceTypeRepository springDataRepository;
 
@@ -39,8 +45,10 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
     }
 
     @Override
-    public List<PriceType> findAll() {
-        return springDataRepository.findAll().stream()
+    public List<PriceType> findAll(String orderBy, String orderDir) {
+        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "createdAt";
+        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        return springDataRepository.findAll(sort).stream()
             .map(PriceTypeEntity::toDomain)
             .toList();
     }

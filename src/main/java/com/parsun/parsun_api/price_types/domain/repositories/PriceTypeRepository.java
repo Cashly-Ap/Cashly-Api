@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface PriceTypeRepository {
     PriceType save(PriceType priceType);
     Optional<PriceType> findById(UUID id);
-    List<PriceType> findAll();
+    List<PriceType> findAll(String orderBy, String orderDir);
     boolean existsById(UUID id);
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);

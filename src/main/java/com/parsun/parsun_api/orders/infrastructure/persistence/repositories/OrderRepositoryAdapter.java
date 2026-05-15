@@ -7,16 +7,22 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderEntity;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderNumberSequenceEntity;
 import com.parsun.parsun_api.orders.infrastructure.persistence.mappers.OrderJpaMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public class OrderRepositoryAdapter implements OrderRepository {
+
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of(
+        "createdAt", "orderNumber", "customerAlias", "status", "totalAmount"
+    );
 
     private final OrderJpaRepository jpaRepository;
     private final OrderNumberSequenceJpaRepository sequenceJpaRepository;
@@ -44,10 +50,13 @@ public class OrderRepositoryAdapter implements OrderRepository {
     @Override
     public List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                            UUID customerId, String status,
-                                           UUID productId, UUID categoryId) {
+                                           UUID productId, UUID categoryId,
+                                           String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
-        return jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId)
+        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "createdAt";
+        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        return jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId, sort)
                 .stream()
                 .map(OrderJpaMapper::toDomain)
                 .toList();

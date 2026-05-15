@@ -74,8 +74,10 @@ public class OrderController {
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) UUID productId,
-            @RequestParam(required = false) UUID categoryId) {
-        List<OrderListResponse> orders = getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId);
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        List<OrderListResponse> orders = getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(orders);
     }
 

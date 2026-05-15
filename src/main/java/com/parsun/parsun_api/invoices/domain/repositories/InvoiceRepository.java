@@ -12,7 +12,8 @@ public interface InvoiceRepository {
     Invoice save(Invoice invoice);
     Optional<Invoice> findById(InvoiceId id);
     List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                     UUID customerId, String status);
+                                     UUID customerId, String status,
+                                     String orderBy, String orderDir);
     void deleteById(InvoiceId id);
     int getNextSequenceForYear(int year);
 }
