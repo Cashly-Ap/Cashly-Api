@@ -1,7 +1,6 @@
 package com.parsun.parsun_api.invoices.infrastructure.persistence.repositories;
 
 import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,7 +31,6 @@ public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID>
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status,
-            Sort sort
+            @Param("status") String status
     );
 }

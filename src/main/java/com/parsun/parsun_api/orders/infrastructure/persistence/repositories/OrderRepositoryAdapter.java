@@ -7,28 +7,24 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderEntity;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderNumberSequenceEntity;
 import com.parsun.parsun_api.orders.infrastructure.persistence.mappers.OrderJpaMapper;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public class OrderRepositoryAdapter implements OrderRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of(
-        "createdAt", "orderNumber", "customerName", "status", "subtotal"
-    );
-
     private final OrderJpaRepository jpaRepository;
     private final OrderNumberSequenceJpaRepository sequenceJpaRepository;
 
     public OrderRepositoryAdapter(OrderJpaRepository jpaRepository,
-                                   OrderNumberSequenceJpaRepository sequenceJpaRepository) {
+                                    OrderNumberSequenceJpaRepository sequenceJpaRepository) {
         this.jpaRepository = jpaRepository;
         this.sequenceJpaRepository = sequenceJpaRepository;
     }
@@ -54,10 +50,24 @@ public class OrderRepositoryAdapter implements OrderRepository {
                                            String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
-        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "createdAt";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
-        return jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId, sort)
-                .stream()
+
+        List<OrderEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId);
+
+        boolean desc = "desc".equalsIgnoreCase(orderDir);
+        Comparator<OrderEntity> comparator = switch (orderBy) {
+            case "orderNumber" -> Comparator.comparing(OrderEntity::getOrderNumber);
+            case "customerName" -> Comparator.comparing(OrderEntity::getCustomerName);
+            case "status" -> Comparator.comparing(OrderEntity::getStatus);
+            case "subtotal" -> Comparator.comparing(OrderEntity::getSubtotal);
+            default -> Comparator.comparing(OrderEntity::getCreatedAt);
+        };
+
+        if (desc) {
+            comparator = comparator.reversed();
+        }
+
+        return entities.stream()
+                .sorted(comparator)
                 .map(OrderJpaMapper::toDomain)
                 .toList();
     }

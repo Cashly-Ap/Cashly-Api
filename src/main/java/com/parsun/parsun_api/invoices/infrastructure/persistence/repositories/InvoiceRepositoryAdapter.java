@@ -3,24 +3,20 @@ package com.parsun.parsun_api.invoices.infrastructure.persistence.repositories;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
 import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceNumberSequenceEntity;
 import com.parsun.parsun_api.invoices.infrastructure.persistence.mappers.InvoiceJpaMapper;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public class InvoiceRepositoryAdapter implements InvoiceRepository {
-
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of(
-        "createdAt", "invoiceNumber", "customerName", "status", "subtotal", "paymentType"
-    );
 
     private final InvoiceJpaRepository jpaRepository;
     private final InvoiceNumberSequenceJpaRepository sequenceJpaRepository;
@@ -55,10 +51,25 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
                                              String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
-        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "createdAt";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
-        return jpaRepository.findAllWithFilters(from, to, customerId, status, sort)
-                .stream()
+
+        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, status);
+
+        boolean desc = "desc".equalsIgnoreCase(orderDir);
+        Comparator<InvoiceEntity> comparator = switch (orderBy) {
+            case "invoiceNumber" -> Comparator.comparing(InvoiceEntity::getInvoiceNumber);
+            case "customerName" -> Comparator.comparing(InvoiceEntity::getCustomerName);
+            case "status" -> Comparator.comparing(InvoiceEntity::getStatus);
+            case "subtotal" -> Comparator.comparing(InvoiceEntity::getSubtotal);
+            case "paymentType" -> Comparator.comparing(InvoiceEntity::getPaymentType);
+            default -> Comparator.comparing(InvoiceEntity::getCreatedAt);
+        };
+
+        if (desc) {
+            comparator = comparator.reversed();
+        }
+
+        return entities.stream()
+                .sorted(comparator)
                 .map(InvoiceJpaMapper::toDomain)
                 .toList();
     }

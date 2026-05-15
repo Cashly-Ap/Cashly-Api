@@ -3,7 +3,6 @@ package com.parsun.parsun_api.orders.infrastructure.persistence.repositories;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderEntity;
 import com.parsun.parsun_api.orders.infrastructure.persistence.entities.OrderLineEntity;
 import com.parsun.parsun_api.products.infrastructure.persistence.entities.ProductEntity;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -51,8 +50,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
             @Param("customerId") UUID customerId,
             @Param("status") String status,
             @Param("productId") UUID productId,
-            @Param("categoryId") UUID categoryId,
-            Sort sort
+            @Param("categoryId") UUID categoryId
     );
 
 }

@@ -53,7 +53,7 @@ public class OrdersReportController {
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
         List<OrderListResponse> orders = getOrdersUseCase.execute(
-                dateFrom, dateTo, customerId, status, productId, categoryId);
+                dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
         byte[] pdf = generateOrdersReportPdfUseCase.execute(orders, mode);
 
         String filename = "reporte-pedidos-" + LocalDate.now().toString() + ".pdf";
