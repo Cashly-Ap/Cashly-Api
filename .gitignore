@@ -37,3 +37,7 @@ build/
 comprobante-pago-*.png
 comprobante-pago-*.txt
 *.pdf
+
+### AI Config ###
+.atl/
+.opencode/
