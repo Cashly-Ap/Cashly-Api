@@ -11,11 +11,11 @@ class QuoteNumberTest {
 
     @ParameterizedTest
     @CsvSource({
-            "2024, 1, 2024-0001",
-            "2024, 100, 2024-0100",
-            "2024, 9999, 2024-9999",
-            "2025, 1, 2025-0001",
-            "2030, 500, 2030-0500"
+            "2024, 1, PRE-2024-0001",
+            "2024, 100, PRE-2024-0100",
+            "2024, 9999, PRE-2024-9999",
+            "2025, 1, PRE-2025-0001",
+            "2030, 500, PRE-2030-0500"
     })
     void should_create_valid_quote_number(int year, int sequence, String expected) {
         QuoteNumber quoteNumber = QuoteNumber.of(year, sequence);
@@ -24,14 +24,14 @@ class QuoteNumberTest {
 
     @Test
     void should_accept_valid_formatted_value() {
-        QuoteNumber quoteNumber = new QuoteNumber("2024-0001");
-        assertEquals("2024-0001", quoteNumber.value());
+        QuoteNumber quoteNumber = new QuoteNumber("PRE-2024-0001");
+        assertEquals("PRE-2024-0001", quoteNumber.value());
     }
 
     @Test
     void should_accept_max_sequence_value() {
         QuoteNumber quoteNumber = QuoteNumber.of(2024, 9999);
-        assertEquals("2024-9999", quoteNumber.value());
+        assertEquals("PRE-2024-9999", quoteNumber.value());
     }
 
     @Test
@@ -43,25 +43,25 @@ class QuoteNumberTest {
     @Test
     void should_throw_on_wrong_separator() {
         assertThrows(IllegalArgumentException.class,
-                () -> new QuoteNumber("2024/0001"));
+                () -> new QuoteNumber("PRE-2024/0001"));
     }
 
     @Test
     void should_throw_on_too_short_sequence() {
         assertThrows(IllegalArgumentException.class,
-                () -> new QuoteNumber("2024-001"));
+                () -> new QuoteNumber("PRE-2024-001"));
     }
 
     @Test
     void should_throw_on_too_long_sequence() {
         assertThrows(IllegalArgumentException.class,
-                () -> new QuoteNumber("2024-00001"));
+                () -> new QuoteNumber("PRE-2024-00001"));
     }
 
     @Test
     void should_throw_on_letters_in_value() {
         assertThrows(IllegalArgumentException.class,
-                () -> new QuoteNumber("20A4-0001"));
+                () -> new QuoteNumber("PRE-20A4-0001"));
     }
 
     @Test

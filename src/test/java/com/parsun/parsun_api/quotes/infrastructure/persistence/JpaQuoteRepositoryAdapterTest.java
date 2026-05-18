@@ -6,9 +6,11 @@ import com.parsun.parsun_api.quotes.domain.entities.QuoteAllocation;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteLine;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +24,32 @@ class JpaQuoteRepositoryAdapterTest extends BaseIntegrationTest {
 
     @Autowired
     private JpaQuoteRepositoryAdapter repository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private UUID testCustomerId;
+
+    @BeforeEach
+    void setUp() {
+        // Clean up any leftover data from previous runs
+        jdbcTemplate.update("DELETE FROM quote_allocations");
+        jdbcTemplate.update("DELETE FROM quote_lines");
+        jdbcTemplate.update("DELETE FROM quotes");
+        jdbcTemplate.update("DELETE FROM quote_number_sequence");
+
+        testCustomerId = UUID.randomUUID();
+        jdbcTemplate.update(
+                "INSERT INTO customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, portal_access, created_at, updated_at) " +
+                "VALUES (UNHEX(REPLACE(?,'-','')), ?, ?, ?, ?, ?, 0, 0, 1, 0, NOW(), NOW())",
+                testCustomerId.toString(),
+                System.currentTimeMillis(),
+                "Test Customer",
+                "JURIDICAL",
+                "J-12345678-9",
+                "Test Alias"
+        );
+    }
 
     private Quote createTestQuote() {
         QuoteLine line = new QuoteLine(
@@ -42,7 +70,7 @@ class JpaQuoteRepositoryAdapterTest extends BaseIntegrationTest {
 
         return Quote.create(
                 QuoteNumber.of(2024, 1),
-                UUID.randomUUID(),
+                testCustomerId,
                 "Test Customer",
                 "J-12345678-9",
                 UUID.randomUUID(),
@@ -108,7 +136,7 @@ class JpaQuoteRepositoryAdapterTest extends BaseIntegrationTest {
 
         assertTrue(repository.existsByQuoteNumber(quote.getQuoteNumber()));
 
-        assertFalse(repository.existsByQuoteNumber(new QuoteNumber("9999-9999")));
+        assertFalse(repository.existsByQuoteNumber(QuoteNumber.of(2099, 9999)));
     }
 
     @Test
@@ -141,7 +169,7 @@ class JpaQuoteRepositoryAdapterTest extends BaseIntegrationTest {
         Quote quote1 = createTestQuote();
         Quote quote2 = Quote.create(
                 QuoteNumber.of(2024, 2),
-                UUID.randomUUID(),
+                testCustomerId,
                 "Another Customer",
                 "V-98765432-1",
                 UUID.randomUUID(),
@@ -189,7 +217,7 @@ class JpaQuoteRepositoryAdapterTest extends BaseIntegrationTest {
 
         Quote quote = Quote.create(
                 QuoteNumber.of(2024, 3),
-                UUID.randomUUID(), "Multi Customer", "E-11111111-1",
+                testCustomerId, "Multi Customer", "E-11111111-1",
                 UUID.randomUUID(), "Multi User",
                 null, "Multi line test",
                 List.of(line1, line2)
@@ -201,7 +229,10 @@ class JpaQuoteRepositoryAdapterTest extends BaseIntegrationTest {
         assertTrue(retrieved.isPresent());
         assertEquals(2, retrieved.get().getLines().size());
 
-        QuoteLine retrievedLine2 = retrieved.get().getLines().get(1);
+        QuoteLine retrievedLine2 = retrieved.get().getLines().stream()
+                .filter(l -> "Product B".equals(l.getProductName()))
+                .findFirst()
+                .orElseThrow();
         assertEquals("Product B", retrievedLine2.getProductName());
         assertEquals(2, retrievedLine2.getAllocations().size());
     }

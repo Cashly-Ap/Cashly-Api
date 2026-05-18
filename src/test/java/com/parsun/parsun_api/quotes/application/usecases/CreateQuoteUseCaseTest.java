@@ -96,7 +96,7 @@ class CreateQuoteUseCaseTest {
         QuoteDetailResponse response = createQuoteUseCase.execute(request, authenticatedUserId);
 
         assertNotNull(response);
-        assertEquals("2026-0001", response.quoteNumber());
+        assertEquals("PRE-2026-0001", response.quoteNumber());
         assertEquals(customerId, response.customerId());
         assertEquals("Empresa Test C.A.", response.customerName());
         assertEquals("J-12345678-9", response.customerRif());
@@ -225,7 +225,7 @@ class CreateQuoteUseCaseTest {
 
         QuoteDetailResponse response = createQuoteUseCase.execute(request, authenticatedUserId);
 
-        assertEquals("2026-0042", response.quoteNumber());
+        assertEquals("PRE-2026-0042", response.quoteNumber());
         verify(quoteRepository).getNextSequenceForYear(LocalDate.now().getYear());
     }
 

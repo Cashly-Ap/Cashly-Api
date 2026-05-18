@@ -100,14 +100,16 @@ class QuoteControllerTest {
                 "DRAFT", LocalDate.now(), BigDecimal.TEN, Instant.now(), Instant.now()
         );
 
-        when(getQuotesUseCase.execute()).thenReturn(List.of(quote));
+        when(getQuotesUseCase.execute(null, null, null, null, null, null, "createdAt", "desc"))
+                .thenReturn(List.of(quote));
 
-        ResponseEntity<List<QuoteListResponse>> result = quoteController.list();
+        ResponseEntity<List<QuoteListResponse>> result = quoteController.list(
+                null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
         assertEquals("2026-0001", result.getBody().get(0).quoteNumber());
-        verify(getQuotesUseCase).execute();
+        verify(getQuotesUseCase).execute(null, null, null, null, null, null, "createdAt", "desc");
     }
 
     @Test
@@ -188,9 +190,11 @@ class QuoteControllerTest {
     @Test
     @DisplayName("should return empty list when no quotes exist")
     void shouldReturnEmptyListWhenNoQuotesExist() {
-        when(getQuotesUseCase.execute()).thenReturn(List.of());
+        when(getQuotesUseCase.execute(null, null, null, null, null, null, "createdAt", "desc"))
+                .thenReturn(List.of());
 
-        ResponseEntity<List<QuoteListResponse>> result = quoteController.list();
+        ResponseEntity<List<QuoteListResponse>> result = quoteController.list(
+                null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());

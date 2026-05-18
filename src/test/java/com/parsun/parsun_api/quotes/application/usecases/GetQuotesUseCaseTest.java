@@ -52,25 +52,29 @@ class GetQuotesUseCaseTest {
                 Instant.now(), Instant.now()
         );
 
-        when(quoteRepository.findAll()).thenReturn(List.of(quote));
+        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc"))
+                .thenReturn(List.of(quote));
 
-        List<QuoteListResponse> responses = getQuotesUseCase.execute();
+        List<QuoteListResponse> responses = getQuotesUseCase.execute(
+                null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(1, responses.size());
         QuoteListResponse response = responses.get(0);
         assertEquals(quote.getId(), response.id());
-        assertEquals("2026-0001", response.quoteNumber());
+        assertEquals("PRE-2026-0001", response.quoteNumber());
         assertEquals("Customer", response.customerName());
         assertEquals("DRAFT", response.status());
-        verify(quoteRepository).findAll();
+        verify(quoteRepository).findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no quotes exist")
     void shouldReturnEmptyListWhenNoQuotes() {
-        when(quoteRepository.findAll()).thenReturn(List.of());
+        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc"))
+                .thenReturn(List.of());
 
-        List<QuoteListResponse> responses = getQuotesUseCase.execute();
+        List<QuoteListResponse> responses = getQuotesUseCase.execute(
+                null, null, null, null, null, null, "createdAt", "desc");
 
         assertTrue(responses.isEmpty());
     }

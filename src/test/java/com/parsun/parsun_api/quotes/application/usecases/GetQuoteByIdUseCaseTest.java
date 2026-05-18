@@ -5,6 +5,10 @@ import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
+import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,17 +36,25 @@ class GetQuoteByIdUseCaseTest {
     @Mock
     private QuoteRepository quoteRepository;
 
+    @Mock
+    private WarehouseStockRepository warehouseStockRepository;
+
+    @Mock
+    private WarehouseRepository warehouseRepository;
+
     private GetQuoteByIdUseCase getQuoteByIdUseCase;
 
     @BeforeEach
     void setUp() {
-        getQuoteByIdUseCase = new GetQuoteByIdUseCase(quoteRepository);
+        getQuoteByIdUseCase = new GetQuoteByIdUseCase(quoteRepository, warehouseStockRepository, warehouseRepository);
     }
 
     @Test
     @DisplayName("should return quote detail when quote exists")
     void shouldReturnQuoteDetailWhenExists() {
         UUID quoteId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        UUID warehouseId = UUID.randomUUID();
         Quote quote = Quote.reconstitute(
                 quoteId,
                 QuoteNumber.of(2026, 1),
@@ -51,11 +63,12 @@ class GetQuoteByIdUseCaseTest {
                 QuoteStatus.DRAFT,
                 LocalDate.now(), null, BigDecimal.TEN,
                 null, null, null, null, null, null,
-                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001", BigDecimal.ONE, BigDecimal.TEN)),
+                List.of(new QuoteLine(productId, "Product", "PROD-001", BigDecimal.ONE, BigDecimal.TEN)),
                 Instant.now(), Instant.now()
         );
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
+        when(warehouseStockRepository.findByProductId(productId)).thenReturn(List.of());
 
         QuoteDetailResponse response = getQuoteByIdUseCase.execute(quoteId);
 

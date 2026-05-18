@@ -152,7 +152,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
     @DisplayName("should throw when quote is not in DRAFT status")
     void shouldThrowWhenQuoteNotDraft() {
         QuoteLine line = new QuoteLine(UUID.randomUUID(), "Prod", "P-001", BigDecimal.ONE, BigDecimal.TEN);
-        Quote quote = Quote.reconstitute(quoteId, new QuoteNumber("2026-0001"),
+        Quote quote = Quote.reconstitute(quoteId, new QuoteNumber("PRE-2026-0001"),
                 UUID.randomUUID(), "Customer", "J-123",
                 authenticatedUserId, "Creator", QuoteStatus.CANCELLED,
                 null, null, BigDecimal.TEN, null, null, null, null,
@@ -186,7 +186,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         QuoteAllocation allocation = new QuoteAllocation(productId, warehouseId, "Main WH", BigDecimal.valueOf(2));
         line.addAllocation(allocation);
 
-        return Quote.reconstitute(quoteId, new QuoteNumber("2026-0002"),
+        return Quote.reconstitute(quoteId, new QuoteNumber("PRE-2026-0002"),
                 UUID.randomUUID(), "Empresa Test C.A.", "J-12345678-9",
                 authenticatedUserId, "Creator", QuoteStatus.DRAFT,
                 LocalDate.of(2026, 6, 30), null, new BigDecimal("100.0000"),
