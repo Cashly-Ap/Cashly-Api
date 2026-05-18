@@ -7,12 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
@@ -26,17 +22,13 @@ public abstract class BaseIntegrationTest {
         }
     }
 
-    @Container
-    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
-        .withDatabaseName("parsun_test")
-        .withUsername("testuser")
-        .withPassword("testpass");
-
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysql::getJdbcUrl);
-        registry.add("spring.datasource.username", mysql::getUsername);
-        registry.add("spring.datasource.password", mysql::getPassword);
+        // Use pre-provisioned mysql-test container from docker-compose
+        // instead of Testcontainers (incompatible with Docker Desktop socket)
+        registry.add("spring.datasource.url", () -> "jdbc:mysql://mysql-test:3306/parsun_test?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_0900_ai_ci");
+        registry.add("spring.datasource.username", () -> "testuser");
+        registry.add("spring.datasource.password", () -> "testpass");
         registry.add("spring.flyway.enabled", () -> "true");
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "validate");
         registry.add("storage.type", () -> "local");
