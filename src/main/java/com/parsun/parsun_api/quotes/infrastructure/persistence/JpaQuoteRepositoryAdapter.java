@@ -3,7 +3,6 @@ package com.parsun.parsun_api.quotes.infrastructure.persistence;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public class JpaQuoteRepositoryAdapter implements QuoteRepository {
 
     private final QuoteJpaRepository jpaRepository;
@@ -36,13 +34,15 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Quote> findById(UUID id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+        return jpaRepository.findByIdWithLines(id).map(mapper::toDomain);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Quote> findAll() {
-        return jpaRepository.findAll().stream()
+        return jpaRepository.findAllWithLines().stream()
                 .map(mapper::toDomain)
                 .toList();
     }
