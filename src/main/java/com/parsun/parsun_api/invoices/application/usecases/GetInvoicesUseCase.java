@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public class GetInvoicesUseCase {
 
+    private static final List<String> DEFAULT_STATUSES = List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID");
+
     private final InvoiceRepository invoiceRepository;
 
     public GetInvoicesUseCase(InvoiceRepository invoiceRepository) {
@@ -17,10 +19,11 @@ public class GetInvoicesUseCase {
     }
 
     public List<InvoiceListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId, String status,
+                                              UUID customerId, List<String> statuses,
                                               UUID productId, UUID categoryId,
                                               String orderBy, String orderDir) {
-        return invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir)
+        List<String> effectiveStatuses = (statuses == null || statuses.isEmpty()) ? DEFAULT_STATUSES : statuses;
+        return invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, productId, categoryId, orderBy, orderDir)
                 .stream()
                 .map(InvoiceMapper::toListResponse)
                 .toList();

@@ -12,7 +12,7 @@ public interface InvoiceRepository {
     Invoice save(Invoice invoice);
     Optional<Invoice> findById(InvoiceId id);
     List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                     UUID customerId, String status,
+                                     UUID customerId, List<String> statuses,
                                      UUID productId, UUID categoryId,
                                      String orderBy, String orderDir);
     void deleteById(InvoiceId id);
