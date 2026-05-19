@@ -15,7 +15,8 @@ VALUES
     (UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'admin@parsun.com',      'Admin User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'ADMIN',       TRUE, TRUE, 1.00, NOW(), NOW()),
     (UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'operator@parsun.com',   'Operator User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
     (UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'sales@parsun.com',      'Sales User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@parsun.com',    'No Sales User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW());
+    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@parsun.com',    'No Sales User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'admin@gmail.com',       'Admin',         '$2b$10$BZhETvZ1oxZw//ZRnV3kAubwJd/B/s6JrmLjX.Fr5z8KdVltKxy7e', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW());
 
 INSERT INTO user_module_permissions (id, user_id, module)
 VALUES
@@ -49,7 +50,17 @@ VALUES
     (UNHEX('ee000000000000000000000000000001'), UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'SALES'),
 
     (UNHEX('ff000000000000000000000000000001'), UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'INVENTORY'),
-    (UNHEX('ff000000000000000000000000000002'), UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'PURCHASES');
+    (UNHEX('ff000000000000000000000000000002'), UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'PURCHASES'),
+
+    -- admin@gmail.com — SUPER_ADMIN with all modules
+    (UNHEX('aa000000000000000000000000000010'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'USERS'),
+    (UNHEX('aa000000000000000000000000000011'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'INVENTORY'),
+    (UNHEX('aa000000000000000000000000000012'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'SALES'),
+    (UNHEX('aa000000000000000000000000000013'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'FINANCE'),
+    (UNHEX('aa000000000000000000000000000014'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'PURCHASES'),
+    (UNHEX('aa000000000000000000000000000015'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'CUSTOMER_PORTAL'),
+    (UNHEX('aa000000000000000000000000000016'), UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'DOCUMENT_ADMIN');
+
 -- =============================================================================
 -- Seed: Customers (10 clientes con emails, teléfonos y direcciones)
 -- portal_password BCrypt of: 49510561Gabriel.
