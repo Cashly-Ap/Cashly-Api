@@ -1,0 +1,14 @@
+package com.parsun.parsun_api.finances.application.dto.response;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record PaymentMethodResponse(
+        UUID id,
+        String code,
+        String name,
+        String description,
+        boolean isActive,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {}
