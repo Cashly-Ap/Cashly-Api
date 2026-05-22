@@ -4,7 +4,7 @@ public enum BusinessModule {
     USERS,
     INVENTORY,
     SALES,
-    FINANCE,
+    FINANCES,
     PURCHASES,
     CUSTOMER_PORTAL,
     DOCUMENT_ADMIN

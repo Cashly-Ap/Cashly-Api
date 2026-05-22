@@ -34,7 +34,7 @@ class UpdatePaymentMethodUseCaseTest {
     @Test
     void should_UpdatePaymentMethod_When_Found() {
         UUID id = UUID.randomUUID();
-        UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest("Updated Name", "Updated Description");
+        UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest("Updated Name", "Updated Description", null);
 
         PaymentMethod existing = PaymentMethod.reconstitute(
                 PaymentMethodId.of(id), "PM-0001", "Old Name", "Old Description", true,
@@ -59,7 +59,7 @@ class UpdatePaymentMethodUseCaseTest {
     @Test
     void should_ThrowException_When_NotFound() {
         UUID id = UUID.randomUUID();
-        UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest("Name", "Description");
+        UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest("Name", "Description", null);
 
         when(repository.findById(PaymentMethodId.of(id))).thenReturn(Optional.empty());
 

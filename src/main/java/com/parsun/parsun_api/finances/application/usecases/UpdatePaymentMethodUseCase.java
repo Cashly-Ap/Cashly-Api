@@ -23,7 +23,7 @@ public class UpdatePaymentMethodUseCase {
         PaymentMethod paymentMethod = repository.findById(PaymentMethodId.of(id))
                 .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + id));
 
-        paymentMethod.update(request.name(), request.description());
+        paymentMethod.update(request.name(), request.description(), request.isActive());
         PaymentMethod saved = repository.save(paymentMethod);
 
         return FinanceMapper.toPaymentMethodResponse(saved);

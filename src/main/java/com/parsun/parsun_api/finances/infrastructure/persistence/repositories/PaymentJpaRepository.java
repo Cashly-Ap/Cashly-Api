@@ -11,6 +11,8 @@ import java.util.UUID;
 
 public interface PaymentJpaRepository extends JpaRepository<PaymentEntity, UUID> {
 
+    boolean existsByPaymentMethodId(UUID paymentMethodId);
+
     @Query("""
             SELECT p FROM PaymentEntity p
             WHERE (:dateFrom IS NULL OR p.createdAt >= :dateFrom)

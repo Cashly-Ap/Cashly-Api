@@ -24,15 +24,21 @@ public class DebitNoteController {
     private final ApplyDebitNoteUseCase applyDebitNoteUseCase;
     private final CancelDebitNoteUseCase cancelDebitNoteUseCase;
     private final GetDebitNotesUseCase getDebitNotesUseCase;
+    private final GetDebitNoteByIdUseCase getDebitNoteByIdUseCase;
+    private final DeleteDebitNoteUseCase deleteDebitNoteUseCase;
 
     public DebitNoteController(CreateDebitNoteUseCase createDebitNoteUseCase,
-                               ApplyDebitNoteUseCase applyDebitNoteUseCase,
-                               CancelDebitNoteUseCase cancelDebitNoteUseCase,
-                               GetDebitNotesUseCase getDebitNotesUseCase) {
+                                ApplyDebitNoteUseCase applyDebitNoteUseCase,
+                                CancelDebitNoteUseCase cancelDebitNoteUseCase,
+                                GetDebitNotesUseCase getDebitNotesUseCase,
+                                GetDebitNoteByIdUseCase getDebitNoteByIdUseCase,
+                                DeleteDebitNoteUseCase deleteDebitNoteUseCase) {
         this.createDebitNoteUseCase = createDebitNoteUseCase;
         this.applyDebitNoteUseCase = applyDebitNoteUseCase;
         this.cancelDebitNoteUseCase = cancelDebitNoteUseCase;
         this.getDebitNotesUseCase = getDebitNotesUseCase;
+        this.getDebitNoteByIdUseCase = getDebitNoteByIdUseCase;
+        this.deleteDebitNoteUseCase = deleteDebitNoteUseCase;
     }
 
     @PostMapping
@@ -59,7 +65,8 @@ public class DebitNoteController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<DebitNoteResponse> getById(@PathVariable UUID id) {
-        return ResponseEntity.ok().build();
+        DebitNoteResponse response = getDebitNoteByIdUseCase.execute(id);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/apply")
@@ -76,5 +83,12 @@ public class DebitNoteController {
     public ResponseEntity<DebitNoteResponse> cancel(@PathVariable UUID id) {
         DebitNoteResponse response = cancelDebitNoteUseCase.execute(id);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        deleteDebitNoteUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 }

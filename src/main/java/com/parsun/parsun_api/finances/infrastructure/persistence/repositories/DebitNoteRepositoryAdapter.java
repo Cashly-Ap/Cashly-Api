@@ -53,6 +53,11 @@ public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
     }
 
     @Override
+    public void delete(DebitNoteId id) {
+        jpaRepository.deleteById(id.value());
+    }
+
+    @Override
     public int getNextSequenceForYear(int year) {
         DebitNoteNumberSequenceEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
                 .orElseGet(() -> {

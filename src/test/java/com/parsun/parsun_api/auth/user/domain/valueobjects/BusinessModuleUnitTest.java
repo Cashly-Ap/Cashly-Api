@@ -28,9 +28,9 @@ class BusinessModuleUnitTest {
     }
 
     @Test
-    void should_have_FINANCE_value() {
-        BusinessModule module = BusinessModule.valueOf("FINANCE");
-        assertEquals(BusinessModule.FINANCE, module);
+    void should_have_FINANCES_value() {
+        BusinessModule module = BusinessModule.valueOf("FINANCES");
+        assertEquals(BusinessModule.FINANCES, module);
     }
 
     @Test
@@ -63,7 +63,7 @@ class BusinessModuleUnitTest {
         assertTrue(values.contains(BusinessModule.USERS));
         assertTrue(values.contains(BusinessModule.INVENTORY));
         assertTrue(values.contains(BusinessModule.SALES));
-        assertTrue(values.contains(BusinessModule.FINANCE));
+        assertTrue(values.contains(BusinessModule.FINANCES));
         assertTrue(values.contains(BusinessModule.PURCHASES));
         assertTrue(values.contains(BusinessModule.CUSTOMER_PORTAL));
         assertTrue(values.contains(BusinessModule.DOCUMENT_ADMIN));

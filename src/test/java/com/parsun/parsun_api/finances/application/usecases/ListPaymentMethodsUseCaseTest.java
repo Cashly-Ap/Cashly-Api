@@ -28,7 +28,7 @@ class ListPaymentMethodsUseCaseTest {
     private ListPaymentMethodsUseCase useCase;
 
     @Test
-    void should_ReturnAllPaymentMethods_When_ActiveOnlyIsFalse() {
+    void should_ReturnAllPaymentMethods_When_ActiveIsNull() {
         PaymentMethod m1 = PaymentMethod.reconstitute(
                 com.parsun.parsun_api.finances.domain.valueobjects.PaymentMethodId.generate(),
                 "PM-0001", "Efectivo", "Cash", true, LocalDateTime.now(), LocalDateTime.now());
@@ -36,16 +36,16 @@ class ListPaymentMethodsUseCaseTest {
                 com.parsun.parsun_api.finances.domain.valueobjects.PaymentMethodId.generate(),
                 "PM-0002", "Transferencia", "Bank transfer", false, LocalDateTime.now(), LocalDateTime.now());
 
-        when(repository.findAll(false)).thenReturn(List.of(m1, m2));
+        when(repository.findAll(null)).thenReturn(List.of(m1, m2));
 
-        List<PaymentMethodResponse> result = useCase.execute(false);
+        List<PaymentMethodResponse> result = useCase.execute(null);
 
         assertEquals(2, result.size());
-        verify(repository).findAll(false);
+        verify(repository).findAll(null);
     }
 
     @Test
-    void should_ReturnOnlyActivePaymentMethods_When_ActiveOnlyIsTrue() {
+    void should_ReturnOnlyActivePaymentMethods_When_ActiveIsTrue() {
         PaymentMethod m1 = PaymentMethod.reconstitute(
                 com.parsun.parsun_api.finances.domain.valueobjects.PaymentMethodId.generate(),
                 "PM-0001", "Efectivo", "Cash", true, LocalDateTime.now(), LocalDateTime.now());
@@ -60,10 +60,25 @@ class ListPaymentMethodsUseCaseTest {
     }
 
     @Test
-    void should_ReturnEmptyList_When_NoMethodsExist() {
-        when(repository.findAll(false)).thenReturn(List.of());
+    void should_ReturnOnlyInactivePaymentMethods_When_ActiveIsFalse() {
+        PaymentMethod m1 = PaymentMethod.reconstitute(
+                com.parsun.parsun_api.finances.domain.valueobjects.PaymentMethodId.generate(),
+                "PM-0002", "Transferencia", "Bank transfer", false, LocalDateTime.now(), LocalDateTime.now());
+
+        when(repository.findAll(false)).thenReturn(List.of(m1));
 
         List<PaymentMethodResponse> result = useCase.execute(false);
+
+        assertEquals(1, result.size());
+        assertFalse(result.get(0).isActive());
+        verify(repository).findAll(false);
+    }
+
+    @Test
+    void should_ReturnEmptyList_When_NoMethodsExist() {
+        when(repository.findAll(null)).thenReturn(List.of());
+
+        List<PaymentMethodResponse> result = useCase.execute(null);
 
         assertTrue(result.isEmpty());
     }

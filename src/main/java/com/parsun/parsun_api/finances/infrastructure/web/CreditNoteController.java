@@ -24,15 +24,21 @@ public class CreditNoteController {
     private final ApplyCreditNoteUseCase applyCreditNoteUseCase;
     private final CancelCreditNoteUseCase cancelCreditNoteUseCase;
     private final GetCreditNotesUseCase getCreditNotesUseCase;
+    private final GetCreditNoteByIdUseCase getCreditNoteByIdUseCase;
+    private final DeleteCreditNoteUseCase deleteCreditNoteUseCase;
 
     public CreditNoteController(CreateCreditNoteUseCase createCreditNoteUseCase,
                                 ApplyCreditNoteUseCase applyCreditNoteUseCase,
                                 CancelCreditNoteUseCase cancelCreditNoteUseCase,
-                                GetCreditNotesUseCase getCreditNotesUseCase) {
+                                GetCreditNotesUseCase getCreditNotesUseCase,
+                                GetCreditNoteByIdUseCase getCreditNoteByIdUseCase,
+                                DeleteCreditNoteUseCase deleteCreditNoteUseCase) {
         this.createCreditNoteUseCase = createCreditNoteUseCase;
         this.applyCreditNoteUseCase = applyCreditNoteUseCase;
         this.cancelCreditNoteUseCase = cancelCreditNoteUseCase;
         this.getCreditNotesUseCase = getCreditNotesUseCase;
+        this.getCreditNoteByIdUseCase = getCreditNoteByIdUseCase;
+        this.deleteCreditNoteUseCase = deleteCreditNoteUseCase;
     }
 
     @PostMapping
@@ -59,7 +65,8 @@ public class CreditNoteController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<CreditNoteResponse> getById(@PathVariable UUID id) {
-        return ResponseEntity.ok().build();
+        CreditNoteResponse response = getCreditNoteByIdUseCase.execute(id);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/apply")
@@ -76,5 +83,12 @@ public class CreditNoteController {
     public ResponseEntity<CreditNoteResponse> cancel(@PathVariable UUID id) {
         CreditNoteResponse response = cancelCreditNoteUseCase.execute(id);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        deleteCreditNoteUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 }

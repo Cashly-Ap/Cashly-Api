@@ -15,8 +15,8 @@ public class ListPaymentMethodsUseCase {
         this.repository = repository;
     }
 
-    public List<PaymentMethodResponse> execute(boolean activeOnly) {
-        List<PaymentMethod> paymentMethods = repository.findAll(activeOnly);
+    public List<PaymentMethodResponse> execute(Boolean active) {
+        List<PaymentMethod> paymentMethods = repository.findAll(active);
         return FinanceMapper.toPaymentMethodResponseList(paymentMethods);
     }
 }

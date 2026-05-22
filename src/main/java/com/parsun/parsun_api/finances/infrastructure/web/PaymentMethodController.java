@@ -22,17 +22,20 @@ public class PaymentMethodController {
     private final ListPaymentMethodsUseCase listPaymentMethodsUseCase;
     private final GetPaymentMethodByIdUseCase getPaymentMethodByIdUseCase;
     private final TogglePaymentMethodUseCase togglePaymentMethodUseCase;
+    private final DeletePaymentMethodUseCase deletePaymentMethodUseCase;
 
     public PaymentMethodController(CreatePaymentMethodUseCase createPaymentMethodUseCase,
                                     UpdatePaymentMethodUseCase updatePaymentMethodUseCase,
                                     ListPaymentMethodsUseCase listPaymentMethodsUseCase,
                                     GetPaymentMethodByIdUseCase getPaymentMethodByIdUseCase,
-                                    TogglePaymentMethodUseCase togglePaymentMethodUseCase) {
+                                    TogglePaymentMethodUseCase togglePaymentMethodUseCase,
+                                    DeletePaymentMethodUseCase deletePaymentMethodUseCase) {
         this.createPaymentMethodUseCase = createPaymentMethodUseCase;
         this.updatePaymentMethodUseCase = updatePaymentMethodUseCase;
         this.listPaymentMethodsUseCase = listPaymentMethodsUseCase;
         this.getPaymentMethodByIdUseCase = getPaymentMethodByIdUseCase;
         this.togglePaymentMethodUseCase = togglePaymentMethodUseCase;
+        this.deletePaymentMethodUseCase = deletePaymentMethodUseCase;
     }
 
     @PostMapping
@@ -46,7 +49,7 @@ public class PaymentMethodController {
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<List<PaymentMethodResponse>> list(
-            @RequestParam(required = false, defaultValue = "false") boolean active) {
+            @RequestParam(required = false) Boolean active) {
         List<PaymentMethodResponse> paymentMethods = listPaymentMethodsUseCase.execute(active);
         return ResponseEntity.ok(paymentMethods);
     }
@@ -72,5 +75,12 @@ public class PaymentMethodController {
     public ResponseEntity<PaymentMethodResponse> toggle(@PathVariable UUID id) {
         PaymentMethodResponse response = togglePaymentMethodUseCase.execute(id);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        deletePaymentMethodUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 }

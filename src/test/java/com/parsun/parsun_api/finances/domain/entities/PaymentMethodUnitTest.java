@@ -66,7 +66,7 @@ class PaymentMethodUnitTest {
         LocalDateTime beforeUpdate = method.getUpdatedAt();
 
         Thread.sleep(10);
-        method.update("Updated Name", "Updated Description");
+        method.update("Updated Name", "Updated Description", null);
 
         assertEquals("Updated Name", method.getName());
         assertEquals("Updated Description", method.getDescription());
@@ -77,7 +77,7 @@ class PaymentMethodUnitTest {
     void should_ThrowException_When_NameIsNull() {
         PaymentMethod method = PaymentMethod.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION);
 
-        assertThrows(NullPointerException.class, () -> method.update(null, "Description"));
+        assertThrows(NullPointerException.class, () -> method.update(null, "Description", null));
     }
 
     // --- toggleActive() ---

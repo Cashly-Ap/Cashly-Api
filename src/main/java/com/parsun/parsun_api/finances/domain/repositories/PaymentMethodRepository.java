@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface PaymentMethodRepository {
     PaymentMethod save(PaymentMethod paymentMethod);
     Optional<PaymentMethod> findById(PaymentMethodId id);
-    List<PaymentMethod> findAll(boolean activeOnly);
+    List<PaymentMethod> findAll(Boolean active);
     Optional<PaymentMethod> findByCode(String code);
+    boolean hasPayments(PaymentMethodId id);
+    void delete(PaymentMethodId id);
 }

@@ -41,10 +41,13 @@ public class PaymentMethod {
         return new PaymentMethod(id, code, name, description, isActive, createdAt, updatedAt);
     }
 
-    public void update(String name, String description) {
+    public void update(String name, String description, Boolean isActive) {
         Objects.requireNonNull(name, "Name cannot be null");
         this.name = name;
         this.description = description;
+        if (isActive != null) {
+            this.isActive = isActive;
+        }
         this.updatedAt = LocalDateTime.now();
     }
 

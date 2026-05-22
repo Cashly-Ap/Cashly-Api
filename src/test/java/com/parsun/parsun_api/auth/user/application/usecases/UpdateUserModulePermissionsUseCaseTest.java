@@ -87,7 +87,7 @@ class UpdateUserModulePermissionsUseCaseTest {
     @Test
     @DisplayName("should_SaveUser_WithUpdatedPermissions")
     void should_SaveUser_WithUpdatedPermissions() {
-        Set<BusinessModule> permissions = Set.of(BusinessModule.SALES, BusinessModule.FINANCE);
+        Set<BusinessModule> permissions = Set.of(BusinessModule.SALES, BusinessModule.FINANCES);
         UpdateUserModulePermissionsRequest request = new UpdateUserModulePermissionsRequest(permissions);
 
         when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));

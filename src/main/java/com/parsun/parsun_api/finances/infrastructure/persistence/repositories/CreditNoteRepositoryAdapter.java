@@ -53,6 +53,11 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
     }
 
     @Override
+    public void delete(CreditNoteId id) {
+        jpaRepository.deleteById(id.value());
+    }
+
+    @Override
     public int getNextSequenceForYear(int year) {
         CreditNoteNumberSequenceEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
                 .orElseGet(() -> {

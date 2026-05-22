@@ -13,8 +13,8 @@ public interface PaymentMethodJpaRepository extends JpaRepository<PaymentMethodE
 
     Optional<PaymentMethodEntity> findByCode(String code);
 
-    @Query("SELECT pm FROM PaymentMethodEntity pm WHERE (:activeOnly = false OR pm.isActive = true)")
-    List<PaymentMethodEntity> findAllActive(@Param("activeOnly") boolean activeOnly);
+    @Query("SELECT pm FROM PaymentMethodEntity pm WHERE (:active IS NULL OR pm.isActive = :active)")
+    List<PaymentMethodEntity> findAllActive(@Param("active") Boolean active);
 
     @Query("SELECT MAX(CAST(SUBSTRING(pm.code, 4) AS integer)) FROM PaymentMethodEntity pm WHERE pm.code LIKE 'PM-%'")
     Optional<Integer> findMaxCodeNumber();
