@@ -37,6 +37,6 @@ public class CreateCreditNoteUseCase {
 
         CreditNote saved = creditNoteRepository.save(creditNote);
 
-        return FinanceMapper.toCreditNoteResponse(saved, null, null);
+        return FinanceMapper.toCreditNoteResponse(saved, null, null, null);
     }
 }

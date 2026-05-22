@@ -50,6 +50,11 @@ public class FinanceConfig {
     }
 
     @Bean
+    public DeletePaymentMethodUseCase deletePaymentMethodUseCase(PaymentMethodRepository repository) {
+        return new DeletePaymentMethodUseCase(repository);
+    }
+
+    @Bean
     public PaymentAllocationService paymentAllocationService(PaymentRepository paymentRepository,
                                                              PaymentAllocationRepository allocationRepository) {
         return new PaymentAllocationService(paymentRepository, allocationRepository);
@@ -139,18 +144,32 @@ public class FinanceConfig {
     }
 
     @Bean
-    public ApplyCreditNoteUseCase applyCreditNoteUseCase(CreditNoteRepository creditNoteRepository) {
-        return new ApplyCreditNoteUseCase(creditNoteRepository);
+    public ApplyCreditNoteUseCase applyCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
+                                                         InvoiceJpaRepository invoiceJpaRepository) {
+        return new ApplyCreditNoteUseCase(creditNoteRepository, invoiceJpaRepository);
     }
 
     @Bean
-    public CancelCreditNoteUseCase cancelCreditNoteUseCase(CreditNoteRepository creditNoteRepository) {
-        return new CancelCreditNoteUseCase(creditNoteRepository);
+    public CancelCreditNoteUseCase cancelCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
+                                                           InvoiceJpaRepository invoiceJpaRepository) {
+        return new CancelCreditNoteUseCase(creditNoteRepository, invoiceJpaRepository);
     }
 
     @Bean
-    public GetCreditNotesUseCase getCreditNotesUseCase(CreditNoteRepository creditNoteRepository) {
-        return new GetCreditNotesUseCase(creditNoteRepository);
+    public DeleteCreditNoteUseCase deleteCreditNoteUseCase(CreditNoteRepository creditNoteRepository) {
+        return new DeleteCreditNoteUseCase(creditNoteRepository);
+    }
+
+    @Bean
+    public GetCreditNotesUseCase getCreditNotesUseCase(CreditNoteRepository creditNoteRepository,
+                                                       InvoiceJpaRepository invoiceJpaRepository) {
+        return new GetCreditNotesUseCase(creditNoteRepository, invoiceJpaRepository);
+    }
+
+    @Bean
+    public GetCreditNoteByIdUseCase getCreditNoteByIdUseCase(CreditNoteRepository creditNoteRepository,
+                                                              InvoiceJpaRepository invoiceJpaRepository) {
+        return new GetCreditNoteByIdUseCase(creditNoteRepository, invoiceJpaRepository);
     }
 
     @Bean
@@ -159,18 +178,32 @@ public class FinanceConfig {
     }
 
     @Bean
-    public ApplyDebitNoteUseCase applyDebitNoteUseCase(DebitNoteRepository debitNoteRepository) {
-        return new ApplyDebitNoteUseCase(debitNoteRepository);
+    public ApplyDebitNoteUseCase applyDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
+                                                       InvoiceJpaRepository invoiceJpaRepository) {
+        return new ApplyDebitNoteUseCase(debitNoteRepository, invoiceJpaRepository);
     }
 
     @Bean
-    public CancelDebitNoteUseCase cancelDebitNoteUseCase(DebitNoteRepository debitNoteRepository) {
-        return new CancelDebitNoteUseCase(debitNoteRepository);
+    public CancelDebitNoteUseCase cancelDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
+                                                         InvoiceJpaRepository invoiceJpaRepository) {
+        return new CancelDebitNoteUseCase(debitNoteRepository, invoiceJpaRepository);
     }
 
     @Bean
-    public GetDebitNotesUseCase getDebitNotesUseCase(DebitNoteRepository debitNoteRepository) {
-        return new GetDebitNotesUseCase(debitNoteRepository);
+    public DeleteDebitNoteUseCase deleteDebitNoteUseCase(DebitNoteRepository debitNoteRepository) {
+        return new DeleteDebitNoteUseCase(debitNoteRepository);
+    }
+
+    @Bean
+    public GetDebitNotesUseCase getDebitNotesUseCase(DebitNoteRepository debitNoteRepository,
+                                                     InvoiceJpaRepository invoiceJpaRepository) {
+        return new GetDebitNotesUseCase(debitNoteRepository, invoiceJpaRepository);
+    }
+
+    @Bean
+    public GetDebitNoteByIdUseCase getDebitNoteByIdUseCase(DebitNoteRepository debitNoteRepository,
+                                                           InvoiceJpaRepository invoiceJpaRepository) {
+        return new GetDebitNoteByIdUseCase(debitNoteRepository, invoiceJpaRepository);
     }
 
     @Bean

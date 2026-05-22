@@ -94,12 +94,14 @@ public class FinanceMapper {
 
     public static CreditNoteResponse toCreditNoteResponse(CreditNote creditNote,
                                                            String customerName,
+                                                           String customerRif,
                                                            String invoiceNumber) {
         return new CreditNoteResponse(
                 creditNote.getId().value(),
                 creditNote.getNoteNumber().value(),
                 creditNote.getCustomerId(),
                 customerName,
+                customerRif,
                 creditNote.getInvoiceId(),
                 invoiceNumber,
                 creditNote.getAmount(),
@@ -115,12 +117,14 @@ public class FinanceMapper {
 
     public static DebitNoteResponse toDebitNoteResponse(DebitNote debitNote,
                                                          String customerName,
+                                                         String customerRif,
                                                          String invoiceNumber) {
         return new DebitNoteResponse(
                 debitNote.getId().value(),
                 debitNote.getNoteNumber().value(),
                 debitNote.getCustomerId(),
                 customerName,
+                customerRif,
                 debitNote.getInvoiceId(),
                 invoiceNumber,
                 debitNote.getAmount(),

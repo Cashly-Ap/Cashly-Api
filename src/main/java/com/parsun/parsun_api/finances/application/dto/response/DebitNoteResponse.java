@@ -9,6 +9,7 @@ public record DebitNoteResponse(
         String noteNumber,
         UUID customerId,
         String customerName,
+        String customerRif,
         UUID invoiceId,
         String invoiceNumber,
         BigDecimal amount,

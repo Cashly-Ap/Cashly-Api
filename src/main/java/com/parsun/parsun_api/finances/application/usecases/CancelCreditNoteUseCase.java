@@ -5,6 +5,8 @@ import com.parsun.parsun_api.finances.application.mappers.FinanceMapper;
 import com.parsun.parsun_api.finances.domain.entities.CreditNote;
 import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.finances.domain.valueobjects.CreditNoteId;
+import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import com.parsun.parsun_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
@@ -12,9 +14,12 @@ import java.util.UUID;
 public class CancelCreditNoteUseCase {
 
     private final CreditNoteRepository creditNoteRepository;
+    private final InvoiceJpaRepository invoiceJpaRepository;
 
-    public CancelCreditNoteUseCase(CreditNoteRepository creditNoteRepository) {
+    public CancelCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
+                                   InvoiceJpaRepository invoiceJpaRepository) {
         this.creditNoteRepository = creditNoteRepository;
+        this.invoiceJpaRepository = invoiceJpaRepository;
     }
 
     @Transactional
@@ -27,6 +32,13 @@ public class CancelCreditNoteUseCase {
 
         CreditNote saved = creditNoteRepository.save(creditNote);
 
-        return FinanceMapper.toCreditNoteResponse(saved, null, null);
+        InvoiceEntity invoice = invoiceJpaRepository.findById(saved.getInvoiceId())
+                .orElse(null);
+
+        String customerName = invoice != null ? invoice.getCustomerName() : null;
+        String customerRif = invoice != null ? invoice.getCustomerRif() : null;
+        String invoiceNumber = invoice != null ? invoice.getInvoiceNumber() : null;
+
+        return FinanceMapper.toCreditNoteResponse(saved, customerName, customerRif, invoiceNumber);
     }
 }

@@ -37,6 +37,6 @@ public class CreateDebitNoteUseCase {
 
         DebitNote saved = debitNoteRepository.save(debitNote);
 
-        return FinanceMapper.toDebitNoteResponse(saved, null, null);
+        return FinanceMapper.toDebitNoteResponse(saved, null, null, null);
     }
 }
