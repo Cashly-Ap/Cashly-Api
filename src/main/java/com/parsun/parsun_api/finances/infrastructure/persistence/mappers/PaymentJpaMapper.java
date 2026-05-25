@@ -49,7 +49,11 @@ public class PaymentJpaMapper {
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getApprovalStatus(),
+                entity.getRejectionReason(),
+                entity.getApprovedBy(),
+                entity.getCommissionPercentage()
         );
     }
 

@@ -9,7 +9,9 @@ import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.finances.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.finances.domain.repositories.PaymentMethodRepository;
 import com.parsun.parsun_api.finances.domain.repositories.PaymentRepository;
+import com.parsun.parsun_api.finances.domain.repositories.ReceivablesRepository;
 import com.parsun.parsun_api.finances.domain.services.PaymentAllocationService;
+import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import com.parsun.parsun_api.finances.infrastructure.persistence.repositories.*;
 import com.parsun.parsun_api.finances.domain.services.CreditValidationService;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
@@ -233,10 +235,84 @@ public class FinanceConfig {
 
     @Bean
     public GetReturnByIdUseCase getReturnByIdUseCase(ReturnRepository returnRepository,
-                                                     ReturnLineJpaRepository returnLineJpaRepository,
-                                                     InvoiceJpaRepository invoiceJpaRepository,
-                                                     SpringDataWarehouseRepository warehouseJpaRepository) {
+                                                      ReturnLineJpaRepository returnLineJpaRepository,
+                                                      InvoiceJpaRepository invoiceJpaRepository,
+                                                      SpringDataWarehouseRepository warehouseJpaRepository) {
         return new GetReturnByIdUseCase(returnRepository, returnLineJpaRepository, invoiceJpaRepository,
                 warehouseJpaRepository);
+    }
+
+    @Bean
+    public GetReceivablesSummaryUseCase getReceivablesSummaryUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetReceivablesSummaryUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public SearchCustomerDebtUseCase searchCustomerDebtUseCase(ReceivablesRepository receivablesRepository) {
+        return new SearchCustomerDebtUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public GetCustomerDebtUseCase getCustomerDebtUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetCustomerDebtUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public GetCustomerInvoicesUseCase getCustomerInvoicesUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetCustomerInvoicesUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public GetPendingPaymentsUseCase getPendingPaymentsUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetPendingPaymentsUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public GetMerchantPaymentsUseCase getMerchantPaymentsUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetMerchantPaymentsUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public GetPaymentHistoryUseCase getPaymentHistoryUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetPaymentHistoryUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public GetCustomerPaymentHistoryUseCase getCustomerPaymentHistoryUseCase(ReceivablesRepository receivablesRepository) {
+        return new GetCustomerPaymentHistoryUseCase(receivablesRepository);
+    }
+
+    @Bean
+    public PayInvoiceUseCase payInvoiceUseCase(PaymentRepository paymentRepository,
+                                               PaymentAllocationRepository allocationRepository,
+                                               InvoiceRepository invoiceRepository,
+                                               FileStorageService fileStorageService) {
+        return new PayInvoiceUseCase(paymentRepository, allocationRepository, invoiceRepository, fileStorageService);
+    }
+
+    @Bean
+    public PayAllCustomerDebtUseCase payAllCustomerDebtUseCase(PaymentRepository paymentRepository,
+                                                               PaymentAllocationRepository allocationRepository,
+                                                               InvoiceRepository invoiceRepository,
+                                                               FileStorageService fileStorageService) {
+        return new PayAllCustomerDebtUseCase(paymentRepository, allocationRepository, invoiceRepository, fileStorageService);
+    }
+
+    @Bean
+    public PayPartialDebtUseCase payPartialDebtUseCase(PaymentRepository paymentRepository,
+                                                       PaymentAllocationRepository allocationRepository,
+                                                       InvoiceRepository invoiceRepository,
+                                                       FileStorageService fileStorageService) {
+        return new PayPartialDebtUseCase(paymentRepository, allocationRepository, invoiceRepository, fileStorageService);
+    }
+
+    @Bean
+    public ApprovePaymentUseCase approvePaymentUseCase(PaymentRepository paymentRepository) {
+        return new ApprovePaymentUseCase(paymentRepository);
+    }
+
+    @Bean
+    public RejectPaymentUseCase rejectPaymentUseCase(PaymentRepository paymentRepository) {
+        return new RejectPaymentUseCase(paymentRepository);
     }
 }

@@ -48,6 +48,10 @@ public class Payment {
         this.createdByName = createdByName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.approvalStatus = null;
+        this.rejectionReason = null;
+        this.approvedBy = null;
+        this.commissionPercentage = null;
     }
 
     public static Payment create(PaymentNumber paymentNumber, UUID customerId, PaymentType type,
@@ -72,14 +76,32 @@ public class Payment {
     }
 
     public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
-                                       PaymentType type, BigDecimal amount, UUID paymentMethodId,
-                                       String referenceNumber, LocalDate paymentDate, String notes,
-                                       PaymentStatus status, BigDecimal appliedAmount,
-                                       UUID createdBy, String createdByName,
-                                       LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                        PaymentType type, BigDecimal amount, UUID paymentMethodId,
+                                        String referenceNumber, LocalDate paymentDate, String notes,
+                                        PaymentStatus status, BigDecimal appliedAmount,
+                                        UUID createdBy, String createdByName,
+                                        LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Payment(id, paymentNumber, customerId, type, amount, paymentMethodId,
                 referenceNumber, paymentDate, notes, status, appliedAmount,
                 createdBy, createdByName, createdAt, updatedAt);
+    }
+
+    public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
+                                        PaymentType type, BigDecimal amount, UUID paymentMethodId,
+                                        String referenceNumber, LocalDate paymentDate, String notes,
+                                        PaymentStatus status, BigDecimal appliedAmount,
+                                        UUID createdBy, String createdByName,
+                                        LocalDateTime createdAt, LocalDateTime updatedAt,
+                                        String approvalStatus, String rejectionReason,
+                                        UUID approvedBy, BigDecimal commissionPercentage) {
+        Payment payment = new Payment(id, paymentNumber, customerId, type, amount, paymentMethodId,
+                referenceNumber, paymentDate, notes, status, appliedAmount,
+                createdBy, createdByName, createdAt, updatedAt);
+        payment.approvalStatus = approvalStatus;
+        payment.rejectionReason = rejectionReason;
+        payment.approvedBy = approvedBy;
+        payment.commissionPercentage = commissionPercentage;
+        return payment;
     }
 
     public void apply(BigDecimal amount) {
@@ -103,6 +125,41 @@ public class Payment {
         this.updatedAt = LocalDateTime.now();
     }
 
+    private String approvalStatus;
+    private String rejectionReason;
+    private UUID approvedBy;
+    private BigDecimal commissionPercentage;
+
+    public void submitForApproval(String voucherPath) {
+        if (this.status != PaymentStatus.DRAFT) {
+            throw new IllegalStateException("Only DRAFT payments can be submitted for approval");
+        }
+        this.status = PaymentStatus.DRAFT;
+        this.approvalStatus = "PENDING_APPROVAL";
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void approve(UUID authenticatedUserId, BigDecimal commissionPercentage) {
+        if (!"PENDING_APPROVAL".equals(this.approvalStatus)) {
+            throw new IllegalStateException("Payment is not pending approval");
+        }
+        this.approvalStatus = "APPROVED";
+        this.approvedBy = authenticatedUserId;
+        this.commissionPercentage = commissionPercentage;
+        this.status = PaymentStatus.APPLIED;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void reject(UUID authenticatedUserId, String reason) {
+        if (!"PENDING_APPROVAL".equals(this.approvalStatus)) {
+            throw new IllegalStateException("Payment is not pending approval");
+        }
+        this.approvalStatus = "REJECTED";
+        this.rejectionReason = reason;
+        this.approvedBy = authenticatedUserId;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void cancel() {
         if (this.status == PaymentStatus.DRAFT) {
             throw new IllegalStateException("DRAFT payments cannot be cancelled, delete them instead");
@@ -122,6 +179,11 @@ public class Payment {
         this.status = PaymentStatus.DRAFT;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public String getApprovalStatus() { return approvalStatus; }
+    public String getRejectionReason() { return rejectionReason; }
+    public UUID getApprovedBy() { return approvedBy; }
+    public BigDecimal getCommissionPercentage() { return commissionPercentage; }
 
     public PaymentId getId() { return id; }
     public PaymentNumber getPaymentNumber() { return paymentNumber; }

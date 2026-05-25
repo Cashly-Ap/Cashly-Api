@@ -68,4 +68,23 @@ public class PaymentEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "voucher_path", length = 500)
+    private String voucherPath;
+
+    @Column(name = "approval_status", length = 20)
+    private String approvalStatus;
+
+    @Column(name = "approved_by", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID approvedBy;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
+    @Column(name = "rejection_reason", length = 500)
+    private String rejectionReason;
+
+    @Column(name = "commission_percentage", precision = 5, scale = 2)
+    private BigDecimal commissionPercentage;
 }
