@@ -131,7 +131,7 @@ public class CreateReturnUseCase {
         }
 
         return FinanceMapper.toReturnDetailResponse(savedReturn, savedLines,
-                invoice.getInvoiceNumber().value(), invoice.getCustomerName(), null);
+                invoice.getInvoiceNumber().value(), invoice.getCustomerName(), invoice.getCustomerRif(), null);
     }
 
     private void createStockMovementEntry(UUID warehouseId, UUID productId, int quantity, String notes) {

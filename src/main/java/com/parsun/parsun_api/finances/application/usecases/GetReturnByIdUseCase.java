@@ -47,6 +47,7 @@ public class GetReturnByIdUseCase {
 
         String invoiceNumber = invoice != null ? invoice.getInvoiceNumber() : null;
         String customerName = invoice != null ? invoice.getCustomerName() : null;
+        String customerRif = invoice != null ? invoice.getCustomerRif() : null;
 
         List<UUID> warehouseIds = lines.stream()
                 .map(ReturnLine::getWarehouseId)
@@ -66,6 +67,6 @@ public class GetReturnByIdUseCase {
                 : Map.of();
 
         return FinanceMapper.toReturnDetailResponse(returnEntity, lines,
-                invoiceNumber, customerName, warehouseNames, productNames);
+                invoiceNumber, customerName, customerRif, warehouseNames, productNames);
     }
 }

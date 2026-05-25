@@ -17,6 +17,7 @@ import com.parsun.parsun_api.finances.domain.entities.ReturnLine;
 
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class FinanceMapper {
@@ -156,6 +157,7 @@ public class FinanceMapper {
                                                                List<ReturnLine> lines,
                                                                String invoiceNumber,
                                                                String customerName,
+                                                               String customerRif,
                                                                Map<UUID, String> warehouseNames,
                                                                Map<UUID, String> productNames) {
         List<ReturnDetailResponse.ReturnLineResponse> lineResponses = lines.stream()
@@ -172,6 +174,10 @@ public class FinanceMapper {
                 ))
                 .toList();
 
+        BigDecimal totalAmount = lines.stream()
+                .map(ReturnLine::getLineTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         return new ReturnDetailResponse(
                 returnEntity.getId().value(),
                 returnEntity.getReturnNumber().value(),
@@ -179,9 +185,11 @@ public class FinanceMapper {
                 invoiceNumber,
                 returnEntity.getCustomerId(),
                 customerName,
+                customerRif,
                 returnEntity.getReturnType().name(),
                 returnEntity.getReason(),
                 null,
+                totalAmount,
                 returnEntity.getCreatedBy(),
                 returnEntity.getCreatedByName(),
                 returnEntity.getCreatedAt(),
@@ -194,7 +202,8 @@ public class FinanceMapper {
                                                                List<ReturnLine> lines,
                                                                String invoiceNumber,
                                                                String customerName,
+                                                               String customerRif,
                                                                Map<UUID, String> warehouseNames) {
-        return toReturnDetailResponse(returnEntity, lines, invoiceNumber, customerName, warehouseNames, Map.of());
+        return toReturnDetailResponse(returnEntity, lines, invoiceNumber, customerName, customerRif, warehouseNames, Map.of());
     }
 }
