@@ -181,7 +181,7 @@ public class FinanceMapper {
                 customerName,
                 returnEntity.getReturnType().name(),
                 returnEntity.getReason(),
-                returnEntity.getStatus().name(),
+                null,
                 returnEntity.getCreatedBy(),
                 returnEntity.getCreatedByName(),
                 returnEntity.getCreatedAt(),

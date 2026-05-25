@@ -39,9 +39,6 @@ public class ReturnEntity {
     @Column(name = "reason", length = 500, nullable = false)
     private String reason;
 
-    @Column(name = "status", length = 20, nullable = false)
-    private String status;
-
     @Column(name = "created_by", columnDefinition = "BINARY(16)", nullable = false)
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID createdBy;

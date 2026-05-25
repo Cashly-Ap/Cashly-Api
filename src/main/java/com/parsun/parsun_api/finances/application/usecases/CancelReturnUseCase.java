@@ -36,7 +36,6 @@ public class CancelReturnUseCase {
         Return returnEntity = returnRepository.findById(ReturnId.of(returnId))
                 .orElseThrow(() -> new IllegalArgumentException("Return not found: " + returnId));
 
-        returnEntity.cancel();
         returnRepository.save(returnEntity);
 
         var lines = returnLineJpaRepository.findByReturnId(returnId);

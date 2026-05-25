@@ -4,7 +4,6 @@ import com.parsun.parsun_api.finances.domain.entities.Return;
 import com.parsun.parsun_api.finances.domain.entities.ReturnLine;
 import com.parsun.parsun_api.finances.domain.valueobjects.ReturnId;
 import com.parsun.parsun_api.finances.domain.valueobjects.ReturnNumber;
-import com.parsun.parsun_api.finances.domain.valueobjects.ReturnStatus;
 import com.parsun.parsun_api.finances.domain.valueobjects.ReturnType;
 import com.parsun.parsun_api.finances.infrastructure.persistence.entities.ReturnEntity;
 import com.parsun.parsun_api.finances.infrastructure.persistence.entities.ReturnLineEntity;
@@ -21,7 +20,6 @@ public class ReturnJpaMapper {
         entity.setCustomerId(returnDomain.getCustomerId());
         entity.setReturnType(returnDomain.getReturnType().name());
         entity.setReason(returnDomain.getReason());
-        entity.setStatus(returnDomain.getStatus().name());
         entity.setCreatedBy(returnDomain.getCreatedBy());
         entity.setCreatedByName(returnDomain.getCreatedByName());
         entity.setCreatedAt(returnDomain.getCreatedAt());
@@ -39,7 +37,6 @@ public class ReturnJpaMapper {
                 entity.getReason(),
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
-                ReturnStatus.valueOf(entity.getStatus()),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
