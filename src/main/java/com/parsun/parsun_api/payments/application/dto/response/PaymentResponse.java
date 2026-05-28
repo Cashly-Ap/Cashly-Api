@@ -1,0 +1,28 @@
+package com.parsun.parsun_api.payments.application.dto.response;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record PaymentResponse(
+        UUID id,
+        String paymentNumber,
+        UUID customerId,
+        String type,
+        BigDecimal amount,
+        UUID paymentMethodId,
+        String referenceNumber,
+        LocalDate paymentDate,
+        String notes,
+        String status,
+        BigDecimal appliedAmount,
+        UUID createdBy,
+        String createdByName,
+        String approvalStatus,
+        String rejectionReason,
+        UUID approvedBy,
+        BigDecimal commissionPercentage,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {}
