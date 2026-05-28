@@ -9,6 +9,7 @@ public record ReturnListResponse(
         UUID id,
         String returnNumber,
         UUID invoiceId,
+        String invoiceNumber,
         UUID customerId,
         String customerName,
         String returnType,

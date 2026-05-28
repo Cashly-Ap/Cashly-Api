@@ -11,16 +11,18 @@ import java.util.UUID;
 public class GetAllReturnsUseCase {
 
     private final ReturnRepository returnRepository;
+    private final ReturnMapper returnMapper;
 
-    public GetAllReturnsUseCase(ReturnRepository returnRepository) {
+    public GetAllReturnsUseCase(ReturnRepository returnRepository, ReturnMapper returnMapper) {
         this.returnRepository = returnRepository;
+        this.returnMapper = returnMapper;
     }
 
     public List<ReturnListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                              UUID customerId, UUID invoiceId) {
         return returnRepository.findAllWithFilters(dateFrom, dateTo, customerId, invoiceId)
                 .stream()
-                .map(ReturnMapper::toListResponse)
+                .map(returnMapper::toListResponse)
                 .toList();
     }
 }

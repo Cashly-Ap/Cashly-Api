@@ -1,6 +1,5 @@
 package com.parsun.parsun_api.returns.application.usecases;
 
-import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.returns.application.dto.request.CreateReturnRequest;
 import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
@@ -22,14 +21,14 @@ public class CreateReturnUseCase {
 
     private final ReturnRepository returnRepository;
     private final CreditNoteCreator creditNoteCreator;
-    private final InvoiceRepository invoiceRepository;
+    private final ReturnMapper returnMapper;
 
     public CreateReturnUseCase(ReturnRepository returnRepository,
                                 CreditNoteCreator creditNoteCreator,
-                                InvoiceRepository invoiceRepository) {
+                                ReturnMapper returnMapper) {
         this.returnRepository = returnRepository;
         this.creditNoteCreator = creditNoteCreator;
-        this.invoiceRepository = invoiceRepository;
+        this.returnMapper = returnMapper;
     }
 
     @Transactional
@@ -37,9 +36,6 @@ public class CreateReturnUseCase {
         int year = LocalDate.now().getYear();
         int sequence = returnRepository.getNextSequenceForYear(year);
         ReturnNumber returnNumber = ReturnNumber.of(year, sequence);
-
-        var invoice = invoiceRepository.findById(InvoiceId.of(request.invoiceId()))
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + request.invoiceId()));
 
         List<ReturnLine> lines = request.lines().stream()
                 .map(ReturnMapper::toLine)
@@ -53,8 +49,6 @@ public class CreateReturnUseCase {
                 returnNumber,
                 InvoiceId.of(request.invoiceId()),
                 request.customerId(),
-                invoice.getCustomerName(),
-                invoice.getCustomerRif(),
                 ReturnType.valueOf(request.returnType()),
                 request.reason(),
                 total,
@@ -74,6 +68,6 @@ public class CreateReturnUseCase {
                 userName
         );
 
-        return ReturnMapper.toResponse(saved);
+        return returnMapper.toResponse(saved);
     }
 }

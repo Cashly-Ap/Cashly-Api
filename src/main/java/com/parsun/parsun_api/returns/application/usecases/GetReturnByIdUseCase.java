@@ -11,16 +11,18 @@ import java.util.UUID;
 public class GetReturnByIdUseCase {
 
     private final ReturnRepository returnRepository;
+    private final ReturnMapper returnMapper;
 
-    public GetReturnByIdUseCase(ReturnRepository returnRepository) {
+    public GetReturnByIdUseCase(ReturnRepository returnRepository, ReturnMapper returnMapper) {
         this.returnRepository = returnRepository;
+        this.returnMapper = returnMapper;
     }
 
     public ReturnResponse execute(UUID id) {
         Return return_ = returnRepository.findById(ReturnId.of(id))
                 .orElseThrow(() -> new ReturnNotFoundException(id));
 
-        return ReturnMapper.toResponse(return_);
+        return returnMapper.toResponse(return_);
     }
 
     public static class ReturnNotFoundException extends RuntimeException {

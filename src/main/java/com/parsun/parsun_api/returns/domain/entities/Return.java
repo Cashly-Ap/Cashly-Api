@@ -16,8 +16,6 @@ public class Return {
     private final ReturnNumber returnNumber;
     private final InvoiceId invoiceId;
     private final UUID customerId;
-    private final String customerName;
-    private final String customerRif;
     private final ReturnType returnType;
     private final String reason;
     private final BigDecimal total;
@@ -28,7 +26,6 @@ public class Return {
     private LocalDateTime updatedAt;
 
     private Return(ReturnId id, ReturnNumber returnNumber, InvoiceId invoiceId, UUID customerId,
-                   String customerName, String customerRif,
                    ReturnType returnType, String reason, BigDecimal total,
                    List<ReturnLine> lines,
                    UUID createdBy, String createdByName,
@@ -37,8 +34,6 @@ public class Return {
         this.returnNumber = returnNumber;
         this.invoiceId = invoiceId;
         this.customerId = customerId;
-        this.customerName = customerName;
-        this.customerRif = customerRif;
         this.returnType = returnType;
         this.reason = reason;
         this.total = total;
@@ -50,15 +45,12 @@ public class Return {
     }
 
     public static Return create(ReturnNumber returnNumber, InvoiceId invoiceId, UUID customerId,
-                                String customerName, String customerRif,
                                 ReturnType returnType, String reason, BigDecimal total,
                                 List<ReturnLine> lines,
                                 UUID createdBy, String createdByName) {
         Objects.requireNonNull(returnNumber, "Return number cannot be null");
         Objects.requireNonNull(invoiceId, "Invoice id cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
-        Objects.requireNonNull(customerName, "Customer name cannot be null");
-        Objects.requireNonNull(customerRif, "Customer RIF cannot be null");
         Objects.requireNonNull(returnType, "Return type cannot be null");
         Objects.requireNonNull(reason, "Reason cannot be null");
         Objects.requireNonNull(total, "Total cannot be null");
@@ -82,18 +74,17 @@ public class Return {
 
         LocalDateTime now = LocalDateTime.now();
         return new Return(ReturnId.generate(), returnNumber, invoiceId, customerId,
-                customerName, customerRif,
                 returnType, reason, total,
                 lines, createdBy, createdByName, now, now);
     }
 
     public static Return reconstitute(ReturnId id, ReturnNumber returnNumber, InvoiceId invoiceId,
-                                       UUID customerId, String customerName, String customerRif,
+                                       UUID customerId,
                                        ReturnType returnType, String reason, BigDecimal total,
                                        List<ReturnLine> lines,
                                        UUID createdBy, String createdByName,
                                        LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new Return(id, returnNumber, invoiceId, customerId, customerName, customerRif,
+        return new Return(id, returnNumber, invoiceId, customerId,
                 returnType, reason, total,
                 lines, createdBy, createdByName, createdAt, updatedAt);
     }
@@ -102,8 +93,6 @@ public class Return {
     public ReturnNumber getReturnNumber() { return returnNumber; }
     public InvoiceId getInvoiceId() { return invoiceId; }
     public UUID getCustomerId() { return customerId; }
-    public String getCustomerName() { return customerName; }
-    public String getCustomerRif() { return customerRif; }
     public ReturnType getReturnType() { return returnType; }
     public String getReason() { return reason; }
     public BigDecimal getTotal() { return total; }

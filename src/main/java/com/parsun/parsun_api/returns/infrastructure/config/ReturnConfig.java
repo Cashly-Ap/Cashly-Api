@@ -2,7 +2,7 @@ package com.parsun.parsun_api.returns.infrastructure.config;
 
 import com.parsun.parsun_api.credit_notes.application.services.CreditNoteCreatorImpl;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
 import com.parsun.parsun_api.returns.application.usecases.CreateReturnUseCase;
 import com.parsun.parsun_api.returns.application.usecases.DeleteReturnUseCase;
 import com.parsun.parsun_api.returns.application.usecases.GetAllReturnsUseCase;
@@ -28,18 +28,18 @@ public class ReturnConfig {
 
     @Bean
     public CreateReturnUseCase createReturnUseCase(CreditNoteCreator creditNoteCreator,
-                                                     InvoiceRepository invoiceRepository) {
-        return new CreateReturnUseCase(returnRepository, creditNoteCreator, invoiceRepository);
+                                                     ReturnMapper returnMapper) {
+        return new CreateReturnUseCase(returnRepository, creditNoteCreator, returnMapper);
     }
 
     @Bean
-    public GetAllReturnsUseCase getAllReturnsUseCase() {
-        return new GetAllReturnsUseCase(returnRepository);
+    public GetAllReturnsUseCase getAllReturnsUseCase(ReturnMapper returnMapper) {
+        return new GetAllReturnsUseCase(returnRepository, returnMapper);
     }
 
     @Bean
-    public GetReturnByIdUseCase getReturnByIdUseCase() {
-        return new GetReturnByIdUseCase(returnRepository);
+    public GetReturnByIdUseCase getReturnByIdUseCase(ReturnMapper returnMapper) {
+        return new GetReturnByIdUseCase(returnRepository, returnMapper);
     }
 
     @Bean

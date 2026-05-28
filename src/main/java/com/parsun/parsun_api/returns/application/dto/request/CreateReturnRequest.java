@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,9 +20,6 @@ public record CreateReturnRequest(
         @NotNull(message = "Return type is required")
         String returnType,
 
-        @NotNull(message = "Date is required")
-        LocalDate date,
-
         @NotNull(message = "Reason is required")
         @Size(max = 500, message = "Reason must be at most 500 characters")
         String reason,
@@ -33,6 +29,9 @@ public record CreateReturnRequest(
         List<ReturnLineRequest> lines
 ) {
     public record ReturnLineRequest(
+
+            @NotNull(message = "Invoice line is required")
+            UUID invoiceLineId,
 
             @NotNull(message = "Product is required")
             UUID productId,

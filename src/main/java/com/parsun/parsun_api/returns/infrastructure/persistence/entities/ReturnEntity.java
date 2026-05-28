@@ -36,12 +36,6 @@ public class ReturnEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID customerId;
 
-    @Column(name = "customer_name", length = 255, nullable = false)
-    private String customerName;
-
-    @Column(name = "customer_rif", length = 50, nullable = false)
-    private String customerRif;
-
     @Column(name = "return_type", length = 20, nullable = false)
     private String returnType;
 

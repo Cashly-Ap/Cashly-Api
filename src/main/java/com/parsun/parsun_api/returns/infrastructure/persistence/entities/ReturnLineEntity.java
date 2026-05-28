@@ -28,6 +28,10 @@ public class ReturnLineEntity {
     @JoinColumn(name = "return_id", nullable = false, columnDefinition = "BINARY(16)")
     private ReturnEntity returnEntity;
 
+    @Column(name = "invoice_line_id", columnDefinition = "BINARY(16)", nullable = false)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID invoiceLineId;
+
     @Column(name = "product_id", columnDefinition = "BINARY(16)", nullable = false)
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID productId;

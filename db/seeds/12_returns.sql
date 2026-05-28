@@ -18,16 +18,6 @@ SET @cust2 = (SELECT id FROM customers WHERE code = 1002);
 SET @cust3 = (SELECT id FROM customers WHERE code = 1003);
 SET @cust4 = (SELECT id FROM customers WHERE code = 1004);
 
-SET @custName1 = (SELECT name FROM customers WHERE code = 1001);
-SET @custName2 = (SELECT name FROM customers WHERE code = 1002);
-SET @custName3 = (SELECT name FROM customers WHERE code = 1003);
-SET @custName4 = (SELECT name FROM customers WHERE code = 1004);
-
-SET @custRif1 = (SELECT rif FROM customers WHERE code = 1001);
-SET @custRif2 = (SELECT rif FROM customers WHERE code = 1002);
-SET @custRif3 = (SELECT rif FROM customers WHERE code = 1003);
-SET @custRif4 = (SELECT rif FROM customers WHERE code = 1004);
-
 SET @prod1 = (SELECT id FROM products WHERE code = 'ELEC-001');
 SET @prod2 = (SELECT id FROM products WHERE code = 'ELEC-002');
 SET @prod3 = (SELECT id FROM products WHERE code = 'ELEC-003');
@@ -41,12 +31,12 @@ SET @wh3 = (SELECT id FROM warehouses WHERE code = 'ALM-VLC-01');
 SET @user1 = (SELECT id FROM users WHERE user_name = 'Super Admin');
 SET @user2 = (SELECT id FROM users WHERE user_name = 'Admin User');
 
-INSERT INTO returns (id, return_number, invoice_id, customer_id, customer_name, customer_rif, return_type, reason, total, created_by, created_by_name, created_at, updated_at)
+INSERT INTO returns (id, return_number, invoice_id, customer_id, return_type, reason, total, created_by, created_by_name, created_at, updated_at)
 VALUES
-    (UNHEX('C1000000000000000000000000000001'), 'RET-2025-0001', @inv1, @cust1, @custName1, @custRif1, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - items completos', 1250.00, @user1, 'Super Admin', NOW(), NOW()),
-    (UNHEX('C1000000000000000000000000000002'), 'RET-2025-0002', @inv2, @cust2, @custName2, @custRif2, 'MANUAL', 'Devolucion parcial - cliente reporta defecto en productos', 1725.00, @user2, 'Admin User', NOW(), NOW()),
-    (UNHEX('C1000000000000000000000000000003'), 'RET-2025-0003', @inv3, @cust3, @custName3, @custRif3, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - orden no procesada', 8850.00, @user1, 'Super Admin', NOW(), NOW()),
-    (UNHEX('C1000000000000000000000000000004'), 'RET-2025-0004', @inv4, @cust4, @custName4, @custRif4, 'MANUAL', 'Devolucion parcial - cantidades especificas solicitadas por cliente', 350.00, @user2, 'Admin User', NOW(), NOW());
+    (UNHEX('C1000000000000000000000000000001'), 'RET-2025-0001', @inv1, @cust1, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - items completos', 1250.00, @user1, 'Super Admin', NOW(), NOW()),
+    (UNHEX('C1000000000000000000000000000002'), 'RET-2025-0002', @inv2, @cust2, 'MANUAL', 'Devolucion parcial - cliente reporta defecto en productos', 1725.00, @user2, 'Admin User', NOW(), NOW()),
+    (UNHEX('C1000000000000000000000000000003'), 'RET-2025-0003', @inv3, @cust3, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - orden no procesada', 8850.00, @user1, 'Super Admin', NOW(), NOW()),
+    (UNHEX('C1000000000000000000000000000004'), 'RET-2025-0004', @inv4, @cust4, 'MANUAL', 'Devolucion parcial - cantidades especificas solicitadas por cliente', 350.00, @user2, 'Admin User', NOW(), NOW());
 
 INSERT INTO return_lines (id, return_id, invoice_line_id, product_id, quantity, unit_price, line_total)
 VALUES

@@ -1,30 +1,47 @@
 package com.parsun.parsun_api.returns.application.mappers;
 
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.returns.application.dto.request.CreateReturnRequest;
 import com.parsun.parsun_api.returns.application.dto.response.ReturnListResponse;
 import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
 import com.parsun.parsun_api.returns.domain.entities.Return;
 import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
 import com.parsun.parsun_api.returns.domain.entities.ReturnLineAllocation;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ReturnMapper {
 
-    private ReturnMapper() {}
+    private final InvoiceRepository invoiceRepository;
+    private final WarehouseRepository warehouseRepository;
 
-    public static ReturnResponse toResponse(Return return_) {
+    public ReturnMapper(InvoiceRepository invoiceRepository, WarehouseRepository warehouseRepository) {
+        this.invoiceRepository = invoiceRepository;
+        this.warehouseRepository = warehouseRepository;
+    }
+
+    public ReturnResponse toResponse(Return return_) {
+        var invoiceOpt = invoiceRepository.findById(return_.getInvoiceId());
+        String invoiceNumber = invoiceOpt.map(inv -> inv.getInvoiceNumber().value()).orElse("");
+        String customerName = invoiceOpt.map(inv -> inv.getCustomerName()).orElse("");
+        String customerRif = invoiceOpt.map(inv -> inv.getCustomerRif()).orElse("");
+
         List<ReturnResponse.ReturnLineResponse> lineResponses = return_.getLines().stream()
-                .map(ReturnMapper::toLineResponse)
+                .map(this::toLineResponse)
                 .toList();
 
         return new ReturnResponse(
                 return_.getId().value(),
                 return_.getReturnNumber().value(),
                 return_.getInvoiceId().value(),
+                invoiceNumber,
                 return_.getCustomerId(),
-                return_.getCustomerName(),
-                return_.getCustomerRif(),
+                customerName,
+                customerRif,
                 return_.getReturnType().name(),
                 return_.getReason(),
                 return_.getTotal(),
@@ -36,13 +53,18 @@ public class ReturnMapper {
         );
     }
 
-    public static ReturnListResponse toListResponse(Return return_) {
+    public ReturnListResponse toListResponse(Return return_) {
+        var invoiceOpt = invoiceRepository.findById(return_.getInvoiceId());
+        String invoiceNumber = invoiceOpt.map(inv -> inv.getInvoiceNumber().value()).orElse("");
+        String customerName = invoiceOpt.map(inv -> inv.getCustomerName()).orElse("");
+
         return new ReturnListResponse(
                 return_.getId().value(),
                 return_.getReturnNumber().value(),
                 return_.getInvoiceId().value(),
+                invoiceNumber,
                 return_.getCustomerId(),
-                return_.getCustomerName(),
+                customerName,
                 return_.getReturnType().name(),
                 return_.getReason(),
                 return_.getTotal(),
@@ -51,12 +73,9 @@ public class ReturnMapper {
         );
     }
 
-    private static ReturnResponse.ReturnLineResponse toLineResponse(ReturnLine line) {
+    private ReturnResponse.ReturnLineResponse toLineResponse(ReturnLine line) {
         List<ReturnResponse.ReturnLineResponse.AllocationResponse> allocationResponses = line.getAllocations().stream()
-                .map(alloc -> new ReturnResponse.ReturnLineResponse.AllocationResponse(
-                        alloc.getWarehouseId(),
-                        alloc.getAllocated()
-                ))
+                .map(this::toAllocationResponse)
                 .toList();
 
         return new ReturnResponse.ReturnLineResponse(
@@ -68,12 +87,24 @@ public class ReturnMapper {
         );
     }
 
+    private ReturnResponse.ReturnLineResponse.AllocationResponse toAllocationResponse(ReturnLineAllocation alloc) {
+        String warehouseName = warehouseRepository.findById(alloc.getWarehouseId())
+                .map(wh -> wh.getName())
+                .orElse("");
+        return new ReturnResponse.ReturnLineResponse.AllocationResponse(
+                alloc.getWarehouseId(),
+                warehouseName,
+                alloc.getAllocated()
+        );
+    }
+
     public static ReturnLine toLine(CreateReturnRequest.ReturnLineRequest request) {
         List<ReturnLineAllocation> allocations = request.allocations().stream()
                 .map(alloc -> ReturnLineAllocation.create(alloc.warehouseId(), alloc.allocated()))
                 .toList();
 
         return ReturnLine.create(
+                request.invoiceLineId(),
                 request.productId(),
                 request.quantity(),
                 request.unitPrice(),

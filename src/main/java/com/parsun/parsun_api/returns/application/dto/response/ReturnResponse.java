@@ -9,6 +9,7 @@ public record ReturnResponse(
         UUID id,
         String returnNumber,
         UUID invoiceId,
+        String invoiceNumber,
         UUID customerId,
         String customerName,
         String customerRif,
@@ -30,6 +31,7 @@ public record ReturnResponse(
     ) {
         public record AllocationResponse(
                 UUID warehouseId,
+                String warehouseName,
                 BigDecimal allocated
         ) {}
     }

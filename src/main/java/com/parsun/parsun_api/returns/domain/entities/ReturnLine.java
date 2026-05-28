@@ -7,14 +7,16 @@ import java.util.UUID;
 
 public class ReturnLine {
 
+    private final UUID invoiceLineId;
     private final UUID productId;
     private final BigDecimal quantity;
     private final BigDecimal unitPrice;
     private final BigDecimal subtotal;
     private final List<ReturnLineAllocation> allocations;
 
-    private ReturnLine(UUID productId, BigDecimal quantity, BigDecimal unitPrice,
+    private ReturnLine(UUID invoiceLineId, UUID productId, BigDecimal quantity, BigDecimal unitPrice,
                        BigDecimal subtotal, List<ReturnLineAllocation> allocations) {
+        Objects.requireNonNull(invoiceLineId, "Invoice line id cannot be null");
         Objects.requireNonNull(productId, "Product id cannot be null");
         Objects.requireNonNull(quantity, "Quantity cannot be null");
         Objects.requireNonNull(unitPrice, "Unit price cannot be null");
@@ -27,6 +29,7 @@ public class ReturnLine {
             throw new IllegalArgumentException("Unit price must be greater than or equal to zero");
         }
 
+        this.invoiceLineId = invoiceLineId;
         this.productId = productId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
@@ -34,11 +37,12 @@ public class ReturnLine {
         this.allocations = allocations != null ? List.copyOf(allocations) : List.of();
     }
 
-    public static ReturnLine create(UUID productId, BigDecimal quantity, BigDecimal unitPrice,
+    public static ReturnLine create(UUID invoiceLineId, UUID productId, BigDecimal quantity, BigDecimal unitPrice,
                                     BigDecimal subtotal, List<ReturnLineAllocation> allocations) {
-        return new ReturnLine(productId, quantity, unitPrice, subtotal, allocations);
+        return new ReturnLine(invoiceLineId, productId, quantity, unitPrice, subtotal, allocations);
     }
 
+    public UUID getInvoiceLineId() { return invoiceLineId; }
     public UUID getProductId() { return productId; }
     public BigDecimal getQuantity() { return quantity; }
     public BigDecimal getUnitPrice() { return unitPrice; }
@@ -63,6 +67,6 @@ public class ReturnLine {
 
     @Override
     public String toString() {
-        return "ReturnLine{productId=" + productId + ", quantity=" + quantity + "}";
+        return "ReturnLine{invoiceLineId=" + invoiceLineId + ", productId=" + productId + ", quantity=" + quantity + "}";
     }
 }

@@ -57,7 +57,6 @@ public class JpaReturnRepository implements ReturnRepository {
         StringBuilder jpql = new StringBuilder("""
                 SELECT DISTINCT r FROM ReturnEntity r
                 LEFT JOIN FETCH r.lines l
-                LEFT JOIN FETCH l.allocations
                 WHERE 1=1
                 """);
 
@@ -132,8 +131,6 @@ public class JpaReturnRepository implements ReturnRepository {
         entity.setReturnNumber(return_.getReturnNumber().value());
         entity.setInvoiceId(return_.getInvoiceId().value());
         entity.setCustomerId(return_.getCustomerId());
-        entity.setCustomerName(return_.getCustomerName());
-        entity.setCustomerRif(return_.getCustomerRif());
         entity.setReturnType(return_.getReturnType().name());
         entity.setReason(return_.getReason());
         entity.setTotal(return_.getTotal());
@@ -155,6 +152,7 @@ public class JpaReturnRepository implements ReturnRepository {
         ReturnLineEntity entity = new ReturnLineEntity();
         entity.setId(UUID.randomUUID());
         entity.setReturnEntity(returnEntity);
+        entity.setInvoiceLineId(line.getInvoiceLineId());
         entity.setProductId(line.getProductId());
         entity.setQuantity(line.getQuantity());
         entity.setUnitPrice(line.getUnitPrice());
@@ -188,8 +186,6 @@ public class JpaReturnRepository implements ReturnRepository {
                 new ReturnNumber(entity.getReturnNumber()),
                 InvoiceId.of(entity.getInvoiceId()),
                 entity.getCustomerId(),
-                entity.getCustomerName(),
-                entity.getCustomerRif(),
                 ReturnType.valueOf(entity.getReturnType()),
                 entity.getReason(),
                 entity.getTotal(),
@@ -207,6 +203,7 @@ public class JpaReturnRepository implements ReturnRepository {
                 .toList();
 
         return ReturnLine.create(
+                entity.getInvoiceLineId(),
                 entity.getProductId(),
                 entity.getQuantity(),
                 entity.getUnitPrice(),
