@@ -1,9 +1,9 @@
 package com.parsun.parsun_api.invoices.application.usecases;
 
-import com.parsun.parsun_api.finances.domain.entities.CreditNote;
-import com.parsun.parsun_api.finances.domain.entities.DebitNote;
-import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
-import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
+import com.parsun.parsun_api.debit_notes.domain.entities.DebitNote;
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;

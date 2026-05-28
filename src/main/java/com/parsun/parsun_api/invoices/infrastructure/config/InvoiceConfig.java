@@ -2,8 +2,8 @@ package com.parsun.parsun_api.invoices.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
-import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
-import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
