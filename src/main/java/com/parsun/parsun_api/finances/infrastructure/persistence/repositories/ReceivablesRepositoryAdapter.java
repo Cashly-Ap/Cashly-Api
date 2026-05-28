@@ -88,16 +88,28 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         CustomerEntity customer = entityManager.find(CustomerEntity.class, customerId);
 
         Query debtQuery = entityManager.createNativeQuery("""
-            SELECT COALESCE(SUM(i.subtotal - COALESCE(pa.total_paid, 0)), 0)
+            SELECT COALESCE(SUM(i.subtotal - COALESCE(pa.total_paid, 0)
+                - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)), 0)
             FROM invoices i
             LEFT JOIN (
                 SELECT p_allocs.invoice_id, SUM(p_allocs.allocated_amount) AS total_paid
                 FROM payment_allocations p_allocs
                 GROUP BY p_allocs.invoice_id
             ) pa ON i.id = pa.invoice_id
+            LEFT JOIN (
+                SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
+                FROM credit_notes cn2
+                GROUP BY cn2.invoice_id
+            ) cn ON cn.invoice_id = i.id
+            LEFT JOIN (
+                SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
+                FROM debit_notes dn2
+                GROUP BY dn2.invoice_id
+            ) dn ON dn.invoice_id = i.id
             WHERE i.customer_id = :customerId
               AND i.status NOT IN ('CANCELLED', 'DRAFT')
-              AND (i.subtotal - COALESCE(pa.total_paid, 0)) > 0
+              AND (i.subtotal - COALESCE(pa.total_paid, 0)
+                - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
             """);
         debtQuery.setParameter("customerId", customerId);
         BigDecimal totalDebt = (BigDecimal) debtQuery.getSingleResult();
@@ -130,7 +142,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             SELECT i.id, i.invoice_number, i.status, i.created_at,
                    i.subtotal,
                    COALESCE(pa.total_paid, 0) AS total_paid,
-                   (i.subtotal - COALESCE(pa.total_paid, 0)) AS balance,
+                   (i.subtotal - COALESCE(pa.total_paid, 0)
+                     - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS balance,
                    p_all.payment_id AS pending_payment_id,
                    p_all.payment_status AS pending_payment_status
             FROM invoices i
@@ -140,6 +153,16 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 GROUP BY p_allocs.invoice_id
             ) pa ON i.id = pa.invoice_id
             LEFT JOIN (
+                SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
+                FROM credit_notes cn2
+                GROUP BY cn2.invoice_id
+            ) cn ON cn.invoice_id = i.id
+            LEFT JOIN (
+                SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
+                FROM debit_notes dn2
+                GROUP BY dn2.invoice_id
+            ) dn ON dn.invoice_id = i.id
+            LEFT JOIN (
                 SELECT pa2.invoice_id, pa2.payment_id, p2.status AS payment_status
                 FROM payment_allocations pa2
                 JOIN payments p2 ON p2.id = pa2.payment_id
@@ -147,7 +170,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             ) p_all ON p_all.invoice_id = i.id
             WHERE i.customer_id = :customerId
               AND i.status NOT IN ('CANCELLED', 'DRAFT')
-              AND (i.subtotal - COALESCE(pa.total_paid, 0)) > 0
+              AND (i.subtotal - COALESCE(pa.total_paid, 0)
+                - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
             ORDER BY i.created_at DESC
             """);
         invoicesQuery.setParameter("customerId", customerId);
@@ -193,16 +217,35 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     public Page<CustomerInvoiceDebtResponse> findCustomerInvoices(UUID customerId, String search, String status, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
+        String notesJoinClause = """
+            LEFT JOIN (
+                SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
+                FROM credit_notes cn2
+                GROUP BY cn2.invoice_id
+            ) cn ON cn.invoice_id = i.id
+            LEFT JOIN (
+                SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
+                FROM debit_notes dn2
+                GROUP BY dn2.invoice_id
+            ) dn ON dn.invoice_id = i.id
+            """;
+
+        String balanceExpr = "(i.subtotal - COALESCE(pa.total_paid, 0)"
+            + " - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0))";
+
+        String partialBalanceExpr = "(i.subtotal - COALESCE(pa.total_paid, 0)"
+            + " - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0))";
+
         String whereClauseCond = "i.customer_id = :customerId AND i.status NOT IN ('CANCELLED', 'DRAFT')";
         if (status != null && !status.isBlank()) {
             whereClauseCond += switch (status) {
-                case "PENDING" -> " AND i.status IN ('PENDING_PAYMENT') AND (i.subtotal - COALESCE(pa.total_paid, 0)) > 0";
-                case "PARTIAL" -> " AND i.status IN ('PARTIALLY_PAID', 'PENDING_PAYMENT') AND (i.subtotal - COALESCE(pa.total_paid, 0)) > 0 AND (i.subtotal - COALESCE(pa.total_paid, 0)) < i.subtotal";
+                case "PENDING" -> " AND i.status IN ('PENDING_PAYMENT') AND " + balanceExpr + " > 0";
+                case "PARTIAL" -> " AND i.status IN ('PARTIALLY_PAID', 'PENDING_PAYMENT') AND " + partialBalanceExpr + " > 0 AND " + partialBalanceExpr + " < i.subtotal";
                 case "PAID" -> " AND i.status = 'PAID'";
-                default -> " AND (i.subtotal - COALESCE(pa.total_paid, 0)) > 0";
+                default -> " AND " + balanceExpr + " > 0";
             };
         } else {
-            whereClauseCond += " AND (i.subtotal - COALESCE(pa.total_paid, 0)) > 0";
+            whereClauseCond += " AND " + balanceExpr + " > 0";
         }
         if (search != null && !search.isBlank()) {
             whereClauseCond += " AND (i.invoice_number LIKE :search)";
@@ -215,6 +258,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "                FROM payment_allocations p_allocs\n" +
             "                GROUP BY p_allocs.invoice_id\n" +
             "            ) pa ON i.id = pa.invoice_id\n" +
+            notesJoinClause +
             "            WHERE " + whereClauseCond;
         Query countQ = entityManager.createNativeQuery(countSql);
         countQ.setParameter("customerId", customerId);
@@ -226,7 +270,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         String dataSql = "SELECT i.id, i.invoice_number, i.status, i.created_at,\n" +
             "                   i.subtotal,\n" +
             "                   COALESCE(pa.total_paid, 0) AS total_paid,\n" +
-            "                   (i.subtotal - COALESCE(pa.total_paid, 0)) AS balance,\n" +
+            "                   " + balanceExpr + " AS balance,\n" +
             "                   p_all.payment_id AS pending_payment_id,\n" +
             "                   p_all.payment_status AS pending_payment_status\n" +
             "            FROM invoices i\n" +
@@ -235,6 +279,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "                FROM payment_allocations p_allocs\n" +
             "                GROUP BY p_allocs.invoice_id\n" +
             "            ) pa ON i.id = pa.invoice_id\n" +
+            notesJoinClause +
             "            LEFT JOIN (\n" +
             "                SELECT pa2.invoice_id, pa2.payment_id, p2.status AS payment_status\n" +
             "                FROM payment_allocations pa2\n" +
