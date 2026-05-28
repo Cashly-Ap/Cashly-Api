@@ -12,7 +12,8 @@ public interface CreditNoteRepository {
     CreditNote save(CreditNote creditNote);
     Optional<CreditNote> findById(CreditNoteId id);
     List<CreditNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                        UUID customerId, String status);
+                                        UUID customerId);
+    List<CreditNote> findByInvoiceId(UUID invoiceId);
     int getNextSequenceForYear(int year);
     void delete(CreditNoteId id);
 }

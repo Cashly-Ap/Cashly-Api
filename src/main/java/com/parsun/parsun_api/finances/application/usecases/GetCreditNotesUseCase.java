@@ -25,8 +25,8 @@ public class GetCreditNotesUseCase {
     }
 
     public List<CreditNoteResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId, String status) {
-        List<CreditNote> creditNotes = creditNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId, status);
+                                              UUID customerId) {
+        List<CreditNote> creditNotes = creditNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId);
 
         List<UUID> invoiceIds = creditNotes.stream()
                 .map(CreditNote::getInvoiceId)

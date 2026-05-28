@@ -3,7 +3,6 @@ package com.parsun.parsun_api.finances.infrastructure.persistence.mappers;
 import com.parsun.parsun_api.finances.domain.entities.CreditNote;
 import com.parsun.parsun_api.finances.domain.valueobjects.CreditNoteId;
 import com.parsun.parsun_api.finances.domain.valueobjects.CreditNoteNumber;
-import com.parsun.parsun_api.finances.domain.valueobjects.CreditNoteStatus;
 import com.parsun.parsun_api.finances.infrastructure.persistence.entities.CreditNoteEntity;
 
 public class CreditNoteJpaMapper {
@@ -18,8 +17,6 @@ public class CreditNoteJpaMapper {
         entity.setInvoiceId(creditNote.getInvoiceId());
         entity.setAmount(creditNote.getAmount());
         entity.setReason(creditNote.getReason());
-        entity.setStatus(creditNote.getStatus().name());
-        entity.setAppliedAmount(creditNote.getAppliedAmount());
         entity.setCreatedBy(creditNote.getCreatedBy());
         entity.setCreatedByName(creditNote.getCreatedByName());
         entity.setCreatedAt(creditNote.getCreatedAt());
@@ -35,8 +32,6 @@ public class CreditNoteJpaMapper {
                 entity.getInvoiceId(),
                 entity.getAmount(),
                 entity.getReason(),
-                CreditNoteStatus.valueOf(entity.getStatus()),
-                entity.getAppliedAmount(),
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
                 entity.getCreatedAt(),

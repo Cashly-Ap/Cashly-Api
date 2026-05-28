@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -21,21 +20,15 @@ import java.util.UUID;
 public class DebitNoteController {
 
     private final CreateDebitNoteUseCase createDebitNoteUseCase;
-    private final ApplyDebitNoteUseCase applyDebitNoteUseCase;
-    private final CancelDebitNoteUseCase cancelDebitNoteUseCase;
     private final GetDebitNotesUseCase getDebitNotesUseCase;
     private final GetDebitNoteByIdUseCase getDebitNoteByIdUseCase;
     private final DeleteDebitNoteUseCase deleteDebitNoteUseCase;
 
     public DebitNoteController(CreateDebitNoteUseCase createDebitNoteUseCase,
-                                ApplyDebitNoteUseCase applyDebitNoteUseCase,
-                                CancelDebitNoteUseCase cancelDebitNoteUseCase,
                                 GetDebitNotesUseCase getDebitNotesUseCase,
                                 GetDebitNoteByIdUseCase getDebitNoteByIdUseCase,
                                 DeleteDebitNoteUseCase deleteDebitNoteUseCase) {
         this.createDebitNoteUseCase = createDebitNoteUseCase;
-        this.applyDebitNoteUseCase = applyDebitNoteUseCase;
-        this.cancelDebitNoteUseCase = cancelDebitNoteUseCase;
         this.getDebitNotesUseCase = getDebitNotesUseCase;
         this.getDebitNoteByIdUseCase = getDebitNoteByIdUseCase;
         this.deleteDebitNoteUseCase = deleteDebitNoteUseCase;
@@ -56,9 +49,8 @@ public class DebitNoteController {
     public ResponseEntity<List<DebitNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
-            @RequestParam(required = false) UUID customerId,
-            @RequestParam(required = false) String status) {
-        List<DebitNoteResponse> debitNotes = getDebitNotesUseCase.execute(dateFrom, dateTo, customerId, status);
+            @RequestParam(required = false) UUID customerId) {
+        List<DebitNoteResponse> debitNotes = getDebitNotesUseCase.execute(dateFrom, dateTo, customerId);
         return ResponseEntity.ok(debitNotes);
     }
 
@@ -66,22 +58,6 @@ public class DebitNoteController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<DebitNoteResponse> getById(@PathVariable UUID id) {
         DebitNoteResponse response = getDebitNoteByIdUseCase.execute(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}/apply")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
-    public ResponseEntity<DebitNoteResponse> apply(@PathVariable UUID id,
-                                                    @RequestParam UUID invoiceId,
-                                                    @RequestParam BigDecimal amount) {
-        DebitNoteResponse response = applyDebitNoteUseCase.execute(id, invoiceId, amount);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
-    public ResponseEntity<DebitNoteResponse> cancel(@PathVariable UUID id) {
-        DebitNoteResponse response = cancelDebitNoteUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 

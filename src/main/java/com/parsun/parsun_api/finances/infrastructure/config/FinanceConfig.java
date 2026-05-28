@@ -124,10 +124,13 @@ public class FinanceConfig {
 
     @Bean
     public CreditValidationService creditValidationService(CustomerRepository customerRepository,
-                                                           PaymentRepository paymentRepository,
-                                                           PaymentAllocationRepository paymentAllocationRepository,
-                                                           InvoiceRepository invoiceRepository) {
-        return new CreditValidationService(customerRepository, paymentRepository, paymentAllocationRepository, invoiceRepository);
+                                                            PaymentRepository paymentRepository,
+                                                            PaymentAllocationRepository paymentAllocationRepository,
+                                                            InvoiceRepository invoiceRepository,
+                                                            CreditNoteRepository creditNoteRepository,
+                                                            DebitNoteRepository debitNoteRepository) {
+        return new CreditValidationService(customerRepository, paymentRepository, paymentAllocationRepository,
+                invoiceRepository, creditNoteRepository, debitNoteRepository);
     }
 
     @Bean
@@ -143,18 +146,6 @@ public class FinanceConfig {
     @Bean
     public CreateCreditNoteUseCase createCreditNoteUseCase(CreditNoteRepository creditNoteRepository) {
         return new CreateCreditNoteUseCase(creditNoteRepository);
-    }
-
-    @Bean
-    public ApplyCreditNoteUseCase applyCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
-                                                         InvoiceJpaRepository invoiceJpaRepository) {
-        return new ApplyCreditNoteUseCase(creditNoteRepository, invoiceJpaRepository);
-    }
-
-    @Bean
-    public CancelCreditNoteUseCase cancelCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
-                                                           InvoiceJpaRepository invoiceJpaRepository) {
-        return new CancelCreditNoteUseCase(creditNoteRepository, invoiceJpaRepository);
     }
 
     @Bean
@@ -177,18 +168,6 @@ public class FinanceConfig {
     @Bean
     public CreateDebitNoteUseCase createDebitNoteUseCase(DebitNoteRepository debitNoteRepository) {
         return new CreateDebitNoteUseCase(debitNoteRepository);
-    }
-
-    @Bean
-    public ApplyDebitNoteUseCase applyDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
-                                                       InvoiceJpaRepository invoiceJpaRepository) {
-        return new ApplyDebitNoteUseCase(debitNoteRepository, invoiceJpaRepository);
-    }
-
-    @Bean
-    public CancelDebitNoteUseCase cancelDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
-                                                         InvoiceJpaRepository invoiceJpaRepository) {
-        return new CancelDebitNoteUseCase(debitNoteRepository, invoiceJpaRepository);
     }
 
     @Bean

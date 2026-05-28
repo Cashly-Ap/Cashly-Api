@@ -16,13 +16,13 @@ public interface CreditNoteJpaRepository extends JpaRepository<CreditNoteEntity,
             WHERE (:dateFrom IS NULL OR c.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR c.createdAt <= :dateTo)
             AND (:customerId IS NULL OR c.customerId = :customerId)
-            AND (:status IS NULL OR c.status = :status)
             ORDER BY c.createdAt DESC
             """)
     List<CreditNoteEntity> findAllWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
-            @Param("customerId") UUID customerId,
-            @Param("status") String status
+            @Param("customerId") UUID customerId
     );
+
+    List<CreditNoteEntity> findByInvoiceId(UUID invoiceId);
 }

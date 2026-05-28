@@ -3,7 +3,6 @@ package com.parsun.parsun_api.finances.infrastructure.persistence.mappers;
 import com.parsun.parsun_api.finances.domain.entities.DebitNote;
 import com.parsun.parsun_api.finances.domain.valueobjects.DebitNoteId;
 import com.parsun.parsun_api.finances.domain.valueobjects.DebitNoteNumber;
-import com.parsun.parsun_api.finances.domain.valueobjects.DebitNoteStatus;
 import com.parsun.parsun_api.finances.infrastructure.persistence.entities.DebitNoteEntity;
 
 public class DebitNoteJpaMapper {
@@ -18,8 +17,6 @@ public class DebitNoteJpaMapper {
         entity.setInvoiceId(debitNote.getInvoiceId());
         entity.setAmount(debitNote.getAmount());
         entity.setReason(debitNote.getReason());
-        entity.setStatus(debitNote.getStatus().name());
-        entity.setAppliedAmount(debitNote.getAppliedAmount());
         entity.setCreatedBy(debitNote.getCreatedBy());
         entity.setCreatedByName(debitNote.getCreatedByName());
         entity.setCreatedAt(debitNote.getCreatedAt());
@@ -35,8 +32,6 @@ public class DebitNoteJpaMapper {
                 entity.getInvoiceId(),
                 entity.getAmount(),
                 entity.getReason(),
-                DebitNoteStatus.valueOf(entity.getStatus()),
-                entity.getAppliedAmount(),
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
                 entity.getCreatedAt(),

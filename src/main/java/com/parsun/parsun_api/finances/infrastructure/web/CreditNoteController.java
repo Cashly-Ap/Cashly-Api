@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -21,21 +20,15 @@ import java.util.UUID;
 public class CreditNoteController {
 
     private final CreateCreditNoteUseCase createCreditNoteUseCase;
-    private final ApplyCreditNoteUseCase applyCreditNoteUseCase;
-    private final CancelCreditNoteUseCase cancelCreditNoteUseCase;
     private final GetCreditNotesUseCase getCreditNotesUseCase;
     private final GetCreditNoteByIdUseCase getCreditNoteByIdUseCase;
     private final DeleteCreditNoteUseCase deleteCreditNoteUseCase;
 
     public CreditNoteController(CreateCreditNoteUseCase createCreditNoteUseCase,
-                                ApplyCreditNoteUseCase applyCreditNoteUseCase,
-                                CancelCreditNoteUseCase cancelCreditNoteUseCase,
                                 GetCreditNotesUseCase getCreditNotesUseCase,
                                 GetCreditNoteByIdUseCase getCreditNoteByIdUseCase,
                                 DeleteCreditNoteUseCase deleteCreditNoteUseCase) {
         this.createCreditNoteUseCase = createCreditNoteUseCase;
-        this.applyCreditNoteUseCase = applyCreditNoteUseCase;
-        this.cancelCreditNoteUseCase = cancelCreditNoteUseCase;
         this.getCreditNotesUseCase = getCreditNotesUseCase;
         this.getCreditNoteByIdUseCase = getCreditNoteByIdUseCase;
         this.deleteCreditNoteUseCase = deleteCreditNoteUseCase;
@@ -56,9 +49,8 @@ public class CreditNoteController {
     public ResponseEntity<List<CreditNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
-            @RequestParam(required = false) UUID customerId,
-            @RequestParam(required = false) String status) {
-        List<CreditNoteResponse> creditNotes = getCreditNotesUseCase.execute(dateFrom, dateTo, customerId, status);
+            @RequestParam(required = false) UUID customerId) {
+        List<CreditNoteResponse> creditNotes = getCreditNotesUseCase.execute(dateFrom, dateTo, customerId);
         return ResponseEntity.ok(creditNotes);
     }
 
@@ -66,22 +58,6 @@ public class CreditNoteController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<CreditNoteResponse> getById(@PathVariable UUID id) {
         CreditNoteResponse response = getCreditNoteByIdUseCase.execute(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}/apply")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
-    public ResponseEntity<CreditNoteResponse> apply(@PathVariable UUID id,
-                                                     @RequestParam UUID invoiceId,
-                                                     @RequestParam BigDecimal amount) {
-        CreditNoteResponse response = applyCreditNoteUseCase.execute(id, invoiceId, amount);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
-    public ResponseEntity<CreditNoteResponse> cancel(@PathVariable UUID id) {
-        CreditNoteResponse response = cancelCreditNoteUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 

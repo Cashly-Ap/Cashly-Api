@@ -6,8 +6,12 @@ import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.finances.application.dto.response.AdvanceResponse;
 import com.parsun.parsun_api.finances.application.dto.response.CreditStatusResponse;
 import com.parsun.parsun_api.finances.application.dto.response.OverdueInvoiceResponse;
+import com.parsun.parsun_api.finances.domain.entities.CreditNote;
+import com.parsun.parsun_api.finances.domain.entities.DebitNote;
 import com.parsun.parsun_api.finances.domain.entities.Payment;
 import com.parsun.parsun_api.finances.domain.entities.PaymentAllocation;
+import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.finances.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.finances.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.finances.domain.valueobjects.PaymentStatus;
@@ -29,15 +33,21 @@ public class CreditValidationService {
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository paymentAllocationRepository;
     private final InvoiceRepository invoiceRepository;
+    private final CreditNoteRepository creditNoteRepository;
+    private final DebitNoteRepository debitNoteRepository;
 
     public CreditValidationService(CustomerRepository customerRepository,
-                                   PaymentRepository paymentRepository,
-                                   PaymentAllocationRepository paymentAllocationRepository,
-                                   InvoiceRepository invoiceRepository) {
+                                    PaymentRepository paymentRepository,
+                                    PaymentAllocationRepository paymentAllocationRepository,
+                                    InvoiceRepository invoiceRepository,
+                                    CreditNoteRepository creditNoteRepository,
+                                    DebitNoteRepository debitNoteRepository) {
         this.customerRepository = customerRepository;
         this.paymentRepository = paymentRepository;
         this.paymentAllocationRepository = paymentAllocationRepository;
         this.invoiceRepository = invoiceRepository;
+        this.creditNoteRepository = creditNoteRepository;
+        this.debitNoteRepository = debitNoteRepository;
     }
 
     public CreditStatusResponse getCreditStatus(UUID customerId) {
@@ -117,7 +127,23 @@ public class CreditValidationService {
 
         BigDecimal appliedPayments = calculateAppliedPaymentsForInvoices(allInvoices);
 
-        return invoiceTotal.subtract(appliedPayments);
+        BigDecimal totalCreditApplied = allInvoices.stream()
+                .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
+                .map(Invoice::getId)
+                .map(id -> creditNoteRepository.findByInvoiceId(id.value()))
+                .flatMap(List::stream)
+                .map(CreditNote::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalDebitApplied = allInvoices.stream()
+                .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
+                .map(Invoice::getId)
+                .map(id -> debitNoteRepository.findByInvoiceId(id.value()))
+                .flatMap(List::stream)
+                .map(DebitNote::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return invoiceTotal.subtract(appliedPayments).subtract(totalCreditApplied).add(totalDebitApplied);
     }
 
     private BigDecimal calculateAppliedPaymentsForInvoices(List<Invoice> invoices) {

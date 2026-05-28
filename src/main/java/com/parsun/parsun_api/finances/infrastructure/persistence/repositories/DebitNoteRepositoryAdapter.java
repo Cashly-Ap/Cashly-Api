@@ -41,12 +41,20 @@ public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
 
     @Override
     public List<DebitNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                               UUID customerId, String status) {
+                                               UUID customerId) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<DebitNoteEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, status);
+        List<DebitNoteEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId);
 
+        return entities.stream()
+                .map(DebitNoteJpaMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<DebitNote> findByInvoiceId(UUID invoiceId) {
+        List<DebitNoteEntity> entities = jpaRepository.findByInvoiceId(invoiceId);
         return entities.stream()
                 .map(DebitNoteJpaMapper::toDomain)
                 .toList();

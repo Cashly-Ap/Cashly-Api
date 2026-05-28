@@ -40,12 +40,6 @@ public class DebitNoteEntity {
     @Column(name = "reason", length = 500, nullable = false)
     private String reason;
 
-    @Column(name = "status", length = 20, nullable = false)
-    private String status;
-
-    @Column(name = "applied_amount", nullable = false, precision = 15, scale = 2)
-    private BigDecimal appliedAmount;
-
     @Column(name = "created_by", columnDefinition = "BINARY(16)", nullable = false)
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID createdBy;

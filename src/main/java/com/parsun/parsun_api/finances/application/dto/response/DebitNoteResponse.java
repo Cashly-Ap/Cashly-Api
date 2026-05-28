@@ -14,8 +14,6 @@ public record DebitNoteResponse(
         String invoiceNumber,
         BigDecimal amount,
         String reason,
-        String status,
-        BigDecimal appliedAmount,
         UUID createdBy,
         String createdByName,
         LocalDateTime createdAt,

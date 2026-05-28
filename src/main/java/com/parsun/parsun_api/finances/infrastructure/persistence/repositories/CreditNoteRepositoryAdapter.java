@@ -41,12 +41,20 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
 
     @Override
     public List<CreditNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                                UUID customerId, String status) {
+                                                UUID customerId) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<CreditNoteEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, status);
+        List<CreditNoteEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId);
 
+        return entities.stream()
+                .map(CreditNoteJpaMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<CreditNote> findByInvoiceId(UUID invoiceId) {
+        List<CreditNoteEntity> entities = jpaRepository.findByInvoiceId(invoiceId);
         return entities.stream()
                 .map(CreditNoteJpaMapper::toDomain)
                 .toList();

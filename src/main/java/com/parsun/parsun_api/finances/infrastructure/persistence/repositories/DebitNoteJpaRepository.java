@@ -16,13 +16,13 @@ public interface DebitNoteJpaRepository extends JpaRepository<DebitNoteEntity, U
             WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
             AND (:customerId IS NULL OR d.customerId = :customerId)
-            AND (:status IS NULL OR d.status = :status)
             ORDER BY d.createdAt DESC
             """)
     List<DebitNoteEntity> findAllWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
-            @Param("customerId") UUID customerId,
-            @Param("status") String status
+            @Param("customerId") UUID customerId
     );
+
+    List<DebitNoteEntity> findByInvoiceId(UUID invoiceId);
 }

@@ -25,8 +25,8 @@ public class GetDebitNotesUseCase {
     }
 
     public List<DebitNoteResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                            UUID customerId, String status) {
-        List<DebitNote> debitNotes = debitNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId, status);
+                                             UUID customerId) {
+        List<DebitNote> debitNotes = debitNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId);
 
         List<UUID> invoiceIds = debitNotes.stream()
                 .map(DebitNote::getInvoiceId)

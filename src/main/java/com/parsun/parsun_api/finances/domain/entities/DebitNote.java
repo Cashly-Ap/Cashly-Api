@@ -2,7 +2,6 @@ package com.parsun.parsun_api.finances.domain.entities;
 
 import com.parsun.parsun_api.finances.domain.valueobjects.DebitNoteId;
 import com.parsun.parsun_api.finances.domain.valueobjects.DebitNoteNumber;
-import com.parsun.parsun_api.finances.domain.valueobjects.DebitNoteStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,15 +16,13 @@ public class DebitNote {
     private final UUID invoiceId;
     private final BigDecimal amount;
     private final String reason;
-    private DebitNoteStatus status;
-    private BigDecimal appliedAmount;
     private final UUID createdBy;
     private final String createdByName;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     private DebitNote(DebitNoteId id, DebitNoteNumber noteNumber, UUID customerId, UUID invoiceId,
-                      BigDecimal amount, String reason, DebitNoteStatus status, BigDecimal appliedAmount,
+                      BigDecimal amount, String reason,
                       UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.noteNumber = noteNumber;
@@ -33,8 +30,6 @@ public class DebitNote {
         this.invoiceId = invoiceId;
         this.amount = amount;
         this.reason = reason;
-        this.status = status;
-        this.appliedAmount = appliedAmount;
         this.createdBy = createdBy;
         this.createdByName = createdByName;
         this.createdAt = createdAt;
@@ -59,43 +54,15 @@ public class DebitNote {
 
         LocalDateTime now = LocalDateTime.now();
         return new DebitNote(DebitNoteId.generate(), noteNumber, customerId, invoiceId, amount, reason,
-                DebitNoteStatus.DRAFT, BigDecimal.ZERO, createdBy, createdByName, now, now);
+                createdBy, createdByName, now, now);
     }
 
     public static DebitNote reconstitute(DebitNoteId id, DebitNoteNumber noteNumber, UUID customerId,
                                          UUID invoiceId, BigDecimal amount, String reason,
-                                         DebitNoteStatus status, BigDecimal appliedAmount,
                                          UUID createdBy, String createdByName,
                                          LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new DebitNote(id, noteNumber, customerId, invoiceId, amount, reason, status, appliedAmount,
+        return new DebitNote(id, noteNumber, customerId, invoiceId, amount, reason,
                 createdBy, createdByName, createdAt, updatedAt);
-    }
-
-    public void apply(BigDecimal amount) {
-        if (this.status != DebitNoteStatus.DRAFT && this.status != DebitNoteStatus.APPLIED) {
-            throw new IllegalStateException("Only DRAFT or APPLIED debit notes can be applied");
-        }
-        Objects.requireNonNull(amount, "Amount cannot be null");
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero");
-        }
-        BigDecimal newApplied = this.appliedAmount.add(amount);
-        if (newApplied.compareTo(this.amount) > 0) {
-            throw new IllegalArgumentException("Applied amount cannot exceed debit note total");
-        }
-        this.appliedAmount = newApplied;
-        if (this.appliedAmount.compareTo(this.amount) == 0) {
-            this.status = DebitNoteStatus.APPLIED;
-        }
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void cancel() {
-        if (this.status == DebitNoteStatus.CANCELLED) {
-            throw new IllegalStateException("Debit note is already cancelled");
-        }
-        this.status = DebitNoteStatus.CANCELLED;
-        this.updatedAt = LocalDateTime.now();
     }
 
     public DebitNoteId getId() { return id; }
@@ -104,8 +71,6 @@ public class DebitNote {
     public UUID getInvoiceId() { return invoiceId; }
     public BigDecimal getAmount() { return amount; }
     public String getReason() { return reason; }
-    public DebitNoteStatus getStatus() { return status; }
-    public BigDecimal getAppliedAmount() { return appliedAmount; }
     public UUID getCreatedBy() { return createdBy; }
     public String getCreatedByName() { return createdByName; }
     public LocalDateTime getCreatedAt() { return createdAt; }
@@ -126,6 +91,6 @@ public class DebitNote {
 
     @Override
     public String toString() {
-        return "DebitNote{id=" + id + ", noteNumber=" + noteNumber + ", amount=" + amount + ", status=" + status + "}";
+        return "DebitNote{id=" + id + ", noteNumber=" + noteNumber + ", amount=" + amount + "}";
     }
 }
