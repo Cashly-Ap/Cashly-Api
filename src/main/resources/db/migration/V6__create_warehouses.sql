@@ -19,11 +19,13 @@ CREATE TABLE warehouse_stock (
     warehouse_id     BINARY(16) NOT NULL,
     product_id       BINARY(16) NOT NULL,
     quantity         INT NOT NULL DEFAULT 0,
+    reserved         INT NOT NULL DEFAULT 0,
     last_movement_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_warehouse_product (warehouse_id, product_id),
     INDEX idx_ws_warehouse (warehouse_id),
     INDEX idx_ws_product   (product_id),
+    INDEX idx_ws_reserved  (reserved),
     CONSTRAINT fk_ws_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
     CONSTRAINT fk_ws_product   FOREIGN KEY (product_id)   REFERENCES products(id)
 );

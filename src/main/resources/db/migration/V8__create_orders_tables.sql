@@ -7,7 +7,7 @@ CREATE TABLE orders (
     created_by      BINARY(16) NOT NULL,
     created_by_name VARCHAR(200) NOT NULL,
     status          VARCHAR(20) NOT NULL DEFAULT 'PENDING',
-    delivery_date   DATE NOT NULL,
+    delivery_date   DATE NULL,
     notes           VARCHAR(1000) NULL,
     subtotal        DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     invoice_id      BINARY(16) NULL,

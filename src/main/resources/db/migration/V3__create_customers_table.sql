@@ -7,6 +7,8 @@ CREATE TABLE customers (
     alias VARCHAR(100) NOT NULL,
     credit_days INT NOT NULL DEFAULT 0,
     credit_limit DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    notes TEXT NULL,
+    price_type_id BINARY(16) NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     portal_access BOOLEAN NOT NULL DEFAULT FALSE,
     portal_password VARCHAR(255) NULL,
@@ -18,6 +20,7 @@ CREATE INDEX idx_customers_code ON customers (code);
 CREATE INDEX idx_customers_rif ON customers (rif);
 CREATE INDEX idx_customers_active ON customers (active);
 CREATE INDEX idx_customers_type ON customers (type);
+CREATE INDEX idx_customers_price_type ON customers (price_type_id);
 
 CREATE TABLE customer_emails (
     id BINARY(16) PRIMARY KEY,

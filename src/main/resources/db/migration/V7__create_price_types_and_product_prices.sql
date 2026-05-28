@@ -22,3 +22,6 @@ create table product_prices (
 
 create index idx_product_prices_product_id on product_prices(product_id);
 create index idx_product_prices_price_type_id on product_prices(price_type_id);
+
+alter table customers add constraint fk_customers_price_type
+    foreign key (price_type_id) references price_types(id) on delete set null;

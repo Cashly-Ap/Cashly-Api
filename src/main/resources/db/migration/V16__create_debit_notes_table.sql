@@ -5,8 +5,6 @@ CREATE TABLE debit_notes (
     invoice_id      BINARY(16) NOT NULL,
     amount          DECIMAL(15, 2) NOT NULL,
     reason          VARCHAR(500) NOT NULL,
-    status          ENUM('DRAFT', 'APPLIED', 'CANCELLED') NOT NULL DEFAULT 'DRAFT',
-    applied_amount  DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     created_by      BINARY(16) NOT NULL,
     created_by_name VARCHAR(200) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -15,7 +13,6 @@ CREATE TABLE debit_notes (
     INDEX idx_debit_notes_note_number    (note_number),
     INDEX idx_debit_notes_customer_id    (customer_id),
     INDEX idx_debit_notes_invoice_id     (invoice_id),
-    INDEX idx_debit_notes_status         (status),
     INDEX idx_debit_notes_created_at     (created_at),
 
     CONSTRAINT fk_debit_notes_customer FOREIGN KEY (customer_id) REFERENCES customers(id),
