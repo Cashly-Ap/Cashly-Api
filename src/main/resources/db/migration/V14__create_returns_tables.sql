@@ -3,8 +3,11 @@ CREATE TABLE returns (
     return_number   VARCHAR(20) NOT NULL UNIQUE,
     invoice_id      BINARY(16) NOT NULL,
     customer_id     BINARY(16) NOT NULL,
+    customer_name   VARCHAR(255) NOT NULL,
+    customer_rif    VARCHAR(50) NOT NULL,
     return_type     ENUM('AUTOMATIC', 'MANUAL') NOT NULL,
     reason          VARCHAR(500) NOT NULL,
+    total           DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     created_by      BINARY(16) NOT NULL,
     created_by_name VARCHAR(200) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -27,7 +30,6 @@ CREATE TABLE return_lines (
     invoice_line_id BINARY(16) NOT NULL,
     product_id      BINARY(16) NOT NULL,
     quantity        DECIMAL(15, 4) NOT NULL,
-    warehouse_id    BINARY(16) NOT NULL,
     unit_price      DECIMAL(15, 2) NOT NULL,
     line_total      DECIMAL(15, 2) NOT NULL,
 
@@ -36,8 +38,17 @@ CREATE TABLE return_lines (
 
     CONSTRAINT fk_return_lines_return       FOREIGN KEY (return_id)       REFERENCES returns(id) ON DELETE CASCADE,
     CONSTRAINT fk_return_lines_invoice_line FOREIGN KEY (invoice_line_id) REFERENCES invoice_lines(id),
-    CONSTRAINT fk_return_lines_product      FOREIGN KEY (product_id)      REFERENCES products(id),
-    CONSTRAINT fk_return_lines_warehouse    FOREIGN KEY (warehouse_id)    REFERENCES warehouses(id)
+    CONSTRAINT fk_return_lines_product      FOREIGN KEY (product_id)      REFERENCES products(id)
+);
+
+CREATE TABLE return_line_allocations (
+    id              BINARY(16) PRIMARY KEY,
+    return_line_id  BINARY(16) NOT NULL,
+    warehouse_id    BINARY(16) NOT NULL,
+    allocated       DECIMAL(15, 4) NOT NULL,
+
+    CONSTRAINT fk_rla_return_line FOREIGN KEY (return_line_id) REFERENCES return_lines(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rla_warehouse   FOREIGN KEY (warehouse_id)   REFERENCES warehouses(id)
 );
 
 CREATE TABLE return_number_sequence (

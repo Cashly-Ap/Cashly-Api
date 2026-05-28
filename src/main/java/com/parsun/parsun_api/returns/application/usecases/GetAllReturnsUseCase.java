@@ -1,0 +1,26 @@
+package com.parsun.parsun_api.returns.application.usecases;
+
+import com.parsun.parsun_api.returns.application.dto.response.ReturnListResponse;
+import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
+import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+public class GetAllReturnsUseCase {
+
+    private final ReturnRepository returnRepository;
+
+    public GetAllReturnsUseCase(ReturnRepository returnRepository) {
+        this.returnRepository = returnRepository;
+    }
+
+    public List<ReturnListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
+                                             UUID customerId, UUID invoiceId) {
+        return returnRepository.findAllWithFilters(dateFrom, dateTo, customerId, invoiceId)
+                .stream()
+                .map(ReturnMapper::toListResponse)
+                .toList();
+    }
+}
