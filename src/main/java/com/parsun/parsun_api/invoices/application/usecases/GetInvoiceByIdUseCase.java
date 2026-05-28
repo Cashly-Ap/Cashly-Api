@@ -1,5 +1,9 @@
 package com.parsun.parsun_api.invoices.application.usecases;
 
+import com.parsun.parsun_api.finances.domain.entities.CreditNote;
+import com.parsun.parsun_api.finances.domain.entities.DebitNote;
+import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
@@ -9,6 +13,8 @@ import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,16 +24,47 @@ public class GetInvoiceByIdUseCase {
 
     private final InvoiceRepository invoiceRepository;
     private final StockEnrichmentService stockEnrichmentService;
+    private final CreditNoteRepository creditNoteRepository;
+    private final DebitNoteRepository debitNoteRepository;
 
     public GetInvoiceByIdUseCase(InvoiceRepository invoiceRepository,
-                                  StockEnrichmentService stockEnrichmentService) {
+                                  StockEnrichmentService stockEnrichmentService,
+                                  CreditNoteRepository creditNoteRepository,
+                                  DebitNoteRepository debitNoteRepository) {
         this.invoiceRepository = invoiceRepository;
         this.stockEnrichmentService = stockEnrichmentService;
+        this.creditNoteRepository = creditNoteRepository;
+        this.debitNoteRepository = debitNoteRepository;
     }
 
     public InvoiceDetailResponse execute(UUID id) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
+
+        List<CreditNote> creditNotes = creditNoteRepository.findByInvoiceId(id);
+        List<DebitNote> debitNotes = debitNoteRepository.findByInvoiceId(id);
+
+        BigDecimal creditApplied = creditNotes.stream()
+                .map(CreditNote::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal debitApplied = debitNotes.stream()
+                .map(DebitNote::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<InvoiceDetailResponse.NoteInfo> notes = new ArrayList<>();
+        for (CreditNote cn : creditNotes) {
+            notes.add(new InvoiceDetailResponse.NoteInfo(
+                    cn.getId().value(), "CREDIT",
+                    cn.getAmount(), cn.getReason(), cn.getCreatedAt()
+            ));
+        }
+        for (DebitNote dn : debitNotes) {
+            notes.add(new InvoiceDetailResponse.NoteInfo(
+                    dn.getId().value(), "DEBIT",
+                    dn.getAmount(), dn.getReason(), dn.getCreatedAt()
+            ));
+        }
 
         List<StockEnrichmentService.AllocationData> allocations = invoice.getLines().stream()
                 .flatMap(line -> line.getAllocations().stream()
@@ -60,6 +97,7 @@ public class GetInvoiceByIdUseCase {
         Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks =
                 stockEnrichmentService.getAllStockByProducts(invoice.getCustomerId(), productIds);
 
-        return InvoiceMapper.toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations);
+        return InvoiceMapper.toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations,
+                creditApplied, debitApplied, notes);
     }
 }

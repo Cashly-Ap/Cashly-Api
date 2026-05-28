@@ -19,12 +19,24 @@ public record InvoiceDetailResponse(
         String paymentType,
         String notes,
         BigDecimal subtotal,
+        BigDecimal creditApplied,
+        BigDecimal debitApplied,
+        BigDecimal total,
+        List<NoteInfo> notesList,
         LocalDateTime cancelledAt,
         String cancelledReason,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<InvoiceLineDetailResponse> lines
 ) {
+    public record NoteInfo(
+            UUID id,
+            String type,
+            BigDecimal amount,
+            String reason,
+            LocalDateTime applicationDate
+    ) {}
+
     public record InvoiceLineDetailResponse(
             UUID id,
             UUID productId,

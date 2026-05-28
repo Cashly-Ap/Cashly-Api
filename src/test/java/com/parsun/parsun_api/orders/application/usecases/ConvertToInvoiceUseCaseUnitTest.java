@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,18 +57,7 @@ class ConvertToInvoiceUseCaseUnitTest {
         UUID authenticatedUserId = UUID.randomUUID();
         Order order = buildConfirmedOrder(orderId);
 
-        InvoiceDetailResponse invoiceResponse = new InvoiceDetailResponse(
-                UUID.randomUUID(),
-                "INV-2026-00001",
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                orderId, "ORD-2026-00001",
-                "PAID", "CASH", null,
-                BigDecimal.valueOf(10),
-                null, null,
-                LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
-        );
+        InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
         when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId)))
@@ -89,17 +79,7 @@ class ConvertToInvoiceUseCaseUnitTest {
         UUID authenticatedUserId = UUID.randomUUID();
         Order order = buildConfirmedOrder(orderId);
 
-        InvoiceDetailResponse invoiceResponse = new InvoiceDetailResponse(
-                UUID.randomUUID(), "INV-2026-00001",
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                orderId, "ORD-2026-00001",
-                "PAID", "CASH", null,
-                BigDecimal.valueOf(10),
-                null, null,
-                LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
-        );
+        InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
         when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId)))
@@ -143,17 +123,7 @@ class ConvertToInvoiceUseCaseUnitTest {
                 LocalDateTime.now(), LocalDateTime.now()
         );
 
-        InvoiceDetailResponse invoiceResponse = new InvoiceDetailResponse(
-                UUID.randomUUID(), "INV-2026-00001",
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                orderId, "ORD-2026-00001",
-                "PAID", "CASH", null,
-                BigDecimal.valueOf(10),
-                null, null,
-                LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
-        );
+        InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
         when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), any()))
@@ -173,17 +143,7 @@ class ConvertToInvoiceUseCaseUnitTest {
         UUID authenticatedUserId = UUID.randomUUID();
         Order order = buildConfirmedOrder(orderId);
 
-        InvoiceDetailResponse invoiceResponse = new InvoiceDetailResponse(
-                UUID.randomUUID(), "INV-2026-00001",
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                orderId, "ORD-2026-00001",
-                "PAID", "CASH", null,
-                BigDecimal.valueOf(10),
-                null, null,
-                LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
-        );
+        InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
         when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId)))
@@ -193,6 +153,22 @@ class ConvertToInvoiceUseCaseUnitTest {
         convertToInvoiceUseCase.execute(orderId, "CASH", authenticatedUserId);
 
         verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    private InvoiceDetailResponse buildInvoiceResponse(UUID orderId) {
+        return new InvoiceDetailResponse(
+                UUID.randomUUID(), "INV-2026-00001",
+                UUID.randomUUID(), "Customer Name", "J-12345678-9",
+                UUID.randomUUID(), "User Name",
+                orderId, "ORD-2026-00001",
+                "PAID", "CASH", null,
+                BigDecimal.valueOf(10),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.TEN,
+                List.of(),
+                null, null,
+                LocalDateTime.now(), LocalDateTime.now(),
+                List.of()
+        );
     }
 
     private Order buildConfirmedOrder(UUID orderId) {

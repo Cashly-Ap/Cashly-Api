@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.invoices.application.usecases;
 
+import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
@@ -37,6 +39,12 @@ class GetInvoiceByIdUseCaseUnitTest {
 
     @Mock
     private StockEnrichmentService stockEnrichmentService;
+
+    @Mock
+    private CreditNoteRepository creditNoteRepository;
+
+    @Mock
+    private DebitNoteRepository debitNoteRepository;
 
     @InjectMocks
     private GetInvoiceByIdUseCase getInvoiceByIdUseCase;

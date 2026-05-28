@@ -6,6 +6,7 @@ import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,12 +20,27 @@ public class InvoiceMapper {
     private InvoiceMapper() {}
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
-                                                          Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
-                                                          Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
+                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
+        return toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations,
+                BigDecimal.ZERO, BigDecimal.ZERO, List.of());
+    }
+
+    public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
+                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<WarehouseProductKey, Integer> thisInvoiceAllocations,
+                                                           BigDecimal creditApplied,
+                                                           BigDecimal debitApplied,
+                                                           List<InvoiceDetailResponse.NoteInfo> notes) {
         List<InvoiceDetailResponse.InvoiceLineDetailResponse> lineResponses = invoice.getLines().stream()
                 .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks, thisInvoiceAllocations))
                 .toList();
+
+        BigDecimal total = invoice.getSubtotal()
+                .subtract(creditApplied)
+                .add(debitApplied);
 
         return new InvoiceDetailResponse(
                 invoice.getId().value(),
@@ -40,12 +56,24 @@ public class InvoiceMapper {
                 invoice.getPaymentType().name(),
                 invoice.getNotes(),
                 invoice.getSubtotal(),
+                creditApplied,
+                debitApplied,
+                total,
+                notes,
                 invoice.getCancelledAt(),
                 invoice.getCancelledReason(),
                 invoice.getCreatedAt(),
                 invoice.getUpdatedAt(),
                 lineResponses
         );
+    }
+
+    public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
+                                                           BigDecimal creditApplied,
+                                                           BigDecimal debitApplied,
+                                                           List<InvoiceDetailResponse.NoteInfo> notes) {
+        return toDetailResponse(invoice, Map.of(), Map.of(), Map.of(),
+                creditApplied, debitApplied, notes);
     }
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,

@@ -2,6 +2,8 @@ package com.parsun.parsun_api.invoices.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.finances.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.finances.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
@@ -28,8 +30,11 @@ public class InvoiceConfig {
 
     @Bean
     public GetInvoiceByIdUseCase getInvoiceByIdUseCase(InvoiceRepository invoiceRepository,
-                                                         StockEnrichmentService stockEnrichmentService) {
-        return new GetInvoiceByIdUseCase(invoiceRepository, stockEnrichmentService);
+                                                          StockEnrichmentService stockEnrichmentService,
+                                                          CreditNoteRepository creditNoteRepository,
+                                                          DebitNoteRepository debitNoteRepository) {
+        return new GetInvoiceByIdUseCase(invoiceRepository, stockEnrichmentService,
+                creditNoteRepository, debitNoteRepository);
     }
 
     @Bean
