@@ -8,11 +8,14 @@ import com.parsun.parsun_api.debit_notes.infrastructure.persistence.entities.Deb
 import com.parsun.parsun_api.debit_notes.infrastructure.persistence.mappers.DebitNoteJpaMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
@@ -58,6 +61,17 @@ public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
         return entities.stream()
                 .map(DebitNoteJpaMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds) {
+        if (invoiceIds.isEmpty()) return Map.of();
+        List<Object[]> results = jpaRepository.sumByInvoiceIds(invoiceIds);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        row -> (UUID) row[0],
+                        row -> (BigDecimal) row[1]
+                ));
     }
 
     @Override
