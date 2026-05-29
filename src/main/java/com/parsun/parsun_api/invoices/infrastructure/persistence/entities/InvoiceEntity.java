@@ -64,6 +64,12 @@ public class InvoiceEntity {
     @Column(name = "subtotal", nullable = false, precision = 15, scale = 2)
     private BigDecimal subtotal;
 
+    @Column(name = "returned_total", nullable = false, precision = 15, scale = 2)
+    private BigDecimal returnedTotal;
+
+    @Column(name = "return_status", length = 20)
+    private String returnStatus;
+
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 

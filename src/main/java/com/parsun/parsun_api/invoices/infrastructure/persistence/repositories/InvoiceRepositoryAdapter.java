@@ -48,12 +48,13 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     @Override
     public List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                              UUID customerId, List<String> statuses,
+                                             List<String> returnStatus,
                                              UUID productId, UUID categoryId,
                                              String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, statuses, productId, categoryId);
+        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, statuses, returnStatus, productId, categoryId);
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<InvoiceEntity> comparator = switch (orderBy) {

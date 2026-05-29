@@ -6,6 +6,7 @@ import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceLineId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
 import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
@@ -33,6 +34,8 @@ public class InvoiceJpaMapper {
         entity.setPaymentType(invoice.getPaymentType().name());
         entity.setNotes(invoice.getNotes());
         entity.setSubtotal(invoice.getSubtotal());
+        entity.setReturnedTotal(invoice.getReturnedTotal());
+        entity.setReturnStatus(invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null);
         entity.setCancelledAt(invoice.getCancelledAt());
         entity.setCancelledReason(invoice.getCancelledReason());
         entity.setCreatedAt(invoice.getCreatedAt());
@@ -52,6 +55,10 @@ public class InvoiceJpaMapper {
                 .map(InvoiceJpaMapper::toLineDomain)
                 .toList();
 
+        InvoiceReturnStatus returnStatus = entity.getReturnStatus() != null
+                ? InvoiceReturnStatus.valueOf(entity.getReturnStatus())
+                : null;
+
         return Invoice.reconstitute(
                 InvoiceId.of(entity.getId()),
                 new InvoiceNumber(entity.getInvoiceNumber()),
@@ -65,6 +72,8 @@ public class InvoiceJpaMapper {
                 InvoiceStatus.valueOf(entity.getStatus()),
                 PaymentType.valueOf(entity.getPaymentType()),
                 entity.getNotes(),
+                entity.getReturnedTotal(),
+                returnStatus,
                 entity.getCancelledAt(),
                 entity.getCancelledReason(),
                 lines,
@@ -83,6 +92,7 @@ public class InvoiceJpaMapper {
         entity.setQuantity(line.getQuantity());
         entity.setUnitPrice(line.getUnitPrice());
         entity.setLineTotal(line.getLineTotal());
+        entity.setReturnedQuantity(line.getReturnedQuantity());
 
         List<InvoiceLineAllocationEntity> allocationEntities = line.getAllocations().stream()
                 .map(a -> toAllocationEntity(a, entity))
@@ -115,6 +125,7 @@ public class InvoiceJpaMapper {
                 entity.getProductCode(),
                 entity.getQuantity(),
                 entity.getUnitPrice(),
+                entity.getReturnedQuantity(),
                 allocations
         );
     }

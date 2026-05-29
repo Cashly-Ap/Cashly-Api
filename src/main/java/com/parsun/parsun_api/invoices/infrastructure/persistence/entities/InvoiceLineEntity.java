@@ -47,6 +47,9 @@ public class InvoiceLineEntity {
     @Column(name = "line_total", nullable = false, precision = 15, scale = 2)
     private BigDecimal lineTotal;
 
+    @Column(name = "returned_quantity", nullable = false, precision = 15, scale = 4)
+    private BigDecimal returnedQuantity;
+
     @OneToMany(mappedBy = "invoiceLine", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<InvoiceLineAllocationEntity> allocations = new ArrayList<>();
 }
