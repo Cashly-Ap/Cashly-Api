@@ -1,32 +1,22 @@
-# Development Dockerfile - Optimized for development workflow
+# Development image with hot reload via spring-boot-devtools
 FROM maven:3.9.9-amazoncorretto-24
 
 WORKDIR /app
 
-# Install development tools
-RUN yum update -y && yum install -y wget vim git tar && yum clean all
+# Install tar/gzip for Maven wrapper (amazoncorretto doesn't include them)
+RUN yum update -y && yum install -y tar gzip && yum clean all
 
-# Copy Maven wrapper and configuration
-COPY mvnw ./
-COPY .mvn .mvn
+# Copy only what's needed for dependency caching at build time
 COPY pom.xml ./
+COPY .mvn .mvn
+COPY mvnw ./
 
-# Make Maven wrapper executable
-RUN chmod +x ./mvnw
+RUN chmod +x ./mvnw && ./mvnw dependency:go-offline -B
 
-# Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
+# Source is mounted as a bind volume at runtime (see docker-compose app-dev)
 COPY src ./src
 
-# Expose application and debug ports
-EXPOSE 8080 5005
+EXPOSE 8080
 
-# Development environment variables
-ENV SPRING_PROFILES_ACTIVE=dev
-ENV SPRING_DEVTOOLS_RESTART_ENABLED=true
-
-# Run with hot reload and debug support
-ENTRYPOINT ["./mvnw", "spring-boot:run", \
-    "-Dspring-boot.run.jvmArguments=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]
+# spring-boot:run enables DevTools automatic restart on classpath changes
+ENTRYPOINT ["./mvnw", "spring-boot:run"]

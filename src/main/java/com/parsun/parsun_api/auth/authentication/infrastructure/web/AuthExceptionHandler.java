@@ -35,7 +35,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +47,8 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @ResponseBody
 public class AuthExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthExceptionHandler.class);
 
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicateEmail(DuplicateEmailException ex) {
@@ -391,13 +396,27 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String name = ex.getName();
+        String value = ex.getValue() != null ? ex.getValue().toString() : "null";
+        String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
+        log.warn("Type mismatch for parameter '{}': value '{}' cannot be converted to {}", name, value, requiredType);
+        Map<String, Object> errorDetails = createErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            "Invalid parameter",
+            "Invalid value '" + value + "' for parameter '" + name + "'. Expected a valid " + requiredType + "."
+        );
+        return ResponseEntity.badRequest().body(errorDetails);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        ex.printStackTrace();
+        log.error("Unhandled exception: {}", ex.getMessage(), ex);
         Map<String, Object> errorDetails = createErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "Internal server error",
-            "An unexpected error occurred"
+            ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred"
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
     }

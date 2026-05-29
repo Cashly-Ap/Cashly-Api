@@ -1,8 +1,12 @@
 services:
+  # ════════════════════════════════════════════════════════════
+  # DEFAULT: Development mode with hot reload
+  #   docker compose up
+  # ════════════════════════════════════════════════════════════
   app:
     build:
       context: .
-      dockerfile: ${DOCKERFILE:-Dockerfile}
+      dockerfile: Dockerfile.dev
     container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-app
     restart: unless-stopped
     ports:
@@ -12,7 +16,53 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-myuser}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}
+      - SPRING_PROFILES_ACTIVE=dev
+      - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
+      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
+      - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+      - CORS_ALLOWED_METHODS=${CORS_ALLOWED_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
+      - CORS_ALLOWED_HEADERS=${CORS_ALLOWED_HEADERS:-*}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS:-true}
+      - CORS_MAX_AGE=${CORS_MAX_AGE:-3600}
+      - STORAGE_LOCATION=${STORAGE_LOCATION:-/app/uploads}
+      - STORAGE_TYPE=${STORAGE_TYPE:-s3}
+      - STORAGE_S3_ENDPOINT=${STORAGE_S3_ENDPOINT:-http://minio:9000}
+      - STORAGE_S3_ACCESS_KEY=${STORAGE_S3_ACCESS_KEY:-minioadmin}
+      - STORAGE_S3_SECRET_KEY=${STORAGE_S3_SECRET_KEY:-minioadmin}
+      - STORAGE_S3_BUCKET=${STORAGE_S3_BUCKET:-parsun-files}
+      - STORAGE_S3_REGION=${STORAGE_S3_REGION:-us-east-1}
+    volumes:
+      - .:/app
+      - maven_cache:/root/.m2
+    depends_on:
+      mysql:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    networks:
+      - parsun-network
+
+  # ════════════════════════════════════════════════════════════
+  # PRODUCTION: Optimized JAR build (multi-stage)
+  #   docker compose --profile prod up
+  # ════════════════════════════════════════════════════════════
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME:-parsun-api}-app-prod
+    profiles:
+      - prod
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:mysql://mysql:3306/mydatabase?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_0900_ai_ci}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-myuser}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_PROFILES_ACTIVE=production
       - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
       - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
@@ -53,6 +103,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/seeds:/seeds
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-verysecret}"]
       interval: 10s
