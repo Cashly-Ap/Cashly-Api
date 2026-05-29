@@ -6,6 +6,7 @@ import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResp
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
+import java.math.BigDecimal;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
@@ -167,6 +168,8 @@ class GetInvoiceByIdUseCaseUnitTest {
                 null,
                 InvoiceStatus.DRAFT,
                 PaymentType.CASH,
+                null,
+                BigDecimal.ZERO,
                 null,
                 null,
                 null,

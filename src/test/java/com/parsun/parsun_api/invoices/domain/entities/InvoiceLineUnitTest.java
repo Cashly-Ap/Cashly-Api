@@ -72,7 +72,7 @@ class InvoiceLineUnitTest {
     void should_ThrowException_When_IdIsNull() {
         assertThrows(NullPointerException.class, () ->
                 InvoiceLine.reconstitute(null, PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                        BigDecimal.ONE, BigDecimal.TEN, List.of()));
+                        BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, List.of()));
     }
 
     @Test
@@ -138,7 +138,7 @@ class InvoiceLineUnitTest {
         InvoiceLineId id = InvoiceLineId.generate();
 
         InvoiceLine line = InvoiceLine.reconstitute(id, PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("5"), new BigDecimal("2.00"), List.of());
+                new BigDecimal("5"), new BigDecimal("2.00"), BigDecimal.ZERO, List.of());
 
         assertEquals(id, line.getId());
         assertEquals(PRODUCT_ID, line.getProductId());

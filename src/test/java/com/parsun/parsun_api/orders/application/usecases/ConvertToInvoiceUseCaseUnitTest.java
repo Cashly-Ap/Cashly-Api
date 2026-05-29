@@ -167,7 +167,8 @@ class ConvertToInvoiceUseCaseUnitTest {
                 List.of(),
                 null, null,
                 LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
+                List.of(),
+                BigDecimal.ZERO, null, List.of()
         );
     }
 

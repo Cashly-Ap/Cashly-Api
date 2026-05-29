@@ -126,7 +126,7 @@ class DeleteInvoiceUseCaseTest {
                 UUID.randomUUID(), "Customer", "J-12345678-9",
                 UUID.randomUUID(), "User", null, null,
                 InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
+                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
         );
 
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 3,
@@ -149,7 +149,7 @@ class DeleteInvoiceUseCaseTest {
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
                 UUID.randomUUID(), "User Name", orderId, null,
                 status, PaymentType.CASH, null,
-                null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
+                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
         );
     }
 

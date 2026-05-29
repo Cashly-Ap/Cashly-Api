@@ -118,6 +118,8 @@ class InvoiceMapperTest {
                 InvoiceStatus.DRAFT,
                 PaymentType.CASH,
                 null,
+                BigDecimal.ZERO,
+                null,
                 null,
                 null,
                 List.of(line),

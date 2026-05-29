@@ -272,7 +272,7 @@ class InvoiceUnitTest {
         Invoice invoice = Invoice.reconstitute(id, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
                 CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, orderId, "ORD-2026-00001",
                 InvoiceStatus.PAID, PaymentType.CASH, "notas",
-                null, null, validLines, now, now);
+                BigDecimal.ZERO, null, null, null, validLines, now, now);
 
         assertEquals(id, invoice.getId());
         assertEquals(InvoiceStatus.PAID, invoice.getStatus());
