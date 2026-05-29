@@ -71,9 +71,9 @@ VALUES (UNHEX('0F200000000000000000000000000009'), UNHEX('0F10000000000000000000
 INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
 VALUES (UNHEX('0F300000000000000000000000000009'), UNHEX('0F200000000000000000000000000009'), UNHEX('B0000000000000000000000000000001'), 1.0000);
 
--- Invoice 5: PAID - CASH - SumZulia (multi-line, multi-warehouse)
+-- Invoice 5: PARTIALLY_PAID - CREDIT - SumZulia (multi-line, multi-warehouse)
 INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
-VALUES (UNHEX('0F100000000000000000000000000005'), 'INV-2026-00030', NULL, NULL, UNHEX('C1000000000000000000000000000005'), 'Suministros Zulia', 'J-40234567-8', UNHEX('F5DDEA444B5A7ED3CC1B1AAED175F76A'), 'Gabriel', 'PARTIALLY_PAID', 'CASH', 'Pago contado - entrega inmediata', 15600.00, NOW(), NOW());
+VALUES (UNHEX('0F100000000000000000000000000005'), 'INV-2026-00030', NULL, NULL, UNHEX('C1000000000000000000000000000005'), 'Suministros Zulia', 'J-40234567-8', UNHEX('F5DDEA444B5A7ED3CC1B1AAED175F76A'), 'Gabriel', 'PARTIALLY_PAID', 'CREDIT', 'Credito vencido - intereses generados', 15600.00, NOW(), NOW());
 
 INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
 VALUES (UNHEX('0F200000000000000000000000000010'), UNHEX('0F100000000000000000000000000005'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 1000.0000, 5.50, 5500.00);
