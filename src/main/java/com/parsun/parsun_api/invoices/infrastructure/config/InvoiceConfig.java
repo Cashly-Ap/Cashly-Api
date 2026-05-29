@@ -4,8 +4,12 @@ import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.infrastructure.services.InvoiceStatusServiceImpl;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
@@ -85,5 +89,14 @@ public class InvoiceConfig {
                                                        OrderRepository orderRepository,
                                                        WarehouseStockRepository warehouseStockRepository) {
         return new DeleteInvoiceUseCase(invoiceRepository, orderRepository, warehouseStockRepository);
+    }
+
+    @Bean
+    public InvoiceStatusServiceImpl invoiceStatusService(InvoiceRepository invoiceRepository,
+                                                          PaymentAllocationRepository paymentAllocationRepository,
+                                                          DebitNoteRepository debitNoteRepository,
+                                                          CreditNoteRepository creditNoteRepository) {
+        return new InvoiceStatusServiceImpl(invoiceRepository, paymentAllocationRepository,
+                debitNoteRepository, creditNoteRepository);
     }
 }

@@ -13,13 +13,10 @@ VALUES (UNHEX('A1000000000000000000000000000001'), 'PAY-2025-0001', UNHEX('c1000
 INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
 VALUES (UNHEX('AA00000000000000000000000000001'), UNHEX('A1000000000000000000000000000001'), UNHEX('0F100000000000000000000000000002'), 3450.00);
 
--- Payment 2: Partial payment for Invoice 3 (PENDING_PAYMENT, ComNorte) - Efectivo
--- Invoice 3 subtotal: 8750.00, paying only 3000.00
+-- Payment 2: Cancelled — was for Invoice 3 (ComNorte) - Efectivo
+-- Invoice 3 was FULLY_RETURNED (AUTOMATIC return), payment was cancelled
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
-VALUES (UNHEX('A1000000000000000000000000000002'), 'PAY-2025-0002', UNHEX('c1000000000000000000000000000003'), 'PAYMENT', 3000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0001'), NULL, '2025-02-10', 'Pago parcial - abono 1 de 3', 'PARTIALLY_APPLIED', 3000.00, UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'Admin User', '2025-02-10 14:15:00', '2025-02-10 14:15:00');
-
-INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
-VALUES (UNHEX('AA00000000000000000000000000002'), UNHEX('A1000000000000000000000000000002'), UNHEX('0F100000000000000000000000000003'), 3000.00);
+VALUES (UNHEX('A1000000000000000000000000000002'), 'PAY-2025-0002', UNHEX('c1000000000000000000000000000003'), 'PAYMENT', 3000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0001'), NULL, '2025-02-10', 'Cancelado por devolucion automatica INV-2026-00028', 'CANCELLED', 0.00, UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'Admin User', '2025-02-10 14:15:00', '2025-02-10 14:15:00');
 
 -- Payment 3: Advance payment on account (ADVANCE) - Tarjeta de débito
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
@@ -41,13 +38,10 @@ VALUES (UNHEX('AA00000000000000000000000000005'), UNHEX('A1000000000000000000000
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
 VALUES (UNHEX('A1000000000000000000000000000006'), 'PAY-2025-0006', UNHEX('c1000000000000000000000000000008'), 'PAYMENT', 1500.00, (SELECT id FROM payment_methods WHERE code = 'PM-0005'), 'CHK-2025-0456', '2025-04-05', 'Cheque sin fondos - cancelado', 'CANCELLED', 0.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-04-05 08:30:00', '2025-04-05 08:30:00');
 
--- Payment 7: Partial payment with reference number - Tarjeta de crédito
--- Paying 2000.00 of Invoice 3 (remaining after payment 2)
+-- Payment 7: Cancelled — was for Invoice 3 (ComNorte) - Tarjeta de crédito
+-- Invoice 3 was FULLY_RETURNED (AUTOMATIC return), payment was cancelled
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
-VALUES (UNHEX('A1000000000000000000000000000007'), 'PAY-2025-0007', UNHEX('c1000000000000000000000000000003'), 'PAYMENT', 2000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0004'), 'CC-VISA-2025-4567-8901', '2025-04-20', 'Segundo abono factura INV-2026-00028', 'PARTIALLY_APPLIED', 2000.00, UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'Admin User', '2025-04-20 13:00:00', '2025-04-20 13:00:00');
-
-INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
-VALUES (UNHEX('AA00000000000000000000000000007'), UNHEX('A1000000000000000000000000000007'), UNHEX('0F100000000000000000000000000003'), 2000.00);
+VALUES (UNHEX('A1000000000000000000000000000007'), 'PAY-2025-0007', UNHEX('c1000000000000000000000000000003'), 'PAYMENT', 2000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0004'), 'CC-VISA-2025-4567-8901', '2025-04-20', 'Cancelado por devolucion automatica INV-2026-00028', 'CANCELLED', 0.00, UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'Admin User', '2025-04-20 13:00:00', '2025-04-20 13:00:00');
 
 -- Payment 8: Another advance - Divisas (USD)
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)

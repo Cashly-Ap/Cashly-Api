@@ -6,6 +6,7 @@ import com.parsun.parsun_api.debit_notes.application.mappers.DebitNoteMapper;
 import com.parsun.parsun_api.debit_notes.domain.entities.DebitNote;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.valueobjects.DebitNoteNumber;
+import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
@@ -14,9 +15,12 @@ import java.util.UUID;
 public class CreateDebitNoteUseCase {
 
     private final DebitNoteRepository debitNoteRepository;
+    private final InvoiceStatusService invoiceStatusService;
 
-    public CreateDebitNoteUseCase(DebitNoteRepository debitNoteRepository) {
+    public CreateDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
+                                  InvoiceStatusService invoiceStatusService) {
         this.debitNoteRepository = debitNoteRepository;
+        this.invoiceStatusService = invoiceStatusService;
     }
 
     @Transactional
@@ -36,6 +40,8 @@ public class CreateDebitNoteUseCase {
         );
 
         DebitNote saved = debitNoteRepository.save(debitNote);
+
+        invoiceStatusService.recalculate(saved.getInvoiceId());
 
         return DebitNoteMapper.toDebitNoteResponse(saved, null, null, null);
     }

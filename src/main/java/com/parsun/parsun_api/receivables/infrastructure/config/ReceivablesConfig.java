@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.receivables.infrastructure.config;
 
+import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import com.parsun.parsun_api.receivables.application.usecases.*;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.receivables.domain.repositories.ReceivablesRepository;
@@ -66,8 +67,10 @@ public class ReceivablesConfig {
     }
 
     @Bean
-    public ApprovePaymentUseCase approvePaymentUseCase(PaymentRepository paymentRepository) {
-        return new ApprovePaymentUseCase(paymentRepository);
+    public ApprovePaymentUseCase approvePaymentUseCase(PaymentRepository paymentRepository,
+                                                        PaymentAllocationRepository paymentAllocationRepository,
+                                                        InvoiceStatusService invoiceStatusService) {
+        return new ApprovePaymentUseCase(paymentRepository, paymentAllocationRepository, invoiceStatusService);
     }
 
     @Bean

@@ -6,6 +6,7 @@ import com.parsun.parsun_api.credit_notes.application.mappers.CreditNoteMapper;
 import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteNumber;
+import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
@@ -14,9 +15,12 @@ import java.util.UUID;
 public class CreateCreditNoteUseCase {
 
     private final CreditNoteRepository creditNoteRepository;
+    private final InvoiceStatusService invoiceStatusService;
 
-    public CreateCreditNoteUseCase(CreditNoteRepository creditNoteRepository) {
+    public CreateCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
+                                   InvoiceStatusService invoiceStatusService) {
         this.creditNoteRepository = creditNoteRepository;
+        this.invoiceStatusService = invoiceStatusService;
     }
 
     @Transactional
@@ -36,6 +40,8 @@ public class CreateCreditNoteUseCase {
         );
 
         CreditNote saved = creditNoteRepository.save(creditNote);
+
+        invoiceStatusService.recalculate(saved.getInvoiceId());
 
         return CreditNoteMapper.toCreditNoteResponse(saved, null, null, null);
     }

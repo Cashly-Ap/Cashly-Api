@@ -4,6 +4,9 @@ import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
 import com.parsun.parsun_api.returns.application.dto.request.CreateReturnRequest;
 import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
 import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
@@ -24,13 +27,19 @@ public class CreateReturnUseCase {
     private final ReturnRepository returnRepository;
     private final InvoiceRepository invoiceRepository;
     private final ReturnMapper returnMapper;
+    private final PaymentAllocationService paymentAllocationService;
+    private final PaymentAllocationRepository allocationRepository;
 
     public CreateReturnUseCase(ReturnRepository returnRepository,
                                 InvoiceRepository invoiceRepository,
-                                ReturnMapper returnMapper) {
+                                ReturnMapper returnMapper,
+                                PaymentAllocationService paymentAllocationService,
+                                PaymentAllocationRepository allocationRepository) {
         this.returnRepository = returnRepository;
         this.invoiceRepository = invoiceRepository;
         this.returnMapper = returnMapper;
+        this.paymentAllocationService = paymentAllocationService;
+        this.allocationRepository = allocationRepository;
     }
 
     @Transactional
@@ -68,6 +77,17 @@ public class CreateReturnUseCase {
 
         invoiceRepository.save(invoice);
 
+        if (return_.getReturnType() == ReturnType.AUTOMATIC) {
+            cancelInvoicePayments(return_.getInvoiceId().value());
+        }
+
         return returnMapper.toResponse(saved);
+    }
+
+    private void cancelInvoicePayments(UUID invoiceId) {
+        allocationRepository.findByInvoiceId(invoiceId).stream()
+                .map(PaymentAllocation::getPaymentId)
+                .distinct()
+                .forEach(paymentAllocationService::cancelPayment);
     }
 }

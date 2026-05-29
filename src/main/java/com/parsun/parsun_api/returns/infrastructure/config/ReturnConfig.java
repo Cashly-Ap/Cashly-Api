@@ -1,6 +1,8 @@
 package com.parsun.parsun_api.returns.infrastructure.config;
 
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
 import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
 import com.parsun.parsun_api.returns.application.usecases.CreateReturnUseCase;
 import com.parsun.parsun_api.returns.application.usecases.DeleteReturnUseCase;
@@ -21,8 +23,11 @@ public class ReturnConfig {
 
     @Bean
     public CreateReturnUseCase createReturnUseCase(InvoiceRepository invoiceRepository,
-                                                      ReturnMapper returnMapper) {
-        return new CreateReturnUseCase(returnRepository, invoiceRepository, returnMapper);
+                                                       ReturnMapper returnMapper,
+                                                       PaymentAllocationService paymentAllocationService,
+                                                       PaymentAllocationRepository allocationRepository) {
+        return new CreateReturnUseCase(returnRepository, invoiceRepository, returnMapper,
+                paymentAllocationService, allocationRepository);
     }
 
     @Bean

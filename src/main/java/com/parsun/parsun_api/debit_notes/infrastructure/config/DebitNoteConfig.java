@@ -5,6 +5,7 @@ import com.parsun.parsun_api.debit_notes.application.usecases.DeleteDebitNoteUse
 import com.parsun.parsun_api.debit_notes.application.usecases.GetDebitNoteByIdUseCase;
 import com.parsun.parsun_api.debit_notes.application.usecases.GetDebitNotesUseCase;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import com.parsun.parsun_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,16 +15,19 @@ public class DebitNoteConfig {
 
     private final DebitNoteRepository debitNoteRepository;
     private final InvoiceJpaRepository invoiceJpaRepository;
+    private final InvoiceStatusService invoiceStatusService;
 
     public DebitNoteConfig(DebitNoteRepository debitNoteRepository,
-                            InvoiceJpaRepository invoiceJpaRepository) {
+                            InvoiceJpaRepository invoiceJpaRepository,
+                            InvoiceStatusService invoiceStatusService) {
         this.debitNoteRepository = debitNoteRepository;
         this.invoiceJpaRepository = invoiceJpaRepository;
+        this.invoiceStatusService = invoiceStatusService;
     }
 
     @Bean
     public CreateDebitNoteUseCase createDebitNoteUseCase() {
-        return new CreateDebitNoteUseCase(debitNoteRepository);
+        return new CreateDebitNoteUseCase(debitNoteRepository, invoiceStatusService);
     }
 
     @Bean
@@ -38,6 +42,6 @@ public class DebitNoteConfig {
 
     @Bean
     public DeleteDebitNoteUseCase deleteDebitNoteUseCase() {
-        return new DeleteDebitNoteUseCase(debitNoteRepository);
+        return new DeleteDebitNoteUseCase(debitNoteRepository, invoiceStatusService);
     }
 }

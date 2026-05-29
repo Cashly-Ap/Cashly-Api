@@ -1,7 +1,7 @@
 -- =============================================================================
 -- Seed: Users & Permissions
 -- Password for all: 49510561Gabriel.
--- Hash (all): $2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW
+-- Hash (all): $2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy
 -- =============================================================================
 
 DELETE FROM user_module_permissions;
@@ -10,12 +10,12 @@ DELETE FROM users;
 
 INSERT INTO users (id, email, user_name, password_hash, role, active, email_verified, commission_deduction_percentage, created_at, updated_at)
 VALUES
-    (UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'gabriel@gmail.com',     'Gabriel',       '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'superadmin@parsun.com', 'Super Admin',   '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'admin@parsun.com',      'Admin User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'ADMIN',       TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'operator@parsun.com',   'Operator User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'sales@parsun.com',      'Sales User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@parsun.com',    'No Sales User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW());
+    (UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'gabriel@gmail.com',     'Gabriel',       '$2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'superadmin@parsun.com', 'Super Admin',   '$2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'admin@parsun.com',      'Admin User',    '$2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy', 'ADMIN',       TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'operator@parsun.com',   'Operator User', '$2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'sales@parsun.com',      'Sales User',    '$2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@parsun.com',    'No Sales User', '$2a$10$v9GJVVjLt5GrhSdy6ITNn.Tagp/2D6ul1ctfZ3MLTufbNAq/TLefy', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW());
 
 INSERT INTO user_module_permissions (id, user_id, module)
 VALUES

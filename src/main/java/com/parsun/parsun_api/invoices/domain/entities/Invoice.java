@@ -162,6 +162,30 @@ public class Invoice {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void recalculatePaymentStatus(BigDecimal totalPaid, BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
+        if (this.status == InvoiceStatus.DRAFT
+                || this.status == InvoiceStatus.CANCELLED
+                || this.status == InvoiceStatus.FULLY_RETURNED) {
+            return;
+        }
+
+        BigDecimal effectiveTotal = this.subtotal.subtract(this.returnedTotal);
+        BigDecimal balance = effectiveTotal
+                .subtract(totalPaid != null ? totalPaid : BigDecimal.ZERO)
+                .add(totalDebitNotes != null ? totalDebitNotes : BigDecimal.ZERO)
+                .subtract(totalCreditNotes != null ? totalCreditNotes : BigDecimal.ZERO);
+
+        if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+            this.status = InvoiceStatus.PAID;
+        } else if (balance.compareTo(effectiveTotal) < 0) {
+            this.status = InvoiceStatus.PARTIALLY_PAID;
+        } else {
+            this.status = InvoiceStatus.PENDING_PAYMENT;
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void applyReturn(Return return_) {
         Objects.requireNonNull(return_, "Return cannot be null");
 
