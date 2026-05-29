@@ -9,6 +9,7 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +34,14 @@ class GetInvoicesUseCaseTest {
     @Mock
     private InvoiceRepository invoiceRepository;
 
+    @Mock
+    private PaymentAllocationJpaRepository paymentAllocationJpaRepository;
+
     private GetInvoicesUseCase getInvoicesUseCase;
 
     @BeforeEach
     void setUp() {
-        getInvoicesUseCase = new GetInvoicesUseCase(invoiceRepository);
+        getInvoicesUseCase = new GetInvoicesUseCase(invoiceRepository, paymentAllocationJpaRepository);
     }
 
     @Test
@@ -48,54 +52,55 @@ class GetInvoicesUseCaseTest {
                 buildInvoice(UUID.randomUUID(), customerId, InvoiceStatus.PENDING_PAYMENT)
         );
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(invoices);
+        when(paymentAllocationJpaRepository.sumByInvoiceIds(anyList())).thenReturn(List.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
-                null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     @Test
     void should_UseDefaultStatuses_When_StatusFilterIsNull() {
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
-        getInvoicesUseCase.execute(null, null, null, null, null, null, null, null);
+        getInvoicesUseCase.execute(null, null, null, null, null, null, null, null, null);
 
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     @Test
     void should_UseDefaultStatuses_When_StatusFilterIsEmpty() {
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
-        getInvoicesUseCase.execute(null, null, null, List.of(), null, null, null, null);
+        getInvoicesUseCase.execute(null, null, null, List.of(), null, null, null, null, null);
 
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     @Test
     void should_PassCustomStatuses_When_Provided() {
         List<String> customStatuses = List.of("PAID", "CANCELLED");
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
-        getInvoicesUseCase.execute(null, null, null, customStatuses, null, null, null, null);
+        getInvoicesUseCase.execute(null, null, null, customStatuses, null, null, null, null, null);
 
         verify(invoiceRepository).findAllWithFilters(
-                null, null, null, customStatuses, null, null, null, null);
+                null, null, null, customStatuses, null, null, null, null, null);
     }
 
     @Test
@@ -106,23 +111,23 @@ class GetInvoicesUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
-        getInvoicesUseCase.execute(dateFrom, dateTo, customerId, null, productId, categoryId, "createdAt", "desc");
+        getInvoicesUseCase.execute(dateFrom, dateTo, customerId, null, null, productId, categoryId, "createdAt", "desc");
 
         verify(invoiceRepository).findAllWithFilters(
                 dateFrom, dateTo, customerId, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                productId, categoryId, "createdAt", "desc");
+                null, productId, categoryId, "createdAt", "desc");
     }
 
     @Test
     void should_ReturnEmptyList_When_NoInvoicesMatch() {
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
-                null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -133,16 +138,17 @@ class GetInvoicesUseCaseTest {
         UUID customerId = UUID.randomUUID();
         Invoice invoice = buildInvoice(UUID.randomUUID(), customerId, InvoiceStatus.DRAFT);
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of(invoice));
+        when(paymentAllocationJpaRepository.sumByInvoiceIds(anyList())).thenReturn(List.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
-                null, null, customerId, null, null, null, null, null);
+                null, null, customerId, null, null, null, null, null, null);
 
         assertEquals(1, result.size());
         verify(invoiceRepository).findAllWithFilters(
                 null, null, customerId, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     private Invoice buildInvoice(UUID id, UUID customerId, InvoiceStatus status) {

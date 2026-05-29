@@ -62,6 +62,7 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
             case "customerName" -> Comparator.comparing(InvoiceEntity::getCustomerName);
             case "status" -> Comparator.comparing(InvoiceEntity::getStatus);
             case "subtotal" -> Comparator.comparing(InvoiceEntity::getSubtotal);
+            case "total" -> Comparator.comparing((InvoiceEntity e) -> e.getSubtotal().subtract(e.getReturnedTotal() != null ? e.getReturnedTotal() : java.math.BigDecimal.ZERO));
             case "paymentType" -> Comparator.comparing(InvoiceEntity::getPaymentType);
             default -> Comparator.comparing(InvoiceEntity::getCreatedAt);
         };

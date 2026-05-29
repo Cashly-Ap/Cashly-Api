@@ -8,6 +8,7 @@ import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
@@ -44,8 +45,9 @@ public class InvoiceConfig {
     }
 
     @Bean
-    public GetInvoicesUseCase getInvoicesUseCase(InvoiceRepository invoiceRepository) {
-        return new GetInvoicesUseCase(invoiceRepository);
+    public GetInvoicesUseCase getInvoicesUseCase(InvoiceRepository invoiceRepository,
+                                                 PaymentAllocationJpaRepository paymentAllocationJpaRepository) {
+        return new GetInvoicesUseCase(invoiceRepository, paymentAllocationJpaRepository);
     }
 
     @Bean

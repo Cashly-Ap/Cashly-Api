@@ -99,8 +99,17 @@ public class InvoiceMapper {
         return toDetailResponse(invoice, Map.of(), Map.of(), Map.of());
     }
 
-    public static InvoiceListResponse toListResponse(Invoice invoice) {
+    public static InvoiceListResponse toListResponse(Invoice invoice, Map<UUID, BigDecimal> paidAmountByInvoiceId) {
         String returnStatus = invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null;
+
+        BigDecimal total;
+        if (invoice.getReturnStatus() != null && invoice.getReturnStatus().name().equals("FULL")) {
+            total = BigDecimal.ZERO;
+        } else {
+            total = invoice.getSubtotal().subtract(invoice.getReturnedTotal());
+        }
+
+        BigDecimal paidAmount = paidAmountByInvoiceId.getOrDefault(invoice.getId().value(), BigDecimal.ZERO);
 
         return new InvoiceListResponse(
                 invoice.getId().value(),
@@ -110,6 +119,8 @@ public class InvoiceMapper {
                 invoice.getStatus().name(),
                 invoice.getPaymentType().name(),
                 invoice.getSubtotal(),
+                total,
+                paidAmount,
                 invoice.getLines().size(),
                 invoice.getOrderId(),
                 invoice.getOrderNumber(),

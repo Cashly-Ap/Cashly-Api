@@ -12,6 +12,8 @@ public record InvoiceListResponse(
         String status,
         String paymentType,
         BigDecimal subtotal,
+        BigDecimal total,
+        BigDecimal paidAmount,
         int lineCount,
         UUID orderId,
         String orderNumber,
