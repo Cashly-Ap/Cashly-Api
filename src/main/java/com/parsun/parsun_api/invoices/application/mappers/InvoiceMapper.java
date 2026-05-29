@@ -99,14 +99,23 @@ public class InvoiceMapper {
         return toDetailResponse(invoice, Map.of(), Map.of(), Map.of());
     }
 
-    public static InvoiceListResponse toListResponse(Invoice invoice, Map<UUID, BigDecimal> paidAmountByInvoiceId) {
+    public static InvoiceListResponse toListResponse(Invoice invoice,
+                                                       Map<UUID, BigDecimal> paidAmountByInvoiceId,
+                                                       Map<UUID, BigDecimal> debitAppliedByInvoiceId,
+                                                       Map<UUID, BigDecimal> creditAppliedByInvoiceId) {
         String returnStatus = invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null;
+
+        BigDecimal creditApplied = creditAppliedByInvoiceId.getOrDefault(invoice.getId().value(), BigDecimal.ZERO);
+        BigDecimal debitApplied = debitAppliedByInvoiceId.getOrDefault(invoice.getId().value(), BigDecimal.ZERO);
 
         BigDecimal total;
         if (invoice.getReturnStatus() != null && invoice.getReturnStatus().name().equals("FULL")) {
             total = BigDecimal.ZERO;
         } else {
-            total = invoice.getSubtotal().subtract(invoice.getReturnedTotal());
+            total = invoice.getSubtotal()
+                    .subtract(invoice.getReturnedTotal())
+                    .subtract(creditApplied)
+                    .add(debitApplied);
         }
 
         BigDecimal paidAmount = paidAmountByInvoiceId.getOrDefault(invoice.getId().value(), BigDecimal.ZERO);
@@ -121,6 +130,8 @@ public class InvoiceMapper {
                 invoice.getSubtotal(),
                 total,
                 paidAmount,
+                creditApplied,
+                debitApplied,
                 invoice.getLines().size(),
                 invoice.getOrderId(),
                 invoice.getOrderNumber(),

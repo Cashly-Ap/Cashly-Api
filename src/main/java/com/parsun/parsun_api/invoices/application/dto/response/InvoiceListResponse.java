@@ -14,6 +14,8 @@ public record InvoiceListResponse(
         BigDecimal subtotal,
         BigDecimal total,
         BigDecimal paidAmount,
+        BigDecimal creditApplied,
+        BigDecimal debitApplied,
         int lineCount,
         UUID orderId,
         String orderNumber,

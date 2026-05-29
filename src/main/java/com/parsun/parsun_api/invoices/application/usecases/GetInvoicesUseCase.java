@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.invoices.application.usecases;
 
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
@@ -19,11 +21,17 @@ public class GetInvoicesUseCase {
 
     private final InvoiceRepository invoiceRepository;
     private final PaymentAllocationJpaRepository paymentAllocationJpaRepository;
+    private final DebitNoteRepository debitNoteRepository;
+    private final CreditNoteRepository creditNoteRepository;
 
     public GetInvoicesUseCase(InvoiceRepository invoiceRepository,
-                              PaymentAllocationJpaRepository paymentAllocationJpaRepository) {
+                              PaymentAllocationJpaRepository paymentAllocationJpaRepository,
+                              DebitNoteRepository debitNoteRepository,
+                              CreditNoteRepository creditNoteRepository) {
         this.invoiceRepository = invoiceRepository;
         this.paymentAllocationJpaRepository = paymentAllocationJpaRepository;
+        this.debitNoteRepository = debitNoteRepository;
+        this.creditNoteRepository = creditNoteRepository;
     }
 
     public List<InvoiceListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
@@ -36,8 +44,15 @@ public class GetInvoicesUseCase {
 
         Map<UUID, BigDecimal> paidAmountByInvoiceId = fetchPaidAmounts(invoices);
 
+        List<UUID> invoiceIds = invoices.stream()
+                .map(invoice -> invoice.getId().value())
+                .toList();
+
+        Map<UUID, BigDecimal> debitAppliedByInvoiceId = debitNoteRepository.sumByInvoiceIds(invoiceIds);
+        Map<UUID, BigDecimal> creditAppliedByInvoiceId = creditNoteRepository.sumByInvoiceIds(invoiceIds);
+
         return invoices.stream()
-                .map(invoice -> InvoiceMapper.toListResponse(invoice, paidAmountByInvoiceId))
+                .map(invoice -> InvoiceMapper.toListResponse(invoice, paidAmountByInvoiceId, debitAppliedByInvoiceId, creditAppliedByInvoiceId))
                 .toList();
     }
 
