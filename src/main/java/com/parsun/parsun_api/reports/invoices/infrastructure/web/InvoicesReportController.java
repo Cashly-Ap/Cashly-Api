@@ -52,7 +52,7 @@ public class InvoicesReportController {
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
         List<InvoiceListResponse> invoices = getInvoicesUseCase.execute(
-                dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
+                dateFrom, dateTo, customerId, status, null, productId, categoryId, "createdAt", "desc");
         byte[] pdf = generateInvoicesReportPdfUseCase.execute(invoices, mode);
 
         String filename = "reporte-facturas-" + LocalDate.now().toString() + ".pdf";

@@ -86,13 +86,14 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
 
     @Override
     public List<OverdueInvoiceResponse> findAllOverdueInvoices() {
-        List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc");
+        List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, null, null, null, null, null, "createdAt", "desc");
 
         List<OverdueInvoiceResponse> result = new ArrayList<>();
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
 
         for (Invoice invoice : allInvoices) {
-            if (invoice.getStatus() != InvoiceStatus.PENDING_PAYMENT && invoice.getStatus() != InvoiceStatus.PARTIALLY_PAID) {
+            if (invoice.getStatus() == InvoiceStatus.FULLY_RETURNED
+                || (invoice.getStatus() != InvoiceStatus.PENDING_PAYMENT && invoice.getStatus() != InvoiceStatus.PARTIALLY_PAID)) {
                 continue;
             }
 
@@ -110,7 +111,7 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
                 int daysOverdue = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, now);
                 result.add(new OverdueInvoiceResponse(
                         invoice.getInvoiceNumber().value(),
-                        invoice.getSubtotal(),
+                        invoice.getSubtotal().subtract(invoice.getReturnedTotal()),
                         dueDate,
                         daysOverdue
                 ));
@@ -121,16 +122,20 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
     }
 
     private BigDecimal calculatePendingBalance(UUID customerId) {
-        List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, customerId, null, null, null, "createdAt", "desc");
+        List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, customerId, null, null, null, null, "createdAt", "desc");
 
-        BigDecimal invoiceTotal = allInvoices.stream()
+        List<Invoice> activeInvoices = allInvoices.stream()
+                .filter(inv -> inv.getStatus() != InvoiceStatus.FULLY_RETURNED)
+                .toList();
+
+        BigDecimal invoiceTotal = activeInvoices.stream()
                 .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
-                .map(Invoice::getSubtotal)
+                .map(inv -> inv.getSubtotal().subtract(inv.getReturnedTotal()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal appliedPayments = calculateAppliedPaymentsForInvoices(allInvoices);
+        BigDecimal appliedPayments = calculateAppliedPaymentsForInvoices(activeInvoices);
 
-        BigDecimal totalCreditApplied = allInvoices.stream()
+        BigDecimal totalCreditApplied = activeInvoices.stream()
                 .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
                 .map(Invoice::getId)
                 .map(id -> creditNoteRepository.findByInvoiceId(id.value()))
@@ -138,7 +143,7 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
                 .map(CreditNote::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalDebitApplied = allInvoices.stream()
+        BigDecimal totalDebitApplied = activeInvoices.stream()
                 .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
                 .map(Invoice::getId)
                 .map(id -> debitNoteRepository.findByInvoiceId(id.value()))
@@ -182,12 +187,13 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
     }
 
     private List<OverdueInvoiceResponse> findOverdueInvoices(UUID customerId, int creditDays) {
-        List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, customerId, null, null, null, "createdAt", "desc");
+        List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, customerId, null, null, null, null, "createdAt", "desc");
         List<OverdueInvoiceResponse> result = new ArrayList<>();
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
 
         for (Invoice invoice : allInvoices) {
-            if (invoice.getStatus() != InvoiceStatus.PENDING_PAYMENT && invoice.getStatus() != InvoiceStatus.PARTIALLY_PAID) {
+            if (invoice.getStatus() == InvoiceStatus.FULLY_RETURNED
+                || (invoice.getStatus() != InvoiceStatus.PENDING_PAYMENT && invoice.getStatus() != InvoiceStatus.PARTIALLY_PAID)) {
                 continue;
             }
 
@@ -198,7 +204,7 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
                 int daysOverdue = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, now);
                 result.add(new OverdueInvoiceResponse(
                         invoice.getInvoiceNumber().value(),
-                        invoice.getSubtotal(),
+                        invoice.getSubtotal().subtract(invoice.getReturnedTotal()),
                         dueDate,
                         daysOverdue
                 ));

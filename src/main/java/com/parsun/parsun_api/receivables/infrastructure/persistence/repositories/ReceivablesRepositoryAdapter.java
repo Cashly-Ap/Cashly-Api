@@ -88,7 +88,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         CustomerEntity customer = entityManager.find(CustomerEntity.class, customerId);
 
         Query debtQuery = entityManager.createNativeQuery("""
-            SELECT COALESCE(SUM(i.subtotal - COALESCE(pa.total_paid, 0)
+            SELECT COALESCE(SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                 - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)), 0)
             FROM invoices i
             LEFT JOIN (
@@ -108,7 +108,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             ) dn ON dn.invoice_id = i.id
             WHERE i.customer_id = :customerId
               AND i.status NOT IN ('CANCELLED', 'DRAFT')
-              AND (i.subtotal - COALESCE(pa.total_paid, 0)
+              AND i.status <> 'FULLY_RETURNED'
+              AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                 - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
             """);
         debtQuery.setParameter("customerId", customerId);
@@ -141,8 +142,9 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         Query invoicesQuery = entityManager.createNativeQuery("""
             SELECT i.id, i.invoice_number, i.status, i.created_at,
                    i.subtotal,
+                   COALESCE(i.returned_total, 0) AS returned_total,
                    COALESCE(pa.total_paid, 0) AS total_paid,
-                   (i.subtotal - COALESCE(pa.total_paid, 0)
+                   (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                      - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS balance,
                    p_all.payment_id AS pending_payment_id,
                    p_all.payment_status AS pending_payment_status
@@ -170,7 +172,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             ) p_all ON p_all.invoice_id = i.id
             WHERE i.customer_id = :customerId
               AND i.status NOT IN ('CANCELLED', 'DRAFT')
-              AND (i.subtotal - COALESCE(pa.total_paid, 0)
+              AND i.status <> 'FULLY_RETURNED'
+              AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                 - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
             ORDER BY i.created_at DESC
             """);
@@ -187,8 +190,9 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         (BigDecimal) row[4],
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
-                        toUuid(row[7]),
-                        (String) row[8]
+                        (BigDecimal) row[7],
+                        toUuid(row[8]),
+                        (String) row[9]
                 ))
                 .toList();
 
@@ -230,13 +234,13 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             ) dn ON dn.invoice_id = i.id
             """;
 
-        String balanceExpr = "(i.subtotal - COALESCE(pa.total_paid, 0)"
+        String balanceExpr = "(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)"
             + " - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0))";
 
-        String partialBalanceExpr = "(i.subtotal - COALESCE(pa.total_paid, 0)"
+        String partialBalanceExpr = "(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)"
             + " - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0))";
 
-        String whereClauseCond = "i.customer_id = :customerId AND i.status NOT IN ('CANCELLED', 'DRAFT')";
+        String whereClauseCond = "i.customer_id = :customerId AND i.status NOT IN ('CANCELLED', 'DRAFT') AND i.status <> 'FULLY_RETURNED'";
         if (status != null && !status.isBlank()) {
             whereClauseCond += switch (status) {
                 case "PENDING" -> " AND i.status IN ('PENDING_PAYMENT') AND " + balanceExpr + " > 0";
@@ -269,6 +273,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
 
         String dataSql = "SELECT i.id, i.invoice_number, i.status, i.created_at,\n" +
             "                   i.subtotal,\n" +
+            "                   COALESCE(i.returned_total, 0) AS returned_total,\n" +
             "                   COALESCE(pa.total_paid, 0) AS total_paid,\n" +
             "                   " + balanceExpr + " AS balance,\n" +
             "                   p_all.payment_id AS pending_payment_id,\n" +
@@ -307,8 +312,9 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         (BigDecimal) row[4],
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
-                        toUuid(row[7]),
-                        (String) row[8]
+                        (BigDecimal) row[7],
+                        toUuid(row[8]),
+                        (String) row[9]
                 ))
                 .toList();
 

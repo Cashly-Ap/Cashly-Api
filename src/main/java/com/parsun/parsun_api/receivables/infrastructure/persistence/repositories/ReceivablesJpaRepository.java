@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocationEntity, UUID> {
 
     @Query(value = """
-        SELECT COALESCE(SUM(i.subtotal - COALESCE(pa.total_paid, 0)
+        SELECT COALESCE(SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)), 0)
         FROM invoices i
         LEFT JOIN (
@@ -30,7 +30,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
         """, nativeQuery = true)
     java.math.BigDecimal findTotalDebt();
@@ -54,7 +55,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
         """, nativeQuery = true)
     long countCustomersWithDebt();
@@ -78,7 +80,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
         """, nativeQuery = true)
     long countInvoicesWithDebt();
@@ -92,7 +95,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
 
     @Query(value = """
         SELECT i.customer_id, c.legal_name AS customerName, c.rif AS customerRif,
-               SUM(i.subtotal - COALESCE(pa.total_paid, 0)
+               SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                  - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS totalDebt,
                COALESCE(pending.pending_amount, 0) AS pendingPaymentsAmount,
                COUNT(DISTINCT i.id) AS pendingInvoicesCount,
@@ -121,7 +124,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY p.customer_id
         ) pending ON pending.customer_id = i.customer_id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
         GROUP BY i.customer_id, c.legal_name, c.rif, pending.pending_amount
         ORDER BY totalDebt DESC
@@ -145,7 +149,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
         """,
         nativeQuery = true)
@@ -171,7 +176,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
           AND (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
         """, nativeQuery = true)
@@ -179,7 +185,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
 
     @Query(value = """
         SELECT i.customer_id, c.legal_name AS customerName, c.rif AS customerRif,
-               SUM(i.subtotal - COALESCE(pa.total_paid, 0)
+               SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                  - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS totalDebt,
                COALESCE(pending.pending_amount, 0) AS pendingPaymentsAmount,
                COUNT(DISTINCT i.id) AS pendingInvoicesCount,
@@ -208,7 +214,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY p.customer_id
         ) pending ON pending.customer_id = i.customer_id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
           AND (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
         GROUP BY i.customer_id, c.legal_name, c.rif, pending.pending_amount
@@ -234,7 +241,8 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
         WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND (i.subtotal - COALESCE(pa.total_paid, 0)
+          AND i.status <> 'FULLY_RETURNED'
+          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
           AND (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
         """,

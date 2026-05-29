@@ -48,7 +48,7 @@ public class PayPartialDebtUseCase {
 
         List<String> statuses = List.of("PENDING_PAYMENT", "PARTIALLY_PAID");
         List<Invoice> unpaidInvoices = invoiceRepository.findAllWithFilters(
-                null, null, customerId, statuses, null, null, null, null);
+                null, null, customerId, statuses, null, null, null, null, null);
 
         if (unpaidInvoices.isEmpty()) {
             throw new IllegalArgumentException("Customer has no unpaid invoices: " + customerId);

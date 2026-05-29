@@ -10,6 +10,7 @@ public record CustomerInvoiceDebtResponse(
         String status,
         LocalDate invoiceDate,
         BigDecimal subtotal,
+        BigDecimal returnedTotal,
         BigDecimal totalPaid,
         BigDecimal balance,
         UUID pendingPaymentId,
