@@ -8,11 +8,14 @@ import com.parsun.parsun_api.credit_notes.infrastructure.persistence.entities.Cr
 import com.parsun.parsun_api.credit_notes.infrastructure.persistence.mappers.CreditNoteJpaMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
@@ -58,6 +61,17 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
         return entities.stream()
                 .map(CreditNoteJpaMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds) {
+        if (invoiceIds.isEmpty()) return Map.of();
+        List<Object[]> results = jpaRepository.sumByInvoiceIds(invoiceIds);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        row -> (UUID) row[0],
+                        row -> (BigDecimal) row[1]
+                ));
     }
 
     @Override

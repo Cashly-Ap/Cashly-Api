@@ -3,8 +3,10 @@ package com.parsun.parsun_api.credit_notes.domain.repositories;
 import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteId;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +16,7 @@ public interface CreditNoteRepository {
     List<CreditNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                         UUID customerId);
     List<CreditNote> findByInvoiceId(UUID invoiceId);
+    Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds);
     int getNextSequenceForYear(int year);
     void delete(CreditNoteId id);
 }
