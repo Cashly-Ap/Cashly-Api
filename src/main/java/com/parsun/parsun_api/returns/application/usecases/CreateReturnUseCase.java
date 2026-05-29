@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.returns.application.usecases;
 
+import com.parsun.parsun_api.invoices.domain.entities.Invoice;
+import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.returns.application.dto.request.CreateReturnRequest;
 import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
@@ -9,7 +12,6 @@ import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
 import com.parsun.parsun_api.returns.domain.entities.ReturnNumber;
 import com.parsun.parsun_api.returns.domain.entities.ReturnType;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
-import com.parsun.parsun_api.returns.domain.services.CreditNoteCreator;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -20,14 +22,14 @@ import java.util.UUID;
 public class CreateReturnUseCase {
 
     private final ReturnRepository returnRepository;
-    private final CreditNoteCreator creditNoteCreator;
+    private final InvoiceRepository invoiceRepository;
     private final ReturnMapper returnMapper;
 
     public CreateReturnUseCase(ReturnRepository returnRepository,
-                                CreditNoteCreator creditNoteCreator,
+                                InvoiceRepository invoiceRepository,
                                 ReturnMapper returnMapper) {
         this.returnRepository = returnRepository;
-        this.creditNoteCreator = creditNoteCreator;
+        this.invoiceRepository = invoiceRepository;
         this.returnMapper = returnMapper;
     }
 
@@ -59,14 +61,12 @@ public class CreateReturnUseCase {
 
         Return saved = returnRepository.save(return_);
 
-        creditNoteCreator.createCreditNote(
-                request.customerId(),
-                request.invoiceId(),
-                saved.getTotal(),
-                request.reason(),
-                authenticatedUserId,
-                userName
-        );
+        Invoice invoice = invoiceRepository.findById(return_.getInvoiceId())
+                .orElseThrow(() -> new InvoiceNotFoundException(return_.getInvoiceId().value()));
+
+        invoice.applyReturn(saved);
+
+        invoiceRepository.save(invoice);
 
         return returnMapper.toResponse(saved);
     }

@@ -11,13 +11,22 @@ import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.products.domain.entities.Product;
+import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.returns.domain.entities.Return;
+import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
+import com.parsun.parsun_api.returns.domain.entities.ReturnLineAllocation;
+import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class GetInvoiceByIdUseCase {
@@ -26,15 +35,24 @@ public class GetInvoiceByIdUseCase {
     private final StockEnrichmentService stockEnrichmentService;
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
+    private final ReturnRepository returnRepository;
+    private final ProductRepository productRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public GetInvoiceByIdUseCase(InvoiceRepository invoiceRepository,
                                   StockEnrichmentService stockEnrichmentService,
                                   CreditNoteRepository creditNoteRepository,
-                                  DebitNoteRepository debitNoteRepository) {
+                                  DebitNoteRepository debitNoteRepository,
+                                  ReturnRepository returnRepository,
+                                  ProductRepository productRepository,
+                                  WarehouseRepository warehouseRepository) {
         this.invoiceRepository = invoiceRepository;
         this.stockEnrichmentService = stockEnrichmentService;
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
+        this.returnRepository = returnRepository;
+        this.productRepository = productRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     public InvoiceDetailResponse execute(UUID id) {
@@ -97,7 +115,68 @@ public class GetInvoiceByIdUseCase {
         Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks =
                 stockEnrichmentService.getAllStockByProducts(invoice.getCustomerId(), productIds);
 
+        // Load and enrich returns
+        List<Return> returns = returnRepository.findAllWithFilters(null, null, null, id);
+        List<InvoiceDetailResponse.ReturnDetail> returnDetails = buildReturnDetails(returns);
+
         return InvoiceMapper.toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations,
-                creditApplied, debitApplied, notes);
+                creditApplied, debitApplied, notes, returnDetails);
+    }
+
+    private List<InvoiceDetailResponse.ReturnDetail> buildReturnDetails(List<Return> returns) {
+        List<InvoiceDetailResponse.ReturnDetail> details = new ArrayList<>();
+
+        for (Return ret : returns) {
+            List<InvoiceDetailResponse.ReturnLineDetail> lineDetails = new ArrayList<>();
+
+            for (ReturnLine line : ret.getLines()) {
+                String productName = "";
+                String productCode = "";
+
+                Optional<Product> productOpt = productRepository.findById(line.getProductId());
+                if (productOpt.isPresent()) {
+                    Product product = productOpt.get();
+                    productName = product.getName();
+                    productCode = product.getCode();
+                }
+
+                List<InvoiceDetailResponse.ReturnLineAllocationDetail> allocationDetails = new ArrayList<>();
+                for (ReturnLineAllocation alloc : line.getAllocations()) {
+                    String warehouseName = "";
+                    Optional<Warehouse> whOpt = warehouseRepository.findById(alloc.getWarehouseId());
+                    if (whOpt.isPresent()) {
+                        warehouseName = whOpt.get().getName();
+                    }
+                    allocationDetails.add(new InvoiceDetailResponse.ReturnLineAllocationDetail(
+                            alloc.getWarehouseId(),
+                            warehouseName,
+                            alloc.getAllocated()
+                    ));
+                }
+
+                lineDetails.add(new InvoiceDetailResponse.ReturnLineDetail(
+                        line.getProductId(),
+                        productName,
+                        productCode,
+                        line.getQuantity(),
+                        line.getUnitPrice(),
+                        line.getSubtotal(),
+                        allocationDetails
+                ));
+            }
+
+            details.add(new InvoiceDetailResponse.ReturnDetail(
+                    ret.getId().value(),
+                    ret.getReturnNumber().value(),
+                    ret.getReturnType().name(),
+                    ret.getReason(),
+                    ret.getTotal(),
+                    ret.getCreatedAt(),
+                    ret.getCreatedByName(),
+                    lineDetails
+            ));
+        }
+
+        return details;
     }
 }

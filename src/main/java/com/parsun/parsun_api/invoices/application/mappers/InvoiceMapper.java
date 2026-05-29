@@ -24,7 +24,7 @@ public class InvoiceMapper {
                                                            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
                                                            Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
         return toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations,
-                BigDecimal.ZERO, BigDecimal.ZERO, List.of());
+                BigDecimal.ZERO, BigDecimal.ZERO, List.of(), List.of());
     }
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
@@ -33,14 +33,24 @@ public class InvoiceMapper {
                                                            Map<WarehouseProductKey, Integer> thisInvoiceAllocations,
                                                            BigDecimal creditApplied,
                                                            BigDecimal debitApplied,
-                                                           List<InvoiceDetailResponse.NoteInfo> notes) {
+                                                           List<InvoiceDetailResponse.NoteInfo> notes,
+                                                           List<InvoiceDetailResponse.ReturnDetail> returns) {
         List<InvoiceDetailResponse.InvoiceLineDetailResponse> lineResponses = invoice.getLines().stream()
                 .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks, thisInvoiceAllocations))
                 .toList();
 
-        BigDecimal total = invoice.getSubtotal()
-                .subtract(creditApplied)
-                .add(debitApplied);
+        BigDecimal total;
+        if (invoice.getReturnStatus() != null
+                && invoice.getReturnStatus().name().equals("FULL")) {
+            total = BigDecimal.ZERO;
+        } else {
+            total = invoice.getSubtotal()
+                    .subtract(invoice.getReturnedTotal())
+                    .subtract(creditApplied)
+                    .add(debitApplied);
+        }
+
+        String returnStatus = invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null;
 
         return new InvoiceDetailResponse(
                 invoice.getId().value(),
@@ -64,7 +74,10 @@ public class InvoiceMapper {
                 invoice.getCancelledReason(),
                 invoice.getCreatedAt(),
                 invoice.getUpdatedAt(),
-                lineResponses
+                lineResponses,
+                invoice.getReturnedTotal(),
+                returnStatus,
+                returns
         );
     }
 
@@ -73,12 +86,12 @@ public class InvoiceMapper {
                                                            BigDecimal debitApplied,
                                                            List<InvoiceDetailResponse.NoteInfo> notes) {
         return toDetailResponse(invoice, Map.of(), Map.of(), Map.of(),
-                creditApplied, debitApplied, notes);
+                creditApplied, debitApplied, notes, List.of());
     }
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
-                                                          Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
         return toDetailResponse(invoice, enrichmentMap, productStocks, Map.of());
     }
 
@@ -87,6 +100,8 @@ public class InvoiceMapper {
     }
 
     public static InvoiceListResponse toListResponse(Invoice invoice) {
+        String returnStatus = invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null;
+
         return new InvoiceListResponse(
                 invoice.getId().value(),
                 invoice.getInvoiceNumber().value(),
@@ -98,7 +113,8 @@ public class InvoiceMapper {
                 invoice.getLines().size(),
                 invoice.getOrderId(),
                 invoice.getOrderNumber(),
-                invoice.getCreatedAt()
+                invoice.getCreatedAt(),
+                returnStatus
         );
     }
 
@@ -151,7 +167,8 @@ public class InvoiceMapper {
                 line.getUnitPrice(),
                 line.getLineTotal(),
                 allocationDetails,
-                stockDetails
+                stockDetails,
+                line.getReturnedQuantity()
         );
     }
 }

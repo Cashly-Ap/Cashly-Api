@@ -27,7 +27,10 @@ public record InvoiceDetailResponse(
         String cancelledReason,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<InvoiceLineDetailResponse> lines
+        List<InvoiceLineDetailResponse> lines,
+        BigDecimal returnedTotal,
+        String returnStatus,
+        List<ReturnDetail> returns
 ) {
     public record NoteInfo(
             UUID id,
@@ -46,7 +49,8 @@ public record InvoiceDetailResponse(
             BigDecimal unitPrice,
             BigDecimal lineTotal,
             List<WarehouseAllocationResponse> warehouseAllocations,
-            List<WarehouseStockDetail> warehouseStocks
+            List<WarehouseStockDetail> warehouseStocks,
+            BigDecimal returnedQuantity
     ) {}
 
     public record WarehouseAllocationResponse(
@@ -65,5 +69,32 @@ public record InvoiceDetailResponse(
             int quantity,
             int reserved,
             int available
+    ) {}
+
+    public record ReturnDetail(
+            UUID id,
+            String returnNumber,
+            String returnType,
+            String reason,
+            BigDecimal total,
+            LocalDateTime createdAt,
+            String createdByName,
+            List<ReturnLineDetail> lines
+    ) {}
+
+    public record ReturnLineDetail(
+            UUID productId,
+            String productName,
+            String productCode,
+            BigDecimal quantity,
+            BigDecimal unitPrice,
+            BigDecimal subtotal,
+            List<ReturnLineAllocationDetail> allocations
+    ) {}
+
+    public record ReturnLineAllocationDetail(
+            UUID warehouseId,
+            String warehouseName,
+            BigDecimal allocated
     ) {}
 }

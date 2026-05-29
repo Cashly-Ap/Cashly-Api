@@ -21,6 +21,7 @@ import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,6 +81,7 @@ public class ConvertQuoteToInvoiceUseCase {
                 authenticatedUserId, user.getUserName().getValue(),
                 null, null,  // orderId, orderNumber (no order when converting from quote)
                 status, resolvedPaymentType, null,
+                BigDecimal.ZERO, null,
                 null, null,
                 invoiceLines, LocalDateTime.now(), LocalDateTime.now()
         );

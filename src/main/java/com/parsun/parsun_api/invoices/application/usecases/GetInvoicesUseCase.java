@@ -20,10 +20,11 @@ public class GetInvoicesUseCase {
 
     public List<InvoiceListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                               UUID customerId, List<String> statuses,
+                                              List<String> returnStatus,
                                               UUID productId, UUID categoryId,
                                               String orderBy, String orderDir) {
         List<String> effectiveStatuses = (statuses == null || statuses.isEmpty()) ? DEFAULT_STATUSES : statuses;
-        return invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, productId, categoryId, orderBy, orderDir)
+        return invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, returnStatus, productId, categoryId, orderBy, orderDir)
                 .stream()
                 .map(InvoiceMapper::toListResponse)
                 .toList();

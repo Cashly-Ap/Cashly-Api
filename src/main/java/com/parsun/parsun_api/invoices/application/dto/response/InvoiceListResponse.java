@@ -15,5 +15,6 @@ public record InvoiceListResponse(
         int lineCount,
         UUID orderId,
         String orderNumber,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String returnStatus
 ) {}

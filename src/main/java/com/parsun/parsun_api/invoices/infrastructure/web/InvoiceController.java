@@ -68,9 +68,10 @@ public class InvoiceController {
             @RequestParam(required = false) List<String> status,
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) List<String> returnStatus,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
-        List<InvoiceListResponse> invoices = getInvoicesUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir);
+        List<InvoiceListResponse> invoices = getInvoicesUseCase.execute(fromDate, toDate, customerId, status, returnStatus, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(invoices);
     }
 

@@ -8,8 +8,10 @@ import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +32,15 @@ public class InvoiceConfig {
 
     @Bean
     public GetInvoiceByIdUseCase getInvoiceByIdUseCase(InvoiceRepository invoiceRepository,
-                                                          StockEnrichmentService stockEnrichmentService,
-                                                          CreditNoteRepository creditNoteRepository,
-                                                          DebitNoteRepository debitNoteRepository) {
+                                                           StockEnrichmentService stockEnrichmentService,
+                                                           CreditNoteRepository creditNoteRepository,
+                                                           DebitNoteRepository debitNoteRepository,
+                                                           ReturnRepository returnRepository,
+                                                           ProductRepository productRepository,
+                                                           WarehouseRepository warehouseRepository) {
         return new GetInvoiceByIdUseCase(invoiceRepository, stockEnrichmentService,
-                creditNoteRepository, debitNoteRepository);
+                creditNoteRepository, debitNoteRepository,
+                returnRepository, productRepository, warehouseRepository);
     }
 
     @Bean
