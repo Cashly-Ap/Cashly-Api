@@ -62,4 +62,29 @@ VALUES
     (UNHEX('C3000000000000000000000000000008'), UNHEX('C2000000000000000000000000000008'), @wh3, 50.0000),
     (UNHEX('C3000000000000000000000000000009'), UNHEX('C2000000000000000000000000000009'), @wh1, 1.0000);
 
+-- Sync invoice return data
+UPDATE invoices i
+SET returned_total = COALESCE((SELECT SUM(r.total) FROM returns r WHERE r.invoice_id = i.id), 0.00),
+    return_status = CASE
+        WHEN EXISTS (
+            SELECT 1 FROM returns r2
+            JOIN return_lines rl ON rl.return_id = r2.id
+            JOIN invoice_lines il ON il.id = rl.invoice_line_id
+            WHERE r2.invoice_id = i.id
+            GROUP BY r2.invoice_id
+            HAVING SUM(rl.quantity) >= SUM(il.quantity)
+        ) THEN 'FULL'
+        WHEN EXISTS (SELECT 1 FROM returns r2 WHERE r2.invoice_id = i.id) THEN 'PARTIAL'
+        ELSE NULL
+    END;
+
+UPDATE invoice_lines il
+SET returned_quantity = COALESCE((SELECT SUM(rl.quantity) FROM return_lines rl WHERE rl.invoice_line_id = il.id), 0.00);
+
+-- Sync invoice status: FULL return → FULLY_RETURNED, or AUTOMATIC return → FULLY_RETURNED
+UPDATE invoices i
+SET i.status = 'FULLY_RETURNED'
+WHERE i.return_status = 'FULL'
+   OR EXISTS (SELECT 1 FROM returns r WHERE r.invoice_id = i.id AND r.return_type = 'AUTOMATIC');
+
 INSERT INTO return_number_sequence (year, next_value) VALUES (2025, 5);

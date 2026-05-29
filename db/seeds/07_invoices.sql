@@ -1,6 +1,10 @@
 -- Seed data for invoices with diverse statuses and customers
 -- Uses existing customers, products, warehouses, and users
 
+ALTER TABLE invoices ADD COLUMN returned_total DECIMAL(15,2) NOT NULL DEFAULT 0.00;
+ALTER TABLE invoices ADD COLUMN return_status VARCHAR(20) DEFAULT NULL;
+ALTER TABLE invoice_lines ADD COLUMN returned_quantity DECIMAL(15,4) NOT NULL DEFAULT 0.00;
+
 -- Invoice 1: DRAFT - CASH - DistCaracas
 INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
 VALUES (UNHEX('0F100000000000000000000000000001'), 'INV-2026-00026', NULL, NULL, UNHEX('C1000000000000000000000000000001'), 'Distribuidora Caracas C.A.', 'J-30123456-7', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', 'CASH', 'Factura borrador para prueba', 1250.00, NOW(), NOW());
