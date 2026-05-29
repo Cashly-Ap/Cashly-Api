@@ -1,9 +1,14 @@
 package com.parsun.parsun_api.invoices.domain.entities;
 
+import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotReturnableException;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.returns.domain.entities.Return;
+import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
+import com.parsun.parsun_api.returns.domain.entities.ReturnType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +33,8 @@ public class Invoice {
     private PaymentType paymentType;
     private String notes;
     private BigDecimal subtotal;
+    private BigDecimal returnedTotal;
+    private InvoiceReturnStatus returnStatus;
     private LocalDateTime cancelledAt;
     private String cancelledReason;
     private final List<InvoiceLine> lines;
@@ -38,6 +45,7 @@ public class Invoice {
                     String customerRif, UUID createdBy, String createdByName,
                     UUID orderId, String orderNumber,
                     InvoiceStatus status, PaymentType paymentType, String notes,
+                    BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
                     LocalDateTime cancelledAt, String cancelledReason,
                     List<InvoiceLine> lines, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -52,6 +60,8 @@ public class Invoice {
         this.status = status;
         this.paymentType = paymentType;
         this.notes = notes;
+        this.returnedTotal = returnedTotal != null ? returnedTotal : BigDecimal.ZERO;
+        this.returnStatus = returnStatus;
         this.cancelledAt = cancelledAt;
         this.cancelledReason = cancelledReason;
         this.lines = new ArrayList<>(lines != null ? lines : List.of());
@@ -61,9 +71,9 @@ public class Invoice {
     }
 
     public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId, String customerName,
-                                 String customerRif, UUID createdBy, String createdByName,
-                                 UUID orderId, String orderNumber,
-                                 PaymentType paymentType, String notes, List<InvoiceLine> lines) {
+                                  String customerRif, UUID createdBy, String createdByName,
+                                  UUID orderId, String orderNumber,
+                                  PaymentType paymentType, String notes, List<InvoiceLine> lines) {
         Objects.requireNonNull(invoiceNumber, "Invoice number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
@@ -80,20 +90,24 @@ public class Invoice {
         return new Invoice(InvoiceId.generate(), invoiceNumber, customerId, customerName, customerRif,
                 createdBy, createdByName, orderId, orderNumber,
                 InvoiceStatus.DRAFT, paymentType, notes,
+                BigDecimal.ZERO, null,
                 null, null, lines, now, now);
     }
 
     public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
-                                       String customerName, String customerRif,
-                                       UUID createdBy, String createdByName,
-                                       UUID orderId, String orderNumber,
-                                       InvoiceStatus status, PaymentType paymentType, String notes,
-                                       LocalDateTime cancelledAt, String cancelledReason,
-                                       List<InvoiceLine> lines, LocalDateTime createdAt,
-                                       LocalDateTime updatedAt) {
+                                        String customerName, String customerRif,
+                                        UUID createdBy, String createdByName,
+                                        UUID orderId, String orderNumber,
+                                        InvoiceStatus status, PaymentType paymentType, String notes,
+                                        BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
+                                        LocalDateTime cancelledAt, String cancelledReason,
+                                        List<InvoiceLine> lines, LocalDateTime createdAt,
+                                        LocalDateTime updatedAt) {
         return new Invoice(id, invoiceNumber, customerId, customerName, customerRif,
                 createdBy, createdByName, orderId, orderNumber,
-                status, paymentType, notes, cancelledAt, cancelledReason,
+                status, paymentType, notes,
+                returnedTotal, returnStatus,
+                cancelledAt, cancelledReason,
                 lines, createdAt, updatedAt);
     }
 
@@ -135,6 +149,9 @@ public class Invoice {
         if (this.status == InvoiceStatus.CANCELLED) {
             throw new IllegalStateException("Invoice is already cancelled");
         }
+        if (this.status == InvoiceStatus.FULLY_RETURNED) {
+            throw new IllegalStateException("Cannot cancel an invoice that is FULLY_RETURNED");
+        }
         Objects.requireNonNull(reason, "Cancellation reason cannot be null");
         if (reason.isBlank()) {
             throw new IllegalArgumentException("Cancellation reason cannot be blank");
@@ -142,6 +159,38 @@ public class Invoice {
         this.status = InvoiceStatus.CANCELLED;
         this.cancelledAt = LocalDateTime.now();
         this.cancelledReason = reason;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void applyReturn(Return return_) {
+        Objects.requireNonNull(return_, "Return cannot be null");
+
+        if (this.status == InvoiceStatus.FULLY_RETURNED || this.status == InvoiceStatus.CANCELLED) {
+            throw new InvoiceNotReturnableException(this.id, this.status);
+        }
+
+        if (!return_.getInvoiceId().value().equals(this.id.value())) {
+            throw new IllegalArgumentException("La devolución no pertenece a esta factura");
+        }
+
+        this.returnedTotal = this.returnedTotal.add(return_.getTotal());
+
+        for (ReturnLine returnLine : return_.getLines()) {
+            this.lines.stream()
+                    .filter(l -> l.getId().value().equals(returnLine.getInvoiceLineId()))
+                    .findFirst()
+                    .ifPresent(line -> line.accumulateReturnedQuantity(returnLine.getQuantity()));
+        }
+
+        boolean allFullyReturned = this.lines.stream()
+                .allMatch(line -> line.getReturnedQuantity().compareTo(line.getQuantity()) >= 0);
+
+        this.returnStatus = allFullyReturned ? InvoiceReturnStatus.FULL : InvoiceReturnStatus.PARTIAL;
+
+        if (return_.getReturnType() == ReturnType.AUTOMATIC || allFullyReturned) {
+            this.status = InvoiceStatus.FULLY_RETURNED;
+        }
+
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -164,6 +213,8 @@ public class Invoice {
     public PaymentType getPaymentType() { return paymentType; }
     public String getNotes() { return notes; }
     public BigDecimal getSubtotal() { return subtotal; }
+    public BigDecimal getReturnedTotal() { return returnedTotal; }
+    public InvoiceReturnStatus getReturnStatus() { return returnStatus; }
     public LocalDateTime getCancelledAt() { return cancelledAt; }
     public String getCancelledReason() { return cancelledReason; }
     public List<InvoiceLine> getLines() { return Collections.unmodifiableList(lines); }
