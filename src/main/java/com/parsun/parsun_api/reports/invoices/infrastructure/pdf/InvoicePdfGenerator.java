@@ -179,7 +179,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
 
         addTotalsRow(table, "SUBTOTAL:", "$ " + formatDecimal(invoice.subtotal()), bold, regular, null);
         addTotalsRow(table, "FORMA DE PAGO:", invoice.paymentType() != null ? formatPaymentType(invoice.paymentType()) : "-", bold, regular, null);
-        addTotalsRow(table, "TOTAL:", "$ " + formatDecimal(invoice.subtotal()), bold, regular, COLOR_GREEN);
+        addTotalsRow(table, "TOTAL:", "$ " + formatDecimal(invoice.total()), bold, regular, COLOR_GREEN);
 
         return table;
     }

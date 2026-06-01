@@ -44,7 +44,7 @@ public class PayAllCustomerDebtUseCase {
         }
 
         BigDecimal totalAmount = unpaidInvoices.stream()
-                .map(Invoice::getSubtotal)
+                .map(inv -> inv.calculateTotal())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int year = LocalDate.now().getYear();
@@ -70,7 +70,7 @@ public class PayAllCustomerDebtUseCase {
             PaymentAllocation allocation = PaymentAllocation.create(
                     saved.getId().value(),
                     invoice.getId().value(),
-                    invoice.getSubtotal()
+                    invoice.calculateTotal()
             );
             allocationRepository.save(allocation);
         }

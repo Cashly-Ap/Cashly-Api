@@ -109,9 +109,13 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
 
             if (dueDate.isBefore(now)) {
                 int daysOverdue = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, now);
+                BigDecimal totalCredit = creditNoteRepository.findByInvoiceId(invoice.getId().value())
+                        .stream().map(CreditNote::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal totalDebit = debitNoteRepository.findByInvoiceId(invoice.getId().value())
+                        .stream().map(DebitNote::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                 result.add(new OverdueInvoiceResponse(
                         invoice.getInvoiceNumber().value(),
-                        invoice.getSubtotal().subtract(invoice.getReturnedTotal()),
+                        invoice.calculateTotal(totalCredit, totalDebit),
                         dueDate,
                         daysOverdue
                 ));
@@ -130,28 +134,18 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
 
         BigDecimal invoiceTotal = activeInvoices.stream()
                 .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
-                .map(inv -> inv.getSubtotal().subtract(inv.getReturnedTotal()))
+                .map(inv -> {
+                    BigDecimal totalCredit = creditNoteRepository.findByInvoiceId(inv.getId().value())
+                            .stream().map(CreditNote::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                    BigDecimal totalDebit = debitNoteRepository.findByInvoiceId(inv.getId().value())
+                            .stream().map(DebitNote::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return inv.calculateTotal(totalCredit, totalDebit);
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal appliedPayments = calculateAppliedPaymentsForInvoices(activeInvoices);
 
-        BigDecimal totalCreditApplied = activeInvoices.stream()
-                .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
-                .map(Invoice::getId)
-                .map(id -> creditNoteRepository.findByInvoiceId(id.value()))
-                .flatMap(List::stream)
-                .map(CreditNote::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal totalDebitApplied = activeInvoices.stream()
-                .filter(inv -> inv.getStatus() == InvoiceStatus.PENDING_PAYMENT || inv.getStatus() == InvoiceStatus.PARTIALLY_PAID)
-                .map(Invoice::getId)
-                .map(id -> debitNoteRepository.findByInvoiceId(id.value()))
-                .flatMap(List::stream)
-                .map(DebitNote::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return invoiceTotal.subtract(appliedPayments).subtract(totalCreditApplied).add(totalDebitApplied);
+        return invoiceTotal.subtract(appliedPayments);
     }
 
     private BigDecimal calculateAppliedPaymentsForInvoices(List<Invoice> invoices) {
@@ -202,9 +196,13 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
 
             if (dueDate.isBefore(now)) {
                 int daysOverdue = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, now);
+                BigDecimal totalCredit = creditNoteRepository.findByInvoiceId(invoice.getId().value())
+                        .stream().map(CreditNote::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal totalDebit = debitNoteRepository.findByInvoiceId(invoice.getId().value())
+                        .stream().map(DebitNote::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                 result.add(new OverdueInvoiceResponse(
                         invoice.getInvoiceNumber().value(),
-                        invoice.getSubtotal().subtract(invoice.getReturnedTotal()),
+                        invoice.calculateTotal(totalCredit, totalDebit),
                         dueDate,
                         daysOverdue
                 ));

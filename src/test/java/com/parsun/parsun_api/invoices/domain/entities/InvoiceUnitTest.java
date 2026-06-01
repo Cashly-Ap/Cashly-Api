@@ -2,6 +2,7 @@ package com.parsun.parsun_api.invoices.domain.entities;
 
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -279,5 +280,81 @@ class InvoiceUnitTest {
         assertEquals(orderId, invoice.getOrderId());
         assertEquals("ORD-2026-00001", invoice.getOrderNumber());
         assertEquals(now, invoice.getCreatedAt());
+    }
+
+    // === calculateTotal ===
+
+    @Test
+    void should_CalculateTotal_When_NormalCase() {
+        List<InvoiceLine> lines = List.of(
+                InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
+                        new BigDecimal("2"), new BigDecimal("10.00"), List.of()),
+                InvoiceLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
+                        new BigDecimal("3"), new BigDecimal("5.00"), List.of())
+        );
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                new BigDecimal("5.00"), null,
+                null, null, lines, LocalDateTime.now(), LocalDateTime.now());
+
+        BigDecimal result = invoice.calculateTotal(new BigDecimal("10.00"), new BigDecimal("3.00"));
+
+        // subtotal(35.00) - returnedTotal(5.00) - creditApplied(10.00) + debitApplied(3.00) = 23.00
+        assertEquals(new BigDecimal("23.00"), result);
+    }
+
+    @Test
+    void should_CalculateTotal_When_FullyReturned() {
+        List<InvoiceLine> lines = List.of(
+                InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
+                        new BigDecimal("2"), new BigDecimal("10.00"), List.of())
+        );
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.FULLY_RETURNED, PaymentType.CASH, null,
+                new BigDecimal("20.00"), InvoiceReturnStatus.FULL,
+                null, null, lines, LocalDateTime.now(), LocalDateTime.now());
+
+        BigDecimal result = invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO);
+
+        // The domain method does NOT special-case FULL — it just applies the formula.
+        // subtotal(20.00) - returnedTotal(20.00) - 0 + 0 = 0.00
+        assertEquals(0, result.compareTo(BigDecimal.ZERO), "Expected 0.00 to be equal to 0 in value");
+    }
+
+    @Test
+    void should_CalculateTotal_When_ZeroDefaultOverload() {
+        List<InvoiceLine> lines = List.of(
+                InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
+                        new BigDecimal("5"), new BigDecimal("100.00"), List.of())
+        );
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                new BigDecimal("100.00"), null,
+                null, null, lines, LocalDateTime.now(), LocalDateTime.now());
+
+        BigDecimal result = invoice.calculateTotal();
+
+        // subtotal(500.00) - returnedTotal(100.00) - 0 + 0 = 400.00
+        assertEquals(new BigDecimal("400.00"), result);
+    }
+
+    @Test
+    void should_CalculateTotal_When_NullSubtotal() throws Exception {
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                BigDecimal.ZERO, null,
+                null, null, List.of(), LocalDateTime.now(), LocalDateTime.now());
+
+        java.lang.reflect.Field subtotalField = Invoice.class.getDeclaredField("subtotal");
+        subtotalField.setAccessible(true);
+        subtotalField.set(invoice, null);
+
+        BigDecimal result = invoice.calculateTotal(BigDecimal.TEN, BigDecimal.ONE);
+
+        assertEquals(BigDecimal.ZERO, result);
     }
 }

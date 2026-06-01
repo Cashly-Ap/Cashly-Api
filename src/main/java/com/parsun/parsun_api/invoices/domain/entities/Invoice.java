@@ -169,11 +169,12 @@ public class Invoice {
             return;
         }
 
-        BigDecimal effectiveTotal = this.subtotal.subtract(this.returnedTotal);
+        BigDecimal effectiveTotal = this.calculateTotal(
+                totalCreditNotes != null ? totalCreditNotes : BigDecimal.ZERO,
+                totalDebitNotes != null ? totalDebitNotes : BigDecimal.ZERO
+        );
         BigDecimal balance = effectiveTotal
-                .subtract(totalPaid != null ? totalPaid : BigDecimal.ZERO)
-                .add(totalDebitNotes != null ? totalDebitNotes : BigDecimal.ZERO)
-                .subtract(totalCreditNotes != null ? totalCreditNotes : BigDecimal.ZERO);
+                .subtract(totalPaid != null ? totalPaid : BigDecimal.ZERO);
 
         if (balance.compareTo(BigDecimal.ZERO) <= 0) {
             this.status = InvoiceStatus.PAID;
@@ -222,6 +223,19 @@ public class Invoice {
         return lines.stream()
                 .map(InvoiceLine::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal calculateTotal(BigDecimal creditApplied, BigDecimal debitApplied) {
+        if (subtotal == null) {
+            return BigDecimal.ZERO;
+        }
+        return subtotal.subtract(returnedTotal)
+                .subtract(creditApplied)
+                .add(debitApplied);
+    }
+
+    public BigDecimal calculateTotal() {
+        return calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     public InvoiceId getId() { return id; }

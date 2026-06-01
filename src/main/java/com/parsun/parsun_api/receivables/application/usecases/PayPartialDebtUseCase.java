@@ -70,7 +70,7 @@ public class PayPartialDebtUseCase {
         for (Invoice invoice : unpaidInvoices) {
             if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
 
-            BigDecimal allocAmount = remaining.min(invoice.getSubtotal());
+            BigDecimal allocAmount = remaining.min(invoice.calculateTotal());
             PaymentAllocation allocation = PaymentAllocation.create(
                     saved.getId().value(),
                     invoice.getId().value(),

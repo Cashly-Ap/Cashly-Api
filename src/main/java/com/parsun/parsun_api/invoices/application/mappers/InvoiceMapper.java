@@ -44,10 +44,7 @@ public class InvoiceMapper {
                 && invoice.getReturnStatus().name().equals("FULL")) {
             total = BigDecimal.ZERO;
         } else {
-            total = invoice.getSubtotal()
-                    .subtract(invoice.getReturnedTotal())
-                    .subtract(creditApplied)
-                    .add(debitApplied);
+            total = invoice.calculateTotal(creditApplied, debitApplied);
         }
 
         String returnStatus = invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null;
@@ -113,10 +110,7 @@ public class InvoiceMapper {
         if (invoice.getReturnStatus() != null && invoice.getReturnStatus().name().equals("FULL")) {
             total = BigDecimal.ZERO;
         } else {
-            total = invoice.getSubtotal()
-                    .subtract(invoice.getReturnedTotal())
-                    .subtract(creditApplied)
-                    .add(debitApplied);
+            total = invoice.calculateTotal(creditApplied, debitApplied);
         }
 
         BigDecimal paidAmount = paidAmountByInvoiceId.getOrDefault(invoice.getId().value(), BigDecimal.ZERO);

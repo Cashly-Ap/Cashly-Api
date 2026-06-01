@@ -12,6 +12,9 @@ public record CustomerInvoiceDebtResponse(
         BigDecimal subtotal,
         BigDecimal returnedTotal,
         BigDecimal totalPaid,
+        BigDecimal creditApplied,
+        BigDecimal debitApplied,
+        BigDecimal total,
         BigDecimal balance,
         UUID pendingPaymentId,
         String pendingPaymentStatus

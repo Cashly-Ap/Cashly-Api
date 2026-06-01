@@ -109,7 +109,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                     addCell(table, String.valueOf(invoice.lineCount()), regular, rowColor, TextAlignment.CENTER);
                 }
 
-                addCell(table, "$" + formatDecimal(invoice.subtotal()), regular, rowColor, TextAlignment.RIGHT);
+                addCell(table, "$" + formatDecimal(invoice.total()), regular, rowColor, TextAlignment.RIGHT);
                 addCell(table, invoice.createdAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), regular, rowColor, TextAlignment.CENTER);
             }
 

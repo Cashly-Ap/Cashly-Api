@@ -177,6 +177,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                    i.subtotal,
                    COALESCE(i.returned_total, 0) AS returned_total,
                    COALESCE(pa.total_paid, 0) AS total_paid,
+                   COALESCE(cn.total_credit, 0) AS credit_applied,
+                   COALESCE(dn.total_debit, 0) AS debit_applied,
+                   (i.subtotal - COALESCE(i.returned_total, 0)
+                     - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total,
                    (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                      - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS balance,
                    p_all.payment_id AS pending_payment_id,
@@ -225,8 +229,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
                         (BigDecimal) row[7],
-                        toUuid(row[8]),
-                        (String) row[9]
+                        (BigDecimal) row[8],
+                        (BigDecimal) row[9],
+                        (BigDecimal) row[10],
+                        toUuid(row[11]),
+                        (String) row[12]
                 ))
                 .toList();
 
@@ -305,10 +312,14 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         }
         long total = ((Number) countQ.getSingleResult()).longValue();
 
-        String dataSql = "SELECT i.id, i.invoice_number, i.status, i.created_at,\n" +
+        String dataSql =             "SELECT i.id, i.invoice_number, i.status, i.created_at,\n" +
             "                   i.subtotal,\n" +
             "                   COALESCE(i.returned_total, 0) AS returned_total,\n" +
             "                   COALESCE(pa.total_paid, 0) AS total_paid,\n" +
+            "                   COALESCE(cn.total_credit, 0) AS credit_applied,\n" +
+            "                   COALESCE(dn.total_debit, 0) AS debit_applied,\n" +
+            "                   (i.subtotal - COALESCE(i.returned_total, 0)\n" +
+            "                     - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total,\n" +
             "                   " + balanceExpr + " AS balance,\n" +
             "                   p_all.payment_id AS pending_payment_id,\n" +
             "                   p_all.payment_status AS pending_payment_status\n" +
@@ -348,8 +359,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
                         (BigDecimal) row[7],
-                        toUuid(row[8]),
-                        (String) row[9]
+                        (BigDecimal) row[8],
+                        (BigDecimal) row[9],
+                        (BigDecimal) row[10],
+                        toUuid(row[11]),
+                        (String) row[12]
                 ))
                 .toList();
 

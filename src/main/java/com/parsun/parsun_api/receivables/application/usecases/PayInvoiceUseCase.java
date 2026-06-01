@@ -38,7 +38,7 @@ public class PayInvoiceUseCase {
         Invoice invoice = invoiceRepository.findById(new InvoiceId(invoiceId))
                 .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + invoiceId));
 
-        BigDecimal amount = request.amount() != null ? request.amount() : invoice.getSubtotal();
+        BigDecimal amount = request.amount() != null ? request.amount() : invoice.calculateTotal();
 
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
