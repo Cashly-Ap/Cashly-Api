@@ -19,10 +19,6 @@ public record PaymentResponse(
         BigDecimal appliedAmount,
         UUID createdBy,
         String createdByName,
-        String approvalStatus,
-        String rejectionReason,
-        UUID approvedBy,
-        BigDecimal commissionPercentage,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

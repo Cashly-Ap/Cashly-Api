@@ -20,13 +20,7 @@ public interface ReceivablesRepository {
 
     Page<CustomerInvoiceDebtResponse> findCustomerInvoices(UUID customerId, String search, String status, int page, int size);
 
-    Page<PendingPaymentResponse> findPendingPayments(String status, String search, int page, int size);
-
-    Page<PendingPaymentResponse> findMerchantPayments(UUID merchantId, String status, String search, int page, int size);
-
     Page<PendingPaymentResponse> findPaymentHistory(String search, int page, int size);
 
     Page<PendingPaymentResponse> findCustomerPaymentHistory(UUID customerId, UUID invoiceId, int page, int size);
-
-    Optional<PendingPaymentResponse> findPendingPaymentById(UUID paymentId);
 }

@@ -59,6 +59,7 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<QuoteJpaEntity> comparator = switch (orderBy) {
+            case null -> Comparator.comparing(QuoteJpaEntity::getCreatedAt);
             case "quoteNumber" -> Comparator.comparing(QuoteJpaEntity::getQuoteNumber);
             case "customerName" -> Comparator.comparing(QuoteJpaEntity::getCustomerName);
             case "status" -> Comparator.comparing(QuoteJpaEntity::getStatus);

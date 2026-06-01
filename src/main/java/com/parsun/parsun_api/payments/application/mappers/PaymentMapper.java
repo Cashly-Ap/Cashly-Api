@@ -23,10 +23,6 @@ public class PaymentMapper {
                 payment.getAppliedAmount(),
                 payment.getCreatedBy(),
                 payment.getCreatedByName(),
-                payment.getApprovalStatus(),
-                payment.getRejectionReason(),
-                payment.getApprovedBy(),
-                payment.getCommissionPercentage(),
                 payment.getCreatedAt(),
                 payment.getUpdatedAt()
         );

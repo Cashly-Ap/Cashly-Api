@@ -93,7 +93,7 @@ class GetPaymentByIdUseCaseUnitTest {
                 "REF-001",
                 LocalDate.of(2026, 5, 28),
                 "Test notes",
-                PaymentStatus.DRAFT,
+                PaymentStatus.APPLIED,
                 BigDecimal.ZERO,
                 UUID.randomUUID(),
                 "Test User",

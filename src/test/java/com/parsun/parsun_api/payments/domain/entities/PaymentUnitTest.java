@@ -54,16 +54,12 @@ class PaymentUnitTest {
             assertEquals(REFERENCE_NUMBER, payment.getReferenceNumber());
             assertEquals(PAYMENT_DATE, payment.getPaymentDate());
             assertEquals(NOTES, payment.getNotes());
-            assertEquals(PaymentStatus.DRAFT, payment.getStatus());
+            assertEquals(PaymentStatus.APPLIED, payment.getStatus());
             assertEquals(BigDecimal.ZERO, payment.getAppliedAmount());
             assertEquals(CREATED_BY, payment.getCreatedBy());
             assertEquals(CREATED_BY_NAME, payment.getCreatedByName());
             assertNotNull(payment.getCreatedAt());
             assertNotNull(payment.getUpdatedAt());
-            assertNull(payment.getApprovalStatus());
-            assertNull(payment.getRejectionReason());
-            assertNull(payment.getApprovedBy());
-            assertNull(payment.getCommissionPercentage());
         }
 
         @Test
@@ -167,123 +163,6 @@ class PaymentUnitTest {
         }
     }
 
-    // ===== Lifecycle: submitForApproval =====
-
-    @Nested
-    @DisplayName("submitForApproval()")
-    class SubmitForApproval {
-
-        @Test
-        void should_SubmitForApproval_When_PaymentIsDraft() {
-            Payment payment = createValidPayment();
-
-            payment.submitForApproval();
-
-            assertEquals("PENDING_APPROVAL", payment.getApprovalStatus());
-            assertNotNull(payment.getUpdatedAt());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsNotDraft() {
-            Payment payment = createValidPayment();
-            payment.submitForApproval();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::submitForApproval);
-
-            assertEquals("Only DRAFT payments can be submitted for approval", exception.getMessage());
-        }
-    }
-
-    // ===== Lifecycle: approve =====
-
-    @Nested
-    @DisplayName("approve()")
-    class Approve {
-
-        @Test
-        void should_Approve_When_PaymentIsPendingApproval() {
-            Payment payment = createValidPayment();
-            payment.submitForApproval();
-            UUID approverId = UUID.randomUUID();
-            BigDecimal commission = new BigDecimal("2.50");
-
-            payment.approve(approverId, commission);
-
-            assertEquals("APPROVED", payment.getApprovalStatus());
-            assertEquals(approverId, payment.getApprovedBy());
-            assertEquals(commission, payment.getCommissionPercentage());
-            assertEquals(PaymentStatus.APPLIED, payment.getStatus());
-            assertNotNull(payment.getUpdatedAt());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsNotPendingApproval() {
-            Payment payment = createValidPayment();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                    payment.approve(UUID.randomUUID(), BigDecimal.ONE));
-
-            assertEquals("Payment is not pending approval", exception.getMessage());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsAlreadyApproved() {
-            Payment payment = createValidPayment();
-            payment.submitForApproval();
-            payment.approve(UUID.randomUUID(), BigDecimal.ONE);
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                    payment.approve(UUID.randomUUID(), BigDecimal.ONE));
-
-            assertEquals("Payment is not pending approval", exception.getMessage());
-        }
-    }
-
-    // ===== Lifecycle: reject =====
-
-    @Nested
-    @DisplayName("reject()")
-    class Reject {
-
-        @Test
-        void should_Reject_When_PaymentIsPendingApproval() {
-            Payment payment = createValidPayment();
-            payment.submitForApproval();
-            UUID rejectorId = UUID.randomUUID();
-            String reason = "Insufficient funds";
-
-            payment.reject(rejectorId, reason);
-
-            assertEquals("REJECTED", payment.getApprovalStatus());
-            assertEquals(reason, payment.getRejectionReason());
-            assertEquals(rejectorId, payment.getApprovedBy());
-            assertNotNull(payment.getUpdatedAt());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsNotPendingApproval() {
-            Payment payment = createValidPayment();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                    payment.reject(UUID.randomUUID(), "Reason"));
-
-            assertEquals("Payment is not pending approval", exception.getMessage());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsAlreadyRejected() {
-            Payment payment = createValidPayment();
-            payment.submitForApproval();
-            payment.reject(UUID.randomUUID(), "First rejection");
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                    payment.reject(UUID.randomUUID(), "Second rejection"));
-
-            assertEquals("Payment is not pending approval", exception.getMessage());
-        }
-    }
-
     // ===== Lifecycle: cancel =====
 
     @Nested
@@ -293,8 +172,7 @@ class PaymentUnitTest {
         @Test
         void should_Cancel_When_PaymentIsApplied() {
             Payment payment = createValidPayment();
-            payment.submitForApproval();
-            payment.approve(UUID.randomUUID(), BigDecimal.ONE);
+            payment.apply(AMOUNT);
 
             payment.cancel();
 
@@ -303,7 +181,7 @@ class PaymentUnitTest {
         }
 
         @Test
-        void should_Cancel_When_PaymentIsPartiallyApplied() {
+        void should_Cancel_When_PaymentHasPartialAppliedAmount() {
             Payment payment = createValidPayment();
             payment.apply(new BigDecimal("400.00"));
 
@@ -313,20 +191,9 @@ class PaymentUnitTest {
         }
 
         @Test
-        void should_ThrowException_When_PaymentIsDraft() {
-            Payment payment = createValidPayment();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::cancel);
-
-            assertEquals("DRAFT payments cannot be cancelled, delete them instead", exception.getMessage());
-        }
-
-        @Test
         void should_ThrowException_When_PaymentIsAlreadyCancelled() {
             Payment payment = createValidPayment();
-            payment.submitForApproval();
-            payment.approve(UUID.randomUUID(), BigDecimal.ONE);
+            payment.apply(AMOUNT);
             payment.cancel();
 
             IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -360,7 +227,7 @@ class PaymentUnitTest {
 
             payment.apply(partial);
 
-            assertEquals(PaymentStatus.PARTIALLY_APPLIED, payment.getStatus());
+            assertEquals(PaymentStatus.APPLIED, payment.getStatus());
             assertEquals(partial, payment.getAppliedAmount());
         }
 
@@ -371,7 +238,7 @@ class PaymentUnitTest {
             payment.apply(new BigDecimal("300.00"));
             payment.apply(new BigDecimal("500.00"));
 
-            assertEquals(PaymentStatus.PARTIALLY_APPLIED, payment.getStatus());
+            assertEquals(PaymentStatus.APPLIED, payment.getStatus());
             assertEquals(new BigDecimal("800.00"), payment.getAppliedAmount());
         }
 
@@ -420,84 +287,28 @@ class PaymentUnitTest {
         }
 
         @Test
-        void should_ThrowException_When_PaymentIsAlreadyApplied() {
+        void should_AllowApplyingToAlreadyAppliedPayment() {
             Payment payment = createValidPayment();
             payment.apply(AMOUNT);
 
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+            // When a payment is already fully applied, applying again should throw
+            // because it would exceed the total
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                     payment.apply(BigDecimal.ONE));
 
-            assertEquals("Only DRAFT or PARTIALLY_APPLIED payments can be applied",
-                    exception.getMessage());
+            assertEquals("Applied amount cannot exceed payment total", exception.getMessage());
         }
 
         @Test
         void should_ThrowException_When_PaymentIsCancelled() {
             Payment payment = createValidPayment();
-            payment.submitForApproval();
-            payment.approve(UUID.randomUUID(), BigDecimal.ONE);
+            payment.apply(AMOUNT);
             payment.cancel();
 
             IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
                     payment.apply(BigDecimal.ONE));
 
-            assertEquals("Only DRAFT or PARTIALLY_APPLIED payments can be applied",
-                    exception.getMessage());
-        }
-    }
-
-    // ===== Lifecycle: unapply =====
-
-    @Nested
-    @DisplayName("unapply()")
-    class Unapply {
-
-        @Test
-        void should_Unapply_When_PaymentIsApplied() {
-            Payment payment = createValidPayment();
-            payment.apply(AMOUNT);
-
-            payment.unapply();
-
-            assertEquals(PaymentStatus.DRAFT, payment.getStatus());
-            assertEquals(BigDecimal.ZERO, payment.getAppliedAmount());
-            assertNotNull(payment.getUpdatedAt());
-        }
-
-        @Test
-        void should_Unapply_When_PaymentIsPartiallyApplied() {
-            Payment payment = createValidPayment();
-            payment.apply(new BigDecimal("400.00"));
-
-            payment.unapply();
-
-            assertEquals(PaymentStatus.DRAFT, payment.getStatus());
-            assertEquals(BigDecimal.ZERO, payment.getAppliedAmount());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsDraft() {
-            Payment payment = createValidPayment();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::unapply);
-
-            assertEquals("Only APPLIED or PARTIALLY_APPLIED payments can be unapplied",
-                    exception.getMessage());
-        }
-
-        @Test
-        void should_ThrowException_When_PaymentIsCancelled() {
-            Payment payment = createValidPayment();
-            payment.submitForApproval();
-            payment.approve(UUID.randomUUID(), BigDecimal.ONE);
-            payment.cancel();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::unapply);
-
-            assertEquals("Only APPLIED or PARTIALLY_APPLIED payments can be unapplied",
-                    exception.getMessage());
+            assertEquals("Cannot apply to a cancelled payment", exception.getMessage());
         }
     }
 
@@ -532,30 +343,6 @@ class PaymentUnitTest {
             assertEquals(CREATED_BY_NAME, payment.getCreatedByName());
             assertEquals(now, payment.getCreatedAt());
             assertEquals(now, payment.getUpdatedAt());
-            assertNull(payment.getApprovalStatus());
-            assertNull(payment.getRejectionReason());
-            assertNull(payment.getApprovedBy());
-            assertNull(payment.getCommissionPercentage());
-        }
-
-        @Test
-        void should_Reconstitute_When_ExtendedFieldsProvided() {
-            PaymentId id = PaymentId.generate();
-            LocalDateTime now = LocalDateTime.now();
-            UUID approverId = UUID.randomUUID();
-
-            Payment payment = Payment.reconstitute(
-                    id, PAYMENT_NUMBER, CUSTOMER_ID, TYPE, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    PaymentStatus.APPLIED, AMOUNT, CREATED_BY, CREATED_BY_NAME, now, now,
-                    "APPROVED", null, approverId, new BigDecimal("3.00"));
-
-            assertEquals(id, payment.getId());
-            assertEquals(PaymentStatus.APPLIED, payment.getStatus());
-            assertEquals("APPROVED", payment.getApprovalStatus());
-            assertNull(payment.getRejectionReason());
-            assertEquals(approverId, payment.getApprovedBy());
-            assertEquals(new BigDecimal("3.00"), payment.getCommissionPercentage());
         }
     }
 
@@ -572,7 +359,7 @@ class PaymentUnitTest {
             Payment payment2 = Payment.reconstitute(
                     id, PAYMENT_NUMBER, CUSTOMER_ID, TYPE, AMOUNT,
                     PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    PaymentStatus.DRAFT, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
+                    PaymentStatus.APPLIED, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
                     payment1.getCreatedAt(), LocalDateTime.now());
 
             assertEquals(payment1, payment2);
@@ -633,7 +420,7 @@ class PaymentUnitTest {
             Payment payment = Payment.reconstitute(
                     PaymentId.generate(), PAYMENT_NUMBER, CUSTOMER_ID, TYPE, AMOUNT,
                     PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    PaymentStatus.DRAFT, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
+                    PaymentStatus.APPLIED, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
                     LocalDateTime.now(), LocalDateTime.now());
 
             assertNotNull(payment.getId());
@@ -656,7 +443,7 @@ class PaymentUnitTest {
             Payment payment = createValidPayment();
             LocalDateTime before = payment.getUpdatedAt();
 
-            payment.submitForApproval();
+            payment.apply(BigDecimal.ONE);
 
             assertNotNull(payment.getUpdatedAt());
             assertTrue(payment.getUpdatedAt().isAfter(before)

@@ -55,6 +55,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<OrderEntity> comparator = switch (orderBy) {
+            case null -> Comparator.comparing(OrderEntity::getCreatedAt);
             case "orderNumber" -> Comparator.comparing(OrderEntity::getOrderNumber);
             case "customerName" -> Comparator.comparing(OrderEntity::getCustomerName);
             case "status" -> Comparator.comparing(OrderEntity::getStatus);

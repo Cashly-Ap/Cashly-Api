@@ -6,5 +6,16 @@ public enum InvoiceStatus {
     PENDING_PAYMENT,
     PARTIALLY_PAID,
     FULLY_RETURNED,
-    CANCELLED
+    CANCELLED;
+
+    public String label() {
+        return switch (this) {
+            case DRAFT -> "Borrador";
+            case PAID -> "Pagada";
+            case PENDING_PAYMENT -> "Pendiente de Pago";
+            case PARTIALLY_PAID -> "Parcialmente Pagada";
+            case FULLY_RETURNED -> "Totalmente Devuelta";
+            case CANCELLED -> "Cancelada";
+        };
+    }
 }

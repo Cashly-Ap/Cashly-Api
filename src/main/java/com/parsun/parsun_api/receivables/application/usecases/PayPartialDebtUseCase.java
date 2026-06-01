@@ -10,12 +10,8 @@ import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
-import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import jakarta.transaction.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,21 +22,18 @@ public class PayPartialDebtUseCase {
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository allocationRepository;
     private final InvoiceRepository invoiceRepository;
-    private final FileStorageService fileStorageService;
 
     public PayPartialDebtUseCase(PaymentRepository paymentRepository,
                                   PaymentAllocationRepository allocationRepository,
-                                  InvoiceRepository invoiceRepository,
-                                  FileStorageService fileStorageService) {
+                                  InvoiceRepository invoiceRepository) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
-        this.fileStorageService = fileStorageService;
     }
 
     @Transactional
     public PaymentResultResponse execute(UUID customerId, PayPartialDebtRequest request,
-                                          MultipartFile voucherFile, UUID authenticatedUserId,
+                                          UUID authenticatedUserId,
                                           String authenticatedUserName) {
         if (request.amount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
@@ -71,20 +64,6 @@ public class PayPartialDebtUseCase {
                 authenticatedUserName
         );
 
-        if (voucherFile != null && !voucherFile.isEmpty()) {
-            try {
-                String filename = "vouchers/" + UUID.randomUUID() + "_" + voucherFile.getOriginalFilename();
-                fileStorageService.store(
-                        filename,
-                        new ByteArrayInputStream(voucherFile.getBytes()),
-                        voucherFile.getContentType()
-                );
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload voucher file", e);
-            }
-        }
-
-        payment.submitForApproval();
         Payment saved = paymentRepository.save(payment);
 
         BigDecimal remaining = request.amount();
@@ -101,10 +80,13 @@ public class PayPartialDebtUseCase {
             remaining = remaining.subtract(allocAmount);
         }
 
+        payment.apply(request.amount());
+        paymentRepository.save(payment);
+
         return new PaymentResultResponse(
                 saved.getId().value(),
-                saved.getStatus().name(),
-                "Partial payment registered and pending approval",
+                payment.getStatus().name(),
+                "Pago parcial registrado exitosamente",
                 true
         );
     }

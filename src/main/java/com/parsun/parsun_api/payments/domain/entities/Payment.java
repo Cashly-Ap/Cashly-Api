@@ -28,11 +28,6 @@ public class Payment {
     private final String createdByName;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String approvalStatus;
-    private String rejectionReason;
-    private UUID approvedBy;
-    private BigDecimal commissionPercentage;
-
     private Payment(PaymentId id, PaymentNumber paymentNumber, UUID customerId, PaymentType type,
                     BigDecimal amount, UUID paymentMethodId, String referenceNumber, LocalDate paymentDate,
                     String notes, PaymentStatus status, BigDecimal appliedAmount,
@@ -72,7 +67,7 @@ public class Payment {
         LocalDateTime now = LocalDateTime.now();
         return new Payment(PaymentId.generate(), paymentNumber, customerId, type, amount,
                 paymentMethodId, referenceNumber, paymentDate, notes,
-                PaymentStatus.DRAFT, BigDecimal.ZERO, createdBy, createdByName, now, now);
+                PaymentStatus.APPLIED, BigDecimal.ZERO, createdBy, createdByName, now, now);
     }
 
     public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
@@ -86,27 +81,9 @@ public class Payment {
                 createdBy, createdByName, createdAt, updatedAt);
     }
 
-    public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
-                                        PaymentType type, BigDecimal amount, UUID paymentMethodId,
-                                        String referenceNumber, LocalDate paymentDate, String notes,
-                                        PaymentStatus status, BigDecimal appliedAmount,
-                                        UUID createdBy, String createdByName,
-                                        LocalDateTime createdAt, LocalDateTime updatedAt,
-                                        String approvalStatus, String rejectionReason,
-                                        UUID approvedBy, BigDecimal commissionPercentage) {
-        Payment payment = new Payment(id, paymentNumber, customerId, type, amount, paymentMethodId,
-                referenceNumber, paymentDate, notes, status, appliedAmount,
-                createdBy, createdByName, createdAt, updatedAt);
-        payment.approvalStatus = approvalStatus;
-        payment.rejectionReason = rejectionReason;
-        payment.approvedBy = approvedBy;
-        payment.commissionPercentage = commissionPercentage;
-        return payment;
-    }
-
     public void apply(BigDecimal amount) {
-        if (this.status != PaymentStatus.DRAFT && this.status != PaymentStatus.PARTIALLY_APPLIED) {
-            throw new IllegalStateException("Only DRAFT or PARTIALLY_APPLIED payments can be applied");
+        if (this.status == PaymentStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot apply to a cancelled payment");
         }
         Objects.requireNonNull(amount, "Amount cannot be null");
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -117,60 +94,15 @@ public class Payment {
             throw new IllegalArgumentException("Applied amount cannot exceed payment total");
         }
         this.appliedAmount = newApplied;
-        if (this.appliedAmount.compareTo(this.amount) == 0) {
-            this.status = PaymentStatus.APPLIED;
-        } else {
-            this.status = PaymentStatus.PARTIALLY_APPLIED;
-        }
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void submitForApproval() {
-        if (this.status != PaymentStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT payments can be submitted for approval");
-        }
-        this.approvalStatus = "PENDING_APPROVAL";
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void approve(UUID authenticatedUserId, BigDecimal commissionPercentage) {
-        if (!"PENDING_APPROVAL".equals(this.approvalStatus)) {
-            throw new IllegalStateException("Payment is not pending approval");
-        }
-        this.approvalStatus = "APPROVED";
-        this.approvedBy = authenticatedUserId;
-        this.commissionPercentage = commissionPercentage;
         this.status = PaymentStatus.APPLIED;
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void reject(UUID authenticatedUserId, String reason) {
-        if (!"PENDING_APPROVAL".equals(this.approvalStatus)) {
-            throw new IllegalStateException("Payment is not pending approval");
-        }
-        this.approvalStatus = "REJECTED";
-        this.rejectionReason = reason;
-        this.approvedBy = authenticatedUserId;
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public void cancel() {
-        if (this.status == PaymentStatus.DRAFT) {
-            throw new IllegalStateException("DRAFT payments cannot be cancelled, delete them instead");
-        }
         if (this.status == PaymentStatus.CANCELLED) {
             throw new IllegalStateException("Payment is already cancelled");
         }
         this.status = PaymentStatus.CANCELLED;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void unapply() {
-        if (this.status != PaymentStatus.APPLIED && this.status != PaymentStatus.PARTIALLY_APPLIED) {
-            throw new IllegalStateException("Only APPLIED or PARTIALLY_APPLIED payments can be unapplied");
-        }
-        this.appliedAmount = BigDecimal.ZERO;
-        this.status = PaymentStatus.DRAFT;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -189,10 +121,6 @@ public class Payment {
     public String getCreatedByName() { return createdByName; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public String getApprovalStatus() { return approvalStatus; }
-    public String getRejectionReason() { return rejectionReason; }
-    public UUID getApprovedBy() { return approvedBy; }
-    public BigDecimal getCommissionPercentage() { return commissionPercentage; }
 
     @Override
     public boolean equals(Object o) {

@@ -16,6 +16,7 @@ public record InvoiceDetailResponse(
         UUID orderId,
         String orderNumber,
         String status,
+        String statusLabel,
         String paymentType,
         String notes,
         BigDecimal subtotal,

@@ -58,6 +58,7 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<InvoiceEntity> comparator = switch (orderBy) {
+            case null -> Comparator.comparing(InvoiceEntity::getCreatedAt);
             case "invoiceNumber" -> Comparator.comparing(InvoiceEntity::getInvoiceNumber);
             case "customerName" -> Comparator.comparing(InvoiceEntity::getCustomerName);
             case "status" -> Comparator.comparing(InvoiceEntity::getStatus);

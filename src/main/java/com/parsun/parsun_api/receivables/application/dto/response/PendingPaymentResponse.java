@@ -15,9 +15,5 @@ public record PendingPaymentResponse(
         String status,
         LocalDate paymentDate,
         LocalDateTime createdAt,
-        String invoiceNumber,
-        String voucherPath,
-        String approvalStatus,
-        String rejectionReason,
-        BigDecimal commissionPercentage
+        String invoiceNumber
 ) {}

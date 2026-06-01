@@ -53,10 +53,6 @@ public class PaymentAllocationService {
         Payment payment = paymentRepository.findById(PaymentId.of(paymentId))
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
 
-        if (payment.getStatus() == PaymentStatus.DRAFT) {
-            throw new IllegalStateException("DRAFT payments cannot be cancelled");
-        }
-
         allocationRepository.deleteByPaymentId(paymentId);
         payment.cancel();
         paymentRepository.save(payment);

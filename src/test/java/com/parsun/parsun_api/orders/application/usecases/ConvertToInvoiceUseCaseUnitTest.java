@@ -161,7 +161,7 @@ class ConvertToInvoiceUseCaseUnitTest {
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
                 UUID.randomUUID(), "User Name",
                 orderId, "ORD-2026-00001",
-                "PAID", "CASH", null,
+                "PAID", "Pagada", "CASH", null,
                 BigDecimal.valueOf(10),
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.TEN,
                 List.of(),

@@ -10,6 +10,7 @@ public record InvoiceListResponse(
         UUID customerId,
         String customerName,
         String status,
+        String statusLabel,
         String paymentType,
         BigDecimal subtotal,
         BigDecimal total,

@@ -63,19 +63,6 @@ public class PaymentEntity {
     @Column(name = "created_by_name", length = 200, nullable = false)
     private String createdByName;
 
-    @Column(name = "approval_status", length = 20)
-    private String approvalStatus;
-
-    @Column(name = "rejection_reason", length = 500)
-    private String rejectionReason;
-
-    @Column(name = "approved_by", columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(SqlTypes.BINARY)
-    private UUID approvedBy;
-
-    @Column(name = "commission_percentage", precision = 5, scale = 2)
-    private BigDecimal commissionPercentage;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

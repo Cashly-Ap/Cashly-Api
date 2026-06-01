@@ -48,6 +48,58 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     }
 
     @Override
+    public Page<PendingPaymentResponse> findPaymentHistory(String search, int page, int size) {
+        return findPaymentsWithFilters(null, null, search, page, size, false);
+    }
+
+    @Override
+    public Page<PendingPaymentResponse> findCustomerPaymentHistory(UUID customerId, UUID invoiceId, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+
+        String whereClauseCond = "p.customer_id = :customerId";
+        if (invoiceId != null) {
+            whereClauseCond += " AND EXISTS (SELECT 1 FROM payment_allocations pa3 WHERE pa3.payment_id = p.id AND pa3.invoice_id = :invoiceId)";
+        }
+
+        String countSql = "SELECT COUNT(DISTINCT p.id)\n" +
+            "            FROM payments p\n" +
+            "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
+            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
+            "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
+            "            WHERE " + whereClauseCond;
+        Query countQ = entityManager.createNativeQuery(countSql);
+        countQ.setParameter("customerId", customerId);
+        if (invoiceId != null) {
+            countQ.setParameter("invoiceId", invoiceId);
+        }
+        long total = ((Number) countQ.getSingleResult()).longValue();
+
+        String dataSql = "SELECT DISTINCT p.id, p.payment_number, p.customer_id, c.legal_name,\n" +
+            "                   p.amount, pm.name, p.status, p.payment_date, p.created_at,\n" +
+            "                   i.invoice_number\n" +
+            "            FROM payments p\n" +
+            "            JOIN customers c ON c.id = p.customer_id\n" +
+            "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
+            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
+            "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
+            "            WHERE " + whereClauseCond + "\n" +
+            "            ORDER BY p.created_at DESC";
+        Query dataQ = entityManager.createNativeQuery(dataSql);
+        dataQ.setParameter("customerId", customerId);
+        if (invoiceId != null) {
+            dataQ.setParameter("invoiceId", invoiceId);
+        }
+        dataQ.setFirstResult(page * size);
+        dataQ.setMaxResults(size);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = dataQ.getResultList();
+        List<PendingPaymentResponse> content = mapPendingPaymentRows(rows);
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
     public Page<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         List<Object[]> rows;
@@ -116,28 +168,9 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         BigDecimal totalDebt = (BigDecimal) debtQuery.getSingleResult();
         if (totalDebt == null) totalDebt = BigDecimal.ZERO;
 
-        Query pendingQuery = entityManager.createNativeQuery("""
-            SELECT COALESCE(SUM(p.amount), 0)
-            FROM payments p
-            WHERE p.customer_id = :customerId
-              AND p.status IN ('PENDING_APPROVAL', 'DRAFT')
-            """);
-        pendingQuery.setParameter("customerId", customerId);
-        BigDecimal pendingAmount = (BigDecimal) pendingQuery.getSingleResult();
-        if (pendingAmount == null) pendingAmount = BigDecimal.ZERO;
-
         BigDecimal availableDebt = customer != null
                 ? customer.getCreditLimit().subtract(totalDebt).max(BigDecimal.ZERO)
                 : BigDecimal.ZERO;
-
-        Query countQuery = entityManager.createNativeQuery("""
-            SELECT COUNT(*)
-            FROM payments p
-            WHERE p.customer_id = :customerId
-              AND p.status IN ('PENDING_APPROVAL', 'DRAFT')
-            """);
-        countQuery.setParameter("customerId", customerId);
-        long pendingPaymentsCount = ((Number) countQuery.getSingleResult()).longValue();
 
         Query invoicesQuery = entityManager.createNativeQuery("""
             SELECT i.id, i.invoice_number, i.status, i.created_at,
@@ -165,10 +198,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 GROUP BY dn2.invoice_id
             ) dn ON dn.invoice_id = i.id
             LEFT JOIN (
-                SELECT pa2.invoice_id, pa2.payment_id, p2.status AS payment_status
+                SELECT pa2.invoice_id, ANY_VALUE(pa2.payment_id) AS payment_id, 'APPLIED' AS payment_status
                 FROM payment_allocations pa2
                 JOIN payments p2 ON p2.id = pa2.payment_id
-                WHERE p2.status IN ('PENDING_APPROVAL', 'DRAFT')
+                WHERE p2.status = 'APPLIED'
+                GROUP BY pa2.invoice_id
             ) p_all ON p_all.invoice_id = i.id
             WHERE i.customer_id = :customerId
               AND i.status NOT IN ('CANCELLED', 'DRAFT')
@@ -210,10 +244,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 phone,
                 email,
                 totalDebt,
-                pendingAmount,
+                BigDecimal.ZERO,
                 availableDebt,
                 invoices,
-                pendingPaymentsCount
+                0L
         );
     }
 
@@ -286,10 +320,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            ) pa ON i.id = pa.invoice_id\n" +
             notesJoinClause +
             "            LEFT JOIN (\n" +
-            "                SELECT pa2.invoice_id, pa2.payment_id, p2.status AS payment_status\n" +
+            "                SELECT pa2.invoice_id, ANY_VALUE(pa2.payment_id) AS payment_id, 'APPLIED' AS payment_status\n" +
             "                FROM payment_allocations pa2\n" +
             "                JOIN payments p2 ON p2.id = pa2.payment_id\n" +
-            "                WHERE p2.status IN ('PENDING_APPROVAL', 'DRAFT')\n" +
+            "                WHERE p2.status = 'APPLIED'\n" +
+            "                GROUP BY pa2.invoice_id\n" +
             "            ) p_all ON p_all.invoice_id = i.id\n" +
             "            WHERE " + whereClauseCond + "\n" +
             "            ORDER BY i.created_at DESC";
@@ -319,95 +354,6 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 .toList();
 
         return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Page<PendingPaymentResponse> findPendingPayments(String status, String search, int page, int size) {
-        return findPaymentsWithFilters(null, status, search, page, size, false);
-    }
-
-    @Override
-    public Page<PendingPaymentResponse> findMerchantPayments(UUID merchantId, String status, String search,
-                                                              int page, int size) {
-        return findPaymentsWithFilters(merchantId, status, search, page, size, true);
-    }
-
-    @Override
-    public Page<PendingPaymentResponse> findPaymentHistory(String search, int page, int size) {
-        return findPaymentsWithFilters(null, null, search, page, size, false);
-    }
-
-    @Override
-    public Page<PendingPaymentResponse> findCustomerPaymentHistory(UUID customerId, UUID invoiceId, int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size);
-
-        String whereClauseCond = "p.customer_id = :customerId";
-        if (invoiceId != null) {
-            whereClauseCond += " AND EXISTS (SELECT 1 FROM payment_allocations pa3 WHERE pa3.payment_id = p.id AND pa3.invoice_id = :invoiceId)";
-        }
-
-        String countSql = "SELECT COUNT(DISTINCT p.id)\n" +
-            "            FROM payments p\n" +
-            "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
-            "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
-            "            WHERE " + whereClauseCond;
-        Query countQ = entityManager.createNativeQuery(countSql);
-        countQ.setParameter("customerId", customerId);
-        if (invoiceId != null) {
-            countQ.setParameter("invoiceId", invoiceId);
-        }
-        long total = ((Number) countQ.getSingleResult()).longValue();
-
-        String dataSql = "SELECT DISTINCT p.id, p.payment_number, p.customer_id, c.legal_name,\n" +
-            "                   p.amount, pm.name, p.status, p.payment_date, p.created_at,\n" +
-            "                   i.invoice_number, p.voucher_path, p.approval_status,\n" +
-            "                   p.rejection_reason, p.commission_percentage\n" +
-            "            FROM payments p\n" +
-            "            JOIN customers c ON c.id = p.customer_id\n" +
-            "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
-            "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
-            "            WHERE " + whereClauseCond + "\n" +
-            "            ORDER BY p.created_at DESC";
-        Query dataQ = entityManager.createNativeQuery(dataSql);
-        dataQ.setParameter("customerId", customerId);
-        if (invoiceId != null) {
-            dataQ.setParameter("invoiceId", invoiceId);
-        }
-        dataQ.setFirstResult(page * size);
-        dataQ.setMaxResults(size);
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> rows = dataQ.getResultList();
-        List<PendingPaymentResponse> content = mapPendingPaymentRows(rows);
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Optional<PendingPaymentResponse> findPendingPaymentById(UUID paymentId) {
-        Query query = entityManager.createNativeQuery("""
-            SELECT p.id, p.payment_number, p.customer_id, c.legal_name,
-                   p.amount, pm.name, p.status, p.payment_date, p.created_at,
-                   i.invoice_number, p.voucher_path, p.approval_status,
-                   p.rejection_reason, p.commission_percentage
-            FROM payments p
-            JOIN customers c ON c.id = p.customer_id
-            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id
-            LEFT JOIN invoices i ON i.id = pa.invoice_id
-            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id
-            WHERE p.id = :paymentId
-            LIMIT 1
-            """);
-        query.setParameter("paymentId", paymentId);
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> rows = query.getResultList();
-        if (rows.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(mapPendingPaymentRow(rows.get(0)));
     }
 
     private Page<PendingPaymentResponse> findPaymentsWithFilters(UUID merchantId, String status,
@@ -440,8 +386,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
 
         String dataSql = "SELECT DISTINCT p.id, p.payment_number, p.customer_id, c.legal_name,\n" +
             "                   p.amount, pm.name, p.status, p.payment_date, p.created_at,\n" +
-            "                   i.invoice_number, p.voucher_path, p.approval_status,\n" +
-            "                   p.rejection_reason, p.commission_percentage\n" +
+            "                   i.invoice_number\n" +
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
@@ -482,20 +427,16 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     @SuppressWarnings("unchecked")
     private PendingPaymentResponse mapPendingPaymentRow(Object[] row) {
         return new PendingPaymentResponse(
-                toUuid(row[0]),       
-                (String) row[1],     
-                toUuid(row[2]),       
-                (String) row[3],     
-                (BigDecimal) row[4], 
-                (String) row[5],     
-                (String) row[6],     
-                row[7] != null ? ((java.sql.Date) row[7]).toLocalDate() : null,   
-                row[8] != null ? ((Timestamp) row[8]).toLocalDateTime() : null,   
-                (String) row[9],     
-                (String) row[10],    
-                (String) row[11],    
-                (String) row[12],    
-                (BigDecimal) row[13] 
+                toUuid(row[0]),
+                (String) row[1],
+                toUuid(row[2]),
+                (String) row[3],
+                (BigDecimal) row[4],
+                (String) row[5],
+                (String) row[6],
+                row[7] != null ? ((java.sql.Date) row[7]).toLocalDate() : null,
+                row[8] != null ? ((Timestamp) row[8]).toLocalDateTime() : null,
+                (String) row[9]
         );
     }
 
