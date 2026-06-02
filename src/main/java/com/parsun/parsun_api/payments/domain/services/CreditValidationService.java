@@ -61,7 +61,8 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
 
         BigDecimal pendingBalance = calculatePendingBalance(customerId);
         BigDecimal unconsumedAdvances = calculateUnconsumedAdvances(customerId);
-        BigDecimal availableCredit = creditLimit.add(unconsumedAdvances).subtract(pendingBalance);
+        BigDecimal availableCredit = creditLimit.add(unconsumedAdvances).subtract(pendingBalance)
+                .max(BigDecimal.ZERO);
 
         List<OverdueInvoiceResponse> overdueInvoices = findOverdueInvoices(customerId, creditDays);
         List<AdvanceResponse> advances = findActiveAdvances(customerId);

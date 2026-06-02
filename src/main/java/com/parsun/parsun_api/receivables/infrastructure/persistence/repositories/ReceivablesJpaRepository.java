@@ -106,7 +106,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
                COALESCE(d.invoice_count, 0) AS pendingInvoicesCount,
                d.oldest_invoice_date AS oldestInvoiceDate,
                c.credit_limit AS creditLimit,
-               (c.credit_limit - COALESCE(d.total_debt, 0)) AS availableCredit
+               GREATEST(c.credit_limit - COALESCE(d.total_debt, 0), 0) AS availableCredit
         FROM customers c
         LEFT JOIN (
             SELECT i.customer_id,
@@ -130,7 +130,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
                 FROM debit_notes
                 GROUP BY invoice_id
             ) dn ON i.id = dn.invoice_id
-            WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+            WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
               AND i.status <> 'FULLY_RETURNED'
             GROUP BY i.customer_id
         ) d ON d.customer_id = c.id
@@ -163,7 +163,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
                COALESCE(d.invoice_count, 0) AS pendingInvoicesCount,
                d.oldest_invoice_date AS oldestInvoiceDate,
                c.credit_limit AS creditLimit,
-               (c.credit_limit - COALESCE(d.total_debt, 0)) AS availableCredit
+               GREATEST(c.credit_limit - COALESCE(d.total_debt, 0), 0) AS availableCredit
         FROM customers c
         LEFT JOIN (
             SELECT i.customer_id,
@@ -187,7 +187,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
                 FROM debit_notes
                 GROUP BY invoice_id
             ) dn ON i.id = dn.invoice_id
-            WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+            WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
               AND i.status <> 'FULLY_RETURNED'
             GROUP BY i.customer_id
         ) d ON d.customer_id = c.id
