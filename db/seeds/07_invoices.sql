@@ -17,9 +17,9 @@ VALUES (UNHEX('0F300000000000000000000000000001'), UNHEX('0F20000000000000000000
 INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
 VALUES (UNHEX('0F300000000000000000000000000002'), UNHEX('0F200000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 50.0000);
 
--- Invoice 2: PAID - CREDIT - ImpSur
+-- Invoice 2: PENDING_PAYMENT - CREDIT - ImpSur (payment cancelled due to return)
 INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
-VALUES (UNHEX('0F100000000000000000000000000002'), 'INV-2026-00027', NULL, NULL, UNHEX('C1000000000000000000000000000002'), 'Importaciones del Sur', 'J-20987654-3', UNHEX('B1FFCD000D1C4FA9BC7E7CCACE31B326'), 'Admin User', 'PAID', 'CREDIT', 'Pago a 30 dias', 3450.00, NOW(), NOW());
+VALUES (UNHEX('0F100000000000000000000000000002'), 'INV-2026-00027', NULL, NULL, UNHEX('C1000000000000000000000000000002'), 'Importaciones del Sur', 'J-20987654-3', UNHEX('B1FFCD000D1C4FA9BC7E7CCACE31B326'), 'Admin User', 'PENDING_PAYMENT', 'CREDIT', 'Pago a 30 dias - cancelado por devolucion', 3450.00, NOW(), NOW());
 
 INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
 VALUES (UNHEX('0F200000000000000000000000000003'), UNHEX('0F100000000000000000000000000002'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 30.0000, 45.00, 1350.00);

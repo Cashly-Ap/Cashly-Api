@@ -883,9 +883,9 @@ VALUES (UNHEX('0F300000000000000000000000000001'), UNHEX('0F20000000000000000000
 INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
 VALUES (UNHEX('0F300000000000000000000000000002'), UNHEX('0F200000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 50.0000);
 
--- Invoice 2: PAID - CREDIT - ImpSur
+-- Invoice 2: PENDING_PAYMENT - CREDIT - ImpSur (payment cancelled due to return)
 INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
-VALUES (UNHEX('0F100000000000000000000000000002'), 'INV-2026-00027', NULL, NULL, UNHEX('C1000000000000000000000000000002'), 'Importaciones del Sur', 'J-20987654-3', UNHEX('B1FFCD000D1C4FA9BC7E7CCACE31B326'), 'Admin User', 'PAID', 'CREDIT', 'Pago a 30 dias', 3450.00, NOW(), NOW());
+VALUES (UNHEX('0F100000000000000000000000000002'), 'INV-2026-00027', NULL, NULL, UNHEX('C1000000000000000000000000000002'), 'Importaciones del Sur', 'J-20987654-3', UNHEX('B1FFCD000D1C4FA9BC7E7CCACE31B326'), 'Admin User', 'PENDING_PAYMENT', 'CREDIT', 'Pago a 30 dias - cancelado por devolucion', 3450.00, NOW(), NOW());
 
 INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
 VALUES (UNHEX('0F200000000000000000000000000003'), UNHEX('0F100000000000000000000000000002'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 30.0000, 45.00, 1350.00);
@@ -1138,12 +1138,9 @@ DELETE FROM payment_allocations;
 DELETE FROM payments;
 
 
--- Payment 1: Full payment for Invoice 2 (PAID, ImpSur) - Transferencia
+-- Payment 1: Cancelled — full payment for Invoice 2 (ImpSur) cancelled due to return RET-2025-0002
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
-VALUES (UNHEX('A1000000000000000000000000000001'), 'PAY-2025-0001', UNHEX('c1000000000000000000000000000002'), 'PAYMENT', 3450.00, (SELECT id FROM payment_methods WHERE code = 'PM-0002'), 'TRF-20250115-0042', '2025-01-15', 'Pago completo factura INV-2026-00027', 'APPLIED', 3450.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-01-15 10:30:00', '2025-01-15 10:30:00');
-
-INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
-VALUES (UNHEX('AA00000000000000000000000000001'), UNHEX('A1000000000000000000000000000001'), UNHEX('0F100000000000000000000000000002'), 3450.00);
+VALUES (UNHEX('A1000000000000000000000000000001'), 'PAY-2025-0001', UNHEX('c1000000000000000000000000000002'), 'PAYMENT', 3450.00, (SELECT id FROM payment_methods WHERE code = 'PM-0002'), 'TRF-20250115-0042', '2025-01-15', 'Cancelado por devolucion RET-2025-0002 en INV-2026-00027', 'CANCELLED', 0.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-01-15 10:30:00', '2025-01-15 10:30:00');
 
 -- Payment 2: Cancelled — was for Invoice 3 (ComNorte) - Efectivo
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)

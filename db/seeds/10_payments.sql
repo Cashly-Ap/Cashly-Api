@@ -5,13 +5,10 @@
 DELETE FROM payment_allocations;
 DELETE FROM payments;
 
--- Payment 1: Full payment for Invoice 2 (PAID, ImpSur) - Transferencia
+-- Payment 1: Cancelled — full payment for Invoice 2 (ImpSur) cancelled due to return RET-2025-0002
 -- Invoice 2 subtotal: 3450.00
 INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
-VALUES (UNHEX('A1000000000000000000000000000001'), 'PAY-2025-0001', UNHEX('c1000000000000000000000000000002'), 'PAYMENT', 3450.00, (SELECT id FROM payment_methods WHERE code = 'PM-0002'), 'TRF-20250115-0042', '2025-01-15', 'Pago completo factura INV-2026-00027', 'APPLIED', 3450.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-01-15 10:30:00', '2025-01-15 10:30:00');
-
-INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
-VALUES (UNHEX('AA00000000000000000000000000001'), UNHEX('A1000000000000000000000000000001'), UNHEX('0F100000000000000000000000000002'), 3450.00);
+VALUES (UNHEX('A1000000000000000000000000000001'), 'PAY-2025-0001', UNHEX('c1000000000000000000000000000002'), 'PAYMENT', 3450.00, (SELECT id FROM payment_methods WHERE code = 'PM-0002'), 'TRF-20250115-0042', '2025-01-15', 'Cancelado por devolucion RET-2025-0002 en INV-2026-00027', 'CANCELLED', 0.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-01-15 10:30:00', '2025-01-15 10:30:00');
 
 -- Payment 2: Cancelled — was for Invoice 3 (ComNorte) - Efectivo
 -- Invoice 3 was FULLY_RETURNED (AUTOMATIC return), payment was cancelled
