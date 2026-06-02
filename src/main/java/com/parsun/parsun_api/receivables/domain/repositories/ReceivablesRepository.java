@@ -14,7 +14,7 @@ public interface ReceivablesRepository {
 
     ReceivablesSummaryResponse findSummary();
 
-    Page<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size);
+    Page<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort);
 
     CustomerDebtSummaryResponse findCustomerDebt(UUID customerId);
 

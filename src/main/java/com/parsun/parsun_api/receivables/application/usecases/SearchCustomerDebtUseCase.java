@@ -15,8 +15,8 @@ public class SearchCustomerDebtUseCase {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<CustomerDebtListResponse> execute(String search, int page, int size) {
-        Page<CustomerDebtListResponse> result = receivablesRepository.findCustomersWithDebt(search, page, size);
+    public PageResponse<CustomerDebtListResponse> execute(String search, int page, int size, String sort) {
+        Page<CustomerDebtListResponse> result = receivablesRepository.findCustomersWithDebt(search, page, size, sort);
         return PageResponse.from(result);
     }
 }

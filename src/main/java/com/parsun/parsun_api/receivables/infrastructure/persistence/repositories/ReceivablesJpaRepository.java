@@ -94,157 +94,116 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
     java.math.BigDecimal findTotalPendingValidationAmount();
 
     @Query(value = """
-        SELECT i.customer_id, c.legal_name AS customerName, c.rif AS customerRif,
-               SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-                 - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS totalDebt,
+        SELECT COUNT(*)
+        FROM customers
+        """, nativeQuery = true)
+    long countAllCustomers();
+
+    @Query(value = """
+        SELECT c.id, c.legal_name AS customerName, c.rif AS customerRif,
+               COALESCE(d.total_debt, 0) AS totalDebt,
                COALESCE(pending.pending_amount, 0) AS pendingPaymentsAmount,
-               COUNT(DISTINCT i.id) AS pendingInvoicesCount,
-               MIN(i.created_at) AS oldestInvoiceDate
-        FROM invoices i
-        JOIN customers c ON c.id = i.customer_id
+               COALESCE(d.invoice_count, 0) AS pendingInvoicesCount,
+               d.oldest_invoice_date AS oldestInvoiceDate,
+               c.credit_limit AS creditLimit,
+               (c.credit_limit - COALESCE(d.total_debt, 0)) AS availableCredit
+        FROM customers c
         LEFT JOIN (
-            SELECT p_allocs.invoice_id, SUM(p_allocs.allocated_amount) AS total_paid
-            FROM payment_allocations p_allocs
-            GROUP BY p_allocs.invoice_id
-        ) pa ON i.id = pa.invoice_id
+            SELECT i.customer_id,
+                   SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                       - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total_debt,
+                   COUNT(DISTINCT i.id) AS invoice_count,
+                   MIN(i.created_at) AS oldest_invoice_date
+            FROM invoices i
+            LEFT JOIN (
+                SELECT invoice_id, SUM(allocated_amount) AS total_paid
+                FROM payment_allocations
+                GROUP BY invoice_id
+            ) pa ON i.id = pa.invoice_id
+            LEFT JOIN (
+                SELECT invoice_id, SUM(amount) AS total_credit
+                FROM credit_notes
+                GROUP BY invoice_id
+            ) cn ON i.id = cn.invoice_id
+            LEFT JOIN (
+                SELECT invoice_id, SUM(amount) AS total_debit
+                FROM debit_notes
+                GROUP BY invoice_id
+            ) dn ON i.id = dn.invoice_id
+            WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+              AND i.status <> 'FULLY_RETURNED'
+            GROUP BY i.customer_id
+        ) d ON d.customer_id = c.id
         LEFT JOIN (
-            SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
-            FROM credit_notes cn2
-            GROUP BY cn2.invoice_id
-        ) cn ON cn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
-            FROM debit_notes dn2
-            GROUP BY dn2.invoice_id
-        ) dn ON dn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT p.customer_id, SUM(p.amount) AS pending_amount
-            FROM payments p
-            WHERE p.status IN ('PENDING_APPROVAL', 'DRAFT')
-            GROUP BY p.customer_id
-        ) pending ON pending.customer_id = i.customer_id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND i.status <> 'FULLY_RETURNED'
-          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
-        GROUP BY i.customer_id, c.legal_name, c.rif, pending.pending_amount
+            SELECT customer_id, SUM(amount) AS pending_amount
+            FROM payments
+            WHERE status IN ('PENDING_APPROVAL', 'DRAFT')
+            GROUP BY customer_id
+        ) pending ON pending.customer_id = c.id
         ORDER BY totalDebt DESC
         """,
         countQuery = """
-        SELECT COUNT(DISTINCT i.customer_id)
-        FROM invoices i
-        LEFT JOIN (
-            SELECT p_allocs.invoice_id, SUM(p_allocs.allocated_amount) AS total_paid
-            FROM payment_allocations p_allocs
-            GROUP BY p_allocs.invoice_id
-        ) pa ON i.id = pa.invoice_id
-        LEFT JOIN (
-            SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
-            FROM credit_notes cn2
-            GROUP BY cn2.invoice_id
-        ) cn ON cn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
-            FROM debit_notes dn2
-            GROUP BY dn2.invoice_id
-        ) dn ON dn.invoice_id = i.id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND i.status <> 'FULLY_RETURNED'
-          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
+        SELECT COUNT(*)
+        FROM customers
         """,
         nativeQuery = true)
     List<Object[]> findCustomersWithDebtRaw(org.springframework.data.domain.Pageable pageable);
 
     @Query(value = """
-        SELECT COUNT(DISTINCT i.customer_id)
-        FROM invoices i
-        JOIN customers c ON c.id = i.customer_id
-        LEFT JOIN (
-            SELECT p_allocs.invoice_id, SUM(p_allocs.allocated_amount) AS total_paid
-            FROM payment_allocations p_allocs
-            GROUP BY p_allocs.invoice_id
-        ) pa ON i.id = pa.invoice_id
-        LEFT JOIN (
-            SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
-            FROM credit_notes cn2
-            GROUP BY cn2.invoice_id
-        ) cn ON cn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
-            FROM debit_notes dn2
-            GROUP BY dn2.invoice_id
-        ) dn ON dn.invoice_id = i.id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND i.status <> 'FULLY_RETURNED'
-          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
-          AND (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
+        SELECT COUNT(*)
+        FROM customers c
+        WHERE (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
         """, nativeQuery = true)
     long countCustomersWithDebtBySearch(@Param("search") String search);
 
     @Query(value = """
-        SELECT i.customer_id, c.legal_name AS customerName, c.rif AS customerRif,
-               SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-                 - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS totalDebt,
+        SELECT c.id, c.legal_name AS customerName, c.rif AS customerRif,
+               COALESCE(d.total_debt, 0) AS totalDebt,
                COALESCE(pending.pending_amount, 0) AS pendingPaymentsAmount,
-               COUNT(DISTINCT i.id) AS pendingInvoicesCount,
-               MIN(i.created_at) AS oldestInvoiceDate
-        FROM invoices i
-        JOIN customers c ON c.id = i.customer_id
+               COALESCE(d.invoice_count, 0) AS pendingInvoicesCount,
+               d.oldest_invoice_date AS oldestInvoiceDate,
+               c.credit_limit AS creditLimit,
+               (c.credit_limit - COALESCE(d.total_debt, 0)) AS availableCredit
+        FROM customers c
         LEFT JOIN (
-            SELECT p_allocs.invoice_id, SUM(p_allocs.allocated_amount) AS total_paid
-            FROM payment_allocations p_allocs
-            GROUP BY p_allocs.invoice_id
-        ) pa ON i.id = pa.invoice_id
+            SELECT i.customer_id,
+                   SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                       - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total_debt,
+                   COUNT(DISTINCT i.id) AS invoice_count,
+                   MIN(i.created_at) AS oldest_invoice_date
+            FROM invoices i
+            LEFT JOIN (
+                SELECT invoice_id, SUM(allocated_amount) AS total_paid
+                FROM payment_allocations
+                GROUP BY invoice_id
+            ) pa ON i.id = pa.invoice_id
+            LEFT JOIN (
+                SELECT invoice_id, SUM(amount) AS total_credit
+                FROM credit_notes
+                GROUP BY invoice_id
+            ) cn ON i.id = cn.invoice_id
+            LEFT JOIN (
+                SELECT invoice_id, SUM(amount) AS total_debit
+                FROM debit_notes
+                GROUP BY invoice_id
+            ) dn ON i.id = dn.invoice_id
+            WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+              AND i.status <> 'FULLY_RETURNED'
+            GROUP BY i.customer_id
+        ) d ON d.customer_id = c.id
         LEFT JOIN (
-            SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
-            FROM credit_notes cn2
-            GROUP BY cn2.invoice_id
-        ) cn ON cn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
-            FROM debit_notes dn2
-            GROUP BY dn2.invoice_id
-        ) dn ON dn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT p.customer_id, SUM(p.amount) AS pending_amount
-            FROM payments p
-            WHERE p.status IN ('PENDING_APPROVAL', 'DRAFT')
-            GROUP BY p.customer_id
-        ) pending ON pending.customer_id = i.customer_id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND i.status <> 'FULLY_RETURNED'
-          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
-          AND (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
-        GROUP BY i.customer_id, c.legal_name, c.rif, pending.pending_amount
+            SELECT customer_id, SUM(amount) AS pending_amount
+            FROM payments
+            WHERE status IN ('PENDING_APPROVAL', 'DRAFT')
+            GROUP BY customer_id
+        ) pending ON pending.customer_id = c.id
+        WHERE c.legal_name LIKE %:search% OR c.rif LIKE %:search%
         ORDER BY totalDebt DESC
         """,
         countQuery = """
-        SELECT COUNT(DISTINCT i.customer_id)
-        FROM invoices i
-        JOIN customers c ON c.id = i.customer_id
-        LEFT JOIN (
-            SELECT p_allocs.invoice_id, SUM(p_allocs.allocated_amount) AS total_paid
-            FROM payment_allocations p_allocs
-            GROUP BY p_allocs.invoice_id
-        ) pa ON i.id = pa.invoice_id
-        LEFT JOIN (
-            SELECT cn2.invoice_id, SUM(cn2.amount) AS total_credit
-            FROM credit_notes cn2
-            GROUP BY cn2.invoice_id
-        ) cn ON cn.invoice_id = i.id
-        LEFT JOIN (
-            SELECT dn2.invoice_id, SUM(dn2.amount) AS total_debit
-            FROM debit_notes dn2
-            GROUP BY dn2.invoice_id
-        ) dn ON dn.invoice_id = i.id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
-          AND i.status <> 'FULLY_RETURNED'
-          AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
-            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
-          AND (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
+        SELECT COUNT(*)
+        FROM customers c
+        WHERE (c.legal_name LIKE %:search% OR c.rif LIKE %:search%)
         """,
         nativeQuery = true)
     List<Object[]> findCustomersWithDebtBySearchRaw(@Param("search") String search,

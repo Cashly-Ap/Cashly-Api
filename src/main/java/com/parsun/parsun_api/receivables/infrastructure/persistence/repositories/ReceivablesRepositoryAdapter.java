@@ -100,18 +100,26 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     }
 
     @Override
-    public Page<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size) {
+    public Page<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort) {
         PageRequest pageable = PageRequest.of(page, size);
-        List<Object[]> rows;
-        long total;
 
+        String sql = buildCustomersWithDebtQuery(search, sort);
+        Query query = entityManager.createNativeQuery(sql);
+        if (search != null && !search.isBlank()) {
+            query.setParameter("search", "%" + search + "%");
+        }
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        long total;
         if (search != null && !search.isBlank()) {
             total = receivablesJpaRepository.countCustomersWithDebtBySearch(search);
-            rows = receivablesJpaRepository.findCustomersWithDebtBySearchRaw(search, pageable);
         } else {
-            total = receivablesJpaRepository.countCustomersWithDebt();
-            rows = receivablesJpaRepository.findCustomersWithDebtRaw(pageable);
+            total = receivablesJpaRepository.countAllCustomers();
         }
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = query.getResultList();
 
         List<CustomerDebtListResponse> content = rows.stream()
                 .map(row -> {
@@ -125,14 +133,89 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                     LocalDate oldestInvoiceDate = oldestDate != null
                             ? new java.sql.Date(oldestDate.getTime()).toLocalDate()
                             : null;
+                    BigDecimal creditLimit = row[7] != null ? (BigDecimal) row[7] : BigDecimal.ZERO;
+                    BigDecimal availableCredit = row[8] != null ? (BigDecimal) row[8] : BigDecimal.ZERO;
                     return new CustomerDebtListResponse(
                             customerId, customerName, customerRif,
-                            totalDebt, pendingAmount, invoicedCount, oldestInvoiceDate
+                            totalDebt, pendingAmount, invoicedCount, oldestInvoiceDate,
+                            creditLimit, availableCredit
                     );
                 })
                 .toList();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    private String buildCustomersWithDebtQuery(String search, String sort) {
+        String baseSql = """
+            SELECT c.id, c.legal_name AS customerName, c.rif AS customerRif,
+                   COALESCE(d.total_debt, 0) AS totalDebt,
+                   COALESCE(pending.pending_amount, 0) AS pendingPaymentsAmount,
+                   COALESCE(d.invoice_count, 0) AS pendingInvoicesCount,
+                   d.oldest_invoice_date AS oldestInvoiceDate,
+                   c.credit_limit AS creditLimit,
+                   (c.credit_limit - COALESCE(d.total_debt, 0)) AS availableCredit
+            FROM customers c
+            LEFT JOIN (
+                SELECT i.customer_id,
+                       SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                           - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total_debt,
+                       COUNT(DISTINCT i.id) AS invoice_count,
+                       MIN(i.created_at) AS oldest_invoice_date
+                FROM invoices i
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(allocated_amount) AS total_paid
+                    FROM payment_allocations
+                    GROUP BY invoice_id
+                ) pa ON i.id = pa.invoice_id
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(amount) AS total_credit
+                    FROM credit_notes
+                    GROUP BY invoice_id
+                ) cn ON i.id = cn.invoice_id
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(amount) AS total_debit
+                    FROM debit_notes
+                    GROUP BY invoice_id
+                ) dn ON i.id = dn.invoice_id
+                WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+                  AND i.status <> 'FULLY_RETURNED'
+                GROUP BY i.customer_id
+            ) d ON d.customer_id = c.id
+            LEFT JOIN (
+                SELECT customer_id, SUM(amount) AS pending_amount
+                FROM payments
+                WHERE status IN ('PENDING_APPROVAL', 'DRAFT')
+                GROUP BY customer_id
+            ) pending ON pending.customer_id = c.id
+            """;
+
+        if (search != null && !search.isBlank()) {
+            baseSql += " WHERE c.legal_name LIKE :search OR c.rif LIKE :search";
+        }
+
+        baseSql += " ORDER BY " + buildOrderBy(sort);
+        return baseSql;
+    }
+
+    private String buildOrderBy(String sort) {
+        if (sort == null || sort.isBlank()) {
+            return "totalDebt DESC";
+        }
+        String[] parts = sort.split(",");
+        String field = parts[0];
+        String direction = parts.length > 1 ? parts[1] : "asc";
+
+        String column = switch (field) {
+            case "customerName" -> "c.legal_name";
+            case "totalDebt" -> "totalDebt";
+            case "creditLimit" -> "c.credit_limit";
+            case "availableCredit" -> "availableCredit";
+            case "pendingInvoicesCount" -> "pendingInvoicesCount";
+            default -> "totalDebt";
+        };
+
+        return column + " " + direction.toUpperCase();
     }
 
     @Override
@@ -244,6 +327,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 ? customer.getEmails().get(0).getEmail()
                 : null;
 
+        BigDecimal creditLimit = customer != null ? customer.getCreditLimit() : BigDecimal.ZERO;
+
         return new CustomerDebtSummaryResponse(
                 customerId,
                 customer != null ? customer.getLegalName() : null,
@@ -252,6 +337,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 email,
                 totalDebt,
                 BigDecimal.ZERO,
+                availableDebt,
+                creditLimit,
                 availableDebt,
                 invoices,
                 0L

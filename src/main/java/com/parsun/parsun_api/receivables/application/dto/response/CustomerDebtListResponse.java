@@ -11,5 +11,7 @@ public record CustomerDebtListResponse(
         BigDecimal totalDebt,
         BigDecimal pendingPaymentsAmount,
         long pendingInvoicesCount,
-        LocalDate oldestInvoiceDate
+        LocalDate oldestInvoiceDate,
+        BigDecimal creditLimit,
+        BigDecimal availableCredit
 ) {}

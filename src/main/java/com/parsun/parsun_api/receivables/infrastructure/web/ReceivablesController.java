@@ -60,8 +60,9 @@ public class ReceivablesController {
     public ResponseEntity<PageResponse<?>> getCustomersWithDebt(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<?> response = searchCustomerDebtUseCase.execute(search, page, size);
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String sort) {
+        PageResponse<?> response = searchCustomerDebtUseCase.execute(search, page, size, sort);
         return ResponseEntity.ok(response);
     }
 
