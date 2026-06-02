@@ -13,6 +13,7 @@ import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -28,9 +29,10 @@ public class InvoiceConfig {
                                                        CustomerRepository customerRepository,
                                                        UserRepository userRepository,
                                                        ProductRepository productRepository,
-                                                       WarehouseStockRepository warehouseStockRepository) {
+                                                       WarehouseStockRepository warehouseStockRepository,
+                                                       CreditGuard creditGuard) {
         return new CreateInvoiceUseCase(invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository);
+                userRepository, productRepository, warehouseStockRepository, creditGuard);
     }
 
     @Bean
@@ -79,9 +81,10 @@ public class InvoiceConfig {
 
     @Bean
     public ConfirmInvoiceUseCase confirmInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                                        WarehouseStockRepository warehouseStockRepository,
-                                                        StockMovementRepository stockMovementRepository) {
-        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository);
+                                                         WarehouseStockRepository warehouseStockRepository,
+                                                         StockMovementRepository stockMovementRepository,
+                                                         CreditGuard creditGuard) {
+        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository, creditGuard);
     }
 
     @Bean

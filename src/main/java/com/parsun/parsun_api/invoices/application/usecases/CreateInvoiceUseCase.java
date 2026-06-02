@@ -21,6 +21,7 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
@@ -39,19 +40,22 @@ public class CreateInvoiceUseCase {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
+    private final CreditGuard creditGuard;
 
     public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  OrderRepository orderRepository,
                                  CustomerRepository customerRepository,
                                  UserRepository userRepository,
                                  ProductRepository productRepository,
-                                 WarehouseStockRepository warehouseStockRepository) {
+                                 WarehouseStockRepository warehouseStockRepository,
+                                 CreditGuard creditGuard) {
         this.invoiceRepository = invoiceRepository;
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.warehouseStockRepository = warehouseStockRepository;
+        this.creditGuard = creditGuard;
     }
 
     @Transactional
@@ -149,6 +153,9 @@ public class CreateInvoiceUseCase {
         Invoice saved = invoiceRepository.save(invoice);
 
         if (orderId != null) {
+            if (paymentType == PaymentType.CREDIT) {
+                creditGuard.ensureCreditAvailable(resolvedCustomerId, saved.calculateTotal());
+            }
             saved.confirm();
             saved = invoiceRepository.save(saved);
         }

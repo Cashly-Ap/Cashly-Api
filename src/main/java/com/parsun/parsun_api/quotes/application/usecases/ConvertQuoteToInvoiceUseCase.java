@@ -17,6 +17,7 @@ import com.parsun.parsun_api.quotes.domain.entities.QuoteAllocation;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteLine;
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,15 +34,18 @@ public class ConvertQuoteToInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final UserRepository userRepository;
+    private final CreditGuard creditGuard;
 
     public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
                                          InvoiceRepository invoiceRepository,
                                          WarehouseStockRepository warehouseStockRepository,
-                                         UserRepository userRepository) {
+                                         UserRepository userRepository,
+                                         CreditGuard creditGuard) {
         this.quoteRepository = quoteRepository;
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.userRepository = userRepository;
+        this.creditGuard = creditGuard;
     }
 
     @Transactional
@@ -58,6 +62,11 @@ public class ConvertQuoteToInvoiceUseCase {
             resolvedPaymentType = PaymentType.valueOf(paymentType.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid payment type: " + paymentType + ". Must be CASH or CREDIT");
+        }
+
+        if (resolvedPaymentType == PaymentType.CREDIT) {
+            BigDecimal quoteTotal = quote.getSubtotal();
+            creditGuard.ensureCreditAvailable(quote.getCustomerId(), quoteTotal);
         }
 
         User user = userRepository.findById(new UserId(authenticatedUserId))

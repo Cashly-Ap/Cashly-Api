@@ -4,6 +4,7 @@
 -- Hash (all): $2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW
 -- =============================================================================
 
+SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM user_module_permissions;
 DELETE FROM refresh_tokens;
 DELETE FROM users;
@@ -67,13 +68,13 @@ VALUES
 -- $2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
+
 DELETE FROM customer_warehouse_access;
 DELETE FROM customer_addresses;
 DELETE FROM customer_phones;
 DELETE FROM customer_emails;
 DELETE FROM customers;
-SET FOREIGN_KEY_CHECKS = 1;
+
 
 INSERT INTO customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, portal_access, portal_password, created_at, updated_at)
 VALUES
@@ -160,12 +161,12 @@ VALUES
 -- Seed: Warehouses (5 almacenes) + Customer Warehouse Access
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
+
 DELETE FROM customer_warehouse_access;
 DELETE FROM stock_movements;
 DELETE FROM warehouse_stock;
 DELETE FROM warehouses;
-SET FOREIGN_KEY_CHECKS = 1;
+
 
 INSERT INTO warehouses (id, code, name, address, state, municipality, postal_code, active)
 VALUES
@@ -201,12 +202,12 @@ VALUES
 -- Compuestos (5): kits que agrupan simples
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
+
 DELETE FROM stock_movements;
 DELETE FROM warehouse_stock;
 DELETE FROM product_components;
 DELETE FROM products;
-SET FOREIGN_KEY_CHECKS = 1;
+
 
 -- -----------------------------------------------------------------------------
 -- PRODUCTOS SIMPLES
@@ -407,10 +408,10 @@ VALUES
 -- Especial = base_price * 0.82 (18% descuento)
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
+
 DELETE FROM product_prices;
 DELETE FROM price_types;
-SET FOREIGN_KEY_CHECKS = 1;
+
 
 -- =============================================================================
 -- PRICE TYPES
@@ -561,7 +562,6 @@ VALUES
 -- Referenciados por seed-customer-warehouses-and-prices.sql
 -- =============================================================================
 
-DELETE FROM product_prices;
 DELETE FROM price_types;
 
 INSERT INTO price_types (id, name, description, active, created_at, updated_at)
@@ -585,12 +585,12 @@ VALUES
 --   ORD-2026-0007  DistCaracas     CONFIRMED
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
+
 DELETE FROM order_line_allocations;
 DELETE FROM order_lines;
 DELETE FROM orders;
 DELETE FROM order_number_sequence;
-SET FOREIGN_KEY_CHECKS = 1;
+
 
 -- Sequence: year 2026, next value starts at 8 (7 orders already used)
 INSERT INTO order_number_sequence (year, next_value)
@@ -860,15 +860,455 @@ VALUES
     (UNHEX('ac000000000000000000000000000019'), UNHEX('ab00000000000000000000000000001a'), UNHEX('b0000000000000000000000000000001'),  1.0000),
     (UNHEX('ac00000000000000000000000000001a'), UNHEX('ab00000000000000000000000000001b'), UNHEX('b0000000000000000000000000000001'),  1.0000);
 -- =============================================================================
--- Seed: Payment Methods
+-- Seed: Invoices (5 facturas con líneas y asignaciones)
 -- =============================================================================
-SOURCE 09_payment_methods.sql;
+
+DELETE FROM invoice_line_allocations;
+DELETE FROM invoice_lines;
+DELETE FROM invoices;
+
+-- Invoice 1: DRAFT - CASH - DistCaracas
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000001'), 'INV-2026-00026', NULL, NULL, UNHEX('C1000000000000000000000000000001'), 'Distribuidora Caracas C.A.', 'J-30123456-7', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', 'CASH', 'Factura borrador para prueba', 1250.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000001'), UNHEX('0F100000000000000000000000000001'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 100.0000, 5.50, 550.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000002'), UNHEX('0F100000000000000000000000000001'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 50.0000, 14.00, 700.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000001'), UNHEX('0F200000000000000000000000000001'), UNHEX('B0000000000000000000000000000001'), 100.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000002'), UNHEX('0F200000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 50.0000);
+
+-- Invoice 2: PAID - CREDIT - ImpSur
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000002'), 'INV-2026-00027', NULL, NULL, UNHEX('C1000000000000000000000000000002'), 'Importaciones del Sur', 'J-20987654-3', UNHEX('B1FFCD000D1C4FA9BC7E7CCACE31B326'), 'Admin User', 'PAID', 'CREDIT', 'Pago a 30 dias', 3450.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000003'), UNHEX('0F100000000000000000000000000002'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 30.0000, 45.00, 1350.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000004'), UNHEX('0F100000000000000000000000000002'), UNHEX('E0000000000000000000000000000004'), 'Multimetro digital', 'ELEC-004', 10.0000, 210.00, 2100.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000003'), UNHEX('0F200000000000000000000000000003'), UNHEX('B0000000000000000000000000000002'), 30.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000004'), UNHEX('0F200000000000000000000000000004'), UNHEX('B0000000000000000000000000000002'), 10.0000);
+
+-- Invoice 3: PENDING_PAYMENT - CREDIT - ComNorte
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000003'), 'INV-2026-00028', NULL, NULL, UNHEX('C1000000000000000000000000000003'), 'Comercial del Norte', 'J-10555444-1', UNHEX('C2AADE111E2D4BA0DD8F8DDBDF42C437'), 'Operator User', 'PENDING_PAYMENT', 'CREDIT', 'Pendiente de pago - credito 60 dias', 8750.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000005'), UNHEX('0F100000000000000000000000000003'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 5.0000, 350.00, 1750.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000006'), UNHEX('0F100000000000000000000000000003'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 500.0000, 5.50, 2750.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000007'), UNHEX('0F100000000000000000000000000003'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 150.0000, 14.00, 2100.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000008'), UNHEX('0F100000000000000000000000000003'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 50.0000, 45.00, 2250.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000005'), UNHEX('0F200000000000000000000000000005'), UNHEX('B0000000000000000000000000000003'), 5.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000006'), UNHEX('0F200000000000000000000000000006'), UNHEX('B0000000000000000000000000000003'), 500.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000007'), UNHEX('0F200000000000000000000000000007'), UNHEX('B0000000000000000000000000000003'), 150.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000008'), UNHEX('0F200000000000000000000000000008'), UNHEX('B0000000000000000000000000000003'), 50.0000);
+
+-- Invoice 4: DRAFT - CASH - CMendoza (single line)
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000004'), 'INV-2026-00029', NULL, NULL, UNHEX('C1000000000000000000000000000004'), 'Carlos Mendoza', 'V-12345678-9', UNHEX('D3BBEF222F3E5CB1EE9F9EECF053D548'), 'Sales User', 'DRAFT', 'CASH', NULL, 175.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000009'), UNHEX('0F100000000000000000000000000004'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 1.0000, 175.00, 175.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000009'), UNHEX('0F200000000000000000000000000009'), UNHEX('B0000000000000000000000000000001'), 1.0000);
+
+-- Invoice 5: PARTIALLY_PAID - CREDIT - SumZulia (multi-line, multi-warehouse)
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000005'), 'INV-2026-00030', NULL, NULL, UNHEX('C1000000000000000000000000000005'), 'Suministros Zulia', 'J-40234567-8', UNHEX('F5DDEA444B5A7ED3CC1B1AAED175F76A'), 'Gabriel', 'PARTIALLY_PAID', 'CREDIT', 'Credito vencido - intereses generados', 15600.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000010'), UNHEX('0F100000000000000000000000000005'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 1000.0000, 5.50, 5500.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000011'), UNHEX('0F100000000000000000000000000005'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 100.0000, 45.00, 4500.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000012'), UNHEX('0F100000000000000000000000000005'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 8.0000, 350.00, 2800.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000013'), UNHEX('0F100000000000000000000000000005'), UNHEX('E0000000000000000000000000000004'), 'Multimetro digital', 'ELEC-004', 4.0000, 210.00, 840.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000014'), UNHEX('0F100000000000000000000000000005'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 140.0000, 14.00, 1960.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000010'), UNHEX('0F200000000000000000000000000010'), UNHEX('B0000000000000000000000000000001'), 600.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000011'), UNHEX('0F200000000000000000000000000010'), UNHEX('B0000000000000000000000000000002'), 400.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000012'), UNHEX('0F200000000000000000000000000011'), UNHEX('B0000000000000000000000000000001'), 100.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000013'), UNHEX('0F200000000000000000000000000012'), UNHEX('B0000000000000000000000000000003'), 8.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000014'), UNHEX('0F200000000000000000000000000013'), UNHEX('B0000000000000000000000000000002'), 4.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000015'), UNHEX('0F200000000000000000000000000014'), UNHEX('B0000000000000000000000000000001'), 140.0000);
+
+-- Update sequence
+UPDATE invoice_number_sequence SET next_value = 31 WHERE year = 2026;
 
 -- =============================================================================
--- Seed: Payments & Payment Allocations
+-- Seed: Quotes (6 presupuestos con líneas y asignaciones)
 -- =============================================================================
-SOURCE 10_payments.sql;
 
-SOURCE 11_credit_debit_notes.sql;
+DELETE FROM quote_allocations;
+DELETE FROM quote_lines;
+DELETE FROM quotes;
 
-SOURCE 12_returns.sql;
+-- Quote 1: DRAFT - DistCaracas (multi-line)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000001'), 'PRE-2026-0007', UNHEX('C1000000000000000000000000000001'), 'Distribuidora Caracas C.A.', 'J-30123456-7', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', 'Presupuesto para proyecto de cableado', 4250.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000001'), UNHEX('0E100000000000000000000000000001'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 500.0000, 5.50, 2750.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000002'), UNHEX('0E100000000000000000000000000001'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 100.0000, 14.00, 1400.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000003'), UNHEX('0E100000000000000000000000000001'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 2.0000, 50.00, 100.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000001'), UNHEX('0E100000000000000000000000000001'), UNHEX('0E200000000000000000000000000001'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 500.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000002'), UNHEX('0E100000000000000000000000000001'), UNHEX('0E200000000000000000000000000002'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 100.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000003'), UNHEX('0E100000000000000000000000000001'), UNHEX('0E200000000000000000000000000003'), UNHEX('E0000000000000000000000000000003'), UNHEX('B0000000000000000000000000000002'), 'Almacen Maracaibo Norte', 2.0000);
+
+-- Quote 2: DRAFT - ImpSur (single line)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000002'), 'PRE-2026-0008', UNHEX('C1000000000000000000000000000002'), 'Importaciones del Sur', 'J-20987654-3', UNHEX('B1FFCD000D1C4FA9BC7E7CCACE31B326'), 'Admin User', 'DRAFT', NULL, 1050.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000004'), UNHEX('0E100000000000000000000000000002'), UNHEX('E0000000000000000000000000000004'), 'Multimetro digital', 'ELEC-004', 5.0000, 210.00, 1050.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000004'), UNHEX('0E100000000000000000000000000002'), UNHEX('0E200000000000000000000000000004'), UNHEX('E0000000000000000000000000000004'), UNHEX('B0000000000000000000000000000002'), 'Almacen Maracaibo Norte', 5.0000);
+
+-- Quote 3: CONVERTED_TO_ORDER - ComNorte
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, order_id, order_number, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000003'), 'PRE-2026-0009', UNHEX('C1000000000000000000000000000003'), 'Comercial del Norte', 'J-10555444-1', UNHEX('C2AADE111E2D4BA0DD8F8DDBDF42C437'), 'Operator User', 'CONVERTED_TO_ORDER', 'Convertido a pedido', 6300.00, UNHEX('0D100000000000000000000000000001'), 'ORD-2026-0001', NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000005'), UNHEX('0E100000000000000000000000000003'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 10.0000, 350.00, 3500.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000006'), UNHEX('0E100000000000000000000000000003'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 200.0000, 5.50, 1100.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000007'), UNHEX('0E100000000000000000000000000003'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 38.0000, 45.00, 1710.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000005'), UNHEX('0E100000000000000000000000000003'), UNHEX('0E200000000000000000000000000005'), UNHEX('E0000000000000000000000000000005'), UNHEX('B0000000000000000000000000000003'), 'Almacen Valencia', 10.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000006'), UNHEX('0E100000000000000000000000000003'), UNHEX('0E200000000000000000000000000006'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000003'), 'Almacen Valencia', 200.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000007'), UNHEX('0E100000000000000000000000000003'), UNHEX('0E200000000000000000000000000007'), UNHEX('E0000000000000000000000000000003'), UNHEX('B0000000000000000000000000000003'), 'Almacen Valencia', 38.0000);
+
+-- Quote 4: CONVERTED_TO_INVOICE - CMendoza
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, invoice_id, invoice_number, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000004'), 'PRE-2026-0010', UNHEX('C1000000000000000000000000000004'), 'Carlos Mendoza', 'V-12345678-9', UNHEX('D3BBEF222F3E5CB1EE9F9EECF053D548'), 'Sales User', 'CONVERTED_TO_INVOICE', 'Convertido a factura pago contado', 875.00, UNHEX('0F100000000000000000000000000001'), 'INV-2026-00026', NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000008'), UNHEX('0E100000000000000000000000000004'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 5.0000, 175.00, 875.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000008'), UNHEX('0E100000000000000000000000000004'), UNHEX('0E200000000000000000000000000008'), UNHEX('E0000000000000000000000000000005'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 5.0000);
+
+-- Quote 5: DRAFT - SumZulia (multi-line, multi-warehouse)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000005'), 'PRE-2026-0011', UNHEX('C1000000000000000000000000000005'), 'Suministros Zulia', 'J-40234567-8', UNHEX('F5DDEA444B5A7ED3CC1B1AAED175F76A'), 'Gabriel', 'DRAFT', 'Presupuesto para remodelacion de oficina', 12450.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000009'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 800.0000, 5.50, 4400.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000010'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 200.0000, 14.00, 2800.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000011'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 60.0000, 45.00, 2700.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000012'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000004'), 'Multimetro digital', 'ELEC-004', 3.0000, 210.00, 630.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000013'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 4.0000, 350.00, 1400.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000014'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 94.0000, 5.50, 517.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000009'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000009'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 500.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000010'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000009'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000002'), 'Almacen Maracaibo Norte', 300.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000011'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000010'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 200.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000012'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000011'), UNHEX('E0000000000000000000000000000003'), UNHEX('B0000000000000000000000000000003'), 'Almacen Valencia', 60.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000013'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000012'), UNHEX('E0000000000000000000000000000004'), UNHEX('B0000000000000000000000000000002'), 'Almacen Maracaibo Norte', 3.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000014'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000013'), UNHEX('E0000000000000000000000000000005'), UNHEX('B0000000000000000000000000000004'), 'Almacen Barquisimeto', 4.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000015'), UNHEX('0E100000000000000000000000000005'), UNHEX('0E200000000000000000000000000014'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000004'), 'Almacen Barquisimeto', 94.0000);
+
+-- Quote 6: DRAFT - DistCaracas (small quote)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000006'), 'PRE-2026-0012', UNHEX('C1000000000000000000000000000001'), 'Distribuidora Caracas C.A.', 'J-30123456-7', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', 'Reposicion de material electrico', 420.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000015'), UNHEX('0E100000000000000000000000000006'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 8.0000, 45.00, 360.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000016'), UNHEX('0E100000000000000000000000000006'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 4.0000, 15.00, 60.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000016'), UNHEX('0E100000000000000000000000000006'), UNHEX('0E200000000000000000000000000015'), UNHEX('E0000000000000000000000000000003'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 8.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000017'), UNHEX('0E100000000000000000000000000006'), UNHEX('0E200000000000000000000000000016'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 4.0000);
+
+-- Update sequence
+UPDATE quote_number_sequence SET next_value = 13 WHERE year = 2026;
+
+-- =============================================================================
+-- Seed: Payment Methods (8 métodos de pago)
+-- =============================================================================
+
+DELETE FROM payment_methods;
+
+
+INSERT INTO payment_methods (id, code, name, description, is_active, created_at, updated_at)
+VALUES
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0001', 'Efectivo',            'Pago en efectivo',                        TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0002', 'Transferencia bancaria', 'Transferencia desde cuenta bancaria',  TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0003', 'Tarjeta de débito',   'Pago con tarjeta de débito',              TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0004', 'Tarjeta de crédito',  'Pago con tarjeta de crédito',             TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0005', 'Cheque',              'Pago con cheque',                         TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0006', 'Divisas',             'Pago en moneda extranjera (USD/EUR)',     TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0007', 'Pago móvil',          'Pago móvil Venezuela',                    TRUE, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'PM-0008', 'Zelle',               'Pago mediante Zelle',                     TRUE, NOW(), NOW());
+
+-- =============================================================================
+-- Seed: Payments & Payment Allocations (8 pagos variados)
+-- =============================================================================
+
+
+DELETE FROM payment_allocations;
+DELETE FROM payments;
+
+
+-- Payment 1: Full payment for Invoice 2 (PAID, ImpSur) - Transferencia
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000001'), 'PAY-2025-0001', UNHEX('c1000000000000000000000000000002'), 'PAYMENT', 3450.00, (SELECT id FROM payment_methods WHERE code = 'PM-0002'), 'TRF-20250115-0042', '2025-01-15', 'Pago completo factura INV-2026-00027', 'APPLIED', 3450.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-01-15 10:30:00', '2025-01-15 10:30:00');
+
+INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
+VALUES (UNHEX('AA00000000000000000000000000001'), UNHEX('A1000000000000000000000000000001'), UNHEX('0F100000000000000000000000000002'), 3450.00);
+
+-- Payment 2: Cancelled — was for Invoice 3 (ComNorte) - Efectivo
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000002'), 'PAY-2025-0002', UNHEX('c1000000000000000000000000000003'), 'PAYMENT', 3000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0001'), NULL, '2025-02-10', 'Cancelado por devolucion automatica INV-2026-00028', 'CANCELLED', 0.00, UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'Admin User', '2025-02-10 14:15:00', '2025-02-10 14:15:00');
+
+-- Payment 3: Advance payment on account (ADVANCE) - Tarjeta de débito
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000003'), 'PAY-2025-0003', UNHEX('c1000000000000000000000000000001'), 'ADVANCE', 2000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0003'), 'DEB-20250220-7891', '2025-02-20', 'Anticipo para futuras compras', 'APPLIED', 2000.00, UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'Operator User', '2025-02-20 09:00:00', '2025-02-20 09:00:00');
+
+-- Payment 4: Advance not yet applied (ADVANCE, DRAFT) - Zelle
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000004'), 'PAY-2025-0004', UNHEX('c1000000000000000000000000000007'), 'ADVANCE', 5000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0008'), 'ZELLE-20250301-ABC', '2025-03-01', 'Anticipo pendiente de aplicar - TecSol', 'APPLIED', 0.00, UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'Sales User', '2025-03-01 16:45:00', '2025-03-01 16:45:00');
+
+-- Payment 5: Full payment for Invoice 5 (PAID, SumZulia) - Pago móvil
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000005'), 'PAY-2025-0005', UNHEX('c1000000000000000000000000000005'), 'PAYMENT', 15600.00, (SELECT id FROM payment_methods WHERE code = 'PM-0007'), 'PM-0424-9876543-20250315', '2025-03-15', 'Pago contado factura INV-2026-00030', 'APPLIED', 15600.00, UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'Gabriel', '2025-03-15 11:20:00', '2025-03-15 11:20:00');
+
+INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
+VALUES (UNHEX('AA00000000000000000000000000005'), UNHEX('A1000000000000000000000000000005'), UNHEX('0F100000000000000000000000000005'), 15600.00);
+
+-- Payment 6: Cancelled payment - Cheque
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000006'), 'PAY-2025-0006', UNHEX('c1000000000000000000000000000008'), 'PAYMENT', 1500.00, (SELECT id FROM payment_methods WHERE code = 'PM-0005'), 'CHK-2025-0456', '2025-04-05', 'Cheque sin fondos - cancelado', 'CANCELLED', 0.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-04-05 08:30:00', '2025-04-05 08:30:00');
+
+-- Payment 7: Cancelled — was for Invoice 3 (ComNorte) - Tarjeta de crédito
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000007'), 'PAY-2025-0007', UNHEX('c1000000000000000000000000000003'), 'PAYMENT', 2000.00, (SELECT id FROM payment_methods WHERE code = 'PM-0004'), 'CC-VISA-2025-4567-8901', '2025-04-20', 'Cancelado por devolucion automatica INV-2026-00028', 'CANCELLED', 0.00, UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'Admin User', '2025-04-20 13:00:00', '2025-04-20 13:00:00');
+
+-- Payment 8: Another advance - Divisas (USD)
+INSERT INTO payments (id, payment_number, customer_id, type, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000008'), 'PAY-2025-0008', UNHEX('c1000000000000000000000000000005'), 'ADVANCE', 3500.00, (SELECT id FROM payment_methods WHERE code = 'PM-0006'), 'USD-CASH-20250510', '2025-05-10', 'Anticipo en divisas - SumZulia', 'APPLIED', 3500.00, UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'Operator User', '2025-05-10 15:30:00', '2025-05-10 15:30:00');
+
+-- Update sequence
+UPDATE payment_number_sequence SET next_value = 9 WHERE year = 2025;
+INSERT IGNORE INTO payment_number_sequence (year, next_value) VALUES (2025, 9);
+
+-- =============================================================================
+-- Seed: Credit Notes & Debit Notes
+-- =============================================================================
+
+
+DELETE FROM debit_notes;
+DELETE FROM debit_note_number_sequence;
+DELETE FROM credit_notes;
+DELETE FROM credit_note_number_sequence;
+
+
+INSERT INTO credit_notes (id, note_number, customer_id, invoice_id, amount, reason, created_by, created_by_name, created_at, updated_at)
+VALUES
+    (UNHEX('da000000000000000000000000000001'), 'CN-2025-0001', (SELECT id FROM customers WHERE code = 1001), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 500.00, 'Devolucion de productos', (SELECT id FROM users WHERE email = 'superadmin@parsun.com'), 'Super Admin', NOW(), NOW()),
+    (UNHEX('da000000000000000000000000000002'), 'CN-2025-0002', (SELECT id FROM customers WHERE code = 1002), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00027'), 200.00, 'Descuento por defecto de fabrica', (SELECT id FROM users WHERE email = 'admin@parsun.com'), 'Admin User', NOW(), NOW()),
+    (UNHEX('da000000000000000000000000000003'), 'CN-2025-0003', (SELECT id FROM customers WHERE code = 1003), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00028'), 150.00, 'Correccion de precio', (SELECT id FROM users WHERE email = 'operator@parsun.com'), 'Operator User', NOW(), NOW());
+
+INSERT INTO credit_note_number_sequence (year, next_value)
+VALUES (2025, 4);
+
+INSERT INTO debit_notes (id, note_number, customer_id, invoice_id, amount, reason, created_by, created_by_name, created_at, updated_at)
+VALUES
+    (UNHEX('db000000000000000000000000000001'), 'DN-2025-0001', (SELECT id FROM customers WHERE code = 1004), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00029'), 75.00, 'Recargo por pago tardio', (SELECT id FROM users WHERE email = 'sales@parsun.com'), 'Sales User', NOW(), NOW()),
+    (UNHEX('db000000000000000000000000000002'), 'DN-2025-0002', (SELECT id FROM customers WHERE code = 1005), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00030'), 120.00, 'Intereses por credito vencido', (SELECT id FROM users WHERE email = 'superadmin@parsun.com'), 'Super Admin', NOW(), NOW()),
+    (UNHEX('db000000000000000000000000000003'), 'DN-2025-0003', (SELECT id FROM customers WHERE code = 1007), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 50.00, 'Ajuste de precio', (SELECT id FROM users WHERE email = 'admin@parsun.com'), 'Admin User', NOW(), NOW());
+
+INSERT INTO debit_note_number_sequence (year, next_value)
+VALUES (2025, 4);
+
+-- =============================================================================
+-- Seed: Returns
+-- =============================================================================
+
+
+DELETE FROM return_line_allocations;
+DELETE FROM return_lines;
+DELETE FROM returns;
+DELETE FROM return_number_sequence;
+
+
+SET @inv1 = (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026');
+SET @inv2 = (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00027');
+SET @inv3 = (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00028');
+SET @inv4 = (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00029');
+
+SET @invLine1 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv1 AND product_code = 'ELEC-001');
+SET @invLine2 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv1 AND product_code = 'ELEC-002');
+SET @invLine3 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv2 AND product_code = 'ELEC-003');
+SET @invLine4 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv2 AND product_code = 'ELEC-004');
+SET @invLine5 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv3 AND product_code = 'HERR-001');
+SET @invLine6 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv3 AND product_code = 'ELEC-001');
+SET @invLine7 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv3 AND product_code = 'ELEC-002');
+SET @invLine8 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv3 AND product_code = 'ELEC-003');
+SET @invLine9 = (SELECT id FROM invoice_lines WHERE invoice_id = @inv4 AND product_code = 'HERR-001');
+
+SET @cust1 = (SELECT id FROM customers WHERE code = 1001);
+SET @cust2 = (SELECT id FROM customers WHERE code = 1002);
+SET @cust3 = (SELECT id FROM customers WHERE code = 1003);
+SET @cust4 = (SELECT id FROM customers WHERE code = 1004);
+
+SET @prod1 = (SELECT id FROM products WHERE code = 'ELEC-001');
+SET @prod2 = (SELECT id FROM products WHERE code = 'ELEC-002');
+SET @prod3 = (SELECT id FROM products WHERE code = 'ELEC-003');
+SET @prod4 = (SELECT id FROM products WHERE code = 'ELEC-004');
+SET @prod5 = (SELECT id FROM products WHERE code = 'HERR-001');
+
+SET @wh1 = (SELECT id FROM warehouses WHERE code = 'ALM-CCS-01');
+SET @wh2 = (SELECT id FROM warehouses WHERE code = 'ALM-MRB-01');
+SET @wh3 = (SELECT id FROM warehouses WHERE code = 'ALM-VLC-01');
+
+SET @user1 = (SELECT id FROM users WHERE user_name = 'Super Admin');
+SET @user2 = (SELECT id FROM users WHERE user_name = 'Admin User');
+
+INSERT INTO returns (id, return_number, invoice_id, customer_id, return_type, reason, total, created_by, created_by_name, created_at, updated_at)
+VALUES
+    (UNHEX('C1000000000000000000000000000001'), 'RET-2025-0001', @inv1, @cust1, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - items completos', 1250.00, @user1, 'Super Admin', NOW(), NOW()),
+    (UNHEX('C1000000000000000000000000000002'), 'RET-2025-0002', @inv2, @cust2, 'MANUAL', 'Devolucion parcial - cliente reporta defecto en productos', 1725.00, @user2, 'Admin User', NOW(), NOW()),
+    (UNHEX('C1000000000000000000000000000003'), 'RET-2025-0003', @inv3, @cust3, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - orden no procesada', 8850.00, @user1, 'Super Admin', NOW(), NOW()),
+    (UNHEX('C1000000000000000000000000000004'), 'RET-2025-0004', @inv4, @cust4, 'MANUAL', 'Devolucion parcial - cantidades especificas solicitadas por cliente', 350.00, @user2, 'Admin User', NOW(), NOW());
+
+INSERT INTO return_lines (id, return_id, invoice_line_id, product_id, quantity, unit_price, line_total)
+VALUES
+    (UNHEX('C2000000000000000000000000000001'), UNHEX('C1000000000000000000000000000001'), @invLine1, @prod1, 100.0000, 5.50, 550.00),
+    (UNHEX('C2000000000000000000000000000002'), UNHEX('C1000000000000000000000000000001'), @invLine2, @prod2, 50.0000, 14.00, 700.00),
+    (UNHEX('C2000000000000000000000000000003'), UNHEX('C1000000000000000000000000000002'), @invLine3, @prod3, 15.0000, 45.00, 675.00),
+    (UNHEX('C2000000000000000000000000000004'), UNHEX('C1000000000000000000000000000002'), @invLine4, @prod4, 5.0000, 210.00, 1050.00),
+    (UNHEX('C2000000000000000000000000000005'), UNHEX('C1000000000000000000000000000003'), @invLine5, @prod5, 5.0000, 350.00, 1750.00),
+    (UNHEX('C2000000000000000000000000000006'), UNHEX('C1000000000000000000000000000003'), @invLine6, @prod1, 500.0000, 5.50, 2750.00),
+    (UNHEX('C2000000000000000000000000000007'), UNHEX('C1000000000000000000000000000003'), @invLine7, @prod2, 150.0000, 14.00, 2100.00),
+    (UNHEX('C2000000000000000000000000000008'), UNHEX('C1000000000000000000000000000003'), @invLine8, @prod3, 50.0000, 45.00, 2250.00),
+    (UNHEX('C2000000000000000000000000000009'), UNHEX('C1000000000000000000000000000004'), @invLine9, @prod5, 1.0000, 350.00, 350.00);
+
+INSERT INTO return_line_allocations (id, return_line_id, warehouse_id, allocated)
+VALUES
+    (UNHEX('C3000000000000000000000000000001'), UNHEX('C2000000000000000000000000000001'), @wh1, 100.0000),
+    (UNHEX('C3000000000000000000000000000002'), UNHEX('C2000000000000000000000000000002'), @wh1, 50.0000),
+    (UNHEX('C3000000000000000000000000000003'), UNHEX('C2000000000000000000000000000003'), @wh2, 15.0000),
+    (UNHEX('C3000000000000000000000000000004'), UNHEX('C2000000000000000000000000000004'), @wh2, 5.0000),
+    (UNHEX('C3000000000000000000000000000005'), UNHEX('C2000000000000000000000000000005'), @wh3, 5.0000),
+    (UNHEX('C3000000000000000000000000000006'), UNHEX('C2000000000000000000000000000006'), @wh3, 500.0000),
+    (UNHEX('C3000000000000000000000000000007'), UNHEX('C2000000000000000000000000000007'), @wh3, 150.0000),
+    (UNHEX('C3000000000000000000000000000008'), UNHEX('C2000000000000000000000000000008'), @wh3, 50.0000),
+    (UNHEX('C3000000000000000000000000000009'), UNHEX('C2000000000000000000000000000009'), @wh1, 1.0000);
+
+-- Sync invoice return data
+UPDATE invoices i
+SET returned_total = COALESCE((SELECT SUM(r.total) FROM returns r WHERE r.invoice_id = i.id), 0.00),
+    return_status = CASE
+        WHEN EXISTS (
+            SELECT 1 FROM returns r2
+            JOIN return_lines rl ON rl.return_id = r2.id
+            JOIN invoice_lines il ON il.id = rl.invoice_line_id
+            WHERE r2.invoice_id = i.id
+            GROUP BY r2.invoice_id
+            HAVING SUM(rl.quantity) >= SUM(il.quantity)
+        ) THEN 'FULL'
+        WHEN EXISTS (SELECT 1 FROM returns r2 WHERE r2.invoice_id = i.id) THEN 'PARTIAL'
+        ELSE NULL
+    END;
+
+UPDATE invoice_lines il
+SET returned_quantity = COALESCE((SELECT SUM(rl.quantity) FROM return_lines rl WHERE rl.invoice_line_id = il.id), 0.00);
+
+-- Sync invoice status: FULL return → FULLY_RETURNED, or AUTOMATIC return → FULLY_RETURNED
+UPDATE invoices i
+SET i.status = 'FULLY_RETURNED'
+WHERE i.return_status = 'FULL'
+   OR EXISTS (SELECT 1 FROM returns r WHERE r.invoice_id = i.id AND r.return_type = 'AUTOMATIC');
+
+INSERT INTO return_number_sequence (year, next_value) VALUES (2025, 5);
+
+SET FOREIGN_KEY_CHECKS = 1;

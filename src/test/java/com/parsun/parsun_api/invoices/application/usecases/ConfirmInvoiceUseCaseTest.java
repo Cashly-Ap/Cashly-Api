@@ -10,6 +10,7 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
@@ -45,12 +46,15 @@ class ConfirmInvoiceUseCaseTest {
     @Mock
     private StockMovementRepository stockMovementRepository;
 
+    @Mock
+    private CreditGuard creditGuard;
+
     private ConfirmInvoiceUseCase confirmInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, stockMovementRepository);
+                warehouseStockRepository, stockMovementRepository, creditGuard);
     }
 
     @Test

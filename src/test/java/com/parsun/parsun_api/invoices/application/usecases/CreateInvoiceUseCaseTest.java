@@ -21,6 +21,7 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,13 +64,16 @@ class CreateInvoiceUseCaseTest {
     @Mock
     private WarehouseStockRepository warehouseStockRepository;
 
+    @Mock
+    private CreditGuard creditGuard;
+
     private CreateInvoiceUseCase createInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         createInvoiceUseCase = new CreateInvoiceUseCase(
                 invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository);
+                userRepository, productRepository, warehouseStockRepository, creditGuard);
     }
 
     @Test

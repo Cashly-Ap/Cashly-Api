@@ -14,6 +14,7 @@ import com.parsun.parsun_api.quotes.infrastructure.persistence.QuoteJpaMapper;
 import com.parsun.parsun_api.quotes.infrastructure.persistence.QuoteJpaRepository;
 import com.parsun.parsun_api.quotes.infrastructure.persistence.QuoteNumberSequenceJpaRepository;
 import com.parsun.parsun_api.quotes.infrastructure.web.QuoteController;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
@@ -103,9 +104,10 @@ public class QuoteConfig {
             QuoteRepository quoteRepository,
             InvoiceRepository invoiceRepository,
             WarehouseStockRepository warehouseStockRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            CreditGuard creditGuard) {
         return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoiceRepository,
-                warehouseStockRepository, userRepository);
+                warehouseStockRepository, userRepository, creditGuard);
     }
 
     @Bean

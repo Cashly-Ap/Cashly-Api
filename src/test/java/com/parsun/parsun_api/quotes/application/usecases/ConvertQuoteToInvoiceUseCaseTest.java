@@ -20,6 +20,7 @@ import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteStatus;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +57,9 @@ class ConvertQuoteToInvoiceUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private CreditGuard creditGuard;
+
     private ConvertQuoteToInvoiceUseCase useCase;
 
     private final UUID quoteId = UUID.randomUUID();
@@ -64,7 +68,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new ConvertQuoteToInvoiceUseCase(
-                quoteRepository, invoiceRepository, warehouseStockRepository, userRepository);
+                quoteRepository, invoiceRepository, warehouseStockRepository, userRepository, creditGuard);
     }
 
     @Test
