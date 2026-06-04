@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.payments.domain.services;
 
+import com.parsun.parsun_api.advances.domain.entities.Advance;
+import com.parsun.parsun_api.advances.domain.repositories.AdvanceRepository;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
@@ -19,7 +21,6 @@ import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,19 +37,22 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
     private final InvoiceRepository invoiceRepository;
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
+    private final AdvanceRepository advanceRepository;
 
     public CreditValidationService(CustomerRepository customerRepository,
                                     PaymentRepository paymentRepository,
                                     PaymentAllocationRepository paymentAllocationRepository,
                                     InvoiceRepository invoiceRepository,
                                     CreditNoteRepository creditNoteRepository,
-                                    DebitNoteRepository debitNoteRepository) {
+                                    DebitNoteRepository debitNoteRepository,
+                                    AdvanceRepository advanceRepository) {
         this.customerRepository = customerRepository;
         this.paymentRepository = paymentRepository;
         this.paymentAllocationRepository = paymentAllocationRepository;
         this.invoiceRepository = invoiceRepository;
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
+        this.advanceRepository = advanceRepository;
     }
 
     @Override
@@ -170,15 +174,11 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
     }
 
     private BigDecimal calculateUnconsumedAdvances(UUID customerId) {
-        List<Payment> allPayments = paymentRepository.findAllWithFilters(null, null, customerId, "ADVANCE", null);
+        List<Advance> activeAdvances = advanceRepository.findActiveByCustomerId(customerId);
 
-        BigDecimal unconsumed = BigDecimal.ZERO;
-        for (Payment payment : allPayments) {
-            if (payment.getType() == PaymentType.ADVANCE && payment.getStatus() != PaymentStatus.CANCELLED) {
-                unconsumed = unconsumed.add(payment.getAmount().subtract(payment.getAppliedAmount()));
-            }
-        }
-        return unconsumed;
+        return activeAdvances.stream()
+                .map(Advance::getRemainingAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private List<OverdueInvoiceResponse> findOverdueInvoices(UUID customerId, int creditDays) {
@@ -214,20 +214,17 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
     }
 
     private List<AdvanceResponse> findActiveAdvances(UUID customerId) {
-        List<Payment> allPayments = paymentRepository.findAllWithFilters(null, null, customerId, "ADVANCE", null);
+        List<Advance> activeAdvances = advanceRepository.findActiveByCustomerId(customerId);
         List<AdvanceResponse> result = new ArrayList<>();
 
-        for (Payment payment : allPayments) {
-            if (payment.getType() == PaymentType.ADVANCE && payment.getStatus() != PaymentStatus.CANCELLED) {
-                BigDecimal remaining = payment.getAmount().subtract(payment.getAppliedAmount());
-                if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-                    result.add(new AdvanceResponse(
-                            payment.getPaymentNumber().value(),
-                            payment.getAmount(),
-                            remaining,
-                            payment.getPaymentDate()
-                    ));
-                }
+        for (Advance advance : activeAdvances) {
+            if (advance.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
+                result.add(new AdvanceResponse(
+                        advance.getAdvanceNumber().value(),
+                        advance.getAmount(),
+                        advance.getRemainingAmount(),
+                        null
+                ));
             }
         }
 

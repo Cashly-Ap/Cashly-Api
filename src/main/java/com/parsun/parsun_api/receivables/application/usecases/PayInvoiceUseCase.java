@@ -7,7 +7,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepos
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
@@ -51,14 +51,14 @@ public class PayInvoiceUseCase {
         Payment payment = Payment.create(
                 paymentNumber,
                 invoice.getCustomerId(),
-                PaymentType.PAYMENT,
                 amount,
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
                 "Pago de factura " + invoice.getInvoiceNumber().value(),
                 authenticatedUserId,
-                authenticatedUserName
+                authenticatedUserName,
+                PaymentStatus.APPLIED
         );
 
         Payment saved = paymentRepository.save(payment);

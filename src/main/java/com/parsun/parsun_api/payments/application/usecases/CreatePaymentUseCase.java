@@ -10,9 +10,10 @@ import com.parsun.parsun_api.payments.application.mappers.PaymentMapper;
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -39,7 +40,8 @@ public class CreatePaymentUseCase {
                 .map(user -> user.getUserName().getValue())
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
 
-        PaymentType type = PaymentType.valueOf(request.type());
+        PaymentStatus status = PaymentStatus.valueOf(request.status());
+        validateRefund(request.customerId(), status, request.amount());
 
         int year = LocalDate.now().getYear();
         int sequence = paymentRepository.getNextSequenceForYear(year);
@@ -48,17 +50,31 @@ public class CreatePaymentUseCase {
         Payment payment = Payment.create(
                 paymentNumber,
                 request.customerId(),
-                type,
                 request.amount(),
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
                 request.notes(),
                 authenticatedUserId,
-                createdByName
+                createdByName,
+                status
         );
 
         Payment saved = paymentRepository.save(payment);
         return PaymentMapper.toResponse(saved);
+    }
+
+    private void validateRefund(UUID customerId, PaymentStatus status, BigDecimal amount) {
+        if (status != PaymentStatus.REFUND) {
+            return;
+        }
+
+        BigDecimal refundableAmount = paymentRepository.getRefundableAmountByCustomerId(customerId);
+        if (refundableAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Cannot create a refund because the customer has no applied payments");
+        }
+        if (amount.compareTo(refundableAmount) > 0) {
+            throw new IllegalArgumentException("Refund amount cannot exceed customer's refundable balance");
+        }
     }
 }

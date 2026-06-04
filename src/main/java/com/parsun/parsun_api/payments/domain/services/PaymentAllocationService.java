@@ -6,7 +6,6 @@ import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -61,10 +60,6 @@ public class PaymentAllocationService {
     public void applyAdvanceToInvoice(UUID advanceId, UUID invoiceId, BigDecimal amount) {
         Payment advance = paymentRepository.findById(PaymentId.of(advanceId))
                 .orElseThrow(() -> new IllegalArgumentException("Advance not found: " + advanceId));
-
-        if (advance.getType() != PaymentType.ADVANCE) {
-            throw new IllegalArgumentException("Payment is not an advance");
-        }
 
         if (advance.getStatus() == PaymentStatus.CANCELLED) {
             throw new IllegalStateException("Cannot apply a cancelled advance");

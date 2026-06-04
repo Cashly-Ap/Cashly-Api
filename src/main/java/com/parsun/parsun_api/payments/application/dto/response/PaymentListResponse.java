@@ -9,7 +9,6 @@ public record PaymentListResponse(
         UUID id,
         String paymentNumber,
         UUID customerId,
-        String type,
         BigDecimal amount,
         String referenceNumber,
         LocalDate paymentDate,

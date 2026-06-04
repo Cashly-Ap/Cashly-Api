@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.payments.application.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -13,8 +14,9 @@ public record CreatePaymentRequest(
         @NotNull(message = "Customer is required")
         UUID customerId,
 
-        @NotNull(message = "Payment type is required")
-        String type,
+        @NotNull(message = "Payment status is required")
+        @JsonAlias("paymentStatus")
+        String status,
 
         @NotNull(message = "Amount is required")
         @Positive(message = "Amount must be greater than zero")

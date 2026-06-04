@@ -3,7 +3,6 @@ package com.parsun.parsun_api.payments.domain.entities;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +15,6 @@ public class Payment {
     private final PaymentId id;
     private final PaymentNumber paymentNumber;
     private final UUID customerId;
-    private final PaymentType type;
     private final BigDecimal amount;
     private final UUID paymentMethodId;
     private final String referenceNumber;
@@ -28,14 +26,13 @@ public class Payment {
     private final String createdByName;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Payment(PaymentId id, PaymentNumber paymentNumber, UUID customerId, PaymentType type,
+    private Payment(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
                     BigDecimal amount, UUID paymentMethodId, String referenceNumber, LocalDate paymentDate,
                     String notes, PaymentStatus status, BigDecimal appliedAmount,
                     UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.paymentNumber = paymentNumber;
         this.customerId = customerId;
-        this.type = type;
         this.amount = amount;
         this.paymentMethodId = paymentMethodId;
         this.referenceNumber = referenceNumber;
@@ -49,12 +46,12 @@ public class Payment {
         this.updatedAt = updatedAt;
     }
 
-    public static Payment create(PaymentNumber paymentNumber, UUID customerId, PaymentType type,
+    public static Payment create(PaymentNumber paymentNumber, UUID customerId,
                                   BigDecimal amount, UUID paymentMethodId, String referenceNumber,
-                                  LocalDate paymentDate, String notes, UUID createdBy, String createdByName) {
+                                  LocalDate paymentDate, String notes, UUID createdBy, String createdByName,
+                                  PaymentStatus status) {
         Objects.requireNonNull(paymentNumber, "Payment number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
-        Objects.requireNonNull(type, "Payment type cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be greater than zero");
@@ -63,21 +60,22 @@ public class Payment {
         Objects.requireNonNull(paymentDate, "Payment date cannot be null");
         Objects.requireNonNull(createdBy, "Created by cannot be null");
         Objects.requireNonNull(createdByName, "Created by name cannot be null");
+        Objects.requireNonNull(status, "Payment status cannot be null");
 
         LocalDateTime now = LocalDateTime.now();
-        return new Payment(PaymentId.generate(), paymentNumber, customerId, type, amount,
-                paymentMethodId, referenceNumber, paymentDate, notes,
-                PaymentStatus.APPLIED, BigDecimal.ZERO, createdBy, createdByName, now, now);
+        return new Payment(PaymentId.generate(), paymentNumber, customerId,
+                amount, paymentMethodId, referenceNumber, paymentDate, notes,
+                status, BigDecimal.ZERO, createdBy, createdByName, now, now);
     }
 
     public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
-                                        PaymentType type, BigDecimal amount, UUID paymentMethodId,
+                                        BigDecimal amount, UUID paymentMethodId,
                                         String referenceNumber, LocalDate paymentDate, String notes,
                                         PaymentStatus status, BigDecimal appliedAmount,
                                         UUID createdBy, String createdByName,
                                         LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new Payment(id, paymentNumber, customerId, type, amount, paymentMethodId,
-                referenceNumber, paymentDate, notes, status, appliedAmount,
+        return new Payment(id, paymentNumber, customerId,
+                amount, paymentMethodId, referenceNumber, paymentDate, notes, status, appliedAmount,
                 createdBy, createdByName, createdAt, updatedAt);
     }
 
@@ -109,7 +107,6 @@ public class Payment {
     public PaymentId getId() { return id; }
     public PaymentNumber getPaymentNumber() { return paymentNumber; }
     public UUID getCustomerId() { return customerId; }
-    public PaymentType getType() { return type; }
     public BigDecimal getAmount() { return amount; }
     public UUID getPaymentMethodId() { return paymentMethodId; }
     public String getReferenceNumber() { return referenceNumber; }
@@ -137,6 +134,6 @@ public class Payment {
 
     @Override
     public String toString() {
-        return "Payment{id=" + id + ", paymentNumber=" + paymentNumber + ", type=" + type + ", amount=" + amount + ", status=" + status + "}";
+        return "Payment{id=" + id + ", paymentNumber=" + paymentNumber + ", amount=" + amount + ", status=" + status + "}";
     }
 }

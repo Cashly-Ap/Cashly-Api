@@ -4,7 +4,6 @@ import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
 import com.parsun.parsun_api.payments.infrastructure.persistence.entities.PaymentEntity;
 
 public class PaymentJpaMapper {
@@ -16,7 +15,6 @@ public class PaymentJpaMapper {
         entity.setId(payment.getId().value());
         entity.setPaymentNumber(payment.getPaymentNumber().value());
         entity.setCustomerId(payment.getCustomerId());
-        entity.setType(payment.getType().name());
         entity.setAmount(payment.getAmount());
         entity.setPaymentMethodId(payment.getPaymentMethodId());
         entity.setReferenceNumber(payment.getReferenceNumber());
@@ -36,7 +34,6 @@ public class PaymentJpaMapper {
                 PaymentId.of(entity.getId()),
                 new PaymentNumber(entity.getPaymentNumber()),
                 entity.getCustomerId(),
-                PaymentType.valueOf(entity.getType()),
                 entity.getAmount(),
                 entity.getPaymentMethodId(),
                 entity.getReferenceNumber(),

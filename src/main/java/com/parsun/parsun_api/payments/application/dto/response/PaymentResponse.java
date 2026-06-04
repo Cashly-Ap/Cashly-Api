@@ -9,7 +9,6 @@ public record PaymentResponse(
         UUID id,
         String paymentNumber,
         UUID customerId,
-        String type,
         BigDecimal amount,
         UUID paymentMethodId,
         String referenceNumber,

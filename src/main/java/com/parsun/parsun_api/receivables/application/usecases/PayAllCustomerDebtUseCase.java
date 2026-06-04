@@ -7,7 +7,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepos
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import jakarta.transaction.Transactional;
@@ -54,14 +54,14 @@ public class PayAllCustomerDebtUseCase {
         Payment payment = Payment.create(
                 paymentNumber,
                 customerId,
-                PaymentType.PAYMENT,
                 totalAmount,
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
                 "Pago total de deuda del cliente",
                 authenticatedUserId,
-                authenticatedUserName
+                authenticatedUserName,
+                PaymentStatus.APPLIED
         );
 
         Payment saved = paymentRepository.save(payment);

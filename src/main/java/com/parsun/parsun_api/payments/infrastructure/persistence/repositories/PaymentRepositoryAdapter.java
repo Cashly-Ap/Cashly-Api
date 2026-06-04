@@ -7,6 +7,7 @@ import com.parsun.parsun_api.payments.infrastructure.persistence.entities.Paymen
 import com.parsun.parsun_api.payments.infrastructure.persistence.mappers.PaymentJpaMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +37,16 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public List<Payment> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                             UUID customerId, String type, String status) {
-        return jpaRepository.findAllWithFilters(dateFrom, dateTo, customerId, type, status)
+                                             UUID customerId, String status) {
+        return jpaRepository.findAllWithFilters(dateFrom, dateTo, customerId, status)
                 .stream()
                 .map(PaymentJpaMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public BigDecimal getRefundableAmountByCustomerId(UUID customerId) {
+        return jpaRepository.getRefundableAmountByCustomerId(customerId);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         List<PaymentEntity> yearPayments = jpaRepository.findAllWithFilters(
                 LocalDate.of(year, 1, 1),
                 LocalDate.of(year, 12, 31),
-                null, null, null);
+                null, null);
         return yearPayments.size() + 1;
     }
 }

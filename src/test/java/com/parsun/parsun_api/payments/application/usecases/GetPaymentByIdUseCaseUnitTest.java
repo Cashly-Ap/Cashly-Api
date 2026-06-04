@@ -6,7 +6,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
-import com.parsun.parsun_api.payments.domain.valueobjects.PaymentType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,6 @@ class GetPaymentByIdUseCaseUnitTest {
         assertEquals(id, response.id());
         assertEquals(payment.getPaymentNumber().value(), response.paymentNumber());
         assertEquals(payment.getCustomerId(), response.customerId());
-        assertEquals(payment.getType().name(), response.type());
         assertEquals(payment.getAmount(), response.amount());
         assertEquals(payment.getPaymentMethodId(), response.paymentMethodId());
         assertEquals(payment.getReferenceNumber(), response.referenceNumber());
@@ -87,7 +86,6 @@ class GetPaymentByIdUseCaseUnitTest {
                 PaymentId.of(id),
                 PaymentNumber.of(2026, 1),
                 UUID.randomUUID(),
-                PaymentType.PAYMENT,
                 new BigDecimal("500.00"),
                 UUID.randomUUID(),
                 "REF-001",
