@@ -5,6 +5,7 @@ import com.parsun.parsun_api.credit_notes.application.usecases.DeleteCreditNoteU
 import com.parsun.parsun_api.credit_notes.application.usecases.GetCreditNoteByIdUseCase;
 import com.parsun.parsun_api.credit_notes.application.usecases.GetCreditNotesUseCase;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import com.parsun.parsun_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
 import org.springframework.context.annotation.Bean;
@@ -14,20 +15,23 @@ import org.springframework.context.annotation.Configuration;
 public class CreditNoteConfig {
 
     private final CreditNoteRepository creditNoteRepository;
+    private final InvoiceRepository invoiceRepository;
     private final InvoiceJpaRepository invoiceJpaRepository;
     private final InvoiceStatusService invoiceStatusService;
 
     public CreditNoteConfig(CreditNoteRepository creditNoteRepository,
+                            InvoiceRepository invoiceRepository,
                             InvoiceJpaRepository invoiceJpaRepository,
                             InvoiceStatusService invoiceStatusService) {
         this.creditNoteRepository = creditNoteRepository;
+        this.invoiceRepository = invoiceRepository;
         this.invoiceJpaRepository = invoiceJpaRepository;
         this.invoiceStatusService = invoiceStatusService;
     }
 
     @Bean
     public CreateCreditNoteUseCase createCreditNoteUseCase() {
-        return new CreateCreditNoteUseCase(creditNoteRepository, invoiceStatusService);
+        return new CreateCreditNoteUseCase(creditNoteRepository, invoiceRepository, invoiceStatusService);
     }
 
     @Bean
