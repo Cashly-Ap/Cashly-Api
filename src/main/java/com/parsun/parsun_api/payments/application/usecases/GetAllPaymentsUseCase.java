@@ -17,8 +17,9 @@ public class GetAllPaymentsUseCase {
     }
 
     public List<PaymentListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId, String type, String status) {
-        return paymentRepository.findAllWithFilters(dateFrom, dateTo, customerId, type, status)
+                                               UUID customerId, String type, String status) {
+        String effectiveStatus = (type != null && status == null) ? type : status;
+        return paymentRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatus)
                 .stream()
                 .map(PaymentMapper::toListResponse)
                 .toList();

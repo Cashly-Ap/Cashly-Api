@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.payments.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
@@ -51,12 +52,14 @@ public class PaymentConfig {
 
     @Bean
     public CreditValidationService creditValidationService(CustomerRepository customerRepository,
-                                                            PaymentRepository paymentRepository,
-                                                            PaymentAllocationRepository paymentAllocationRepository,
-                                                            InvoiceRepository invoiceRepository,
-                                                            CreditNoteRepository creditNoteRepository,
-                                                            DebitNoteRepository debitNoteRepository) {
-        return new CreditValidationService(customerRepository, paymentRepository, paymentAllocationRepository,
+                                                             CustomerBalanceRepository customerBalanceRepository,
+                                                             PaymentRepository paymentRepository,
+                                                             PaymentAllocationRepository paymentAllocationRepository,
+                                                             InvoiceRepository invoiceRepository,
+                                                             CreditNoteRepository creditNoteRepository,
+                                                             DebitNoteRepository debitNoteRepository) {
+        return new CreditValidationService(customerRepository, customerBalanceRepository,
+                paymentRepository, paymentAllocationRepository,
                 invoiceRepository, creditNoteRepository, debitNoteRepository);
     }
 }

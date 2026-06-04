@@ -11,10 +11,9 @@ public record CreditStatusResponse(
         String customerRif,
         BigDecimal creditLimit,
         BigDecimal pendingBalance,
-        BigDecimal unconsumedAdvances,
+        BigDecimal customerBalance,
         BigDecimal availableCredit,
         List<OverdueInvoiceResponse> overdueInvoices,
-        List<AdvanceResponse> advances,
         boolean hasOverdue,
         boolean canCreateCreditInvoice
 ) {}

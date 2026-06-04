@@ -105,7 +105,7 @@ public class PaymentPdfGenerator implements PaymentPdfPort {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        table.addCell(buildDetailCell("Tipo: ", payment.type(), bold, regular));
+        table.addCell(buildDetailCell("Estado: ", payment.status() != null ? payment.status() : "-", bold, regular));
         table.addCell(buildDetailCell("Monto: ", "$ " + formatDecimal(payment.amount()), bold, regular));
         
         String reference = payment.referenceNumber() != null ? payment.referenceNumber() : "-";

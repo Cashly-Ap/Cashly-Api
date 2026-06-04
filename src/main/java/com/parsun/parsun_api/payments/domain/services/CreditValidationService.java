@@ -1,15 +1,14 @@
 package com.parsun.parsun_api.payments.domain.services;
 
-import com.parsun.parsun_api.advances.domain.entities.Advance;
-import com.parsun.parsun_api.advances.domain.repositories.AdvanceRepository;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.entities.CustomerBalance;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.debit_notes.domain.entities.DebitNote;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.parsun.parsun_api.receivables.application.dto.response.AdvanceResponse;
 import com.parsun.parsun_api.receivables.application.dto.response.CreditStatusResponse;
 import com.parsun.parsun_api.receivables.application.dto.response.OverdueInvoiceResponse;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
@@ -32,27 +31,27 @@ import java.util.UUID;
 public class CreditValidationService implements com.parsun.parsun_api.shared.services.CreditValidationService {
 
     private final CustomerRepository customerRepository;
+    private final CustomerBalanceRepository customerBalanceRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository paymentAllocationRepository;
     private final InvoiceRepository invoiceRepository;
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
-    private final AdvanceRepository advanceRepository;
 
     public CreditValidationService(CustomerRepository customerRepository,
+                                    CustomerBalanceRepository customerBalanceRepository,
                                     PaymentRepository paymentRepository,
                                     PaymentAllocationRepository paymentAllocationRepository,
                                     InvoiceRepository invoiceRepository,
                                     CreditNoteRepository creditNoteRepository,
-                                    DebitNoteRepository debitNoteRepository,
-                                    AdvanceRepository advanceRepository) {
+                                    DebitNoteRepository debitNoteRepository) {
         this.customerRepository = customerRepository;
+        this.customerBalanceRepository = customerBalanceRepository;
         this.paymentRepository = paymentRepository;
         this.paymentAllocationRepository = paymentAllocationRepository;
         this.invoiceRepository = invoiceRepository;
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
-        this.advanceRepository = advanceRepository;
     }
 
     @Override
@@ -64,12 +63,13 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
         int creditDays = customer.getCreditDays().getValue();
 
         BigDecimal pendingBalance = calculatePendingBalance(customerId);
-        BigDecimal unconsumedAdvances = calculateUnconsumedAdvances(customerId);
-        BigDecimal availableCredit = creditLimit.add(unconsumedAdvances).subtract(pendingBalance)
+        BigDecimal customerBalance = customerBalanceRepository.findByCustomerId(customerId)
+                .map(CustomerBalance::getTotalBalance)
+                .orElse(BigDecimal.ZERO);
+        BigDecimal availableCredit = creditLimit.add(customerBalance).subtract(pendingBalance)
                 .max(BigDecimal.ZERO);
 
         List<OverdueInvoiceResponse> overdueInvoices = findOverdueInvoices(customerId, creditDays);
-        List<AdvanceResponse> advances = findActiveAdvances(customerId);
 
         boolean hasOverdue = !overdueInvoices.isEmpty();
         boolean canCreateCreditInvoice = availableCredit.compareTo(BigDecimal.ZERO) >= 0 && !hasOverdue;
@@ -80,10 +80,9 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
                 customer.getRif().getValue(),
                 creditLimit,
                 pendingBalance,
-                unconsumedAdvances,
+                customerBalance,
                 availableCredit,
                 overdueInvoices,
-                advances,
                 hasOverdue,
                 canCreateCreditInvoice
         );
@@ -173,14 +172,6 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
         return totalApplied;
     }
 
-    private BigDecimal calculateUnconsumedAdvances(UUID customerId) {
-        List<Advance> activeAdvances = advanceRepository.findActiveByCustomerId(customerId);
-
-        return activeAdvances.stream()
-                .map(Advance::getRemainingAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     private List<OverdueInvoiceResponse> findOverdueInvoices(UUID customerId, int creditDays) {
         List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, customerId, null, null, null, null, "createdAt", "desc");
         List<OverdueInvoiceResponse> result = new ArrayList<>();
@@ -213,21 +204,4 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
         return result;
     }
 
-    private List<AdvanceResponse> findActiveAdvances(UUID customerId) {
-        List<Advance> activeAdvances = advanceRepository.findActiveByCustomerId(customerId);
-        List<AdvanceResponse> result = new ArrayList<>();
-
-        for (Advance advance : activeAdvances) {
-            if (advance.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
-                result.add(new AdvanceResponse(
-                        advance.getAdvanceNumber().value(),
-                        advance.getAmount(),
-                        advance.getRemainingAmount(),
-                        null
-                ));
-            }
-        }
-
-        return result;
-    }
 }

@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.receivables.infrastructure.persistence.repositories;
 
+import com.parsun.parsun_api.customers.domain.entities.CustomerBalance;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.infrastructure.persistence.entities.CustomerEntity;
 import com.parsun.parsun_api.customers.infrastructure.persistence.entities.CustomerPhoneEntity;
 import com.parsun.parsun_api.customers.infrastructure.persistence.entities.CustomerEmailEntity;
@@ -25,11 +27,14 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
 
     private final EntityManager entityManager;
     private final ReceivablesJpaRepository receivablesJpaRepository;
+    private final CustomerBalanceRepository customerBalanceRepository;
 
     public ReceivablesRepositoryAdapter(EntityManager entityManager,
-                                         ReceivablesJpaRepository receivablesJpaRepository) {
+                                         ReceivablesJpaRepository receivablesJpaRepository,
+                                         CustomerBalanceRepository customerBalanceRepository) {
         this.entityManager = entityManager;
         this.receivablesJpaRepository = receivablesJpaRepository;
+        this.customerBalanceRepository = customerBalanceRepository;
     }
 
     @Override
@@ -41,9 +46,18 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         BigDecimal pendingValidation = receivablesJpaRepository.findTotalPendingValidationAmount();
         if (pendingValidation == null) pendingValidation = BigDecimal.ZERO;
 
+        BigDecimal totalCustomerBalance = BigDecimal.ZERO;
+        Query balanceSumQuery = entityManager.createNativeQuery(
+                "SELECT COALESCE(SUM(total_balance), 0) FROM customer_balances"
+        );
+        Object sumResult = balanceSumQuery.getSingleResult();
+        if (sumResult != null) {
+            totalCustomerBalance = (BigDecimal) sumResult;
+        }
+
         return new ReceivablesSummaryResponse(
                 totalDebt, customersWithDebt, invoicesWithDebt,
-                pendingValidation, LocalDateTime.now()
+                pendingValidation, totalCustomerBalance, LocalDateTime.now()
         );
     }
 
@@ -135,10 +149,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                             : null;
                     BigDecimal creditLimit = row[7] != null ? (BigDecimal) row[7] : BigDecimal.ZERO;
                     BigDecimal availableCredit = row[8] != null ? (BigDecimal) row[8] : BigDecimal.ZERO;
+                    BigDecimal customerBalance = row[9] != null ? (BigDecimal) row[9] : BigDecimal.ZERO;
                     return new CustomerDebtListResponse(
                             customerId, customerName, customerRif,
                             totalDebt, pendingAmount, invoicedCount, oldestInvoiceDate,
-                            creditLimit, availableCredit
+                            creditLimit, availableCredit, customerBalance
                     );
                 })
                 .toList();
@@ -154,8 +169,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                    COALESCE(d.invoice_count, 0) AS pendingInvoicesCount,
                    d.oldest_invoice_date AS oldestInvoiceDate,
                    c.credit_limit AS creditLimit,
-                    GREATEST(c.credit_limit - COALESCE(d.total_debt, 0), 0) AS availableCredit
+                   GREATEST(c.credit_limit - COALESCE(d.total_debt, 0) + COALESCE(cb.total_balance, 0), 0) AS availableCredit,
+                   COALESCE(cb.total_balance, 0) AS customerBalance
             FROM customers c
+            LEFT JOIN customer_balances cb ON cb.customer_id = c.id
             LEFT JOIN (
                 SELECT i.customer_id,
                        SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
@@ -329,6 +346,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
 
         BigDecimal creditLimit = customer != null ? customer.getCreditLimit() : BigDecimal.ZERO;
 
+        BigDecimal customerBalance = customerBalanceRepository.findByCustomerId(customerId)
+                .map(CustomerBalance::getTotalBalance)
+                .orElse(BigDecimal.ZERO);
+
         return new CustomerDebtSummaryResponse(
                 customerId,
                 customer != null ? customer.getLegalName() : null,
@@ -337,9 +358,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 email,
                 totalDebt,
                 BigDecimal.ZERO,
-                availableDebt,
+                availableDebt.add(customerBalance),
                 creditLimit,
-                availableDebt,
+                availableDebt.add(customerBalance),
+                customerBalance,
                 invoices,
                 0L
         );

@@ -16,6 +16,7 @@ public record CustomerDebtSummaryResponse(
         BigDecimal availableDebt,
         BigDecimal creditLimit,
         BigDecimal availableCredit,
+        BigDecimal customerBalance,
         List<CustomerInvoiceDebtResponse> invoicesWithDebt,
         long pendingPaymentsCount
 ) {}

@@ -8,11 +8,12 @@ public record ReceivablesSummaryResponse(
         long totalCustomersWithDebt,
         long totalInvoicesWithDebt,
         BigDecimal totalPendingValidationAmount,
+        BigDecimal totalCustomerBalance,
         LocalDateTime calculatedAt
 ) {
     public static ReceivablesSummaryResponse empty() {
         return new ReceivablesSummaryResponse(
-                BigDecimal.ZERO, 0L, 0L, BigDecimal.ZERO, LocalDateTime.now()
+                BigDecimal.ZERO, 0L, 0L, BigDecimal.ZERO, BigDecimal.ZERO, LocalDateTime.now()
         );
     }
 }

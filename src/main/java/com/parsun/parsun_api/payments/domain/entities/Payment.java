@@ -26,6 +26,7 @@ public class Payment {
     private final String createdByName;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
     private Payment(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
                     BigDecimal amount, UUID paymentMethodId, String referenceNumber, LocalDate paymentDate,
                     String notes, PaymentStatus status, BigDecimal appliedAmount,
@@ -47,9 +48,9 @@ public class Payment {
     }
 
     public static Payment create(PaymentNumber paymentNumber, UUID customerId,
-                                  BigDecimal amount, UUID paymentMethodId, String referenceNumber,
-                                  LocalDate paymentDate, String notes, UUID createdBy, String createdByName,
-                                  PaymentStatus status) {
+                                 BigDecimal amount, UUID paymentMethodId, String referenceNumber,
+                                 LocalDate paymentDate, String notes, UUID createdBy, String createdByName,
+                                 PaymentStatus status) {
         Objects.requireNonNull(paymentNumber, "Payment number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
@@ -69,11 +70,11 @@ public class Payment {
     }
 
     public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
-                                        BigDecimal amount, UUID paymentMethodId,
-                                        String referenceNumber, LocalDate paymentDate, String notes,
-                                        PaymentStatus status, BigDecimal appliedAmount,
-                                        UUID createdBy, String createdByName,
-                                        LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                       BigDecimal amount, UUID paymentMethodId,
+                                       String referenceNumber, LocalDate paymentDate, String notes,
+                                       PaymentStatus status, BigDecimal appliedAmount,
+                                       UUID createdBy, String createdByName,
+                                       LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Payment(id, paymentNumber, customerId,
                 amount, paymentMethodId, referenceNumber, paymentDate, notes, status, appliedAmount,
                 createdBy, createdByName, createdAt, updatedAt);
@@ -104,20 +105,61 @@ public class Payment {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public PaymentId getId() { return id; }
-    public PaymentNumber getPaymentNumber() { return paymentNumber; }
-    public UUID getCustomerId() { return customerId; }
-    public BigDecimal getAmount() { return amount; }
-    public UUID getPaymentMethodId() { return paymentMethodId; }
-    public String getReferenceNumber() { return referenceNumber; }
-    public LocalDate getPaymentDate() { return paymentDate; }
-    public String getNotes() { return notes; }
-    public PaymentStatus getStatus() { return status; }
-    public BigDecimal getAppliedAmount() { return appliedAmount; }
-    public UUID getCreatedBy() { return createdBy; }
-    public String getCreatedByName() { return createdByName; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public PaymentId getId() {
+        return id;
+    }
+
+    public PaymentNumber getPaymentNumber() {
+        return paymentNumber;
+    }
+
+    public UUID getCustomerId() {
+        return customerId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public UUID getPaymentMethodId() {
+        return paymentMethodId;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public LocalDate getPaymentDate() {
+        return paymentDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public BigDecimal getAppliedAmount() {
+        return appliedAmount;
+    }
+
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {

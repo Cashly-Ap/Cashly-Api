@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.returns.infrastructure.config;
 
+import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
@@ -9,6 +11,7 @@ import com.parsun.parsun_api.returns.application.usecases.DeleteReturnUseCase;
 import com.parsun.parsun_api.returns.application.usecases.GetAllReturnsUseCase;
 import com.parsun.parsun_api.returns.application.usecases.GetReturnByIdUseCase;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,11 +26,15 @@ public class ReturnConfig {
 
     @Bean
     public CreateReturnUseCase createReturnUseCase(InvoiceRepository invoiceRepository,
-                                                       ReturnMapper returnMapper,
-                                                       PaymentAllocationService paymentAllocationService,
-                                                       PaymentAllocationRepository allocationRepository) {
+                                                        ReturnMapper returnMapper,
+                                                        PaymentAllocationService paymentAllocationService,
+                                                        PaymentAllocationRepository allocationRepository,
+                                                        EntityManager entityManager,
+                                                        CustomerBalanceRepository customerBalanceRepository,
+                                                        AddToCustomerBalanceUseCase addToCustomerBalanceUseCase) {
         return new CreateReturnUseCase(returnRepository, invoiceRepository, returnMapper,
-                paymentAllocationService, allocationRepository);
+                paymentAllocationService, allocationRepository, entityManager,
+                customerBalanceRepository, addToCustomerBalanceUseCase);
     }
 
     @Bean
