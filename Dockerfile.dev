@@ -18,5 +18,5 @@ COPY src ./src
 
 EXPOSE 8080
 
-# spring-boot:run enables DevTools automatic restart on classpath changes
-ENTRYPOINT ["./mvnw", "spring-boot:run"]
+# Run without compiling tests
+ENTRYPOINT ["./mvnw", "spring-boot:run", "-DskipTests", "-Dmaven.test.skip=true", "-Dsurefire.skip=true", "-DfailIfNoTests=false"]

@@ -2,6 +2,7 @@ package com.parsun.parsun_api.customers.infrastructure.config;
 
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.application.usecases.*;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.customers.domain.services.CustomerCodeGenerator;
@@ -83,5 +84,23 @@ public class CustomerConfig {
             CustomerRepository customerRepository,
             WarehouseRepository warehouseRepository) {
         return new ListCustomerWarehousesUseCase(accessRepository, customerRepository, warehouseRepository);
+    }
+
+    @Bean
+    public GetCustomerBalanceUseCase getCustomerBalanceUseCase(
+            CustomerBalanceRepository customerBalanceRepository) {
+        return new GetCustomerBalanceUseCase(customerBalanceRepository);
+    }
+
+    @Bean
+    public AddToCustomerBalanceUseCase addToCustomerBalanceUseCase(
+            CustomerBalanceRepository customerBalanceRepository) {
+        return new AddToCustomerBalanceUseCase(customerBalanceRepository);
+    }
+
+    @Bean
+    public ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase(
+            CustomerBalanceRepository customerBalanceRepository) {
+        return new ConsumeCustomerBalanceUseCase(customerBalanceRepository);
     }
 }

@@ -54,3 +54,34 @@ CREATE TABLE customer_addresses (
 
 CREATE INDEX idx_customer_addresses_customer_id ON customer_addresses (customer_id);
 CREATE INDEX idx_customer_addresses_billing ON customer_addresses (billing);
+
+CREATE TABLE customer_balances (
+    id            BINARY(16) PRIMARY KEY,
+    customer_id   BINARY(16) NOT NULL UNIQUE,
+    total_balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE balance_transactions (
+    id              BINARY(16) PRIMARY KEY,
+    customer_id     BINARY(16) NOT NULL,
+    type            ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
+    amount          DECIMAL(15,2) NOT NULL,
+    reference_type  ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
+    reference_id    BINARY(16),
+    notes           VARCHAR(500),
+    created_by      BINARY(16),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE INDEX idx_bt_customer ON balance_transactions(customer_id);
+CREATE INDEX idx_bt_type ON balance_transactions(type);
+CREATE INDEX idx_bt_reference ON balance_transactions(reference_type, reference_id);
+
+CREATE TABLE balance_tx_sequence (
+    year       INT PRIMARY KEY,
+    next_value INT NOT NULL DEFAULT 1
+);
