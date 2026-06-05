@@ -1,7 +1,9 @@
 package com.parsun.parsun_api.returns.application.usecases;
 
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
@@ -57,6 +59,12 @@ class CreateReturnUseCaseTest {
     @Mock
     private AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
 
+    @Mock
+    private CreditNoteRepository creditNoteRepository;
+
+    @Mock
+    private DebitNoteRepository debitNoteRepository;
+
     @Captor
     private ArgumentCaptor<BigDecimal> surplusCaptor;
 
@@ -70,8 +78,10 @@ class CreateReturnUseCaseTest {
         useCase = new CreateReturnUseCase(
                 returnRepository, invoiceRepository, returnMapper,
                 paymentAllocationService, allocationRepository,
-                addToCustomerBalanceUseCase
+                addToCustomerBalanceUseCase, creditNoteRepository, debitNoteRepository
         );
+        when(creditNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
+        when(debitNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
     }
 
     private CreateReturnRequest buildRequest(BigDecimal total, String returnType, UUID invoiceId, UUID customerId) {

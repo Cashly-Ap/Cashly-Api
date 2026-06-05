@@ -8,8 +8,11 @@ import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -22,13 +25,22 @@ public class PayPartialDebtUseCase {
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository allocationRepository;
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceStatusService invoiceStatusService;
+    private final CreditNoteRepository creditNoteRepository;
+    private final DebitNoteRepository debitNoteRepository;
 
     public PayPartialDebtUseCase(PaymentRepository paymentRepository,
                                   PaymentAllocationRepository allocationRepository,
-                                  InvoiceRepository invoiceRepository) {
+                                  InvoiceRepository invoiceRepository,
+                                  InvoiceStatusService invoiceStatusService,
+                                  CreditNoteRepository creditNoteRepository,
+                                  DebitNoteRepository debitNoteRepository) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
+        this.invoiceStatusService = invoiceStatusService;
+        this.creditNoteRepository = creditNoteRepository;
+        this.debitNoteRepository = debitNoteRepository;
     }
 
     @Transactional
@@ -70,7 +82,13 @@ public class PayPartialDebtUseCase {
         for (Invoice invoice : unpaidInvoices) {
             if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
 
-            BigDecimal allocAmount = remaining.min(invoice.calculateTotal());
+            BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                    .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                    .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal allocAmount = remaining.min(invoice.calculateTotal(creds, debits));
             PaymentAllocation allocation = PaymentAllocation.create(
                     saved.getId().value(),
                     invoice.getId().value(),
@@ -82,6 +100,10 @@ public class PayPartialDebtUseCase {
 
         payment.apply(request.amount());
         paymentRepository.save(payment);
+
+        for (Invoice invoice : unpaidInvoices) {
+            invoiceStatusService.recalculate(invoice.getId().value());
+        }
 
         return new PaymentResultResponse(
                 saved.getId().value(),

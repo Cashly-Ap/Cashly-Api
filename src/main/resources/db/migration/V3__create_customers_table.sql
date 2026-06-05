@@ -67,9 +67,9 @@ CREATE TABLE customer_balances (
 CREATE TABLE balance_transactions (
     id                BINARY(16) PRIMARY KEY,
     customer_id       BINARY(16) NOT NULL,
-    type              ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
-    amount            DECIMAL(15,2) NOT NULL,
-    reference_type    ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
+    type            ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND','CREDIT_NOTE') NOT NULL,
+    amount          DECIMAL(15,2) NOT NULL,
+    reference_type  ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND','CREDIT_NOTE') NOT NULL,
     reference_id      BINARY(16),
     number            VARCHAR(100),
     reference_number  VARCHAR(100),

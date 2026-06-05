@@ -5,5 +5,6 @@ public enum BalanceType {
     RETURNS,
     PAYMENTS,
     INVOICES,
-    REFUND
+    REFUND,
+    CREDIT_NOTE
 }

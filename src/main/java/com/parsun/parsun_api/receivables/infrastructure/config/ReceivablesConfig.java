@@ -3,7 +3,10 @@ package com.parsun.parsun_api.receivables.infrastructure.config;
 import com.parsun.parsun_api.receivables.application.usecases.*;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.receivables.domain.repositories.ReceivablesRepository;
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.shared.services.CreditValidationService;
 import org.springframework.context.annotation.Bean;
@@ -35,25 +38,37 @@ public class ReceivablesConfig {
     @Bean
     public PayInvoiceUseCase payInvoiceUseCase(PaymentRepository paymentRepository,
                                                 PaymentAllocationRepository paymentAllocationRepository,
-                                                InvoiceRepository invoiceRepository) {
+                                                InvoiceRepository invoiceRepository,
+                                                InvoiceStatusService invoiceStatusService,
+                                                CreditNoteRepository creditNoteRepository,
+                                                DebitNoteRepository debitNoteRepository) {
         return new PayInvoiceUseCase(paymentRepository, paymentAllocationRepository,
-                invoiceRepository);
+                invoiceRepository, invoiceStatusService,
+                creditNoteRepository, debitNoteRepository);
     }
 
     @Bean
     public PayAllCustomerDebtUseCase payAllCustomerDebtUseCase(PaymentRepository paymentRepository,
                                                                 PaymentAllocationRepository paymentAllocationRepository,
-                                                                InvoiceRepository invoiceRepository) {
+                                                                InvoiceRepository invoiceRepository,
+                                                                InvoiceStatusService invoiceStatusService,
+                                                                CreditNoteRepository creditNoteRepository,
+                                                                DebitNoteRepository debitNoteRepository) {
         return new PayAllCustomerDebtUseCase(paymentRepository, paymentAllocationRepository,
-                invoiceRepository);
+                invoiceRepository, invoiceStatusService,
+                creditNoteRepository, debitNoteRepository);
     }
 
     @Bean
     public PayPartialDebtUseCase payPartialDebtUseCase(PaymentRepository paymentRepository,
-                                                       PaymentAllocationRepository paymentAllocationRepository,
-                                                       InvoiceRepository invoiceRepository) {
+                                                        PaymentAllocationRepository paymentAllocationRepository,
+                                                        InvoiceRepository invoiceRepository,
+                                                        InvoiceStatusService invoiceStatusService,
+                                                        CreditNoteRepository creditNoteRepository,
+                                                        DebitNoteRepository debitNoteRepository) {
         return new PayPartialDebtUseCase(paymentRepository, paymentAllocationRepository,
-                invoiceRepository);
+                invoiceRepository, invoiceStatusService,
+                creditNoteRepository, debitNoteRepository);
     }
 
     @Bean

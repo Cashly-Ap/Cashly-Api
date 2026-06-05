@@ -1,7 +1,9 @@
 package com.parsun.parsun_api.returns.application.usecases;
 
+import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
+import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
@@ -32,19 +34,25 @@ public class CreateReturnUseCase {
     private final PaymentAllocationService paymentAllocationService;
     private final PaymentAllocationRepository allocationRepository;
     private final AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
+    private final CreditNoteRepository creditNoteRepository;
+    private final DebitNoteRepository debitNoteRepository;
 
     public CreateReturnUseCase(ReturnRepository returnRepository,
                                 InvoiceRepository invoiceRepository,
                                 ReturnMapper returnMapper,
                                 PaymentAllocationService paymentAllocationService,
                                 PaymentAllocationRepository allocationRepository,
-                                AddToCustomerBalanceUseCase addToCustomerBalanceUseCase) {
+                                AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
+                                CreditNoteRepository creditNoteRepository,
+                                DebitNoteRepository debitNoteRepository) {
         this.returnRepository = returnRepository;
         this.invoiceRepository = invoiceRepository;
         this.returnMapper = returnMapper;
         this.paymentAllocationService = paymentAllocationService;
         this.allocationRepository = allocationRepository;
         this.addToCustomerBalanceUseCase = addToCustomerBalanceUseCase;
+        this.creditNoteRepository = creditNoteRepository;
+        this.debitNoteRepository = debitNoteRepository;
     }
 
     @Transactional
@@ -88,8 +96,19 @@ public class CreateReturnUseCase {
             cancelInvoicePayments(return_.getInvoiceId().value());
         }
 
-        BigDecimal remaining = invoice.getSubtotal().subtract(invoice.getReturnedTotal());
-        BigDecimal surplus = totalPaid.subtract(remaining);
+        BigDecimal totalCreditNotes = creditNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
+                .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalDebitNotes = debitNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
+                .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal effectiveTotal = invoice.calculateTotal(totalCreditNotes, totalDebitNotes);
+        if (effectiveTotal.compareTo(BigDecimal.ZERO) < 0) {
+            effectiveTotal = BigDecimal.ZERO;
+        }
+        BigDecimal surplus = totalPaid.subtract(effectiveTotal);
 
         if (surplus.compareTo(BigDecimal.ZERO) > 0) {
             addToCustomerBalanceUseCase.execute(
