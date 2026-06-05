@@ -10,6 +10,8 @@ import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
@@ -28,26 +30,48 @@ public class PayPartialDebtUseCase {
     private final InvoiceStatusService invoiceStatusService;
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
+    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
 
     public PayPartialDebtUseCase(PaymentRepository paymentRepository,
                                   PaymentAllocationRepository allocationRepository,
                                   InvoiceRepository invoiceRepository,
                                   InvoiceStatusService invoiceStatusService,
                                   CreditNoteRepository creditNoteRepository,
-                                  DebitNoteRepository debitNoteRepository) {
+                                  DebitNoteRepository debitNoteRepository,
+                                  ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoiceStatusService = invoiceStatusService;
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
+        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
     }
 
     @Transactional
     public PaymentResultResponse execute(UUID customerId, PayPartialDebtRequest request,
                                           UUID authenticatedUserId,
                                           String authenticatedUserName) {
-        if (request.amount().compareTo(BigDecimal.ZERO) <= 0) {
+        BigDecimal balanceUsed = BigDecimal.ZERO;
+        if (request.useBalance() != null && request.useBalance() && request.balanceAmount() != null) {
+            balanceUsed = request.balanceAmount();
+            if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
+                consumeCustomerBalanceUseCase.execute(
+                    customerId,
+                    BalanceType.INVOICES,
+                    balanceUsed,
+                    BalanceType.INVOICES,
+                    null,
+                    "Pago parcial de deuda",
+                    null,
+                    authenticatedUserId
+                );
+            }
+        }
+
+        BigDecimal paymentAmount = request.amount().subtract(balanceUsed);
+
+        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
         }
 
@@ -66,7 +90,7 @@ public class PayPartialDebtUseCase {
         Payment payment = Payment.create(
                 paymentNumber,
                 customerId,
-                request.amount(),
+                paymentAmount,
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
@@ -78,7 +102,7 @@ public class PayPartialDebtUseCase {
 
         Payment saved = paymentRepository.save(payment);
 
-        BigDecimal remaining = request.amount();
+        BigDecimal remaining = paymentAmount;
         for (Invoice invoice : unpaidInvoices) {
             if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
 
@@ -98,7 +122,7 @@ public class PayPartialDebtUseCase {
             remaining = remaining.subtract(allocAmount);
         }
 
-        payment.apply(request.amount());
+        payment.apply(paymentAmount);
         paymentRepository.save(payment);
 
         for (Invoice invoice : unpaidInvoices) {

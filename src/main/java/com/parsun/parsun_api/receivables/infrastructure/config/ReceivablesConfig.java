@@ -9,6 +9,7 @@ import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.shared.services.CreditValidationService;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,10 +42,12 @@ public class ReceivablesConfig {
                                                 InvoiceRepository invoiceRepository,
                                                 InvoiceStatusService invoiceStatusService,
                                                 CreditNoteRepository creditNoteRepository,
-                                                DebitNoteRepository debitNoteRepository) {
+                                                DebitNoteRepository debitNoteRepository,
+                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
         return new PayInvoiceUseCase(paymentRepository, paymentAllocationRepository,
                 invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository);
+                creditNoteRepository, debitNoteRepository,
+                consumeCustomerBalanceUseCase);
     }
 
     @Bean
@@ -53,10 +56,12 @@ public class ReceivablesConfig {
                                                                 InvoiceRepository invoiceRepository,
                                                                 InvoiceStatusService invoiceStatusService,
                                                                 CreditNoteRepository creditNoteRepository,
-                                                                DebitNoteRepository debitNoteRepository) {
+                                                                DebitNoteRepository debitNoteRepository,
+                                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
         return new PayAllCustomerDebtUseCase(paymentRepository, paymentAllocationRepository,
                 invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository);
+                creditNoteRepository, debitNoteRepository,
+                consumeCustomerBalanceUseCase);
     }
 
     @Bean
@@ -65,10 +70,12 @@ public class ReceivablesConfig {
                                                         InvoiceRepository invoiceRepository,
                                                         InvoiceStatusService invoiceStatusService,
                                                         CreditNoteRepository creditNoteRepository,
-                                                        DebitNoteRepository debitNoteRepository) {
+                                                        DebitNoteRepository debitNoteRepository,
+                                                        ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
         return new PayPartialDebtUseCase(paymentRepository, paymentAllocationRepository,
                 invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository);
+                creditNoteRepository, debitNoteRepository,
+                consumeCustomerBalanceUseCase);
     }
 
     @Bean

@@ -10,6 +10,8 @@ import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
@@ -28,19 +30,22 @@ public class PayAllCustomerDebtUseCase {
     private final InvoiceStatusService invoiceStatusService;
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
+    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
 
     public PayAllCustomerDebtUseCase(PaymentRepository paymentRepository,
                                       PaymentAllocationRepository allocationRepository,
                                       InvoiceRepository invoiceRepository,
                                       InvoiceStatusService invoiceStatusService,
                                       CreditNoteRepository creditNoteRepository,
-                                      DebitNoteRepository debitNoteRepository) {
+                                      DebitNoteRepository debitNoteRepository,
+                                      ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoiceStatusService = invoiceStatusService;
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
+        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
     }
 
     @Transactional
@@ -67,6 +72,29 @@ public class PayAllCustomerDebtUseCase {
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        BigDecimal balanceUsed = BigDecimal.ZERO;
+        if (request.useBalance() != null && request.useBalance() && request.balanceAmount() != null) {
+            balanceUsed = request.balanceAmount();
+            if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
+                consumeCustomerBalanceUseCase.execute(
+                    customerId,
+                    BalanceType.INVOICES,
+                    balanceUsed,
+                    BalanceType.INVOICES,
+                    null,
+                    "Pago total de deuda",
+                    null,
+                    authenticatedUserId
+                );
+            }
+        }
+
+        BigDecimal paymentAmount = totalAmount.subtract(balanceUsed);
+
+        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Payment amount must be greater than zero");
+        }
+
         int year = LocalDate.now().getYear();
         int sequence = paymentRepository.getNextSequenceForYear(year);
         PaymentNumber paymentNumber = PaymentNumber.of(year, sequence);
@@ -74,7 +102,7 @@ public class PayAllCustomerDebtUseCase {
         Payment payment = Payment.create(
                 paymentNumber,
                 customerId,
-                totalAmount,
+                paymentAmount,
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
@@ -101,7 +129,7 @@ public class PayAllCustomerDebtUseCase {
             allocationRepository.save(allocation);
         }
 
-        payment.apply(totalAmount);
+        payment.apply(paymentAmount);
         paymentRepository.save(payment);
 
         for (Invoice invoice : unpaidInvoices) {

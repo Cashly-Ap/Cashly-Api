@@ -20,5 +20,9 @@ public record PayPartialDebtRequest(
 
         @NotNull(message = "Amount is required")
         @Positive(message = "Amount must be greater than zero")
-        BigDecimal amount
+        BigDecimal amount,
+
+        Boolean useBalance,
+
+        BigDecimal balanceAmount
 ) {}

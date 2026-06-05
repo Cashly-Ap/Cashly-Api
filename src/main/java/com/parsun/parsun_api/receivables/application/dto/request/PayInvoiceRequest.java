@@ -19,5 +19,9 @@ public record PayInvoiceRequest(
         LocalDate paymentDate,
 
         @Positive(message = "Amount must be greater than zero")
-        BigDecimal amount
+        BigDecimal amount,
+
+        Boolean useBalance,
+
+        BigDecimal balanceAmount
 ) {}

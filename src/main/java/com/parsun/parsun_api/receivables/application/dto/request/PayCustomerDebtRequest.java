@@ -3,6 +3,7 @@ package com.parsun.parsun_api.receivables.application.dto.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -14,5 +15,9 @@ public record PayCustomerDebtRequest(
         String referenceNumber,
 
         @NotNull(message = "Payment date is required")
-        LocalDate paymentDate
+        LocalDate paymentDate,
+
+        Boolean useBalance,
+
+        BigDecimal balanceAmount
 ) {}
