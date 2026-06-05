@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.invoices.infrastructure.web;
 
 import com.parsun.parsun_api.invoices.application.dto.request.CancelInvoiceRequest;
+import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.request.UpdateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
@@ -107,8 +108,11 @@ public class InvoiceController {
 
     @PutMapping("/{id}/confirm")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<InvoiceDetailResponse> confirm(@PathVariable UUID id) {
-        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id);
+    public ResponseEntity<InvoiceDetailResponse> confirm(@PathVariable UUID id,
+                                                          @Valid @RequestBody ConfirmInvoiceRequest request,
+                                                          Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id, request, userId);
         return ResponseEntity.ok(response);
     }
 

@@ -27,6 +27,13 @@ public class CreditGuard {
      * Validates that a customer has sufficient credit for a given invoice total.
      * Throws CreditLimitExceededException if credit is insufficient.
      */
+    public boolean isCreditAvailable(UUID customerId, BigDecimal invoiceTotal) {
+        CreditStatusResponse status = creditValidationService.getCreditStatus(customerId);
+        return !status.hasOverdue()
+            && status.canCreateCreditInvoice()
+            && status.availableCredit().compareTo(invoiceTotal) >= 0;
+    }
+
     public void ensureCreditAvailable(UUID customerId, BigDecimal invoiceTotal) {
         CreditStatusResponse status = creditValidationService.getCreditStatus(customerId);
 

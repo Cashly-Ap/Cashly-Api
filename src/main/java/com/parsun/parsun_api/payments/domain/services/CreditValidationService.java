@@ -153,14 +153,12 @@ public class CreditValidationService implements com.parsun.parsun_api.shared.ser
     }
 
     private BigDecimal calculateAppliedPaymentsForInvoices(List<Invoice> invoices) {
-        List<UUID> invoiceIds = invoices.stream()
-                .map(Invoice::getId)
-                .map(id -> id.value())
-                .toList();
-
         BigDecimal totalApplied = BigDecimal.ZERO;
-        for (UUID invoiceId : invoiceIds) {
-            List<PaymentAllocation> allocations = paymentAllocationRepository.findByInvoiceId(invoiceId);
+        for (Invoice invoice : invoices) {
+            if (invoice.getStatus() != InvoiceStatus.PENDING_PAYMENT && invoice.getStatus() != InvoiceStatus.PARTIALLY_PAID) {
+                continue;
+            }
+            List<PaymentAllocation> allocations = paymentAllocationRepository.findByInvoiceId(invoice.getId().value());
             for (PaymentAllocation allocation : allocations) {
                 Payment payment = paymentRepository.findById(PaymentId.of(allocation.getPaymentId()))
                         .orElse(null);

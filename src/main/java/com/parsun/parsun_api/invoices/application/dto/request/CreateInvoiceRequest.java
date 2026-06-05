@@ -23,6 +23,12 @@ public record CreateInvoiceRequest(
         @Size(max = 1000, message = "Notes must be at most 1000 characters")
         String notes,
 
+        Boolean useBalance,
+
+        BigDecimal balanceAmount,
+
+        UUID paymentMethodId,
+
         @NotEmpty(message = "At least one invoice line is required")
         @Valid
         List<InvoiceLineRequest> lines

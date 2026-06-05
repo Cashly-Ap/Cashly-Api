@@ -1,6 +1,8 @@
 package com.parsun.parsun_api.invoices.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
@@ -8,6 +10,7 @@ import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.infrastructure.services.InvoiceStatusServiceImpl;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
@@ -81,10 +84,16 @@ public class InvoiceConfig {
 
     @Bean
     public ConfirmInvoiceUseCase confirmInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                                         WarehouseStockRepository warehouseStockRepository,
-                                                         StockMovementRepository stockMovementRepository,
-                                                         CreditGuard creditGuard) {
-        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository, creditGuard);
+                                                          WarehouseStockRepository warehouseStockRepository,
+                                                          StockMovementRepository stockMovementRepository,
+                                                          CreditGuard creditGuard,
+                                                          UserRepository userRepository,
+                                                          PasswordEncoder passwordEncoder,
+                                                          ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                                                          PaymentRepository paymentRepository,
+                                                          PaymentAllocationRepository paymentAllocationRepository) {
+        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository, creditGuard,
+                userRepository, passwordEncoder, consumeCustomerBalanceUseCase, paymentRepository, paymentAllocationRepository);
     }
 
     @Bean

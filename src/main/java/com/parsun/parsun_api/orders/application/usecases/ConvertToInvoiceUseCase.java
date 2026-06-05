@@ -34,6 +34,9 @@ public class ConvertToInvoiceUseCase {
                 null,
                 paymentType,
                 null,
+                null,
+                null,
+                null,
                 null
         );
 
