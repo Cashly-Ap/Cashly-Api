@@ -17,4 +17,7 @@ public interface PaymentAllocationJpaRepository extends JpaRepository<PaymentAll
 
     @Query("SELECT a.invoiceId, SUM(a.allocatedAmount) FROM PaymentAllocationEntity a WHERE a.invoiceId IN :invoiceIds GROUP BY a.invoiceId")
     List<Object[]> sumByInvoiceIds(@Param("invoiceIds") List<UUID> invoiceIds);
+
+    @Query("SELECT COALESCE(SUM(a.allocatedAmount), 0) FROM PaymentAllocationEntity a WHERE a.invoiceId = :invoiceId")
+    BigDecimal sumAllocatedAmountByInvoiceId(@Param("invoiceId") UUID invoiceId);
 }

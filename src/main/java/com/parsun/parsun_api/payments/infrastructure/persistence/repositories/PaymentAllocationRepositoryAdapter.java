@@ -5,6 +5,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepos
 import com.parsun.parsun_api.payments.infrastructure.persistence.mappers.PaymentAllocationJpaMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,5 +42,10 @@ public class PaymentAllocationRepositoryAdapter implements PaymentAllocationRepo
     @Override
     public void deleteByPaymentId(UUID paymentId) {
         jpaRepository.deleteByPaymentId(paymentId);
+    }
+
+    @Override
+    public BigDecimal getAllocatedAmountByInvoiceId(UUID invoiceId) {
+        return jpaRepository.sumAllocatedAmountByInvoiceId(invoiceId);
     }
 }
