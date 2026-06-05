@@ -65,21 +65,24 @@ CREATE TABLE customer_balances (
 );
 
 CREATE TABLE balance_transactions (
-    id              BINARY(16) PRIMARY KEY,
-    customer_id     BINARY(16) NOT NULL,
-    type            ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
-    amount          DECIMAL(15,2) NOT NULL,
-    reference_type  ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
-    reference_id    BINARY(16),
-    notes           VARCHAR(500),
-    created_by      BINARY(16),
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id                BINARY(16) PRIMARY KEY,
+    customer_id       BINARY(16) NOT NULL,
+    type              ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
+    amount            DECIMAL(15,2) NOT NULL,
+    reference_type    ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND') NOT NULL,
+    reference_id      BINARY(16),
+    number            VARCHAR(100),
+    reference_number  VARCHAR(100),
+    created_by        BINARY(16),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
 
 CREATE INDEX idx_bt_customer ON balance_transactions(customer_id);
 CREATE INDEX idx_bt_type ON balance_transactions(type);
 CREATE INDEX idx_bt_reference ON balance_transactions(reference_type, reference_id);
+CREATE INDEX idx_bt_number ON balance_transactions(number);
+CREATE INDEX idx_bt_reference_number ON balance_transactions(reference_number);
 
 CREATE TABLE balance_tx_sequence (
     year       INT PRIMARY KEY,

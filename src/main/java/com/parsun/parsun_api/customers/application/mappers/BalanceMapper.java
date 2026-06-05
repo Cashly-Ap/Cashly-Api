@@ -27,7 +27,8 @@ public final class BalanceMapper {
             transaction.getAmount(),
             transaction.getReferenceType().name(),
             transaction.getReferenceId(),
-            transaction.getNotes(),
+            transaction.getNumber(),
+            transaction.getReferenceNumber(),
             transaction.getCreatedBy(),
             transaction.getCreatedAt()
         );

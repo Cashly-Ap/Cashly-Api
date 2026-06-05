@@ -11,7 +11,8 @@ public record BalanceTransactionResponse(
     BigDecimal amount,
     String referenceType,
     UUID referenceId,
-    String notes,
+    String number,
+    String referenceNumber,
     UUID createdBy,
     LocalDateTime createdAt
 ) {}

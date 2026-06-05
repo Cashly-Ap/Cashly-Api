@@ -134,7 +134,7 @@ class CreateReturnUseCaseTest {
 
         verify(allocationRepository).getAllocatedAmountByInvoiceId(invoiceId);
         verify(addToCustomerBalanceUseCase, never()).execute(
-                any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(), any(), any()
         );
     }
 
@@ -166,6 +166,7 @@ class CreateReturnUseCaseTest {
                 surplusCaptor.capture(),
                 eq(BalanceType.RETURNS),
                 any(UUID.class),
+                anyString(),
                 anyString(),
                 eq(authenticatedUserId)
         );
@@ -201,6 +202,7 @@ class CreateReturnUseCaseTest {
                 eq(BalanceType.RETURNS),
                 any(UUID.class),
                 anyString(),
+                anyString(),
                 eq(authenticatedUserId)
         );
         assertEquals(0, new BigDecimal("15.00").compareTo(surplusCaptor.getValue()));
@@ -229,7 +231,7 @@ class CreateReturnUseCaseTest {
         verify(allocationRepository).getAllocatedAmountByInvoiceId(invoiceId);
         verify(paymentAllocationService, never()).cancelPayment(any());
         verify(addToCustomerBalanceUseCase, never()).execute(
-                any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(), any(), any()
         );
     }
 }

@@ -390,16 +390,25 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         String partialBalanceExpr = "(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)"
             + " - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0))";
 
-        String whereClauseCond = "i.customer_id = :customerId AND i.status NOT IN ('CANCELLED', 'DRAFT') AND i.status <> 'FULLY_RETURNED'";
-        if (status != null && !status.isBlank()) {
-            whereClauseCond += switch (status) {
-                case "PENDING" -> " AND i.status IN ('PENDING_PAYMENT') AND " + balanceExpr + " > 0";
-                case "PARTIAL" -> " AND i.status IN ('PARTIALLY_PAID', 'PENDING_PAYMENT') AND " + partialBalanceExpr + " > 0 AND " + partialBalanceExpr + " < i.subtotal";
-                case "PAID" -> " AND i.status = 'PAID'";
-                default -> " AND " + balanceExpr + " > 0";
-            };
+        String whereClauseCond;
+        if ("RETURNED".equals(status)) {
+            whereClauseCond = "i.customer_id = :customerId AND i.status = 'FULLY_RETURNED'";
+        } else if ("CANCELLED".equals(status)) {
+            whereClauseCond = "i.customer_id = :customerId AND i.status = 'CANCELLED'";
+        } else if ("PARTIAL_RETURN".equals(status)) {
+            whereClauseCond = "i.customer_id = :customerId AND i.status NOT IN ('CANCELLED', 'DRAFT') AND i.status <> 'FULLY_RETURNED' AND i.return_status = 'PARTIAL'";
         } else {
-            whereClauseCond += " AND " + balanceExpr + " > 0";
+            whereClauseCond = "i.customer_id = :customerId AND i.status NOT IN ('CANCELLED', 'DRAFT') AND i.status <> 'FULLY_RETURNED'";
+            if (status != null && !status.isBlank()) {
+                whereClauseCond += switch (status) {
+                    case "PENDING" -> " AND i.status IN ('PENDING_PAYMENT') AND " + balanceExpr + " > 0";
+                    case "PARTIAL" -> " AND i.status IN ('PARTIALLY_PAID', 'PENDING_PAYMENT') AND " + partialBalanceExpr + " > 0 AND " + partialBalanceExpr + " < i.subtotal";
+                    case "PAID" -> " AND i.status = 'PAID'";
+                    default -> " AND " + balanceExpr + " > 0";
+                };
+            } else {
+                whereClauseCond += " AND " + balanceExpr + " > 0";
+            }
         }
         if (search != null && !search.isBlank()) {
             whereClauseCond += " AND (i.invoice_number LIKE :search)";

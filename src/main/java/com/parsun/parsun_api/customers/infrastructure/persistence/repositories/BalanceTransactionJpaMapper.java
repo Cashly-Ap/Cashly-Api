@@ -16,7 +16,8 @@ public final class BalanceTransactionJpaMapper {
         entity.setAmount(domain.getAmount());
         entity.setReferenceType(domain.getReferenceType().name());
         entity.setReferenceId(domain.getReferenceId());
-        entity.setNotes(domain.getNotes());
+        entity.setNumber(domain.getNumber());
+        entity.setReferenceNumber(domain.getReferenceNumber());
         entity.setCreatedBy(domain.getCreatedBy());
         entity.setCreatedAt(domain.getCreatedAt());
         return entity;
@@ -31,7 +32,8 @@ public final class BalanceTransactionJpaMapper {
             entity.getAmount(),
             com.parsun.parsun_api.customers.domain.valueobjects.BalanceType.valueOf(entity.getReferenceType()),
             entity.getReferenceId(),
-            entity.getNotes(),
+            entity.getNumber(),
+            entity.getReferenceNumber(),
             entity.getCreatedBy(),
             entity.getCreatedAt()
         );

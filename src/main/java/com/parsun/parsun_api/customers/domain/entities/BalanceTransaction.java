@@ -15,13 +15,15 @@ public class BalanceTransaction {
     private final BigDecimal amount;
     private final BalanceType referenceType;
     private final UUID referenceId;
-    private final String notes;
+    private final String number;
+    private final String referenceNumber;
     private final UUID createdBy;
     private final LocalDateTime createdAt;
 
     private BalanceTransaction(UUID id, UUID customerId, BalanceType type,
                                BigDecimal amount, BalanceType referenceType,
-                               UUID referenceId, String notes, UUID createdBy,
+                               UUID referenceId, String number,
+                               String referenceNumber, UUID createdBy,
                                LocalDateTime createdAt) {
         this.id = id;
         this.customerId = customerId;
@@ -29,14 +31,16 @@ public class BalanceTransaction {
         this.amount = amount;
         this.referenceType = referenceType;
         this.referenceId = referenceId;
-        this.notes = notes;
+        this.number = number;
+        this.referenceNumber = referenceNumber;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
     }
 
     public static BalanceTransaction create(UUID customerId, BalanceType type,
                                              BigDecimal amount, BalanceType referenceType,
-                                             UUID referenceId, String notes, UUID createdBy) {
+                                             UUID referenceId, String number,
+                                             String referenceNumber, UUID createdBy) {
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(type, "Type cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
@@ -50,7 +54,8 @@ public class BalanceTransaction {
                 amount,
                 referenceType,
                 referenceId,
-                notes,
+                number,
+                referenceNumber,
                 createdBy,
                 LocalDateTime.now()
         );
@@ -58,10 +63,11 @@ public class BalanceTransaction {
 
     public static BalanceTransaction reconstitute(UUID id, UUID customerId, BalanceType type,
                                                    BigDecimal amount, BalanceType referenceType,
-                                                   UUID referenceId, String notes, UUID createdBy,
+                                                   UUID referenceId, String number,
+                                                   String referenceNumber, UUID createdBy,
                                                    LocalDateTime createdAt) {
         return new BalanceTransaction(id, customerId, type, amount,
-                referenceType, referenceId, notes, createdBy, createdAt);
+                referenceType, referenceId, number, referenceNumber, createdBy, createdAt);
     }
 
     public UUID getId() { return id; }
@@ -70,7 +76,8 @@ public class BalanceTransaction {
     public BigDecimal getAmount() { return amount; }
     public BalanceType getReferenceType() { return referenceType; }
     public UUID getReferenceId() { return referenceId; }
-    public String getNotes() { return notes; }
+    public String getNumber() { return number; }
+    public String getReferenceNumber() { return referenceNumber; }
     public UUID getCreatedBy() { return createdBy; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 

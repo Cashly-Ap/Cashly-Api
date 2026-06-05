@@ -23,7 +23,7 @@ public class ConsumeCustomerBalanceUseCase {
     @Transactional
     public CustomerBalanceResponse execute(UUID customerId, BalanceType type, BigDecimal amount,
                                             BalanceType referenceType, UUID referenceId,
-                                            String notes, UUID createdBy) {
+                                            String number, String referenceNumber, UUID createdBy) {
         CustomerBalance balance = customerBalanceRepository.findByCustomerId(customerId)
             .orElseThrow(() -> new IllegalStateException(
                 "Customer balance not found for customer id: " + customerId));
@@ -36,7 +36,8 @@ public class ConsumeCustomerBalanceUseCase {
             amount.negate(),
             referenceType,
             referenceId,
-            notes,
+            number,
+            referenceNumber,
             createdBy
         );
 

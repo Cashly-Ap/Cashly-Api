@@ -98,8 +98,8 @@ public class CreateReturnUseCase {
                 surplus,
                 BalanceType.RETURNS,
                 return_.getId().value(),
+                return_.getReturnNumber().value(),
                 invoice.getInvoiceNumber().value(),
-                "Return surplus from " + return_.getReturnNumber().value(),
                 authenticatedUserId
             );
         }

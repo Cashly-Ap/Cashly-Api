@@ -46,8 +46,11 @@ public class BalanceTransactionEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID referenceId;
 
-    @Column(name = "notes", length = 500)
-    private String notes;
+    @Column(name = "number", length = 100)
+    private String number;
+
+    @Column(name = "reference_number", length = 100)
+    private String referenceNumber;
 
     @Column(name = "created_by", columnDefinition = "BINARY(16)", nullable = false)
     @JdbcTypeCode(SqlTypes.BINARY)

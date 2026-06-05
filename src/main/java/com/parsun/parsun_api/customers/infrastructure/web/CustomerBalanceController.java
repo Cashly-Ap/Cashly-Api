@@ -1,9 +1,11 @@
 package com.parsun.parsun_api.customers.infrastructure.web;
 
 import com.parsun.parsun_api.customers.application.dto.request.CreateAdvanceRequest;
+import com.parsun.parsun_api.customers.application.dto.request.CreateRefundRequest;
 import com.parsun.parsun_api.customers.application.dto.response.BalanceTransactionResponse;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerBalanceResponse;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.application.usecases.GetCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.shared.dto.PageResponse;
@@ -22,11 +24,14 @@ public class CustomerBalanceController {
 
     private final GetCustomerBalanceUseCase getCustomerBalanceUseCase;
     private final AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
+    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
 
     public CustomerBalanceController(GetCustomerBalanceUseCase getCustomerBalanceUseCase,
-                                      AddToCustomerBalanceUseCase addToCustomerBalanceUseCase) {
+                                      AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
+                                      ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
         this.getCustomerBalanceUseCase = getCustomerBalanceUseCase;
         this.addToCustomerBalanceUseCase = addToCustomerBalanceUseCase;
+        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
     }
 
     @GetMapping
@@ -57,7 +62,28 @@ public class CustomerBalanceController {
                 request.amount(),
                 BalanceType.ADVANCED,
                 null,
-                request.notes(),
+                null,
+                null,
+                userId
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/refund")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<CustomerBalanceResponse> createRefund(
+            @PathVariable UUID customerId,
+            @Valid @RequestBody CreateRefundRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        CustomerBalanceResponse response = consumeCustomerBalanceUseCase.execute(
+                customerId,
+                BalanceType.REFUND,
+                request.amount(),
+                BalanceType.REFUND,
+                null,
+                null,
+                null,
                 userId
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
