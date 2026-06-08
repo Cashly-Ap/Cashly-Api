@@ -3,6 +3,7 @@ package com.parsun.parsun_api.payments.infrastructure.persistence.mappers;
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentSource;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.payments.infrastructure.persistence.entities.PaymentEntity;
 
@@ -17,6 +18,7 @@ public class PaymentJpaMapper {
         entity.setCustomerId(payment.getCustomerId());
         entity.setAmount(payment.getAmount());
         entity.setPaymentMethodId(payment.getPaymentMethodId());
+        entity.setSource(payment.getSource() != null ? payment.getSource().name() : PaymentSource.PAYMENT_METHOD.name());
         entity.setReferenceNumber(payment.getReferenceNumber());
         entity.setPaymentDate(payment.getPaymentDate());
         entity.setNotes(payment.getNotes());
@@ -30,12 +32,16 @@ public class PaymentJpaMapper {
     }
 
     public static Payment toDomain(PaymentEntity entity) {
+        PaymentSource source = entity.getSource() != null
+                ? PaymentSource.valueOf(entity.getSource())
+                : PaymentSource.PAYMENT_METHOD;
         return Payment.reconstitute(
                 PaymentId.of(entity.getId()),
                 new PaymentNumber(entity.getPaymentNumber()),
                 entity.getCustomerId(),
                 entity.getAmount(),
                 entity.getPaymentMethodId(),
+                source,
                 entity.getReferenceNumber(),
                 entity.getPaymentDate(),
                 entity.getNotes(),

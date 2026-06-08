@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record PayCustomerDebtRequest(
-        @NotNull(message = "Payment method is required")
         UUID paymentMethodId,
 
         @Size(max = 100, message = "Reference number must be at most 100 characters")

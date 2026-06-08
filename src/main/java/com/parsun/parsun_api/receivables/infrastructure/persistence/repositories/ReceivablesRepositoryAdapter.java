@@ -89,7 +89,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         long total = ((Number) countQ.getSingleResult()).longValue();
 
         String dataSql = "SELECT DISTINCT p.id, p.payment_number, p.customer_id, c.legal_name,\n" +
-            "                   p.amount, pm.name, p.status, p.payment_date, p.created_at,\n" +
+            "                   p.amount, pm.name, p.status, p.source, p.payment_date, p.created_at,\n" +
             "                   i.invoice_number\n" +
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
@@ -517,7 +517,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         long total = ((Number) countQ.getSingleResult()).longValue();
 
         String dataSql = "SELECT DISTINCT p.id, p.payment_number, p.customer_id, c.legal_name,\n" +
-            "                   p.amount, pm.name, p.status, p.payment_date, p.created_at,\n" +
+            "                   p.amount, pm.name, p.status, p.source, p.payment_date, p.created_at,\n" +
             "                   i.invoice_number\n" +
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
@@ -566,9 +566,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 (BigDecimal) row[4],
                 (String) row[5],
                 (String) row[6],
-                row[7] != null ? ((java.sql.Date) row[7]).toLocalDate() : null,
-                row[8] != null ? ((Timestamp) row[8]).toLocalDateTime() : null,
-                (String) row[9]
+                (String) row[7],
+                row[8] != null ? ((java.sql.Date) row[8]).toLocalDate() : null,
+                row[9] != null ? ((Timestamp) row[9]).toLocalDateTime() : null,
+                (String) row[10]
         );
     }
 

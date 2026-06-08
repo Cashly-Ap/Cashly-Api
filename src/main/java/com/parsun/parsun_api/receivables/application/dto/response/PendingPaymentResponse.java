@@ -13,6 +13,7 @@ public record PendingPaymentResponse(
         BigDecimal amount,
         String paymentMethodName,
         String status,
+        String source,
         LocalDate paymentDate,
         LocalDateTime createdAt,
         String invoiceNumber

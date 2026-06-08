@@ -34,9 +34,12 @@ public class PaymentEntity {
     @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "payment_method_id", columnDefinition = "BINARY(16)", nullable = false)
+    @Column(name = "payment_method_id", columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID paymentMethodId;
+
+    @Column(name = "source", length = 20, nullable = false)
+    private String source;
 
     @Column(name = "reference_number", length = 100)
     private String referenceNumber;

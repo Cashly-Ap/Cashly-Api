@@ -7,6 +7,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepos
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentSource;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
@@ -71,8 +72,13 @@ public class PayPartialDebtUseCase {
 
         BigDecimal paymentAmount = request.amount().subtract(balanceUsed);
 
-        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0
+                && balanceUsed.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
+        }
+
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0 && request.paymentMethodId() == null) {
+            throw new IllegalArgumentException("Payment method is required when payment amount is greater than zero");
         }
 
         List<String> statuses = List.of("PENDING_PAYMENT", "PARTIALLY_PAID");
@@ -84,54 +90,110 @@ public class PayPartialDebtUseCase {
         }
 
         int year = LocalDate.now().getYear();
-        int sequence = paymentRepository.getNextSequenceForYear(year);
-        PaymentNumber paymentNumber = PaymentNumber.of(year, sequence);
 
-        Payment payment = Payment.create(
-                paymentNumber,
-                customerId,
-                paymentAmount,
-                request.paymentMethodId(),
-                request.referenceNumber(),
-                request.paymentDate(),
-                "Pago parcial de deuda del cliente",
-                authenticatedUserId,
-                authenticatedUserName,
-                PaymentStatus.APPLIED
-        );
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
+            int sequence = paymentRepository.getNextSequenceForYear(year);
+            PaymentNumber paymentNumber = PaymentNumber.of(year, sequence);
 
-        Payment saved = paymentRepository.save(payment);
-
-        BigDecimal remaining = paymentAmount;
-        for (Invoice invoice : unpaidInvoices) {
-            if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
-
-            BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                    .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                    .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal allocAmount = remaining.min(invoice.calculateTotal(creds, debits));
-            PaymentAllocation allocation = PaymentAllocation.create(
-                    saved.getId().value(),
-                    invoice.getId().value(),
-                    allocAmount
+            Payment payment = Payment.create(
+                    paymentNumber,
+                    customerId,
+                    paymentAmount,
+                    request.paymentMethodId(),
+                    request.referenceNumber(),
+                    request.paymentDate(),
+                    "Pago parcial de deuda del cliente",
+                    authenticatedUserId,
+                    authenticatedUserName,
+                    PaymentStatus.APPLIED
             );
-            allocationRepository.save(allocation);
-            remaining = remaining.subtract(allocAmount);
+
+            Payment saved = paymentRepository.save(payment);
+
+            BigDecimal remaining = paymentAmount;
+            for (Invoice invoice : unpaidInvoices) {
+                if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
+
+                BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                        .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                        .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal allocAmount = remaining.min(invoice.calculateTotal(creds, debits));
+                PaymentAllocation allocation = PaymentAllocation.create(
+                        saved.getId().value(),
+                        invoice.getId().value(),
+                        allocAmount
+                );
+                allocationRepository.save(allocation);
+                remaining = remaining.subtract(allocAmount);
+            }
+
+            payment.apply(paymentAmount);
+            paymentRepository.save(payment);
         }
 
-        payment.apply(paymentAmount);
-        paymentRepository.save(payment);
+        if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
+            int balanceSequence = paymentRepository.getNextSequenceForYear(year);
+            PaymentNumber balancePaymentNumber = PaymentNumber.of(year, balanceSequence);
+
+            Payment balancePayment = Payment.create(
+                    balancePaymentNumber,
+                    customerId,
+                    balanceUsed,
+                    null,
+                    PaymentSource.CUSTOMER_BALANCE,
+                    null,
+                    request.paymentDate(),
+                    "Pago con saldo a favor - Pago parcial de deuda",
+                    authenticatedUserId,
+                    authenticatedUserName,
+                    PaymentStatus.APPLIED
+            );
+
+            Payment savedBalancePayment = paymentRepository.save(balancePayment);
+
+            BigDecimal remainingBalance = balanceUsed;
+            for (Invoice invoice : unpaidInvoices) {
+                if (remainingBalance.compareTo(BigDecimal.ZERO) <= 0) break;
+
+                BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                        .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                        .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal invoiceTotal = invoice.calculateTotal(creds, debits);
+
+                BigDecimal alreadyAllocated = allocationRepository.findByInvoiceId(invoice.getId().value()).stream()
+                        .map(PaymentAllocation::getAllocatedAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal invoiceRemaining = invoiceTotal.subtract(alreadyAllocated);
+                if (invoiceRemaining.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+                BigDecimal allocAmount = remainingBalance.min(invoiceRemaining);
+                PaymentAllocation balanceAllocation = PaymentAllocation.create(
+                        savedBalancePayment.getId().value(),
+                        invoice.getId().value(),
+                        allocAmount
+                );
+                allocationRepository.save(balanceAllocation);
+                remainingBalance = remainingBalance.subtract(allocAmount);
+            }
+
+            balancePayment.apply(balanceUsed);
+            paymentRepository.save(balancePayment);
+        }
 
         for (Invoice invoice : unpaidInvoices) {
             invoiceStatusService.recalculate(invoice.getId().value());
         }
 
         return new PaymentResultResponse(
-                saved.getId().value(),
-                payment.getStatus().name(),
+                null,
+                PaymentStatus.APPLIED.name(),
                 "Pago parcial registrado exitosamente",
                 true
         );

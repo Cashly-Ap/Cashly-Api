@@ -7,6 +7,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepos
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentSource;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
@@ -85,44 +86,83 @@ public class PayInvoiceUseCase {
 
         BigDecimal paymentAmount = amount.subtract(balanceUsed);
 
-        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0
+                && balanceUsed.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
         }
 
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0 && request.paymentMethodId() == null) {
+            throw new IllegalArgumentException("Payment method is required when payment amount is greater than zero");
+        }
+
         int year = LocalDate.now().getYear();
-        int sequence = paymentRepository.getNextSequenceForYear(year);
-        PaymentNumber paymentNumber = PaymentNumber.of(year, sequence);
 
-        Payment payment = Payment.create(
-                paymentNumber,
-                invoice.getCustomerId(),
-                paymentAmount,
-                request.paymentMethodId(),
-                request.referenceNumber(),
-                request.paymentDate(),
-                "Pago de factura " + invoice.getInvoiceNumber().value(),
-                authenticatedUserId,
-                authenticatedUserName,
-                PaymentStatus.APPLIED
-        );
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
+            int sequence = paymentRepository.getNextSequenceForYear(year);
+            PaymentNumber paymentNumber = PaymentNumber.of(year, sequence);
 
-        Payment saved = paymentRepository.save(payment);
+            Payment payment = Payment.create(
+                    paymentNumber,
+                    invoice.getCustomerId(),
+                    paymentAmount,
+                    request.paymentMethodId(),
+                    request.referenceNumber(),
+                    request.paymentDate(),
+                    "Pago de factura " + invoice.getInvoiceNumber().value(),
+                    authenticatedUserId,
+                    authenticatedUserName,
+                    PaymentStatus.APPLIED
+            );
 
-        PaymentAllocation allocation = PaymentAllocation.create(
-                saved.getId().value(),
-                invoiceId,
-                paymentAmount
-        );
-        allocationRepository.save(allocation);
+            Payment saved = paymentRepository.save(payment);
 
-        payment.apply(paymentAmount);
-        paymentRepository.save(payment);
+            PaymentAllocation allocation = PaymentAllocation.create(
+                    saved.getId().value(),
+                    invoiceId,
+                    paymentAmount
+            );
+            allocationRepository.save(allocation);
+
+            payment.apply(paymentAmount);
+            paymentRepository.save(payment);
+        }
+
+        if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
+            int balanceSequence = paymentRepository.getNextSequenceForYear(year);
+            PaymentNumber balancePaymentNumber = PaymentNumber.of(year, balanceSequence);
+
+            Payment balancePayment = Payment.create(
+                    balancePaymentNumber,
+                    invoice.getCustomerId(),
+                    balanceUsed,
+                    null,
+                    PaymentSource.CUSTOMER_BALANCE,
+                    null,
+                    request.paymentDate(),
+                    "Pago con saldo a favor - Factura " + invoice.getInvoiceNumber().value(),
+                    authenticatedUserId,
+                    authenticatedUserName,
+                    PaymentStatus.APPLIED
+            );
+
+            Payment savedBalancePayment = paymentRepository.save(balancePayment);
+
+            PaymentAllocation balanceAllocation = PaymentAllocation.create(
+                    savedBalancePayment.getId().value(),
+                    invoiceId,
+                    balanceUsed
+            );
+            allocationRepository.save(balanceAllocation);
+
+            balancePayment.apply(balanceUsed);
+            paymentRepository.save(balancePayment);
+        }
 
         invoiceStatusService.recalculate(invoiceId);
 
         return new PaymentResultResponse(
-                saved.getId().value(),
-                payment.getStatus().name(),
+                null,
+                PaymentStatus.APPLIED.name(),
                 "Pago registrado exitosamente",
                 true
         );
