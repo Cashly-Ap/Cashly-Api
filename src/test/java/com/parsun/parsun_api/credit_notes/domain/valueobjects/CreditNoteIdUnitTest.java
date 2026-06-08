@@ -70,6 +70,6 @@ class CreditNoteIdUnitTest {
         UUID uuid = UUID.randomUUID();
         CreditNoteId creditNoteId = CreditNoteId.of(uuid);
 
-        assertEquals(uuid.toString(), creditNoteId.toString());
+        assertEquals("CreditNoteId[value=" + uuid + "]", creditNoteId.toString());
     }
 }

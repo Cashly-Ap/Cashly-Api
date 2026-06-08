@@ -136,6 +136,7 @@ class ConfirmInvoiceUseCaseTest {
         Invoice invoice = buildInvoiceWithLine(id, InvoiceStatus.DRAFT, PaymentType.CASH, warehouseId, productId);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
         stock.addStock(100);
+        stock.reserve(10);
         User user = buildUser(authenticatedUserId);
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));

@@ -66,6 +66,6 @@ class PaymentIdUnitTest {
         UUID uuid = UUID.randomUUID();
         PaymentId paymentId = PaymentId.of(uuid);
 
-        assertEquals(uuid.toString(), paymentId.toString());
+        assertEquals("PaymentId[value=" + uuid + "]", paymentId.toString());
     }
 }

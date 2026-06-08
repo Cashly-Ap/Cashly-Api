@@ -147,13 +147,14 @@ class GetCreditNotesUseCaseTest {
     void shouldReturnEmptyListWhenNoCreditNotesFound() {
         when(creditNoteRepository.findAllWithFilters(null, null, null))
                 .thenReturn(List.of());
+        when(invoiceJpaRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<CreditNoteResponse> responses = getCreditNotesUseCase.execute(null, null, null);
 
         assertNotNull(responses);
         assertTrue(responses.isEmpty());
         verify(creditNoteRepository).findAllWithFilters(null, null, null);
-        verifyNoInteractions(invoiceJpaRepository);
+        verify(invoiceJpaRepository).findAllById(List.of());
     }
 
     @Test

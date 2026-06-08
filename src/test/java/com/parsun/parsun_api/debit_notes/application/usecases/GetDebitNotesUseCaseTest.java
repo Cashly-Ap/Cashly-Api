@@ -101,11 +101,12 @@ class GetDebitNotesUseCaseTest {
     @Test
     void should_ReturnEmptyList_When_NoDebitNotesExist() {
         when(debitNoteRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of());
+        when(invoiceJpaRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<DebitNoteResponse> responses = getDebitNotesUseCase.execute(null, null, null);
 
         assertTrue(responses.isEmpty());
         verify(debitNoteRepository).findAllWithFilters(null, null, null);
-        verifyNoInteractions(invoiceJpaRepository);
+        verify(invoiceJpaRepository).findAllById(List.of());
     }
 }

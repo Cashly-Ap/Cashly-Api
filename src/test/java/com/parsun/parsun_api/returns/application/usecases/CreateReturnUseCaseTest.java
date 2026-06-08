@@ -9,6 +9,7 @@ import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceLineId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
@@ -129,7 +130,7 @@ class CreateReturnUseCaseTest {
                 BigDecimal.ONE, subtotal, BigDecimal.ZERO, List.of()
         );
         return Invoice.reconstitute(
-                InvoiceId.of(invoiceId), null, UUID.randomUUID(),
+                InvoiceId.of(invoiceId), InvoiceNumber.of(2026, 1), UUID.randomUUID(),
                 "Customer", "RIF",
                 null, null, null, null,
                 InvoiceStatus.PENDING_PAYMENT, null, null,

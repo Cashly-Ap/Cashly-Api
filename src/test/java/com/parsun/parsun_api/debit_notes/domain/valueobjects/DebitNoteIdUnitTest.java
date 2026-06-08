@@ -67,6 +67,6 @@ class DebitNoteIdUnitTest {
         UUID uuid = UUID.randomUUID();
         DebitNoteId id = DebitNoteId.of(uuid);
 
-        assertEquals(uuid.toString(), id.toString());
+        assertEquals("DebitNoteId[value=" + uuid + "]", id.toString());
     }
 }

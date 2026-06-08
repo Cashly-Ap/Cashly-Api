@@ -70,6 +70,6 @@ class PaymentNumberUnitTest {
     void should_ReturnValue_When_ToStringCalled() {
         PaymentNumber paymentNumber = PaymentNumber.of(2026, 1);
 
-        assertEquals("PAY-2026-0001", paymentNumber.toString());
+        assertEquals("PaymentNumber[value=PAY-2026-0001]", paymentNumber.toString());
     }
 }

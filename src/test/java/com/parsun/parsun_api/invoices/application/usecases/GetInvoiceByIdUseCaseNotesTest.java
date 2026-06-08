@@ -16,7 +16,10 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +53,15 @@ class GetInvoiceByIdUseCaseNotesTest {
     @Mock
     private DebitNoteRepository debitNoteRepository;
 
+    @Mock
+    private ReturnRepository returnRepository;
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @Mock
+    private WarehouseRepository warehouseRepository;
+
     @InjectMocks
     private GetInvoiceByIdUseCase getInvoiceByIdUseCase;
 
@@ -61,6 +73,7 @@ class GetInvoiceByIdUseCaseNotesTest {
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
         when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
+        when(returnRepository.findAllWithFilters(any(), any(), any(), any())).thenReturn(List.of());
 
         UUID creditNoteId = UUID.randomUUID();
         CreditNote creditNote = CreditNote.reconstitute(
@@ -104,6 +117,7 @@ class GetInvoiceByIdUseCaseNotesTest {
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
         when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
+        when(returnRepository.findAllWithFilters(any(), any(), any(), any())).thenReturn(List.of());
         when(creditNoteRepository.findByInvoiceId(id)).thenReturn(List.of());
         when(debitNoteRepository.findByInvoiceId(id)).thenReturn(List.of());
 

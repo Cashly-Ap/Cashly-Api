@@ -12,11 +12,12 @@ class InvoiceStatusUnitTest {
     void should_HaveAllExpectedEnumValues() {
         InvoiceStatus[] values = InvoiceStatus.values();
 
-        assertEquals(5, values.length);
+        assertEquals(6, values.length);
         assertNotNull(InvoiceStatus.valueOf("DRAFT"));
         assertNotNull(InvoiceStatus.valueOf("PAID"));
         assertNotNull(InvoiceStatus.valueOf("PENDING_PAYMENT"));
         assertNotNull(InvoiceStatus.valueOf("PARTIALLY_PAID"));
+        assertNotNull(InvoiceStatus.valueOf("FULLY_RETURNED"));
         assertNotNull(InvoiceStatus.valueOf("CANCELLED"));
     }
 
@@ -43,6 +44,11 @@ class InvoiceStatusUnitTest {
     @Test
     void should_ReturnCancelled_When_ValueOfCancelled() {
         assertEquals(InvoiceStatus.CANCELLED, InvoiceStatus.valueOf("CANCELLED"));
+    }
+
+    @Test
+    void should_ReturnFullyReturned_When_ValueOfFullyReturned() {
+        assertEquals(InvoiceStatus.FULLY_RETURNED, InvoiceStatus.valueOf("FULLY_RETURNED"));
     }
 
     @Test

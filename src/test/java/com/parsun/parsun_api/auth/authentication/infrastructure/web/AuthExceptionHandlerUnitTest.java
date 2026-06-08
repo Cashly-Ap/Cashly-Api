@@ -160,7 +160,7 @@ class AuthExceptionHandlerUnitTest {
         assertNotNull(response.getBody());
         assertEquals(500, response.getBody().get("status"));
         assertEquals("Internal server error", response.getBody().get("error"));
-        assertEquals("An unexpected error occurred", response.getBody().get("message"));
+        assertEquals("Unexpected error", response.getBody().get("message"));
         assertTrue(response.getBody().containsKey("timestamp"));
     }
 
