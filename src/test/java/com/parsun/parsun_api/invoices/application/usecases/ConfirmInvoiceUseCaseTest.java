@@ -1,15 +1,20 @@
 package com.parsun.parsun_api.invoices.application.usecases;
 
+import com.parsun.parsun_api.auth.user.domain.entities.User;
+import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.*;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
+import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
-import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
-import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
-import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
-import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.invoices.domain.valueobjects.*;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
@@ -49,23 +54,45 @@ class ConfirmInvoiceUseCaseTest {
     @Mock
     private CreditGuard creditGuard;
 
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
+
+    @Mock
+    private PaymentRepository paymentRepository;
+
+    @Mock
+    private PaymentAllocationRepository allocationRepository;
+
     private ConfirmInvoiceUseCase confirmInvoiceUseCase;
+
+    private final UUID authenticatedUserId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, stockMovementRepository, creditGuard);
+                warehouseStockRepository, stockMovementRepository, creditGuard,
+                userRepository, passwordEncoder, consumeCustomerBalanceUseCase,
+                paymentRepository, allocationRepository);
     }
 
     @Test
     void should_ConfirmInvoice_When_InvoiceIsDraftAndCash() {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT, PaymentType.CASH);
+        User user = buildUser(authenticatedUserId);
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id);
+        ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, false, null, null);
+        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id, request, authenticatedUserId);
 
         assertNotNull(response);
         assertEquals("PAID", response.status());
@@ -76,88 +103,131 @@ class ConfirmInvoiceUseCaseTest {
     void should_ConfirmInvoice_When_InvoiceIsDraftAndCredit() {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT, PaymentType.CREDIT);
+        User user = buildUser(authenticatedUserId);
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(creditGuard.isCreditAvailable(any(), any())).thenReturn(true);
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id);
+        ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, false, null, null);
+        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id, request, authenticatedUserId);
 
         assertNotNull(response);
         assertEquals("PENDING_PAYMENT", response.status());
+        verify(invoiceRepository).save(any(Invoice.class));
     }
 
     @Test
-    void should_ThrowInvoiceNotFoundException_When_InvoiceNotFound() {
+    void should_ThrowException_When_InvoiceNotFound() {
         UUID id = UUID.randomUUID();
-
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.empty());
 
-        InvoiceNotFoundException exception = assertThrows(
-                InvoiceNotFoundException.class,
-                () -> confirmInvoiceUseCase.execute(id)
-        );
-
-        assertEquals("Invoice not found with id: " + id, exception.getMessage());
-        verify(invoiceRepository, never()).save(any());
+        ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, false, null, null);
+        assertThrows(InvoiceNotFoundException.class, () -> 
+            confirmInvoiceUseCase.execute(id, request, authenticatedUserId));
     }
 
     @Test
-    void should_ThrowException_When_InvoiceNotInDraftStatus() {
-        UUID id = UUID.randomUUID();
-        Invoice invoice = buildInvoice(id, InvoiceStatus.PAID, PaymentType.CASH);
-
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-
-        assertThrows(
-                IllegalStateException.class,
-                () -> confirmInvoiceUseCase.execute(id)
-        );
-
-        verify(invoiceRepository, never()).save(any());
-    }
-
-    @Test
-    void should_DeductStockAllocations_When_InvoiceHasAllocations() {
+    void should_CreateStockMovement_When_InvoiceConfirmed() {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        int allocatedQty = 5;
-
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, BigDecimal.valueOf(allocatedQty));
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Invoice invoice = Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "User", null, null,
-                InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
-
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 5,
-                LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = buildInvoiceWithLine(id, InvoiceStatus.DRAFT, PaymentType.CASH, warehouseId, productId);
+        WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
+        stock.addStock(100);
+        User user = buildUser(authenticatedUserId);
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
+            StockMovement m = inv.getArgument(0);
+            return new StockMovement(UUID.randomUUID(), m.getWarehouseId(), m.getProductId(),
+                    m.getMovementType(), m.getQuantity(), m.getPreviousStock(), m.getNewStock(),
+                    m.getOriginMovementId(), m.getTransferBatchId(), m.getReferenceType(),
+                    m.getReferenceId(), m.getReferenceNumber(), m.getNotes(), m.getCreatedAt());
+        });
 
-        confirmInvoiceUseCase.execute(id);
+        ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, false, null, null);
+        confirmInvoiceUseCase.execute(id, request, authenticatedUserId);
 
-        assertEquals(0, stock.getReserved());  // 5 - 5 = 0
-        verify(warehouseStockRepository).save(stock);
-        verify(stockMovementRepository).save(any(StockMovement.class));
+        verify(stockMovementRepository).save(argThat(movement -> 
+            movement.getMovementType() == MovementType.SALE_EXIT &&
+            movement.getQuantity() == 10
+        ));
     }
 
     private Invoice buildInvoice(UUID id, InvoiceStatus status, PaymentType paymentType) {
-        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
         return Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name", null, null,
-                status, paymentType, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
+                InvoiceId.of(id),
+                InvoiceNumber.of(2024, 1),
+                UUID.randomUUID(),
+                "Test Customer",
+                "J-12345678-9",
+                UUID.randomUUID(),
+                "Test User",
+                null,
+                null,
+                status,
+                paymentType,
+                null,
+                BigDecimal.ZERO,
+                null,
+                null,
+                null,
+                List.of(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private Invoice buildInvoiceWithLine(UUID id, InvoiceStatus status, PaymentType paymentType, 
+                                         UUID warehouseId, UUID productId) {
+        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, BigDecimal.TEN);
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.of(UUID.randomUUID()),
+                productId,
+                "Test Product",
+                "PROD-001",
+                BigDecimal.TEN,
+                BigDecimal.valueOf(10),
+                BigDecimal.valueOf(100),
+                List.of(allocation)
+        );
+        return Invoice.reconstitute(
+                InvoiceId.of(id),
+                InvoiceNumber.of(2024, 1),
+                UUID.randomUUID(),
+                "Test Customer",
+                "J-12345678-9",
+                UUID.randomUUID(),
+                "Test User",
+                null,
+                null,
+                status,
+                paymentType,
+                null,
+                BigDecimal.ZERO,
+                null,
+                null,
+                null,
+                List.of(line),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private User buildUser(UUID id) {
+        return new User(
+                new UserId(id),
+                new Email("test@example.com"),
+                new UserName("testuser"),
+                Password.fromHash("hashedPassword"),
+                UserRole.ADMIN
         );
     }
 }

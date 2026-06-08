@@ -195,7 +195,7 @@ class CancelOrderUseCaseUnitTest {
 
         verify(stockMovementRepository).save(stockMovementCaptor.capture());
         StockMovement movement = stockMovementCaptor.getValue();
-        assertEquals(MovementType.ENTRY, movement.getMovementType());
+        assertEquals(MovementType.CANCEL_ENTRY, movement.getMovementType());
         assertEquals(5, movement.getQuantity());
         assertEquals(45, movement.getPreviousStock());
         assertEquals(50, movement.getNewStock());

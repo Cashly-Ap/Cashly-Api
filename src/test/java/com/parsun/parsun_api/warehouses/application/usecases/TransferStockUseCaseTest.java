@@ -83,7 +83,8 @@ class TransferStockUseCaseTest {
             StockMovement m = inv.getArgument(0);
             return new StockMovement(UUID.randomUUID(), m.getWarehouseId(), m.getProductId(),
                     m.getMovementType(), m.getQuantity(), m.getPreviousStock(), m.getNewStock(),
-                    m.getOriginMovementId(), m.getTransferBatchId(), m.getNotes(), m.getCreatedAt());
+                    m.getOriginMovementId(), m.getTransferBatchId(), m.getReferenceType(),
+                    m.getReferenceId(), m.getReferenceNumber(), m.getNotes(), m.getCreatedAt());
         });
 
         List<StockMovementResponse> response = useCase.execute(sourceId, request);

@@ -51,9 +51,30 @@ class MovementTypeUnitTest {
     }
 
     @Test
-    @DisplayName("values() returns 6 items")
-    void shouldHaveSixValues() {
+    @DisplayName("RETURN_ENTRY enum value exists")
+    void shouldHaveReturnEntryValue() {
+        assertNotNull(MovementType.valueOf("RETURN_ENTRY"));
+        assertEquals(MovementType.RETURN_ENTRY, MovementType.valueOf("RETURN_ENTRY"));
+    }
+
+    @Test
+    @DisplayName("CANCEL_ENTRY enum value exists")
+    void shouldHaveCancelEntryValue() {
+        assertNotNull(MovementType.valueOf("CANCEL_ENTRY"));
+        assertEquals(MovementType.CANCEL_ENTRY, MovementType.valueOf("CANCEL_ENTRY"));
+    }
+
+    @Test
+    @DisplayName("SALE_EXIT enum value exists")
+    void shouldHaveSaleExitValue() {
+        assertNotNull(MovementType.valueOf("SALE_EXIT"));
+        assertEquals(MovementType.SALE_EXIT, MovementType.valueOf("SALE_EXIT"));
+    }
+
+    @Test
+    @DisplayName("values() returns 9 items")
+    void shouldHaveNineValues() {
         MovementType[] values = MovementType.values();
-        assertEquals(6, values.length);
+        assertEquals(9, values.length);
     }
 }

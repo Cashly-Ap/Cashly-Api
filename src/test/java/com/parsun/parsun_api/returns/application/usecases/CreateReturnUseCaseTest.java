@@ -17,6 +17,9 @@ import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
 import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
 import com.parsun.parsun_api.returns.domain.entities.Return;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,6 +68,12 @@ class CreateReturnUseCaseTest {
     @Mock
     private DebitNoteRepository debitNoteRepository;
 
+    @Mock
+    private WarehouseStockRepository warehouseStockRepository;
+
+    @Mock
+    private StockMovementRepository stockMovementRepository;
+
     @Captor
     private ArgumentCaptor<BigDecimal> surplusCaptor;
 
@@ -78,10 +87,19 @@ class CreateReturnUseCaseTest {
         useCase = new CreateReturnUseCase(
                 returnRepository, invoiceRepository, returnMapper,
                 paymentAllocationService, allocationRepository,
-                addToCustomerBalanceUseCase, creditNoteRepository, debitNoteRepository
+                addToCustomerBalanceUseCase, creditNoteRepository, debitNoteRepository,
+                warehouseStockRepository, stockMovementRepository
         );
         when(creditNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
         when(debitNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
+        
+        // Configure warehouse stock repository to return valid stock for any warehouse/product
+        WarehouseStock mockStock = WarehouseStock.create(UUID.randomUUID(), UUID.randomUUID());
+        mockStock.addStock(1000); // Ensure enough stock
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(any(), any()))
+                .thenReturn(Optional.of(mockStock));
+        when(warehouseStockRepository.save(any(WarehouseStock.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
     }
 
     private CreateReturnRequest buildRequest(BigDecimal total, String returnType, UUID invoiceId, UUID customerId) {
