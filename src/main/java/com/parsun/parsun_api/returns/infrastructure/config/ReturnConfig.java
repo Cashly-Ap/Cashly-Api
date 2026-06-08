@@ -12,6 +12,8 @@ import com.parsun.parsun_api.returns.application.usecases.DeleteReturnUseCase;
 import com.parsun.parsun_api.returns.application.usecases.GetAllReturnsUseCase;
 import com.parsun.parsun_api.returns.application.usecases.GetReturnByIdUseCase;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,15 +28,17 @@ public class ReturnConfig {
 
     @Bean
     public CreateReturnUseCase createReturnUseCase(InvoiceRepository invoiceRepository,
-                                                         ReturnMapper returnMapper,
-                                                         PaymentAllocationService paymentAllocationService,
-                                                         PaymentAllocationRepository allocationRepository,
-                                                         AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
-                                                         CreditNoteRepository creditNoteRepository,
-                                                         DebitNoteRepository debitNoteRepository) {
+                                                          ReturnMapper returnMapper,
+                                                          PaymentAllocationService paymentAllocationService,
+                                                          PaymentAllocationRepository allocationRepository,
+                                                          AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
+                                                          CreditNoteRepository creditNoteRepository,
+                                                          DebitNoteRepository debitNoteRepository,
+                                                          WarehouseStockRepository warehouseStockRepository,
+                                                          StockMovementRepository stockMovementRepository) {
         return new CreateReturnUseCase(returnRepository, invoiceRepository, returnMapper,
                 paymentAllocationService, allocationRepository, addToCustomerBalanceUseCase,
-                creditNoteRepository, debitNoteRepository);
+                creditNoteRepository, debitNoteRepository, warehouseStockRepository, stockMovementRepository);
     }
 
     @Bean

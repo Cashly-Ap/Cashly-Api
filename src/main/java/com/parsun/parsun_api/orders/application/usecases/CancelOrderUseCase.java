@@ -11,6 +11,7 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -62,15 +63,18 @@ public class CancelOrderUseCase {
                                 // because the reservation was already consumed by deductReserved.
                                 warehouseStockRepository.save(stock);
 
-                                stockMovementRepository.save(StockMovement.create(
+                                stockMovementRepository.save(StockMovement.createWithReference(
                                         allocation.getWarehouseId(),
                                         line.getProductId(),
-                                        MovementType.ENTRY,
+                                        MovementType.CANCEL_ENTRY,
                                         allocation.getAllocated().intValue(),
                                         previous,
                                         stock.getQuantity(),
                                         null,
                                         null,
+                                        ReferenceType.ORDER,
+                                        order.getId().value(),
+                                        order.getOrderNumber().value(),
                                         "Order cancelled"
                                 ));
                             } else {

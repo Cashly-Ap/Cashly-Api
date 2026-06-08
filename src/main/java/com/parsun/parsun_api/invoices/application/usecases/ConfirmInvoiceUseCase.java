@@ -24,6 +24,7 @@ import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -146,16 +147,19 @@ public class ConfirmInvoiceUseCase {
                             int previousReserved = stock.getReserved();
                             stock.deductReserved(allocation.getAllocated().intValue());
                             warehouseStockRepository.save(stock);
-                            stockMovementRepository.save(StockMovement.create(
+                            stockMovementRepository.save(StockMovement.createWithReference(
                                     allocation.getWarehouseId(),
                                     line.getProductId(),
-                                    MovementType.EXIT,
+                                    MovementType.SALE_EXIT,
                                     allocation.getAllocated().intValue(),
                                     previousQuantity,
                                     stock.getQuantity(),
                                     null,
                                     null,
-                                    "Factura confirmada"
+                                    ReferenceType.INVOICE,
+                                    invoice.getId().value(),
+                                    invoice.getInvoiceNumber().value(),
+                                    "Invoice confirmed"
                             ));
                         });
             }

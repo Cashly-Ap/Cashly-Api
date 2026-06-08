@@ -11,6 +11,7 @@ import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStock
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
@@ -88,10 +89,11 @@ public class StockEntryUseCase {
                     Product componentProduct = productRepository.findById(component.getComponentProductId())
                             .orElseThrow(() -> new ProductNotFoundException(component.getComponentProductId()));
 
-                    StockMovement componentMovement = StockMovement.create(
+                    StockMovement componentMovement = StockMovement.createWithReference(
                             warehouseId, component.getComponentProductId(), MovementType.COMPONENT_EXIT,
                             required, prevComponentQty, savedComponent.getQuantity(),
-                            null, null, "Component consumed for: " + product.getName()
+                            null, null, ReferenceType.MANUAL, null, null,
+                            "Component consumed for: " + product.getName()
                     );
                     StockMovement savedComponentMovement = stockMovementRepository.save(componentMovement);
                     movements.add(StockMovementResponse.from(savedComponentMovement,
@@ -107,10 +109,10 @@ public class StockEntryUseCase {
             stock.addStock(item.quantity());
             WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
-            StockMovement movement = StockMovement.create(
+            StockMovement movement = StockMovement.createWithReference(
                     warehouseId, product.getId(), MovementType.ENTRY,
                     item.quantity(), prevQty, savedStock.getQuantity(),
-                    null, null, item.notes()
+                    null, null, ReferenceType.MANUAL, null, null, item.notes()
             );
             StockMovement saved = stockMovementRepository.save(movement);
             movements.add(StockMovementResponse.from(saved, product.getCode(), product.getName()));

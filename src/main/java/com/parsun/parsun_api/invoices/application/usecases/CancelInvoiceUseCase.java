@@ -11,6 +11,7 @@ import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -58,15 +59,18 @@ public class CancelInvoiceUseCase {
                                 stock.addStock(allocation.getAllocated().intValue());
                                 warehouseStockRepository.save(stock);
 
-                                stockMovementRepository.save(StockMovement.create(
+                                stockMovementRepository.save(StockMovement.createWithReference(
                                         allocation.getWarehouseId(),
                                         line.getProductId(),
-                                        MovementType.ENTRY,
+                                        MovementType.CANCEL_ENTRY,
                                         allocation.getAllocated().intValue(),
                                         previous,
                                         stock.getQuantity(),
                                         null,
                                         null,
+                                        ReferenceType.INVOICE,
+                                        invoice.getId().value(),
+                                        invoice.getInvoiceNumber().value(),
                                         "Invoice cancelled"
                                 ));
                             } else {

@@ -16,9 +16,16 @@ import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
 import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
 import com.parsun.parsun_api.returns.domain.entities.Return;
 import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
+import com.parsun.parsun_api.returns.domain.entities.ReturnLineAllocation;
 import com.parsun.parsun_api.returns.domain.entities.ReturnNumber;
 import com.parsun.parsun_api.returns.domain.entities.ReturnType;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
+import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
+import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
+import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -36,6 +43,8 @@ public class CreateReturnUseCase {
     private final AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final StockMovementRepository stockMovementRepository;
 
     public CreateReturnUseCase(ReturnRepository returnRepository,
                                 InvoiceRepository invoiceRepository,
@@ -44,7 +53,9 @@ public class CreateReturnUseCase {
                                 PaymentAllocationRepository allocationRepository,
                                 AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
                                 CreditNoteRepository creditNoteRepository,
-                                DebitNoteRepository debitNoteRepository) {
+                                DebitNoteRepository debitNoteRepository,
+                                WarehouseStockRepository warehouseStockRepository,
+                                StockMovementRepository stockMovementRepository) {
         this.returnRepository = returnRepository;
         this.invoiceRepository = invoiceRepository;
         this.returnMapper = returnMapper;
@@ -53,6 +64,8 @@ public class CreateReturnUseCase {
         this.addToCustomerBalanceUseCase = addToCustomerBalanceUseCase;
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
+        this.warehouseStockRepository = warehouseStockRepository;
+        this.stockMovementRepository = stockMovementRepository;
     }
 
     @Transactional
@@ -82,6 +95,9 @@ public class CreateReturnUseCase {
         );
 
         Return saved = returnRepository.save(return_);
+
+        // Restore stock and create movements for each allocation
+        restoreStockFromReturn(saved);
 
         Invoice invoice = invoiceRepository.findById(return_.getInvoiceId())
                 .orElseThrow(() -> new InvoiceNotFoundException(return_.getInvoiceId().value()));
@@ -124,6 +140,50 @@ public class CreateReturnUseCase {
         }
 
         return returnMapper.toResponse(saved);
+    }
+
+    /**
+     * Restores stock to warehouses based on return line allocations.
+     * Creates RETURN_ENTRY movements for traceability.
+     * Uses pessimistic locking to prevent concurrent stock updates.
+     */
+    private void restoreStockFromReturn(Return return_) {
+        for (ReturnLine line : return_.getLines()) {
+            for (ReturnLineAllocation allocation : line.getAllocations()) {
+                // Truncate DECIMAL(15,4) to INT (e.g., 5.9999 → 5, 0.5000 → 0)
+                int quantity = allocation.getAllocated().intValue();
+                
+                // Skip if truncated quantity is 0
+                if (quantity <= 0) {
+                    continue;
+                }
+
+                WarehouseStock stock = warehouseStockRepository
+                        .findByWarehouseIdAndProductIdForUpdate(allocation.getWarehouseId(), line.getProductId())
+                        .orElseThrow(() -> new IllegalStateException(
+                                "Stock not found for warehouse=" + allocation.getWarehouseId() 
+                                + " product=" + line.getProductId()));
+
+                int previousStock = stock.getQuantity();
+                stock.addStock(quantity);
+                warehouseStockRepository.save(stock);
+
+                stockMovementRepository.save(StockMovement.createWithReference(
+                        allocation.getWarehouseId(),
+                        line.getProductId(),
+                        MovementType.RETURN_ENTRY,
+                        quantity,
+                        previousStock,
+                        stock.getQuantity(),
+                        null,
+                        null,
+                        ReferenceType.RETURN,
+                        return_.getId().value(),
+                        return_.getReturnNumber().value(),
+                        "Return: " + return_.getReturnNumber().value()
+                ));
+            }
+        }
     }
 
     private void cancelInvoicePayments(UUID invoiceId) {

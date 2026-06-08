@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.warehouses.application.dto.response;
 
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,9 @@ public record StockMovementResponse(
         int newStock,
         String originMovementId,
         String transferBatchId,
+        ReferenceType referenceType,
+        String referenceId,
+        String referenceNumber,
         String notes,
         LocalDateTime createdAt
 ) {
@@ -30,6 +34,9 @@ public record StockMovementResponse(
                 m.getPreviousStock(), m.getNewStock(),
                 m.getOriginMovementId() != null ? m.getOriginMovementId().toString() : null,
                 m.getTransferBatchId(),
+                m.getReferenceType(),
+                m.getReferenceId() != null ? m.getReferenceId().toString() : null,
+                m.getReferenceNumber(),
                 m.getNotes(), m.getCreatedAt()
         );
     }

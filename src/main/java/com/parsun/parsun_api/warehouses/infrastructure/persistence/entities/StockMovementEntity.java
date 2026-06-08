@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.warehouses.infrastructure.persistence.entities;
 
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +18,8 @@ import java.util.UUID;
         @Index(name = "idx_stock_movement_warehouse", columnList = "warehouse_id"),
         @Index(name = "idx_stock_movement_product", columnList = "product_id"),
         @Index(name = "idx_stock_movement_type", columnList = "movement_type"),
-        @Index(name = "idx_stock_movement_batch", columnList = "transfer_batch_id")
+        @Index(name = "idx_stock_movement_batch", columnList = "transfer_batch_id"),
+        @Index(name = "idx_sm_ref_type_id", columnList = "reference_type, reference_id")
     }
 )
 @Getter
@@ -60,6 +62,17 @@ public class StockMovementEntity {
     @Column(name = "transfer_batch_id", length = 50)
     private String transferBatchId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reference_type", length = 20)
+    private ReferenceType referenceType;
+
+    @Column(name = "reference_id", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID referenceId;
+
+    @Column(name = "reference_number", length = 100)
+    private String referenceNumber;
+
     @Column(name = "notes", length = 500)
     private String notes;
 
@@ -77,6 +90,9 @@ public class StockMovementEntity {
         e.newStock = m.getNewStock();
         e.originMovementId = m.getOriginMovementId();
         e.transferBatchId = m.getTransferBatchId();
+        e.referenceType = m.getReferenceType();
+        e.referenceId = m.getReferenceId();
+        e.referenceNumber = m.getReferenceNumber();
         e.notes = m.getNotes();
         e.createdAt = m.getCreatedAt();
         return e;
@@ -85,6 +101,7 @@ public class StockMovementEntity {
     public StockMovement toDomain() {
         return new StockMovement(id, warehouseId, productId, movementType,
                 quantity, previousStock, newStock, originMovementId,
-                transferBatchId, notes, createdAt);
+                transferBatchId, referenceType, referenceId, referenceNumber,
+                notes, createdAt);
     }
 }

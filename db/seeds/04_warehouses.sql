@@ -4,8 +4,9 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM customer_warehouse_access;
-DELETE FROM stock_movements;
-DELETE FROM warehouse_stock;
+-- Note: stock_movements y warehouse_stock se crean en seed 13
+-- DELETE FROM stock_movements;
+-- DELETE FROM warehouse_stock;
 DELETE FROM warehouses;
 SET FOREIGN_KEY_CHECKS = 1;
 

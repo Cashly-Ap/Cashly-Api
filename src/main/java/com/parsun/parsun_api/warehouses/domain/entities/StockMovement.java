@@ -14,13 +14,17 @@ public class StockMovement {
     private final int newStock;
     private final UUID originMovementId;
     private final String transferBatchId;
+    private final ReferenceType referenceType;
+    private final UUID referenceId;
+    private final String referenceNumber;
     private final String notes;
     private final LocalDateTime createdAt;
 
     public StockMovement(UUID id, UUID warehouseId, UUID productId, MovementType movementType,
                          int quantity, int previousStock, int newStock,
-                         UUID originMovementId, String transferBatchId, String notes,
-                         LocalDateTime createdAt) {
+                         UUID originMovementId, String transferBatchId,
+                         ReferenceType referenceType, UUID referenceId, String referenceNumber,
+                         String notes, LocalDateTime createdAt) {
         this.id = id;
         this.warehouseId = warehouseId;
         this.productId = productId;
@@ -30,15 +34,35 @@ public class StockMovement {
         this.newStock = newStock;
         this.originMovementId = originMovementId;
         this.transferBatchId = transferBatchId;
+        this.referenceType = referenceType;
+        this.referenceId = referenceId;
+        this.referenceNumber = referenceNumber;
         this.notes = notes;
         this.createdAt = createdAt;
     }
 
+    /**
+     * Factory method for backward compatibility (without reference tracking)
+     */
     public static StockMovement create(UUID warehouseId, UUID productId, MovementType movementType,
                                         int quantity, int previousStock, int newStock,
                                         UUID originMovementId, String transferBatchId, String notes) {
         return new StockMovement(null, warehouseId, productId, movementType, quantity,
-                previousStock, newStock, originMovementId, transferBatchId, notes, LocalDateTime.now());
+                previousStock, newStock, originMovementId, transferBatchId,
+                null, null, null, notes, LocalDateTime.now());
+    }
+
+    /**
+     * Factory method with reference tracking
+     */
+    public static StockMovement createWithReference(UUID warehouseId, UUID productId, MovementType movementType,
+                                                     int quantity, int previousStock, int newStock,
+                                                     UUID originMovementId, String transferBatchId,
+                                                     ReferenceType referenceType, UUID referenceId, 
+                                                     String referenceNumber, String notes) {
+        return new StockMovement(null, warehouseId, productId, movementType, quantity,
+                previousStock, newStock, originMovementId, transferBatchId,
+                referenceType, referenceId, referenceNumber, notes, LocalDateTime.now());
     }
 
     public UUID getId() { return id; }
@@ -50,6 +74,9 @@ public class StockMovement {
     public int getNewStock() { return newStock; }
     public UUID getOriginMovementId() { return originMovementId; }
     public String getTransferBatchId() { return transferBatchId; }
+    public ReferenceType getReferenceType() { return referenceType; }
+    public UUID getReferenceId() { return referenceId; }
+    public String getReferenceNumber() { return referenceNumber; }
     public String getNotes() { return notes; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

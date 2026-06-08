@@ -42,6 +42,12 @@ public class JpaWarehouseStockRepository implements WarehouseStockRepository {
     }
 
     @Override
+    public Optional<WarehouseStock> findByWarehouseIdAndProductIdForUpdate(UUID warehouseId, UUID productId) {
+        return springDataRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)
+                .map(WarehouseStockEntity::toDomain);
+    }
+
+    @Override
     public List<WarehouseStock> findByWarehouseId(UUID warehouseId) {
         return springDataRepository.findByWarehouseId(warehouseId, PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted()))
                 .stream().map(WarehouseStockEntity::toDomain).toList();

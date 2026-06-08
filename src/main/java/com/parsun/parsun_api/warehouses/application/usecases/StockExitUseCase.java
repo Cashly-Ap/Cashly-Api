@@ -11,6 +11,7 @@ import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWareh
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
@@ -76,10 +77,10 @@ public class StockExitUseCase {
             stock.removeStock(item.quantity());
             WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
-            StockMovement movement = StockMovement.create(
+            StockMovement movement = StockMovement.createWithReference(
                     warehouseId, product.getId(), MovementType.EXIT,
                     item.quantity(), prevQty, savedStock.getQuantity(),
-                    null, null, item.notes()
+                    null, null, ReferenceType.MANUAL, null, null, item.notes()
             );
             StockMovement saved = stockMovementRepository.save(movement);
             movements.add(StockMovementResponse.from(saved, product.getCode(), product.getName()));

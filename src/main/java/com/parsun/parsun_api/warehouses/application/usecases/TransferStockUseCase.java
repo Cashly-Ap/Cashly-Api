@@ -10,6 +10,7 @@ import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWareh
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
+import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
@@ -67,10 +68,10 @@ public class TransferStockUseCase {
         sourceStock.removeStock(request.quantity());
         WarehouseStock savedSource = warehouseStockRepository.save(sourceStock);
 
-        StockMovement outMovement = StockMovement.create(
+        StockMovement outMovement = StockMovement.createWithReference(
                 sourceWarehouseId, product.getId(), MovementType.TRANSFER_OUT,
                 request.quantity(), sourcePrev, savedSource.getQuantity(),
-                null, batchId, request.notes()
+                null, batchId, ReferenceType.TRANSFER, null, batchId, request.notes()
         );
         StockMovement savedOut = stockMovementRepository.save(outMovement);
 
@@ -83,10 +84,10 @@ public class TransferStockUseCase {
         destStock.addStock(request.quantity());
         WarehouseStock savedDest = warehouseStockRepository.save(destStock);
 
-        StockMovement inMovement = StockMovement.create(
+        StockMovement inMovement = StockMovement.createWithReference(
                 request.destinationWarehouseId(), product.getId(), MovementType.TRANSFER_IN,
                 request.quantity(), destPrev, savedDest.getQuantity(),
-                savedOut.getId(), batchId, request.notes()
+                savedOut.getId(), batchId, ReferenceType.TRANSFER, null, batchId, request.notes()
         );
         StockMovement savedIn = stockMovementRepository.save(inMovement);
 
