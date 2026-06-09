@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.reports.stock.infrastructure.web;
 
 import com.parsun.parsun_api.reports.stock.application.query.StockPdfQuery;
+import com.parsun.parsun_api.reports.stock.application.usecases.GenerateStockExcelUseCase;
 import com.parsun.parsun_api.reports.stock.application.usecases.GenerateStockPdfUseCase;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,9 +20,13 @@ import java.util.UUID;
 public class StockReportController {
 
     private final GenerateStockPdfUseCase generateStockPdfUseCase;
+    private final GenerateStockExcelUseCase generateStockExcelUseCase;
 
-    public StockReportController(GenerateStockPdfUseCase generateStockPdfUseCase) {
+    public StockReportController(
+            GenerateStockPdfUseCase generateStockPdfUseCase,
+            GenerateStockExcelUseCase generateStockExcelUseCase) {
         this.generateStockPdfUseCase = generateStockPdfUseCase;
+        this.generateStockExcelUseCase = generateStockExcelUseCase;
     }
 
     @GetMapping("/pdf")
@@ -36,5 +41,19 @@ public class StockReportController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stock-almacenes.pdf\"")
                 .body(pdf);
+    }
+
+    @GetMapping("/excel")
+    public ResponseEntity<byte[]> getStockExcel(
+            @RequestParam(required = false) UUID warehouseId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Boolean withStock,
+            @RequestParam(required = false) Boolean lowStock) {
+        StockPdfQuery query = new StockPdfQuery(warehouseId, categoryId, withStock, lowStock);
+        byte[] excel = generateStockExcelUseCase.execute(query);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stock-almacenes.xlsx\"")
+                .body(excel);
     }
 }

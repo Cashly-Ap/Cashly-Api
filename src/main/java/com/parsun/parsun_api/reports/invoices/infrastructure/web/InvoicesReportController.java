@@ -37,7 +37,7 @@ public class InvoicesReportController {
         byte[] pdf = generateInvoicePdfUseCase.execute(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"factura-" + id + ".pdf\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"nota-" + id + ".pdf\"")
                 .body(pdf);
     }
 

@@ -3,6 +3,7 @@ package com.parsun.parsun_api.invoices.infrastructure.web;
 import com.parsun.parsun_api.invoices.application.dto.request.CancelInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
+import com.parsun.parsun_api.invoices.application.dto.request.DuplicateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.request.UpdateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
@@ -93,8 +94,10 @@ public class InvoiceController {
 
     @PostMapping("/{id}/duplicate")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<InvoiceDetailResponse> duplicate(@PathVariable UUID id) {
-        InvoiceDetailResponse invoice = duplicateInvoiceUseCase.execute(id);
+    public ResponseEntity<InvoiceDetailResponse> duplicate(@PathVariable UUID id,
+                                                            @RequestBody(required = false) DuplicateInvoiceRequest request) {
+        UUID customerId = request != null ? request.customerId() : null;
+        InvoiceDetailResponse invoice = duplicateInvoiceUseCase.execute(id, customerId);
         return ResponseEntity.status(HttpStatus.CREATED).body(invoice);
     }
 

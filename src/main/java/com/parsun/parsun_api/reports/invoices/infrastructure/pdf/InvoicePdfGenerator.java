@@ -60,7 +60,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
             document.add(buildHeader(invoice, bold, regular));
             document.add(buildSectionTitle("DATOS DEL CLIENTE", bold));
             document.add(buildClientTable(invoice, bold, regular));
-            document.add(buildSectionTitle("DETALLE DE LA FACTURA", bold));
+            document.add(buildSectionTitle("DETALLE DE LA NOTA", bold));
             document.add(buildLinesTable(invoice, bold, regular));
             document.add(buildTotalsTable(invoice, bold, regular));
 
@@ -93,13 +93,13 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
 
         String invoiceDate = invoice.createdAt().format(DATE_FORMATTER);
         Cell infoCell = new Cell()
-                .add(new Paragraph("Factura N: " + invoice.invoiceNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
+                .add(new Paragraph("Nota N: " + invoice.invoiceNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
                 .add(new Paragraph("Fecha: " + invoiceDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
 
         if (invoice.orderNumber() != null) {
-            infoCell.add(new Paragraph("Pedido: " + invoice.orderNumber()).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY));
+            infoCell.add(new Paragraph("N° de Orden: " + invoice.orderNumber()).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY));
         }
 
         header.addCell(infoCell);

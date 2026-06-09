@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.reports.movements.infrastructure.web;
 
 import com.parsun.parsun_api.reports.movements.application.query.MovementsPdfQuery;
+import com.parsun.parsun_api.reports.movements.application.usecases.GenerateMovementsExcelUseCase;
 import com.parsun.parsun_api.reports.movements.application.usecases.GenerateMovementsPdfUseCase;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -21,9 +22,13 @@ import java.util.UUID;
 public class MovementsReportController {
 
     private final GenerateMovementsPdfUseCase generateMovementsPdfUseCase;
+    private final GenerateMovementsExcelUseCase generateMovementsExcelUseCase;
 
-    public MovementsReportController(GenerateMovementsPdfUseCase generateMovementsPdfUseCase) {
+    public MovementsReportController(
+            GenerateMovementsPdfUseCase generateMovementsPdfUseCase,
+            GenerateMovementsExcelUseCase generateMovementsExcelUseCase) {
         this.generateMovementsPdfUseCase = generateMovementsPdfUseCase;
+        this.generateMovementsExcelUseCase = generateMovementsExcelUseCase;
     }
 
     @GetMapping("/pdf")
@@ -39,5 +44,20 @@ public class MovementsReportController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"historial-movimientos.pdf\"")
                 .body(pdf);
+    }
+
+    @GetMapping("/excel")
+    public ResponseEntity<byte[]> getMovementsExcel(
+            @RequestParam(required = false) UUID warehouseId,
+            @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) String movementType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
+        MovementsPdfQuery query = new MovementsPdfQuery(warehouseId, productId, movementType, dateFrom, dateTo);
+        byte[] excel = generateMovementsExcelUseCase.execute(query);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"historial-movimientos.xlsx\"")
+                .body(excel);
     }
 }

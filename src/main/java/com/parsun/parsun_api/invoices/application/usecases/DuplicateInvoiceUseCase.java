@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.invoices.application.usecases;
 
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
@@ -26,19 +29,35 @@ public class DuplicateInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final ProductRepository productRepository;
+    private final CustomerRepository customerRepository;
 
     public DuplicateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                     WarehouseStockRepository warehouseStockRepository,
-                                    ProductRepository productRepository) {
+                                    ProductRepository productRepository,
+                                    CustomerRepository customerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.productRepository = productRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional
-    public InvoiceDetailResponse execute(UUID id) {
+    public InvoiceDetailResponse execute(UUID id, UUID newCustomerId) {
         Invoice original = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
+
+        UUID customerId = original.getCustomerId();
+        String customerName = original.getCustomerName();
+        String customerRif = original.getCustomerRif();
+
+        if (newCustomerId != null) {
+            Customer customer = customerRepository.findById(new CustomerId(newCustomerId))
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Customer not found: " + newCustomerId));
+            customerId = customer.getId().getValue();
+            customerName = customer.getLegalName().getValue();
+            customerRif = customer.getRif().getValue();
+        }
 
         int year = LocalDate.now().getYear();
         int sequence = invoiceRepository.getNextSequenceForYear(year);
@@ -67,9 +86,9 @@ public class DuplicateInvoiceUseCase {
 
         Invoice duplicate = Invoice.create(
                 newNumber,
-                original.getCustomerId(),
-                original.getCustomerName(),
-                original.getCustomerRif(),
+                customerId,
+                customerName,
+                customerRif,
                 original.getCreatedBy(),
                 original.getCreatedByName(),
                 null,
