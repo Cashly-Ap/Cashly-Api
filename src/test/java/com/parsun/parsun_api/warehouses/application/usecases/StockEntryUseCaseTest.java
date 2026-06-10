@@ -170,7 +170,7 @@ class StockEntryUseCaseTest {
         List<StockMovementResponse> response = useCase.execute(warehouseId, request);
 
         assertNotNull(response);
-        // 1 COMPONENT_EXIT + 1 ENTRY
+        
         assertEquals(2, response.size());
         verify(stockMovementRepository, times(2)).save(any(StockMovement.class));
     }
@@ -184,7 +184,7 @@ class StockEntryUseCaseTest {
         Product composite = buildCompositeProduct(productId, "COMP-PROD", "Composite", List.of(pc));
 
         WarehouseStock componentStock = WarehouseStock.create(warehouseId, componentId);
-        componentStock.addStock(1); // Only 1, but need 2*3=6
+        componentStock.addStock(1); 
 
         StockEntryRequest request = new StockEntryRequest(
                 List.of(new StockBatchItem(productId, 3, null))

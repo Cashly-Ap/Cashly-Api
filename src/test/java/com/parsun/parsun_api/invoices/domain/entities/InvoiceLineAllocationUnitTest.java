@@ -64,7 +64,7 @@ class InvoiceLineAllocationUnitTest {
 
     @Test
     void should_AllowNullId_When_Reconstituted() {
-        // The constructor does not validate id, so null is allowed for reconstitute
+        
         InvoiceLineAllocation allocation = InvoiceLineAllocation.reconstitute(null, UUID.randomUUID(), BigDecimal.ONE);
 
         assertNull(allocation.getId());

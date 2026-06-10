@@ -150,7 +150,7 @@ class OrderUnitTest {
                 order.getLines().add(validLines.get(0)));
     }
 
-    // --- update ---
+    
 
     @Test
     void should_UpdateOrder_When_StatusIsPending() throws InterruptedException {
@@ -194,7 +194,7 @@ class OrderUnitTest {
                 order.update(null, List.of()));
     }
 
-    // --- cancel ---
+    
 
     @Test
     void should_CancelOrder_When_StatusIsDraft() throws InterruptedException {
@@ -273,7 +273,7 @@ class OrderUnitTest {
         assertEquals("Cancellation reason cannot be blank", exception.getMessage());
     }
 
-    // --- markAsInvoiced ---
+    
 
     @Test
     void should_MarkAsInvoiced_When_StatusIsConfirmed() throws InterruptedException {
@@ -325,7 +325,7 @@ class OrderUnitTest {
                 order.markAsInvoiced(UUID.randomUUID(), null));
     }
 
-    // --- revertFromInvoiced ---
+    
 
     @Test
     void should_RevertFromInvoiced_When_StatusIsInvoiced() throws InterruptedException {
@@ -381,7 +381,7 @@ class OrderUnitTest {
         assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
     }
 
-    // --- isOwnedBy ---
+    
 
     @Test
     void should_ReturnTrue_When_UserIsOwner() {
@@ -399,7 +399,7 @@ class OrderUnitTest {
         assertFalse(order.isOwnedBy(UUID.randomUUID()));
     }
 
-    // --- reconstitute ---
+    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {

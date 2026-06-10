@@ -71,7 +71,7 @@ public class ConvertQuoteToOrderUseCase {
                 orderLines, LocalDateTime.now(), LocalDateTime.now()
         );
 
-        // Deduct stock for each line allocation
+        
         for (QuoteLine quoteLine : quote.getLines()) {
             for (QuoteAllocation allocation : quoteLine.getAllocations()) {
                 WarehouseStock stock = warehouseStockRepository

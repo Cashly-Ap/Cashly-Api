@@ -5,9 +5,7 @@ import com.parsun.parsun_api.reports.orders.application.port.OrdersReportPdfPort
 
 import java.util.List;
 
-/**
- * Implementation of GenerateOrdersReportPdfUseCase.
- */
+
 public class GenerateOrdersReportPdfUseCaseImpl implements GenerateOrdersReportPdfUseCase {
 
     private final OrdersReportPdfPort ordersReportPdfPort;

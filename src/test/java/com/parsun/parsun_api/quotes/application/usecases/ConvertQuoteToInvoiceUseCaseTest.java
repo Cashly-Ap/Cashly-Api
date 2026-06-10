@@ -96,17 +96,17 @@ class ConvertQuoteToInvoiceUseCaseTest {
         assertNotNull(result.invoiceId());
         assertNotNull(result.invoiceNumber());
 
-        // Verify stock was deducted
+        
         assertEquals(48, stock.getQuantity());
 
-        // Verify invoice was saved in PAID status with CASH payment type
+        
         ArgumentCaptor<Invoice> invoiceCaptor = ArgumentCaptor.forClass(Invoice.class);
         verify(invoiceRepository).save(invoiceCaptor.capture());
         Invoice savedInvoice = invoiceCaptor.getValue();
         assertEquals(InvoiceStatus.PAID, savedInvoice.getStatus());
         assertEquals(PaymentType.CASH, savedInvoice.getPaymentType());
 
-        // Verify quote was marked
+        
         verify(quoteRepository).save(quote);
         assertEquals(result.invoiceId(), quote.getInvoiceId());
     }
@@ -183,7 +183,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         verify(invoiceRepository, never()).save(any());
     }
 
-    // --- Helpers ---
+    
 
     private Quote buildDraftQuote(UUID quoteId, UUID warehouseId, UUID productId) {
         QuoteLine line = new QuoteLine(productId, "Product A", "PROD-001", BigDecimal.valueOf(2), new BigDecimal("50.0000"));

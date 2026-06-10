@@ -345,7 +345,7 @@ class CreateQuoteUseCaseTest {
         assertEquals(0, new BigDecimal("200.0000").compareTo(response.subtotal()));
     }
 
-    // --- Test Helpers ---
+    
 
     private Customer buildCustomer(UUID customerId) {
         return Customer.reconstitute(

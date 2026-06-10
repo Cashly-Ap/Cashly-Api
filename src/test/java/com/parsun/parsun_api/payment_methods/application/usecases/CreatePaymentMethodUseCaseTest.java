@@ -119,10 +119,7 @@ class CreatePaymentMethodUseCaseTest {
         verify(repository).save(any(PaymentMethod.class));
     }
 
-    /**
-     * Helper to create a PaymentMethodId for test doubles without relying on
-     * the real generation during save mocking.
-     */
+    
     private static final class PaymentMethodIdHelper {
         static com.parsun.parsun_api.payment_methods.domain.valueobjects.PaymentMethodId create() {
             return com.parsun.parsun_api.payment_methods.domain.valueobjects.PaymentMethodId.of(

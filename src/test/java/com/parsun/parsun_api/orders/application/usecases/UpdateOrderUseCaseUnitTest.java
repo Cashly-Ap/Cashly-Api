@@ -179,9 +179,9 @@ class UpdateOrderUseCaseUnitTest {
 
         updateOrderUseCase.execute(id, request);
 
-        // Old reservation released: reserved went from 5 to 2
+        
         assertEquals(2, oldStock.getReserved());
-        // New reservation: reserved went from 0 to 2
+        
         assertEquals(2, newStock.getReserved());
 
         verify(warehouseStockRepository, times(2)).save(any(WarehouseStock.class));

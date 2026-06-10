@@ -16,7 +16,7 @@ class PaymentMethodUnitTest {
     private static final String VALID_NAME = "Cash";
     private static final String VALID_DESCRIPTION = "Cash payment method";
 
-    // --- create() ---
+    
 
     @Test
     void should_CreateActivePaymentMethod_When_ValidData() {
@@ -61,7 +61,7 @@ class PaymentMethodUnitTest {
         assertNotEquals(pm1.getId(), pm2.getId());
     }
 
-    // --- reconstitute() ---
+    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
@@ -91,7 +91,7 @@ class PaymentMethodUnitTest {
         assertFalse(pm.isActive());
     }
 
-    // --- update() ---
+    
 
     @Test
     void should_UpdateFields_When_ValidData() throws InterruptedException {
@@ -135,7 +135,7 @@ class PaymentMethodUnitTest {
                 () -> pm.update(null, VALID_DESCRIPTION, null));
     }
 
-    // --- toggleActive() ---
+    
 
     @Test
     void should_Deactivate_When_Active() throws InterruptedException {
@@ -164,7 +164,7 @@ class PaymentMethodUnitTest {
         assertTrue(pm.getUpdatedAt().isAfter(beforeToggle));
     }
 
-    // --- deactivate() ---
+    
 
     @Test
     void should_Deactivate_When_Called() throws InterruptedException {
@@ -188,7 +188,7 @@ class PaymentMethodUnitTest {
         assertFalse(pm.isActive());
     }
 
-    // --- equals / hashCode ---
+    
 
     @Test
     void should_BeEqual_When_SameId() {
@@ -212,7 +212,7 @@ class PaymentMethodUnitTest {
         assertNotEquals(pm1, pm2);
     }
 
-    // --- toString ---
+    
 
     @Test
     void toString_Should_ContainFields() {

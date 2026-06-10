@@ -58,7 +58,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            // Header
+            
             Paragraph title = new Paragraph("Reporte de Pedidos")
                     .setFont(bold)
                     .setFontSize(18)
@@ -78,14 +78,14 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             document.add(subtitle);
 
-            // Table
+            
             float[] columnWidths = detailed
                     ? new float[]{2f, 3f, 1.5f, 2f, 2f, 1.5f}
                     : new float[]{2f, 3f, 2f, 2f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
-            // Headers
+            
             String[] headers = detailed
                     ? new String[]{"N° Pedido", "Cliente", "Líneas", "Factura", "Total", "Fecha"}
                     : new String[]{"N° Pedido", "Cliente", "Total", "Fecha"};
@@ -99,7 +99,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
                 table.addHeaderCell(headerCell);
             }
 
-            // Rows
+            
             for (int i = 0; i < orders.size(); i++) {
                 OrderListResponse order = orders.get(i);
                 boolean even = i % 2 == 0;
@@ -119,7 +119,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             document.add(table);
 
-            // Summary
+            
             Paragraph totalLabel = new Paragraph("Total de Pedidos: " + orders.size())
                     .setFont(bold)
                     .setFontSize(11)
@@ -127,7 +127,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
                     .setMarginTop(16);
             document.add(totalLabel);
 
-            // Calculate totals by status
+            
             long confirmed = orders.stream().filter(o -> "CONFIRMED".equals(o.status())).count();
             long invoiced = orders.stream().filter(o -> "INVOICED".equals(o.status())).count();
             long cancelled = orders.stream().filter(o -> "CANCELLED".equals(o.status())).count();
@@ -142,7 +142,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
                     .setMarginTop(8);
             document.add(summary);
 
-            // Footer
+            
             Paragraph footer = new Paragraph("Documento generado automáticamente por PARSUN")
                     .setFont(regular)
                     .setFontSize(8)

@@ -44,7 +44,7 @@ class InvoiceMapperTest {
 
         assertThat(response.creditApplied()).isEqualByComparingTo("100");
         assertThat(response.debitApplied()).isEqualByComparingTo("50");
-        assertThat(response.total()).isEqualByComparingTo("950"); // 1000 - 100 + 50
+        assertThat(response.total()).isEqualByComparingTo("950"); 
         assertThat(response.notesList()).hasSize(2);
         assertThat(response.subtotal()).isEqualByComparingTo("1000");
     }
@@ -59,7 +59,7 @@ class InvoiceMapperTest {
 
         assertThat(response.creditApplied()).isEqualByComparingTo("0");
         assertThat(response.debitApplied()).isEqualByComparingTo("0");
-        assertThat(response.total()).isEqualByComparingTo("500"); // 500 - 0 + 0
+        assertThat(response.total()).isEqualByComparingTo("500"); 
         assertThat(response.notesList()).isEmpty();
         assertThat(response.subtotal()).isEqualByComparingTo("500");
     }
@@ -77,7 +77,7 @@ class InvoiceMapperTest {
                 )
         );
 
-        assertThat(response.total()).isEqualByComparingTo("1700"); // 2000 - 300 + 0
+        assertThat(response.total()).isEqualByComparingTo("1700"); 
         assertThat(response.creditApplied()).isEqualByComparingTo("300");
         assertThat(response.debitApplied()).isEqualByComparingTo("0");
     }
@@ -95,7 +95,7 @@ class InvoiceMapperTest {
                 )
         );
 
-        assertThat(response.total()).isEqualByComparingTo("2200"); // 2000 - 0 + 200
+        assertThat(response.total()).isEqualByComparingTo("2200"); 
         assertThat(response.creditApplied()).isEqualByComparingTo("0");
         assertThat(response.debitApplied()).isEqualByComparingTo("200");
     }

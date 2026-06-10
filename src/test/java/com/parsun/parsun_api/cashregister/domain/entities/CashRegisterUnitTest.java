@@ -22,7 +22,7 @@ class CashRegisterUnitTest {
     private static final String OPENED_BY_NAME = "Operator Test";
     private static final RegisterId CLOSURE_ID = RegisterId.generate();
 
-    // --- create (open) ---
+    
 
     @Test
     void should_OpenClosure_When_ValidDataProvided() {
@@ -88,7 +88,7 @@ class CashRegisterUnitTest {
         assertEquals("Opened by name must not be blank", exception.getMessage());
     }
 
-    // --- applyTotals ---
+    
 
     @Test
     void should_ApplyTotals_When_ValidDataProvided() {
@@ -100,12 +100,12 @@ class CashRegisterUnitTest {
         );
 
         closure.applyTotals(
-                new BigDecimal("2150.00"), 5,   // payments
-                new BigDecimal("500.00"), 1,    // advances
-                new BigDecimal("100.00"), 2,    // returns
-                new BigDecimal("50.00"),        // credit notes
-                new BigDecimal("0"),            // debit notes
-                new BigDecimal("3500.00"), 3,   // invoices
+                new BigDecimal("2150.00"), 5,   
+                new BigDecimal("500.00"), 1,    
+                new BigDecimal("100.00"), 2,    
+                new BigDecimal("50.00"),        
+                new BigDecimal("0"),            
+                new BigDecimal("3500.00"), 3,   
                 details
         );
 
@@ -120,8 +120,8 @@ class CashRegisterUnitTest {
         assertEquals(2, closure.getReturnCount());
         assertEquals(3, closure.getInvoiceCount());
 
-        // expected = payments + advances - returns - credit_notes + debit_notes
-        // 2150 + 500 - 100 - 50 + 0 = 2500
+        
+        
         assertEquals(new BigDecimal("2500.00"), closure.getExpectedClosingBalance());
         assertEquals(2, closure.getDetails().size());
     }
@@ -131,7 +131,7 @@ class CashRegisterUnitTest {
         CashRegister closure = CashRegister.open(CLOSURE_ID, CLOSURE_DATE, OPENED_BY, OPENED_BY_NAME);
         closure.close(UUID.randomUUID(), "Test", null);
 
-        // applyTotals does NOT check state — can be called anytime
+        
         closure.applyTotals(
                 new BigDecimal("100.00"), 1,
                 BigDecimal.ZERO, 0,
@@ -155,7 +155,7 @@ class CashRegisterUnitTest {
                         BigDecimal.ZERO, 0, Collections.emptyList()));
     }
 
-    // --- close ---
+    
 
     @Test
     void should_CloseClosure_When_StatusIsOpen() {
@@ -203,7 +203,7 @@ class CashRegisterUnitTest {
         assertEquals("Closed by name must not be blank", exception.getMessage());
     }
 
-    // --- reconstitute ---
+    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {

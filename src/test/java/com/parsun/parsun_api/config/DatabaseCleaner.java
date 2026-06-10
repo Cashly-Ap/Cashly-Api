@@ -33,7 +33,7 @@ public class DatabaseCleaner {
             try {
                 entityManager.createNativeQuery("TRUNCATE TABLE " + table).executeUpdate();
             } catch (Exception e) {
-                // Table might not exist yet, ignore
+                
             }
         }
         

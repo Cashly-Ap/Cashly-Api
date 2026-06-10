@@ -28,13 +28,13 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map Quote to QuoteListResponse with all fields correctly")
     void shouldMapToQuoteListResponse() {
-        // Given
+        
         Quote quote = buildDraftQuote();
 
-        // When
+        
         QuoteListResponse response = QuoteMapper.toListResponse(quote);
 
-        // Then
+        
         assertNotNull(response);
         assertEquals(quote.getId(), response.id());
         assertEquals(quote.getQuoteNumber().value(), response.quoteNumber());
@@ -51,14 +51,14 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map Quote to QuoteDetailResponse with all fields including nested lines and allocations")
     void shouldMapToQuoteDetailResponse() {
-        // Given
+        
         UUID warehouseId = UUID.randomUUID();
         Quote quote = buildDraftQuoteWithLines(warehouseId);
 
-        // When
+        
         QuoteDetailResponse response = QuoteMapper.toDetailResponse(quote);
 
-        // Then — top-level fields
+        
         assertNotNull(response);
         assertEquals(quote.getId(), response.id());
         assertEquals(quote.getQuoteNumber().value(), response.quoteNumber());
@@ -80,7 +80,7 @@ class QuoteMapperTest {
         assertEquals(quote.getCreatedAt(), response.createdAt());
         assertEquals(quote.getUpdatedAt(), response.updatedAt());
 
-        // Then — lines
+        
         assertThat(response.lines()).hasSize(1);
         QuoteLineDetailResponse lineResponse = response.lines().get(0);
         QuoteLine line = quote.getLines().get(0);
@@ -92,7 +92,7 @@ class QuoteMapperTest {
         assertEquals(line.getUnitPrice(), lineResponse.unitPrice());
         assertEquals(line.getLineTotal(), lineResponse.lineTotal());
 
-        // Then — allocations
+        
         assertThat(lineResponse.allocations()).hasSize(1);
         QuoteAllocationDetailResponse allocationResponse = lineResponse.allocations().get(0);
         QuoteAllocation allocation = line.getAllocations().get(0);
@@ -105,13 +105,13 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map Quote with multiple lines and allocations to detail response")
     void shouldMapQuoteWithMultipleLinesToDetailResponse() {
-        // Given
+        
         Quote quote = buildQuoteWithMultipleLines();
 
-        // When
+        
         QuoteDetailResponse response = QuoteMapper.toDetailResponse(quote);
 
-        // Then
+        
         assertThat(response.lines()).hasSize(2);
         assertEquals(0, new BigDecimal("350.0000").compareTo(response.subtotal()));
     }
@@ -119,15 +119,15 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map Quote with cancelled fields to detail response")
     void shouldMapCancelledQuoteToDetailResponse() {
-        // Given
+        
         Quote quote = buildDraftQuote();
         quote.cancel("Customer decided to cancel");
         Instant cancelledAt = quote.getCancelledAt();
 
-        // When
+        
         QuoteDetailResponse response = QuoteMapper.toDetailResponse(quote);
 
-        // Then
+        
         assertEquals("CANCELLED", response.status());
         assertNotNull(response.cancelledAt());
         assertEquals("Customer decided to cancel", response.cancelledReason());
@@ -136,15 +136,15 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map Quote with order linkage to detail response")
     void shouldMapQuoteWithOrderToDetailResponse() {
-        // Given
+        
         UUID orderId = UUID.randomUUID();
         Quote quote = buildDraftQuote();
         quote.markConvertedToOrder(orderId, "2026-0001");
 
-        // When
+        
         QuoteDetailResponse response = QuoteMapper.toDetailResponse(quote);
 
-        // Then
+        
         assertEquals(orderId, response.orderId());
         assertEquals("2026-0001", response.orderNumber());
         assertNull(response.invoiceId());
@@ -155,15 +155,15 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map Quote with invoice linkage to detail response")
     void shouldMapQuoteWithInvoiceToDetailResponse() {
-        // Given
+        
         UUID invoiceId = UUID.randomUUID();
         Quote quote = buildDraftQuote();
         quote.markConvertedToInvoice(invoiceId, "2026-0001");
 
-        // When
+        
         QuoteDetailResponse response = QuoteMapper.toDetailResponse(quote);
 
-        // Then
+        
         assertNull(response.orderId());
         assertNull(response.orderNumber());
         assertEquals(invoiceId, response.invoiceId());
@@ -174,7 +174,7 @@ class QuoteMapperTest {
     @Test
     @DisplayName("should map empty lines list")
     void shouldMapQuoteWithEmptyLines() {
-        // Given
+        
         Quote quote = Quote.reconstitute(
                 UUID.randomUUID(),
                 QuoteNumber.of(2026, 1),
@@ -188,14 +188,14 @@ class QuoteMapperTest {
                 Instant.now(), Instant.now()
         );
 
-        // When
+        
         QuoteDetailResponse response = QuoteMapper.toDetailResponse(quote);
 
-        // Then
+        
         assertThat(response.lines()).isEmpty();
     }
 
-    // --- Test Helpers ---
+    
 
     private Quote buildDraftQuote() {
         return Quote.create(

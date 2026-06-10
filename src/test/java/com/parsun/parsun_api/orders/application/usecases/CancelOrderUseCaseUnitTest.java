@@ -150,9 +150,9 @@ class CancelOrderUseCaseUnitTest {
 
         cancelOrderUseCase.execute(id, request);
 
-        // Only releaseReserved — no addStock, no StockMovement
-        assertEquals(50, stock.getQuantity());  // unchanged
-        assertEquals(5, stock.getReserved());   // 10 - 5
+        
+        assertEquals(50, stock.getQuantity());  
+        assertEquals(5, stock.getReserved());   
         verify(warehouseStockRepository).save(stock);
         verifyNoInteractions(stockMovementRepository);
     }
@@ -175,10 +175,10 @@ class CancelOrderUseCaseUnitTest {
         );
         CancelOrderRequest request = new CancelOrderRequest("Supplier issue");
 
-        // After deductReserved(5): quantity went from 50→45, reserved went from 10→5
-        // (5 remaining reserved belongs to OTHER orders, not this one)
-        // On cancel, only addStock(5) restores quantity. releaseReserved is NOT called
-        // because deductReserved already consumed this order's reservation.
+        
+        
+        
+        
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 45, 5,
                 LocalDateTime.now(), LocalDateTime.now());
 
@@ -189,9 +189,9 @@ class CancelOrderUseCaseUnitTest {
 
         cancelOrderUseCase.execute(id, request);
 
-        // Restore stock only — releaseReserved is NOT called for confirmed orders
-        assertEquals(50, stock.getQuantity());  // 45 + 5
-        assertEquals(5, stock.getReserved());   // unchanged — reserved=5 belongs to other orders
+        
+        assertEquals(50, stock.getQuantity());  
+        assertEquals(5, stock.getReserved());   
 
         verify(stockMovementRepository).save(stockMovementCaptor.capture());
         StockMovement movement = stockMovementCaptor.getValue();

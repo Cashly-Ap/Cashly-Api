@@ -14,7 +14,7 @@ class CategoryUnitTest {
     private static final String VALID_NAME = "Test Category";
     private static final String VALID_DESCRIPTION = "A test category";
 
-    // --- create() ---
+    
 
     @Test
     void should_CreateActiveCategory_With_NullId() {
@@ -28,7 +28,7 @@ class CategoryUnitTest {
         assertNotNull(category.getUpdatedAt());
     }
 
-    // --- reconstitute() ---
+    
 
     @Test
     void should_Reconstitute_With_FullState() {
@@ -45,7 +45,7 @@ class CategoryUnitTest {
         assertEquals(now, category.getUpdatedAt());
     }
 
-    // --- update() ---
+    
 
     @Test
     void should_UpdateNameDescriptionAndActive_When_ValidData() throws InterruptedException {
@@ -72,7 +72,7 @@ class CategoryUnitTest {
         assertEquals("Updated Name", category.getName());
     }
 
-    // --- activate/deactivate ---
+    
 
     @Test
     void should_Activate_When_Deactivated() throws InterruptedException {
@@ -99,7 +99,7 @@ class CategoryUnitTest {
         assertTrue(category.getUpdatedAt().isAfter(beforeDeactivate));
     }
 
-    // --- Name validation ---
+    
 
     @Test
     void should_ThrowException_When_NameIsNull() {
@@ -143,7 +143,7 @@ class CategoryUnitTest {
         assertEquals(maxName, category.getName());
     }
 
-    // --- Description validation ---
+    
 
     @Test
     void should_AcceptNullDescription() {
@@ -169,7 +169,7 @@ class CategoryUnitTest {
                 Category.create(VALID_NAME, longDesc));
     }
 
-    // --- equals/hashCode by ID only ---
+    
 
     @Test
     void should_BeEqual_When_SameId() {

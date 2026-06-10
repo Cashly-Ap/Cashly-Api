@@ -23,10 +23,10 @@ public class UpdatePaymentUseCase {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
 
-        // Apply partial updates
+        
         if (request.referenceNumber() != null) {
-            // referenceNumber is not mutable via domain entity; this is a placeholder
-            // for future domain behavior if needed
+            
+            
         }
 
         Payment saved = paymentRepository.save(payment);

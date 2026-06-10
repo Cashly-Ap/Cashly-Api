@@ -92,14 +92,14 @@ class ConvertQuoteToOrderUseCaseTest {
         assertNotNull(result.orderId());
         assertNotNull(result.orderNumber());
 
-        // Verify stock was deducted (100 - 3 = 97)
+        
         assertEquals(97, stock.getQuantity());
 
-        // Verify quote was marked as converted
+        
         assertEquals(result.orderId(), quote.getOrderId());
         assertEquals(result.orderNumber(), quote.getOrderNumber());
 
-        // Verify order was saved in CONFIRMED status
+        
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
         verify(orderRepository).save(orderCaptor.capture());
         Order savedOrder = orderCaptor.getValue();
@@ -107,7 +107,7 @@ class ConvertQuoteToOrderUseCaseTest {
         assertEquals(quote.getCustomerId(), savedOrder.getCustomerId());
         assertEquals(quote.getCustomerName(), savedOrder.getCustomerName());
 
-        // Verify quote was saved
+        
         verify(quoteRepository).save(quote);
     }
 
@@ -156,7 +156,7 @@ class ConvertQuoteToOrderUseCaseTest {
         verify(orderRepository, never()).save(any());
     }
 
-    // --- Helpers ---
+    
 
     private Quote buildDraftQuote(UUID quoteId, UUID warehouseId, UUID productId) {
         QuoteLine line = new QuoteLine(productId, "Product A", "PROD-001", BigDecimal.valueOf(3), new BigDecimal("100.0000"));

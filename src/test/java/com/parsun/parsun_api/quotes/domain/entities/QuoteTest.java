@@ -121,7 +121,7 @@ class QuoteTest {
             Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                     CREATED_BY, CREATED_BY_NAME, null, null, validLines());
 
-            // Line 1: 2 x 10.00 = 20.00, Line 2: 3 x 5.00 = 15.00 => 35.00
+            
             assertEquals(new BigDecimal("35.00"), quote.getSubtotal());
         }
 
@@ -304,17 +304,17 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             BigDecimal initialSubtotal = quote.getSubtotal();
 
-            // Adding a line should increase subtotal
+            
             QuoteLine newLine = createLine("Product C", new BigDecimal("1"), new BigDecimal("50.00"));
             quote.addLine(newLine);
             assertTrue(quote.getSubtotal().compareTo(initialSubtotal) > 0);
 
-            // Updating a line should change subtotal
+            
             QuoteLine firstLine = quote.getLines().get(0);
             quote.updateLine(firstLine.getId(), new BigDecimal("100"), new BigDecimal("1000.00"));
             assertTrue(quote.getSubtotal().compareTo(initialSubtotal) > 0);
 
-            // Removing a line should decrease subtotal to a different value
+            
             BigDecimal afterUpdate = quote.getSubtotal();
             quote.removeLine(newLine.getId());
             assertTrue(quote.getSubtotal().compareTo(afterUpdate) < 0);

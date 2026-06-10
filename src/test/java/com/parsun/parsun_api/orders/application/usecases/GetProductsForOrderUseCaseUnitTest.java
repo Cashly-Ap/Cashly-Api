@@ -264,7 +264,7 @@ class GetProductsForOrderUseCaseUnitTest {
     void should_ReturnEmptyPage_When_NoProductsMatch() {
         UUID customerId = UUID.randomUUID();
 
-        // Use real customer to avoid unnecessary stubs on unused methods
+        
         Customer customer = mock(Customer.class);
 
         when(customerRepository.findById(new CustomerId(customerId)))

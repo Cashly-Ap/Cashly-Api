@@ -142,7 +142,7 @@ class GetProductsForQuoteUseCaseTest {
         verify(productRepository, never()).findAllWithFilters(any(), any(), any(), any(), anyInt(), anyInt(), any(), any());
     }
 
-    // --- Helpers ---
+    
 
     private Customer buildCustomer(UUID customerId, UUID priceTypeId) {
         return Customer.reconstitute(

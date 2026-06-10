@@ -18,9 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Implementation of GenerateOrderPdfUseCase.
- */
+
 public class GenerateOrderPdfUseCaseImpl implements GenerateOrderPdfUseCase {
 
     private final OrderRepository orderRepository;

@@ -152,8 +152,8 @@ class ConfirmOrderUseCaseUnitTest {
 
         confirmOrderUseCase.execute(id);
 
-        assertEquals(45, stock.getQuantity());  // 50 - 5
-        assertEquals(5, stock.getReserved());    // 10 - 5
+        assertEquals(45, stock.getQuantity());  
+        assertEquals(5, stock.getReserved());    
         verify(warehouseStockRepository).save(stock);
     }
 

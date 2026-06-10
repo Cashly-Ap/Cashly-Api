@@ -19,7 +19,7 @@ class ProductUnitTest {
     private static final String VALID_DESCRIPTION = "A test product";
     private static final UUID CATEGORY_ID = UUID.randomUUID();
 
-    // --- create() ---
+    
 
     @Test
     void should_CreateActiveProduct_When_ValidData() {
@@ -51,7 +51,7 @@ class ProductUnitTest {
         assertTrue(product.isComposite());
     }
 
-    // --- reconstitute() ---
+    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
@@ -81,7 +81,7 @@ class ProductUnitTest {
         assertEquals(now, product.getUpdatedAt());
     }
 
-    // --- update() ---
+    
 
     @Test
     void should_UpdateFields_When_ValidData() throws InterruptedException {
@@ -142,7 +142,7 @@ class ProductUnitTest {
                 product.update(longName, "desc", CATEGORY_ID, null, null, null, null));
     }
 
-    // --- activate/deactivate ---
+    
 
     @Test
     void should_Activate_When_Deactivated() throws InterruptedException {
@@ -171,7 +171,7 @@ class ProductUnitTest {
         assertTrue(product.getUpdatedAt().isAfter(beforeDeactivate));
     }
 
-    // --- makeComposite() ---
+    
 
     @Test
     void should_MakeComposite_When_NotComposite() throws InterruptedException {
@@ -186,7 +186,7 @@ class ProductUnitTest {
         assertTrue(product.getUpdatedAt().isAfter(beforeMake));
     }
 
-    // --- setComponents() ---
+    
 
     @Test
     void should_ThrowException_When_SetComponentsOnNonComposite() {
@@ -214,7 +214,7 @@ class ProductUnitTest {
         assertEquals(compId, product.getComponents().get(0).getComponentProductId());
     }
 
-    // --- setProductPrices() ---
+    
 
     @Test
     void should_SetProductPrices_When_ValidList() {
@@ -231,7 +231,7 @@ class ProductUnitTest {
         assertEquals(priceTypeId, product.getProductPrices().get(0).getPriceTypeId());
     }
 
-    // --- assignPhoto/removePhoto ---
+    
 
     @Test
     void should_AssignPhoto_When_PathProvided() throws InterruptedException {
@@ -261,7 +261,7 @@ class ProductUnitTest {
         assertTrue(product.getUpdatedAt().isAfter(beforeRemove));
     }
 
-    // --- Code validation ---
+    
 
     @Test
     void should_ThrowException_When_CodeIsNull() {
@@ -283,7 +283,7 @@ class ProductUnitTest {
                 Product.create(longCode, VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null, null, null));
     }
 
-    // --- Name validation ---
+    
 
     @Test
     void should_ThrowException_When_NameIsNull() {
@@ -305,7 +305,7 @@ class ProductUnitTest {
                 Product.create(VALID_CODE, longName, VALID_DESCRIPTION, CATEGORY_ID, false, null, null, null));
     }
 
-    // --- Code trimming and uppercasing ---
+    
 
     @Test
     void should_TrimAndUppercaseCode_When_CreatedWithSpacesAndLowercase() {
@@ -315,7 +315,7 @@ class ProductUnitTest {
         assertEquals("PROD-001", product.getCode());
     }
 
-    // --- Name trimming ---
+    
 
     @Test
     void should_TrimName_When_CreatedWithSpaces() {
@@ -325,7 +325,7 @@ class ProductUnitTest {
         assertEquals("Test Product", product.getName());
     }
 
-    // --- Collections are unmodifiable ---
+    
 
     @Test
     void should_ReturnUnmodifiableComponents_When_GetComponentsCalled() {
@@ -345,7 +345,7 @@ class ProductUnitTest {
                 product.getProductPrices().add(ProductPrice.create(UUID.randomUUID(), BigDecimal.TEN)));
     }
 
-    // --- equals/hashCode by ID only ---
+    
 
     @Test
     void should_BeEqual_When_SameId() {

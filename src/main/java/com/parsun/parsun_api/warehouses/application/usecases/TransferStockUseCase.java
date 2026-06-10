@@ -52,7 +52,7 @@ public class TransferStockUseCase {
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new ProductNotFoundException(request.productId()));
 
-        // Deduct from source
+        
         WarehouseStock sourceStock = warehouseStockRepository
                 .findByWarehouseIdAndProductId(sourceWarehouseId, product.getId())
                 .orElseThrow(() -> new ProductNotInWarehouseException(product.getId(), sourceWarehouseId));
@@ -75,7 +75,7 @@ public class TransferStockUseCase {
         );
         StockMovement savedOut = stockMovementRepository.save(outMovement);
 
-        // Add to destination
+        
         WarehouseStock destStock = warehouseStockRepository
                 .findByWarehouseIdAndProductId(request.destinationWarehouseId(), product.getId())
                 .orElseGet(() -> WarehouseStock.create(request.destinationWarehouseId(), product.getId()));

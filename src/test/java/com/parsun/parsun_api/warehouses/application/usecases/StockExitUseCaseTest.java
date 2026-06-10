@@ -130,7 +130,7 @@ class StockExitUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(5); // Only 5 available
+        stock.addStock(5); 
 
         StockExitRequest request = new StockExitRequest(
                 List.of(new StockBatchItem(productId, 10, null))

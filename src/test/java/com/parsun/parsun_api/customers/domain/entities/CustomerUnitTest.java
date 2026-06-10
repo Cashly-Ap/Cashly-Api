@@ -142,9 +142,9 @@ class CustomerUnitTest {
         customer.addAddress("Address 1", true, true, "State", "Mun", "1000");
         customer.addAddress("Address 2", true, true, "State", "Mun", "1000");
 
-        // First address was unmarked when second billing address was added
+        
         assertFalse(customer.getAddresses().get(0).isBilling());
-        // Only the latest billing address is marked
+        
         assertTrue(customer.getAddresses().get(1).isBilling());
     }
 

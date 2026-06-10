@@ -208,9 +208,7 @@ class LoginUserUseCaseTest {
         );
     }
 
-    /**
-     * Simple test implementation of Authenticable for unit testing.
-     */
+    
     private static class TestAuthenticable implements Authenticable {
         private final String subjectId;
         private final String email;

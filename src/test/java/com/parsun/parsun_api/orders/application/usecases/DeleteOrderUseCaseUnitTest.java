@@ -78,7 +78,7 @@ class DeleteOrderUseCaseUnitTest {
 
         deleteOrderUseCase.execute(id);
 
-        assertEquals(5, stock.getReserved()); // released from 10 to 5
+        assertEquals(5, stock.getReserved()); 
         verify(warehouseStockRepository).save(stock);
         verify(orderRepository).deleteById(OrderId.of(id));
     }
@@ -167,8 +167,8 @@ class DeleteOrderUseCaseUnitTest {
 
         deleteOrderUseCase.execute(id);
 
-        assertEquals(2, stock1.getReserved()); // 5 - 3
-        assertEquals(3, stock2.getReserved()); // 10 - 7
+        assertEquals(2, stock1.getReserved()); 
+        assertEquals(3, stock2.getReserved()); 
         verify(warehouseStockRepository, times(2)).save(any(WarehouseStock.class));
         verify(orderRepository).deleteById(OrderId.of(id));
     }

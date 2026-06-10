@@ -133,8 +133,8 @@ class CreateOrderUseCaseUnitTest {
 
         createOrderUseCase.execute(request, authenticatedUserId);
 
-        assertEquals(7, stock.getReserved());  // 2 + 5
-        assertEquals(50, stock.getQuantity());  // unchanged
+        assertEquals(7, stock.getReserved());  
+        assertEquals(50, stock.getQuantity());  
         verify(warehouseStockRepository).save(stock);
     }
 

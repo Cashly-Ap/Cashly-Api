@@ -88,14 +88,14 @@ public class ConvertQuoteToInvoiceUseCase {
                 InvoiceId.generate(), invoiceNumber,
                 quote.getCustomerId(), quote.getCustomerName(), quote.getCustomerRif(),
                 authenticatedUserId, user.getUserName().getValue(),
-                null, null,  // orderId, orderNumber (no order when converting from quote)
+                null, null,  
                 status, resolvedPaymentType, null,
                 BigDecimal.ZERO, null,
                 null, null,
                 invoiceLines, LocalDateTime.now(), LocalDateTime.now()
         );
 
-        // Deduct stock for each line allocation
+        
         for (QuoteLine quoteLine : quote.getLines()) {
             for (QuoteAllocation allocation : quoteLine.getAllocations()) {
                 WarehouseStock stock = warehouseStockRepository

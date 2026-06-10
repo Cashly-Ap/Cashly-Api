@@ -58,9 +58,9 @@ public class CancelOrderUseCase {
                             if (wasConfirmedOrInvoiced) {
                                 int previous = stock.getQuantity();
                                 stock.addStock(allocation.getAllocated().intValue());
-                                // Note: deductReserved already reduced both quantity AND reserved during confirmation.
-                                // Only addStock is needed to restore quantity. releaseReserved is NOT called
-                                // because the reservation was already consumed by deductReserved.
+                                
+                                
+                                
                                 warehouseStockRepository.save(stock);
 
                                 stockMovementRepository.save(StockMovement.createWithReference(

@@ -82,7 +82,7 @@ public class CashRegister {
         this.details = details;
     }
 
-    // --- Factory: OPEN a new closure ---
+    
 
     public static CashRegister open(RegisterId id, LocalDate closureDate,
                                    UUID openedBy, String openedByName) {
@@ -109,7 +109,7 @@ public class CashRegister {
         );
     }
 
-    // --- Factory: RECONSTITUTE from persistence ---
+    
 
     public static CashRegister reconstitute(
             RegisterId id, LocalDate closureDate, RegisterStatus status,
@@ -138,7 +138,7 @@ public class CashRegister {
         );
     }
 
-    // --- Behaviour: apply computed totals (not a state machine step) ---
+    
 
     public void applyTotals(
             BigDecimal totalPayments, int paymentCount,
@@ -168,7 +168,7 @@ public class CashRegister {
         this.totalInvoices = totalInvoices;
         this.invoiceCount = invoiceCount;
 
-        // expected = payments + advances - returns - credit_notes + debit_notes
+        
         this.expectedClosingBalance = totalPayments
                 .add(totalAdvances)
                 .subtract(totalReturns)
@@ -183,7 +183,7 @@ public class CashRegister {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // --- Behaviour: close ---
+    
 
     public void close(UUID closedBy, String closedByName, String closingNotes) {
         if (status != RegisterStatus.OPEN) {
@@ -203,7 +203,7 @@ public class CashRegister {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // --- Getters ---
+    
 
     public RegisterId getId() { return id; }
     public LocalDate getClosureDate() { return closureDate; }

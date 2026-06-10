@@ -103,7 +103,7 @@ class GetInvoiceByIdUseCaseNotesTest {
         assertNotNull(response);
         assertThat(response.creditApplied()).isEqualByComparingTo("200");
         assertThat(response.debitApplied()).isEqualByComparingTo("50");
-        assertThat(response.total()).isEqualByComparingTo("850"); // 1000 - 200 + 50
+        assertThat(response.total()).isEqualByComparingTo("850"); 
         assertThat(response.notesList()).hasSize(2);
         verify(creditNoteRepository).findByInvoiceId(id);
         verify(debitNoteRepository).findByInvoiceId(id);
@@ -126,7 +126,7 @@ class GetInvoiceByIdUseCaseNotesTest {
         assertNotNull(response);
         assertThat(response.creditApplied()).isEqualByComparingTo("0");
         assertThat(response.debitApplied()).isEqualByComparingTo("0");
-        assertThat(response.total()).isEqualByComparingTo("1000"); // subtotal = 1000
+        assertThat(response.total()).isEqualByComparingTo("1000"); 
         assertThat(response.notesList()).isEmpty();
     }
 

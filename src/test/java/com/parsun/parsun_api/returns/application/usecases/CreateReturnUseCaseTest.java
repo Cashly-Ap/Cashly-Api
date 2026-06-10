@@ -94,9 +94,9 @@ class CreateReturnUseCaseTest {
         when(creditNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
         when(debitNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
         
-        // Configure warehouse stock repository to return valid stock for any warehouse/product
+        
         WarehouseStock mockStock = WarehouseStock.create(UUID.randomUUID(), UUID.randomUUID());
-        mockStock.addStock(1000); // Ensure enough stock
+        mockStock.addStock(1000); 
         when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(any(), any()))
                 .thenReturn(Optional.of(mockStock));
         when(warehouseStockRepository.save(any(WarehouseStock.class)))

@@ -115,7 +115,7 @@ public class GetInvoiceByIdUseCase {
         Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks =
                 stockEnrichmentService.getAllStockByProducts(invoice.getCustomerId(), productIds);
 
-        // Load and enrich returns
+        
         List<Return> returns = returnRepository.findAllWithFilters(null, null, null, id);
         List<InvoiceDetailResponse.ReturnDetail> returnDetails = buildReturnDetails(returns);
 

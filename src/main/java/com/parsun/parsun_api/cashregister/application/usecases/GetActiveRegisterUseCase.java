@@ -26,7 +26,7 @@ public class GetActiveRegisterUseCase {
     public CashRegisterResponse execute(UUID userId) {
         LocalDate today = LocalDate.now();
 
-        // 1. Return active (OPEN) closure if one exists
+        
         var activeClosure = closureRepository.findActiveClosure();
         if (activeClosure.isPresent()) {
             var closure = activeClosure.get();
@@ -46,7 +46,7 @@ public class GetActiveRegisterUseCase {
             return CashRegisterMapper.toResponse(saved, dailyTotals);
         }
 
-        // 2. Return today's register if one exists (even if closed)
+        
         var todayClosure = closureRepository.findByClosureDate(today);
         if (todayClosure.isPresent()) {
             var closure = todayClosure.get();
@@ -54,7 +54,7 @@ public class GetActiveRegisterUseCase {
             return CashRegisterMapper.toResponse(closure, dailyTotals);
         }
 
-        // 3. Auto-open a new register for today
+        
         var user = userRepository.findById(new UserId(userId));
         String userName = user.map(u -> u.getUserName().getValue())
                 .orElseThrow(() -> new IllegalStateException("User not found: " + userId));

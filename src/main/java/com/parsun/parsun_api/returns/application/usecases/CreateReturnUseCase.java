@@ -96,7 +96,7 @@ public class CreateReturnUseCase {
 
         Return saved = returnRepository.save(return_);
 
-        // Restore stock and create movements for each allocation
+        
         restoreStockFromReturn(saved);
 
         Invoice invoice = invoiceRepository.findById(return_.getInvoiceId())
@@ -142,18 +142,14 @@ public class CreateReturnUseCase {
         return returnMapper.toResponse(saved);
     }
 
-    /**
-     * Restores stock to warehouses based on return line allocations.
-     * Creates RETURN_ENTRY movements for traceability.
-     * Uses pessimistic locking to prevent concurrent stock updates.
-     */
+    
     private void restoreStockFromReturn(Return return_) {
         for (ReturnLine line : return_.getLines()) {
             for (ReturnLineAllocation allocation : line.getAllocations()) {
-                // Truncate DECIMAL(15,4) to INT (e.g., 5.9999 → 5, 0.5000 → 0)
+                
                 int quantity = allocation.getAllocated().intValue();
                 
-                // Skip if truncated quantity is 0
+                
                 if (quantity <= 0) {
                     continue;
                 }

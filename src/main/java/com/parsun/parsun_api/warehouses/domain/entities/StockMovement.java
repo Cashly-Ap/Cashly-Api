@@ -41,9 +41,7 @@ public class StockMovement {
         this.createdAt = createdAt;
     }
 
-    /**
-     * Factory method for backward compatibility (without reference tracking)
-     */
+    
     public static StockMovement create(UUID warehouseId, UUID productId, MovementType movementType,
                                         int quantity, int previousStock, int newStock,
                                         UUID originMovementId, String transferBatchId, String notes) {
@@ -52,9 +50,7 @@ public class StockMovement {
                 null, null, null, notes, LocalDateTime.now());
     }
 
-    /**
-     * Factory method with reference tracking
-     */
+    
     public static StockMovement createWithReference(UUID warehouseId, UUID productId, MovementType movementType,
                                                      int quantity, int previousStock, int newStock,
                                                      UUID originMovementId, String transferBatchId,

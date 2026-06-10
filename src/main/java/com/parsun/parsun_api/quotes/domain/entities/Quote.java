@@ -36,7 +36,7 @@ public class Quote {
     private final Instant createdAt;
     private Instant updatedAt;
 
-    // Private constructor — used by both create() and reconstitute()
+    
     private Quote(UUID id, QuoteNumber quoteNumber, UUID customerId, String customerName,
                   String customerRif, UUID createdBy, String createdByName, QuoteStatus status,
                   LocalDate expiryDate, String notes, BigDecimal subtotal,
@@ -65,9 +65,7 @@ public class Quote {
         this.updatedAt = updatedAt;
     }
 
-    /**
-     * Factory method — creates a new Quote in DRAFT status with validation.
-     */
+    
     public static Quote create(QuoteNumber quoteNumber, UUID customerId, String customerName,
                                String customerRif, UUID createdBy, String createdByName,
                                LocalDate expiryDate, String notes, List<QuoteLine> lines) {
@@ -106,9 +104,7 @@ public class Quote {
         );
     }
 
-    /**
-     * Reconstitution factory — used by JPA mappers. NO validation.
-     */
+    
     public static Quote reconstitute(UUID id, QuoteNumber quoteNumber, UUID customerId,
                                      String customerName, String customerRif,
                                      UUID createdBy, String createdByName, QuoteStatus status,
@@ -125,7 +121,7 @@ public class Quote {
                 lines, createdAt, updatedAt);
     }
 
-    // --- Status Transitions ---
+    
 
     public void cancel(String reason) {
         if (reason == null || reason.isBlank()) {
@@ -161,7 +157,7 @@ public class Quote {
         }
     }
 
-    // --- Line Management (only in DRAFT) ---
+    
 
     public void addLine(QuoteLine line) {
         assertDraft();
@@ -196,7 +192,7 @@ public class Quote {
         }
     }
 
-    // --- Helpers ---
+    
 
     private void recalculateSubtotal() {
         this.subtotal = calculateSubtotal(lines);
@@ -212,7 +208,7 @@ public class Quote {
         this.updatedAt = Instant.now();
     }
 
-    // --- Guard Methods ---
+    
 
     public boolean canBeModified() {
         return this.status == QuoteStatus.DRAFT;
@@ -226,7 +222,7 @@ public class Quote {
         return this.status != QuoteStatus.CANCELLED;
     }
 
-    // --- Getters ---
+    
 
     public UUID getId() { return id; }
     public QuoteNumber getQuoteNumber() { return quoteNumber; }

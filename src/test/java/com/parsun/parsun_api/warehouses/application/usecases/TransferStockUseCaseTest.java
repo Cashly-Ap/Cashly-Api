@@ -185,7 +185,7 @@ class TransferStockUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         WarehouseStock sourceStock = WarehouseStock.create(sourceId, productId);
-        sourceStock.addStock(5); // Only 5 available
+        sourceStock.addStock(5); 
 
         TransferStockRequest request = new TransferStockRequest(productId, destId, 20, null);
 

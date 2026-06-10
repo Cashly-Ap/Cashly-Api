@@ -37,7 +37,7 @@ class InvoiceUnitTest {
         );
     }
 
-    // --- create ---
+    
 
     @Test
     void should_CreateInvoice_When_ValidDataProvided() {
@@ -175,7 +175,7 @@ class InvoiceUnitTest {
                 invoice.getLines().add(validLines.get(0)));
     }
 
-    // --- confirm ---
+    
 
     @Test
     void should_TransitionToPaid_When_ConfirmingCashInvoice() throws InterruptedException {
@@ -214,7 +214,7 @@ class InvoiceUnitTest {
         assertEquals("Only DRAFT invoices can be confirmed", exception.getMessage());
     }
 
-    // --- cancel ---
+    
 
     @Test
     void should_CancelInvoice_When_StatusIsDraft() throws InterruptedException {
@@ -262,7 +262,7 @@ class InvoiceUnitTest {
         assertEquals("Cancellation reason cannot be blank", exception.getMessage());
     }
 
-    // --- reconstitute ---
+    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
@@ -282,7 +282,7 @@ class InvoiceUnitTest {
         assertEquals(now, invoice.getCreatedAt());
     }
 
-    // === calculateTotal ===
+    
 
     @Test
     void should_CalculateTotal_When_NormalCase() {
@@ -300,7 +300,7 @@ class InvoiceUnitTest {
 
         BigDecimal result = invoice.calculateTotal(new BigDecimal("10.00"), new BigDecimal("3.00"));
 
-        // subtotal(35.00) - returnedTotal(5.00) - creditApplied(10.00) + debitApplied(3.00) = 23.00
+        
         assertEquals(new BigDecimal("23.00"), result);
     }
 
@@ -318,8 +318,8 @@ class InvoiceUnitTest {
 
         BigDecimal result = invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO);
 
-        // The domain method does NOT special-case FULL — it just applies the formula.
-        // subtotal(20.00) - returnedTotal(20.00) - 0 + 0 = 0.00
+        
+        
         assertEquals(0, result.compareTo(BigDecimal.ZERO), "Expected 0.00 to be equal to 0 in value");
     }
 
@@ -337,7 +337,7 @@ class InvoiceUnitTest {
 
         BigDecimal result = invoice.calculateTotal();
 
-        // subtotal(500.00) - returnedTotal(100.00) - 0 + 0 = 400.00
+        
         assertEquals(new BigDecimal("400.00"), result);
     }
 

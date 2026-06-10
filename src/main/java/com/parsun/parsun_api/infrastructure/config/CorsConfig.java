@@ -32,13 +32,13 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Always allow common localhost origins with wildcard patterns
-        // This covers http://localhost:4200, http://localhost:8080, http://127.0.0.1:*, etc.
+        
+        
         configuration.addAllowedOriginPattern("http://localhost:*");
         configuration.addAllowedOriginPattern("http://127.0.0.1:*");
         configuration.addAllowedOriginPattern("http://[::1]:*");
         
-        // Also add any specific origins configured via property/env var
+        
         if (allowedOrigins != null && !allowedOrigins.isBlank()) {
             List<String> origins = Arrays.asList(allowedOrigins.split(","));
             for (String origin : origins) {

@@ -56,8 +56,8 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public int getNextSequenceForYear(int year) {
-        // Simplified sequence: count existing payments for the year + 1
-        // This can be replaced with a dedicated sequence table later
+        
+        
         List<PaymentEntity> yearPayments = jpaRepository.findAllWithFilters(
                 LocalDate.of(year, 1, 1),
                 LocalDate.of(year, 12, 31),

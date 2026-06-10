@@ -5,9 +5,7 @@ import com.parsun.parsun_api.reports.quotes.application.port.QuotesReportPdfPort
 
 import java.util.List;
 
-/**
- * Implementation of GenerateQuotesReportPdfUseCase.
- */
+
 public class GenerateQuotesReportPdfUseCaseImpl implements GenerateQuotesReportPdfUseCase {
 
     private final QuotesReportPdfPort quotesReportPdfPort;

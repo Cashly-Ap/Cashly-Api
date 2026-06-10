@@ -9,9 +9,7 @@ import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 
 import java.util.UUID;
 
-/**
- * Implementation of GenerateQuotePdfUseCase.
- */
+
 public class GenerateQuotePdfUseCaseImpl implements GenerateQuotePdfUseCase {
 
     private final QuoteRepository quoteRepository;

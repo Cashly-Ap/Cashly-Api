@@ -16,17 +16,12 @@ public class CreditGuard {
         this.creditValidationService = creditValidationService;
     }
 
-    /**
-     * Returns the current credit status for a customer.
-     */
+    
     public CreditStatusResponse getCreditStatus(UUID customerId) {
         return creditValidationService.getCreditStatus(customerId);
     }
 
-    /**
-     * Validates that a customer has sufficient credit for a given invoice total.
-     * Throws CreditLimitExceededException if credit is insufficient.
-     */
+    
     public boolean isCreditAvailable(UUID customerId, BigDecimal invoiceTotal) {
         CreditStatusResponse status = creditValidationService.getCreditStatus(customerId);
         return !status.hasOverdue()

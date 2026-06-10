@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QuoteStatusTest {
 
-    // Valid transitions
+    
 
     @Test
     void should_allow_draft_to_converted_to_order() {
@@ -24,7 +24,7 @@ class QuoteStatusTest {
         assertTrue(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.CANCELLED));
     }
 
-    // Invalid transitions
+    
 
     @Test
     void should_not_allow_draft_to_draft() {
@@ -55,7 +55,7 @@ class QuoteStatusTest {
         }
     }
 
-    // Self-transitions (staying in same state)
+    
 
     @Test
     void should_not_allow_transition_to_same_state() {
