@@ -1,8 +1,7 @@
 -- V19: Create cash register tables for daily financial reconciliation
 -- This enables the cash register workflow:
---   1. OPEN   - Start of day, operator opens a new register for today
---   2. CLOSED - End of day, totals are calculated, actual counts recorded
---   3. VERIFIED - Admin reviews and confirms the register
+--   1. OPEN  - Start of day, operator opens a new register for today
+--   2. CLOSED - End of day, totals are calculated, and register is closed
 
 CREATE TABLE cash_registers (
     id BINARY(16) PRIMARY KEY,
@@ -14,9 +13,6 @@ CREATE TABLE cash_registers (
     closed_by BINARY(16) NULL,
     closed_by_name VARCHAR(255) NULL,
     closed_at DATETIME NULL,
-    verified_by BINARY(16) NULL,
-    verified_by_name VARCHAR(255) NULL,
-    verified_at DATETIME NULL,
     total_payments DECIMAL(15,2) NOT NULL DEFAULT 0,
     total_advances DECIMAL(15,2) NOT NULL DEFAULT 0,
     total_returns DECIMAL(15,2) NOT NULL DEFAULT 0,
@@ -36,7 +32,6 @@ CREATE TABLE cash_registers (
     updated_at DATETIME NOT NULL,
     CONSTRAINT fk_register_opened_by FOREIGN KEY (opened_by) REFERENCES users(id),
     CONSTRAINT fk_register_closed_by FOREIGN KEY (closed_by) REFERENCES users(id),
-    CONSTRAINT fk_register_verified_by FOREIGN KEY (verified_by) REFERENCES users(id),
     INDEX idx_closure_date (closure_date),
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

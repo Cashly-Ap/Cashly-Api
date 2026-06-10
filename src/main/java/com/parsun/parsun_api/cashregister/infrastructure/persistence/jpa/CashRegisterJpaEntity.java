@@ -52,16 +52,6 @@ public class CashRegisterJpaEntity {
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
 
-    @Column(name = "verified_by", columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(SqlTypes.BINARY)
-    private UUID verifiedBy;
-
-    @Column(name = "verified_by_name", length = 255)
-    private String verifiedByName;
-
-    @Column(name = "verified_at")
-    private LocalDateTime verifiedAt;
-
     @Column(name = "total_payments", nullable = false, precision = 15, scale = 2)
     private BigDecimal totalPayments;
 

@@ -37,9 +37,6 @@ class CashRegisterUnitTest {
         assertNull(closure.getClosedBy());
         assertNull(closure.getClosedByName());
         assertNull(closure.getClosedAt());
-        assertNull(closure.getVerifiedBy());
-        assertNull(closure.getVerifiedByName());
-        assertNull(closure.getVerifiedAt());
         assertEquals(BigDecimal.ZERO, closure.getTotalPayments());
         assertEquals(BigDecimal.ZERO, closure.getTotalAdvances());
         assertEquals(BigDecimal.ZERO, closure.getTotalReturns());
@@ -206,56 +203,20 @@ class CashRegisterUnitTest {
         assertEquals("Closed by name must not be blank", exception.getMessage());
     }
 
-    // --- verify ---
-
-    @Test
-    void should_VerifyClosure_When_StatusIsClosed() {
-        CashRegister closure = CashRegister.open(CLOSURE_ID, CLOSURE_DATE, OPENED_BY, OPENED_BY_NAME);
-        closure.close(UUID.randomUUID(), "Supervisor", "Cierre normal");
-
-        UUID verifiedBy = UUID.randomUUID();
-        closure.verify(verifiedBy, "Admin Test");
-
-        assertEquals(RegisterStatus.VERIFIED, closure.getStatus());
-        assertEquals(verifiedBy, closure.getVerifiedBy());
-        assertEquals("Admin Test", closure.getVerifiedByName());
-        assertNotNull(closure.getVerifiedAt());
-    }
-
-    @Test
-    void should_ThrowException_When_VerifyingOpenClosure() {
-        CashRegister closure = CashRegister.open(CLOSURE_ID, CLOSURE_DATE, OPENED_BY, OPENED_BY_NAME);
-
-        assertThrows(IllegalStateException.class, () ->
-                closure.verify(UUID.randomUUID(), "Admin"));
-    }
-
-    @Test
-    void should_ThrowException_When_VerifyingAlreadyVerifiedClosure() {
-        CashRegister closure = CashRegister.open(CLOSURE_ID, CLOSURE_DATE, OPENED_BY, OPENED_BY_NAME);
-        closure.close(UUID.randomUUID(), "Supervisor", null);
-        closure.verify(UUID.randomUUID(), "Admin");
-
-        assertThrows(IllegalStateException.class, () ->
-                closure.verify(UUID.randomUUID(), "Another Admin"));
-    }
-
     // --- reconstitute ---
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
         LocalDateTime now = LocalDateTime.now();
         UUID closedBy = UUID.randomUUID();
-        UUID verifiedBy = UUID.randomUUID();
         List<CashRegisterDetail> details = List.of(
                 CashRegisterDetail.create(UUID.randomUUID(), "Efectivo", 5, new BigDecimal("150.00"))
         );
 
         CashRegister closure = CashRegister.reconstitute(
-                CLOSURE_ID, CLOSURE_DATE, RegisterStatus.VERIFIED,
+                CLOSURE_ID, CLOSURE_DATE, RegisterStatus.CLOSED,
                 OPENED_BY, OPENED_BY_NAME, now,
                 closedBy, "Supervisor", now,
-                verifiedBy, "Admin", now,
                 new BigDecimal("2150.00"), new BigDecimal("500.00"),
                 new BigDecimal("100.00"), new BigDecimal("50.00"), BigDecimal.ZERO,
                 new BigDecimal("3500.00"),
@@ -267,7 +228,7 @@ class CashRegisterUnitTest {
         );
 
         assertEquals(CLOSURE_ID, closure.getId());
-        assertEquals(RegisterStatus.VERIFIED, closure.getStatus());
+        assertEquals(RegisterStatus.CLOSED, closure.getStatus());
         assertEquals(new BigDecimal("2500.00"), closure.getExpectedClosingBalance());
         assertEquals(new BigDecimal("2450.00"), closure.getActualClosingBalance());
         assertEquals(new BigDecimal("50.00"), closure.getDifference());

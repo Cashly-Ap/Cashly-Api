@@ -24,37 +24,44 @@ public class GetActiveRegisterUseCase {
     }
 
     public CashRegisterResponse execute(UUID userId) {
-        CashRegister closure = closureRepository.findActiveClosure()
-                .orElseGet(() -> autoOpenRegister(userId));
-
-        DailyTotals dailyTotals = closureRepository.findDailyTotals(closure.getClosureDate());
-
-        closure.applyTotals(
-                dailyTotals.totalPayments(), dailyTotals.paymentCount(),
-                dailyTotals.totalAdvances(), dailyTotals.advanceCount(),
-                dailyTotals.totalReturns(), dailyTotals.returnCount(),
-                dailyTotals.totalCreditNotes(),
-                dailyTotals.totalDebitNotes(),
-                dailyTotals.totalInvoices(), dailyTotals.invoiceCount(),
-                dailyTotals.paymentDetails()
-        );
-
-        CashRegister saved = closureRepository.save(closure);
-        return CashRegisterMapper.toResponse(saved, dailyTotals);
-    }
-
-    private CashRegister autoOpenRegister(UUID userId) {
         LocalDate today = LocalDate.now();
 
-        if (closureRepository.findByClosureDate(today).isPresent()) {
-            throw new IllegalStateException("A closure already exists for today: " + today);
+        // 1. Return active (OPEN) closure if one exists
+        var activeClosure = closureRepository.findActiveClosure();
+        if (activeClosure.isPresent()) {
+            var closure = activeClosure.get();
+            var dailyTotals = closureRepository.findDailyTotals(closure.getClosureDate());
+
+            closure.applyTotals(
+                    dailyTotals.totalPayments(), dailyTotals.paymentCount(),
+                    dailyTotals.totalAdvances(), dailyTotals.advanceCount(),
+                    dailyTotals.totalReturns(), dailyTotals.returnCount(),
+                    dailyTotals.totalCreditNotes(),
+                    dailyTotals.totalDebitNotes(),
+                    dailyTotals.totalInvoices(), dailyTotals.invoiceCount(),
+                    dailyTotals.paymentDetails()
+            );
+
+            var saved = closureRepository.save(closure);
+            return CashRegisterMapper.toResponse(saved, dailyTotals);
         }
 
+        // 2. Return today's register if one exists (even if closed)
+        var todayClosure = closureRepository.findByClosureDate(today);
+        if (todayClosure.isPresent()) {
+            var closure = todayClosure.get();
+            var dailyTotals = closureRepository.findDailyTotals(closure.getClosureDate());
+            return CashRegisterMapper.toResponse(closure, dailyTotals);
+        }
+
+        // 3. Auto-open a new register for today
         var user = userRepository.findById(new UserId(userId));
         String userName = user.map(u -> u.getUserName().getValue())
                 .orElseThrow(() -> new IllegalStateException("User not found: " + userId));
 
-        CashRegister closure = CashRegister.open(RegisterId.generate(), today, userId, userName);
-        return closureRepository.save(closure);
+        var closure = CashRegister.open(RegisterId.generate(), today, userId, userName);
+        var saved = closureRepository.save(closure);
+        var dailyTotals = closureRepository.findDailyTotals(saved.getClosureDate());
+        return CashRegisterMapper.toResponse(saved, dailyTotals);
     }
 }

@@ -10,16 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class RegisterStatusUnitTest {
 
     @Test
-    void should_HaveThreeValues() {
+    void should_HaveTwoValues() {
         RegisterStatus[] values = RegisterStatus.values();
-        assertEquals(3, values.length);
+        assertEquals(2, values.length);
     }
 
     @Test
     void should_HaveCorrectOrder() {
         assertEquals(RegisterStatus.OPEN, RegisterStatus.valueOf("OPEN"));
         assertEquals(RegisterStatus.CLOSED, RegisterStatus.valueOf("CLOSED"));
-        assertEquals(RegisterStatus.VERIFIED, RegisterStatus.valueOf("VERIFIED"));
     }
 
     @Test
@@ -31,10 +30,5 @@ class RegisterStatusUnitTest {
     @Test
     void should_TransitionToClosed() {
         assertEquals("CLOSED", RegisterStatus.CLOSED.name());
-    }
-
-    @Test
-    void should_TransitionToVerified() {
-        assertEquals("VERIFIED", RegisterStatus.VERIFIED.name());
     }
 }

@@ -179,9 +179,6 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         if (closure.getClosedBy() != null) entity.setClosedBy(closure.getClosedBy());
         if (closure.getClosedByName() != null) entity.setClosedByName(closure.getClosedByName());
         if (closure.getClosedAt() != null) entity.setClosedAt(closure.getClosedAt());
-        if (closure.getVerifiedBy() != null) entity.setVerifiedBy(closure.getVerifiedBy());
-        if (closure.getVerifiedByName() != null) entity.setVerifiedByName(closure.getVerifiedByName());
-        if (closure.getVerifiedAt() != null) entity.setVerifiedAt(closure.getVerifiedAt());
         entity.setTotalPayments(closure.getTotalPayments());
         entity.setTotalAdvances(closure.getTotalAdvances());
         entity.setTotalReturns(closure.getTotalReturns());
@@ -236,9 +233,6 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 entity.getClosedBy(),
                 entity.getClosedByName(),
                 entity.getClosedAt(),
-                entity.getVerifiedBy(),
-                entity.getVerifiedByName(),
-                entity.getVerifiedAt(),
                 entity.getTotalPayments(),
                 entity.getTotalAdvances(),
                 entity.getTotalReturns(),

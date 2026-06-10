@@ -23,9 +23,6 @@ public class CashRegister {
     private UUID closedBy;
     private String closedByName;
     private LocalDateTime closedAt;
-    private UUID verifiedBy;
-    private String verifiedByName;
-    private LocalDateTime verifiedAt;
     private BigDecimal totalPayments;
     private BigDecimal totalAdvances;
     private BigDecimal totalReturns;
@@ -48,7 +45,6 @@ public class CashRegister {
     private CashRegister(RegisterId id, LocalDate closureDate, RegisterStatus status,
                         UUID openedBy, String openedByName, LocalDateTime openedAt,
                         UUID closedBy, String closedByName, LocalDateTime closedAt,
-                        UUID verifiedBy, String verifiedByName, LocalDateTime verifiedAt,
                         BigDecimal totalPayments, BigDecimal totalAdvances,
                         BigDecimal totalReturns, BigDecimal totalCreditNotes, BigDecimal totalDebitNotes,
                         BigDecimal totalInvoices,
@@ -66,9 +62,6 @@ public class CashRegister {
         this.closedBy = closedBy;
         this.closedByName = closedByName;
         this.closedAt = closedAt;
-        this.verifiedBy = verifiedBy;
-        this.verifiedByName = verifiedByName;
-        this.verifiedAt = verifiedAt;
         this.totalPayments = totalPayments;
         this.totalAdvances = totalAdvances;
         this.totalReturns = totalReturns;
@@ -106,7 +99,6 @@ public class CashRegister {
                 id, closureDate, RegisterStatus.OPEN,
                 openedBy, openedByName, now,
                 null, null, null,
-                null, null, null,
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO,
@@ -123,7 +115,6 @@ public class CashRegister {
             RegisterId id, LocalDate closureDate, RegisterStatus status,
             UUID openedBy, String openedByName, LocalDateTime openedAt,
             UUID closedBy, String closedByName, LocalDateTime closedAt,
-            UUID verifiedBy, String verifiedByName, LocalDateTime verifiedAt,
             BigDecimal totalPayments, BigDecimal totalAdvances,
             BigDecimal totalReturns, BigDecimal totalCreditNotes, BigDecimal totalDebitNotes,
             BigDecimal totalInvoices,
@@ -136,7 +127,6 @@ public class CashRegister {
                 id, closureDate, status,
                 openedBy, openedByName, openedAt,
                 closedBy, closedByName, closedAt,
-                verifiedBy, verifiedByName, verifiedAt,
                 totalPayments, totalAdvances,
                 totalReturns, totalCreditNotes, totalDebitNotes,
                 totalInvoices,
@@ -213,22 +203,6 @@ public class CashRegister {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // --- Behaviour: verify ---
-
-    public void verify(UUID verifiedBy, String verifiedByName) {
-        if (status != RegisterStatus.CLOSED) {
-            throw new IllegalStateException("Only CLOSED closures can be verified");
-        }
-        Objects.requireNonNull(verifiedBy, "Verified by must not be null");
-        Objects.requireNonNull(verifiedByName, "Verified by name must not be null");
-
-        this.status = RegisterStatus.VERIFIED;
-        this.verifiedBy = verifiedBy;
-        this.verifiedByName = verifiedByName;
-        this.verifiedAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
     // --- Getters ---
 
     public RegisterId getId() { return id; }
@@ -240,9 +214,6 @@ public class CashRegister {
     public UUID getClosedBy() { return closedBy; }
     public String getClosedByName() { return closedByName; }
     public LocalDateTime getClosedAt() { return closedAt; }
-    public UUID getVerifiedBy() { return verifiedBy; }
-    public String getVerifiedByName() { return verifiedByName; }
-    public LocalDateTime getVerifiedAt() { return verifiedAt; }
     public BigDecimal getTotalPayments() { return totalPayments; }
     public BigDecimal getTotalAdvances() { return totalAdvances; }
     public BigDecimal getTotalReturns() { return totalReturns; }
