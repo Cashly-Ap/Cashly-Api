@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.cashregister.infrastructure.persistence;
 
+import com.parsun.parsun_api.cashregister.application.dto.CashRegisterExportRow;
 import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
@@ -9,15 +10,20 @@ import com.parsun.parsun_api.cashregister.domain.valueobjects.RegisterStatus;
 import com.parsun.parsun_api.cashregister.infrastructure.persistence.jpa.CashRegisterDetailJpaEntity;
 import com.parsun.parsun_api.cashregister.infrastructure.persistence.jpa.CashRegisterJpaEntity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,13 +68,32 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CashRegister> findAll(int page, int size, String sort) {
-        var pageable = PageRequest.of(page, size);
-        var entityPage = jpaRepository.findAll(pageable);
+    public Page<CashRegister> findAll(int page, int size, String sort,
+                                      LocalDate dateFrom, LocalDate dateTo) {
+        Specification<CashRegisterJpaEntity> spec = withDateBetween(dateFrom, dateTo);
+        var pageable = PageRequest.of(page, size, parseSort(sort));
+        var entityPage = jpaRepository.findAll(spec, pageable);
         var domains = entityPage.getContent().stream()
                 .map(this::toDomain)
                 .toList();
         return new PageImpl<>(domains, pageable, entityPage.getTotalElements());
+    }
+
+    private Specification<CashRegisterJpaEntity> withDateBetween(LocalDate dateFrom, LocalDate dateTo) {
+        return (root, query, cb) -> {
+            if (dateFrom == null && dateTo == null) return null;
+            var path = root.<LocalDate>get("closureDate");
+            if (dateFrom != null && dateTo != null) return cb.between(path, dateFrom, dateTo);
+            if (dateFrom != null) return cb.greaterThanOrEqualTo(path, dateFrom);
+            return cb.lessThanOrEqualTo(path, dateTo);
+        };
+    }
+
+    private Sort parseSort(String sort) {
+        if (sort == null || sort.isBlank()) return Sort.unsorted();
+        String[] parts = sort.split(",");
+        if (parts.length < 2) return Sort.by(parts[0].trim());
+        return Sort.by(Sort.Direction.fromString(parts[1].trim()), parts[0].trim());
     }
 
     @Override
@@ -102,11 +127,11 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         );
 
         var invoicesTotal = queryDecimal(
-                "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE DATE(created_at) = :date AND status = 'PAID'",
+                "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE DATE(created_at) = :date AND status != 'DRAFT' AND status != 'CANCELLED'",
                 closureDate
         );
         var invoicesCount = queryInt(
-                "SELECT COUNT(*) FROM invoices WHERE DATE(created_at) = :date AND status = 'PAID'",
+                "SELECT COUNT(*) FROM invoices WHERE DATE(created_at) = :date AND status != 'DRAFT' AND status != 'CANCELLED'",
                 closureDate
         );
 
@@ -117,11 +142,6 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
 
         var debitNotesTotal = queryDecimal(
                 "SELECT COALESCE(SUM(amount), 0) FROM debit_notes WHERE DATE(created_at) = :date",
-                closureDate
-        );
-
-        var totalInvoiced = queryDecimal(
-                "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE DATE(created_at) = :date",
                 closureDate
         );
 
@@ -163,9 +183,267 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 returnsTotal, returnsCount,
                 creditNotesTotal, debitNotesTotal,
                 invoicesTotal, invoicesCount,
-                totalInvoiced, paymentsTotal, totalExpenses,
+                invoicesTotal, paymentsTotal, totalExpenses,
                 details
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+    public List<CashRegisterExportRow> findExportRows(LocalDate closureDate) {
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int sortOrder = 0;
+
+        rows.addAll(queryInvoices(closureDate, sortOrder));
+        sortOrder += 1000;
+        rows.addAll(queryReturns(closureDate, sortOrder));
+        sortOrder += 1000;
+        rows.addAll(queryPayments(closureDate, sortOrder));
+        sortOrder += 1000;
+        rows.addAll(queryAdvances(closureDate, sortOrder));
+        sortOrder += 1000;
+        rows.addAll(queryCreditNotes(closureDate, sortOrder));
+        sortOrder += 1000;
+        rows.addAll(queryDebitNotes(closureDate, sortOrder));
+
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryInvoices(LocalDate date, int baseOrder) {
+        String sql = """
+                SELECT i.invoice_number, i.subtotal, i.created_at, i.customer_name
+                FROM invoices i
+                WHERE DATE(i.created_at) = :date AND i.status = 'PAID'
+                ORDER BY i.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("date", date);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]);
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            var paymentBreakdown = getInvoicePaymentBreakdown(docNumber, date);
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "FAC", docNumber, total,
+                    paymentBreakdown.efectivo(),
+                    paymentBreakdown.dolar(),
+                    paymentBreakdown.transferencia(),
+                    paymentBreakdown.zelle(),
+                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    customerName, "VENTAS", order++
+            ));
+        }
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryReturns(LocalDate date, int baseOrder) {
+        String sql = """
+                SELECT r.return_number, r.total, r.created_at, c.legal_name
+                FROM returns r
+                JOIN customers c ON c.id = r.customer_id
+                WHERE DATE(r.created_at) = :date
+                ORDER BY r.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("date", date);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]);
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "DEV", docNumber, total,
+                    total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    customerName, "VENTAS", order++
+            ));
+        }
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryPayments(LocalDate date, int baseOrder) {
+        String sql = """
+                SELECT p.payment_number, p.amount, p.payment_date, c.legal_name, pm.code
+                FROM payments p
+                JOIN customers c ON c.id = p.customer_id
+                JOIN payment_methods pm ON pm.id = p.payment_method_id
+                WHERE p.payment_date = :date AND p.status = 'APPLIED'
+                ORDER BY p.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("date", date);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]);
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            String pmCode = (String) row[4];
+            var breakdown = distributeByPaymentMethod(total, pmCode);
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "PAG", docNumber, total,
+                    breakdown.efectivo(), breakdown.dolar(),
+                    breakdown.transferencia(), breakdown.zelle(),
+                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    customerName, "CUENTAS POR COBRAR", order++
+            ));
+        }
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryAdvances(LocalDate date, int baseOrder) {
+        String sql = """
+                SELECT bt.number, bt.amount, bt.created_at, c.legal_name
+                FROM balance_transactions bt
+                JOIN customers c ON c.id = bt.customer_id
+                WHERE DATE(bt.created_at) = :date AND bt.type = 'ADVANCED'
+                ORDER BY bt.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("date", date);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]);
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "ANT", docNumber, total,
+                    total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    customerName, "CUENTAS POR COBRAR", order++
+            ));
+        }
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryCreditNotes(LocalDate date, int baseOrder) {
+        String sql = """
+                SELECT cn.note_number, cn.amount, cn.created_at, c.legal_name
+                FROM credit_notes cn
+                JOIN customers c ON c.id = cn.customer_id
+                WHERE DATE(cn.created_at) = :date
+                ORDER BY cn.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("date", date);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]);
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "NC", docNumber, total,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, total,
+                    customerName, "OPERACIONES DE CAJA", order++
+            ));
+        }
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryDebitNotes(LocalDate date, int baseOrder) {
+        String sql = """
+                SELECT dn.note_number, dn.amount, dn.created_at, c.legal_name
+                FROM debit_notes dn
+                JOIN customers c ON c.id = dn.customer_id
+                WHERE DATE(dn.created_at) = :date
+                ORDER BY dn.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("date", date);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]);
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "ND", docNumber, total,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    customerName, "OPERACIONES DE CAJA", order++
+            ));
+        }
+        return rows;
+    }
+
+    private PaymentBreakdown getInvoicePaymentBreakdown(String invoiceNumber, LocalDate date) {
+        String sql = """
+                SELECT pm.code, COALESCE(SUM(pa.allocated_amount), 0)
+                FROM invoices i
+                JOIN payment_allocations pa ON pa.invoice_id = i.id
+                JOIN payments p ON p.id = pa.payment_id
+                JOIN payment_methods pm ON pm.id = p.payment_method_id
+                WHERE i.invoice_number = :invoiceNumber
+                  AND p.status = 'APPLIED'
+                GROUP BY pm.code
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("invoiceNumber", invoiceNumber);
+        List<Object[]> results = query.getResultList();
+        BigDecimal efectivo = BigDecimal.ZERO;
+        BigDecimal dolar = BigDecimal.ZERO;
+        BigDecimal transferencia = BigDecimal.ZERO;
+        BigDecimal zelle = BigDecimal.ZERO;
+        for (Object[] row : results) {
+            String code = (String) row[0];
+            BigDecimal amount = toBigDecimal(row[1]);
+            switch (code) {
+                case "PM-0001" -> efectivo = efectivo.add(amount);
+                case "PM-0006" -> dolar = dolar.add(amount);
+                case "PM-0002" -> transferencia = transferencia.add(amount);
+                case "PM-0008" -> zelle = zelle.add(amount);
+                default -> efectivo = efectivo.add(amount);
+            }
+        }
+        return new PaymentBreakdown(efectivo, dolar, transferencia, zelle);
+    }
+
+    private PaymentBreakdown distributeByPaymentMethod(BigDecimal total, String pmCode) {
+        return switch (pmCode) {
+            case "PM-0001" -> new PaymentBreakdown(total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+            case "PM-0006" -> new PaymentBreakdown(BigDecimal.ZERO, total, BigDecimal.ZERO, BigDecimal.ZERO);
+            case "PM-0002" -> new PaymentBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, total, BigDecimal.ZERO);
+            case "PM-0008" -> new PaymentBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, total);
+            default -> new PaymentBreakdown(total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        };
+    }
+
+    private record PaymentBreakdown(BigDecimal efectivo, BigDecimal dolar,
+                                    BigDecimal transferencia, BigDecimal zelle) {}
+
+    private BigDecimal toBigDecimal(Object value) {
+        if (value == null) return BigDecimal.ZERO;
+        if (value instanceof BigDecimal bd) return bd;
+        if (value instanceof Number n) return BigDecimal.valueOf(n.doubleValue());
+        return BigDecimal.ZERO;
+    }
+
+    private LocalDate toLocalDate(Object value) {
+        if (value == null) return null;
+        if (value instanceof Date sqlDate) return sqlDate.toLocalDate();
+        if (value instanceof java.sql.Timestamp ts) return ts.toLocalDateTime().toLocalDate();
+        if (value instanceof LocalDate ld) return ld;
+        if (value instanceof LocalDateTime ldt) return ldt.toLocalDate();
+        return null;
     }
 
     private CashRegisterJpaEntity toEntity(CashRegister closure) {
