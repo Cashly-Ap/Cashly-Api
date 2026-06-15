@@ -1,12 +1,13 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.payments.application.dto.request.UpdatePaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentSource;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,79 +25,89 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("GetPaymentByIdUseCase Unit Tests")
-class GetPaymentByIdUseCaseUnitTest {
+@DisplayName("UpdatePaymentUseCase Unit Tests")
+class UpdatePaymentUseCaseTest {
 
     @Mock
     private PaymentRepository paymentRepository;
 
-    private GetPaymentByIdUseCase getPaymentByIdUseCase;
+    private UpdatePaymentUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        getPaymentByIdUseCase = new GetPaymentByIdUseCase(paymentRepository);
+        useCase = new UpdatePaymentUseCase(paymentRepository);
     }
 
     @Test
-    void should_ReturnPaymentResponse_When_PaymentExists() {
+    void should_UpdatePayment_When_PaymentExists() {
         UUID id = UUID.randomUUID();
         Payment payment = buildPayment(id);
 
         when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.of(payment));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        PaymentResponse response = getPaymentByIdUseCase.execute(id);
+        UpdatePaymentRequest request = new UpdatePaymentRequest("REF-UPDATED", null, null, null);
 
-        assertNotNull(response);
-        assertEquals(id, response.id());
-        assertEquals(payment.getPaymentNumber().value(), response.paymentNumber());
-        assertEquals(payment.getCustomerId(), response.customerId());
-        assertEquals(payment.getAmount(), response.amount());
-        assertEquals(payment.getPaymentMethodId(), response.paymentMethodId());
-        assertEquals(payment.getReferenceNumber(), response.referenceNumber());
-        assertEquals(payment.getPaymentDate(), response.paymentDate());
-        assertEquals(payment.getNotes(), response.notes());
-        assertEquals(payment.getStatus().name(), response.status());
-        assertEquals(payment.getAppliedAmount(), response.appliedAmount());
-        assertEquals(payment.getCreatedBy(), response.createdBy());
-        assertEquals(payment.getCreatedByName(), response.createdByName());
-        assertEquals(payment.getCreatedAt(), response.createdAt());
-        assertEquals(payment.getUpdatedAt(), response.updatedAt());
+        PaymentResponse result = useCase.execute(id, request);
 
+        assertNotNull(result);
+        assertEquals(id, result.id());
         verify(paymentRepository).findById(PaymentId.of(id));
+        verify(paymentRepository).save(payment);
     }
 
     @Test
-    void should_ThrowIllegalArgumentException_When_PaymentDoesNotExist() {
+    void should_ThrowException_When_PaymentDoesNotExist() {
         UUID id = UUID.randomUUID();
 
         when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.empty());
 
+        UpdatePaymentRequest request = new UpdatePaymentRequest("REF-UPDATED", null, null, null);
+
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> getPaymentByIdUseCase.execute(id)
+                () -> useCase.execute(id, request)
         );
 
         assertEquals("Payment not found: " + id, exception.getMessage());
         verify(paymentRepository).findById(PaymentId.of(id));
+        verify(paymentRepository, never()).save(any());
+    }
+
+    @Test
+    void should_AcceptNullReferenceNumber() {
+        UUID id = UUID.randomUUID();
+        Payment payment = buildPayment(id);
+
+        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.of(payment));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        UpdatePaymentRequest request = new UpdatePaymentRequest(null, null, null, null);
+
+        PaymentResponse result = useCase.execute(id, request);
+
+        assertNotNull(result);
+        assertEquals(id, result.id());
+        verify(paymentRepository).save(payment);
     }
 
     private Payment buildPayment(UUID id) {
-        LocalDateTime now = LocalDateTime.now();
         return Payment.reconstitute(
                 PaymentId.of(id),
                 PaymentNumber.of(2026, 1),
                 UUID.randomUUID(),
                 new BigDecimal("500.00"),
                 UUID.randomUUID(),
+                PaymentSource.PAYMENT_METHOD,
                 "REF-001",
-                LocalDate.of(2026, 5, 28),
+                LocalDate.now(),
                 "Test notes",
                 PaymentStatus.APPLIED,
                 BigDecimal.ZERO,
                 UUID.randomUUID(),
                 "Test User",
-                now,
-                now
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
     }
 }

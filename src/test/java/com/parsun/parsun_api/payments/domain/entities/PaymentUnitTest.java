@@ -2,6 +2,7 @@ package com.parsun.parsun_api.payments.domain.entities;
 
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
+import com.parsun.parsun_api.payments.domain.valueobjects.PaymentSource;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -289,8 +290,6 @@ class PaymentUnitTest {
             Payment payment = createValidPayment();
             payment.apply(AMOUNT);
 
-            // When a payment is already fully applied, applying again should throw
-            // because it would exceed the total
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                     payment.apply(BigDecimal.ONE));
 
@@ -323,7 +322,8 @@ class PaymentUnitTest {
 
             Payment payment = Payment.reconstitute(
                     id, PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
+                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
                     PaymentStatus.APPLIED, AMOUNT, CREATED_BY, CREATED_BY_NAME, now, now);
 
             assertEquals(id, payment.getId());
@@ -331,6 +331,7 @@ class PaymentUnitTest {
             assertEquals(CUSTOMER_ID, payment.getCustomerId());
             assertEquals(AMOUNT, payment.getAmount());
             assertEquals(PAYMENT_METHOD_ID, payment.getPaymentMethodId());
+            assertEquals(PaymentSource.PAYMENT_METHOD, payment.getSource());
             assertEquals(REFERENCE_NUMBER, payment.getReferenceNumber());
             assertEquals(PAYMENT_DATE, payment.getPaymentDate());
             assertEquals(NOTES, payment.getNotes());
@@ -355,7 +356,8 @@ class PaymentUnitTest {
             PaymentId id = payment1.getId();
             Payment payment2 = Payment.reconstitute(
                     id, PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
+                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
                     PaymentStatus.APPLIED, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
                     payment1.getCreatedAt(), LocalDateTime.now());
 
@@ -415,7 +417,8 @@ class PaymentUnitTest {
         void should_ReturnAllFields_ThroughGetters() {
             Payment payment = Payment.reconstitute(
                     PaymentId.generate(), PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
+                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
                     PaymentStatus.APPLIED, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
                     LocalDateTime.now(), LocalDateTime.now());
 
@@ -424,6 +427,7 @@ class PaymentUnitTest {
             assertNotNull(payment.getCustomerId());
             assertNotNull(payment.getAmount());
             assertNotNull(payment.getPaymentMethodId());
+            assertNotNull(payment.getSource());
             assertNotNull(payment.getPaymentDate());
             assertNotNull(payment.getStatus());
             assertNotNull(payment.getAppliedAmount());
