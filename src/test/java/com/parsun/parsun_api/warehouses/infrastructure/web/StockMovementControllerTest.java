@@ -1,0 +1,83 @@
+package com.parsun.parsun_api.warehouses.infrastructure.web;
+
+import com.parsun.parsun_api.shared.dto.PageResponse;
+import com.parsun.parsun_api.warehouses.application.dto.response.StockMovementResponse;
+import com.parsun.parsun_api.warehouses.application.usecases.GetStockMovementsUseCase;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("StockMovementController Unit Tests")
+class StockMovementControllerTest {
+
+    @Mock
+    private GetStockMovementsUseCase getStockMovementsUseCase;
+
+    @InjectMocks
+    private StockMovementController stockMovementController;
+
+    @Test
+    @DisplayName("should get movements and return page")
+    void should_get_movements_and_return_page() {
+        UUID warehouseId = UUID.randomUUID();
+        StockMovementResponse movement = mock(StockMovementResponse.class);
+        PageResponse<StockMovementResponse> pageResponse = new PageResponse<>(
+                List.of(movement), 1L, 1, 20, 0, true, true, false);
+
+        when(getStockMovementsUseCase.execute(eq(warehouseId), any(), anyInt(), anyInt()))
+                .thenReturn(pageResponse);
+
+        PageResponse<StockMovementResponse> result = stockMovementController.getMovements(
+                warehouseId, null, 0, 20);
+
+        assertEquals(1, result.content().size());
+        verify(getStockMovementsUseCase).execute(warehouseId, null, 0, 20);
+    }
+
+    @Test
+    @DisplayName("should get movements filtered by product")
+    void should_get_movements_filtered_by_product() {
+        UUID warehouseId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        StockMovementResponse movement = mock(StockMovementResponse.class);
+        PageResponse<StockMovementResponse> pageResponse = new PageResponse<>(
+                List.of(movement), 1L, 1, 20, 0, true, true, false);
+
+        when(getStockMovementsUseCase.execute(eq(warehouseId), eq(productId), anyInt(), anyInt()))
+                .thenReturn(pageResponse);
+
+        PageResponse<StockMovementResponse> result = stockMovementController.getMovements(
+                warehouseId, productId, 0, 20);
+
+        assertEquals(1, result.content().size());
+        verify(getStockMovementsUseCase).execute(warehouseId, productId, 0, 20);
+    }
+
+    @Test
+    @DisplayName("should return empty movements page")
+    void should_return_empty_movements_page() {
+        UUID warehouseId = UUID.randomUUID();
+        PageResponse<StockMovementResponse> emptyPage = new PageResponse<>(
+                List.of(), 0L, 0, 20, 0, true, true, true);
+
+        when(getStockMovementsUseCase.execute(eq(warehouseId), any(), anyInt(), anyInt()))
+                .thenReturn(emptyPage);
+
+        PageResponse<StockMovementResponse> result = stockMovementController.getMovements(
+                warehouseId, null, 0, 20);
+
+        assertTrue(result.content().isEmpty());
+        verify(getStockMovementsUseCase).execute(warehouseId, null, 0, 20);
+    }
+}

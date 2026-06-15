@@ -21,7 +21,7 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
-import com.parsun.parsun_api.shared.services.CreditGuard;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +65,7 @@ class CreateInvoiceUseCaseTest {
     private WarehouseStockRepository warehouseStockRepository;
 
     @Mock
-    private CreditGuard creditGuard;
+    private InvoiceAuthorizationService authorizationService;
 
     private CreateInvoiceUseCase createInvoiceUseCase;
 
@@ -73,7 +73,7 @@ class CreateInvoiceUseCaseTest {
     void setUp() {
         createInvoiceUseCase = new CreateInvoiceUseCase(
                 invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository, creditGuard);
+                userRepository, productRepository, warehouseStockRepository, authorizationService);
     }
 
     @Test
@@ -86,7 +86,8 @@ class CreateInvoiceUseCaseTest {
         User user = buildUser(authenticatedUserId);
 
         CreateInvoiceRequest request = new CreateInvoiceRequest(
-                orderId, null, null, "CASH", null, List.of()
+                orderId, null, null, "CASH", null,
+                null, null, null, null, List.of()
         );
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
@@ -97,7 +98,7 @@ class CreateInvoiceUseCaseTest {
         InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
 
         assertNotNull(response);
-        verify(invoiceRepository, times(2)).save(any(Invoice.class));
+        verify(invoiceRepository, times(1)).save(any(Invoice.class));
     }
 
     @Test
@@ -114,7 +115,8 @@ class CreateInvoiceUseCaseTest {
                 productId, BigDecimal.ONE, BigDecimal.TEN, List.of()
         );
         CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", "Notes", List.of(lineRequest)
+                null, customerId, null, "CASH", "Notes",
+                null, null, null, null, List.of(lineRequest)
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -134,7 +136,8 @@ class CreateInvoiceUseCaseTest {
         UUID orderId = UUID.randomUUID();
 
         CreateInvoiceRequest request = new CreateInvoiceRequest(
-                orderId, null, null, "CASH", null, List.of()
+                orderId, null, null, "CASH", null,
+                null, null, null, null, List.of()
         );
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.empty());
@@ -155,7 +158,8 @@ class CreateInvoiceUseCaseTest {
                 UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN, List.of()
         );
         CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null, List.of(lineRequest)
+                null, customerId, null, "CASH", null,
+                null, null, null, null, List.of(lineRequest)
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
@@ -179,7 +183,8 @@ class CreateInvoiceUseCaseTest {
                 UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN, List.of()
         );
         CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null, List.of(lineRequest)
+                null, customerId, null, "CASH", null,
+                null, null, null, null, List.of(lineRequest)
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -206,7 +211,8 @@ class CreateInvoiceUseCaseTest {
                 productId, BigDecimal.ONE, BigDecimal.TEN, List.of()
         );
         CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null, List.of(lineRequest)
+                null, customerId, null, "CASH", null,
+                null, null, null, null, List.of(lineRequest)
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
