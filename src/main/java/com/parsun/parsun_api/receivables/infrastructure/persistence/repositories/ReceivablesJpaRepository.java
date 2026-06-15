@@ -29,7 +29,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             FROM debit_notes dn2
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+        WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
           AND i.status <> 'FULLY_RETURNED'
           AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
@@ -54,7 +54,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             FROM debit_notes dn2
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+        WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
           AND i.status <> 'FULLY_RETURNED'
           AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
@@ -79,7 +79,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
             FROM debit_notes dn2
             GROUP BY dn2.invoice_id
         ) dn ON dn.invoice_id = i.id
-        WHERE i.status NOT IN ('CANCELLED', 'DRAFT')
+        WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
           AND i.status <> 'FULLY_RETURNED'
           AND (i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) > 0
