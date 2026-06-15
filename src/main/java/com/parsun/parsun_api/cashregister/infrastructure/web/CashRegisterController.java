@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
@@ -71,8 +72,10 @@ public class CashRegisterController {
     public ResponseEntity<Page<CashRegisterResponse>> getHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "closureDate,desc") String sort) {
-        var history = getRegisterHistoryUseCase.execute(page, size, sort);
+            @RequestParam(defaultValue = "closureDate,desc") String sort,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo) {
+        var history = getRegisterHistoryUseCase.execute(page, size, sort, dateFrom, dateTo);
         return ResponseEntity.ok(history);
     }
 }

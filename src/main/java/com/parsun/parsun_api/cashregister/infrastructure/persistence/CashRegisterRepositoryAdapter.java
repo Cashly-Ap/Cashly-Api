@@ -191,34 +191,35 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
     @Override
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public List<CashRegisterExportRow> findExportRows(LocalDate closureDate) {
+    public List<CashRegisterExportRow> findExportRows(LocalDate dateFrom, LocalDate dateTo) {
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int sortOrder = 0;
 
-        rows.addAll(queryInvoices(closureDate, sortOrder));
+        rows.addAll(queryInvoices(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
-        rows.addAll(queryReturns(closureDate, sortOrder));
+        rows.addAll(queryReturns(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
-        rows.addAll(queryPayments(closureDate, sortOrder));
+        rows.addAll(queryPayments(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
-        rows.addAll(queryAdvances(closureDate, sortOrder));
+        rows.addAll(queryAdvances(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
-        rows.addAll(queryCreditNotes(closureDate, sortOrder));
+        rows.addAll(queryCreditNotes(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
-        rows.addAll(queryDebitNotes(closureDate, sortOrder));
+        rows.addAll(queryDebitNotes(dateFrom, dateTo, sortOrder));
 
         return rows;
     }
 
-    private List<CashRegisterExportRow> queryInvoices(LocalDate date, int baseOrder) {
+    private List<CashRegisterExportRow> queryInvoices(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
                 SELECT i.invoice_number, i.subtotal, i.created_at, i.customer_name
                 FROM invoices i
-                WHERE DATE(i.created_at) = :date AND i.status = 'PAID'
+                WHERE DATE(i.created_at) BETWEEN :dateFrom AND :dateTo AND i.status = 'PAID'
                 ORDER BY i.created_at
                 """;
         var query = entityManager.createNativeQuery(sql);
-        query.setParameter("date", date);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
         List<Object[]> results = query.getResultList();
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int order = baseOrder;
@@ -227,7 +228,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
             BigDecimal total = toBigDecimal(row[1]);
             LocalDate emissionDate = toLocalDate(row[2]);
             String customerName = (String) row[3];
-            var paymentBreakdown = getInvoicePaymentBreakdown(docNumber, date);
+            var paymentBreakdown = getInvoicePaymentBreakdown(docNumber, dateFrom, dateTo);
             rows.add(CashRegisterExportRow.of(
                     emissionDate, "FAC", docNumber, total,
                     paymentBreakdown.efectivo(),
@@ -241,16 +242,17 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
-    private List<CashRegisterExportRow> queryReturns(LocalDate date, int baseOrder) {
+    private List<CashRegisterExportRow> queryReturns(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
                 SELECT r.return_number, r.total, r.created_at, c.legal_name
                 FROM returns r
                 JOIN customers c ON c.id = r.customer_id
-                WHERE DATE(r.created_at) = :date
+                WHERE DATE(r.created_at) BETWEEN :dateFrom AND :dateTo
                 ORDER BY r.created_at
                 """;
         var query = entityManager.createNativeQuery(sql);
-        query.setParameter("date", date);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
         List<Object[]> results = query.getResultList();
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int order = baseOrder;
@@ -269,17 +271,18 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
-    private List<CashRegisterExportRow> queryPayments(LocalDate date, int baseOrder) {
+    private List<CashRegisterExportRow> queryPayments(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
                 SELECT p.payment_number, p.amount, p.payment_date, c.legal_name, pm.code
                 FROM payments p
                 JOIN customers c ON c.id = p.customer_id
                 JOIN payment_methods pm ON pm.id = p.payment_method_id
-                WHERE p.payment_date = :date AND p.status = 'APPLIED'
+                WHERE p.payment_date BETWEEN :dateFrom AND :dateTo AND p.status = 'APPLIED'
                 ORDER BY p.created_at
                 """;
         var query = entityManager.createNativeQuery(sql);
-        query.setParameter("date", date);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
         List<Object[]> results = query.getResultList();
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int order = baseOrder;
@@ -301,16 +304,17 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
-    private List<CashRegisterExportRow> queryAdvances(LocalDate date, int baseOrder) {
+    private List<CashRegisterExportRow> queryAdvances(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
                 SELECT bt.number, bt.amount, bt.created_at, c.legal_name
                 FROM balance_transactions bt
                 JOIN customers c ON c.id = bt.customer_id
-                WHERE DATE(bt.created_at) = :date AND bt.type = 'ADVANCED'
+                WHERE DATE(bt.created_at) BETWEEN :dateFrom AND :dateTo AND bt.type = 'ADVANCED'
                 ORDER BY bt.created_at
                 """;
         var query = entityManager.createNativeQuery(sql);
-        query.setParameter("date", date);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
         List<Object[]> results = query.getResultList();
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int order = baseOrder;
@@ -329,16 +333,17 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
-    private List<CashRegisterExportRow> queryCreditNotes(LocalDate date, int baseOrder) {
+    private List<CashRegisterExportRow> queryCreditNotes(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
                 SELECT cn.note_number, cn.amount, cn.created_at, c.legal_name
                 FROM credit_notes cn
                 JOIN customers c ON c.id = cn.customer_id
-                WHERE DATE(cn.created_at) = :date
+                WHERE DATE(cn.created_at) BETWEEN :dateFrom AND :dateTo
                 ORDER BY cn.created_at
                 """;
         var query = entityManager.createNativeQuery(sql);
-        query.setParameter("date", date);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
         List<Object[]> results = query.getResultList();
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int order = baseOrder;
@@ -357,16 +362,17 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
-    private List<CashRegisterExportRow> queryDebitNotes(LocalDate date, int baseOrder) {
+    private List<CashRegisterExportRow> queryDebitNotes(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
                 SELECT dn.note_number, dn.amount, dn.created_at, c.legal_name
                 FROM debit_notes dn
                 JOIN customers c ON c.id = dn.customer_id
-                WHERE DATE(dn.created_at) = :date
+                WHERE DATE(dn.created_at) BETWEEN :dateFrom AND :dateTo
                 ORDER BY dn.created_at
                 """;
         var query = entityManager.createNativeQuery(sql);
-        query.setParameter("date", date);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
         List<Object[]> results = query.getResultList();
         List<CashRegisterExportRow> rows = new ArrayList<>();
         int order = baseOrder;
@@ -385,7 +391,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
-    private PaymentBreakdown getInvoicePaymentBreakdown(String invoiceNumber, LocalDate date) {
+    private PaymentBreakdown getInvoicePaymentBreakdown(String invoiceNumber, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
                 SELECT pm.code, COALESCE(SUM(pa.allocated_amount), 0)
                 FROM invoices i

@@ -21,16 +21,6 @@ public final class CashRegisterMapper {
                 .map(CashRegisterMapper::toDetailResponse)
                 .collect(Collectors.toList());
 
-        BigDecimal totalPayments = closure.getTotalPayments();
-        BigDecimal totalAdvances = closure.getTotalAdvances();
-        BigDecimal totalReturns = closure.getTotalReturns();
-        BigDecimal totalCreditNotes = closure.getTotalCreditNotes();
-        BigDecimal totalDebitNotes = closure.getTotalDebitNotes();
-        BigDecimal totalInvoices = closure.getTotalInvoices();
-        int paymentCount = closure.getPaymentCount();
-        int advanceCount = closure.getAdvanceCount();
-        int returnCount = closure.getReturnCount();
-        int invoiceCount = closure.getInvoiceCount();
         BigDecimal totalInvoiced = closure.getTotalInvoices();
         BigDecimal totalRevenue = closure.getTotalPayments();
         BigDecimal totalExpenses = closure.getTotalReturns().add(closure.getTotalCreditNotes());
@@ -39,17 +29,6 @@ public final class CashRegisterMapper {
         List<ExpenseSummaryItem> expenseSummary = List.of();
 
         if (dailyTotals != null) {
-            totalPayments = dailyTotals.totalPayments();
-            totalAdvances = dailyTotals.totalAdvances();
-            totalReturns = dailyTotals.totalReturns();
-            totalCreditNotes = dailyTotals.totalCreditNotes();
-            totalDebitNotes = dailyTotals.totalDebitNotes();
-            totalInvoices = dailyTotals.totalInvoices();
-            paymentCount = dailyTotals.paymentCount();
-            advanceCount = dailyTotals.advanceCount();
-            returnCount = dailyTotals.returnCount();
-            invoiceCount = dailyTotals.invoiceCount();
-
             totalInvoiced = dailyTotals.totalInvoiced();
             totalRevenue = dailyTotals.totalRevenue();
             totalExpenses = dailyTotals.totalExpenses();
@@ -69,10 +48,6 @@ public final class CashRegisterMapper {
                 closure.getClosedBy(),
                 closure.getClosedByName(),
                 closure.getClosedAt(),
-                totalPayments, totalAdvances,
-                totalReturns, totalCreditNotes, totalDebitNotes,
-                totalInvoices,
-                paymentCount, advanceCount, returnCount, invoiceCount,
                 closure.getClosingNotes(),
                 details,
                 totalInvoiced, totalRevenue, totalExpenses, balance,

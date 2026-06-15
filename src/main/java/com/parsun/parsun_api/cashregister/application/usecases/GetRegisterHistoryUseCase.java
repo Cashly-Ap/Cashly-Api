@@ -6,6 +6,7 @@ import com.parsun.parsun_api.cashregister.domain.repositories.CashRegisterReposi
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class GetRegisterHistoryUseCase {
@@ -16,8 +17,9 @@ public class GetRegisterHistoryUseCase {
         this.closureRepository = closureRepository;
     }
 
-    public Page<CashRegisterResponse> execute(int page, int size, String sort) {
-        var closurePage = closureRepository.findAll(page, size, sort);
+    public Page<CashRegisterResponse> execute(int page, int size, String sort,
+                                               LocalDate dateFrom, LocalDate dateTo) {
+        var closurePage = closureRepository.findAll(page, size, sort, dateFrom, dateTo);
         List<CashRegisterResponse> responses = closurePage.getContent().stream()
                 .map(CashRegisterMapper::toResponse)
                 .toList();

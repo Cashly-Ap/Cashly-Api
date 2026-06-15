@@ -1,0 +1,86 @@
+package com.parsun.parsun_api.cashregister.infrastructure.web;
+
+import com.parsun.parsun_api.cashregister.application.usecases.GenerateCashRegisterExcelUseCase;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("CashRegisterExportController Unit Tests")
+class CashRegisterExportControllerTest {
+
+    @Mock
+    private GenerateCashRegisterExcelUseCase generateCashRegisterExcelUseCase;
+
+    @InjectMocks
+    private CashRegisterExportController controller;
+
+    @Test
+    @DisplayName("should return Excel file with correct headers for valid date range")
+    void shouldReturnExcelFileWithCorrectHeadersForValidDateRange() {
+        LocalDate dateFrom = LocalDate.of(2025, 6, 15);
+        LocalDate dateTo = LocalDate.of(2025, 6, 15);
+        byte[] expectedBytes = new byte[]{1, 2, 3};
+
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo)).thenReturn(expectedBytes);
+
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(
+                MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+                response.getHeaders().getContentType()
+        );
+        String contentDisposition = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
+        assertNotNull(contentDisposition);
+        assertTrue(contentDisposition.contains("cierre-caja-detallado-2025-06-15_2025-06-15.xlsx"));
+        assertTrue(contentDisposition.startsWith("attachment"));
+        assertArrayEquals(expectedBytes, response.getBody());
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo);
+    }
+
+    @Test
+    @DisplayName("should return Excel file with date-range-specific filename")
+    void shouldReturnExcelFileWithDateRangeSpecificFilename() {
+        LocalDate dateFrom = LocalDate.of(2025, 12, 1);
+        LocalDate dateTo = LocalDate.of(2025, 12, 31);
+        byte[] expectedBytes = new byte[]{4, 5, 6};
+
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo)).thenReturn(expectedBytes);
+
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo);
+
+        String contentDisposition = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
+        assertTrue(contentDisposition.contains("cierre-caja-detallado-2025-12-01_2025-12-31.xlsx"));
+        assertArrayEquals(expectedBytes, response.getBody());
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo);
+    }
+
+    @Test
+    @DisplayName("should return empty Excel when no data")
+    void shouldReturnEmptyExcelWhenNoData() {
+        LocalDate dateFrom = LocalDate.of(2025, 6, 15);
+        LocalDate dateTo = LocalDate.of(2025, 6, 15);
+
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo)).thenReturn(new byte[0]);
+
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+        assertEquals(0, response.getBody().length);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo);
+    }
+}
