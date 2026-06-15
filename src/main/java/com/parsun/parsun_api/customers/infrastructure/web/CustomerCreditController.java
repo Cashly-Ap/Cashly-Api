@@ -1,9 +1,9 @@
-package com.parsun.parsun_api.receivables.infrastructure.web;
+package com.parsun.parsun_api.customers.infrastructure.web;
 
-import com.parsun.parsun_api.receivables.application.dto.response.CreditStatusResponse;
-import com.parsun.parsun_api.receivables.application.dto.response.OverdueInvoiceResponse;
-import com.parsun.parsun_api.receivables.application.usecases.GetCustomerCreditStatusUseCase;
-import com.parsun.parsun_api.receivables.application.usecases.GetOverdueInvoicesUseCase;
+import com.parsun.parsun_api.customers.application.dto.response.CreditStatusResponse;
+import com.parsun.parsun_api.customers.application.dto.response.OverdueInvoiceResponse;
+import com.parsun.parsun_api.customers.application.usecases.credit.GetCustomerCreditStatusUseCase;
+import com.parsun.parsun_api.customers.application.usecases.credit.GetOverdueInvoicesUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,26 +12,26 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/credit")
-public class CreditController {
+@RequestMapping("/api/customers")
+public class CustomerCreditController {
 
     private final GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase;
     private final GetOverdueInvoicesUseCase getOverdueInvoicesUseCase;
 
-    public CreditController(GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase,
-                            GetOverdueInvoicesUseCase getOverdueInvoicesUseCase) {
+    public CustomerCreditController(GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase,
+                                     GetOverdueInvoicesUseCase getOverdueInvoicesUseCase) {
         this.getCustomerCreditStatusUseCase = getCustomerCreditStatusUseCase;
         this.getOverdueInvoicesUseCase = getOverdueInvoicesUseCase;
     }
 
-    @GetMapping("/{customerId}")
+    @GetMapping("/{customerId}/credit")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<CreditStatusResponse> getCreditStatus(@PathVariable UUID customerId) {
         CreditStatusResponse response = getCustomerCreditStatusUseCase.execute(customerId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/overdue")
+    @GetMapping("/credit/overdue")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<List<OverdueInvoiceResponse>> getOverdueInvoices() {
         List<OverdueInvoiceResponse> response = getOverdueInvoicesUseCase.execute();

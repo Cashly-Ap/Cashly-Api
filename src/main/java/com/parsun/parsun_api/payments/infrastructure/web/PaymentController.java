@@ -1,9 +1,13 @@
 package com.parsun.parsun_api.payments.infrastructure.web;
 
 import com.parsun.parsun_api.payments.application.dto.request.CreatePaymentRequest;
+import com.parsun.parsun_api.payments.application.dto.request.PayCustomerDebtRequest;
+import com.parsun.parsun_api.payments.application.dto.request.PayInvoiceRequest;
+import com.parsun.parsun_api.payments.application.dto.request.PayPartialDebtRequest;
 import com.parsun.parsun_api.payments.application.dto.request.UpdatePaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentListResponse;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
+import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResponse;
 import com.parsun.parsun_api.payments.application.usecases.*;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,21 +30,30 @@ public class PaymentController {
     private final GetPaymentByIdUseCase getPaymentByIdUseCase;
     private final UpdatePaymentUseCase updatePaymentUseCase;
     private final DeletePaymentUseCase deletePaymentUseCase;
+    private final PayInvoiceUseCase payInvoiceUseCase;
+    private final PayAllCustomerDebtUseCase payAllCustomerDebtUseCase;
+    private final PayPartialDebtUseCase payPartialDebtUseCase;
 
     public PaymentController(CreatePaymentUseCase createPaymentUseCase,
                               GetAllPaymentsUseCase getAllPaymentsUseCase,
                               GetPaymentByIdUseCase getPaymentByIdUseCase,
                               UpdatePaymentUseCase updatePaymentUseCase,
-                              DeletePaymentUseCase deletePaymentUseCase) {
+                              DeletePaymentUseCase deletePaymentUseCase,
+                              PayInvoiceUseCase payInvoiceUseCase,
+                              PayAllCustomerDebtUseCase payAllCustomerDebtUseCase,
+                              PayPartialDebtUseCase payPartialDebtUseCase) {
         this.createPaymentUseCase = createPaymentUseCase;
         this.getAllPaymentsUseCase = getAllPaymentsUseCase;
         this.getPaymentByIdUseCase = getPaymentByIdUseCase;
         this.updatePaymentUseCase = updatePaymentUseCase;
         this.deletePaymentUseCase = deletePaymentUseCase;
+        this.payInvoiceUseCase = payInvoiceUseCase;
+        this.payAllCustomerDebtUseCase = payAllCustomerDebtUseCase;
+        this.payPartialDebtUseCase = payPartialDebtUseCase;
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCE')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<PaymentResponse> create(
             @Valid @RequestBody CreatePaymentRequest request,
             Authentication authentication) {
@@ -50,7 +63,7 @@ public class PaymentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCE')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<List<PaymentListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -62,14 +75,50 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCE')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<PaymentResponse> getById(@PathVariable UUID id) {
         PaymentResponse payment = getPaymentByIdUseCase.execute(id);
         return ResponseEntity.ok(payment);
     }
 
+    @PostMapping("/invoices/{invoiceId}/pay")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<PaymentResultResponse> payInvoice(
+            @PathVariable UUID invoiceId,
+            @Valid @RequestBody PayInvoiceRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        String userName = authentication.getName();
+        PaymentResultResponse response = payInvoiceUseCase.execute(invoiceId, request, userId, userName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/customers/{customerId}/pay-all")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<PaymentResultResponse> payAllCustomerDebt(
+            @PathVariable UUID customerId,
+            @RequestBody @Valid PayCustomerDebtRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        String userName = authentication.getName();
+        PaymentResultResponse response = payAllCustomerDebtUseCase.execute(customerId, request, userId, userName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/customers/{customerId}/pay-partial")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<PaymentResultResponse> payPartialDebt(
+            @PathVariable UUID customerId,
+            @RequestBody @Valid PayPartialDebtRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        String userName = authentication.getName();
+        PaymentResultResponse response = payPartialDebtUseCase.execute(customerId, request, userId, userName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCE')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<PaymentResponse> update(@PathVariable UUID id,
                                                    @Valid @RequestBody UpdatePaymentRequest request) {
         PaymentResponse response = updatePaymentUseCase.execute(id, request);
@@ -77,7 +126,7 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCE')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePaymentUseCase.execute(id);
         return ResponseEntity.noContent().build();

@@ -1,7 +1,7 @@
-package com.parsun.parsun_api.receivables.application.usecases;
+package com.parsun.parsun_api.payments.application.usecases;
 
-import com.parsun.parsun_api.receivables.application.dto.request.PayPartialDebtRequest;
-import com.parsun.parsun_api.receivables.application.dto.response.PaymentResultResponse;
+import com.parsun.parsun_api.payments.application.dto.request.PayPartialDebtRequest;
+import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResponse;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.payments.domain.entities.Payment;

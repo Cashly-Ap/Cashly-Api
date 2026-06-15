@@ -1,4 +1,4 @@
-package com.parsun.parsun_api.receivables.application.dto.response;
+package com.parsun.parsun_api.payments.application.dto.response;
 
 import java.util.UUID;
 

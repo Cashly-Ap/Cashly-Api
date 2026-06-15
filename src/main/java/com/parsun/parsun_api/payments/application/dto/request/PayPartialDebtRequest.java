@@ -1,4 +1,4 @@
-package com.parsun.parsun_api.receivables.application.dto.request;
+package com.parsun.parsun_api.payments.application.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record PayInvoiceRequest(
+public record PayPartialDebtRequest(
         UUID paymentMethodId,
 
         @Size(max = 100, message = "Reference number must be at most 100 characters")
@@ -17,6 +17,7 @@ public record PayInvoiceRequest(
         @NotNull(message = "Payment date is required")
         LocalDate paymentDate,
 
+        @NotNull(message = "Amount is required")
         @Positive(message = "Amount must be greater than zero")
         BigDecimal amount,
 

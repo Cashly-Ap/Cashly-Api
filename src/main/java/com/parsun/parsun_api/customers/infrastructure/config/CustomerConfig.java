@@ -1,7 +1,10 @@
 package com.parsun.parsun_api.customers.infrastructure.config;
 
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
+import com.parsun.parsun_api.customers.application.services.CreditValidationService;
 import com.parsun.parsun_api.customers.application.usecases.*;
+import com.parsun.parsun_api.customers.application.usecases.credit.GetCustomerCreditStatusUseCase;
+import com.parsun.parsun_api.customers.application.usecases.credit.GetOverdueInvoicesUseCase;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
@@ -102,5 +105,17 @@ public class CustomerConfig {
     public ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase(
             CustomerBalanceRepository customerBalanceRepository) {
         return new ConsumeCustomerBalanceUseCase(customerBalanceRepository);
+    }
+
+    @Bean
+    public GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase(
+            CreditValidationService creditValidationService) {
+        return new GetCustomerCreditStatusUseCase(creditValidationService);
+    }
+
+    @Bean
+    public GetOverdueInvoicesUseCase getOverdueInvoicesUseCase(
+            CreditValidationService creditValidationService) {
+        return new GetOverdueInvoicesUseCase(creditValidationService);
     }
 }

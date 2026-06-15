@@ -1,4 +1,4 @@
-package com.parsun.parsun_api.receivables.application.dto.response;
+package com.parsun.parsun_api.customers.application.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

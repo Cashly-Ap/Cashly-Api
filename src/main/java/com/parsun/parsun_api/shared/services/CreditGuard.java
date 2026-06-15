@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.shared.services;
 
-import com.parsun.parsun_api.receivables.application.dto.response.CreditStatusResponse;
+import com.parsun.parsun_api.customers.application.dto.response.CreditStatusResponse;
+import com.parsun.parsun_api.customers.application.services.CreditValidationService;
 import com.parsun.parsun_api.shared.services.exceptions.CreditLimitExceededException;
 import org.springframework.stereotype.Component;
 

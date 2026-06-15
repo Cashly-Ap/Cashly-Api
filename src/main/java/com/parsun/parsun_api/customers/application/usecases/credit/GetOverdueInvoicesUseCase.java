@@ -1,7 +1,7 @@
-package com.parsun.parsun_api.receivables.application.usecases;
+package com.parsun.parsun_api.customers.application.usecases.credit;
 
-import com.parsun.parsun_api.receivables.application.dto.response.OverdueInvoiceResponse;
-import com.parsun.parsun_api.shared.services.CreditValidationService;
+import com.parsun.parsun_api.customers.application.dto.response.OverdueInvoiceResponse;
+import com.parsun.parsun_api.customers.application.services.CreditValidationService;
 import jakarta.transaction.Transactional;
 
 import java.util.List;

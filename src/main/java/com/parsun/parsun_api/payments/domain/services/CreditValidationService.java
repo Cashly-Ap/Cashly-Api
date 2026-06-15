@@ -9,8 +9,8 @@ import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.debit_notes.domain.entities.DebitNote;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.parsun.parsun_api.receivables.application.dto.response.CreditStatusResponse;
-import com.parsun.parsun_api.receivables.application.dto.response.OverdueInvoiceResponse;
+import com.parsun.parsun_api.customers.application.dto.response.CreditStatusResponse;
+import com.parsun.parsun_api.customers.application.dto.response.OverdueInvoiceResponse;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CreditValidationService implements com.parsun.parsun_api.shared.services.CreditValidationService {
+public class CreditValidationService implements com.parsun.parsun_api.customers.application.services.CreditValidationService {
 
     private final CustomerRepository customerRepository;
     private final CustomerBalanceRepository customerBalanceRepository;
