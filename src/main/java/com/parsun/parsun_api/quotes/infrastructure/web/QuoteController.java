@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.quotes.infrastructure.web;
 
 import com.parsun.parsun_api.quotes.application.dto.request.CancelQuoteRequest;
+import com.parsun.parsun_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
 import com.parsun.parsun_api.quotes.application.dto.request.CreateQuoteRequest;
 import com.parsun.parsun_api.quotes.application.dto.request.UpdateQuoteRequest;
 import com.parsun.parsun_api.quotes.application.dto.response.*;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -149,11 +149,10 @@ public class QuoteController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<QuoteConvertedToInvoiceResponse> convertToInvoice(
             @PathVariable UUID id,
-            @RequestBody Map<String, String> body,
+            @Valid @RequestBody ConvertQuoteToInvoiceRequest request,
             Authentication authentication) {
-        String paymentType = body.get("paymentType");
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        QuoteConvertedToInvoiceResponse response = convertQuoteToInvoiceUseCase.execute(id, paymentType, userId);
+        QuoteConvertedToInvoiceResponse response = convertQuoteToInvoiceUseCase.execute(id, request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

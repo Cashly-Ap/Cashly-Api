@@ -3,6 +3,7 @@ package com.parsun.parsun_api.orders.application.usecases;
 import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.usecases.CreateInvoiceUseCase;
+import com.parsun.parsun_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
@@ -64,7 +65,8 @@ class ConvertToInvoiceUseCaseUnitTest {
                 .thenReturn(invoiceResponse);
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(orderId, "CASH", authenticatedUserId);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
+        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(orderId, request, authenticatedUserId);
 
         assertNotNull(response);
         assertEquals(orderId, response.orderId());
@@ -86,7 +88,8 @@ class ConvertToInvoiceUseCaseUnitTest {
                 .thenReturn(invoiceResponse);
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        convertToInvoiceUseCase.execute(orderId, "CREDIT", authenticatedUserId);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CREDIT", null, null, null, null);
+        convertToInvoiceUseCase.execute(orderId, request, authenticatedUserId);
 
         verify(createInvoiceUseCase).execute(invoiceRequestCaptor.capture(), eq(authenticatedUserId));
         CreateInvoiceRequest captured = invoiceRequestCaptor.getValue();
@@ -101,9 +104,10 @@ class ConvertToInvoiceUseCaseUnitTest {
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.empty());
 
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
         assertThrows(
                 OrderNotFoundException.class,
-                () -> convertToInvoiceUseCase.execute(orderId, "CASH", UUID.randomUUID())
+                () -> convertToInvoiceUseCase.execute(orderId, request, UUID.randomUUID())
         );
 
         verifyNoInteractions(createInvoiceUseCase);
@@ -129,9 +133,10 @@ class ConvertToInvoiceUseCaseUnitTest {
         when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), any()))
                 .thenReturn(invoiceResponse);
 
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
         assertThrows(
                 IllegalStateException.class,
-                () -> convertToInvoiceUseCase.execute(orderId, "CASH", UUID.randomUUID())
+                () -> convertToInvoiceUseCase.execute(orderId, request, UUID.randomUUID())
         );
 
         verify(orderRepository, never()).save(any());
@@ -150,7 +155,8 @@ class ConvertToInvoiceUseCaseUnitTest {
                 .thenReturn(invoiceResponse);
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        convertToInvoiceUseCase.execute(orderId, "CASH", authenticatedUserId);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
+        convertToInvoiceUseCase.execute(orderId, request, authenticatedUserId);
 
         verify(orderRepository, times(1)).save(any(Order.class));
     }

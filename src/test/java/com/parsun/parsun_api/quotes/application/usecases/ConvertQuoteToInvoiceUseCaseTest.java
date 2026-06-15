@@ -6,12 +6,14 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
 import com.parsun.parsun_api.quotes.application.dto.response.QuoteConvertedToInvoiceResponse;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteAllocation;
@@ -20,7 +22,6 @@ import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteStatus;
-import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
     private UserRepository userRepository;
 
     @Mock
-    private CreditGuard creditGuard;
+    private InvoiceAuthorizationService authorizationService;
 
     private ConvertQuoteToInvoiceUseCase useCase;
 
@@ -68,7 +69,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new ConvertQuoteToInvoiceUseCase(
-                quoteRepository, invoiceRepository, warehouseStockRepository, userRepository, creditGuard);
+                quoteRepository, invoiceRepository, warehouseStockRepository, userRepository, authorizationService);
     }
 
     @Test
@@ -89,7 +90,8 @@ class ConvertQuoteToInvoiceUseCaseTest {
                 .thenReturn(Optional.of(stock));
         when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        QuoteConvertedToInvoiceResponse result = useCase.execute(quoteId, "CASH", authenticatedUserId);
+        ConvertQuoteToInvoiceRequest request = new ConvertQuoteToInvoiceRequest("CASH", null, null, null, null);
+        QuoteConvertedToInvoiceResponse result = useCase.execute(quoteId, request, authenticatedUserId);
 
         assertNotNull(result);
         assertEquals(quoteId, result.quoteId());
@@ -129,7 +131,8 @@ class ConvertQuoteToInvoiceUseCaseTest {
                 .thenReturn(Optional.of(stock));
         when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        QuoteConvertedToInvoiceResponse result = useCase.execute(quoteId, "CREDIT", authenticatedUserId);
+        ConvertQuoteToInvoiceRequest request = new ConvertQuoteToInvoiceRequest("CREDIT", null, null, null, null);
+        QuoteConvertedToInvoiceResponse result = useCase.execute(quoteId, request, authenticatedUserId);
 
         ArgumentCaptor<Invoice> invoiceCaptor = ArgumentCaptor.forClass(Invoice.class);
         verify(invoiceRepository).save(invoiceCaptor.capture());
@@ -145,8 +148,9 @@ class ConvertQuoteToInvoiceUseCaseTest {
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
+        ConvertQuoteToInvoiceRequest request = new ConvertQuoteToInvoiceRequest("BITCOIN", null, null, null, null);
         assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(quoteId, "BITCOIN", authenticatedUserId));
+                useCase.execute(quoteId, request, authenticatedUserId));
 
         verify(invoiceRepository, never()).save(any());
         verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
@@ -164,8 +168,9 @@ class ConvertQuoteToInvoiceUseCaseTest {
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
+        ConvertQuoteToInvoiceRequest request = new ConvertQuoteToInvoiceRequest("CASH", null, null, null, null);
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                useCase.execute(quoteId, "CASH", authenticatedUserId));
+                useCase.execute(quoteId, request, authenticatedUserId));
 
         assertEquals("Only DRAFT quotes can be converted to invoices", exception.getMessage());
         verify(invoiceRepository, never()).save(any());
@@ -177,8 +182,9 @@ class ConvertQuoteToInvoiceUseCaseTest {
     void shouldThrowWhenQuoteNotFound() {
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
 
+        ConvertQuoteToInvoiceRequest request = new ConvertQuoteToInvoiceRequest("CASH", null, null, null, null);
         assertThrows(QuoteNotFoundException.class, () ->
-                useCase.execute(quoteId, "CASH", authenticatedUserId));
+                useCase.execute(quoteId, request, authenticatedUserId));
 
         verify(invoiceRepository, never()).save(any());
     }

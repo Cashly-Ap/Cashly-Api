@@ -3,6 +3,7 @@ package com.parsun.parsun_api.quotes.application.usecases;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
@@ -11,13 +12,13 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
 import com.parsun.parsun_api.quotes.application.dto.response.QuoteConvertedToInvoiceResponse;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteAllocation;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteLine;
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
-import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,22 +35,22 @@ public class ConvertQuoteToInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final UserRepository userRepository;
-    private final CreditGuard creditGuard;
+    private final InvoiceAuthorizationService authorizationService;
 
     public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
                                          InvoiceRepository invoiceRepository,
                                          WarehouseStockRepository warehouseStockRepository,
                                          UserRepository userRepository,
-                                         CreditGuard creditGuard) {
+                                         InvoiceAuthorizationService authorizationService) {
         this.quoteRepository = quoteRepository;
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.userRepository = userRepository;
-        this.creditGuard = creditGuard;
+        this.authorizationService = authorizationService;
     }
 
     @Transactional
-    public QuoteConvertedToInvoiceResponse execute(UUID quoteId, String paymentType, UUID authenticatedUserId) {
+    public QuoteConvertedToInvoiceResponse execute(UUID quoteId, ConvertQuoteToInvoiceRequest request, UUID authenticatedUserId) {
         Quote quote = quoteRepository.findById(quoteId)
                 .orElseThrow(() -> new QuoteNotFoundException(quoteId));
 
@@ -59,14 +60,9 @@ public class ConvertQuoteToInvoiceUseCase {
 
         PaymentType resolvedPaymentType;
         try {
-            resolvedPaymentType = PaymentType.valueOf(paymentType.toUpperCase());
+            resolvedPaymentType = PaymentType.valueOf(request.paymentType().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid payment type: " + paymentType + ". Must be CASH or CREDIT");
-        }
-
-        if (resolvedPaymentType == PaymentType.CREDIT) {
-            BigDecimal quoteTotal = quote.getSubtotal();
-            creditGuard.ensureCreditAvailable(quote.getCustomerId(), quoteTotal);
+            throw new IllegalArgumentException("Invalid payment type: " + request.paymentType() + ". Must be CASH or CREDIT");
         }
 
         User user = userRepository.findById(new UserId(authenticatedUserId))
@@ -76,10 +72,6 @@ public class ConvertQuoteToInvoiceUseCase {
         int sequence = invoiceRepository.getNextSequenceForYear(year);
         InvoiceNumber invoiceNumber = InvoiceNumber.of(year, sequence);
 
-        InvoiceStatus status = resolvedPaymentType == PaymentType.CASH
-                ? InvoiceStatus.PAID
-                : InvoiceStatus.PENDING_PAYMENT;
-
         List<InvoiceLine> invoiceLines = quote.getLines().stream()
                 .map(this::toInvoiceLine)
                 .toList();
@@ -88,14 +80,20 @@ public class ConvertQuoteToInvoiceUseCase {
                 InvoiceId.generate(), invoiceNumber,
                 quote.getCustomerId(), quote.getCustomerName(), quote.getCustomerRif(),
                 authenticatedUserId, user.getUserName().getValue(),
-                null, null,  
-                status, resolvedPaymentType, null,
+                null, null,
+                InvoiceStatus.DRAFT, resolvedPaymentType, null,
                 BigDecimal.ZERO, null,
                 null, null,
                 invoiceLines, LocalDateTime.now(), LocalDateTime.now()
         );
 
-        
+        authorizationService.authorize(invoice, user,
+                request.confirmationPassword(), request.useBalance(),
+                request.balanceAmount(), request.paymentMethodId(),
+                authenticatedUserId);
+
+        invoice.confirm();
+
         for (QuoteLine quoteLine : quote.getLines()) {
             for (QuoteAllocation allocation : quoteLine.getAllocations()) {
                 WarehouseStock stock = warehouseStockRepository

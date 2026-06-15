@@ -3,6 +3,7 @@ package com.parsun.parsun_api.orders.application.usecases;
 import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.usecases.CreateInvoiceUseCase;
+import com.parsun.parsun_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
@@ -24,23 +25,24 @@ public class ConvertToInvoiceUseCase {
     }
 
     @Transactional
-    public ConvertToInvoiceResponse execute(UUID orderId, String paymentType, UUID authenticatedUserId) {
+    public ConvertToInvoiceResponse execute(UUID orderId, ConvertToInvoiceRequest request, UUID authenticatedUserId) {
         Order order = orderRepository.findById(OrderId.of(orderId))
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
+        CreateInvoiceRequest createRequest = new CreateInvoiceRequest(
                 order.getId().value(),
                 null,
                 null,
-                paymentType,
+                request.paymentType(),
                 null,
-                null,
-                null,
-                null,
+                request.useBalance(),
+                request.balanceAmount(),
+                request.paymentMethodId(),
+                request.confirmationPassword(),
                 null
         );
 
-        InvoiceDetailResponse invoice = createInvoiceUseCase.execute(request, authenticatedUserId);
+        InvoiceDetailResponse invoice = createInvoiceUseCase.execute(createRequest, authenticatedUserId);
 
         order.markAsInvoiced(invoice.id(), invoice.invoiceNumber());
         orderRepository.save(order);

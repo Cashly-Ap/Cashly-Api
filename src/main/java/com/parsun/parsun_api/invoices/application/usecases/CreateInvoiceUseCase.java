@@ -9,6 +9,7 @@ import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
@@ -21,7 +22,6 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
-import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
@@ -40,7 +40,7 @@ public class CreateInvoiceUseCase {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final CreditGuard creditGuard;
+    private final InvoiceAuthorizationService authorizationService;
 
     public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  OrderRepository orderRepository,
@@ -48,14 +48,14 @@ public class CreateInvoiceUseCase {
                                  UserRepository userRepository,
                                  ProductRepository productRepository,
                                  WarehouseStockRepository warehouseStockRepository,
-                                 CreditGuard creditGuard) {
+                                 InvoiceAuthorizationService authorizationService) {
         this.invoiceRepository = invoiceRepository;
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.warehouseStockRepository = warehouseStockRepository;
-        this.creditGuard = creditGuard;
+        this.authorizationService = authorizationService;
     }
 
     @Transactional
@@ -150,15 +150,17 @@ public class CreateInvoiceUseCase {
                 lines
         );
 
-        Invoice saved = invoiceRepository.save(invoice);
-
         if (orderId != null) {
-            if (paymentType == PaymentType.CREDIT) {
-                creditGuard.ensureCreditAvailable(resolvedCustomerId, saved.calculateTotal());
-            }
-            saved.confirm();
-            saved = invoiceRepository.save(saved);
+            User user = userRepository.findById(new UserId(authenticatedUserId))
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            authorizationService.authorize(invoice, user,
+                    request.confirmationPassword(), request.useBalance(),
+                    request.balanceAmount(), request.paymentMethodId(),
+                    authenticatedUserId);
+            invoice.confirm();
         }
+
+        Invoice saved = invoiceRepository.save(invoice);
 
         return InvoiceMapper.toDetailResponse(saved);
     }

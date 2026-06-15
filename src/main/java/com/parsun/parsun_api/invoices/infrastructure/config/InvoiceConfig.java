@@ -1,22 +1,19 @@
 package com.parsun.parsun_api.invoices.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
-import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
-import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.application.usecases.*;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.infrastructure.services.InvoiceStatusServiceImpl;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
-import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -33,9 +30,9 @@ public class InvoiceConfig {
                                                        UserRepository userRepository,
                                                        ProductRepository productRepository,
                                                        WarehouseStockRepository warehouseStockRepository,
-                                                       CreditGuard creditGuard) {
+                                                       InvoiceAuthorizationService authorizationService) {
         return new CreateInvoiceUseCase(invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository, creditGuard);
+                userRepository, productRepository, warehouseStockRepository, authorizationService);
     }
 
     @Bean
@@ -86,16 +83,12 @@ public class InvoiceConfig {
 
     @Bean
     public ConfirmInvoiceUseCase confirmInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                                          WarehouseStockRepository warehouseStockRepository,
-                                                          StockMovementRepository stockMovementRepository,
-                                                          CreditGuard creditGuard,
-                                                          UserRepository userRepository,
-                                                          PasswordEncoder passwordEncoder,
-                                                          ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                                          PaymentRepository paymentRepository,
-                                                          PaymentAllocationRepository paymentAllocationRepository) {
-        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository, creditGuard,
-                userRepository, passwordEncoder, consumeCustomerBalanceUseCase, paymentRepository, paymentAllocationRepository);
+                                                           WarehouseStockRepository warehouseStockRepository,
+                                                           StockMovementRepository stockMovementRepository,
+                                                           InvoiceAuthorizationService authorizationService,
+                                                           UserRepository userRepository) {
+        return new ConfirmInvoiceUseCase(invoiceRepository, warehouseStockRepository, stockMovementRepository,
+                authorizationService, userRepository);
     }
 
     @Bean

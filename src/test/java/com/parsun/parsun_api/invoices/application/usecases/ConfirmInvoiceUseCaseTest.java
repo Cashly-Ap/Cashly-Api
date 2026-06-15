@@ -2,20 +2,16 @@ package com.parsun.parsun_api.invoices.application.usecases;
 
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
-import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.*;
-import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.*;
-import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
-import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
@@ -52,22 +48,10 @@ class ConfirmInvoiceUseCaseTest {
     private StockMovementRepository stockMovementRepository;
 
     @Mock
-    private CreditGuard creditGuard;
+    private InvoiceAuthorizationService authorizationService;
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-
-    @Mock
-    private PaymentRepository paymentRepository;
-
-    @Mock
-    private PaymentAllocationRepository allocationRepository;
 
     private ConfirmInvoiceUseCase confirmInvoiceUseCase;
 
@@ -76,9 +60,8 @@ class ConfirmInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, stockMovementRepository, creditGuard,
-                userRepository, passwordEncoder, consumeCustomerBalanceUseCase,
-                paymentRepository, allocationRepository);
+                warehouseStockRepository, stockMovementRepository,
+                authorizationService, userRepository);
     }
 
     @Test
@@ -107,7 +90,6 @@ class ConfirmInvoiceUseCaseTest {
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(creditGuard.isCreditAvailable(any(), any())).thenReturn(true);
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
 
         ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, false, null, null);

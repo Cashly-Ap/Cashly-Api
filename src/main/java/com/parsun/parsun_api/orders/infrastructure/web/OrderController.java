@@ -117,7 +117,7 @@ public class OrderController {
                                                                       @Valid @RequestBody ConvertToInvoiceRequest request,
                                                                       Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id, request.paymentType(), userId);
+        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id, request, userId);
         return ResponseEntity.ok(response);
     }
 

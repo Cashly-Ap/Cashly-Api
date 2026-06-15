@@ -29,6 +29,8 @@ public record CreateInvoiceRequest(
 
         UUID paymentMethodId,
 
+        String confirmationPassword,
+
         @NotEmpty(message = "At least one invoice line is required")
         @Valid
         List<InvoiceLineRequest> lines

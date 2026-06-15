@@ -4,6 +4,7 @@ import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
@@ -14,7 +15,6 @@ import com.parsun.parsun_api.quotes.infrastructure.persistence.QuoteJpaMapper;
 import com.parsun.parsun_api.quotes.infrastructure.persistence.QuoteJpaRepository;
 import com.parsun.parsun_api.quotes.infrastructure.persistence.QuoteNumberSequenceJpaRepository;
 import com.parsun.parsun_api.quotes.infrastructure.web.QuoteController;
-import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
@@ -105,9 +105,9 @@ public class QuoteConfig {
             InvoiceRepository invoiceRepository,
             WarehouseStockRepository warehouseStockRepository,
             UserRepository userRepository,
-            CreditGuard creditGuard) {
+            InvoiceAuthorizationService authorizationService) {
         return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoiceRepository,
-                warehouseStockRepository, userRepository, creditGuard);
+                warehouseStockRepository, userRepository, authorizationService);
     }
 
     @Bean
