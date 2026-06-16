@@ -126,6 +126,18 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 closureDate
         );
 
+        var refundsTotal = queryDecimal(
+                "SELECT COALESCE(ABS(SUM(amount)), 0) FROM balance_transactions WHERE type = 'REFUND' AND DATE(created_at) = :date",
+                closureDate
+        );
+        var refundsCount = queryInt(
+                "SELECT COUNT(*) FROM balance_transactions WHERE type = 'REFUND' AND DATE(created_at) = :date",
+                closureDate
+        );
+
+        returnsTotal = returnsTotal.add(refundsTotal);
+        returnsCount = returnsCount + refundsCount;
+
         var invoicesTotal = queryDecimal(
                 "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE DATE(created_at) = :date AND status != 'DRAFT' AND status != 'CANCELLED'",
                 closureDate
@@ -199,6 +211,8 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         sortOrder += 1000;
         rows.addAll(queryReturns(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
+        rows.addAll(queryRefunds(dateFrom, dateTo, sortOrder));
+        sortOrder += 1000;
         rows.addAll(queryPayments(dateFrom, dateTo, sortOrder));
         sortOrder += 1000;
         rows.addAll(queryAdvances(dateFrom, dateTo, sortOrder));
@@ -266,6 +280,35 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                     total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "VENTAS", order++
+            ));
+        }
+        return rows;
+    }
+
+    private List<CashRegisterExportRow> queryRefunds(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
+        String sql = """
+                SELECT bt.number, bt.amount, bt.created_at, c.legal_name
+                FROM balance_transactions bt
+                JOIN customers c ON c.id = bt.customer_id
+                WHERE DATE(bt.created_at) BETWEEN :dateFrom AND :dateTo AND bt.type = 'REFUND'
+                ORDER BY bt.created_at
+                """;
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
+        List<Object[]> results = query.getResultList();
+        List<CashRegisterExportRow> rows = new ArrayList<>();
+        int order = baseOrder;
+        for (Object[] row : results) {
+            String docNumber = (String) row[0];
+            BigDecimal total = toBigDecimal(row[1]).abs();
+            LocalDate emissionDate = toLocalDate(row[2]);
+            String customerName = (String) row[3];
+            rows.add(CashRegisterExportRow.of(
+                    emissionDate, "REI", docNumber, total,
+                    total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    customerName, "OPERACIONES DE CAJA", order++
             ));
         }
         return rows;

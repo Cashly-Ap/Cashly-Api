@@ -88,6 +88,22 @@ class CashRegisterExcelGeneratorTest {
     }
 
     @Test
+    @DisplayName("Should handle REI (Reintegro) document type")
+    void shouldHandleReintegroDocumentType() {
+        List<CashRegisterExportRow> rows = List.of(
+                CashRegisterExportRow.of(TEST_DATE, "REI", "REI-001", BigDecimal.valueOf(100),
+                        BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Cliente Reintegro",
+                        MODULE_CAJA, 1)
+        );
+
+        byte[] excelBytes = generator.generateExcel(rows);
+
+        assertNotNull(excelBytes);
+        assertTrue(excelBytes.length > 0);
+    }
+
+    @Test
     @DisplayName("Should handle all payment method distributions")
     void shouldHandleAllPaymentMethods() {
         List<CashRegisterExportRow> rows = List.of(
