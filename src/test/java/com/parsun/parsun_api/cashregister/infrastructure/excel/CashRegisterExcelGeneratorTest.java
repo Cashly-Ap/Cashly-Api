@@ -1,6 +1,9 @@
 package com.parsun.parsun_api.cashregister.infrastructure.excel;
 
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterExportRow;
+import com.parsun.parsun_api.cashregister.application.dto.CustomerSummary;
+import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
+import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -115,6 +119,51 @@ class CashRegisterExcelGeneratorTest {
         );
 
         byte[] excelBytes = generator.generateExcel(rows);
+
+        assertNotNull(excelBytes);
+        assertTrue(excelBytes.length > 0);
+    }
+
+    @Test
+    @DisplayName("Should generate simple Excel without errors")
+    void shouldGenerateSimpleExcel() {
+        var detail1 = CashRegisterDetail.create(
+                UUID.randomUUID(), "Efectivo", 5, BigDecimal.valueOf(2500));
+        var detail2 = CashRegisterDetail.create(
+                UUID.randomUUID(), "Transferencia", 3, BigDecimal.valueOf(1500));
+        var details = List.of(detail1, detail2);
+
+        var totals = new DailyTotals(
+                BigDecimal.valueOf(4000), 8,
+                BigDecimal.ZERO, 0,
+                BigDecimal.valueOf(1000), 2,
+                BigDecimal.valueOf(300), BigDecimal.ZERO,
+                BigDecimal.valueOf(3500), 5,
+                BigDecimal.valueOf(3500),
+                BigDecimal.valueOf(4000),
+                BigDecimal.valueOf(1300),
+                details
+        );
+
+        byte[] excelBytes = generator.generateSimpleExcel(details, totals);
+
+        assertNotNull(excelBytes);
+        assertTrue(excelBytes.length > 0);
+    }
+
+    @Test
+    @DisplayName("Should generate grouped Excel without errors")
+    void shouldGenerateGroupedExcel() {
+        List<CustomerSummary> summaries = List.of(
+                new CustomerSummary("Cliente A", BigDecimal.valueOf(5000),
+                        BigDecimal.valueOf(4800), BigDecimal.valueOf(200),
+                        BigDecimal.valueOf(4600)),
+                new CustomerSummary("Cliente B", BigDecimal.valueOf(3000),
+                        BigDecimal.valueOf(3000), BigDecimal.ZERO,
+                        BigDecimal.valueOf(3000))
+        );
+
+        byte[] excelBytes = generator.generateGroupedExcel(summaries);
 
         assertNotNull(excelBytes);
         assertTrue(excelBytes.length > 0);

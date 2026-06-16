@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.cashregister.infrastructure.web;
 
+import com.parsun.parsun_api.cashregister.application.dto.ReportType;
 import com.parsun.parsun_api.cashregister.application.usecases.GenerateCashRegisterExcelUseCase;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,13 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/cash-register")
 public class CashRegisterExportController {
 
-    private static final String FILE_NAME_PATTERN = "cierre-caja-detallado-%s.xlsx";
     private static final String ATTACHMENT_HEADER = "attachment; filename=\"%s\"";
 
     private final GenerateCashRegisterExcelUseCase generateCashRegisterExcelUseCase;
@@ -29,10 +28,16 @@ public class CashRegisterExportController {
     @GetMapping("/export")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
     public ResponseEntity<byte[]> exportExcel(@RequestParam LocalDate dateFrom,
-                                              @RequestParam LocalDate dateTo) {
-        byte[] excelBytes = generateCashRegisterExcelUseCase.execute(dateFrom, dateTo);
+                                              @RequestParam LocalDate dateTo,
+                                              @RequestParam(defaultValue = "DETAILED") ReportType type) {
+        byte[] excelBytes = generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, type);
 
-        String fileName = String.format(FILE_NAME_PATTERN, dateFrom + "_" + dateTo);
+        String prefix = switch (type) {
+            case SIMPLE -> "cierre-caja-resumen";
+            case DETAILED -> "cierre-caja-detallado";
+            case GROUPED -> "cierre-caja-por-cliente";
+        };
+        String fileName = String.format("%s-%s.xlsx", prefix, dateFrom + "_" + dateTo);
         String contentDisposition = String.format(ATTACHMENT_HEADER, fileName);
 
         return ResponseEntity.ok()

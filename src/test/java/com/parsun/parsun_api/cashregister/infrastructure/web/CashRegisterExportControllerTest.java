@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.cashregister.infrastructure.web;
 
+import com.parsun.parsun_api.cashregister.application.dto.ReportType;
 import com.parsun.parsun_api.cashregister.application.usecases.GenerateCashRegisterExcelUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,9 +35,9 @@ class CashRegisterExportControllerTest {
         LocalDate dateTo = LocalDate.of(2025, 6, 15);
         byte[] expectedBytes = new byte[]{1, 2, 3};
 
-        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo)).thenReturn(expectedBytes);
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, ReportType.DETAILED)).thenReturn(expectedBytes);
 
-        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo);
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo, ReportType.DETAILED);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(
@@ -48,7 +49,7 @@ class CashRegisterExportControllerTest {
         assertTrue(contentDisposition.contains("cierre-caja-detallado-2025-06-15_2025-06-15.xlsx"));
         assertTrue(contentDisposition.startsWith("attachment"));
         assertArrayEquals(expectedBytes, response.getBody());
-        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo, ReportType.DETAILED);
     }
 
     @Test
@@ -58,14 +59,14 @@ class CashRegisterExportControllerTest {
         LocalDate dateTo = LocalDate.of(2025, 12, 31);
         byte[] expectedBytes = new byte[]{4, 5, 6};
 
-        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo)).thenReturn(expectedBytes);
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, ReportType.DETAILED)).thenReturn(expectedBytes);
 
-        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo);
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo, ReportType.DETAILED);
 
         String contentDisposition = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
         assertTrue(contentDisposition.contains("cierre-caja-detallado-2025-12-01_2025-12-31.xlsx"));
         assertArrayEquals(expectedBytes, response.getBody());
-        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo, ReportType.DETAILED);
     }
 
     @Test
@@ -74,13 +75,13 @@ class CashRegisterExportControllerTest {
         LocalDate dateFrom = LocalDate.of(2025, 6, 15);
         LocalDate dateTo = LocalDate.of(2025, 6, 15);
 
-        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo)).thenReturn(new byte[0]);
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, ReportType.DETAILED)).thenReturn(new byte[0]);
 
-        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo);
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo, ReportType.DETAILED);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
         assertEquals(0, response.getBody().length);
-        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo, ReportType.DETAILED);
     }
 }

@@ -1,7 +1,10 @@
 package com.parsun.parsun_api.cashregister.infrastructure.excel;
 
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterExportRow;
+import com.parsun.parsun_api.cashregister.application.dto.CustomerSummary;
+import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.application.port.CashRegisterExcelPort;
+import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -41,6 +44,144 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
     private static final String MSG_NO_DATA = "No se encontraron transacciones para la fecha especificada";
     private static final String ERROR_EXCEL = "Error al generar el archivo Excel";
+
+    @Override
+    public byte[] generateSimpleExcel(List<CashRegisterDetail> paymentSummary, DailyTotals totals) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Resumen de Caja");
+
+            CellStyle titleStyle = createTitleStyle(workbook);
+            CellStyle headerStyle = createHeaderStyle(workbook);
+            CellStyle dataStyle = createDataStyle(workbook);
+            CellStyle subtotalStyle = createSubtotalStyle(workbook);
+            CellStyle currencyStyle = createCurrencyStyle(workbook);
+
+            configureSimpleColumnWidths(sheet);
+
+            int rowNum = 0;
+            rowNum = writeTitle(sheet, titleStyle, rowNum);
+            rowNum = writeEmptyRow(sheet, rowNum);
+
+            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "Resumen por Metodo de Pago");
+            rowNum = writePaymentMethodHeader(sheet, headerStyle, rowNum);
+
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            int totalTx = 0;
+
+            for (CashRegisterDetail detail : paymentSummary) {
+                Row dataRow = sheet.createRow(rowNum);
+                dataRow.createCell(0).setCellValue(detail.getPaymentMethodName());
+                dataRow.createCell(0).setCellStyle(dataStyle);
+                dataRow.createCell(1).setCellValue(detail.getTransactionCount());
+                dataRow.createCell(1).setCellStyle(dataStyle);
+                Cell amountCell = dataRow.createCell(2);
+                amountCell.setCellValue(detail.getExpectedAmount().doubleValue());
+                amountCell.setCellStyle(currencyStyle);
+                dataRow.setHeightInPoints(18);
+                rowNum++;
+
+                totalAmount = totalAmount.add(detail.getExpectedAmount());
+                totalTx += detail.getTransactionCount();
+            }
+
+            Row totalRow = sheet.createRow(rowNum);
+            totalRow.createCell(0).setCellValue("TOTAL");
+            totalRow.createCell(0).setCellStyle(subtotalStyle);
+            totalRow.createCell(1).setCellValue(totalTx);
+            totalRow.createCell(1).setCellStyle(subtotalStyle);
+            Cell totalAmountCell = totalRow.createCell(2);
+            totalAmountCell.setCellValue(totalAmount.doubleValue());
+            totalAmountCell.setCellStyle(createCurrencySubtotalStyle(workbook));
+            totalRow.setHeightInPoints(20);
+            rowNum += 2;
+
+            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "Totales Generales");
+            rowNum = writeTotalsHeader(sheet, headerStyle, rowNum);
+
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Facturado", totals.totalInvoiced());
+            rowNum++;
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Ingresado", totals.totalRevenue());
+            rowNum++;
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Gastado", totals.totalExpenses());
+            rowNum++;
+            BigDecimal balance = totals.totalRevenue().subtract(totals.totalExpenses());
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Balance", balance);
+
+            return toBytes(workbook);
+        } catch (IOException e) {
+            throw new RuntimeException(ERROR_EXCEL, e);
+        }
+    }
+
+    @Override
+    public byte[] generateGroupedExcel(List<CustomerSummary> customerSummaries) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Cierre por Cliente");
+
+            CellStyle titleStyle = createTitleStyle(workbook);
+            CellStyle headerStyle = createHeaderStyle(workbook);
+            CellStyle dataStyle = createDataStyle(workbook);
+            CellStyle subtotalStyle = createSubtotalStyle(workbook);
+            CellStyle currencyStyle = createCurrencyStyle(workbook);
+            CellStyle currencySubtotalStyle = createCurrencySubtotalStyle(workbook);
+
+            configureGroupedColumnWidths(sheet);
+
+            int rowNum = 0;
+            Row titleRow = sheet.createRow(rowNum);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("CIERRE DE CAJA POR CLIENTE");
+            titleCell.setCellStyle(titleStyle);
+            sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 4));
+            titleRow.setHeightInPoints(30);
+            rowNum += 2;
+
+            String[] headers = {"Cliente", "Total Facturado", "Total Pagado", "Total Devuelto", "Balance"};
+            Row headerRow = sheet.createRow(rowNum);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+            headerRow.setHeightInPoints(20);
+            rowNum++;
+
+            BigDecimal grandInvoiced = BigDecimal.ZERO;
+            BigDecimal grandPaid = BigDecimal.ZERO;
+            BigDecimal grandReturned = BigDecimal.ZERO;
+            BigDecimal grandBalance = BigDecimal.ZERO;
+
+            for (CustomerSummary summary : customerSummaries) {
+                Row dataRow = sheet.createRow(rowNum);
+                dataRow.createCell(0).setCellValue(summary.customerName());
+                dataRow.createCell(0).setCellStyle(dataStyle);
+                writeCurrencyCell(dataRow, 1, summary.totalInvoiced(), currencyStyle);
+                writeCurrencyCell(dataRow, 2, summary.totalPayments(), currencyStyle);
+                writeCurrencyCell(dataRow, 3, summary.totalReturns(), currencyStyle);
+                writeCurrencyCell(dataRow, 4, summary.balance(), currencyStyle);
+                dataRow.setHeightInPoints(18);
+                rowNum++;
+
+                grandInvoiced = grandInvoiced.add(summary.totalInvoiced());
+                grandPaid = grandPaid.add(summary.totalPayments());
+                grandReturned = grandReturned.add(summary.totalReturns());
+                grandBalance = grandBalance.add(summary.balance());
+            }
+
+            Row subtotalRow = sheet.createRow(rowNum);
+            subtotalRow.createCell(0).setCellValue("TOTAL GENERAL");
+            subtotalRow.createCell(0).setCellStyle(subtotalStyle);
+            writeCurrencyCell(subtotalRow, 1, grandInvoiced, currencySubtotalStyle);
+            writeCurrencyCell(subtotalRow, 2, grandPaid, currencySubtotalStyle);
+            writeCurrencyCell(subtotalRow, 3, grandReturned, currencySubtotalStyle);
+            writeCurrencyCell(subtotalRow, 4, grandBalance, currencySubtotalStyle);
+            subtotalRow.setHeightInPoints(20);
+
+            return toBytes(workbook);
+        } catch (IOException e) {
+            throw new RuntimeException(ERROR_EXCEL, e);
+        }
+    }
 
     @Override
     public byte[] generateExcel(List<CashRegisterExportRow> rows) {
@@ -391,6 +532,77 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
         return style;
+    }
+
+    private void writeCurrencyCell(Row row, int col, BigDecimal value, CellStyle style) {
+        Cell cell = row.createCell(col);
+        cell.setCellValue(value.doubleValue());
+        cell.setCellStyle(style);
+    }
+
+    private void writeTotalsRow(Sheet sheet, CellStyle dataStyle, CellStyle currencyStyle,
+                                int rowNum, String label, BigDecimal value) {
+        Row row = sheet.createRow(rowNum);
+        Cell labelCell = row.createCell(0);
+        labelCell.setCellValue(label);
+        labelCell.setCellStyle(dataStyle);
+        Cell valueCell = row.createCell(1);
+        valueCell.setCellValue(value.doubleValue());
+        valueCell.setCellStyle(currencyStyle);
+        row.setHeightInPoints(18);
+    }
+
+    private int writeEmptyRow(Sheet sheet, int rowNum) {
+        sheet.createRow(rowNum);
+        return rowNum + 1;
+    }
+
+    private int writeSectionTitle(Sheet sheet, CellStyle style, int rowNum, String title) {
+        Row row = sheet.createRow(rowNum);
+        Cell cell = row.createCell(0);
+        cell.setCellValue(title);
+        cell.setCellStyle(style);
+        sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 4));
+        row.setHeightInPoints(22);
+        return rowNum + 1;
+    }
+
+    private int writePaymentMethodHeader(Sheet sheet, CellStyle style, int rowNum) {
+        Row headerRow = sheet.createRow(rowNum);
+        String[] headers = {"Metodo de Pago", "Transacciones", "Monto"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(style);
+        }
+        headerRow.setHeightInPoints(20);
+        return rowNum + 1;
+    }
+
+    private int writeTotalsHeader(Sheet sheet, CellStyle style, int rowNum) {
+        Row headerRow = sheet.createRow(rowNum);
+        String[] headers = {"Concepto", "Monto"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(style);
+        }
+        headerRow.setHeightInPoints(20);
+        return rowNum + 1;
+    }
+
+    private void configureSimpleColumnWidths(Sheet sheet) {
+        sheet.setColumnWidth(0, 6000);
+        sheet.setColumnWidth(1, 4500);
+        sheet.setColumnWidth(2, 4500);
+    }
+
+    private void configureGroupedColumnWidths(Sheet sheet) {
+        sheet.setColumnWidth(0, 6000);
+        sheet.setColumnWidth(1, 4500);
+        sheet.setColumnWidth(2, 4500);
+        sheet.setColumnWidth(3, 4500);
+        sheet.setColumnWidth(4, 4500);
     }
 
     private byte[] toBytes(XSSFWorkbook workbook) {

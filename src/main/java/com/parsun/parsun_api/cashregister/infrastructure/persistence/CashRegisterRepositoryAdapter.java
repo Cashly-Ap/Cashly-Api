@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.cashregister.infrastructure.persistence;
 
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterExportRow;
+import com.parsun.parsun_api.cashregister.application.dto.CustomerSummary;
 import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
@@ -23,8 +24,11 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -198,6 +202,168 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 invoicesTotal, paymentsTotal, totalExpenses,
                 details
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DailyTotals findRangeTotals(LocalDate dateFrom, LocalDate dateTo) {
+        var paymentsTotal = queryDecimalRange(
+                "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE payment_date BETWEEN :dateFrom AND :dateTo AND status = 'APPLIED'",
+                dateFrom, dateTo
+        );
+        var paymentsCount = queryIntRange(
+                "SELECT COUNT(*) FROM payments WHERE payment_date BETWEEN :dateFrom AND :dateTo AND status = 'APPLIED'",
+                dateFrom, dateTo
+        );
+        var advancesTotal = queryDecimalRange(
+                "SELECT COALESCE(SUM(amount), 0) FROM balance_transactions WHERE type = 'ADVANCED' AND DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        var advancesCount = queryIntRange(
+                "SELECT COUNT(*) FROM balance_transactions WHERE type = 'ADVANCED' AND DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        var returnsTotal = queryDecimalRange(
+                "SELECT COALESCE(SUM(total), 0) FROM returns WHERE DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        var returnsCount = queryIntRange(
+                "SELECT COUNT(*) FROM returns WHERE DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        var refundsTotal = queryDecimalRange(
+                "SELECT COALESCE(ABS(SUM(amount)), 0) FROM balance_transactions WHERE type = 'REFUND' AND DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        var refundsCount = queryIntRange(
+                "SELECT COUNT(*) FROM balance_transactions WHERE type = 'REFUND' AND DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        returnsTotal = returnsTotal.add(refundsTotal);
+        returnsCount = returnsCount + refundsCount;
+
+        var invoicesTotal = queryDecimalRange(
+                "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE DATE(created_at) BETWEEN :dateFrom AND :dateTo AND status != 'DRAFT' AND status != 'CANCELLED'",
+                dateFrom, dateTo
+        );
+        var invoicesCount = queryIntRange(
+                "SELECT COUNT(*) FROM invoices WHERE DATE(created_at) BETWEEN :dateFrom AND :dateTo AND status != 'DRAFT' AND status != 'CANCELLED'",
+                dateFrom, dateTo
+        );
+        var creditNotesTotal = queryDecimalRange(
+                "SELECT COALESCE(SUM(amount), 0) FROM credit_notes WHERE DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+        var debitNotesTotal = queryDecimalRange(
+                "SELECT COALESCE(SUM(amount), 0) FROM debit_notes WHERE DATE(created_at) BETWEEN :dateFrom AND :dateTo",
+                dateFrom, dateTo
+        );
+
+        var totalExpenses = returnsTotal.add(creditNotesTotal);
+
+        var paymentsSummary = findPaymentMethodSummary(dateFrom, dateTo);
+
+        return new DailyTotals(
+                paymentsTotal, paymentsCount,
+                advancesTotal, advancesCount,
+                returnsTotal, returnsCount,
+                creditNotesTotal, debitNotesTotal,
+                invoicesTotal, invoicesCount,
+                invoicesTotal, paymentsTotal, totalExpenses,
+                paymentsSummary
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CashRegisterDetail> findPaymentMethodSummary(LocalDate dateFrom, LocalDate dateTo) {
+        List<?> rawRows = entityManager.createNativeQuery(
+                """
+                SELECT pm.id, pm.name,
+                       COALESCE(SUM(p.amount), 0) AS total_amount,
+                       COUNT(p.id) AS tx_count
+                FROM payment_methods pm
+                LEFT JOIN payments p ON p.payment_method_id = pm.id
+                    AND p.payment_date BETWEEN :dateFrom AND :dateTo
+                    AND p.status = 'APPLIED'
+                WHERE pm.is_active = true
+                GROUP BY pm.id, pm.name
+                ORDER BY pm.name
+                """
+        )
+                .setParameter("dateFrom", dateFrom)
+                .setParameter("dateTo", dateTo)
+                .getResultList();
+
+        return rawRows.stream()
+                .map(row -> {
+                    Object[] cols = (Object[]) row;
+                    UUID pmId = toUuid(cols[0]);
+                    String pmName = (String) cols[1];
+                    BigDecimal totalAmount = ((Number) cols[2]) != null
+                            ? BigDecimal.valueOf(((Number) cols[2]).doubleValue())
+                            : BigDecimal.ZERO;
+                    int txCount = ((Number) cols[3]) != null ? ((Number) cols[3]).intValue() : 0;
+                    return CashRegisterDetail.create(pmId, pmName, txCount, totalAmount);
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+    public List<CustomerSummary> findCustomerSummary(LocalDate dateFrom, LocalDate dateTo) {
+        var invoicesMap = queryCustomerDecimalMap(
+                "SELECT i.customer_id, c.legal_name, COALESCE(SUM(i.subtotal), 0) " +
+                "FROM invoices i JOIN customers c ON c.id = i.customer_id " +
+                "WHERE DATE(i.created_at) BETWEEN :dateFrom AND :dateTo AND i.status NOT IN ('DRAFT', 'CANCELLED') " +
+                "GROUP BY i.customer_id, c.legal_name",
+                dateFrom, dateTo
+        );
+        var paymentsMap = queryCustomerDecimalMap(
+                "SELECT p.customer_id, c.legal_name, COALESCE(SUM(p.amount), 0) " +
+                "FROM payments p JOIN customers c ON c.id = p.customer_id " +
+                "WHERE p.payment_date BETWEEN :dateFrom AND :dateTo AND p.status = 'APPLIED' " +
+                "GROUP BY p.customer_id, c.legal_name",
+                dateFrom, dateTo
+        );
+        var returnsMap = queryCustomerDecimalMap(
+                "SELECT r.customer_id, c.legal_name, COALESCE(SUM(r.total), 0) " +
+                "FROM returns r JOIN customers c ON c.id = r.customer_id " +
+                "WHERE DATE(r.created_at) BETWEEN :dateFrom AND :dateTo " +
+                "GROUP BY r.customer_id, c.legal_name",
+                dateFrom, dateTo
+        );
+
+        var allCustomers = new LinkedHashMap<String, AbstractMap.SimpleEntry<BigDecimal, BigDecimal>>();
+        invoicesMap.forEach((name, amount) -> allCustomers.put(name, new AbstractMap.SimpleEntry<>(amount, BigDecimal.ZERO)));
+        paymentsMap.forEach((name, amount) -> allCustomers.merge(name, new AbstractMap.SimpleEntry<>(BigDecimal.ZERO, amount),
+                (a, b) -> new AbstractMap.SimpleEntry<>(a.getKey().add(b.getKey()), a.getValue().add(b.getValue()))));
+
+        return allCustomers.entrySet().stream()
+                .map(entry -> {
+                    String name = entry.getKey();
+                    BigDecimal invoiced = invoicesMap.getOrDefault(name, BigDecimal.ZERO);
+                    BigDecimal paid = paymentsMap.getOrDefault(name, BigDecimal.ZERO);
+                    BigDecimal returned = returnsMap.getOrDefault(name, BigDecimal.ZERO);
+                    BigDecimal balance = paid.subtract(returned);
+                    return new CustomerSummary(name, invoiced, paid, returned, balance);
+                })
+                .toList();
+    }
+
+    private Map<String, BigDecimal> queryCustomerDecimalMap(String sql, LocalDate dateFrom, LocalDate dateTo) {
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
+        List<Object[]> results = query.getResultList();
+        var map = new java.util.LinkedHashMap<String, BigDecimal>();
+        for (Object[] row : results) {
+            String name = (String) row[1];
+            BigDecimal amount = toBigDecimal(row[2]);
+            map.merge(name, amount, BigDecimal::add);
+        }
+        return map;
     }
 
     @Override
@@ -592,6 +758,22 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         var result = entityManager.createNativeQuery(sql)
                 .setParameter("date", date)
                 .getSingleResult();
+        return result != null ? ((Number) result).intValue() : 0;
+    }
+
+    private BigDecimal queryDecimalRange(String sql, LocalDate dateFrom, LocalDate dateTo) {
+        var result = entityManager.createNativeQuery(sql)
+                .setParameter("dateFrom", dateFrom)
+                .setParameter("dateTo", dateTo)
+                .getSingleResult();
+        return result != null ? BigDecimal.valueOf(((Number) result).doubleValue()) : BigDecimal.ZERO;
+    }
+
+    private int queryIntRange(String sql, LocalDate dateFrom, LocalDate dateTo) {
+        var query = entityManager.createNativeQuery(sql);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateTo", dateTo);
+        var result = query.getSingleResult();
         return result != null ? ((Number) result).intValue() : 0;
     }
 
