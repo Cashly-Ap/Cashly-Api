@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -175,6 +176,129 @@ class CreditNoteRepositoryAdapterTest {
             assertTrue(result.isEmpty());
             verify(jpaRepository).findAllWithFilters(null, null, null);
         }
+
+        @Test
+        void should_ConvertDateFromAndDateTo_When_FiltersProvided() {
+            LocalDate dateFrom = LocalDate.of(2026, 1, 1);
+            LocalDate dateTo = LocalDate.of(2026, 1, 31);
+            UUID customerId = UUID.randomUUID();
+            CreditNoteEntity entity = CreditNoteJpaMapper.toEntity(
+                    CreditNote.reconstitute(
+                            CreditNoteId.generate(),
+                            CreditNoteNumber.of(2026, 1),
+                            UUID.randomUUID(),
+                            UUID.randomUUID(),
+                            new BigDecimal("150.00"),
+                            "Product damaged",
+                            UUID.randomUUID(),
+                            "John Doe",
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    )
+            );
+
+            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(entity));
+
+            List<CreditNote> result = adapter.findAllWithFilters(dateFrom, dateTo, customerId);
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            verify(jpaRepository).findAllWithFilters(
+                    dateFrom.atStartOfDay(),
+                    dateTo.atTime(23, 59, 59),
+                    customerId
+            );
+        }
+
+        @Test
+        void should_PassOnlyDateFrom_When_OnlyDateFromProvided() {
+            LocalDate dateFrom = LocalDate.of(2026, 6, 15);
+            CreditNoteEntity entity = CreditNoteJpaMapper.toEntity(
+                    CreditNote.reconstitute(
+                            CreditNoteId.generate(),
+                            CreditNoteNumber.of(2026, 1),
+                            UUID.randomUUID(),
+                            UUID.randomUUID(),
+                            new BigDecimal("150.00"),
+                            "Product damaged",
+                            UUID.randomUUID(),
+                            "John Doe",
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    )
+            );
+
+            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(entity));
+
+            List<CreditNote> result = adapter.findAllWithFilters(dateFrom, null, null);
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            verify(jpaRepository).findAllWithFilters(
+                    dateFrom.atStartOfDay(),
+                    null,
+                    null
+            );
+        }
+
+        @Test
+        void should_PassOnlyDateTo_When_OnlyDateToProvided() {
+            LocalDate dateTo = LocalDate.of(2026, 12, 31);
+            CreditNoteEntity entity = CreditNoteJpaMapper.toEntity(
+                    CreditNote.reconstitute(
+                            CreditNoteId.generate(),
+                            CreditNoteNumber.of(2026, 1),
+                            UUID.randomUUID(),
+                            UUID.randomUUID(),
+                            new BigDecimal("150.00"),
+                            "Product damaged",
+                            UUID.randomUUID(),
+                            "John Doe",
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    )
+            );
+
+            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(entity));
+
+            List<CreditNote> result = adapter.findAllWithFilters(null, dateTo, null);
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            verify(jpaRepository).findAllWithFilters(
+                    null,
+                    dateTo.atTime(23, 59, 59),
+                    null
+            );
+        }
+
+        @Test
+        void should_PassOnlyCustomerId_When_OnlyCustomerIdProvided() {
+            UUID customerId = UUID.randomUUID();
+            CreditNoteEntity entity = CreditNoteJpaMapper.toEntity(
+                    CreditNote.reconstitute(
+                            CreditNoteId.generate(),
+                            CreditNoteNumber.of(2026, 1),
+                            customerId,
+                            UUID.randomUUID(),
+                            new BigDecimal("150.00"),
+                            "Product damaged",
+                            UUID.randomUUID(),
+                            "John Doe",
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    )
+            );
+
+            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(entity));
+
+            List<CreditNote> result = adapter.findAllWithFilters(null, null, customerId);
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(customerId, result.get(0).getCustomerId());
+            verify(jpaRepository).findAllWithFilters(null, null, customerId);
+        }
     }
 
     @Nested
@@ -207,6 +331,48 @@ class CreditNoteRepositoryAdapterTest {
             assertEquals(1, result.size());
             assertEquals(invoiceId, result.get(0).getInvoiceId());
             verify(jpaRepository).findByInvoiceId(invoiceId);
+        }
+    }
+
+    @Nested
+    @DisplayName("SumByInvoiceIds")
+    class SumByInvoiceIds {
+
+        @Test
+        void should_ReturnEmptyMap_When_InvoiceIdsEmpty() {
+            Map<UUID, BigDecimal> result = adapter.sumByInvoiceIds(List.of());
+
+            assertTrue(result.isEmpty());
+            verify(jpaRepository, never()).sumByInvoiceIds(any());
+        }
+
+        @Test
+        void should_ReturnMappedResults_When_InvoiceIdsProvided() {
+            UUID invoiceId1 = UUID.randomUUID();
+            UUID invoiceId2 = UUID.randomUUID();
+            List<UUID> invoiceIds = List.of(invoiceId1, invoiceId2);
+
+            Object[] row1 = new Object[]{invoiceId1, new BigDecimal("100.00")};
+            Object[] row2 = new Object[]{invoiceId2, new BigDecimal("200.00")};
+            when(jpaRepository.sumByInvoiceIds(invoiceIds)).thenReturn(List.of(row1, row2));
+
+            Map<UUID, BigDecimal> result = adapter.sumByInvoiceIds(invoiceIds);
+
+            assertEquals(2, result.size());
+            assertEquals(new BigDecimal("100.00"), result.get(invoiceId1));
+            assertEquals(new BigDecimal("200.00"), result.get(invoiceId2));
+            verify(jpaRepository).sumByInvoiceIds(invoiceIds);
+        }
+
+        @Test
+        void should_ReturnEmptyMap_When_NoResultsFromDatabase() {
+            UUID invoiceId = UUID.randomUUID();
+            when(jpaRepository.sumByInvoiceIds(List.of(invoiceId))).thenReturn(List.of());
+
+            Map<UUID, BigDecimal> result = adapter.sumByInvoiceIds(List.of(invoiceId));
+
+            assertTrue(result.isEmpty());
+            verify(jpaRepository).sumByInvoiceIds(List.of(invoiceId));
         }
     }
 

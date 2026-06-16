@@ -8,6 +8,8 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,12 +17,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -222,5 +229,183 @@ class JpaUserRepositoryUnitTest {
 
         assertEquals("User cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).deleteById(any(UUID.class));
+    }
+
+    // ============ findAll() tests ============
+
+    @Test
+    @DisplayName("should_ReturnAllUsers_When_UsersExist")
+    void should_ReturnAllUsers_When_UsersExist() {
+        when(springDataUserRepository.findAll()).thenReturn(List.of(testUserEntity));
+
+        List<User> users = jpaUserRepository.findAll();
+
+        assertEquals(1, users.size());
+        assertEquals(testUser.getId(), users.get(0).getId());
+        assertEquals(testUser.getEmail(), users.get(0).getEmail());
+        verify(springDataUserRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("should_ReturnEmptyList_When_NoUsersExist")
+    void should_ReturnEmptyList_When_NoUsersExist() {
+        when(springDataUserRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<User> users = jpaUserRepository.findAll();
+
+        assertTrue(users.isEmpty());
+        verify(springDataUserRepository, times(1)).findAll();
+    }
+
+    // ============ findByRole() tests ============
+
+    @Test
+    @DisplayName("should_FindUsersByRole_When_UsersExist")
+    void should_FindUsersByRole_When_UsersExist() {
+        UserRole role = UserRole.OPERATOR;
+        when(springDataUserRepository.findByRole(role)).thenReturn(List.of(testUserEntity));
+
+        List<User> users = jpaUserRepository.findByRole(role);
+
+        assertEquals(1, users.size());
+        assertEquals(testUser.getId(), users.get(0).getId());
+        assertEquals(role, users.get(0).getRole());
+        verify(springDataUserRepository, times(1)).findByRole(role);
+    }
+
+    @Test
+    @DisplayName("should_ReturnEmptyList_When_NoUsersFoundByRole")
+    void should_ReturnEmptyList_When_NoUsersFoundByRole() {
+        UserRole role = UserRole.ADMIN;
+        when(springDataUserRepository.findByRole(role)).thenReturn(Collections.emptyList());
+
+        List<User> users = jpaUserRepository.findByRole(role);
+
+        assertTrue(users.isEmpty());
+        verify(springDataUserRepository, times(1)).findByRole(role);
+    }
+
+    @Test
+    @DisplayName("should_ThrowException_When_FindingByNullRole")
+    void should_ThrowException_When_FindingByNullRole() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> jpaUserRepository.findByRole(null)
+        );
+
+        assertEquals("Role cannot be null", exception.getMessage());
+        verify(springDataUserRepository, never()).findByRole(any());
+    }
+
+    // ============ findAllWithFilters() tests ============
+
+    @Test
+    @DisplayName("should_FindAllWithFilters_When_FiltersProvided")
+    void should_FindAllWithFilters_When_FiltersProvided() {
+        String search = "test";
+        UserRole role = UserRole.OPERATOR;
+        Boolean active = true;
+        String excludeId = null;
+        int page = 0;
+        int size = 10;
+        String orderBy = "userName";
+        String orderDir = "asc";
+
+        List<UserEntity> entities = List.of(testUserEntity);
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<UserEntity> entityPage = new PageImpl<>(entities, pageable, 1);
+
+        when(springDataUserRepository.findAllWithFilters(
+            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
+        )).thenReturn(entityPage);
+
+        PageResponse<User> result = jpaUserRepository.findAllWithFilters(
+            search, role, active, excludeId, page, size, orderBy, orderDir
+        );
+
+        assertNotNull(result);
+        assertEquals(1, result.content().size());
+        assertEquals(testUser.getId(), result.content().get(0).getId());
+        assertEquals(1, result.totalElements());
+        assertEquals(1, result.totalPages());
+        assertEquals(size, result.size());
+        assertEquals(page, result.number());
+        assertTrue(result.first());
+        assertTrue(result.last());
+        assertFalse(result.empty());
+        verify(springDataUserRepository, times(1)).findAllWithFilters(
+            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
+        );
+    }
+
+    @Test
+    @DisplayName("should_FindAllWithFilters_When_UsingDescendingSortAndExcludeId")
+    void should_FindAllWithFilters_When_UsingDescendingSortAndExcludeId() {
+        String search = null;
+        UserRole role = null;
+        Boolean active = null;
+        String excludeId = "550e8400-e29b-41d4-a716-446655440000";
+        int page = 0;
+        int size = 20;
+        String orderBy = "email";
+        String orderDir = "desc";
+
+        UUID excludeUuid = UUID.fromString(excludeId);
+        List<UserEntity> entities = List.of(testUserEntity);
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<UserEntity> entityPage = new PageImpl<>(entities, pageable, 1);
+
+        when(springDataUserRepository.findAllWithFilters(
+            isNull(), isNull(), isNull(), eq(excludeUuid), any(PageRequest.class)
+        )).thenReturn(entityPage);
+
+        PageResponse<User> result = jpaUserRepository.findAllWithFilters(
+            search, role, active, excludeId, page, size, orderBy, orderDir
+        );
+
+        assertNotNull(result);
+        assertEquals(1, result.content().size());
+        assertEquals(testUser.getId(), result.content().get(0).getId());
+        assertEquals(1, result.totalElements());
+        assertEquals(page, result.number());
+        assertEquals(size, result.size());
+        assertTrue(result.first());
+        assertTrue(result.last());
+        verify(springDataUserRepository, times(1)).findAllWithFilters(
+            isNull(), isNull(), isNull(), eq(excludeUuid), any(PageRequest.class)
+        );
+    }
+
+    @Test
+    @DisplayName("should_FindAllWithFilters_When_DefaultSortAppliedForInvalidOrderBy")
+    void should_FindAllWithFilters_When_DefaultSortAppliedForInvalidOrderBy() {
+        String search = "";
+        UserRole role = UserRole.ADMIN;
+        Boolean active = false;
+        String excludeId = null;
+        int page = 0;
+        int size = 10;
+        String orderBy = "invalidField";
+        String orderDir = "desc";
+
+        List<UserEntity> entities = Collections.emptyList();
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<UserEntity> entityPage = new PageImpl<>(entities, pageable, 0);
+
+        when(springDataUserRepository.findAllWithFilters(
+            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
+        )).thenReturn(entityPage);
+
+        PageResponse<User> result = jpaUserRepository.findAllWithFilters(
+            search, role, active, excludeId, page, size, orderBy, orderDir
+        );
+
+        assertNotNull(result);
+        assertTrue(result.content().isEmpty());
+        assertEquals(0, result.totalElements());
+        assertTrue(result.empty());
+        verify(springDataUserRepository, times(1)).findAllWithFilters(
+            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
+        );
     }
 }

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -205,5 +206,140 @@ class JpaRefreshTokenRepositoryUnitTest {
 
         assertEquals("User ID cannot be null", exception.getMessage());
         verify(springDataRefreshTokenRepository, never()).findBySubjectId(any(UUID.class));
+    }
+
+    // ============================================================
+    // revokeAllByUserId tests
+    // ============================================================
+
+    @Test
+    @DisplayName("should_RevokeAllTokensByUserId_When_TokensExist")
+    void should_RevokeAllTokensByUserId_When_TokensExist() {
+        UserId userId = UserId.from(testSubjectId);
+        UUID userUuid = UUID.fromString(testSubjectId);
+
+        RefreshTokenEntity token1 = testRefreshTokenEntity;
+        RefreshTokenEntity token2 = RefreshTokenEntity.fromDomain(
+            new RefreshToken(
+                RefreshTokenId.generate(),
+                testSubjectId,
+                AuthenticableType.USER,
+                UUID.randomUUID().toString(),
+                LocalDateTime.now().plusDays(7)
+            )
+        );
+
+        when(springDataRefreshTokenRepository.findBySubjectIdAndRevoked(userUuid, false))
+            .thenReturn(Arrays.asList(token1, token2));
+
+        jpaRefreshTokenRepository.revokeAllByUserId(userId);
+
+        verify(springDataRefreshTokenRepository, times(1))
+            .findBySubjectIdAndRevoked(userUuid, false);
+        verify(springDataRefreshTokenRepository, times(2)).save(any(RefreshTokenEntity.class));
+        assertTrue(token1.isRevoked());
+        assertTrue(token2.isRevoked());
+    }
+
+    @Test
+    @DisplayName("should_NotRevokeAnyTokens_When_NoTokensForUser")
+    void should_NotRevokeAnyTokens_When_NoTokensForUser() {
+        UserId userId = UserId.from(testSubjectId);
+        UUID userUuid = UUID.fromString(testSubjectId);
+
+        when(springDataRefreshTokenRepository.findBySubjectIdAndRevoked(userUuid, false))
+            .thenReturn(List.of());
+
+        jpaRefreshTokenRepository.revokeAllByUserId(userId);
+
+        verify(springDataRefreshTokenRepository, times(1))
+            .findBySubjectIdAndRevoked(userUuid, false);
+        verify(springDataRefreshTokenRepository, never()).save(any(RefreshTokenEntity.class));
+    }
+
+    @Test
+    @DisplayName("should_ThrowException_When_RevokingByNullUserId")
+    void should_ThrowException_When_RevokingByNullUserId() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> jpaRefreshTokenRepository.revokeAllByUserId(null)
+        );
+
+        assertEquals("User ID cannot be null", exception.getMessage());
+        verify(springDataRefreshTokenRepository, never())
+            .findBySubjectIdAndRevoked(any(UUID.class), anyBoolean());
+    }
+
+    // ============================================================
+    // deleteExpiredTokens tests
+    // ============================================================
+
+    @Test
+    @DisplayName("should_DeleteOnlyExpiredTokens_When_MixedTokensExist")
+    void should_DeleteOnlyExpiredTokens_When_MixedTokensExist() {
+        RefreshTokenEntity expiredToken1 = createExpiredTokenEntity();
+        RefreshTokenEntity expiredToken2 = createExpiredTokenEntity();
+        RefreshTokenEntity validToken = testRefreshTokenEntity;
+
+        when(springDataRefreshTokenRepository.findAll())
+            .thenReturn(Arrays.asList(expiredToken1, validToken, expiredToken2));
+
+        jpaRefreshTokenRepository.deleteExpiredTokens();
+
+        verify(springDataRefreshTokenRepository, times(1)).findAll();
+        verify(springDataRefreshTokenRepository, times(1)).delete(expiredToken1);
+        verify(springDataRefreshTokenRepository, times(1)).delete(expiredToken2);
+        verify(springDataRefreshTokenRepository, never()).delete(validToken);
+    }
+
+    @Test
+    @DisplayName("should_NotDeleteAnyTokens_When_AllTokensAreValid")
+    void should_NotDeleteAnyTokens_When_AllTokensAreValid() {
+        RefreshTokenEntity validToken1 = testRefreshTokenEntity;
+        RefreshTokenEntity validToken2 = RefreshTokenEntity.fromDomain(
+            new RefreshToken(
+                RefreshTokenId.generate(),
+                testSubjectId,
+                AuthenticableType.USER,
+                UUID.randomUUID().toString(),
+                LocalDateTime.now().plusDays(7)
+            )
+        );
+
+        when(springDataRefreshTokenRepository.findAll())
+            .thenReturn(Arrays.asList(validToken1, validToken2));
+
+        jpaRefreshTokenRepository.deleteExpiredTokens();
+
+        verify(springDataRefreshTokenRepository, times(1)).findAll();
+        verify(springDataRefreshTokenRepository, never()).delete(any(RefreshTokenEntity.class));
+    }
+
+    @Test
+    @DisplayName("should_DeleteAllTokens_When_AllTokensAreExpired")
+    void should_DeleteAllTokens_When_AllTokensAreExpired() {
+        RefreshTokenEntity expiredToken1 = createExpiredTokenEntity();
+        RefreshTokenEntity expiredToken2 = createExpiredTokenEntity();
+
+        when(springDataRefreshTokenRepository.findAll())
+            .thenReturn(Arrays.asList(expiredToken1, expiredToken2));
+
+        jpaRefreshTokenRepository.deleteExpiredTokens();
+
+        verify(springDataRefreshTokenRepository, times(1)).findAll();
+        verify(springDataRefreshTokenRepository, times(1)).delete(expiredToken1);
+        verify(springDataRefreshTokenRepository, times(1)).delete(expiredToken2);
+    }
+
+    private RefreshTokenEntity createExpiredTokenEntity() {
+        RefreshTokenEntity entity = new RefreshTokenEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setSubjectId(UUID.fromString(testSubjectId));
+        entity.setSubjectType(AuthenticableType.USER);
+        entity.setToken(UUID.randomUUID().toString());
+        entity.setExpiresAt(LocalDateTime.now().minusDays(1));
+        entity.setRevoked(false);
+        entity.setCreatedAt(LocalDateTime.now().minusDays(7));
+        return entity;
     }
 }
