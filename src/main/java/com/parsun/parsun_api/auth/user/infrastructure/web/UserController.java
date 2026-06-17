@@ -5,16 +5,8 @@ import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserModuleP
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserPasswordRequest;
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserRequest;
 import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
-import com.parsun.parsun_api.auth.user.application.usecases.GetAllUsersUseCase;
-import com.parsun.parsun_api.auth.user.application.usecases.GetUserByIdUseCase;
-import com.parsun.parsun_api.auth.user.application.usecases.RegisterUserUseCase;
-import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserEmailUseCase;
-import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserModulePermissionsUseCase;
-import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserPasswordUseCase;
+import com.parsun.parsun_api.auth.user.application.usecases.*;
 import com.parsun.parsun_api.auth.user.application.dto.request.RegisterUserRequest;
-import com.parsun.parsun_api.auth.user.domain.entities.User;
-import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
-import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
@@ -24,8 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,26 +23,29 @@ public class UserController {
     private final GetAllUsersUseCase getAllUsersUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
     private final RegisterUserUseCase registerUserUseCase;
+    private final UpdateUserUseCase updateUserUseCase;
+    private final DeleteUserUseCase deleteUserUseCase;
     private final UpdateUserEmailUseCase updateUserEmailUseCase;
     private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
     private final UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase;
-    private final UserRepository userRepository;
 
     public UserController(
             GetAllUsersUseCase getAllUsersUseCase,
             GetUserByIdUseCase getUserByIdUseCase,
             RegisterUserUseCase registerUserUseCase,
+            UpdateUserUseCase updateUserUseCase,
+            DeleteUserUseCase deleteUserUseCase,
             UpdateUserEmailUseCase updateUserEmailUseCase,
             UpdateUserPasswordUseCase updateUserPasswordUseCase,
-            UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase,
-            UserRepository userRepository) {
+            UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
+        this.updateUserUseCase = updateUserUseCase;
+        this.deleteUserUseCase = deleteUserUseCase;
         this.updateUserEmailUseCase = updateUserEmailUseCase;
         this.updateUserPasswordUseCase = updateUserPasswordUseCase;
         this.updateUserModulePermissionsUseCase = updateUserModulePermissionsUseCase;
-        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -90,47 +83,14 @@ public class UserController {
     public ResponseEntity<UserResponse> update(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserRequest request) {
-        
-        UserId userId = new UserId(UUID.fromString(id));
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-
-        user.updateUserName(new com.parsun.parsun_api.auth.user.domain.valueobjects.UserName(request.userName()));
-        user.setRole(request.role());
-
-        if (request.active() != null) {
-            if (request.active()) {
-                user.activate();
-            } else {
-                user.deactivate();
-            }
-        }
-
-        if (request.emailVerified() != null) {
-            user.setEmailVerified(request.emailVerified());
-        }
-
-        User savedUser = userRepository.save(user);
-        return ResponseEntity.ok(UserResponse.from(savedUser));
+        UserResponse user = updateUserUseCase.execute(id, request);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
-        
-        if (id.equals(java.util.UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd20a215").toString())) {
-            throw new IllegalArgumentException("Cannot delete the super admin user");
-        }
-        
-        UserId userId = new UserId(UUID.fromString(id));
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-        
-        if (user.getRole() == com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole.SUPER_ADMIN) {
-            throw new IllegalArgumentException("Cannot delete another SUPER_ADMIN user");
-        }
-        
-        userRepository.delete(user);
+        deleteUserUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
