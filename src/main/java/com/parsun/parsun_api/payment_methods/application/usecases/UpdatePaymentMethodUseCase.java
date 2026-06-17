@@ -7,9 +7,11 @@ import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
 import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.parsun.parsun_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class UpdatePaymentMethodUseCase {
 
     private final PaymentMethodRepository repository;

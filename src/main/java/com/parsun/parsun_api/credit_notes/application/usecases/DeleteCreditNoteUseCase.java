@@ -5,9 +5,11 @@ import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteReposito
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteId;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class DeleteCreditNoteUseCase {
 
     private final CreditNoteRepository creditNoteRepository;

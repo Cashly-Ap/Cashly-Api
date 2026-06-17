@@ -16,11 +16,13 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Service
 public class CreateCreditNoteUseCase {
 
     private final CreditNoteRepository creditNoteRepository;

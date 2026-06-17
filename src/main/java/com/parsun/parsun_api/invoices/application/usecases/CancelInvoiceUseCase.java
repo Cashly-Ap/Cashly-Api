@@ -16,9 +16,11 @@ import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class CancelInvoiceUseCase {
 
     private final InvoiceRepository invoiceRepository;

@@ -7,7 +7,9 @@ import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRe
 import com.parsun.parsun_api.payment_methods.domain.valueobjects.PaymentMethodId;
 
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GetPaymentMethodByIdUseCase {
 
     private final PaymentMethodRepository repository;

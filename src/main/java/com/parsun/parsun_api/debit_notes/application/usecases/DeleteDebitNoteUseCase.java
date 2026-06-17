@@ -5,9 +5,11 @@ import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository
 import com.parsun.parsun_api.debit_notes.domain.valueobjects.DebitNoteId;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class DeleteDebitNoteUseCase {
 
     private final DebitNoteRepository debitNoteRepository;
