@@ -208,10 +208,6 @@ class JpaRefreshTokenRepositoryUnitTest {
         verify(springDataRefreshTokenRepository, never()).findBySubjectId(any(UUID.class));
     }
 
-    // ============================================================
-    // revokeAllByUserId tests
-    // ============================================================
-
     @Test
     @DisplayName("should_RevokeAllTokensByUserId_When_TokensExist")
     void should_RevokeAllTokensByUserId_When_TokensExist() {
@@ -269,10 +265,6 @@ class JpaRefreshTokenRepositoryUnitTest {
         verify(springDataRefreshTokenRepository, never())
             .findBySubjectIdAndRevoked(any(UUID.class), anyBoolean());
     }
-
-    // ============================================================
-    // deleteExpiredTokens tests
-    // ============================================================
 
     @Test
     @DisplayName("should_DeleteOnlyExpiredTokens_When_MixedTokensExist")

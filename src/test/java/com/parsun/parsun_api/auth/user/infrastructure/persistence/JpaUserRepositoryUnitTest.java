@@ -231,8 +231,6 @@ class JpaUserRepositoryUnitTest {
         verify(springDataUserRepository, never()).deleteById(any(UUID.class));
     }
 
-    // ============ findAll() tests ============
-
     @Test
     @DisplayName("should_ReturnAllUsers_When_UsersExist")
     void should_ReturnAllUsers_When_UsersExist() {
@@ -256,8 +254,6 @@ class JpaUserRepositoryUnitTest {
         assertTrue(users.isEmpty());
         verify(springDataUserRepository, times(1)).findAll();
     }
-
-    // ============ findByRole() tests ============
 
     @Test
     @DisplayName("should_FindUsersByRole_When_UsersExist")
@@ -296,8 +292,6 @@ class JpaUserRepositoryUnitTest {
         assertEquals("Role cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).findByRole(any());
     }
-
-    // ============ findAllWithFilters() tests ============
 
     @Test
     @DisplayName("should_FindAllWithFilters_When_FiltersProvided")

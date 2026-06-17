@@ -365,7 +365,6 @@ class OrderRepositoryAdapterTest {
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            // CONFIRMED (C) < DRAFT (D) alphabetically
             assertEquals(OrderStatus.CONFIRMED, result.getFirst().getStatus());
             assertEquals(OrderStatus.DRAFT, result.getLast().getStatus());
         }

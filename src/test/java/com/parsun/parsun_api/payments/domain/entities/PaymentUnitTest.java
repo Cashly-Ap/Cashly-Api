@@ -35,8 +35,6 @@ class PaymentUnitTest {
                 CREATED_BY, CREATED_BY_NAME, STATUS);
     }
 
-    // ===== Factory: create =====
-
     @Nested
     @DisplayName("Payment.create()")
     class CreatePayment {
@@ -162,8 +160,6 @@ class PaymentUnitTest {
         }
     }
 
-    // ===== Lifecycle: cancel =====
-
     @Nested
     @DisplayName("cancel()")
     class Cancel {
@@ -201,8 +197,6 @@ class PaymentUnitTest {
             assertEquals("Payment is already cancelled", exception.getMessage());
         }
     }
-
-    // ===== Lifecycle: apply =====
 
     @Nested
     @DisplayName("apply()")
@@ -309,8 +303,6 @@ class PaymentUnitTest {
         }
     }
 
-    // ===== Reconstitute =====
-
     @Nested
     @DisplayName("reconstitute()")
     class Reconstitute {
@@ -343,8 +335,6 @@ class PaymentUnitTest {
             assertEquals(now, payment.getUpdatedAt());
         }
     }
-
-    // ===== equals / hashCode / toString =====
 
     @Nested
     @DisplayName("equals, hashCode, toString")
@@ -406,8 +396,6 @@ class PaymentUnitTest {
             assertTrue(result.contains(payment.getStatus().name()));
         }
     }
-
-    // ===== Getters =====
 
     @Nested
     @DisplayName("Getters")

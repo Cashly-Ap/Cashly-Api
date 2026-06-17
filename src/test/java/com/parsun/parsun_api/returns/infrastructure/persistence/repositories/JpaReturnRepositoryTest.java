@@ -57,8 +57,6 @@ class JpaReturnRepositoryTest {
         adapter = new JpaReturnRepository(entityManager);
     }
 
-    // ── Helper factory methods ─────────────────────────────────────────────
-
     private Return createTestReturn() {
         ReturnId id = ReturnId.of(UUID.randomUUID());
         ReturnNumber returnNumber = ReturnNumber.of(2026, 1);
@@ -143,10 +141,6 @@ class JpaReturnRepositoryTest {
         return entity;
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Save
-    // ═══════════════════════════════════════════════════════════════════════
-
     @Nested
     @DisplayName("Save")
     class Save {
@@ -156,7 +150,6 @@ class JpaReturnRepositoryTest {
         void save_Create_When_IdIsNull() {
             Return return_ = createTestReturn();
 
-            // entityManager.find() returns null by default → findJpaEntity returns empty
             doNothing().when(entityManager).persist(entityCaptor.capture());
 
             Return saved = adapter.save(return_);
@@ -227,10 +220,8 @@ class JpaReturnRepositoryTest {
             Return return_ = createTestReturn();
             ReturnEntity existingEntity = createTestEntity(return_);
 
-            // findJpaEntity finds the entity
             when(entityManager.find(ReturnEntity.class, return_.getId().value()))
                     .thenReturn(existingEntity);
-            // merge returns the managed entity
             when(entityManager.merge(any(ReturnEntity.class)))
                     .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -247,10 +238,6 @@ class JpaReturnRepositoryTest {
             verify(entityManager).merge(any(ReturnEntity.class));
         }
     }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  FindById
-    // ═══════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("FindById")
@@ -296,10 +283,6 @@ class JpaReturnRepositoryTest {
             verify(entityManager).find(ReturnEntity.class, id.value());
         }
     }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  FindAllWithFilters
-    // ═══════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("FindAllWithFilters")
@@ -375,10 +358,6 @@ class JpaReturnRepositoryTest {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Delete
-    // ═══════════════════════════════════════════════════════════════════════
-
     @Nested
     @DisplayName("Delete")
     class Delete {
@@ -412,10 +391,6 @@ class JpaReturnRepositoryTest {
             verify(entityManager, never()).remove(any());
         }
     }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  GetNextSequenceForYear
-    // ═══════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("GetNextSequenceForYear")
