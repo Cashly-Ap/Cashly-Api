@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,14 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     public Optional<Invoice> findById(InvoiceId id) {
         return jpaRepository.findWithLinesById(id.value())
                 .map(InvoiceJpaMapper::toDomain);
+    }
+
+    @Override
+    public List<Invoice> findAllById(Collection<InvoiceId> ids) {
+        List<UUID> uuidIds = ids.stream().map(InvoiceId::value).toList();
+        return jpaRepository.findAllById(uuidIds).stream()
+                .map(InvoiceJpaMapper::toDomain)
+                .toList();
     }
 
     @Override

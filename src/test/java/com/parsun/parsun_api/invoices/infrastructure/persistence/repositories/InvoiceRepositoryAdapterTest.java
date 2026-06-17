@@ -386,14 +386,12 @@ class InvoiceRepositoryAdapterTest {
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            // DRAFT < PENDING_PAYMENT alphabetically
             assertEquals(InvoiceStatus.DRAFT, result.getFirst().getStatus());
             assertEquals(InvoiceStatus.PENDING_PAYMENT, result.getLast().getStatus());
         }
 
         @Test
         void should_SortBySubtotal() {
-            // Create lines with different line totals to produce different subtotals
             InvoiceLine line1 = InvoiceLine.reconstitute(
                     InvoiceLineId.of(UUID.randomUUID()),
                     UUID.randomUUID(),
@@ -433,7 +431,7 @@ class InvoiceRepositoryAdapterTest {
                     null,
                     null,
                     null,
-                    List.of(line1),  // subtotal = 3 * 100 = 300
+                    List.of(line1),
                     LocalDateTime.now(),
                     LocalDateTime.now()
             );
@@ -455,7 +453,7 @@ class InvoiceRepositoryAdapterTest {
                     null,
                     null,
                     null,
-                    List.of(line2),  // subtotal = 5 * 200 = 1000
+                    List.of(line2),
                     LocalDateTime.now(),
                     LocalDateTime.now()
             );
@@ -476,11 +474,6 @@ class InvoiceRepositoryAdapterTest {
 
         @Test
         void should_SortByTotal() {
-            // "total" comparator uses: subtotal - returnedTotal
-            // Both invoices use the same line (subtotal = 2*50 = 100)
-            // invoice1: returnedTotal = 50 -> diff = 50
-            // invoice2: returnedTotal = 10 -> diff = 90
-            // Sorted ASC: invoice1 (50) first, then invoice2 (90)
             Invoice invoice1 = Invoice.reconstitute(
                     InvoiceId.of(UUID.randomUUID()),
                     InvoiceNumber.of(2026, 1),
@@ -494,11 +487,11 @@ class InvoiceRepositoryAdapterTest {
                     InvoiceStatus.DRAFT,
                     PaymentType.CREDIT,
                     "Notes",
-                    new BigDecimal("50.00"),  // returnedTotal
-                    null,                     // returnStatus
-                    null,                     // cancelledAt
-                    null,                     // cancelledReason
-                    List.of(createTestLine()), // subtotal = 2*50 = 100
+                    new BigDecimal("50.00"),
+                    null,
+                    null,
+                    null,
+                    List.of(createTestLine()),
                     LocalDateTime.now(),
                     LocalDateTime.now()
             );
@@ -516,11 +509,11 @@ class InvoiceRepositoryAdapterTest {
                     InvoiceStatus.DRAFT,
                     PaymentType.CASH,
                     "Notes",
-                    new BigDecimal("10.00"),  // returnedTotal
-                    null,                     // returnStatus
-                    null,                     // cancelledAt
-                    null,                     // cancelledReason
-                    List.of(createTestLine()), // subtotal = 2*50 = 100
+                    new BigDecimal("10.00"),
+                    null,
+                    null,
+                    null,
+                    List.of(createTestLine()),
                     LocalDateTime.now(),
                     LocalDateTime.now()
             );
@@ -536,17 +529,12 @@ class InvoiceRepositoryAdapterTest {
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            // invoice1 has diff=50 (100-50), invoice2 has diff=90 (100-10)
-            // So invoice1 (smaller diff) comes first
             assertEquals(invoice1.getInvoiceNumber(), result.getFirst().getInvoiceNumber());
             assertEquals(invoice2.getInvoiceNumber(), result.getLast().getInvoiceNumber());
         }
 
         @Test
         void should_SortByTotal_When_ReturnedTotalIsNull() {
-            // The ternary e.getReturnedTotal() != null ? ... : BigDecimal.ZERO
-            // must be exercised when returnedTotal IS null.
-            // The domain constructor converts null to ZERO, so we set null directly on the entity.
             Invoice invoice1 = Invoice.reconstitute(
                     InvoiceId.of(UUID.randomUUID()),
                     InvoiceNumber.of(2026, 1),
@@ -592,16 +580,13 @@ class InvoiceRepositoryAdapterTest {
             );
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
-            entity1.setReturnedTotal(null); // Force null to exercise the ternary's false branch
+            entity1.setReturnedTotal(null);
 
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
             when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
                     .thenReturn(List.of(entity2, entity1));
 
-            // invoice1: returnedTotal=null -> ternary gives ZERO -> diff = 100 - 0 = 100
-            // invoice2: returnedTotal=10 -> diff = 100 - 10 = 90
-            // Sorted ASC: invoice2 (diff=90) first, then invoice1 (diff=100)
             List<Invoice> result = adapter.findAllWithFilters(
                     null, null, null, null, null, null, null, "total", "asc");
 
@@ -613,7 +598,6 @@ class InvoiceRepositoryAdapterTest {
 
         @Test
         void should_SortByPaymentType() {
-            // CASH < CREDIT alphabetically
             Invoice invoice1 = Invoice.reconstitute(
                     InvoiceId.of(UUID.randomUUID()),
                     InvoiceNumber.of(2026, 1),
@@ -678,9 +662,6 @@ class InvoiceRepositoryAdapterTest {
             Invoice invoice1 = createTestInvoice();
             Invoice invoice2 = createTestInvoice();
 
-            // Manually set different timestamps for deterministic ordering
-            // Since both are created with the same time, order is undefined
-            // but the code should not throw with an unknown orderBy value
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
@@ -692,7 +673,6 @@ class InvoiceRepositoryAdapterTest {
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            // Should not throw — uses createdAt as default
         }
 
         @Test
@@ -747,7 +727,6 @@ class InvoiceRepositoryAdapterTest {
             when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
                     .thenReturn(List.of(entity1, entity2));
 
-            // DESC order: B should come first, then A
             List<Invoice> result = adapter.findAllWithFilters(
                     null, null, null, null, null, null, null, "customerName", "desc");
 

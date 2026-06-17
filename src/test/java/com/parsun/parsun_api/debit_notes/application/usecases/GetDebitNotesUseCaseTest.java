@@ -5,8 +5,10 @@ import com.parsun.parsun_api.debit_notes.domain.entities.DebitNote;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.valueobjects.DebitNoteId;
 import com.parsun.parsun_api.debit_notes.domain.valueobjects.DebitNoteNumber;
-import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.parsun.parsun_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
+import com.parsun.parsun_api.invoices.domain.entities.Invoice;
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,13 +33,13 @@ class GetDebitNotesUseCaseTest {
     private DebitNoteRepository debitNoteRepository;
 
     @Mock
-    private InvoiceJpaRepository invoiceJpaRepository;
+    private InvoiceRepository invoiceRepository;
 
     private GetDebitNotesUseCase getDebitNotesUseCase;
 
     @BeforeEach
     void setUp() {
-        getDebitNotesUseCase = new GetDebitNotesUseCase(debitNoteRepository, invoiceJpaRepository);
+        getDebitNotesUseCase = new GetDebitNotesUseCase(debitNoteRepository, invoiceRepository);
     }
 
     @Test
@@ -52,14 +54,16 @@ class GetDebitNotesUseCaseTest {
                 LocalDateTime.now(), LocalDateTime.now()
         );
 
-        InvoiceEntity invoice = new InvoiceEntity();
-        invoice.setId(invoiceId);
-        invoice.setCustomerName("Test Customer");
-        invoice.setCustomerRif("J-12345678-9");
-        invoice.setInvoiceNumber("INV-2026-00001");
+        Invoice invoice = mock(Invoice.class);
+        InvoiceNumber invoiceNumber = mock(InvoiceNumber.class);
+        when(invoice.getId()).thenReturn(InvoiceId.of(invoiceId));
+        when(invoice.getCustomerName()).thenReturn("Test Customer");
+        when(invoice.getCustomerRif()).thenReturn("J-12345678-9");
+        when(invoice.getInvoiceNumber()).thenReturn(invoiceNumber);
+        when(invoiceNumber.value()).thenReturn("INV-2026-00001");
 
         when(debitNoteRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(debitNote));
-        when(invoiceJpaRepository.findAllById(List.of(invoiceId))).thenReturn(List.of(invoice));
+        when(invoiceRepository.findAllById(List.of(InvoiceId.of(invoiceId)))).thenReturn(List.of(invoice));
 
         List<DebitNoteResponse> responses = getDebitNotesUseCase.execute(null, null, null);
 
@@ -70,7 +74,7 @@ class GetDebitNotesUseCaseTest {
         assertEquals("J-12345678-9", response.customerRif());
         assertEquals("INV-2026-00001", response.invoiceNumber());
         verify(debitNoteRepository).findAllWithFilters(null, null, null);
-        verify(invoiceJpaRepository).findAllById(List.of(invoiceId));
+        verify(invoiceRepository).findAllById(List.of(InvoiceId.of(invoiceId)));
     }
 
     @Test
@@ -86,7 +90,7 @@ class GetDebitNotesUseCaseTest {
         );
 
         when(debitNoteRepository.findAllWithFilters(null, null, null)).thenReturn(List.of(debitNote));
-        when(invoiceJpaRepository.findAllById(List.of(invoiceId))).thenReturn(List.of());
+        when(invoiceRepository.findAllById(List.of(InvoiceId.of(invoiceId)))).thenReturn(List.of());
 
         List<DebitNoteResponse> responses = getDebitNotesUseCase.execute(null, null, null);
 
@@ -101,12 +105,12 @@ class GetDebitNotesUseCaseTest {
     @Test
     void should_ReturnEmptyList_When_NoDebitNotesExist() {
         when(debitNoteRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of());
-        when(invoiceJpaRepository.findAllById(List.of())).thenReturn(List.of());
+        when(invoiceRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<DebitNoteResponse> responses = getDebitNotesUseCase.execute(null, null, null);
 
         assertTrue(responses.isEmpty());
         verify(debitNoteRepository).findAllWithFilters(null, null, null);
-        verify(invoiceJpaRepository).findAllById(List.of());
+        verify(invoiceRepository).findAllById(List.of());
     }
 }

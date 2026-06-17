@@ -5,18 +5,16 @@ import com.parsun.parsun_api.payment_methods.application.dto.response.PaymentMet
 import com.parsun.parsun_api.payment_methods.application.mappers.PaymentMethodMapper;
 import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
 import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRepository;
-import com.parsun.parsun_api.payment_methods.infrastructure.persistence.repositories.PaymentMethodJpaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreatePaymentMethodUseCase {
 
     private final PaymentMethodRepository repository;
-    private final PaymentMethodJpaRepository jpaRepository;
 
-    public CreatePaymentMethodUseCase(PaymentMethodRepository repository,
-                                       PaymentMethodJpaRepository jpaRepository) {
+    public CreatePaymentMethodUseCase(PaymentMethodRepository repository) {
         this.repository = repository;
-        this.jpaRepository = jpaRepository;
     }
 
     @Transactional
@@ -30,7 +28,7 @@ public class CreatePaymentMethodUseCase {
     }
 
     private String generateNextCode() {
-        int maxNumber = jpaRepository.findMaxCodeNumber().orElse(0);
+        int maxNumber = repository.findMaxCodeNumber().orElse(0);
         int nextNumber = maxNumber + 1;
         return String.format("PM-%04d", nextNumber);
     }

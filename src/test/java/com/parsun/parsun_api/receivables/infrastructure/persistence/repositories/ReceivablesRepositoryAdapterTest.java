@@ -39,14 +39,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for {@link ReceivablesRepositoryAdapter}.
- *
- * IMPORTANT: Never use {@code List.of(row)} for {@code Object[]} rows.
- * Java's varargs expansion treats the array as individual arguments,
- * producing a flat list instead of {@code List<Object[]>}. Always use
- * {@code Collections.singletonList(row)} or a mutable list wrapper.
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ReceivablesRepositoryAdapter Unit Tests")
 class ReceivablesRepositoryAdapterTest {
@@ -72,10 +64,6 @@ class ReceivablesRepositoryAdapterTest {
     void setUp() {
         adapter = new ReceivablesRepositoryAdapter(entityManager, receivablesJpaRepository, customerBalanceRepository);
     }
-
-    // ======================================================================
-    // findSummary
-    // ======================================================================
 
     @Nested
     @DisplayName("findSummary")
@@ -124,10 +112,6 @@ class ReceivablesRepositoryAdapterTest {
         }
     }
 
-    // ======================================================================
-    // findCustomerDebt
-    // ======================================================================
-
     @Nested
     @DisplayName("findCustomerDebt")
     class FindCustomerDebt {
@@ -144,7 +128,6 @@ class ReceivablesRepositoryAdapterTest {
         @Test
         @DisplayName("should return full debt summary for existing customer with invoices and balance")
         void shouldReturnFullDebtSummaryForExistingCustomer() {
-            // Customer entity
             CustomerPhoneEntity phone = new CustomerPhoneEntity();
             phone.setPhone("+584141234567");
             CustomerEmailEntity email = new CustomerEmailEntity();
@@ -157,10 +140,8 @@ class ReceivablesRepositoryAdapterTest {
             when(customerEntity.getCreditLimit()).thenReturn(new BigDecimal("100000.00"));
             when(entityManager.find(CustomerEntity.class, customerId)).thenReturn(customerEntity);
 
-            // Total debt query
             doReturn(new BigDecimal("30000.00")).when(nativeQuery).getSingleResult();
 
-            // Invoice rows — use singletonList to preserve the Object[] array
             UUID invoiceId = UUID.randomUUID();
             Timestamp invoiceDate = Timestamp.valueOf(LocalDateTime.now().minusDays(30));
             Object[] invoiceRow = new Object[]{
@@ -172,7 +153,6 @@ class ReceivablesRepositoryAdapterTest {
             };
             doReturn(Collections.singletonList(invoiceRow)).when(nativeQuery).getResultList();
 
-            // Customer balance
             CustomerBalance balance = CustomerBalance.reconstitute(
                     UUID.randomUUID(), customerId, BigDecimal.valueOf(5000),
                     LocalDateTime.now(), LocalDateTime.now()
@@ -180,10 +160,8 @@ class ReceivablesRepositoryAdapterTest {
             when(customerBalanceRepository.findByCustomerId(customerId))
                     .thenReturn(Optional.of(balance));
 
-            // Execute
             CustomerDebtSummaryResponse result = adapter.findCustomerDebt(customerId);
 
-            // Assert
             assertThat(result.customerId()).isEqualTo(customerId);
             assertThat(result.customerName()).isEqualTo("Test Customer S.A.");
             assertThat(result.customerRif()).isEqualTo("J-12345678-9");
@@ -247,7 +225,6 @@ class ReceivablesRepositoryAdapterTest {
             when(customerEntity.getCreditLimit()).thenReturn(new BigDecimal("100000.00"));
             when(entityManager.find(CustomerEntity.class, customerId)).thenReturn(customerEntity);
 
-            // getSingleResult() returns null → exercises totalDebt == null true branch
             doReturn(null).when(nativeQuery).getSingleResult();
 
             UUID invoiceId = UUID.randomUUID();
@@ -282,7 +259,6 @@ class ReceivablesRepositoryAdapterTest {
 
             doReturn(BigDecimal.ZERO).when(nativeQuery).getSingleResult();
 
-            // Invoice row with null date (row[3] = null) — exercises row[3] != null false branch
             UUID invoiceId = UUID.randomUUID();
             Object[] invoiceRow = new Object[]{
                 invoiceId, "FAC-NULL-DATE", "PENDING_PAYMENT", null,
@@ -293,7 +269,6 @@ class ReceivablesRepositoryAdapterTest {
             };
             doReturn(Collections.singletonList(invoiceRow)).when(nativeQuery).getResultList();
 
-            // CustomerBalance returns empty Optional — exercises orElse(ZERO) path while customer exists
             when(customerBalanceRepository.findByCustomerId(customerId))
                     .thenReturn(Optional.empty());
 
@@ -310,10 +285,6 @@ class ReceivablesRepositoryAdapterTest {
             assertThat(result.invoicesWithDebt().get(0).invoiceDate()).isNull();
         }
     }
-
-    // ======================================================================
-    // findCustomersWithDebt
-    // ======================================================================
 
     @Nested
     @DisplayName("findCustomersWithDebt")
@@ -609,10 +580,6 @@ class ReceivablesRepositoryAdapterTest {
         }
     }
 
-    // ======================================================================
-    // findCustomerInvoices
-    // ======================================================================
-
     @Nested
     @DisplayName("findCustomerInvoices")
     class FindCustomerInvoices {
@@ -841,7 +808,7 @@ class ReceivablesRepositoryAdapterTest {
         void shouldHandleNullInvoiceDateInRows() {
             UUID invId = UUID.randomUUID();
             Object[] row = new Object[]{
-                invId, "FAC-NULL-DT", "PENDING_PAYMENT", null,   // null date
+                invId, "FAC-NULL-DT", "PENDING_PAYMENT", null,
                 BigDecimal.valueOf(5000), BigDecimal.ZERO, BigDecimal.valueOf(1000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(5000), BigDecimal.valueOf(4000),
@@ -859,10 +826,6 @@ class ReceivablesRepositoryAdapterTest {
             assertThat(result.getContent().get(0).invoiceDate()).isNull();
         }
     }
-
-    // ======================================================================
-    // findCustomerPaymentHistory
-    // ======================================================================
 
     @Nested
     @DisplayName("findCustomerPaymentHistory")
@@ -953,10 +916,6 @@ class ReceivablesRepositoryAdapterTest {
         }
     }
 
-    // ======================================================================
-    // findPaymentHistory
-    // ======================================================================
-
     @Nested
     @DisplayName("findPaymentHistory")
     class FindPaymentHistory {
@@ -1036,7 +995,6 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            // search=null -> no filters in findPaymentsWithFilters -> conditions.isEmpty() -> "1=1"
             Page<PendingPaymentResponse> result = adapter.findPaymentHistory(null, 0, 10);
 
             assertThat(result.getContent()).hasSize(1);
@@ -1048,13 +1006,11 @@ class ReceivablesRepositoryAdapterTest {
         void shouldHandleNullDatesInPaymentRows() {
             UUID paymentId = UUID.randomUUID();
             UUID custId = UUID.randomUUID();
-            // row[8] = null (paymentDate), row[9] = null (createdAt)
-            // Exercises mapPendingPaymentRow null branches
             Object[] row = new Object[]{
                 paymentId, "PAG-NULL-DATE", custId, "Customer Null Date",
                 BigDecimal.valueOf(1000), "Cash", "PENDING", "MANUAL",
-                null,   // paymentDate = null
-                null,   // createdAt = null
+                null,
+                null,
                 "FAC-NULL"
             };
 

@@ -6,8 +6,11 @@ import com.parsun.parsun_api.payments.infrastructure.persistence.mappers.Payment
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class PaymentAllocationRepositoryAdapter implements PaymentAllocationRepository {
@@ -47,5 +50,15 @@ public class PaymentAllocationRepositoryAdapter implements PaymentAllocationRepo
     @Override
     public BigDecimal getAllocatedAmountByInvoiceId(UUID invoiceId) {
         return jpaRepository.sumAllocatedAmountByInvoiceId(invoiceId);
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> sumByInvoiceIds(Collection<UUID> invoiceIds) {
+        List<Object[]> results = jpaRepository.sumByInvoiceIds(List.copyOf(invoiceIds));
+        return results.stream()
+                .collect(Collectors.toMap(
+                        row -> (UUID) row[0],
+                        row -> (BigDecimal) row[1]
+                ));
     }
 }

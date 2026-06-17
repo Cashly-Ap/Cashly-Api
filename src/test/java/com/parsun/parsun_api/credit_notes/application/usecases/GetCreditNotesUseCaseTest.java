@@ -5,8 +5,10 @@ import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteId;
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteNumber;
-import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.parsun.parsun_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
+import com.parsun.parsun_api.invoices.domain.entities.Invoice;
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,13 +34,13 @@ class GetCreditNotesUseCaseTest {
     private CreditNoteRepository creditNoteRepository;
 
     @Mock
-    private InvoiceJpaRepository invoiceJpaRepository;
+    private InvoiceRepository invoiceRepository;
 
     private GetCreditNotesUseCase getCreditNotesUseCase;
 
     @BeforeEach
     void setUp() {
-        getCreditNotesUseCase = new GetCreditNotesUseCase(creditNoteRepository, invoiceJpaRepository);
+        getCreditNotesUseCase = new GetCreditNotesUseCase(creditNoteRepository, invoiceRepository);
     }
 
     @Test
@@ -71,21 +73,25 @@ class GetCreditNotesUseCaseTest {
                 LocalDateTime.now()
         );
 
-        InvoiceEntity invoice1 = new InvoiceEntity();
-        invoice1.setId(invoiceId1);
-        invoice1.setCustomerName("Acme Corp");
-        invoice1.setCustomerRif("J-12345678-9");
-        invoice1.setInvoiceNumber("INV-2026-00001");
+        Invoice invoice1 = mock(Invoice.class);
+        InvoiceNumber invoiceNumber1 = mock(InvoiceNumber.class);
+        when(invoice1.getId()).thenReturn(InvoiceId.of(invoiceId1));
+        when(invoice1.getCustomerName()).thenReturn("Acme Corp");
+        when(invoice1.getCustomerRif()).thenReturn("J-12345678-9");
+        when(invoice1.getInvoiceNumber()).thenReturn(invoiceNumber1);
+        when(invoiceNumber1.value()).thenReturn("INV-2026-00001");
 
-        InvoiceEntity invoice2 = new InvoiceEntity();
-        invoice2.setId(invoiceId2);
-        invoice2.setCustomerName("Beta Inc");
-        invoice2.setCustomerRif("J-98765432-1");
-        invoice2.setInvoiceNumber("INV-2026-00002");
+        Invoice invoice2 = mock(Invoice.class);
+        InvoiceNumber invoiceNumber2 = mock(InvoiceNumber.class);
+        when(invoice2.getId()).thenReturn(InvoiceId.of(invoiceId2));
+        when(invoice2.getCustomerName()).thenReturn("Beta Inc");
+        when(invoice2.getCustomerRif()).thenReturn("J-98765432-1");
+        when(invoice2.getInvoiceNumber()).thenReturn(invoiceNumber2);
+        when(invoiceNumber2.value()).thenReturn("INV-2026-00002");
 
         when(creditNoteRepository.findAllWithFilters(null, null, null))
                 .thenReturn(List.of(creditNote1, creditNote2));
-        when(invoiceJpaRepository.findAllById(List.of(invoiceId1, invoiceId2)))
+        when(invoiceRepository.findAllById(List.of(InvoiceId.of(invoiceId1), InvoiceId.of(invoiceId2))))
                 .thenReturn(List.of(invoice1, invoice2));
 
         List<CreditNoteResponse> responses = getCreditNotesUseCase.execute(null, null, null);
@@ -108,7 +114,7 @@ class GetCreditNotesUseCaseTest {
         assertEquals(new BigDecimal("200.00"), response2.amount());
 
         verify(creditNoteRepository).findAllWithFilters(null, null, null);
-        verify(invoiceJpaRepository).findAllById(List.of(invoiceId1, invoiceId2));
+        verify(invoiceRepository).findAllById(List.of(InvoiceId.of(invoiceId1), InvoiceId.of(invoiceId2)));
     }
 
     @Test
@@ -130,7 +136,7 @@ class GetCreditNotesUseCaseTest {
 
         when(creditNoteRepository.findAllWithFilters(null, null, null))
                 .thenReturn(List.of(creditNote));
-        when(invoiceJpaRepository.findAllById(List.of(invoiceId)))
+        when(invoiceRepository.findAllById(List.of(InvoiceId.of(invoiceId))))
                 .thenReturn(List.of());
 
         List<CreditNoteResponse> responses = getCreditNotesUseCase.execute(null, null, null);
@@ -147,14 +153,14 @@ class GetCreditNotesUseCaseTest {
     void shouldReturnEmptyListWhenNoCreditNotesFound() {
         when(creditNoteRepository.findAllWithFilters(null, null, null))
                 .thenReturn(List.of());
-        when(invoiceJpaRepository.findAllById(List.of())).thenReturn(List.of());
+        when(invoiceRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<CreditNoteResponse> responses = getCreditNotesUseCase.execute(null, null, null);
 
         assertNotNull(responses);
         assertTrue(responses.isEmpty());
         verify(creditNoteRepository).findAllWithFilters(null, null, null);
-        verify(invoiceJpaRepository).findAllById(List.of());
+        verify(invoiceRepository).findAllById(List.of());
     }
 
     @Test

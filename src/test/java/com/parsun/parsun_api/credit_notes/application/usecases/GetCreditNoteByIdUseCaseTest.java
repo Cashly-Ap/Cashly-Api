@@ -5,8 +5,10 @@ import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteId;
 import com.parsun.parsun_api.credit_notes.domain.valueobjects.CreditNoteNumber;
-import com.parsun.parsun_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.parsun.parsun_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
+import com.parsun.parsun_api.invoices.domain.entities.Invoice;
+import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,13 +32,13 @@ class GetCreditNoteByIdUseCaseTest {
     private CreditNoteRepository creditNoteRepository;
 
     @Mock
-    private InvoiceJpaRepository invoiceJpaRepository;
+    private InvoiceRepository invoiceRepository;
 
     private GetCreditNoteByIdUseCase getCreditNoteByIdUseCase;
 
     @BeforeEach
     void setUp() {
-        getCreditNoteByIdUseCase = new GetCreditNoteByIdUseCase(creditNoteRepository, invoiceJpaRepository);
+        getCreditNoteByIdUseCase = new GetCreditNoteByIdUseCase(creditNoteRepository, invoiceRepository);
     }
 
     @Test
@@ -57,14 +59,15 @@ class GetCreditNoteByIdUseCaseTest {
                 LocalDateTime.now()
         );
 
-        InvoiceEntity invoiceEntity = new InvoiceEntity();
-        invoiceEntity.setId(invoiceId);
-        invoiceEntity.setCustomerName("Acme Corp");
-        invoiceEntity.setCustomerRif("J-12345678-9");
-        invoiceEntity.setInvoiceNumber("INV-2026-00001");
+        Invoice invoice = mock(Invoice.class);
+        InvoiceNumber invoiceNumber = mock(InvoiceNumber.class);
+        when(invoice.getCustomerName()).thenReturn("Acme Corp");
+        when(invoice.getCustomerRif()).thenReturn("J-12345678-9");
+        when(invoice.getInvoiceNumber()).thenReturn(invoiceNumber);
+        when(invoiceNumber.value()).thenReturn("INV-2026-00001");
 
         when(creditNoteRepository.findById(CreditNoteId.of(creditNoteId))).thenReturn(Optional.of(creditNote));
-        when(invoiceJpaRepository.findById(invoiceId)).thenReturn(Optional.of(invoiceEntity));
+        when(invoiceRepository.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.of(invoice));
 
         CreditNoteResponse response = getCreditNoteByIdUseCase.execute(creditNoteId);
 
@@ -78,7 +81,7 @@ class GetCreditNoteByIdUseCaseTest {
         assertEquals(new BigDecimal("150.00"), response.amount());
         assertEquals("Product damaged", response.reason());
         verify(creditNoteRepository).findById(CreditNoteId.of(creditNoteId));
-        verify(invoiceJpaRepository).findById(invoiceId);
+        verify(invoiceRepository).findById(InvoiceId.of(invoiceId));
     }
 
     @Test
@@ -100,7 +103,7 @@ class GetCreditNoteByIdUseCaseTest {
         );
 
         when(creditNoteRepository.findById(CreditNoteId.of(creditNoteId))).thenReturn(Optional.of(creditNote));
-        when(invoiceJpaRepository.findById(invoiceId)).thenReturn(Optional.empty());
+        when(invoiceRepository.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.empty());
 
         CreditNoteResponse response = getCreditNoteByIdUseCase.execute(creditNoteId);
 
@@ -123,6 +126,6 @@ class GetCreditNoteByIdUseCaseTest {
         assertTrue(exception.getMessage().contains("Credit note not found"));
         assertTrue(exception.getMessage().contains(creditNoteId.toString()));
         verify(creditNoteRepository).findById(CreditNoteId.of(creditNoteId));
-        verifyNoInteractions(invoiceJpaRepository);
+        verifyNoInteractions(invoiceRepository);
     }
 }

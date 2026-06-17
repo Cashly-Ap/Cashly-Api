@@ -5,7 +5,6 @@ import com.parsun.parsun_api.payment_methods.application.dto.response.PaymentMet
 import com.parsun.parsun_api.payment_methods.application.mappers.PaymentMethodMapper;
 import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
 import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRepository;
-import com.parsun.parsun_api.payment_methods.infrastructure.persistence.repositories.PaymentMethodJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +29,6 @@ class CreatePaymentMethodUseCaseTest {
     @Mock
     private PaymentMethodRepository repository;
 
-    @Mock
-    private PaymentMethodJpaRepository jpaRepository;
-
     @InjectMocks
     private CreatePaymentMethodUseCase useCase;
 
@@ -43,7 +39,7 @@ class CreatePaymentMethodUseCaseTest {
     void should_CreatePaymentMethod_When_ValidRequest() {
         CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", "Cash payment method");
 
-        when(jpaRepository.findMaxCodeNumber()).thenReturn(Optional.of(5));
+        when(repository.findMaxCodeNumber()).thenReturn(Optional.of(5));
 
         PaymentMethod savedPaymentMethod = PaymentMethod.reconstitute(
                 PaymentMethodIdHelper.create(), "PM-0006", "Cash", "Cash payment method",
@@ -58,7 +54,7 @@ class CreatePaymentMethodUseCaseTest {
         assertEquals("Cash payment method", result.description());
         assertTrue(result.isActive());
 
-        verify(jpaRepository).findMaxCodeNumber();
+        verify(repository).findMaxCodeNumber();
         verify(repository).save(paymentMethodCaptor.capture());
         PaymentMethod captured = paymentMethodCaptor.getValue();
         assertEquals("PM-0006", captured.getCode());
@@ -71,7 +67,7 @@ class CreatePaymentMethodUseCaseTest {
     void should_CreateWithFirstCode_When_NoExistingCodes() {
         CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Bank Transfer", "Bank transfer payment");
 
-        when(jpaRepository.findMaxCodeNumber()).thenReturn(Optional.empty());
+        when(repository.findMaxCodeNumber()).thenReturn(Optional.empty());
 
         PaymentMethod savedPaymentMethod = PaymentMethod.reconstitute(
                 PaymentMethodIdHelper.create(), "PM-0001", "Bank Transfer", "Bank transfer payment",
@@ -83,7 +79,7 @@ class CreatePaymentMethodUseCaseTest {
         assertNotNull(result);
         assertEquals("PM-0001", result.code());
 
-        verify(jpaRepository).findMaxCodeNumber();
+        verify(repository).findMaxCodeNumber();
         verify(repository).save(any(PaymentMethod.class));
     }
 
@@ -91,7 +87,7 @@ class CreatePaymentMethodUseCaseTest {
     void should_CreateWithNullDescription_When_RequestDescriptionIsNull() {
         CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", null);
 
-        when(jpaRepository.findMaxCodeNumber()).thenReturn(Optional.of(0));
+        when(repository.findMaxCodeNumber()).thenReturn(Optional.of(0));
 
         PaymentMethod savedPaymentMethod = PaymentMethod.reconstitute(
                 PaymentMethodIdHelper.create(), "PM-0001", "Cash", null,
@@ -108,7 +104,7 @@ class CreatePaymentMethodUseCaseTest {
     void should_ThrowException_When_RepositoryFails() {
         CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", "Cash payment");
 
-        when(jpaRepository.findMaxCodeNumber()).thenReturn(Optional.of(0));
+        when(repository.findMaxCodeNumber()).thenReturn(Optional.of(0));
         when(repository.save(any(PaymentMethod.class)))
                 .thenThrow(new RuntimeException("Database error"));
 

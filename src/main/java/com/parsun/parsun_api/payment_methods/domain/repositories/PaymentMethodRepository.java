@@ -11,5 +11,6 @@ public interface PaymentMethodRepository {
     Optional<PaymentMethod> findById(PaymentMethodId id);
     List<PaymentMethod> findAll(Boolean active);
     Optional<PaymentMethod> findByCode(String code);
+    Optional<Integer> findMaxCodeNumber();
     void delete(PaymentMethodId id);
 }

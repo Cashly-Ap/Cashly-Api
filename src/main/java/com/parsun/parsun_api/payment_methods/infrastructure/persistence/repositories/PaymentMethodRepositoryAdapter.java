@@ -45,6 +45,11 @@ public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
     }
 
     @Override
+    public Optional<Integer> findMaxCodeNumber() {
+        return jpaRepository.findMaxCodeNumber();
+    }
+
+    @Override
     public void delete(PaymentMethodId id) {
         jpaRepository.deleteById(id.value());
     }

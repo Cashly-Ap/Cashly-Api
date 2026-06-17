@@ -11,7 +11,7 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.parsun.parsun_api.payments.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class GetInvoicesUseCaseTest {
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private PaymentAllocationJpaRepository paymentAllocationJpaRepository;
+    private PaymentAllocationRepository paymentAllocationRepository;
 
     @Mock
     private DebitNoteRepository debitNoteRepository;
@@ -50,7 +50,7 @@ class GetInvoicesUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        getInvoicesUseCase = new GetInvoicesUseCase(invoiceRepository, paymentAllocationJpaRepository, debitNoteRepository, creditNoteRepository);
+        getInvoicesUseCase = new GetInvoicesUseCase(invoiceRepository, paymentAllocationRepository, debitNoteRepository, creditNoteRepository);
     }
 
     @Test
@@ -63,9 +63,9 @@ class GetInvoicesUseCaseTest {
 
         when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(invoices);
-        when(paymentAllocationJpaRepository.sumByInvoiceIds(anyList())).thenReturn(List.of());
-        when(debitNoteRepository.sumByInvoiceIds(anyList())).thenReturn(Map.of());
-        when(creditNoteRepository.sumByInvoiceIds(anyList())).thenReturn(Map.of());
+        when(paymentAllocationRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(debitNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(creditNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
                 null, null, null, null, null, null, null, null, null);
@@ -151,9 +151,9 @@ class GetInvoicesUseCaseTest {
 
         when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of(invoice));
-        when(paymentAllocationJpaRepository.sumByInvoiceIds(anyList())).thenReturn(List.of());
-        when(debitNoteRepository.sumByInvoiceIds(anyList())).thenReturn(Map.of());
-        when(creditNoteRepository.sumByInvoiceIds(anyList())).thenReturn(Map.of());
+        when(paymentAllocationRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(debitNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(creditNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
                 null, null, customerId, null, null, null, null, null, null);

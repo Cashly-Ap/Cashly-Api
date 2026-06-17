@@ -3,7 +3,9 @@ package com.parsun.parsun_api.payments.domain.repositories;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface PaymentAllocationRepository {
@@ -12,4 +14,5 @@ public interface PaymentAllocationRepository {
     List<PaymentAllocation> findByInvoiceId(UUID invoiceId);
     void deleteByPaymentId(UUID paymentId);
     BigDecimal getAllocatedAmountByInvoiceId(UUID invoiceId);
+    Map<UUID, BigDecimal> sumByInvoiceIds(Collection<UUID> invoiceIds);
 }
