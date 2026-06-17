@@ -1,17 +1,16 @@
-package com.parsun.parsun_api.auth.authentication.infrastructure.web;
+package com.parsun.parsun_api.infrastructure.config;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.parsun.parsun_api.auth.authentication.application.exceptions.InvalidCredentialsException;
+import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenException;
+import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
+import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
+import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
+import com.parsun.parsun_api.infrastructure.config.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +18,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import com.parsun.parsun_api.auth.authentication.application.exceptions.InvalidCredentialsException;
-import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenException;
-import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
-import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
-import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AuthExceptionHandler Unit Tests")
-class AuthExceptionHandlerUnitTest {
+@DisplayName("GlobalExceptionHandler Unit Tests")
+class GlobalExceptionHandlerUnitTest {
 
     @InjectMocks
-    private AuthExceptionHandler authExceptionHandler;
+    private GlobalExceptionHandler globalExceptionHandler;
 
     @Mock
     private MethodArgumentNotValidException validationException;
@@ -43,7 +44,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleDuplicateEmailException_When_EmailAlreadyExists() {
         DuplicateEmailException exception = new DuplicateEmailException("test@example.com");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleDuplicateEmail(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleDuplicateEmail(exception);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -58,7 +59,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleUserNotFoundException_When_UserNotFound() {
         UserNotFoundException exception = new UserNotFoundException("User not found");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleUserNotFound(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleUserNotFound(exception);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -73,7 +74,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleInvalidCredentialsException_When_CredentialsInvalid() {
         InvalidCredentialsException exception = new InvalidCredentialsException("Invalid email or password");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleInvalidCredentials(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleInvalidCredentials(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -88,7 +89,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleInvalidTokenException_When_TokenInvalid() {
         InvalidTokenException exception = new InvalidTokenException("Invalid token");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleInvalidToken(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleInvalidToken(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -103,7 +104,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleTokenExpiredException_When_TokenExpired() {
         TokenExpiredException exception = new TokenExpiredException("Token has expired");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleTokenExpired(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleTokenExpired(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -118,7 +119,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleIllegalArgumentException_When_ArgumentInvalid() {
         IllegalArgumentException exception = new IllegalArgumentException("Invalid argument provided");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleIllegalArgument(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleIllegalArgument(exception);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -137,7 +138,7 @@ class AuthExceptionHandlerUnitTest {
         when(validationException.getBindingResult()).thenReturn(bindingResult);
         when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError1, fieldError2));
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleValidationErrors(validationException);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleValidationErrors(validationException);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -154,7 +155,7 @@ class AuthExceptionHandlerUnitTest {
     void should_HandleGenericException_When_UnexpectedErrorOccurs() {
         Exception exception = new Exception("Unexpected error");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleGenericException(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleGenericException(exception);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -169,7 +170,7 @@ class AuthExceptionHandlerUnitTest {
     void should_ReturnProperFormat_When_HandlingAnyException() {
         DuplicateEmailException exception = new DuplicateEmailException("test@example.com");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleDuplicateEmail(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleDuplicateEmail(exception);
 
         assertNotNull(response.getBody());
         assertTrue(response.getBody().containsKey("timestamp"));
@@ -184,7 +185,7 @@ class AuthExceptionHandlerUnitTest {
     void should_ReturnConflictStatus_When_DuplicateEmailOccurs() {
         DuplicateEmailException exception = new DuplicateEmailException("test@example.com");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleDuplicateEmail(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleDuplicateEmail(exception);
 
         assertEquals(HttpStatus.CONFLICT.value(), response.getBody().get("status"));
     }
@@ -194,7 +195,7 @@ class AuthExceptionHandlerUnitTest {
     void should_ReturnNotFoundStatus_When_UserNotFound() {
         UserNotFoundException exception = new UserNotFoundException("User not found");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleUserNotFound(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleUserNotFound(exception);
 
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().get("status"));
     }
@@ -204,7 +205,7 @@ class AuthExceptionHandlerUnitTest {
     void should_ReturnUnauthorizedStatus_When_InvalidCredentials() {
         InvalidCredentialsException exception = new InvalidCredentialsException("Invalid credentials");
 
-        ResponseEntity<Map<String, Object>> response = authExceptionHandler.handleInvalidCredentials(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleInvalidCredentials(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getBody().get("status"));
     }
