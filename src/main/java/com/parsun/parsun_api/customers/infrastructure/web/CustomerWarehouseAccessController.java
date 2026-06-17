@@ -39,7 +39,6 @@ public class CustomerWarehouseAccessController {
 
     @PostMapping("/{warehouseId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<CustomerWarehouseAccessResponse> grantAccess(
             @PathVariable UUID customerId,
             @PathVariable UUID warehouseId,
@@ -52,7 +51,6 @@ public class CustomerWarehouseAccessController {
 
     @DeleteMapping("/{warehouseId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> revokeAccess(
             @PathVariable UUID customerId,
             @PathVariable UUID warehouseId) {

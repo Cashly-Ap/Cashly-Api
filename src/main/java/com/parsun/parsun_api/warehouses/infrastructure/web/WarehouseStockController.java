@@ -10,6 +10,7 @@ import com.parsun.parsun_api.warehouses.application.dto.response.WarehouseStockR
 import com.parsun.parsun_api.warehouses.application.usecases.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,42 +41,38 @@ public class WarehouseStockController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
-    public PageResponse<WarehouseStockResponse> getStock(
+    public ResponseEntity<PageResponse<WarehouseStockResponse>> getStock(
             @PathVariable UUID warehouseId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return getWarehouseStockUseCase.execute(warehouseId, page, size);
+        return ResponseEntity.ok(getWarehouseStockUseCase.execute(warehouseId, page, size));
     }
 
     @PostMapping("/entry")
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public List<StockMovementResponse> entry(@PathVariable UUID warehouseId,
-                                              @Valid @RequestBody StockEntryRequest request) {
-        return stockEntryUseCase.execute(warehouseId, request);
+    public ResponseEntity<List<StockMovementResponse>> entry(@PathVariable UUID warehouseId,
+                                                              @Valid @RequestBody StockEntryRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(stockEntryUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/exit")
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public List<StockMovementResponse> exit(@PathVariable UUID warehouseId,
-                                             @Valid @RequestBody StockExitRequest request) {
-        return stockExitUseCase.execute(warehouseId, request);
+    public ResponseEntity<List<StockMovementResponse>> exit(@PathVariable UUID warehouseId,
+                                                             @Valid @RequestBody StockExitRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(stockExitUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/adjustment")
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public StockMovementResponse adjustment(@PathVariable UUID warehouseId,
-                                             @Valid @RequestBody StockAdjustmentRequest request) {
-        return stockAdjustmentUseCase.execute(warehouseId, request);
+    public ResponseEntity<StockMovementResponse> adjustment(@PathVariable UUID warehouseId,
+                                                             @Valid @RequestBody StockAdjustmentRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(stockAdjustmentUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/transfer")
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public List<StockMovementResponse> transfer(@PathVariable UUID warehouseId,
-                                                 @Valid @RequestBody TransferStockRequest request) {
-        return transferStockUseCase.execute(warehouseId, request);
+    public ResponseEntity<List<StockMovementResponse>> transfer(@PathVariable UUID warehouseId,
+                                                                  @Valid @RequestBody TransferStockRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(transferStockUseCase.execute(warehouseId, request));
     }
 }

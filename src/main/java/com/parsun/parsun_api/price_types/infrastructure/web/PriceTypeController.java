@@ -6,6 +6,7 @@ import com.parsun.parsun_api.price_types.application.dto.response.PriceTypeRespo
 import com.parsun.parsun_api.price_types.application.usecases.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,37 +36,36 @@ public class PriceTypeController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public PriceTypeResponse create(@Valid @RequestBody CreatePriceTypeRequest request) {
-        return createPriceTypeUseCase.execute(request);
+    public ResponseEntity<PriceTypeResponse> create(@Valid @RequestBody CreatePriceTypeRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(createPriceTypeUseCase.execute(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public PriceTypeResponse update(@PathVariable UUID id,
-                                     @Valid @RequestBody UpdatePriceTypeRequest request) {
-        return updatePriceTypeUseCase.execute(id, request);
+    public ResponseEntity<PriceTypeResponse> update(@PathVariable UUID id,
+                                                     @Valid @RequestBody UpdatePriceTypeRequest request) {
+        return ResponseEntity.ok(updatePriceTypeUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
-    public void delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePriceTypeUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
-    public PriceTypeResponse getById(@PathVariable UUID id) {
-        return getPriceTypeUseCase.execute(id);
+    public ResponseEntity<PriceTypeResponse> getById(@PathVariable UUID id) {
+        return ResponseEntity.ok(getPriceTypeUseCase.execute(id));
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
-    public List<PriceTypeResponse> listAll(
+    public ResponseEntity<List<PriceTypeResponse>> listAll(
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
-        return listPriceTypesUseCase.execute(orderBy, orderDir);
+        return ResponseEntity.ok(listPriceTypesUseCase.execute(orderBy, orderDir));
     }
 }

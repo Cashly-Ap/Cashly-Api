@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,10 +62,12 @@ class WarehouseControllerTest {
         CreateWarehouseRequest request = new CreateWarehouseRequest(
                 "WH-01", "Main Warehouse", "Address", "State", "Municipality", "1000");
 
-        WarehouseDetailResponse result = warehouseController.create(request);
+        ResponseEntity<WarehouseDetailResponse> result = warehouseController.create(request);
 
-        assertEquals(id, result.id());
-        assertEquals("Main Warehouse", result.name());
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(id, result.getBody().id());
+        assertEquals("Main Warehouse", result.getBody().name());
         verify(createWarehouseUseCase).execute(any(CreateWarehouseRequest.class));
     }
 
@@ -77,9 +81,11 @@ class WarehouseControllerTest {
 
         when(getWarehouseUseCase.execute(UUID.fromString(id))).thenReturn(response);
 
-        WarehouseDetailResponse result = warehouseController.getById(UUID.fromString(id));
+        ResponseEntity<WarehouseDetailResponse> result = warehouseController.getById(UUID.fromString(id));
 
-        assertEquals(id, result.id());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(id, result.getBody().id());
         verify(getWarehouseUseCase).execute(UUID.fromString(id));
     }
 
@@ -96,9 +102,11 @@ class WarehouseControllerTest {
         when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(pageResponse);
 
-        PageResponse<WarehouseListResponse> result = warehouseController.list(null, null, 0, 20, "name", "asc");
+        ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController.list(null, null, 0, 20, "name", "asc");
 
-        assertEquals(1, result.content().size());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(1, result.getBody().content().size());
         verify(listWarehousesUseCase).execute(null, null, 0, 20, "name", "asc");
     }
 
@@ -111,9 +119,11 @@ class WarehouseControllerTest {
         when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(emptyPage);
 
-        PageResponse<WarehouseListResponse> result = warehouseController.list(null, null, 0, 20, "name", "asc");
+        ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController.list(null, null, 0, 20, "name", "asc");
 
-        assertTrue(result.content().isEmpty());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertTrue(result.getBody().content().isEmpty());
         verify(listWarehousesUseCase).execute(null, null, 0, 20, "name", "asc");
     }
 
@@ -131,10 +141,12 @@ class WarehouseControllerTest {
         UpdateWarehouseRequest request = new UpdateWarehouseRequest(
                 "Updated Warehouse", "Addr", "State", "Municipality", "1000", true);
 
-        WarehouseDetailResponse result = warehouseController.update(uuid, request);
+        ResponseEntity<WarehouseDetailResponse> result = warehouseController.update(uuid, request);
 
-        assertEquals(id, result.id());
-        assertEquals("Updated Warehouse", result.name());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(id, result.getBody().id());
+        assertEquals("Updated Warehouse", result.getBody().name());
         verify(updateWarehouseUseCase).execute(eq(uuid), any(UpdateWarehouseRequest.class));
     }
 
@@ -144,8 +156,9 @@ class WarehouseControllerTest {
         UUID id = UUID.randomUUID();
         doNothing().when(deleteWarehouseUseCase).execute(id);
 
-        warehouseController.delete(id);
+        ResponseEntity<Void> result = warehouseController.delete(id);
 
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         verify(deleteWarehouseUseCase).execute(id);
     }
 }

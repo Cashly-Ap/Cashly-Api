@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,10 +59,12 @@ class PriceTypeControllerTest {
 
         CreatePriceTypeRequest request = new CreatePriceTypeRequest("Retail", "Retail price");
 
-        PriceTypeResponse result = priceTypeController.create(request);
+        ResponseEntity<PriceTypeResponse> result = priceTypeController.create(request);
 
-        assertEquals(id, result.id());
-        assertEquals("Retail", result.name());
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(id, result.getBody().id());
+        assertEquals("Retail", result.getBody().name());
         verify(createPriceTypeUseCase).execute(any(CreatePriceTypeRequest.class));
     }
 
@@ -77,10 +81,12 @@ class PriceTypeControllerTest {
 
         UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Wholesale", "Wholesale price", true);
 
-        PriceTypeResponse result = priceTypeController.update(uuid, request);
+        ResponseEntity<PriceTypeResponse> result = priceTypeController.update(uuid, request);
 
-        assertEquals(id, result.id());
-        assertEquals("Wholesale", result.name());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(id, result.getBody().id());
+        assertEquals("Wholesale", result.getBody().name());
         verify(updatePriceTypeUseCase).execute(eq(uuid), any(UpdatePriceTypeRequest.class));
     }
 
@@ -90,8 +96,9 @@ class PriceTypeControllerTest {
         UUID id = UUID.randomUUID();
         doNothing().when(deletePriceTypeUseCase).execute(id);
 
-        priceTypeController.delete(id);
+        ResponseEntity<Void> result = priceTypeController.delete(id);
 
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         verify(deletePriceTypeUseCase).execute(id);
     }
 
@@ -105,9 +112,11 @@ class PriceTypeControllerTest {
 
         when(getPriceTypeUseCase.execute(UUID.fromString(id))).thenReturn(response);
 
-        PriceTypeResponse result = priceTypeController.getById(UUID.fromString(id));
+        ResponseEntity<PriceTypeResponse> result = priceTypeController.getById(UUID.fromString(id));
 
-        assertEquals(id, result.id());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(id, result.getBody().id());
         verify(getPriceTypeUseCase).execute(UUID.fromString(id));
     }
 
@@ -123,9 +132,11 @@ class PriceTypeControllerTest {
 
         when(listPriceTypesUseCase.execute(anyString(), anyString())).thenReturn(List.of(pt1, pt2));
 
-        List<PriceTypeResponse> result = priceTypeController.listAll("createdAt", "desc");
+        ResponseEntity<List<PriceTypeResponse>> result = priceTypeController.listAll("createdAt", "desc");
 
-        assertEquals(2, result.size());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(2, result.getBody().size());
         verify(listPriceTypesUseCase).execute("createdAt", "desc");
     }
 
@@ -134,9 +145,11 @@ class PriceTypeControllerTest {
     void should_return_empty_list_when_no_price_types() {
         when(listPriceTypesUseCase.execute(anyString(), anyString())).thenReturn(List.of());
 
-        List<PriceTypeResponse> result = priceTypeController.listAll("createdAt", "desc");
+        ResponseEntity<List<PriceTypeResponse>> result = priceTypeController.listAll("createdAt", "desc");
 
-        assertTrue(result.isEmpty());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertTrue(result.getBody().isEmpty());
         verify(listPriceTypesUseCase).execute("createdAt", "desc");
     }
 }
