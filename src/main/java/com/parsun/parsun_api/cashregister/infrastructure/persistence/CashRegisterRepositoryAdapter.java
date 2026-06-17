@@ -139,7 +139,6 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 closureDate
         );
 
-        returnsTotal = returnsTotal.add(refundsTotal);
         returnsCount = returnsCount + refundsCount;
 
         var invoicesTotal = queryDecimal(
@@ -161,7 +160,8 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 closureDate
         );
 
-        var totalExpenses = returnsTotal.add(creditNotesTotal);
+        var totalExpenses = returnsTotal.add(refundsTotal).add(creditNotesTotal).add(debitNotesTotal);
+        var totalRevenue = paymentsTotal.add(advancesTotal);
 
         List<?> rawRows = entityManager.createNativeQuery(
                         """
@@ -199,7 +199,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 returnsTotal, returnsCount,
                 creditNotesTotal, debitNotesTotal,
                 invoicesTotal, invoicesCount,
-                invoicesTotal, paymentsTotal, totalExpenses,
+                invoicesTotal, totalRevenue, totalExpenses,
                 details
         );
     }
@@ -239,7 +239,6 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 "SELECT COUNT(*) FROM balance_transactions WHERE type = 'REFUND' AND DATE(created_at) BETWEEN :dateFrom AND :dateTo",
                 dateFrom, dateTo
         );
-        returnsTotal = returnsTotal.add(refundsTotal);
         returnsCount = returnsCount + refundsCount;
 
         var invoicesTotal = queryDecimalRange(
@@ -259,7 +258,8 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 dateFrom, dateTo
         );
 
-        var totalExpenses = returnsTotal.add(creditNotesTotal);
+        var totalExpenses = returnsTotal.add(refundsTotal).add(creditNotesTotal).add(debitNotesTotal);
+        var totalRevenue = paymentsTotal.add(advancesTotal);
 
         var paymentsSummary = findPaymentMethodSummary(dateFrom, dateTo);
 
@@ -269,7 +269,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 returnsTotal, returnsCount,
                 creditNotesTotal, debitNotesTotal,
                 invoicesTotal, invoicesCount,
-                invoicesTotal, paymentsTotal, totalExpenses,
+                invoicesTotal, totalRevenue, totalExpenses,
                 paymentsSummary
         );
     }
@@ -415,7 +415,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                     paymentBreakdown.dolar(),
                     paymentBreakdown.transferencia(),
                     paymentBreakdown.zelle(),
-                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "VENTAS", order++
             ));
         }
@@ -444,7 +444,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
             rows.add(CashRegisterExportRow.of(
                     emissionDate, "DEV", docNumber, total,
                     total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "VENTAS", order++
             ));
         }
@@ -473,7 +473,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
             rows.add(CashRegisterExportRow.of(
                     emissionDate, "REI", docNumber, total,
                     total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "OPERACIONES DE CAJA", order++
             ));
         }
@@ -506,7 +506,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                     emissionDate, "PAG", docNumber, total,
                     breakdown.efectivo(), breakdown.dolar(),
                     breakdown.transferencia(), breakdown.zelle(),
-                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "CUENTAS POR COBRAR", order++
             ));
         }
@@ -535,7 +535,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
             rows.add(CashRegisterExportRow.of(
                     emissionDate, "ANT", docNumber, total,
                     total, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "CUENTAS POR COBRAR", order++
             ));
         }
@@ -564,7 +564,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
             rows.add(CashRegisterExportRow.of(
                     emissionDate, "NC", docNumber, total,
                     BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    BigDecimal.ZERO, total,
+                    BigDecimal.ZERO, total, BigDecimal.ZERO,
                     customerName, "OPERACIONES DE CAJA", order++
             ));
         }
@@ -593,7 +593,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
             rows.add(CashRegisterExportRow.of(
                     emissionDate, "ND", docNumber, total,
                     BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     customerName, "OPERACIONES DE CAJA", order++
             ));
         }

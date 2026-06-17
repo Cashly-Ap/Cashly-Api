@@ -15,6 +15,7 @@ public record CashRegisterExportRow(
         BigDecimal zelle,
         BigDecimal anticipoAplicado,
         BigDecimal notaCreditoAplicado,
+        BigDecimal notaDebito,
         String customerName,
         String module,
         int sortOrder
@@ -30,6 +31,7 @@ public record CashRegisterExportRow(
             BigDecimal zelle,
             BigDecimal anticipoAplicado,
             BigDecimal notaCreditoAplicado,
+            BigDecimal notaDebito,
             String customerName,
             String module,
             int sortOrder
@@ -45,6 +47,7 @@ public record CashRegisterExportRow(
                 zelle != null ? zelle : BigDecimal.ZERO,
                 anticipoAplicado != null ? anticipoAplicado : BigDecimal.ZERO,
                 notaCreditoAplicado != null ? notaCreditoAplicado : BigDecimal.ZERO,
+                notaDebito != null ? notaDebito : BigDecimal.ZERO,
                 customerName,
                 module,
                 sortOrder

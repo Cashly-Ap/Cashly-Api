@@ -27,15 +27,15 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     private static final String[] MODULE_ORDER = {MODULE_VENTAS, MODULE_CXC, MODULE_CAJA};
 
     private static final int COL_EMISSION_DATE = 0;
-    private static final int COL_DOC_TYPE = 1;
-    private static final int COL_DOC_NUMBER = 2;
-    private static final int COL_TOTAL_OPERATION = 3;
-    private static final int COL_EFECTIVO = 4;
-    private static final int COL_DOLAR = 5;
-    private static final int COL_TRANSF_DOLAR = 6;
-    private static final int COL_ZELLE = 7;
-    private static final int COL_ANTICIPO = 8;
-    private static final int COL_NOTA_CREDITO = 9;
+    private static final int COL_DOC_NUMBER = 1;
+    private static final int COL_TOTAL_OPERATION = 2;
+    private static final int COL_EFECTIVO = 3;
+    private static final int COL_DOLAR = 4;
+    private static final int COL_TRANSF_DOLAR = 5;
+    private static final int COL_ZELLE = 6;
+    private static final int COL_ANTICIPO = 7;
+    private static final int COL_NOTA_CREDITO = 8;
+    private static final int COL_NOTA_DEBITO = 9;
     private static final int COL_CUSTOMER = 10;
     private static final int COLUMN_COUNT = 11;
 
@@ -70,10 +70,12 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
             for (CashRegisterDetail detail : paymentSummary) {
                 Row dataRow = sheet.createRow(rowNum);
-                dataRow.createCell(0).setCellValue(detail.getPaymentMethodName());
-                dataRow.createCell(0).setCellStyle(dataStyle);
-                dataRow.createCell(1).setCellValue(detail.getTransactionCount());
-                dataRow.createCell(1).setCellStyle(dataStyle);
+                Cell nameCell = dataRow.createCell(0);
+                nameCell.setCellValue(detail.getPaymentMethodName());
+                nameCell.setCellStyle(dataStyle);
+                Cell txCell = dataRow.createCell(1);
+                txCell.setCellValue(detail.getTransactionCount());
+                txCell.setCellStyle(dataStyle);
                 Cell amountCell = dataRow.createCell(2);
                 amountCell.setCellValue(detail.getExpectedAmount().doubleValue());
                 amountCell.setCellStyle(currencyStyle);
@@ -85,10 +87,12 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             }
 
             Row totalRow = sheet.createRow(rowNum);
-            totalRow.createCell(0).setCellValue("TOTAL");
-            totalRow.createCell(0).setCellStyle(subtotalStyle);
-            totalRow.createCell(1).setCellValue(totalTx);
-            totalRow.createCell(1).setCellStyle(subtotalStyle);
+            Cell totalLabelCell = totalRow.createCell(0);
+            totalLabelCell.setCellValue("TOTAL");
+            totalLabelCell.setCellStyle(subtotalStyle);
+            Cell totalTxCell = totalRow.createCell(1);
+            totalTxCell.setCellValue(totalTx);
+            totalTxCell.setCellStyle(subtotalStyle);
             Cell totalAmountCell = totalRow.createCell(2);
             totalAmountCell.setCellValue(totalAmount.doubleValue());
             totalAmountCell.setCellStyle(createCurrencySubtotalStyle(workbook));
@@ -153,8 +157,9 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
             for (CustomerSummary summary : customerSummaries) {
                 Row dataRow = sheet.createRow(rowNum);
-                dataRow.createCell(0).setCellValue(summary.customerName());
-                dataRow.createCell(0).setCellStyle(dataStyle);
+                Cell nameCell = dataRow.createCell(0);
+                nameCell.setCellValue(summary.customerName());
+                nameCell.setCellStyle(dataStyle);
                 writeCurrencyCell(dataRow, 1, summary.totalInvoiced(), currencyStyle);
                 writeCurrencyCell(dataRow, 2, summary.totalPayments(), currencyStyle);
                 writeCurrencyCell(dataRow, 3, summary.totalReturns(), currencyStyle);
@@ -169,8 +174,9 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             }
 
             Row subtotalRow = sheet.createRow(rowNum);
-            subtotalRow.createCell(0).setCellValue("TOTAL GENERAL");
-            subtotalRow.createCell(0).setCellStyle(subtotalStyle);
+            Cell subtotalLabelCell = subtotalRow.createCell(0);
+            subtotalLabelCell.setCellValue("TOTAL GENERAL");
+            subtotalLabelCell.setCellStyle(subtotalStyle);
             writeCurrencyCell(subtotalRow, 1, grandInvoiced, currencySubtotalStyle);
             writeCurrencyCell(subtotalRow, 2, grandPaid, currencySubtotalStyle);
             writeCurrencyCell(subtotalRow, 3, grandReturned, currencySubtotalStyle);
@@ -213,14 +219,6 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             Map<String, List<CashRegisterExportRow>> grouped = rows.stream()
                     .collect(Collectors.groupingBy(CashRegisterExportRow::module));
 
-            BigDecimal grandTotal = BigDecimal.ZERO;
-            BigDecimal grandEfectivo = BigDecimal.ZERO;
-            BigDecimal grandDolar = BigDecimal.ZERO;
-            BigDecimal grandTransf = BigDecimal.ZERO;
-            BigDecimal grandZelle = BigDecimal.ZERO;
-            BigDecimal grandAnticipo = BigDecimal.ZERO;
-            BigDecimal grandNC = BigDecimal.ZERO;
-
             for (String module : MODULE_ORDER) {
                 List<CashRegisterExportRow> moduleRows = grouped.get(module);
                 if (moduleRows == null || moduleRows.isEmpty()) {
@@ -255,28 +253,42 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
                 BigDecimal moduleNC = moduleRows.stream()
                         .map(CashRegisterExportRow::notaCreditoAplicado)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal moduleND = moduleRows.stream()
+                        .map(CashRegisterExportRow::notaDebito)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
                         "SUBTOTAL " + module, moduleTotal,
                         moduleEfectivo, moduleDolar, moduleTransf, moduleZelle,
-                        moduleAnticipo, moduleNC);
+                        moduleAnticipo, moduleNC, moduleND);
                 rowNum++;
-
-                grandTotal = grandTotal.add(moduleTotal);
-                grandEfectivo = grandEfectivo.add(moduleEfectivo);
-                grandDolar = grandDolar.add(moduleDolar);
-                grandTransf = grandTransf.add(moduleTransf);
-                grandZelle = grandZelle.add(moduleZelle);
-                grandAnticipo = grandAnticipo.add(moduleAnticipo);
-                grandNC = grandNC.add(moduleNC);
-
                 rowNum++;
             }
 
-            writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
-                    "TOTAL GENERAL", grandTotal,
-                    grandEfectivo, grandDolar, grandTransf, grandZelle,
-                    grandAnticipo, grandNC);
+            BigDecimal totalFacturado = rows.stream()
+                    .filter(r -> "FAC".equals(r.documentType()))
+                    .map(CashRegisterExportRow::totalOperation)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalCobrado = rows.stream()
+                    .filter(r -> "PAG".equals(r.documentType()) || "ANT".equals(r.documentType()))
+                    .map(CashRegisterExportRow::totalOperation)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalDevuelto = rows.stream()
+                    .filter(r -> "DEV".equals(r.documentType()) || "REI".equals(r.documentType())
+                              || "NC".equals(r.documentType()) || "ND".equals(r.documentType()))
+                    .map(CashRegisterExportRow::totalOperation)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal balance = totalCobrado.subtract(totalDevuelto);
+
+            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "RESUMEN GENERAL");
+            rowNum = writeTotalsHeader(sheet, headerStyle, rowNum);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Facturado", totalFacturado);
+            rowNum++;
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Cobrado", totalCobrado);
+            rowNum++;
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Devuelto", totalDevuelto);
+            rowNum++;
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Balance", balance);
 
             return toBytes(workbook);
 
@@ -298,9 +310,9 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     private int writeHeader(Sheet sheet, CellStyle headerStyle, int rowNum) {
         Row headerRow = sheet.createRow(rowNum);
         String[] headers = {
-                "Fecha Emisión", "Tipo Doc.", "Documento", "Total Operación",
+                "Fecha Emisión", "Documento", "Total Operación",
                 "Efectivo Bs.", "Dólar", "Transf.Dólar", "Zelle",
-                "Anticipo Aplicado", "N/C Aplicado", "Cliente"
+                "Anticipo Aplicado", "N/C Aplicado", "N/D Aplicado", "Cliente"
         };
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -319,10 +331,6 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
         dateCell.setCellValue(row.emissionDate() != null
                 ? row.emissionDate().format(DATE_FORMATTER) : "");
         dateCell.setCellStyle(dateStyle);
-
-        Cell docTypeCell = dataRow.createCell(COL_DOC_TYPE);
-        docTypeCell.setCellValue(row.documentType());
-        docTypeCell.setCellStyle(dataStyle);
 
         Cell docNumCell = dataRow.createCell(COL_DOC_NUMBER);
         docNumCell.setCellValue(row.documentNumber());
@@ -356,6 +364,10 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
         ncCell.setCellValue(row.notaCreditoAplicado().doubleValue());
         ncCell.setCellStyle(currencyStyle);
 
+        Cell ndCell = dataRow.createCell(COL_NOTA_DEBITO);
+        ndCell.setCellValue(row.notaDebito().doubleValue());
+        ndCell.setCellStyle(currencyStyle);
+
         Cell customerCell = dataRow.createCell(COL_CUSTOMER);
         customerCell.setCellValue(row.customerName() != null ? row.customerName() : "");
         customerCell.setCellStyle(dataStyle);
@@ -366,14 +378,15 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     private void writeSubtotalRow(Sheet sheet, CellStyle subtotalStyle, CellStyle currencyStyle,
                                   int rowNum, String label, BigDecimal total,
                                   BigDecimal efectivo, BigDecimal dolar, BigDecimal transf,
-                                  BigDecimal zelle, BigDecimal anticipo, BigDecimal nc) {
+                                  BigDecimal zelle, BigDecimal anticipo, BigDecimal nc,
+                                  BigDecimal nd) {
         Row subtotalRow = sheet.createRow(rowNum);
 
         Cell labelCell = subtotalRow.createCell(COL_EMISSION_DATE);
         labelCell.setCellValue(label);
         labelCell.setCellStyle(subtotalStyle);
 
-        for (int i = COL_DOC_TYPE; i <= COL_CUSTOMER; i++) {
+        for (int i = COL_DOC_NUMBER; i <= COL_CUSTOMER; i++) {
             Cell emptyCell = subtotalRow.createCell(i);
             emptyCell.setCellStyle(subtotalStyle);
         }
@@ -406,6 +419,10 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
         ncCell.setCellValue(nc.doubleValue());
         ncCell.setCellStyle(currencyStyle);
 
+        Cell ndCell = subtotalRow.createCell(COL_NOTA_DEBITO);
+        ndCell.setCellValue(nd.doubleValue());
+        ndCell.setCellStyle(currencyStyle);
+
         subtotalRow.setHeightInPoints(20);
     }
 
@@ -418,8 +435,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     }
 
     private void configureColumnWidths(Sheet sheet) {
-        sheet.setColumnWidth(COL_EMISSION_DATE, 3500);
-        sheet.setColumnWidth(COL_DOC_TYPE, 3000);
+        sheet.setColumnWidth(COL_EMISSION_DATE, 4500);
         sheet.setColumnWidth(COL_DOC_NUMBER, 5000);
         sheet.setColumnWidth(COL_TOTAL_OPERATION, 4500);
         sheet.setColumnWidth(COL_EFECTIVO, 4000);
@@ -428,6 +444,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
         sheet.setColumnWidth(COL_ZELLE, 3500);
         sheet.setColumnWidth(COL_ANTICIPO, 4500);
         sheet.setColumnWidth(COL_NOTA_CREDITO, 4000);
+        sheet.setColumnWidth(COL_NOTA_DEBITO, 4000);
         sheet.setColumnWidth(COL_CUSTOMER, 6000);
     }
 
