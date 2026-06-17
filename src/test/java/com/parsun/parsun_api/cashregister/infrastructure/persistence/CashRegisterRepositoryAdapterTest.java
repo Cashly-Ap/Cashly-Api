@@ -40,8 +40,8 @@ class CashRegisterRepositoryAdapterTest {
     }
 
     @Test
-    @DisplayName("should include REFUND balance_transactions in totalReturns")
-    void should_include_refund_transactions_in_total_returns() {
+    @DisplayName("totalExpenses should include all caja items: returns + refunds + creditNotes + debitNotes")
+    void should_include_all_caja_items_in_total_expenses() {
         var today = LocalDate.now();
 
         when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
@@ -65,7 +65,7 @@ class CashRegisterRepositoryAdapterTest {
 
         var result = adapter.findDailyTotals(today);
 
-        assertThat(result.totalReturns()).isEqualByComparingTo(new BigDecimal("100.00"));
+        assertThat(result.totalReturns()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.returnCount()).isEqualTo(1);
         assertThat(result.totalExpenses()).isEqualByComparingTo(new BigDecimal("100.00"));
     }

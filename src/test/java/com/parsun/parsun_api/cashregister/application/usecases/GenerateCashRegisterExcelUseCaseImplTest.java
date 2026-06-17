@@ -48,8 +48,8 @@ class GenerateCashRegisterExcelUseCaseImplTest {
         List<CashRegisterExportRow> mockRows = List.of(
                 CashRegisterExportRow.of(DATE_FROM, "FAC", "INV-001", BigDecimal.valueOf(1000),
                         BigDecimal.valueOf(500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Cliente A",
-                        "VENTAS", 1)
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente A", "VENTAS", 1)
         );
         byte[] expectedBytes = new byte[]{1, 2, 3};
 

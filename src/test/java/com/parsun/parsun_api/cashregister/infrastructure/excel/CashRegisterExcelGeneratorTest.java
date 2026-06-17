@@ -40,20 +40,20 @@ class CashRegisterExcelGeneratorTest {
         List<CashRegisterExportRow> rows = List.of(
                 CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1000),
                         BigDecimal.valueOf(500), BigDecimal.valueOf(300), BigDecimal.valueOf(200),
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Cliente A",
-                        MODULE_VENTAS, 1),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente A", MODULE_VENTAS, 1),
                 CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-002", BigDecimal.valueOf(2000),
                         BigDecimal.valueOf(2000), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Cliente B",
-                        MODULE_VENTAS, 2),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente B", MODULE_VENTAS, 2),
                 CashRegisterExportRow.of(TEST_DATE, "PAG", "PAY-001", BigDecimal.valueOf(500),
                         BigDecimal.valueOf(500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Cliente C",
-                        MODULE_CXC, 1001),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente C", MODULE_CXC, 1001),
                 CashRegisterExportRow.of(TEST_DATE, "NC", "NC-001", BigDecimal.valueOf(150),
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.valueOf(150), "Cliente D",
-                        MODULE_CAJA, 2001)
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.valueOf(150), BigDecimal.ZERO,
+                        "Cliente D", MODULE_CAJA, 2001)
         );
 
         byte[] excelBytes = generator.generateExcel(rows);
@@ -81,8 +81,8 @@ class CashRegisterExcelGeneratorTest {
         List<CashRegisterExportRow> rows = List.of(
                 CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1500),
                         BigDecimal.valueOf(1500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Test",
-                        MODULE_VENTAS, 1)
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Test", MODULE_VENTAS, 1)
         );
 
         byte[] excelBytes = generator.generateExcel(rows);
@@ -96,9 +96,9 @@ class CashRegisterExcelGeneratorTest {
     void shouldHandleReintegroDocumentType() {
         List<CashRegisterExportRow> rows = List.of(
                 CashRegisterExportRow.of(TEST_DATE, "REI", "REI-001", BigDecimal.valueOf(100),
-                        BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "Cliente Reintegro",
-                        MODULE_CAJA, 1)
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente Reintegro", MODULE_CAJA, 1)
         );
 
         byte[] excelBytes = generator.generateExcel(rows);
@@ -114,8 +114,8 @@ class CashRegisterExcelGeneratorTest {
                 CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(5000),
                         BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
                         BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(500), BigDecimal.valueOf(500), "Multi Pago",
-                        MODULE_VENTAS, 1)
+                        BigDecimal.valueOf(500), BigDecimal.valueOf(500), BigDecimal.ZERO,
+                        "Multi Pago", MODULE_VENTAS, 1)
         );
 
         byte[] excelBytes = generator.generateExcel(rows);
