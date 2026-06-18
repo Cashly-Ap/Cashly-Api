@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.reports.finance.infrastructure.config;
 
 import com.parsun.parsun_api.payments.application.usecases.GetPaymentByIdUseCase;
+import com.parsun.parsun_api.receivables.domain.repositories.ReceivablesRepository;
 import com.parsun.parsun_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
 import com.parsun.parsun_api.reports.finance.application.port.CollectionsReportPdfPort;
 import com.parsun.parsun_api.reports.finance.application.port.PaymentHistoryReportPdfPort;
@@ -28,6 +29,9 @@ class FinancesReportConfigTest {
     private PaymentPdfPort paymentPdfPort;
 
     @Mock
+    private ReceivablesRepository receivablesRepository;
+
+    @Mock
     private AccountsReceivableReportPdfPort accountsReceivableReportPdfPort;
 
     @Mock
@@ -44,7 +48,7 @@ class FinancesReportConfigTest {
         var paymentPdfUseCase = config.generatePaymentPdfUseCase(getPaymentByIdUseCase, paymentPdfPort);
         assertNotNull(paymentPdfUseCase);
 
-        var arUseCase = config.generateAccountsReceivableReportPdfUseCase(accountsReceivableReportPdfPort);
+        var arUseCase = config.generateAccountsReceivableReportPdfUseCase(receivablesRepository, accountsReceivableReportPdfPort);
         assertNotNull(arUseCase);
 
         var phUseCase = config.generatePaymentHistoryReportPdfUseCase(paymentHistoryReportPdfPort);

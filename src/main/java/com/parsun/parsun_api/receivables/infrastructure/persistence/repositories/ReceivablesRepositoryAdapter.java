@@ -573,6 +573,79 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         );
     }
 
+    @Override
+    public List<Object[]> findAccountsReceivableForReport(UUID customerId, boolean overdueOnly) {
+        String sql = """
+            SELECT c.id, c.legal_name, c.rif, c.credit_limit,
+                   COALESCE(sub.pending_balance, 0) AS pending_balance,
+                   GREATEST(c.credit_limit - COALESCE(sub.pending_balance, 0) + COALESCE(cb.total_balance, 0), 0) AS available,
+                   COALESCE(sub.age0_30, 0) AS age0_30,
+                   COALESCE(sub.age31_60, 0) AS age31_60,
+                   COALESCE(sub.age61_90, 0) AS age61_90,
+                   COALESCE(sub.age91_120, 0) AS age91_120,
+                   COALESCE(sub.age120_plus, 0) AS age120_plus
+            FROM customers c
+            LEFT JOIN customer_balances cb ON cb.customer_id = c.id
+            LEFT JOIN (
+                SELECT
+                    i.customer_id,
+                    SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                        - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS pending_balance,
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 0 AND 30
+                        THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age0_30,
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 31 AND 60
+                        THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age31_60,
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 61 AND 90
+                        THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age61_90,
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 91 AND 120
+                        THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age91_120,
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) >= 121
+                        THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
+                            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age120_plus
+                FROM invoices i
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(allocated_amount) AS total_paid
+                    FROM payment_allocations GROUP BY invoice_id
+                ) pa ON i.id = pa.invoice_id
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(amount) AS total_credit
+                    FROM credit_notes GROUP BY invoice_id
+                ) cn ON i.id = cn.invoice_id
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(amount) AS total_debit
+                    FROM debit_notes GROUP BY invoice_id
+                ) dn ON i.id = dn.invoice_id
+                WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
+                  AND i.status <> 'FULLY_RETURNED'
+                GROUP BY i.customer_id
+            ) sub ON sub.customer_id = c.id
+            """;
+
+        StringBuilder finalSql = new StringBuilder(sql);
+
+        if (customerId != null) {
+            finalSql.append(" WHERE c.id = :customerId");
+        } else if (overdueOnly) {
+            finalSql.append(" WHERE sub.pending_balance > 0");
+        }
+
+        finalSql.append(" ORDER BY sub.pending_balance DESC");
+
+        Query query = entityManager.createNativeQuery(finalSql.toString());
+
+        if (customerId != null) {
+            query.setParameter("customerId", customerId);
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = query.getResultList();
+        return rows;
+    }
+
     private UUID toUuid(Object value) {
         if (value == null) return null;
         if (value instanceof UUID uuid) return uuid;

@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.reports.finance.application.usecases;
 
+import com.parsun.parsun_api.receivables.domain.repositories.ReceivablesRepository;
 import com.parsun.parsun_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,10 +20,28 @@ import static org.mockito.Mockito.*;
 class GenerateAccountsReceivableReportPdfUseCaseImplTest {
 
     @Mock
+    private ReceivablesRepository receivablesRepository;
+
+    @Mock
     private AccountsReceivableReportPdfPort pdfPort;
 
     @InjectMocks
     private GenerateAccountsReceivableReportPdfUseCaseImpl useCase;
+
+    private Object[] mockRow(String customerIdHex, String name, String rif, int creditLimit, int pending, int available) {
+        var id = java.util.UUID.randomUUID();
+        return new Object[]{
+                id, name, rif,
+                java.math.BigDecimal.valueOf(creditLimit),
+                java.math.BigDecimal.valueOf(pending),
+                java.math.BigDecimal.valueOf(available),
+                java.math.BigDecimal.ZERO,
+                java.math.BigDecimal.ZERO,
+                java.math.BigDecimal.ZERO,
+                java.math.BigDecimal.ZERO,
+                java.math.BigDecimal.ZERO
+        };
+    }
 
     @Test
     @DisplayName("should generate accounts receivable PDF for customer")
@@ -29,6 +49,8 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
         UUID customerId = UUID.randomUUID();
         byte[] expectedPdf = "AR PDF".getBytes();
 
+        when(receivablesRepository.findAccountsReceivableForReport(customerId, false))
+                .thenReturn(List.<Object[]>of(mockRow(null, "Test Customer", "J-123", 10000, 5000, 5000)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(customerId, false);
@@ -42,6 +64,8 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
     void should_generate_overdue_accounts_receivable_pdf() {
         byte[] expectedPdf = "Overdue PDF".getBytes();
 
+        when(receivablesRepository.findAccountsReceivableForReport(null, true))
+                .thenReturn(List.<Object[]>of(mockRow(null, "Overdue Customer", "J-456", 5000, 6000, 0)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(null, true);
@@ -55,6 +79,11 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
     void should_generate_accounts_receivable_pdf_without_filters() {
         byte[] expectedPdf = "All AR PDF".getBytes();
 
+        when(receivablesRepository.findAccountsReceivableForReport(null, false))
+                .thenReturn(List.<Object[]>of(
+                        mockRow(null, "Customer A", "J-111", 10000, 3000, 7000),
+                        mockRow(null, "Customer B", "J-222", 8000, 9000, 0)
+                ));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(null, false);

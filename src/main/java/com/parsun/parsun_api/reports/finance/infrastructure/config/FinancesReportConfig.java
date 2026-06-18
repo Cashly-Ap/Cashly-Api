@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.reports.finance.infrastructure.config;
 
 import com.parsun.parsun_api.payments.application.usecases.GetPaymentByIdUseCase;
+import com.parsun.parsun_api.receivables.domain.repositories.ReceivablesRepository;
 import com.parsun.parsun_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
 import com.parsun.parsun_api.reports.finance.application.port.CollectionsReportPdfPort;
 import com.parsun.parsun_api.reports.finance.application.port.PaymentHistoryReportPdfPort;
@@ -55,8 +56,9 @@ public class FinancesReportConfig {
 
     @Bean
     public GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase(
+            ReceivablesRepository receivablesRepository,
             AccountsReceivableReportPdfPort pdfPort) {
-        return new GenerateAccountsReceivableReportPdfUseCaseImpl(pdfPort);
+        return new GenerateAccountsReceivableReportPdfUseCaseImpl(receivablesRepository, pdfPort);
     }
 
     @Bean

@@ -7,6 +7,7 @@ import com.parsun.parsun_api.receivables.application.dto.response.PendingPayment
 import com.parsun.parsun_api.receivables.application.dto.response.ReceivablesSummaryResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,4 +24,6 @@ public interface ReceivablesRepository {
     Page<PendingPaymentResponse> findPaymentHistory(String search, int page, int size);
 
     Page<PendingPaymentResponse> findCustomerPaymentHistory(UUID customerId, UUID invoiceId, int page, int size);
+
+    List<Object[]> findAccountsReceivableForReport(UUID customerId, boolean overdueOnly);
 }

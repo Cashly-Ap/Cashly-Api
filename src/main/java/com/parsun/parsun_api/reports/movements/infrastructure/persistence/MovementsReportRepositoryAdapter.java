@@ -16,7 +16,10 @@ public class MovementsReportRepositoryAdapter implements MovementsReportReposito
             "ADJUSTMENT", "Ajuste",
             "TRANSFER_IN", "Transferencia Entrada",
             "TRANSFER_OUT", "Transferencia Salida",
-            "COMPONENT_EXIT", "Salida Componente"
+            "COMPONENT_EXIT", "Salida Componente",
+            "RETURN_ENTRY", "Entrada por Devolución",
+            "CANCEL_ENTRY", "Entrada por Anulación",
+            "SALE_EXIT", "Salida por Venta"
     );
 
     private final MovementsReportJpaRepository jpaRepository;
