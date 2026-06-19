@@ -18,10 +18,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +51,7 @@ class ListProductsUseCaseTest {
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Electronics");
+        when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
 
         ProductListResponse listResponse = new ProductListResponse(
                 product.getId().toString(), product.getCode(), product.getName(),
@@ -61,7 +63,8 @@ class ListProductsUseCaseTest {
 
         when(productRepository.findAllWithFilters(null, null, null, null, 0, 10, "name", "asc"))
                 .thenReturn(page);
-        when(productMapper.toListResponse(any(Product.class), eq("Electronics"), anyBoolean())).thenReturn(listResponse);
+        when(productRepository.findIdsWithReferences(any())).thenReturn(Set.of());
+        when(productMapper.toListResponse(any(Product.class), anyString(), anyBoolean())).thenReturn(listResponse);
 
         PageResponse<ProductListResponse> result = useCase.execute(null, null, null, null, 0, 10, "name", "asc");
 
