@@ -1,9 +1,9 @@
 package com.parsun.parsun_api.products.application.usecases;
 
+import com.parsun.parsun_api.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
-import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -11,25 +11,23 @@ import java.util.UUID;
 public class DeleteProductUseCase {
 
     private final ProductRepository productRepository;
-    private final StockMovementRepository stockMovementRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
 
-    public DeleteProductUseCase(ProductRepository productRepository,
-                                 StockMovementRepository stockMovementRepository,
-                                 WarehouseStockRepository warehouseStockRepository) {
+    public DeleteProductUseCase(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.stockMovementRepository = stockMovementRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
     }
 
     @Transactional
     public void execute(UUID id) {
-        if (!productRepository.findById(id).isPresent()) {
+        if (productRepository.findById(id).isEmpty()) {
             throw new ProductNotFoundException(id);
         }
-        stockMovementRepository.deleteByProductId(id);
-        warehouseStockRepository.deleteByProductId(id);
+
         productRepository.deleteComponentReferencesByProductId(id);
-        productRepository.delete(id);
+
+        try {
+            productRepository.delete(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ProductHasAssociatedRecordsException(id);
+        }
     }
 }

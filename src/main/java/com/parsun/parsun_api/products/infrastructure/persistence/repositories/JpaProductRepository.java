@@ -127,6 +127,14 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
+    public Set<UUID> findIdsWithReferences(Set<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Set.of();
+        }
+        return springDataRepository.findProductIdsWithReferences(ids);
+    }
+
+    @Override
     public String generateNextCode() {
         ProductCodeSequenceEntity sequence = codeSequenceRepository.save(new ProductCodeSequenceEntity());
         return String.format(CODE_FORMAT, sequence.getId());

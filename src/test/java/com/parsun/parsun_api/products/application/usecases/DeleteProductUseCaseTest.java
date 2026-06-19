@@ -1,16 +1,16 @@
 package com.parsun.parsun_api.products.application.usecases;
 
+import com.parsun.parsun_api.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
-import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,12 +28,6 @@ class DeleteProductUseCaseTest {
     @Mock
     private ProductRepository productRepository;
 
-    @Mock
-    private StockMovementRepository stockMovementRepository;
-
-    @Mock
-    private WarehouseStockRepository warehouseStockRepository;
-
     @InjectMocks
     private DeleteProductUseCase useCase;
 
@@ -49,8 +43,6 @@ class DeleteProductUseCaseTest {
 
         useCase.execute(id);
 
-        verify(stockMovementRepository).deleteByProductId(id);
-        verify(warehouseStockRepository).deleteByProductId(id);
         verify(productRepository).deleteComponentReferencesByProductId(id);
         verify(productRepository).delete(id);
     }
@@ -62,8 +54,23 @@ class DeleteProductUseCaseTest {
         when(productRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ProductNotFoundException.class, () -> useCase.execute(id));
-        verify(stockMovementRepository, never()).deleteByProductId(any());
-        verify(warehouseStockRepository, never()).deleteByProductId(any());
         verify(productRepository, never()).delete(any());
+    }
+
+    @Test
+    void should_ThrowProductHasAssociatedRecordsException_When_ForeignKeyViolation() {
+        UUID id = UUID.randomUUID();
+        Product product = Product.reconstitute(id, "PROD-001", "Test Product", "Description",
+                UUID.randomUUID(), false, true, null,
+                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        doThrow(new DataIntegrityViolationException("FK constraint"))
+                .when(productRepository).delete(id);
+
+        assertThrows(ProductHasAssociatedRecordsException.class, () -> useCase.execute(id));
+        verify(productRepository).deleteComponentReferencesByProductId(id);
+        verify(productRepository).delete(id);
     }
 }

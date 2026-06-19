@@ -6,7 +6,6 @@ import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.application.usecases.*;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
-import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
@@ -52,10 +51,8 @@ public class ProductConfig {
     }
 
     @Bean
-    public DeleteProductUseCase deleteProductUseCase(ProductRepository productRepository,
-                                                      StockMovementRepository stockMovementRepository,
-                                                      WarehouseStockRepository warehouseStockRepository) {
-        return new DeleteProductUseCase(productRepository, stockMovementRepository, warehouseStockRepository);
+    public DeleteProductUseCase deleteProductUseCase(ProductRepository productRepository) {
+        return new DeleteProductUseCase(productRepository);
     }
 
     @Bean

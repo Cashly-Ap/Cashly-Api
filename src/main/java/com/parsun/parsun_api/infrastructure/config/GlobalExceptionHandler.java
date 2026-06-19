@@ -21,6 +21,7 @@ import com.parsun.parsun_api.orders.domain.exceptions.OrderNotPendingException;
 import com.parsun.parsun_api.products.application.exceptions.CompositeProductCannotBeComponentException;
 import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCodeException;
 import com.parsun.parsun_api.products.application.exceptions.DuplicateProductComponentException;
+import com.parsun.parsun_api.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.parsun.parsun_api.products.application.exceptions.ProductHasStockException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
 import com.parsun.parsun_api.price_types.application.exceptions.DuplicatePriceTypeNameException;
@@ -163,6 +164,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleDuplicateProductComponent(DuplicateProductComponentException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(createErrorResponse(HttpStatus.CONFLICT, "Duplicate component", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProductHasAssociatedRecordsException.class)
+    public ResponseEntity<Map<String, Object>> handleProductHasAssociatedRecords(ProductHasAssociatedRecordsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, "Product has associated records", ex.getMessage()));
     }
 
     @ExceptionHandler(ProductHasStockException.class)
