@@ -1,7 +1,11 @@
 package com.parsun.parsun_api.auth.authentication.infrastructure.web;
 
+import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserPasswordRequest;
+import com.parsun.parsun_api.auth.user.application.usecases.UpdateUserPasswordUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,17 +32,20 @@ public class AuthController {
     private final LoginUserUseCase loginUserUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUserUseCase logoutUserUseCase;
+    private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
 
     public AuthController(
         RegisterUserUseCase registerUserUseCase,
         LoginUserUseCase loginUserUseCase,
         RefreshTokenUseCase refreshTokenUseCase,
-        LogoutUserUseCase logoutUserUseCase
+        LogoutUserUseCase logoutUserUseCase,
+        UpdateUserPasswordUseCase updateUserPasswordUseCase
     ) {
         this.registerUserUseCase = registerUserUseCase;
         this.loginUserUseCase = loginUserUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUserUseCase = logoutUserUseCase;
+        this.updateUserPasswordUseCase = updateUserPasswordUseCase;
     }
 
     @PostMapping("/register")
@@ -63,5 +70,14 @@ public class AuthController {
     public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
         logoutUserUseCase.execute(request);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/change-password")
+    public ResponseEntity<UserResponse> changePassword(
+            Authentication authentication,
+            @Valid @RequestBody UpdateUserPasswordRequest request) {
+        String userId = (String) authentication.getPrincipal();
+        UserResponse response = updateUserPasswordUseCase.execute(userId, request);
+        return ResponseEntity.ok(response);
     }
 }
