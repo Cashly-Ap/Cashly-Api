@@ -55,7 +55,7 @@ class CreateProductUseCaseTest {
         UUID categoryId = UUID.randomUUID();
         UUID priceTypeId = UUID.randomUUID();
         CreateProductRequest request = new CreateProductRequest(
-                "Test Product", "Description", categoryId, false,
+                null, "Test Product", "Description", categoryId, false,
                 new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
                 null, List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("25.00"))));
 
@@ -89,7 +89,7 @@ class CreateProductUseCaseTest {
         UUID componentId = UUID.randomUUID();
         CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(componentId, 2);
         CreateProductRequest request = new CreateProductRequest(
-                "Composite Product", "Description", categoryId, true,
+                null, "Composite Product", "Description", categoryId, true,
                 null, null, null,
                 List.of(compReq), null);
 
@@ -122,7 +122,7 @@ class CreateProductUseCaseTest {
     void should_ThrowException_When_CategoryNotFound() {
         UUID categoryId = UUID.randomUUID();
         CreateProductRequest request = new CreateProductRequest(
-                "Test Product", "Description", categoryId, false,
+                null, "Test Product", "Description", categoryId, false,
                 null, null, null, null, null);
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
@@ -136,7 +136,7 @@ class CreateProductUseCaseTest {
         UUID categoryId = UUID.randomUUID();
         UUID priceTypeId = UUID.randomUUID();
         CreateProductRequest request = new CreateProductRequest(
-                "Test Product", "Description", categoryId, false,
+                null, "Test Product", "Description", categoryId, false,
                 null, null, null, null,
                 List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("10.00"))));
 
@@ -156,7 +156,7 @@ class CreateProductUseCaseTest {
         UUID componentId = UUID.randomUUID();
         CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(componentId, 2);
         CreateProductRequest request = new CreateProductRequest(
-                "Composite", "Description", categoryId, true,
+                null, "Composite", "Description", categoryId, true,
                 null, null, null,
                 List.of(compReq, compReq), null);
 
@@ -182,7 +182,7 @@ class CreateProductUseCaseTest {
         UUID componentId = UUID.randomUUID();
         CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(componentId, 2);
         CreateProductRequest request = new CreateProductRequest(
-                "Composite", "Description", categoryId, true,
+                null, "Composite", "Description", categoryId, true,
                 null, null, null,
                 List.of(compReq), null);
 

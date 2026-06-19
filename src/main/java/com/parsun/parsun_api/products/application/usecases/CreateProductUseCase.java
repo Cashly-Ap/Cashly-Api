@@ -46,7 +46,9 @@ public class CreateProductUseCase {
         var category = categoryRepository.findById(request.categoryId())
             .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
 
-        String code = productRepository.generateNextCode();
+        String code = request.code() != null && !request.code().isBlank()
+            ? request.code()
+            : productRepository.generateNextCode();
 
         List<ProductPrice> productPrices = buildProductPrices(request.productPrices());
 
