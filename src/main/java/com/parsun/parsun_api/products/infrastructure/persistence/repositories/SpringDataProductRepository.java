@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface SpringDataProductRepository extends JpaRepository<ProductEntity, UUID> {
@@ -47,6 +48,23 @@ public interface SpringDataProductRepository extends JpaRepository<ProductEntity
     @Modifying
     @Query("DELETE FROM ProductComponentEntity pc WHERE pc.componentProductId = :productId")
     void deleteByComponentProductId(@Param("productId") UUID productId);
+
+    @Query(value = """
+        SELECT DISTINCT BIN_TO_UUID(p.id) FROM (
+            SELECT product_id AS id FROM order_lines WHERE product_id IN :ids
+            UNION ALL
+            SELECT product_id FROM warehouse_stock WHERE product_id IN :ids
+            UNION ALL
+            SELECT product_id FROM stock_movements WHERE product_id IN :ids
+            UNION ALL
+            SELECT product_id FROM invoice_lines WHERE product_id IN :ids
+            UNION ALL
+            SELECT product_id FROM return_lines WHERE product_id IN :ids
+            UNION ALL
+            SELECT component_product_id AS id FROM product_components WHERE component_product_id IN :ids
+        ) p
+        """, nativeQuery = true)
+    Set<UUID> findProductIdsWithReferences(@Param("ids") Collection<UUID> ids);
 
     @Query("""
         SELECT p FROM ProductEntity p

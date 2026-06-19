@@ -8,7 +8,9 @@ import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ListProductsUseCase {
 
@@ -26,16 +28,23 @@ public class ListProductsUseCase {
 
     @Transactional(readOnly = true)
     public PageResponse<ProductListResponse> execute(String search, UUID categoryId, Boolean active,
-                                                      Boolean composite, int page, int size,
-                                                      String orderBy, String orderDir) {
+                                                       Boolean composite, int page, int size,
+                                                       String orderBy, String orderDir) {
         PageResponse<com.parsun.parsun_api.products.domain.entities.Product> result =
             productRepository.findAllWithFilters(search, categoryId, active, composite, page, size, orderBy, orderDir);
+
+        Set<UUID> productIds = result.content().stream()
+            .map(com.parsun.parsun_api.products.domain.entities.Product::getId)
+            .collect(Collectors.toSet());
+
+        Set<UUID> idsWithReferences = productRepository.findIdsWithReferences(productIds);
 
         List<ProductListResponse> content = result.content().stream()
             .map(product -> {
                 String categoryName = categoryRepository.findById(product.getCategoryId())
                     .map(c -> c.getName()).orElse("");
-                return productMapper.toListResponse(product, categoryName);
+                boolean deletable = !idsWithReferences.contains(product.getId());
+                return productMapper.toListResponse(product, categoryName, deletable);
             })
             .toList();
 

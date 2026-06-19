@@ -79,7 +79,7 @@ class ProductMapperTest {
     void should_MapProductToListResponse_When_SimpleProduct() {
         Product product = simpleProduct();
 
-        ProductListResponse response = mapper.toListResponse(product, categoryName);
+        ProductListResponse response = mapper.toListResponse(product, categoryName, true);
 
         assertNotNull(response);
         assertEquals(productId.toString(), response.id());
@@ -91,6 +91,7 @@ class ProductMapperTest {
         assertEquals(true, response.active());
         assertEquals(basePrice, response.basePrice());
         assertTrue(response.productPrices().isEmpty());
+        assertTrue(response.deletable());
     }
 
     @Test
@@ -105,7 +106,7 @@ class ProductMapperTest {
                 LocalDateTime.now(), LocalDateTime.now()
         );
 
-        ProductListResponse response = mapper.toListResponse(product, categoryName);
+        ProductListResponse response = mapper.toListResponse(product, categoryName, true);
 
         assertEquals(1, response.productPrices().size());
         assertEquals(priceTypeId.toString(), response.productPrices().get(0).priceTypeId());

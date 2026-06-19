@@ -21,5 +21,6 @@ public interface ProductRepository {
                                           int page, int size);
     void delete(UUID id);
     void deleteComponentReferencesByProductId(UUID productId);
+    Set<UUID> findIdsWithReferences(Set<UUID> ids);
     String generateNextCode();
 }

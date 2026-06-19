@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class ProductMapper {
 
-    public ProductListResponse toListResponse(Product product, String categoryName) {
+    public ProductListResponse toListResponse(Product product, String categoryName, boolean deletable) {
         List<ProductPriceListItem> prices = product.getProductPrices().stream()
             .map(pp -> new ProductPriceListItem(pp.getPriceTypeId().toString(), pp.getPrice()))
             .toList();
@@ -22,7 +22,7 @@ public class ProductMapper {
             product.getId().toString(), product.getCode(), product.getName(),
             product.getCategoryId().toString(), categoryName,
             product.isComposite(), product.isActive(),
-            product.getBasePrice(), prices
+            product.getBasePrice(), prices, deletable
         );
     }
 

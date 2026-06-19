@@ -12,7 +12,8 @@ public record ProductListResponse(
     boolean composite,
     boolean active,
     BigDecimal basePrice,
-    List<ProductPriceListItem> productPrices
+    List<ProductPriceListItem> productPrices,
+    boolean deletable
 ) {
     public record ProductPriceListItem(String priceTypeId, BigDecimal price) {}
 }

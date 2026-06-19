@@ -80,7 +80,7 @@ class ProductControllerTest {
         when(createProductUseCase.execute(any(CreateProductRequest.class))).thenReturn(response);
 
         var request = new CreateProductRequest(
-                "Test Product", "Desc", UUID.randomUUID(), false,
+                null, "Test Product", "Desc", UUID.randomUUID(), false,
                 BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, null, null);
 
         ResponseEntity<ProductDetailResponse> result = productController.create(request);

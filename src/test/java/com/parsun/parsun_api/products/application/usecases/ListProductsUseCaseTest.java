@@ -54,15 +54,14 @@ class ListProductsUseCaseTest {
         ProductListResponse listResponse = new ProductListResponse(
                 product.getId().toString(), product.getCode(), product.getName(),
                 categoryId.toString(), "Electronics", false, true,
-                new BigDecimal("10.00"), List.of());
+                new BigDecimal("10.00"), List.of(), true);
 
         PageResponse<Product> page = new PageResponse<>(
                 List.of(product), 1L, 1, 10, 0, true, true, false);
 
         when(productRepository.findAllWithFilters(null, null, null, null, 0, 10, "name", "asc"))
                 .thenReturn(page);
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productMapper.toListResponse(any(Product.class), eq("Electronics"))).thenReturn(listResponse);
+        when(productMapper.toListResponse(any(Product.class), eq("Electronics"), anyBoolean())).thenReturn(listResponse);
 
         PageResponse<ProductListResponse> result = useCase.execute(null, null, null, null, 0, 10, "name", "asc");
 
