@@ -88,7 +88,8 @@ public class GetProductsForPurchaseUseCase {
                 categoryName,
                 product.isActive(),
                 totalStock,
-                stockItems
+                stockItems,
+                product.getBasePrice()
         );
     }
 }

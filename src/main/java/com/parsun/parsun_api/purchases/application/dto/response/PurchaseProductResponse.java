@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.purchases.application.dto.response;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record PurchaseProductResponse(
@@ -10,7 +11,8 @@ public record PurchaseProductResponse(
         String categoryName,
         boolean active,
         int stock,
-        List<WarehouseStockItem> stockItems
+        List<WarehouseStockItem> stockItems,
+        BigDecimal purchasePrice
 ) {
     public record WarehouseStockItem(
             String warehouseId,
