@@ -22,7 +22,7 @@ public class PurchaseMapper {
     }
 
     public static PurchaseDetailResponse toDetailResponse(Purchase purchase, WarehouseRepository warehouseRepository) {
-        Map<UUID, Warehouse> warehouseMap = Map.of();
+        final Map<UUID, Warehouse> warehouseMap;
         if (warehouseRepository != null && !purchase.getLines().isEmpty()) {
             warehouseMap = purchase.getLines().stream()
                     .flatMap(line -> line.getAllocations().stream())
@@ -32,6 +32,8 @@ public class PurchaseMapper {
                     .filter(opt -> opt.isPresent())
                     .map(opt -> opt.get())
                     .collect(Collectors.toMap(Warehouse::getId, w -> w));
+        } else {
+            warehouseMap = Map.of();
         }
 
         List<PurchaseDetailResponse.LineDetailResponse> lineResponses = purchase.getLines().stream()
