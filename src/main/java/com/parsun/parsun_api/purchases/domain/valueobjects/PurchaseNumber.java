@@ -20,4 +20,8 @@ public record PurchaseNumber(String value) {
         }
         return new PurchaseNumber(String.format(FORMAT, PREFIX, year, sequence));
     }
+
+    public String getValue() {
+        return value;
+    }
 }

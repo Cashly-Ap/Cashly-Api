@@ -16,4 +16,8 @@ public record PurchaseId(UUID value) {
     public static PurchaseId of(UUID value) {
         return new PurchaseId(value);
     }
+
+    public UUID getValue() {
+        return value;
+    }
 }
