@@ -11,6 +11,7 @@ import com.parsun.parsun_api.purchases.domain.entities.PurchaseLineAllocation;
 import com.parsun.parsun_api.purchases.domain.exceptions.PurchaseNotFoundException;
 import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
 import com.parsun.parsun_api.purchases.domain.valueobjects.PurchaseId;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -20,11 +21,14 @@ public class UpdatePurchaseUseCase {
 
     private final PurchaseRepository purchaseRepository;
     private final ProductRepository productRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public UpdatePurchaseUseCase(PurchaseRepository purchaseRepository,
-                                  ProductRepository productRepository) {
+                                  ProductRepository productRepository,
+                                  WarehouseRepository warehouseRepository) {
         this.purchaseRepository = purchaseRepository;
         this.productRepository = productRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     @Transactional
@@ -55,6 +59,6 @@ public class UpdatePurchaseUseCase {
         purchase.update(request.notes(), lines);
 
         Purchase saved = purchaseRepository.save(purchase);
-        return PurchaseMapper.toDetailResponse(saved);
+        return PurchaseMapper.toDetailResponse(saved, warehouseRepository);
     }
 }

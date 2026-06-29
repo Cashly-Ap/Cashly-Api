@@ -14,6 +14,7 @@ import com.parsun.parsun_api.purchases.domain.entities.PurchaseLineAllocation;
 import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
 import com.parsun.parsun_api.purchases.domain.valueobjects.PurchaseNumber;
 import com.parsun.parsun_api.suppliers.domain.entities.Supplier;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.suppliers.domain.repositories.SupplierRepository;
 import com.parsun.parsun_api.suppliers.domain.valueobjects.SupplierId;
 import jakarta.transaction.Transactional;
@@ -28,15 +29,18 @@ public class CreatePurchaseUseCase {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public CreatePurchaseUseCase(PurchaseRepository purchaseRepository,
                                   SupplierRepository supplierRepository,
                                   ProductRepository productRepository,
-                                  UserRepository userRepository) {
+                                  UserRepository userRepository,
+                                  WarehouseRepository warehouseRepository) {
         this.purchaseRepository = purchaseRepository;
         this.supplierRepository = supplierRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     @Transactional
@@ -83,6 +87,6 @@ public class CreatePurchaseUseCase {
         );
 
         Purchase saved = purchaseRepository.save(purchase);
-        return PurchaseMapper.toDetailResponse(saved);
+        return PurchaseMapper.toDetailResponse(saved, warehouseRepository);
     }
 }

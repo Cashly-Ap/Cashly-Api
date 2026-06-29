@@ -10,6 +10,7 @@ import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
 import com.parsun.parsun_api.purchases.domain.valueobjects.PurchaseId;
 import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import com.parsun.parsun_api.warehouses.domain.entities.ReferenceType;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
@@ -23,13 +24,16 @@ public class ConfirmPurchaseUseCase {
     private final PurchaseRepository purchaseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public ConfirmPurchaseUseCase(PurchaseRepository purchaseRepository,
                                    WarehouseStockRepository warehouseStockRepository,
-                                   StockMovementRepository stockMovementRepository) {
+                                   StockMovementRepository stockMovementRepository,
+                                   WarehouseRepository warehouseRepository) {
         this.purchaseRepository = purchaseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     @Transactional
@@ -41,7 +45,7 @@ public class ConfirmPurchaseUseCase {
         addStockFromPurchase(purchase);
 
         Purchase saved = purchaseRepository.save(purchase);
-        return PurchaseMapper.toDetailResponse(saved);
+        return PurchaseMapper.toDetailResponse(saved, warehouseRepository);
     }
 
     private void addStockFromPurchase(Purchase purchase) {

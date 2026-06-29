@@ -19,13 +19,15 @@ public class PurchaseConfig {
     public CreatePurchaseUseCase createPurchaseUseCase(PurchaseRepository purchaseRepository,
                                                         SupplierRepository supplierRepository,
                                                         ProductRepository productRepository,
-                                                        UserRepository userRepository) {
-        return new CreatePurchaseUseCase(purchaseRepository, supplierRepository, productRepository, userRepository);
+                                                        UserRepository userRepository,
+                                                        WarehouseRepository warehouseRepository) {
+        return new CreatePurchaseUseCase(purchaseRepository, supplierRepository, productRepository, userRepository, warehouseRepository);
     }
 
     @Bean
-    public GetPurchaseByIdUseCase getPurchaseByIdUseCase(PurchaseRepository purchaseRepository) {
-        return new GetPurchaseByIdUseCase(purchaseRepository);
+    public GetPurchaseByIdUseCase getPurchaseByIdUseCase(PurchaseRepository purchaseRepository,
+                                                          WarehouseRepository warehouseRepository) {
+        return new GetPurchaseByIdUseCase(purchaseRepository, warehouseRepository);
     }
 
     @Bean
@@ -35,22 +37,25 @@ public class PurchaseConfig {
 
     @Bean
     public UpdatePurchaseUseCase updatePurchaseUseCase(PurchaseRepository purchaseRepository,
-                                                        ProductRepository productRepository) {
-        return new UpdatePurchaseUseCase(purchaseRepository, productRepository);
+                                                        ProductRepository productRepository,
+                                                        WarehouseRepository warehouseRepository) {
+        return new UpdatePurchaseUseCase(purchaseRepository, productRepository, warehouseRepository);
     }
 
     @Bean
     public ConfirmPurchaseUseCase confirmPurchaseUseCase(PurchaseRepository purchaseRepository,
                                                           WarehouseStockRepository warehouseStockRepository,
-                                                          StockMovementRepository stockMovementRepository) {
-        return new ConfirmPurchaseUseCase(purchaseRepository, warehouseStockRepository, stockMovementRepository);
+                                                          StockMovementRepository stockMovementRepository,
+                                                          WarehouseRepository warehouseRepository) {
+        return new ConfirmPurchaseUseCase(purchaseRepository, warehouseStockRepository, stockMovementRepository, warehouseRepository);
     }
 
     @Bean
     public CancelPurchaseUseCase cancelPurchaseUseCase(PurchaseRepository purchaseRepository,
                                                         WarehouseStockRepository warehouseStockRepository,
-                                                        StockMovementRepository stockMovementRepository) {
-        return new CancelPurchaseUseCase(purchaseRepository, warehouseStockRepository, stockMovementRepository);
+                                                        StockMovementRepository stockMovementRepository,
+                                                        WarehouseRepository warehouseRepository) {
+        return new CancelPurchaseUseCase(purchaseRepository, warehouseStockRepository, stockMovementRepository, warehouseRepository);
     }
 
     @Bean
