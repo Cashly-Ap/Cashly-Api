@@ -159,7 +159,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
             addTableCell(table, line.productName(), regular, rowBg, TextAlignment.LEFT);
             addTableCell(table, formatDecimal(line.quantity()), regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, "$ " + formatDecimal(line.unitCost()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(line.lineTotal()), regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(line.subtotal()), regular, rowBg, TextAlignment.RIGHT);
         }
 
         return table;
