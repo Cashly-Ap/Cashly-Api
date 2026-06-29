@@ -5,6 +5,7 @@ import com.parsun.parsun_api.purchases.application.dto.request.CreatePurchaseReq
 import com.parsun.parsun_api.purchases.application.dto.request.UpdatePurchaseRequest;
 import com.parsun.parsun_api.purchases.application.dto.response.PurchaseDetailResponse;
 import com.parsun.parsun_api.purchases.application.dto.response.PurchaseListResponse;
+import com.parsun.parsun_api.purchases.application.dto.response.PurchaseProductResponse;
 import com.parsun.parsun_api.purchases.application.usecases.*;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -214,7 +215,7 @@ class PurchaseControllerTest {
     @Test
     @DisplayName("should get products for purchase and return 200")
     void shouldGetProductsForPurchase() {
-        PageResponse<?> pageResponse = new PageResponse<>(
+        PageResponse<PurchaseProductResponse> pageResponse = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
         when(getProductsForPurchaseUseCase.execute(any(), any(), anyInt(), anyInt()))

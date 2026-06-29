@@ -14,7 +14,7 @@ import com.parsun.parsun_api.purchases.domain.entities.Purchase;
 import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
 import com.parsun.parsun_api.suppliers.domain.entities.Supplier;
 import com.parsun.parsun_api.suppliers.domain.repositories.SupplierRepository;
-import com.parsun.parsun_api.suppliers.domain.valueobjects.SupplierId;
+import com.parsun.parsun_api.suppliers.domain.valueobjects.*;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -256,15 +257,17 @@ class CreatePurchaseUseCaseUnitTest {
     private Supplier buildSupplier(UUID id) {
         return Supplier.reconstitute(
                 new SupplierId(id),
-                "PROV-001",
-                "Proveedor Test C.A.",
-                "J-12345678-9",
-                "Test Address",
-                "test@proveedor.com",
-                "0212-5555555",
+                SupplierCode.from(1001L),
+                new LegalName("Proveedor Test C.A."),
+                SupplierType.JURIDICO,
+                new Rif("J-12345678-9"),
+                new SupplierAlias("Test Prov"),
+                "Notas de prueba",
                 true,
-                java.time.LocalDateTime.now(),
-                java.time.LocalDateTime.now(),
+                LocalDateTime.now().minusDays(5),
+                LocalDateTime.now().minusDays(5),
+                List.of(),
+                List.of(),
                 List.of()
         );
     }
