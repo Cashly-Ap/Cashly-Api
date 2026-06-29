@@ -130,9 +130,7 @@ class PurchaseControllerTest {
     @DisplayName("should get purchase by id and return 200")
     void shouldGetPurchaseById() {
         UUID id = UUID.randomUUID();
-        PurchaseDetailResponse response = buildDetailResponse();
-        when(response.id()).thenReturn(id);
-        when(response.purchaseNumber()).thenReturn("PUR-2026-00001");
+        PurchaseDetailResponse response = buildDetailResponse(id, "DRAFT");
 
         when(getPurchaseByIdUseCase.execute(id)).thenReturn(response);
 
@@ -169,8 +167,7 @@ class PurchaseControllerTest {
     @DisplayName("should confirm purchase and return 200")
     void shouldConfirmPurchase() {
         UUID id = UUID.randomUUID();
-        PurchaseDetailResponse response = buildDetailResponse();
-        when(response.status()).thenReturn("CONFIRMED");
+        PurchaseDetailResponse response = buildDetailResponse(id, "CONFIRMED");
 
         when(confirmPurchaseUseCase.execute(id)).thenReturn(response);
 
@@ -185,8 +182,7 @@ class PurchaseControllerTest {
     @DisplayName("should cancel purchase and return 200")
     void shouldCancelPurchase() {
         UUID id = UUID.randomUUID();
-        PurchaseDetailResponse response = buildDetailResponse();
-        when(response.status()).thenReturn("CANCELLED");
+        PurchaseDetailResponse response = buildDetailResponse(id, "CANCELLED");
 
         when(cancelPurchaseUseCase.execute(eq(id), any(CancelPurchaseRequest.class))).thenReturn(response);
 
@@ -229,15 +225,19 @@ class PurchaseControllerTest {
     }
 
     private PurchaseDetailResponse buildDetailResponse() {
+        return buildDetailResponse(UUID.randomUUID(), "DRAFT");
+    }
+
+    private PurchaseDetailResponse buildDetailResponse(UUID id, String status) {
         return new PurchaseDetailResponse(
-                UUID.randomUUID(),
+                id,
                 "PUR-2026-00001",
                 UUID.randomUUID(),
                 "Supplier Name",
                 "J-12345678-9",
                 UUID.randomUUID(),
                 "User Name",
-                "DRAFT",
+                status,
                 null,
                 BigDecimal.TEN,
                 null,
