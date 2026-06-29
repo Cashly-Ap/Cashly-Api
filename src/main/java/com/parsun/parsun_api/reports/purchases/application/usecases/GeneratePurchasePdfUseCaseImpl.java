@@ -6,6 +6,7 @@ import com.parsun.parsun_api.reports.purchases.application.port.PurchasePdfPort;
 import com.parsun.parsun_api.purchases.domain.entities.Purchase;
 import com.parsun.parsun_api.purchases.domain.exceptions.PurchaseNotFoundException;
 import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
+import com.parsun.parsun_api.purchases.domain.valueobjects.PurchaseId;
 
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class GeneratePurchasePdfUseCaseImpl implements GeneratePurchasePdfUseCas
 
     @Override
     public byte[] execute(UUID purchaseId) {
-        Purchase purchase = purchaseRepository.findById(purchaseId)
+        Purchase purchase = purchaseRepository.findById(PurchaseId.of(purchaseId))
                 .orElseThrow(() -> new PurchaseNotFoundException(purchaseId));
 
         PurchaseDetailResponse purchaseDetail = PurchaseMapper.toDetailResponse(purchase);
