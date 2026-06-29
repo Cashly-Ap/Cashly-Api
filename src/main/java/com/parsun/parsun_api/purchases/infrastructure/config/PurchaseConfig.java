@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.purchases.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.purchases.application.usecases.*;
 import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
@@ -54,5 +55,12 @@ public class PurchaseConfig {
     @Bean
     public DeletePurchaseUseCase deletePurchaseUseCase(PurchaseRepository purchaseRepository) {
         return new DeletePurchaseUseCase(purchaseRepository);
+    }
+
+    @Bean
+    public GetProductsForPurchaseUseCase getProductsForPurchaseUseCase(ProductRepository productRepository,
+                                                                        CategoryRepository categoryRepository,
+                                                                        WarehouseStockRepository warehouseStockRepository) {
+        return new GetProductsForPurchaseUseCase(productRepository, categoryRepository, warehouseStockRepository);
     }
 }

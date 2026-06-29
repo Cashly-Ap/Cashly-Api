@@ -30,13 +30,16 @@ public class PurchaseController {
     private final CancelPurchaseUseCase cancelPurchaseUseCase;
     private final DeletePurchaseUseCase deletePurchaseUseCase;
 
+    private final GetProductsForPurchaseUseCase getProductsForPurchaseUseCase;
+
     public PurchaseController(CreatePurchaseUseCase createPurchaseUseCase,
                                GetPurchaseByIdUseCase getPurchaseByIdUseCase,
                                ListPurchasesUseCase listPurchasesUseCase,
                                UpdatePurchaseUseCase updatePurchaseUseCase,
                                ConfirmPurchaseUseCase confirmPurchaseUseCase,
                                CancelPurchaseUseCase cancelPurchaseUseCase,
-                               DeletePurchaseUseCase deletePurchaseUseCase) {
+                               DeletePurchaseUseCase deletePurchaseUseCase,
+                               GetProductsForPurchaseUseCase getProductsForPurchaseUseCase) {
         this.createPurchaseUseCase = createPurchaseUseCase;
         this.getPurchaseByIdUseCase = getPurchaseByIdUseCase;
         this.listPurchasesUseCase = listPurchasesUseCase;
@@ -44,6 +47,7 @@ public class PurchaseController {
         this.confirmPurchaseUseCase = confirmPurchaseUseCase;
         this.cancelPurchaseUseCase = cancelPurchaseUseCase;
         this.deletePurchaseUseCase = deletePurchaseUseCase;
+        this.getProductsForPurchaseUseCase = getProductsForPurchaseUseCase;
     }
 
     @PostMapping
@@ -70,6 +74,16 @@ public class PurchaseController {
         List<PurchaseListResponse> purchases = listPurchasesUseCase.execute(
                 fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(purchases);
+    }
+
+    @GetMapping("/products")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    public ResponseEntity<?> getProducts(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(getProductsForPurchaseUseCase.execute(search, categoryId, page, size));
     }
 
     @GetMapping("/{id}")
