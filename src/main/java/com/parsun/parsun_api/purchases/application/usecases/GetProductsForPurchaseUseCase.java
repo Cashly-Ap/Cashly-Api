@@ -4,7 +4,10 @@ import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.purchases.application.dto.response.PurchaseProductResponse;
+import com.parsun.parsun_api.purchases.application.dto.response.PurchaseProductResponse.WarehouseStockItem;
 import com.parsun.parsun_api.shared.dto.PageResponse;
+import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +19,16 @@ public class GetProductsForPurchaseUseCase {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final WarehouseStockRepository warehouseStockRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public GetProductsForPurchaseUseCase(ProductRepository productRepository,
                                           CategoryRepository categoryRepository,
-                                          WarehouseStockRepository warehouseStockRepository) {
+                                          WarehouseStockRepository warehouseStockRepository,
+                                          WarehouseRepository warehouseRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.warehouseStockRepository = warehouseStockRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     @Transactional(readOnly = true)
@@ -45,9 +51,22 @@ public class GetProductsForPurchaseUseCase {
                 .map(c -> c.getName())
                 .orElse("");
 
-        int totalStock = warehouseStockRepository.findByProductId(product.getId()).stream()
-                .mapToInt(s -> s.getQuantity())
-                .sum();
+        List<WarehouseStockItem> stockItems = warehouseStockRepository
+                .findByProductId(product.getId()).stream()
+                .map(stock -> {
+                    Warehouse warehouse = warehouseRepository.findById(stock.getWarehouseId()).orElse(null);
+                    return new WarehouseStockItem(
+                            stock.getWarehouseId().toString(),
+                            warehouse != null ? warehouse.getCode() : "",
+                            warehouse != null ? warehouse.getName() : "",
+                            stock.getQuantity(),
+                            stock.getReserved(),
+                            stock.getAvailableQuantity()
+                    );
+                })
+                .toList();
+
+        int totalStock = stockItems.stream().mapToInt(WarehouseStockItem::quantity).sum();
 
         return new PurchaseProductResponse(
                 product.getId().toString(),
@@ -56,7 +75,8 @@ public class GetProductsForPurchaseUseCase {
                 product.getCategoryId().toString(),
                 categoryName,
                 product.isActive(),
-                totalStock
+                totalStock,
+                stockItems
         );
     }
 }

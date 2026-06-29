@@ -7,6 +7,7 @@ import com.parsun.parsun_api.purchases.application.usecases.*;
 import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
 import com.parsun.parsun_api.suppliers.domain.repositories.SupplierRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +61,8 @@ public class PurchaseConfig {
     @Bean
     public GetProductsForPurchaseUseCase getProductsForPurchaseUseCase(ProductRepository productRepository,
                                                                         CategoryRepository categoryRepository,
-                                                                        WarehouseStockRepository warehouseStockRepository) {
-        return new GetProductsForPurchaseUseCase(productRepository, categoryRepository, warehouseStockRepository);
+                                                                        WarehouseStockRepository warehouseStockRepository,
+                                                                        WarehouseRepository warehouseRepository) {
+        return new GetProductsForPurchaseUseCase(productRepository, categoryRepository, warehouseStockRepository, warehouseRepository);
     }
 }
