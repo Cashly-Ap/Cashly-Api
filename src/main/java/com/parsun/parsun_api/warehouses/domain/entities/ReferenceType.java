@@ -5,5 +5,6 @@ public enum ReferenceType {
     INVOICE,
     RETURN,
     TRANSFER,
+    PURCHASE,
     MANUAL
 }
