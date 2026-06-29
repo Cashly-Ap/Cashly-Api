@@ -35,6 +35,8 @@ public record PurchaseDetailResponse(
     ) {
         public record AllocationDetail(
                 UUID warehouseId,
+                String warehouseCode,
+                String warehouseName,
                 BigDecimal quantity
         ) {}
     }
