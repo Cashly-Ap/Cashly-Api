@@ -7,12 +7,15 @@ import com.parsun.parsun_api.purchases.application.dto.response.PurchaseProductR
 import com.parsun.parsun_api.purchases.application.dto.response.PurchaseProductResponse.WarehouseStockItem;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
+import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class GetProductsForPurchaseUseCase {
 
@@ -34,11 +37,14 @@ public class GetProductsForPurchaseUseCase {
     @Transactional(readOnly = true)
     public PageResponse<PurchaseProductResponse> execute(String search, UUID categoryId,
                                                           int page, int size) {
+        List<Warehouse> allWarehouses = warehouseRepository.findAllWithFilters(
+                null, true, 0, 1000, "name", "asc").content();
+
         PageResponse<Product> productsPage = productRepository.findAllWithFilters(
                 search, categoryId, true, false, page, size, "name", "asc");
 
         List<PurchaseProductResponse> content = productsPage.content().stream()
-                .map(this::toResponse)
+                .map(product -> toResponse(product, allWarehouses))
                 .toList();
 
         return new PageResponse<>(content, productsPage.totalElements(), productsPage.totalPages(),
@@ -46,22 +52,28 @@ public class GetProductsForPurchaseUseCase {
                 productsPage.last(), productsPage.empty());
     }
 
-    private PurchaseProductResponse toResponse(Product product) {
+    private PurchaseProductResponse toResponse(Product product, List<Warehouse> allWarehouses) {
         String categoryName = categoryRepository.findById(product.getCategoryId())
                 .map(c -> c.getName())
                 .orElse("");
 
-        List<WarehouseStockItem> stockItems = warehouseStockRepository
+        Map<UUID, WarehouseStock> stockByWarehouse = warehouseStockRepository
                 .findByProductId(product.getId()).stream()
-                .map(stock -> {
-                    Warehouse warehouse = warehouseRepository.findById(stock.getWarehouseId()).orElse(null);
+                .collect(Collectors.toMap(WarehouseStock::getWarehouseId, s -> s));
+
+        List<WarehouseStockItem> stockItems = allWarehouses.stream()
+                .map(warehouse -> {
+                    WarehouseStock stock = stockByWarehouse.get(warehouse.getId());
+                    int quantity = stock != null ? stock.getQuantity() : 0;
+                    int reserved = stock != null ? stock.getReserved() : 0;
+                    int available = stock != null ? stock.getAvailableQuantity() : 0;
                     return new WarehouseStockItem(
-                            stock.getWarehouseId().toString(),
-                            warehouse != null ? warehouse.getCode() : "",
-                            warehouse != null ? warehouse.getName() : "",
-                            stock.getQuantity(),
-                            stock.getReserved(),
-                            stock.getAvailableQuantity()
+                            warehouse.getId().toString(),
+                            warehouse.getCode(),
+                            warehouse.getName(),
+                            quantity,
+                            reserved,
+                            available
                     );
                 })
                 .toList();
