@@ -30,14 +30,14 @@ public record PurchaseDetailResponse(
             String productCode,
             BigDecimal quantity,
             BigDecimal unitCost,
-            BigDecimal lineTotal,
-            List<AllocationDetail> warehouseAllocations
+            BigDecimal subtotal,
+            List<AllocationDetail> allocations
     ) {
         public record AllocationDetail(
                 UUID warehouseId,
                 String warehouseCode,
                 String warehouseName,
-                BigDecimal quantity
+                BigDecimal allocatedQuantity
         ) {}
     }
 }
