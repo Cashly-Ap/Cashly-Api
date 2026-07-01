@@ -83,7 +83,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteCustomerUseCase.execute(id);
         return ResponseEntity.noContent().build();

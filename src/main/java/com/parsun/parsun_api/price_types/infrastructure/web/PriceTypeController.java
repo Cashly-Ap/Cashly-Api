@@ -56,13 +56,13 @@ public class PriceTypeController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY') or hasAuthority('MODULE_SALES')")
     public ResponseEntity<PriceTypeResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(getPriceTypeUseCase.execute(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY') or hasAuthority('MODULE_SALES')")
     public ResponseEntity<List<PriceTypeResponse>> listAll(
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
