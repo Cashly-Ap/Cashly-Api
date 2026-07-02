@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReferenceTypeTest {
 
     @Test
-    void should_HaveFiveValues() {
+    void should_HaveSixValues() {
         ReferenceType[] values = ReferenceType.values();
-        assertEquals(5, values.length);
+        assertEquals(6, values.length);
     }
 
     @Test
@@ -39,6 +39,12 @@ class ReferenceTypeTest {
     }
 
     @Test
+    void should_HavePurchaseValue() {
+        assertNotNull(ReferenceType.valueOf("PURCHASE"));
+        assertEquals(ReferenceType.PURCHASE, ReferenceType.valueOf("PURCHASE"));
+    }
+
+    @Test
     void should_HaveManualValue() {
         assertNotNull(ReferenceType.valueOf("MANUAL"));
         assertEquals(ReferenceType.MANUAL, ReferenceType.valueOf("MANUAL"));
@@ -50,6 +56,7 @@ class ReferenceTypeTest {
         assertSame(ReferenceType.INVOICE, ReferenceType.values()[1]);
         assertSame(ReferenceType.RETURN, ReferenceType.values()[2]);
         assertSame(ReferenceType.TRANSFER, ReferenceType.values()[3]);
-        assertSame(ReferenceType.MANUAL, ReferenceType.values()[4]);
+        assertSame(ReferenceType.PURCHASE, ReferenceType.values()[4]);
+        assertSame(ReferenceType.MANUAL, ReferenceType.values()[5]);
     }
 }
