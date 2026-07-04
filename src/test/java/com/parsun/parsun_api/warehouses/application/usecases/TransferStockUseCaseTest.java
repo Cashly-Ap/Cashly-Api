@@ -215,7 +215,7 @@ class TransferStockUseCaseTest {
     private Product buildProduct(UUID id, String code, String name) {
         return Product.reconstitute(
                 id, code, name, "Desc", null, false, true, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
         );
     }

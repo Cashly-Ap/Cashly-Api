@@ -224,7 +224,7 @@ class UpdateOrderUseCaseUnitTest {
         return Product.reconstitute(
                 productId, "PROD-001", "Product A",
                 null, null, false, true, null,
-                BigDecimal.TEN, BigDecimal.valueOf(8), BigDecimal.valueOf(0.25),
+                BigDecimal.valueOf(8),
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now()
         );

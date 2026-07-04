@@ -38,7 +38,7 @@ class RemoveProductPhotoUseCaseTest {
         UUID productId = UUID.randomUUID();
         Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 UUID.randomUUID(), false, true, "products/photo.jpg",
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
@@ -65,7 +65,7 @@ class RemoveProductPhotoUseCaseTest {
         UUID productId = UUID.randomUUID();
         Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 UUID.randomUUID(), false, true, null,
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));

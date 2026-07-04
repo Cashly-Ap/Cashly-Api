@@ -314,8 +314,8 @@ class CreateQuoteUseCaseTest {
 
         Customer customer = buildCustomer(customerId);
         User user = buildUser(authenticatedUserId);
-        Product product1 = Product.reconstitute(product1Id, "PROD-001", "Product 1", null, null, false, true, null, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
-        Product product2 = Product.reconstitute(product2Id, "PROD-002", "Product 2", null, null, false, true, null, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product1 = Product.reconstitute(product1Id, "PROD-001", "Product 1", null, null, false, true, null, BigDecimal.TEN, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product2 = Product.reconstitute(product2Id, "PROD-002", "Product 2", null, null, false, true, null, BigDecimal.TEN, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         CreateQuoteRequest request = new CreateQuoteRequest(
                 customerId, null, null,
@@ -384,9 +384,7 @@ class CreateQuoteUseCaseTest {
                 false,
                 true,
                 null,
-                BigDecimal.TEN,
                 BigDecimal.valueOf(8),
-                BigDecimal.valueOf(0.25),
                 List.of(),
                 List.of(),
                 LocalDateTime.now(),

@@ -48,7 +48,7 @@ class GetProductStockUseCaseTest {
 
         Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 UUID.randomUUID(), false, true, null,
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), now, now);
 
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId,
@@ -87,7 +87,7 @@ class GetProductStockUseCaseTest {
 
         Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 UUID.randomUUID(), false, true, null,
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), now, now);
 
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId,

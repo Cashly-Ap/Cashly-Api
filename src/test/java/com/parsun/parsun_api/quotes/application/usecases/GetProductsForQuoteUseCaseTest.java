@@ -163,12 +163,12 @@ class GetProductsForQuoteUseCaseTest {
     private Product buildProduct(UUID productId, String code, String name, UUID categoryId,
                                   BigDecimal basePrice, UUID priceTypeId, BigDecimal customerPrice) {
         List<ProductPrice> productPrices = priceTypeId != null && customerPrice != null
-                ? List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, customerPrice))
+                ? List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, customerPrice, null))
                 : List.of();
 
         return Product.reconstitute(
                 productId, code, name, null, categoryId, false, true, null,
-                basePrice, BigDecimal.TEN, BigDecimal.valueOf(0.25),
+                BigDecimal.TEN,
                 List.of(), productPrices, LocalDateTime.now(), LocalDateTime.now()
         );
     }

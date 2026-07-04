@@ -215,7 +215,7 @@ class StockEntryUseCaseTest {
     private Product buildProduct(UUID id, String code, String name, boolean composite) {
         return Product.reconstitute(
                 id, code, name, "Desc", null, composite, true, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
         );
     }
@@ -223,7 +223,7 @@ class StockEntryUseCaseTest {
     private Product buildCompositeProduct(UUID id, String code, String name, List<ProductComponent> components) {
         return Product.reconstitute(
                 id, code, name, "Desc", null, true, true, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO,
                 components, List.of(), LocalDateTime.now(), LocalDateTime.now()
         );
     }

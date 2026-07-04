@@ -58,7 +58,7 @@ class UploadProductPhotoUseCaseTest {
 
         Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 categoryId, false, true, null,
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
@@ -66,7 +66,7 @@ class UploadProductPhotoUseCaseTest {
 
         Product savedProduct = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 categoryId, false, true, "products/image.jpg",
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
@@ -107,7 +107,7 @@ class UploadProductPhotoUseCaseTest {
 
         Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 categoryId, false, true, "products/old-photo.jpg",
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
@@ -115,7 +115,7 @@ class UploadProductPhotoUseCaseTest {
 
         Product savedProduct = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
                 categoryId, false, true, "products/new-photo.jpg",
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("50.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);

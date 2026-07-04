@@ -57,12 +57,12 @@ class UpdateProductUseCaseTest {
         UUID categoryId = UUID.randomUUID();
         UpdateProductRequest request = new UpdateProductRequest(
                 "Updated Name", "Updated desc", categoryId,
-                new BigDecimal("20.00"), new BigDecimal("10.00"), new BigDecimal("50.00"),
+                new BigDecimal("20.00"),
                 false, null, null, true);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Old Name", "Old desc",
                 categoryId, false, true, null,
-                new BigDecimal("10.00"), new BigDecimal("5.00"), new BigDecimal("25.00"),
+                new BigDecimal("5.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
@@ -70,7 +70,7 @@ class UpdateProductUseCaseTest {
 
         Product savedProduct = Product.reconstitute(id, "PROD-001", "Updated Name", "Updated desc",
                 categoryId, false, true, null,
-                new BigDecimal("20.00"), new BigDecimal("10.00"), new BigDecimal("50.00"),
+                new BigDecimal("10.00"),
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
@@ -92,7 +92,7 @@ class UpdateProductUseCaseTest {
         UUID id = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null, false, null, null, true);
+                "Name", "desc", categoryId, null, false, null, null, true);
 
         when(productRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -105,10 +105,10 @@ class UpdateProductUseCaseTest {
         UUID id = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null, false, null, null, true);
+                "Name", "desc", categoryId, null, false, null, null, true);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, false, true, null, null, null, null,
+                categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(existingProduct));
@@ -122,18 +122,18 @@ class UpdateProductUseCaseTest {
         UUID id = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null,
-                true, null, null, null);
+                "Name", "desc", categoryId, null,
+                true, List.of(), null, null);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, false, true, null, null, null, null,
+                categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Cat");
 
         Product savedProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, true, true, null, null, null, null,
+                categoryId, true, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
@@ -157,22 +157,22 @@ class UpdateProductUseCaseTest {
         UpdateProductRequest.ComponentRequest compReq = new UpdateProductRequest.ComponentRequest(componentId, 3);
 
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null,
+                "Name", "desc", categoryId, null,
                 true, List.of(compReq), null, null);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, true, true, null, null, null, null,
+                categoryId, true, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Product componentProduct = Product.reconstitute(componentId, "COMP-001", "Component",
-                "desc", categoryId, false, true, null, null, null, null,
+                "desc", categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Cat");
 
         Product savedProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, true, true, null, null, null, null,
+                categoryId, true, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
@@ -196,20 +196,20 @@ class UpdateProductUseCaseTest {
         UUID priceTypeId = UUID.randomUUID();
 
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null,
+                "Name", "desc", categoryId, null,
                 false, null,
-                List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("30.00"))),
+                List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("30.00"), null)),
                 null);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, false, true, null, null, null, null,
+                categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Cat");
 
         Product savedProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, false, true, null, null, null, null,
+                categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
@@ -234,15 +234,15 @@ class UpdateProductUseCaseTest {
         UpdateProductRequest.ComponentRequest compReq = new UpdateProductRequest.ComponentRequest(componentId, 2);
 
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null,
+                "Name", "desc", categoryId, null,
                 true, List.of(compReq, compReq), null, null);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, true, true, null, null, null, null,
+                categoryId, true, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Product componentProduct = Product.reconstitute(componentId, "COMP-001", "Component",
-                "desc", categoryId, false, true, null, null, null, null,
+                "desc", categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(existingProduct));
@@ -260,15 +260,15 @@ class UpdateProductUseCaseTest {
         UpdateProductRequest.ComponentRequest compReq = new UpdateProductRequest.ComponentRequest(componentId, 2);
 
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null,
+                "Name", "desc", categoryId, null,
                 true, List.of(compReq), null, null);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, true, true, null, null, null, null,
+                categoryId, true, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Product compositeComponent = Product.reconstitute(componentId, "COMP-001", "Component",
-                "desc", categoryId, true, true, null, null, null, null,
+                "desc", categoryId, true, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(existingProduct));
@@ -285,13 +285,13 @@ class UpdateProductUseCaseTest {
         UUID priceTypeId = UUID.randomUUID();
 
         UpdateProductRequest request = new UpdateProductRequest(
-                "Name", "desc", categoryId, null, null, null,
+                "Name", "desc", categoryId, null,
                 false, null,
-                List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("10.00"))),
+                List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("10.00"), null)),
                 null);
 
         Product existingProduct = Product.reconstitute(id, "PROD-001", "Name", "desc",
-                categoryId, false, true, null, null, null, null,
+                categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(existingProduct));

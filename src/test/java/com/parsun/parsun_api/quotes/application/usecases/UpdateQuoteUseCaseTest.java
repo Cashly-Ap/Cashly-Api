@@ -68,7 +68,7 @@ class UpdateQuoteUseCaseTest {
                 List.of(existingLine)
         );
 
-        Product product = Product.reconstitute(productId, "PROD-001", "New Product", null, null, false, true, null, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001", "New Product", null, null, false, true, null, BigDecimal.TEN, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
         Warehouse warehouse = Warehouse.reconstitute(warehouseId, "WH-001", "Main Warehouse", null, null, null, null, true, LocalDateTime.now(), LocalDateTime.now());
 
         UpdateQuoteRequest request = new UpdateQuoteRequest(

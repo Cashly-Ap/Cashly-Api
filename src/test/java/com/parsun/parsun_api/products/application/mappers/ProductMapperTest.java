@@ -32,9 +32,7 @@ class ProductMapperTest {
     private final String code = "P001";
     private final String name = "Test Product";
     private final String description = "Test Description";
-    private final BigDecimal basePrice = new BigDecimal("100.00");
     private final BigDecimal purchasePrice = new BigDecimal("70.00");
-    private final BigDecimal profitMargin = new BigDecimal("30.00");
     private final String categoryName = "Electronics";
 
     @BeforeEach
@@ -46,7 +44,7 @@ class ProductMapperTest {
         return Product.reconstitute(
                 productId, code, name, description, categoryId,
                 false, true, null,
-                basePrice, purchasePrice, profitMargin,
+                purchasePrice,
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -60,7 +58,7 @@ class ProductMapperTest {
         Product componentProduct = Product.reconstitute(
                 componentProductId, "C001", "Component 1", "Component desc", categoryId,
                 false, true, null,
-                new BigDecimal("30.00"), new BigDecimal("20.00"), new BigDecimal("10.00"),
+                new BigDecimal("20.00"),
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -68,9 +66,9 @@ class ProductMapperTest {
         return Product.reconstitute(
                 productId, code, name, description, categoryId,
                 true, true, null,
-                basePrice, purchasePrice, profitMargin,
+                purchasePrice,
                 List.of(component),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("120.00"))),
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("120.00"), new BigDecimal("30.00"))),
                 LocalDateTime.now(), LocalDateTime.now()
         );
     }
@@ -89,7 +87,7 @@ class ProductMapperTest {
         assertEquals(categoryName, response.categoryName());
         assertEquals(false, response.composite());
         assertEquals(true, response.active());
-        assertEquals(basePrice, response.basePrice());
+        assertEquals(purchasePrice, response.purchasePrice());
         assertTrue(response.productPrices().isEmpty());
         assertTrue(response.deletable());
     }
@@ -100,9 +98,9 @@ class ProductMapperTest {
         Product product = Product.reconstitute(
                 productId, code, name, description, categoryId,
                 false, true, null,
-                basePrice, purchasePrice, profitMargin,
+                purchasePrice,
                 List.of(),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"))),
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"), null)),
                 LocalDateTime.now(), LocalDateTime.now()
         );
 
@@ -138,7 +136,7 @@ class ProductMapperTest {
         Product componentProduct = Product.reconstitute(
                 componentProductId, "C001", "Component 1", "Component desc", categoryId,
                 false, true, null,
-                new BigDecimal("30.00"), new BigDecimal("20.00"), new BigDecimal("10.00"),
+                new BigDecimal("20.00"),
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -160,9 +158,9 @@ class ProductMapperTest {
         Product product = Product.reconstitute(
                 productId, code, name, description, categoryId,
                 false, true, null,
-                basePrice, purchasePrice, profitMargin,
+                purchasePrice,
                 List.of(),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"))),
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"), null)),
                 LocalDateTime.now(), LocalDateTime.now()
         );
 
@@ -190,9 +188,7 @@ class ProductMapperTest {
         assertEquals(false, response.composite());
         assertEquals(true, response.active());
         assertNull(response.photo());
-        assertEquals(basePrice, response.basePrice());
         assertEquals(purchasePrice, response.purchasePrice());
-        assertEquals(profitMargin, response.profitMargin());
         assertTrue(response.components().isEmpty());
         assertTrue(response.productPrices().isEmpty());
         assertNotNull(response.createdAt());
@@ -204,9 +200,9 @@ class ProductMapperTest {
         return Product.reconstitute(
                 productId, code, name, description, categoryId,
                 false, true, null,
-                basePrice, purchasePrice, profitMargin,
+                purchasePrice,
                 List.of(),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"))),
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"), null)),
                 LocalDateTime.now(), LocalDateTime.now()
         );
     }

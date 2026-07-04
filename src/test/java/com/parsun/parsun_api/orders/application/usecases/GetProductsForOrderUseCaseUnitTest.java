@@ -97,7 +97,7 @@ class GetProductsForOrderUseCaseUnitTest {
         Product product = Product.reconstitute(
                 productId, "PROD-001", "Test Product", "Desc", categoryId,
                 false, true, null,
-                BigDecimal.valueOf(100), BigDecimal.valueOf(60), BigDecimal.valueOf(40),
+                BigDecimal.valueOf(60),
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now());
         PageResponse<Product> productPage = new PageResponse<>(
@@ -130,7 +130,7 @@ class GetProductsForOrderUseCaseUnitTest {
         assertEquals("Test Product", response.name());
         assertEquals(categoryId.toString(), response.categoryId());
         assertEquals("Category A", response.categoryName());
-        assertEquals(BigDecimal.valueOf(100), response.customerPrice());
+        assertEquals(BigDecimal.valueOf(60), response.customerPrice());
         assertEquals(50, response.totalStock());
         assertEquals(1, response.stock().size());
         assertEquals(warehouseId.toString(), response.stock().getFirst().warehouseId());
@@ -185,11 +185,11 @@ class GetProductsForOrderUseCaseUnitTest {
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
 
-        ProductPrice customerPrice = ProductPrice.create(priceTypeId, BigDecimal.valueOf(85));
+        ProductPrice customerPrice = ProductPrice.create(priceTypeId, BigDecimal.valueOf(85), null);
         Product product = Product.reconstitute(
                 productId, "PROD-002", "Priced Product", "Desc", categoryId,
                 false, true, null,
-                BigDecimal.valueOf(100), BigDecimal.valueOf(60), BigDecimal.valueOf(40),
+                BigDecimal.valueOf(60),
                 List.of(), List.of(customerPrice),
                 LocalDateTime.now(), LocalDateTime.now());
         PageResponse<Product> productPage = new PageResponse<>(
@@ -238,7 +238,7 @@ class GetProductsForOrderUseCaseUnitTest {
         Product product = Product.reconstitute(
                 productId, "PROD-003", "Base Price Product", "Desc", categoryId,
                 false, true, null,
-                BigDecimal.valueOf(75), BigDecimal.valueOf(45), BigDecimal.valueOf(30),
+                BigDecimal.valueOf(45),
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now());
         PageResponse<Product> productPage = new PageResponse<>(
@@ -257,7 +257,7 @@ class GetProductsForOrderUseCaseUnitTest {
         PageResponse<OrderProductResponse> result = useCase.execute(
                 customerId, null, null, null, null, 0, 20);
 
-        assertEquals(BigDecimal.valueOf(75), result.content().getFirst().customerPrice());
+        assertEquals(BigDecimal.valueOf(45), result.content().getFirst().customerPrice());
     }
 
     @Test
@@ -315,7 +315,7 @@ class GetProductsForOrderUseCaseUnitTest {
         Product product = Product.reconstitute(
                 productId, "PROD-004", "Stock Product", "Desc", categoryId,
                 false, true, null,
-                BigDecimal.valueOf(50), BigDecimal.valueOf(30), BigDecimal.valueOf(20),
+                BigDecimal.valueOf(30),
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now());
         PageResponse<Product> productPage = new PageResponse<>(

@@ -63,8 +63,7 @@ class JpaProductRepositoryTest {
         @Test
         void should_CreateNewProduct_When_IdIsNull() {
             Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"),
-                    new BigDecimal("80.00"), new BigDecimal("25.00"));
+                    UUID.randomUUID(), false, new BigDecimal("100.00"));
 
             ProductEntity savedEntity = ProductEntity.fromDomain(product);
             savedEntity.setId(UUID.randomUUID());
@@ -91,7 +90,7 @@ class JpaProductRepositoryTest {
             Product product = Product.reconstitute(
                     id, "PRD-00001", "Updated Product", "Updated description",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("150.00"), new BigDecimal("120.00"), new BigDecimal("20.00"),
+                    new BigDecimal("120.00"),
                     List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
             ProductEntity existingEntity = ProductEntity.fromDomain(product);
@@ -105,7 +104,7 @@ class JpaProductRepositoryTest {
 
             assertNotNull(result);
             assertEquals("Updated Product", result.getName());
-            assertEquals(new BigDecimal("150.00"), result.getBasePrice());
+            assertEquals(new BigDecimal("120.00"), result.getPurchasePrice());
 
             verify(springDataRepository).findWithComponentsById(id);
             verify(springDataRepository).saveAndFlush(any(ProductEntity.class));
@@ -119,7 +118,7 @@ class JpaProductRepositoryTest {
             Product product = Product.reconstitute(
                     id, "PRD-00002", "Fallback Product", "Fallback description",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("200.00"), new BigDecimal("150.00"), new BigDecimal("33.00"),
+                    new BigDecimal("150.00"),
                     List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
             when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.empty());
@@ -141,13 +140,13 @@ class JpaProductRepositoryTest {
         @Test
         void should_CreateNewProduct_When_IdIsNull_WithPrices() {
             UUID priceTypeId = UUID.randomUUID();
-            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"));
+            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"), null);
             List<ProductPrice> prices = List.of(price);
 
             Product product = Product.reconstitute(
                     null, "PRD-00001", "Test Product", "A test product",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("100.00"), new BigDecimal("80.00"), new BigDecimal("25.00"),
+                    new BigDecimal("80.00"),
                     List.of(), prices, LocalDateTime.now(), LocalDateTime.now());
 
             PriceTypeEntity priceTypeEntity = new PriceTypeEntity();
@@ -172,13 +171,13 @@ class JpaProductRepositoryTest {
         void should_UpdateExistingProduct_When_IdIsNotNullAndEntityFound_WithPrices() {
             UUID id = UUID.randomUUID();
             UUID priceTypeId = UUID.randomUUID();
-            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"));
+            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"), null);
             List<ProductPrice> prices = List.of(price);
 
             Product product = Product.reconstitute(
                     id, "PRD-00001", "Updated Product", "Updated description",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("150.00"), new BigDecimal("120.00"), new BigDecimal("20.00"),
+                    new BigDecimal("120.00"),
                     List.of(), prices, LocalDateTime.now(), LocalDateTime.now());
 
             ProductEntity existingEntity = ProductEntity.fromDomain(product);
@@ -196,7 +195,7 @@ class JpaProductRepositoryTest {
 
             assertNotNull(result);
             assertEquals("Updated Product", result.getName());
-            assertEquals(new BigDecimal("150.00"), result.getBasePrice());
+            assertEquals(new BigDecimal("120.00"), result.getPurchasePrice());
 
             verify(springDataRepository).findWithComponentsById(id);
             verify(springDataRepository).saveAndFlush(any(ProductEntity.class));
@@ -208,13 +207,13 @@ class JpaProductRepositoryTest {
         void should_CreateNewProduct_When_IdIsNotNullButEntityNotFound_WithPrices() {
             UUID id = UUID.randomUUID();
             UUID priceTypeId = UUID.randomUUID();
-            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"));
+            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"), null);
             List<ProductPrice> prices = List.of(price);
 
             Product product = Product.reconstitute(
                     id, "PRD-00002", "Fallback Product", "Fallback description",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("200.00"), new BigDecimal("150.00"), new BigDecimal("33.00"),
+                    new BigDecimal("150.00"),
                     List.of(), prices, LocalDateTime.now(), LocalDateTime.now());
 
             when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.empty());
@@ -247,8 +246,7 @@ class JpaProductRepositoryTest {
         void should_ReturnDomainObject_When_EntityFound() {
             UUID id = UUID.randomUUID();
             Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"),
-                    new BigDecimal("80.00"), new BigDecimal("25.00"));
+                    UUID.randomUUID(), false, new BigDecimal("100.00"));
             ProductEntity entity = ProductEntity.fromDomain(product);
             entity.setId(id);
 
@@ -360,8 +358,7 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnPagedResults_When_EntitiesFound() {
             Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"),
-                    new BigDecimal("80.00"), new BigDecimal("25.00"));
+                    UUID.randomUUID(), false, new BigDecimal("100.00"));
 
             Page<ProductEntity> entityPage = mock(Page.class);
             Page<Product> mappedPage = mock(Page.class);
@@ -487,8 +484,7 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnPagedResults_When_EntitiesFound() {
             Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"),
-                    new BigDecimal("80.00"), new BigDecimal("25.00"));
+                    UUID.randomUUID(), false, new BigDecimal("100.00"));
 
             Page<ProductEntity> entityPage = mock(Page.class);
             Page<Product> mappedPage = mock(Page.class);

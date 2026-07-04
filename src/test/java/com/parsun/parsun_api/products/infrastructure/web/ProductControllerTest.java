@@ -81,7 +81,7 @@ class ProductControllerTest {
 
         var request = new CreateProductRequest(
                 null, "Test Product", "Desc", UUID.randomUUID(), false,
-                BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, null, null);
+                BigDecimal.TEN, null, null);
 
         ResponseEntity<ProductDetailResponse> result = productController.create(request);
 
@@ -153,7 +153,7 @@ class ProductControllerTest {
 
         var request = new UpdateProductRequest(
                 "Updated", "Desc", UUID.randomUUID(),
-                BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO,
+                BigDecimal.TEN,
                 false, null, null, null);
 
         ResponseEntity<ProductDetailResponse> result = productController.update(id, request);
