@@ -87,7 +87,7 @@ class CatalogReportControllerTest {
 
         assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
         assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("catalogo-productos.pdf"));
+                .contains("reporte-productos.pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generateCatalogPdfUseCase).execute(any(CatalogPdfQuery.class));

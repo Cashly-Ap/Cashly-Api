@@ -60,7 +60,7 @@ public class CatalogReportController {
         byte[] pdf = generateCatalogPdfUseCase.execute(query);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"catalogo-productos.pdf\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"reporte-productos.pdf\"")
                 .body(pdf);
     }
 }
