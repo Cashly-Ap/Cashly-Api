@@ -20,9 +20,7 @@ public class Product {
     private boolean composite;
     private boolean active;
     private String photo;
-    private BigDecimal basePrice;
     private BigDecimal purchasePrice;
-    private BigDecimal profitMargin;
     private List<ProductComponent> components;
     private List<ProductPrice> productPrices;
     private final LocalDateTime createdAt;
@@ -30,7 +28,7 @@ public class Product {
 
     private Product(UUID id, String code, String name, String description, UUID categoryId,
                     boolean composite, boolean active, String photo,
-                    BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin,
+                    BigDecimal purchasePrice,
                     List<ProductComponent> components, List<ProductPrice> productPrices,
                     LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateCode(code);
@@ -43,9 +41,7 @@ public class Product {
         this.composite = composite;
         this.active = active;
         this.photo = photo;
-        this.basePrice = basePrice;
         this.purchasePrice = purchasePrice;
-        this.profitMargin = profitMargin;
         this.components = new ArrayList<>(components != null ? components : List.of());
         this.productPrices = new ArrayList<>(productPrices != null ? productPrices : List.of());
         this.createdAt = createdAt;
@@ -53,34 +49,29 @@ public class Product {
     }
 
     public static Product create(String code, String name, String description, UUID categoryId,
-                                  boolean composite,
-                                  BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin) {
+                                  boolean composite, BigDecimal purchasePrice) {
         LocalDateTime now = LocalDateTime.now();
         return new Product(null, code, name, description, categoryId, composite,
-                true, null, basePrice, purchasePrice, profitMargin, List.of(), List.of(), now, now);
+                true, null, purchasePrice, List.of(), List.of(), now, now);
     }
 
     public static Product reconstitute(UUID id, String code, String name, String description,
                                         UUID categoryId, boolean composite,
                                         boolean active, String photo,
-                                        BigDecimal basePrice, BigDecimal purchasePrice,
-                                        BigDecimal profitMargin, List<ProductComponent> components,
+                                        BigDecimal purchasePrice, List<ProductComponent> components,
                                         List<ProductPrice> productPrices,
                                         LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Product(id, code, name, description, categoryId, composite,
-                active, photo, basePrice, purchasePrice, profitMargin, components, productPrices, createdAt, updatedAt);
+                active, photo, purchasePrice, components, productPrices, createdAt, updatedAt);
     }
 
     public void update(String name, String description, UUID categoryId,
-                       BigDecimal basePrice, BigDecimal purchasePrice, BigDecimal profitMargin,
-                       Boolean active) {
+                       BigDecimal purchasePrice, Boolean active) {
         validateName(name);
         this.name = name.trim();
         this.description = description;
         this.categoryId = categoryId;
-        this.basePrice = basePrice;
         this.purchasePrice = purchasePrice;
-        this.profitMargin = profitMargin;
         if (active != null) this.active = active;
         this.updatedAt = LocalDateTime.now();
     }
@@ -149,9 +140,7 @@ public class Product {
     public boolean isComposite() { return composite; }
     public boolean isActive() { return active; }
     public String getPhoto() { return photo; }
-    public BigDecimal getBasePrice() { return basePrice; }
     public BigDecimal getPurchasePrice() { return purchasePrice; }
-    public BigDecimal getProfitMargin() { return profitMargin; }
     public List<ProductComponent> getComponents() { return Collections.unmodifiableList(components); }
     public List<ProductPrice> getProductPrices() { return Collections.unmodifiableList(productPrices); }
     public LocalDateTime getCreatedAt() { return createdAt; }

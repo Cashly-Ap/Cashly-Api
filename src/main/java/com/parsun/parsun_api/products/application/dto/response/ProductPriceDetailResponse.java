@@ -6,5 +6,6 @@ public record ProductPriceDetailResponse(
     String id,
     String priceTypeId,
     String priceTypeName,
-    BigDecimal price
+    BigDecimal price,
+    BigDecimal profitMargin
 ) {}

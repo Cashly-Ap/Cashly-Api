@@ -54,7 +54,7 @@ public class CreateProductUseCase {
 
         Product product = Product.create(code, request.name(), request.description(),
                 request.categoryId(), Boolean.TRUE.equals(request.composite()),
-                request.basePrice(), request.purchasePrice(), request.profitMargin());
+                request.purchasePrice());
 
         product.setProductPrices(productPrices);
 
@@ -78,7 +78,7 @@ public class CreateProductUseCase {
         return requests.stream().map(r -> {
             priceTypeRepository.findById(r.priceTypeId())
                 .orElseThrow(() -> new PriceTypeNotFoundException(r.priceTypeId()));
-            return ProductPrice.create(r.priceTypeId(), r.price());
+            return ProductPrice.create(r.priceTypeId(), r.price(), r.profitMargin());
         }).toList();
     }
 

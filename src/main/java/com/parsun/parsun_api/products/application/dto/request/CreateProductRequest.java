@@ -1,7 +1,6 @@
 package com.parsun.parsun_api.products.application.dto.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,15 +27,8 @@ public record CreateProductRequest(
     @NotNull(message = "Composite flag is required")
     Boolean composite,
 
-    @DecimalMin(value = "0.0", message = "Base price must be non-negative")
-    BigDecimal basePrice,
-
     @DecimalMin(value = "0.0", message = "Purchase price must be non-negative")
     BigDecimal purchasePrice,
-
-    @DecimalMin(value = "0.0", message = "Profit margin must be between 0 and 100")
-    @DecimalMax(value = "100.0", message = "Profit margin must be between 0 and 100")
-    BigDecimal profitMargin,
 
     @Valid
     List<ComponentRequest> components,

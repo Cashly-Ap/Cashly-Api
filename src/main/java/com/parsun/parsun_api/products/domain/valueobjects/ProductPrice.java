@@ -9,8 +9,9 @@ public class ProductPrice {
     private final UUID id;
     private final UUID priceTypeId;
     private final BigDecimal price;
+    private final BigDecimal profitMargin;
 
-    private ProductPrice(UUID id, UUID priceTypeId, BigDecimal price) {
+    private ProductPrice(UUID id, UUID priceTypeId, BigDecimal price, BigDecimal profitMargin) {
         Objects.requireNonNull(priceTypeId, "Price type ID cannot be null");
         Objects.requireNonNull(price, "Price cannot be null");
         if (price.compareTo(BigDecimal.ZERO) < 0) {
@@ -19,19 +20,21 @@ public class ProductPrice {
         this.id = id;
         this.priceTypeId = priceTypeId;
         this.price = price;
+        this.profitMargin = profitMargin;
     }
 
-    public static ProductPrice create(UUID priceTypeId, BigDecimal price) {
-        return new ProductPrice(null, priceTypeId, price);
+    public static ProductPrice create(UUID priceTypeId, BigDecimal price, BigDecimal profitMargin) {
+        return new ProductPrice(null, priceTypeId, price, profitMargin);
     }
 
-    public static ProductPrice reconstitute(UUID id, UUID priceTypeId, BigDecimal price) {
-        return new ProductPrice(id, priceTypeId, price);
+    public static ProductPrice reconstitute(UUID id, UUID priceTypeId, BigDecimal price, BigDecimal profitMargin) {
+        return new ProductPrice(id, priceTypeId, price, profitMargin);
     }
 
     public UUID getId() { return id; }
     public UUID getPriceTypeId() { return priceTypeId; }
     public BigDecimal getPrice() { return price; }
+    public BigDecimal getProfitMargin() { return profitMargin; }
 
     @Override
     public boolean equals(Object o) {

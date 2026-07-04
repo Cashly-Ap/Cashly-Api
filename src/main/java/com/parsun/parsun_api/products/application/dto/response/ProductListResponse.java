@@ -11,7 +11,7 @@ public record ProductListResponse(
     String categoryName,
     boolean composite,
     boolean active,
-    BigDecimal basePrice,
+    BigDecimal purchasePrice,
     List<ProductPriceListItem> productPrices,
     boolean deletable
 ) {

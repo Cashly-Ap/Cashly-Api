@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Entity
 @Table(
@@ -61,14 +60,8 @@ public class ProductEntity {
     @Column(name = "photo", length = 500)
     private String photo;
 
-    @Column(name = "base_price")
-    private BigDecimal basePrice;
-
     @Column(name = "purchase_price")
     private BigDecimal purchasePrice;
-
-    @Column(name = "profit_margin")
-    private BigDecimal profitMargin;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -92,9 +85,7 @@ public class ProductEntity {
         entity.composite = product.isComposite();
         entity.active = product.isActive();
         entity.photo = product.getPhoto();
-        entity.basePrice = product.getBasePrice();
         entity.purchasePrice = product.getPurchasePrice();
-        entity.profitMargin = product.getProfitMargin();
         entity.createdAt = product.getCreatedAt();
         entity.updatedAt = product.getUpdatedAt();
         entity.components = product.getComponents().stream()
@@ -120,9 +111,7 @@ public class ProductEntity {
         this.composite = product.isComposite();
         this.active = product.isActive();
         this.photo = product.getPhoto();
-        this.basePrice = product.getBasePrice();
         this.purchasePrice = product.getPurchasePrice();
-        this.profitMargin = product.getProfitMargin();
         this.updatedAt = product.getUpdatedAt();
         this.components.clear();
         product.getComponents().forEach(c -> this.components.add(ProductComponentEntity.fromDomain(c, this)));
@@ -143,7 +132,7 @@ public class ProductEntity {
             .map(ProductPriceEntity::toDomain)
             .toList();
         return Product.reconstitute(id, code, name, description, categoryId,
-                composite, active, photo, basePrice, purchasePrice, profitMargin,
+                composite, active, photo, purchasePrice,
                 domainComponents, domainPrices, createdAt, updatedAt);
     }
 }

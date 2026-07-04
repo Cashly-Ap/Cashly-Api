@@ -33,6 +33,9 @@ public class ProductPriceEntity {
     @Column(name = "price", nullable = false, precision = 19, scale = 4)
     private BigDecimal price;
 
+    @Column(name = "profit_margin")
+    private BigDecimal profitMargin;
+
     public static ProductPriceEntity fromDomain(ProductPrice productPrice, ProductEntity product,
                                                  PriceTypeEntity priceType) {
         ProductPriceEntity entity = new ProductPriceEntity();
@@ -40,10 +43,11 @@ public class ProductPriceEntity {
         entity.product = product;
         entity.priceType = priceType;
         entity.price = productPrice.getPrice();
+        entity.profitMargin = productPrice.getProfitMargin();
         return entity;
     }
 
     public ProductPrice toDomain() {
-        return ProductPrice.reconstitute(id, priceType.getId(), price);
+        return ProductPrice.reconstitute(id, priceType.getId(), price, profitMargin);
     }
 }

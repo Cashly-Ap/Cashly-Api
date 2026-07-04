@@ -50,7 +50,7 @@ public class UpdateProductUseCase {
             .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
 
         product.update(request.name(), request.description(), request.categoryId(),
-                request.basePrice(), request.purchasePrice(), request.profitMargin(), request.active());
+                request.purchasePrice(), request.active());
 
         if (Boolean.TRUE.equals(request.composite()) && !product.isComposite()) {
             product.makeComposite();
@@ -95,7 +95,7 @@ public class UpdateProductUseCase {
         return requests.stream().map(r -> {
             priceTypeRepository.findById(r.priceTypeId())
                 .orElseThrow(() -> new PriceTypeNotFoundException(r.priceTypeId()));
-            return ProductPrice.create(r.priceTypeId(), r.price());
+            return ProductPrice.create(r.priceTypeId(), r.price(), r.profitMargin());
         }).toList();
     }
 

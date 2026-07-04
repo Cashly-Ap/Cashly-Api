@@ -22,7 +22,7 @@ public class ProductMapper {
             product.getId().toString(), product.getCode(), product.getName(),
             product.getCategoryId().toString(), categoryName,
             product.isComposite(), product.isActive(),
-            product.getBasePrice(), prices, deletable
+            product.getPurchasePrice(), prices, deletable
         );
     }
 
@@ -43,7 +43,7 @@ public class ProductMapper {
             .map(pp -> {
                 String priceId = pp.getId() != null ? pp.getId().toString() : null;
                 String priceTypeName = priceTypeNames.getOrDefault(pp.getPriceTypeId(), "");
-                return new ProductPriceDetailResponse(priceId, pp.getPriceTypeId().toString(), priceTypeName, pp.getPrice());
+                return new ProductPriceDetailResponse(priceId, pp.getPriceTypeId().toString(), priceTypeName, pp.getPrice(), pp.getProfitMargin());
             })
             .toList();
 
@@ -52,7 +52,7 @@ public class ProductMapper {
             product.getCategoryId().toString(), categoryName,
             product.isComposite(), product.isActive(),
             product.getPhoto(),
-            product.getBasePrice(), product.getPurchasePrice(), product.getProfitMargin(),
+            product.getPurchasePrice(),
             components, productPrices, product.getCreatedAt(), product.getUpdatedAt()
         );
     }
