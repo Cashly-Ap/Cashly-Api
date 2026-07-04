@@ -56,15 +56,15 @@ public class JpaCustomerRepository implements CustomerRepository {
 
     @Override
     public PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active,
-                                                      Boolean portalAccess, String state, String municipality,
-                                                      String postalCode, int page, int size,
-                                                      String orderBy, String orderDir) {
+                                                       Boolean portalAccess, String state, String municipality,
+                                                       String postalCode, Boolean hasActiveWarehouse, int page, int size,
+                                                       String orderBy, String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "legalName";
         Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         Page<CustomerEntity> result = springDataRepository.findAllWithFilters(
-            search, rif, type, active, portalAccess, state, municipality, postalCode, pageable);
+            search, rif, type, active, portalAccess, state, municipality, postalCode, hasActiveWarehouse, pageable);
 
         Page<Customer> mapped = result.map(CustomerEntity::toDomain);
         return PageResponse.from(mapped);

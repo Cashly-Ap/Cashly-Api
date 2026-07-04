@@ -11,7 +11,7 @@ public interface CustomerRepository {
     Customer save(Customer customer);
     Optional<Customer> findById(CustomerId id);
     List<Customer> findAll();
-    PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active, Boolean portalAccess, String state, String municipality, String postalCode, int page, int size, String orderBy, String orderDir);
+    PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active, Boolean portalAccess, String state, String municipality, String postalCode, Boolean hasActiveWarehouse, int page, int size, String orderBy, String orderDir);
     void delete(CustomerId id);
     boolean existsById(CustomerId id);
     long getNextCode();

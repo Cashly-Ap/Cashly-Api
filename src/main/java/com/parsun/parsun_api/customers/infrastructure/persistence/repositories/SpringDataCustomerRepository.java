@@ -31,6 +31,11 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
         AND (:postalCode IS NULL OR EXISTS (
             SELECT 1 FROM CustomerAddressEntity ca WHERE ca.customerId = c.id AND ca.postalCode = :postalCode
         ))
+        AND (:hasActiveWarehouse IS NULL OR EXISTS (
+            SELECT 1 FROM CustomerWarehouseAccessEntity cwa
+            JOIN WarehouseEntity w ON w.id = cwa.warehouseId
+            WHERE cwa.customerId = c.id AND w.active = true
+        ))
         """)
     Page<CustomerEntity> findAllWithFilters(
         @Param("search") String search,
@@ -41,6 +46,7 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
         @Param("state") String state,
         @Param("municipality") String municipality,
         @Param("postalCode") String postalCode,
+        @Param("hasActiveWarehouse") Boolean hasActiveWarehouse,
         Pageable pageable
     );
 }

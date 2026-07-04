@@ -63,7 +63,20 @@ public class CustomerController {
             @RequestParam(defaultValue = "asc") String orderDir) {
         PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
             search, rif, type, active, portalAccess, state, municipality, postalCode,
-            page, size, orderBy, orderDir);
+            null, page, size, orderBy, orderDir);
+        return ResponseEntity.ok(customers);
+    }
+
+    @GetMapping("/picker")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<PageResponse<CustomerListResponse>> getForPicker(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
+            search, null, type, true, null, null, null, null,
+            true, page, size, "legalName", "asc");
         return ResponseEntity.ok(customers);
     }
 
