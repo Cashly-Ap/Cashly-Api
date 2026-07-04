@@ -6,7 +6,6 @@ import com.parsun.parsun_api.quotes.application.dto.request.CreateQuoteRequest;
 import com.parsun.parsun_api.quotes.application.dto.request.UpdateQuoteRequest;
 import com.parsun.parsun_api.quotes.application.dto.response.*;
 import com.parsun.parsun_api.quotes.application.usecases.*;
-import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,6 @@ public class QuoteController {
     private final UpdateQuoteUseCase updateQuoteUseCase;
     private final DeleteQuoteUseCase deleteQuoteUseCase;
     private final CancelQuoteUseCase cancelQuoteUseCase;
-    private final GetProductsForQuoteUseCase getProductsForQuoteUseCase;
     private final GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase;
     private final ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase;
     private final ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase;
@@ -40,7 +38,6 @@ public class QuoteController {
                             UpdateQuoteUseCase updateQuoteUseCase,
                             DeleteQuoteUseCase deleteQuoteUseCase,
                             CancelQuoteUseCase cancelQuoteUseCase,
-                            GetProductsForQuoteUseCase getProductsForQuoteUseCase,
                             GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
                             ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
                             ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
@@ -50,7 +47,6 @@ public class QuoteController {
         this.updateQuoteUseCase = updateQuoteUseCase;
         this.deleteQuoteUseCase = deleteQuoteUseCase;
         this.cancelQuoteUseCase = cancelQuoteUseCase;
-        this.getProductsForQuoteUseCase = getProductsForQuoteUseCase;
         this.getWarehousesForQuoteUseCase = getWarehousesForQuoteUseCase;
         this.convertQuoteToOrderUseCase = convertQuoteToOrderUseCase;
         this.convertQuoteToInvoiceUseCase = convertQuoteToInvoiceUseCase;
@@ -111,20 +107,6 @@ public class QuoteController {
             @Valid @RequestBody CancelQuoteRequest request) {
         cancelQuoteUseCase.execute(id, request);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/products")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<PageResponse<QuoteProductResponse>> getProducts(
-            @RequestParam UUID customerId,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) UUID categoryId,
-            @RequestParam(required = false) Boolean composite,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<QuoteProductResponse> result = getProductsForQuoteUseCase.execute(
-                customerId, search, categoryId, composite, page, size);
-        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/warehouses")
