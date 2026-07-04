@@ -31,7 +31,16 @@ public class GetDashboardUseCase {
         );
 
         BigDecimal overdueReceivables = jdbc.queryForObject(
-            "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')",
+            "SELECT COALESCE(SUM(balance), 0) FROM (" +
+            "  SELECT i.id, (i.subtotal - COALESCE(i.returned_total, 0)" +
+            "    - COALESCE(pa.total_paid, 0) - COALESCE(cn.total_credit, 0)" +
+            "    + COALESCE(dn.total_debit, 0)) AS balance" +
+            "  FROM invoices i" +
+            "  LEFT JOIN (SELECT invoice_id, SUM(allocated_amount) AS total_paid FROM payment_allocations GROUP BY invoice_id) pa ON pa.invoice_id = i.id" +
+            "  LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_credit FROM credit_notes GROUP BY invoice_id) cn ON cn.invoice_id = i.id" +
+            "  LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_debit FROM debit_notes GROUP BY invoice_id) dn ON dn.invoice_id = i.id" +
+            "  WHERE i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')" +
+            ") t WHERE t.balance > 0",
             BigDecimal.class
         );
 
