@@ -1,6 +1,8 @@
 package com.parsun.parsun_api.products.infrastructure.config;
 
 import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
 import com.parsun.parsun_api.products.application.mappers.ProductMapper;
 import com.parsun.parsun_api.products.application.usecases.*;
@@ -75,5 +77,17 @@ public class ProductConfig {
                                                           WarehouseStockRepository warehouseStockRepository,
                                                           WarehouseRepository warehouseRepository) {
         return new GetProductStockUseCase(productRepository, warehouseStockRepository, warehouseRepository);
+    }
+
+    @Bean
+    public GetProductsForTransactionUseCase getProductsForTransactionUseCase(
+            CustomerRepository customerRepository,
+            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
+            ProductRepository productRepository,
+            CategoryRepository categoryRepository,
+            WarehouseStockRepository warehouseStockRepository,
+            WarehouseRepository warehouseRepository) {
+        return new GetProductsForTransactionUseCase(customerRepository, customerWarehouseAccessRepository,
+                productRepository, categoryRepository, warehouseStockRepository, warehouseRepository);
     }
 }

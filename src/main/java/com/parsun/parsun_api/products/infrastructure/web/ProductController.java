@@ -6,6 +6,7 @@ import com.parsun.parsun_api.products.application.dto.response.ProductDetailResp
 import com.parsun.parsun_api.products.application.dto.response.ProductListResponse;
 import com.parsun.parsun_api.products.application.dto.response.ProductStockByWarehouseResponse;
 import com.parsun.parsun_api.products.application.usecases.*;
+import com.parsun.parsun_api.products.application.dto.response.ProductWithStockResponse;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import jakarta.validation.Valid;
@@ -33,6 +34,7 @@ public class ProductController {
     private final RemoveProductPhotoUseCase removeProductPhotoUseCase;
     private final GetProductStockUseCase getProductStockUseCase;
     private final FileStorageService fileStorageService;
+    private final GetProductsForTransactionUseCase getProductsForTransactionUseCase;
 
     public ProductController(CreateProductUseCase createProductUseCase,
                               GetProductUseCase getProductUseCase,
@@ -42,7 +44,8 @@ public class ProductController {
                               UploadProductPhotoUseCase uploadProductPhotoUseCase,
                               RemoveProductPhotoUseCase removeProductPhotoUseCase,
                               GetProductStockUseCase getProductStockUseCase,
-                              FileStorageService fileStorageService) {
+                              FileStorageService fileStorageService,
+                              GetProductsForTransactionUseCase getProductsForTransactionUseCase) {
         this.createProductUseCase = createProductUseCase;
         this.getProductUseCase = getProductUseCase;
         this.listProductsUseCase = listProductsUseCase;
@@ -52,6 +55,7 @@ public class ProductController {
         this.removeProductPhotoUseCase = removeProductPhotoUseCase;
         this.getProductStockUseCase = getProductStockUseCase;
         this.fileStorageService = fileStorageService;
+        this.getProductsForTransactionUseCase = getProductsForTransactionUseCase;
     }
 
     @PostMapping
@@ -60,7 +64,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createProductUseCase.execute(request));
     }
 
-    @GetMapping
+    @GetMapping(params = "!customerId")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
     public ResponseEntity<PageResponse<ProductListResponse>> getAll(
             @RequestParam(required = false) String search,
@@ -73,6 +77,21 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String orderDir) {
         return ResponseEntity.ok(
             listProductsUseCase.execute(search, categoryId, active, composite, page, size, orderBy, orderDir));
+    }
+
+    @GetMapping(params = "customerId")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<PageResponse<ProductWithStockResponse>> getForTransaction(
+            @RequestParam UUID customerId,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Boolean composite,
+            @RequestParam(required = false, defaultValue = "true") Boolean withStock,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        PageResponse<ProductWithStockResponse> response =
+                getProductsForTransactionUseCase.execute(customerId, search, categoryId, composite, withStock, page, size);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
