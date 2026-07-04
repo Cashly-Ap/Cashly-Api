@@ -15,52 +15,52 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- -----------------------------------------------------------------------------
 -- PRODUCTOS SIMPLES
 -- -----------------------------------------------------------------------------
-INSERT INTO products (id, code, name, description, category_id, composite, active, base_price, purchase_price, profit_margin)
+INSERT INTO products (id, code, name, description, category_id, composite, active, purchase_price)
 VALUES
     -- Electrónica (cat a1)
-    (UNHEX('e0000000000000000000000000000001'), 'ELEC-001', 'Cable UTP Cat6 (metro)',        'Cable de red categoría 6, venta por metro',          UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 2.50,  1.80, 28.00),
-    (UNHEX('e0000000000000000000000000000002'), 'ELEC-002', 'Toma corriente doble',          'Toma corriente doble polarizado 15A',                UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 8.00,  5.50, 31.25),
-    (UNHEX('e0000000000000000000000000000003'), 'ELEC-003', 'Breaker 20A',                   'Interruptor termomagnético 20 amperios',             UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 15.00, 10.00, 33.33),
-    (UNHEX('e0000000000000000000000000000004'), 'ELEC-004', 'Multímetro digital',            'Multímetro digital con pinza amperimétrica',         UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 45.00, 30.00, 33.33),
+    (UNHEX('e0000000000000000000000000000001'), 'ELEC-001', 'Cable UTP Cat6 (metro)',        'Cable de red categoría 6, venta por metro',          UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 1.80),
+    (UNHEX('e0000000000000000000000000000002'), 'ELEC-002', 'Toma corriente doble',          'Toma corriente doble polarizado 15A',                UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 5.50),
+    (UNHEX('e0000000000000000000000000000003'), 'ELEC-003', 'Breaker 20A',                   'Interruptor termomagnético 20 amperios',             UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 10.00),
+    (UNHEX('e0000000000000000000000000000004'), 'ELEC-004', 'Multímetro digital',            'Multímetro digital con pinza amperimétrica',         UNHEX('a0000000000000000000000000000001'), FALSE, TRUE, 30.00),
 
     -- Herramientas (cat a2)
-    (UNHEX('e0000000000000000000000000000005'), 'HERR-001', 'Taladro percutor 13mm',         'Taladro percutor 750W con maletín',                  UNHEX('a0000000000000000000000000000002'), FALSE, TRUE, 120.00, 85.00, 29.17),
-    (UNHEX('e0000000000000000000000000000006'), 'HERR-002', 'Juego llaves combinadas 12pz',  'Set de llaves combinadas 8-19mm acero cromo',        UNHEX('a0000000000000000000000000000002'), FALSE, TRUE, 35.00,  22.00, 37.14),
-    (UNHEX('e0000000000000000000000000000007'), 'HERR-003', 'Nivel de burbuja 60cm',         'Nivel aluminio 3 burbujas 60cm',                     UNHEX('a0000000000000000000000000000002'), FALSE, TRUE, 18.00,  12.00, 33.33),
+    (UNHEX('e0000000000000000000000000000005'), 'HERR-001', 'Taladro percutor 13mm',         'Taladro percutor 750W con maletín',                  UNHEX('a0000000000000000000000000000002'), FALSE, TRUE, 85.00),
+    (UNHEX('e0000000000000000000000000000006'), 'HERR-002', 'Juego llaves combinadas 12pz',  'Set de llaves combinadas 8-19mm acero cromo',        UNHEX('a0000000000000000000000000000002'), FALSE, TRUE, 22.00),
+    (UNHEX('e0000000000000000000000000000007'), 'HERR-003', 'Nivel de burbuja 60cm',         'Nivel aluminio 3 burbujas 60cm',                     UNHEX('a0000000000000000000000000000002'), FALSE, TRUE, 12.00),
 
     -- Insumos de Oficina (cat a3)
-    (UNHEX('e0000000000000000000000000000008'), 'OFIC-001', 'Resma papel carta',             'Resma papel bond carta 75g 500 hojas',               UNHEX('a0000000000000000000000000000003'), FALSE, TRUE, 6.50,  4.80, 26.15),
-    (UNHEX('e0000000000000000000000000000009'), 'OFIC-002', 'Tóner HP 85A',                 'Tóner negro HP CE285A compatible LaserJet',          UNHEX('a0000000000000000000000000000003'), FALSE, TRUE, 28.00, 18.00, 35.71),
-    (UNHEX('e000000000000000000000000000000a'), 'OFIC-003', 'Bolígrafos caja x12',           'Caja 12 bolígrafos azul punta media',                UNHEX('a0000000000000000000000000000003'), FALSE, TRUE, 4.00,  2.50, 37.50),
+    (UNHEX('e0000000000000000000000000000008'), 'OFIC-001', 'Resma papel carta',             'Resma papel bond carta 75g 500 hojas',               UNHEX('a0000000000000000000000000000003'), FALSE, TRUE, 4.80),
+    (UNHEX('e0000000000000000000000000000009'), 'OFIC-002', 'Tóner HP 85A',                 'Tóner negro HP CE285A compatible LaserJet',          UNHEX('a0000000000000000000000000000003'), FALSE, TRUE, 18.00),
+    (UNHEX('e000000000000000000000000000000a'), 'OFIC-003', 'Bolígrafos caja x12',           'Caja 12 bolígrafos azul punta media',                UNHEX('a0000000000000000000000000000003'), FALSE, TRUE, 2.50),
 
     -- Lubricantes (cat a4)
-    (UNHEX('e000000000000000000000000000000b'), 'LUBR-001', 'Aceite motor 20W50 (litro)',    'Aceite mineral para motor 20W50, venta por litro',   UNHEX('a0000000000000000000000000000004'), FALSE, TRUE, 5.00,  3.50, 30.00),
-    (UNHEX('e000000000000000000000000000000c'), 'LUBR-002', 'Grasa multiuso (kg)',           'Grasa multipropósito para rodamientos, por kg',      UNHEX('a0000000000000000000000000000004'), FALSE, TRUE, 7.00,  4.80, 31.43),
+    (UNHEX('e000000000000000000000000000000b'), 'LUBR-001', 'Aceite motor 20W50 (litro)',    'Aceite mineral para motor 20W50, venta por litro',   UNHEX('a0000000000000000000000000000004'), FALSE, TRUE, 3.50),
+    (UNHEX('e000000000000000000000000000000c'), 'LUBR-002', 'Grasa multiuso (kg)',           'Grasa multipropósito para rodamientos, por kg',      UNHEX('a0000000000000000000000000000004'), FALSE, TRUE, 4.80),
 
     -- Seguridad Industrial (cat a5)
-    (UNHEX('e000000000000000000000000000000d'), 'SEGUR-001', 'Casco de seguridad',           'Casco de seguridad industrial tipo II clase E',      UNHEX('a0000000000000000000000000000005'), FALSE, TRUE, 12.00, 8.00, 33.33),
-    (UNHEX('e000000000000000000000000000000e'), 'SEGUR-002', 'Guantes de nitrilo (par)',     'Guantes de nitrilo resistentes a químicos talla M',  UNHEX('a0000000000000000000000000000005'), FALSE, TRUE, 3.50,  2.00, 42.86),
-    (UNHEX('e000000000000000000000000000000f'), 'SEGUR-003', 'Lentes de seguridad',          'Lentes panorámicos antiempañantes clara',            UNHEX('a0000000000000000000000000000005'), FALSE, TRUE, 5.00,  3.20, 36.00),
+    (UNHEX('e000000000000000000000000000000d'), 'SEGUR-001', 'Casco de seguridad',           'Casco de seguridad industrial tipo II clase E',      UNHEX('a0000000000000000000000000000005'), FALSE, TRUE, 8.00),
+    (UNHEX('e000000000000000000000000000000e'), 'SEGUR-002', 'Guantes de nitrilo (par)',     'Guantes de nitrilo resistentes a químicos talla M',  UNHEX('a0000000000000000000000000000005'), FALSE, TRUE, 2.00),
+    (UNHEX('e000000000000000000000000000000f'), 'SEGUR-003', 'Lentes de seguridad',          'Lentes panorámicos antiempañantes clara',            UNHEX('a0000000000000000000000000000005'), FALSE, TRUE, 3.20),
 
     -- Limpieza (cat a6)
-    (UNHEX('e0000000000000000000000000000010'), 'LIMP-001', 'Desengrasante industrial (litro)', 'Desengrasante concentrado, diluir 1:10',          UNHEX('a0000000000000000000000000000006'), FALSE, TRUE, 4.50,  2.80, 37.78),
-    (UNHEX('e0000000000000000000000000000011'), 'LIMP-002', 'Franela industrial (kg)',       'Franela blanca para limpieza industrial por kg',     UNHEX('a0000000000000000000000000000006'), FALSE, TRUE, 6.00,  3.80, 36.67),
+    (UNHEX('e0000000000000000000000000000010'), 'LIMP-001', 'Desengrasante industrial (litro)', 'Desengrasante concentrado, diluir 1:10',          UNHEX('a0000000000000000000000000000006'), FALSE, TRUE, 2.80),
+    (UNHEX('e0000000000000000000000000000011'), 'LIMP-002', 'Franela industrial (kg)',       'Franela blanca para limpieza industrial por kg',     UNHEX('a0000000000000000000000000000006'), FALSE, TRUE, 3.80),
 
     -- Plomería (cat a9)
-    (UNHEX('e0000000000000000000000000000012'), 'PLOM-001', 'Tubo PVC 1/2" (metro)',        'Tubería PVC cédula 40, venta por metro',             UNHEX('a0000000000000000000000000000009'), FALSE, TRUE, 1.80,  1.10, 38.89),
-    (UNHEX('e0000000000000000000000000000013'), 'PLOM-002', 'Codo PVC 1/2" x 90°',         'Codo PVC presión 1/2 pulgada 90 grados',             UNHEX('a0000000000000000000000000000009'), FALSE, TRUE, 0.60,  0.35, 41.67),
-    (UNHEX('e0000000000000000000000000000014'), 'PLOM-003', 'Llave de paso 1/2"',           'Válvula de bola PVC 1/2 pulgada',                   UNHEX('a0000000000000000000000000000009'), FALSE, TRUE, 3.50,  2.20, 37.14);
+    (UNHEX('e0000000000000000000000000000012'), 'PLOM-001', 'Tubo PVC 1/2" (metro)',        'Tubería PVC cédula 40, venta por metro',             UNHEX('a0000000000000000000000000000009'), FALSE, TRUE, 1.10),
+    (UNHEX('e0000000000000000000000000000013'), 'PLOM-002', 'Codo PVC 1/2" x 90°',         'Codo PVC presión 1/2 pulgada 90 grados',             UNHEX('a0000000000000000000000000000009'), FALSE, TRUE, 0.35),
+    (UNHEX('e0000000000000000000000000000014'), 'PLOM-003', 'Llave de paso 1/2"',           'Válvula de bola PVC 1/2 pulgada',                   UNHEX('a0000000000000000000000000000009'), FALSE, TRUE, 2.20);
 
 -- -----------------------------------------------------------------------------
 -- PRODUCTOS COMPUESTOS
 -- -----------------------------------------------------------------------------
-INSERT INTO products (id, code, name, description, category_id, composite, active, base_price, purchase_price, profit_margin)
+INSERT INTO products (id, code, name, description, category_id, composite, active, purchase_price)
 VALUES
-    (UNHEX('e0000000000000000000000000000015'), 'KIT-ELEC-01',  'Kit Instalación Eléctrica Básica',  'Kit completo para instalación eléctrica residencial básica', UNHEX('a0000000000000000000000000000001'), TRUE, TRUE, 85.00,  60.00, 29.41),
-    (UNHEX('e0000000000000000000000000000016'), 'KIT-SEGUR-01', 'Kit EPP Completo',                   'Equipo de protección personal completo para obra',           UNHEX('a0000000000000000000000000000005'), TRUE, TRUE, 25.00,  16.00, 36.00),
-    (UNHEX('e0000000000000000000000000000017'), 'KIT-OFIC-01',  'Kit Oficina Mensual',               'Insumos de oficina para un mes de operación',               UNHEX('a0000000000000000000000000000003'), TRUE, TRUE, 70.00,  48.00, 31.43),
-    (UNHEX('e0000000000000000000000000000018'), 'KIT-PLOM-01',  'Kit Plomería Básica 5m',            'Kit de plomería para instalación de 5 metros',              UNHEX('a0000000000000000000000000000009'), TRUE, TRUE, 18.00,  12.00, 33.33),
-    (UNHEX('e0000000000000000000000000000019'), 'KIT-HERR-01',  'Kit Herramientas Eléctricas',       'Kit taladro con nivel y juego de llaves',                   UNHEX('a0000000000000000000000000000002'), TRUE, TRUE, 185.00, 130.00, 29.73);
+    (UNHEX('e0000000000000000000000000000015'), 'KIT-ELEC-01',  'Kit Instalación Eléctrica Básica',  'Kit completo para instalación eléctrica residencial básica', UNHEX('a0000000000000000000000000000001'), TRUE, TRUE, 60.00),
+    (UNHEX('e0000000000000000000000000000016'), 'KIT-SEGUR-01', 'Kit EPP Completo',                   'Equipo de protección personal completo para obra',           UNHEX('a0000000000000000000000000000005'), TRUE, TRUE, 16.00),
+    (UNHEX('e0000000000000000000000000000017'), 'KIT-OFIC-01',  'Kit Oficina Mensual',               'Insumos de oficina para un mes de operación',               UNHEX('a0000000000000000000000000000003'), TRUE, TRUE, 48.00),
+    (UNHEX('e0000000000000000000000000000018'), 'KIT-PLOM-01',  'Kit Plomería Básica 5m',            'Kit de plomería para instalación de 5 metros',              UNHEX('a0000000000000000000000000000009'), TRUE, TRUE, 12.00),
+    (UNHEX('e0000000000000000000000000000019'), 'KIT-HERR-01',  'Kit Herramientas Eléctricas',       'Kit taladro con nivel y juego de llaves',                   UNHEX('a0000000000000000000000000000002'), TRUE, TRUE, 130.00);
 
 -- -----------------------------------------------------------------------------
 -- COMPONENTES DE PRODUCTOS COMPUESTOS
