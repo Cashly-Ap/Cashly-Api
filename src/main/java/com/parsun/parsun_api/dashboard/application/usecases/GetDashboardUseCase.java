@@ -59,10 +59,18 @@ public class GetDashboardUseCase {
 
     public List<MonthlySalesResponse> getMonthlySales() {
         return jdbc.query(
-            "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COALESCE(SUM(subtotal), 0) AS total " +
-            "FROM invoices WHERE status NOT IN ('CANCELLED', 'DRAFT') " +
-            "AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) " +
-            "GROUP BY DATE_FORMAT(created_at, '%Y-%m') ORDER BY month",
+            "SELECT months.month, COALESCE(SUM(i.subtotal), 0) AS total " +
+            "FROM (" +
+            "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m') AS month UNION ALL " +
+            "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y-%m') UNION ALL " +
+            "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m') UNION ALL " +
+            "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y-%m') UNION ALL " +
+            "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m') UNION ALL " +
+            "  SELECT DATE_FORMAT(CURDATE(), '%Y-%m')" +
+            ") months " +
+            "LEFT JOIN invoices i ON DATE_FORMAT(i.created_at, '%Y-%m') = months.month " +
+            "AND i.status NOT IN ('CANCELLED', 'DRAFT') " +
+            "GROUP BY months.month ORDER BY months.month",
             (rs, rowNum) -> new MonthlySalesResponse(
                 rs.getString("month"),
                 rs.getBigDecimal("total")
