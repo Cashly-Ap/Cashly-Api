@@ -7,5 +7,6 @@ public enum BusinessModule {
     FINANCES,
     PURCHASES,
     CUSTOMER_PORTAL,
-    DOCUMENT_ADMIN
+    DOCUMENT_ADMIN,
+    DASHBOARD
 }
