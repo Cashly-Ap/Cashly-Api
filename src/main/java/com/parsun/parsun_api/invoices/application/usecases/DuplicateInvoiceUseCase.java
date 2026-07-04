@@ -71,7 +71,7 @@ public class DuplicateInvoiceUseCase {
                             .orElseThrow(() -> new IllegalArgumentException(
                                     "Product not found: " + line.getProductId()));
 
-                    BigDecimal currentPrice = product.getBasePrice();
+                    BigDecimal currentPrice = line.getUnitPrice();
 
                     List<InvoiceLineAllocation> copiedAllocations = applyStockAllocations(line);
 

@@ -68,12 +68,12 @@ public class GetProductsForQuoteUseCase {
 
     private BigDecimal resolveCustomerPrice(Product product, UUID priceTypeId) {
         if (priceTypeId == null) {
-            return product.getBasePrice();
+            return product.getPurchasePrice();
         }
         return product.getProductPrices().stream()
                 .filter(pp -> priceTypeId.equals(pp.getPriceTypeId()))
                 .map(pp -> pp.getPrice())
                 .findFirst()
-                .orElse(product.getBasePrice());
+                .orElse(product.getPurchasePrice());
     }
 }
