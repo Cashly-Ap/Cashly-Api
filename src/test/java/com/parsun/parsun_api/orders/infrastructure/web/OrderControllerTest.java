@@ -7,7 +7,6 @@ import com.parsun.parsun_api.orders.application.dto.request.UpdateOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.application.dto.response.OrderListResponse;
-import com.parsun.parsun_api.orders.application.dto.response.OrderProductResponse;
 import com.parsun.parsun_api.orders.application.usecases.CancelOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.ConfirmOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.ConvertToInvoiceUseCase;
@@ -15,7 +14,6 @@ import com.parsun.parsun_api.orders.application.usecases.CreateOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.DeleteOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.GetOrderByIdUseCase;
 import com.parsun.parsun_api.orders.application.usecases.GetOrdersUseCase;
-import com.parsun.parsun_api.orders.application.usecases.GetProductsForOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.UpdateOrderUseCase;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -64,9 +62,6 @@ class OrderControllerTest {
 
     @Mock
     private DeleteOrderUseCase deleteOrderUseCase;
-
-    @Mock
-    private GetProductsForOrderUseCase getProductsForOrderUseCase;
 
     @Mock
     private Authentication authentication;
@@ -227,21 +222,5 @@ class OrderControllerTest {
         verify(deleteOrderUseCase).execute(id);
     }
 
-    @Test
-    @DisplayName("should get products for order and return 200")
-    void should_get_products_for_order_and_return_200() {
-        OrderProductResponse product = mock(OrderProductResponse.class);
-        PageResponse<OrderProductResponse> pageResponse = new PageResponse<>(
-                List.of(product), 1L, 1, 20, 0, true, true, false);
 
-        when(getProductsForOrderUseCase.execute(any(), any(), any(), any(), any(), anyInt(), anyInt()))
-                .thenReturn(pageResponse);
-
-        ResponseEntity<PageResponse<OrderProductResponse>> result = orderController.getProductsForOrder(
-                UUID.randomUUID(), null, null, null, true, 0, 20);
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().content().size());
-        verify(getProductsForOrderUseCase).execute(any(), any(), any(), any(), any(), anyInt(), anyInt());
-    }
 }

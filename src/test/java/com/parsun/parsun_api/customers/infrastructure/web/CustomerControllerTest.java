@@ -85,7 +85,7 @@ class CustomerControllerTest {
         PageResponse<CustomerListResponse> pageResponse = new PageResponse<>(
                 List.of(customer), 1L, 1, 10, 0, true, true, false);
 
-        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(),
+        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(),
                 anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(pageResponse);
 
@@ -94,7 +94,7 @@ class CustomerControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
     }
 
     @Test
@@ -103,7 +103,7 @@ class CustomerControllerTest {
         PageResponse<CustomerListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(),
+        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(),
                 anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(emptyPage);
 
@@ -112,7 +112,7 @@ class CustomerControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
     }
 
     @Test
