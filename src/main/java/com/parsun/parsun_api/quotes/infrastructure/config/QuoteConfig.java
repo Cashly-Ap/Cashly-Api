@@ -117,14 +117,13 @@ public class QuoteConfig {
                                             UpdateQuoteUseCase updateQuoteUseCase,
                                             DeleteQuoteUseCase deleteQuoteUseCase,
                                             CancelQuoteUseCase cancelQuoteUseCase,
-                                            GetProductsForQuoteUseCase getProductsForQuoteUseCase,
                                             GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
                                             ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
                                             ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
         return new QuoteController(createQuoteUseCase, getQuotesUseCase, getQuoteByIdUseCase,
                 updateQuoteUseCase, deleteQuoteUseCase,
                 cancelQuoteUseCase,
-                getProductsForQuoteUseCase, getWarehousesForQuoteUseCase,
+                getWarehousesForQuoteUseCase,
                 convertQuoteToOrderUseCase, convertQuoteToInvoiceUseCase);
     }
 }
