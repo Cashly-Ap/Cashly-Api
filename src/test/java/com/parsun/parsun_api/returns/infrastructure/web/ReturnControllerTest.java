@@ -170,26 +170,28 @@ class ReturnControllerTest {
     @DisplayName("should delete return and return 204")
     void shouldDeleteReturn() {
         UUID id = UUID.randomUUID();
-        doNothing().when(deleteReturnUseCase).execute(id);
+        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        doNothing().when(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
 
-        ResponseEntity<Void> result = returnController.delete(id);
+        ResponseEntity<Void> result = returnController.delete(id, authentication);
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         assertNull(result.getBody());
-        verify(deleteReturnUseCase).execute(id);
+        verify(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
     }
 
     @Test
     @DisplayName("should throw exception when deleting non-existent return")
     void shouldThrowWhenDeletingNonExistentReturn() {
         UUID id = UUID.randomUUID();
+        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
 
         doThrow(new GetReturnByIdUseCase.ReturnNotFoundException(id))
-                .when(deleteReturnUseCase).execute(id);
+                .when(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
 
         assertThrows(GetReturnByIdUseCase.ReturnNotFoundException.class,
-                () -> returnController.delete(id));
-        verify(deleteReturnUseCase).execute(id);
+                () -> returnController.delete(id, authentication));
+        verify(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
     }
 
     @Test

@@ -14,6 +14,7 @@ import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
 import com.parsun.parsun_api.returns.application.dto.request.CreateReturnRequest;
 import com.parsun.parsun_api.returns.application.dto.response.ReturnResponse;
 import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
+import com.parsun.parsun_api.returns.domain.entities.CancelledAllocation;
 import com.parsun.parsun_api.returns.domain.entities.Return;
 import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
 import com.parsun.parsun_api.returns.domain.entities.ReturnLineAllocation;
@@ -30,6 +31,7 @@ import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -109,7 +111,9 @@ public class CreateReturnUseCase {
         BigDecimal totalPaid = allocationRepository.getAllocatedAmountByInvoiceId(return_.getInvoiceId().value());
 
         if (return_.getReturnType() == ReturnType.AUTOMATIC) {
+            List<CancelledAllocation> snapshot = captureCancelledAllocations(return_.getInvoiceId().value());
             cancelInvoicePayments(return_.getInvoiceId().value());
+            saved = rebuildReturnWithCancelledAllocations(saved, snapshot);
         }
 
         BigDecimal totalCreditNotes = creditNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
@@ -187,5 +191,29 @@ public class CreateReturnUseCase {
                 .map(PaymentAllocation::getPaymentId)
                 .distinct()
                 .forEach(paymentAllocationService::cancelPayment);
+    }
+
+    private List<CancelledAllocation> captureCancelledAllocations(UUID invoiceId) {
+        return allocationRepository.findByInvoiceId(invoiceId).stream()
+                .map(a -> CancelledAllocation.create(a.getPaymentId(), a.getInvoiceId(), a.getAllocatedAmount()))
+                .toList();
+    }
+
+    private Return rebuildReturnWithCancelledAllocations(Return original, List<CancelledAllocation> cancelledAllocations) {
+        return Return.reconstitute(
+                original.getId(),
+                original.getReturnNumber(),
+                original.getInvoiceId(),
+                original.getCustomerId(),
+                original.getReturnType(),
+                original.getReason(),
+                original.getTotal(),
+                new ArrayList<>(original.getLines()),
+                cancelledAllocations,
+                original.getCreatedBy(),
+                original.getCreatedByName(),
+                original.getCreatedAt(),
+                original.getUpdatedAt()
+        );
     }
 }

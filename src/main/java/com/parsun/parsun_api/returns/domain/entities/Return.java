@@ -20,6 +20,7 @@ public class Return {
     private final String reason;
     private final BigDecimal total;
     private final List<ReturnLine> lines;
+    private final List<CancelledAllocation> cancelledAllocations;
     private final UUID createdBy;
     private final String createdByName;
     private final LocalDateTime createdAt;
@@ -28,6 +29,7 @@ public class Return {
     private Return(ReturnId id, ReturnNumber returnNumber, InvoiceId invoiceId, UUID customerId,
                    ReturnType returnType, String reason, BigDecimal total,
                    List<ReturnLine> lines,
+                   List<CancelledAllocation> cancelledAllocations,
                    UUID createdBy, String createdByName,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -38,6 +40,7 @@ public class Return {
         this.reason = reason;
         this.total = total;
         this.lines = new ArrayList<>(lines != null ? lines : List.of());
+        this.cancelledAllocations = new ArrayList<>(cancelledAllocations != null ? cancelledAllocations : List.of());
         this.createdBy = createdBy;
         this.createdByName = createdByName;
         this.createdAt = createdAt;
@@ -75,18 +78,19 @@ public class Return {
         LocalDateTime now = LocalDateTime.now();
         return new Return(ReturnId.generate(), returnNumber, invoiceId, customerId,
                 returnType, reason, total,
-                lines, createdBy, createdByName, now, now);
+                lines, List.of(), createdBy, createdByName, now, now);
     }
 
     public static Return reconstitute(ReturnId id, ReturnNumber returnNumber, InvoiceId invoiceId,
                                        UUID customerId,
                                        ReturnType returnType, String reason, BigDecimal total,
                                        List<ReturnLine> lines,
+                                       List<CancelledAllocation> cancelledAllocations,
                                        UUID createdBy, String createdByName,
                                        LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Return(id, returnNumber, invoiceId, customerId,
                 returnType, reason, total,
-                lines, createdBy, createdByName, createdAt, updatedAt);
+                lines, cancelledAllocations, createdBy, createdByName, createdAt, updatedAt);
     }
 
     public ReturnId getId() { return id; }
@@ -97,6 +101,7 @@ public class Return {
     public String getReason() { return reason; }
     public BigDecimal getTotal() { return total; }
     public List<ReturnLine> getLines() { return Collections.unmodifiableList(lines); }
+    public List<CancelledAllocation> getCancelledAllocations() { return Collections.unmodifiableList(cancelledAllocations); }
     public UUID getCreatedBy() { return createdBy; }
     public String getCreatedByName() { return createdByName; }
     public LocalDateTime getCreatedAt() { return createdAt; }

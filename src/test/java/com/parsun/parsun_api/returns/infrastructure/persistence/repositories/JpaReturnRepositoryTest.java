@@ -93,6 +93,7 @@ class JpaReturnRepositoryTest {
         return Return.reconstitute(
                 id, returnNumber, invoiceId, customerId,
                 returnType, reason, total, lines,
+                List.of(),
                 createdBy, createdByName, now, now
         );
     }

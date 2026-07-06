@@ -68,8 +68,10 @@ public class ReturnController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        deleteReturnUseCase.execute(id);
+    public ResponseEntity<Void> delete(@PathVariable UUID id,
+                                        Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        deleteReturnUseCase.execute(id, userId, "User");
         return ResponseEntity.noContent().build();
     }
 }

@@ -111,6 +111,7 @@ class GetReturnByIdUseCaseTest {
                         BigDecimal.ONE, new BigDecimal("50.00"), new BigDecimal("50.00"),
                         List.of()
                 )),
+                List.of(),
                 UUID.randomUUID(),
                 "Test User",
                 LocalDateTime.now(),

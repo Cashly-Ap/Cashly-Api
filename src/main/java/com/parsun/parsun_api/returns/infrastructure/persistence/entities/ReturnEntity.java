@@ -60,4 +60,7 @@ public class ReturnEntity {
 
     @OneToMany(mappedBy = "returnEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReturnLineEntity> lines = new ArrayList<>();
+
+    @OneToMany(mappedBy = "returnEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ReturnCancelledAllocationEntity> cancelledAllocations = new ArrayList<>();
 }

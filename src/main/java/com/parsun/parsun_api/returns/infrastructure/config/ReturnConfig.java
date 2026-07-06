@@ -2,9 +2,11 @@ package com.parsun.parsun_api.returns.infrastructure.config;
 
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
 import com.parsun.parsun_api.returns.application.mappers.ReturnMapper;
 import com.parsun.parsun_api.returns.application.usecases.CreateReturnUseCase;
@@ -52,7 +54,17 @@ public class ReturnConfig {
     }
 
     @Bean
-    public DeleteReturnUseCase deleteReturnUseCase() {
-        return new DeleteReturnUseCase(returnRepository);
+    public DeleteReturnUseCase deleteReturnUseCase(InvoiceRepository invoiceRepository,
+                                                     WarehouseStockRepository warehouseStockRepository,
+                                                     StockMovementRepository stockMovementRepository,
+                                                     ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                                                     PaymentRepository paymentRepository,
+                                                     PaymentAllocationRepository allocationRepository,
+                                                     CreditNoteRepository creditNoteRepository,
+                                                     DebitNoteRepository debitNoteRepository) {
+        return new DeleteReturnUseCase(returnRepository, invoiceRepository,
+                warehouseStockRepository, stockMovementRepository,
+                consumeCustomerBalanceUseCase, paymentRepository, allocationRepository,
+                creditNoteRepository, debitNoteRepository);
     }
 }

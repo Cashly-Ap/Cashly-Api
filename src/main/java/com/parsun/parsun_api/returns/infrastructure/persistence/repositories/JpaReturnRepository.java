@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.returns.infrastructure.persistence.repositories;
 
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.returns.domain.entities.CancelledAllocation;
 import com.parsun.parsun_api.returns.domain.entities.Return;
 import com.parsun.parsun_api.returns.domain.entities.ReturnId;
 import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
@@ -9,6 +10,7 @@ import com.parsun.parsun_api.returns.domain.entities.ReturnNumber;
 import com.parsun.parsun_api.returns.domain.entities.ReturnStatus;
 import com.parsun.parsun_api.returns.domain.entities.ReturnType;
 import com.parsun.parsun_api.returns.domain.repositories.ReturnRepository;
+import com.parsun.parsun_api.returns.infrastructure.persistence.entities.ReturnCancelledAllocationEntity;
 import com.parsun.parsun_api.returns.infrastructure.persistence.entities.ReturnEntity;
 import com.parsun.parsun_api.returns.infrastructure.persistence.entities.ReturnLineAllocationEntity;
 import com.parsun.parsun_api.returns.infrastructure.persistence.entities.ReturnLineEntity;
@@ -145,6 +147,12 @@ public class JpaReturnRepository implements ReturnRepository {
         entity.getLines().clear();
         entity.getLines().addAll(lineEntities);
 
+        List<ReturnCancelledAllocationEntity> cancelledEntities = return_.getCancelledAllocations().stream()
+                .map(ca -> toCancelledAllocationEntity(ca, entity))
+                .toList();
+        entity.getCancelledAllocations().clear();
+        entity.getCancelledAllocations().addAll(cancelledEntities);
+
         return entity;
     }
 
@@ -181,6 +189,10 @@ public class JpaReturnRepository implements ReturnRepository {
                 .map(this::toLineDomain)
                 .toList();
 
+        List<CancelledAllocation> cancelledAllocations = entity.getCancelledAllocations().stream()
+                .map(this::toCancelledAllocationDomain)
+                .toList();
+
         return Return.reconstitute(
                 ReturnId.of(entity.getId()),
                 new ReturnNumber(entity.getReturnNumber()),
@@ -190,6 +202,7 @@ public class JpaReturnRepository implements ReturnRepository {
                 entity.getReason(),
                 entity.getTotal(),
                 lines,
+                cancelledAllocations,
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
                 entity.getCreatedAt(),
@@ -217,6 +230,24 @@ public class JpaReturnRepository implements ReturnRepository {
                 entity.getId(),
                 entity.getWarehouseId(),
                 entity.getAllocated()
+        );
+    }
+
+    private ReturnCancelledAllocationEntity toCancelledAllocationEntity(CancelledAllocation ca, ReturnEntity returnEntity) {
+        ReturnCancelledAllocationEntity entity = new ReturnCancelledAllocationEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setReturnEntity(returnEntity);
+        entity.setPaymentId(ca.getPaymentId());
+        entity.setInvoiceId(ca.getInvoiceId());
+        entity.setAmount(ca.getAmount());
+        return entity;
+    }
+
+    private CancelledAllocation toCancelledAllocationDomain(ReturnCancelledAllocationEntity entity) {
+        return CancelledAllocation.reconstitute(
+                entity.getPaymentId(),
+                entity.getInvoiceId(),
+                entity.getAmount()
         );
     }
 }

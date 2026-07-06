@@ -73,7 +73,7 @@ class ReturnMapperTest {
                 ReturnId.generate(), ReturnNumber.of(2026, 1),
                 InvoiceId.of(invoiceId), UUID.randomUUID(),
                 ReturnType.AUTOMATIC, "Producto defectuoso",
-                new BigDecimal("50.00"), List.of(line),
+                new BigDecimal("50.00"), List.of(line), List.of(),
                 UUID.randomUUID(), "Test User",
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -110,7 +110,7 @@ class ReturnMapperTest {
                 ReturnId.generate(), ReturnNumber.of(2026, 1),
                 InvoiceId.of(invoiceId), UUID.randomUUID(),
                 ReturnType.AUTOMATIC, "Producto defectuoso",
-                new BigDecimal("50.00"), List.of(line),
+                new BigDecimal("50.00"), List.of(line), List.of(),
                 UUID.randomUUID(), "Test User",
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -141,7 +141,7 @@ class ReturnMapperTest {
                 ReturnId.generate(), ReturnNumber.of(2026, 1),
                 InvoiceId.of(invoiceId), UUID.randomUUID(),
                 ReturnType.MANUAL, "Cambio de producto",
-                new BigDecimal("50.00"), List.of(line),
+                new BigDecimal("50.00"), List.of(line), List.of(),
                 UUID.randomUUID(), "Test User",
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -175,7 +175,7 @@ class ReturnMapperTest {
                 ReturnId.generate(), ReturnNumber.of(2026, 1),
                 InvoiceId.of(invoiceId), UUID.randomUUID(),
                 ReturnType.AUTOMATIC, "Producto defectuoso",
-                new BigDecimal("50.00"), List.of(line),
+                new BigDecimal("50.00"), List.of(line), List.of(),
                 UUID.randomUUID(), "Test User",
                 LocalDateTime.now(), LocalDateTime.now()
         );

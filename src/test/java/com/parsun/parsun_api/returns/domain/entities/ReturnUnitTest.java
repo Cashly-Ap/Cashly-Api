@@ -186,7 +186,7 @@ class ReturnUnitTest {
 
         Return return_ = Return.reconstitute(
                 id, RETURN_NUMBER, INVOICE_ID, CUSTOMER_ID, RETURN_TYPE, REASON,
-                new BigDecimal("50.00"), validLines, CREATED_BY, CREATED_BY_NAME, now, now
+                new BigDecimal("50.00"), validLines, List.of(), CREATED_BY, CREATED_BY_NAME, now, now
         );
 
         assertEquals(id, return_.getId());
@@ -225,7 +225,7 @@ class ReturnUnitTest {
 
         Return return2 = Return.reconstitute(
                 id, RETURN_NUMBER, INVOICE_ID, CUSTOMER_ID, RETURN_TYPE, REASON,
-                new BigDecimal("50.00"), validLines, CREATED_BY, CREATED_BY_NAME,
+                new BigDecimal("50.00"), validLines, List.of(), CREATED_BY, CREATED_BY_NAME,
                 return1.getCreatedAt(), LocalDateTime.now()
         );
 
