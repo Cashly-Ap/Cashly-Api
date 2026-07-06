@@ -154,4 +154,61 @@ class InvoiceLineUnitTest {
         assertThrows(UnsupportedOperationException.class, () ->
                 line.getAllocations().add(allocation));
     }
+
+
+    // ============================================================
+    // decreaseReturnedQuantity()
+    // ============================================================
+
+    @Test
+    void should_DecreaseReturnedQuantity_When_ValidQuantityProvided() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+
+        line.decreaseReturnedQuantity(new BigDecimal("3"));
+
+        assertEquals(new BigDecimal("2"), line.getReturnedQuantity());
+    }
+
+    @Test
+    void should_ThrowException_When_DecreaseQuantityIsNull() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+
+        assertThrows(NullPointerException.class, () ->
+                line.decreaseReturnedQuantity(null));
+    }
+
+    @Test
+    void should_ThrowException_When_DecreaseQuantityIsNegative() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                line.decreaseReturnedQuantity(new BigDecimal("-1")));
+    }
+
+    @Test
+    void should_ThrowException_When_DecreaseQuantityWouldMakeReturnedNegative() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                line.decreaseReturnedQuantity(new BigDecimal("6")));
+    }
+
+    @Test
+    void should_AllowDecreasingReturnedQuantityToExactlyZero() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+
+        line.decreaseReturnedQuantity(new BigDecimal("5"));
+
+        assertEquals(BigDecimal.ZERO, line.getReturnedQuantity());
+    }
 }

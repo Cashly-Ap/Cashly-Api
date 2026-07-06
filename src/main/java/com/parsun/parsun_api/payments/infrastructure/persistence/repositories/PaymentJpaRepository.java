@@ -33,4 +33,6 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentEntity, UUID>
             AND p.status = 'APPLIED'
             """)
     BigDecimal getRefundableAmountByCustomerId(@Param("customerId") UUID customerId);
+
+    long countByPaymentMethodId(UUID paymentMethodId);
 }

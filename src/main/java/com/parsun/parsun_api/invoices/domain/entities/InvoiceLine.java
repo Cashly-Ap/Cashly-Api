@@ -84,4 +84,16 @@ public class InvoiceLine {
         }
         this.returnedQuantity = newReturnedQuantity;
     }
+
+    public void decreaseReturnedQuantity(BigDecimal quantity) {
+        Objects.requireNonNull(quantity, "Quantity cannot be null");
+        if (quantity.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+        BigDecimal newReturnedQuantity = this.returnedQuantity.subtract(quantity);
+        if (newReturnedQuantity.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Returned quantity cannot be negative");
+        }
+        this.returnedQuantity = newReturnedQuantity;
+    }
 }

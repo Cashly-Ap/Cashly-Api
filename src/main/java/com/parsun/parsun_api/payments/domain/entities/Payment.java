@@ -120,6 +120,14 @@ public class Payment {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void reactivate() {
+        if (this.status != PaymentStatus.CANCELLED) {
+            throw new IllegalStateException("Only cancelled payments can be reactivated");
+        }
+        this.status = PaymentStatus.APPLIED;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public PaymentId getId() {
         return id;
     }

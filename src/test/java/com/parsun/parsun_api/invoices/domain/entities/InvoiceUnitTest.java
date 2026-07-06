@@ -1,10 +1,13 @@
 package com.parsun.parsun_api.invoices.domain.entities;
 
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
+import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceLineId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.returns.domain.entities.Return;
+import com.parsun.parsun_api.returns.domain.entities.ReturnLine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @DisplayName("Invoice Domain Entity Unit Tests")
 class InvoiceUnitTest {
@@ -356,5 +361,123 @@ class InvoiceUnitTest {
         BigDecimal result = invoice.calculateTotal(BigDecimal.TEN, BigDecimal.ONE);
 
         assertEquals(BigDecimal.ZERO, result);
+    }
+
+
+    // ============================================================
+    // revertReturn()
+    // ============================================================
+
+    @Test
+    void should_RevertReturnedTotalAndReturnedQuantity_When_ValidReturnProvided() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), UUID.randomUUID(), "Product", "CODE",
+                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("5"), List.of());
+        InvoiceId invoiceId = InvoiceId.generate();
+        Invoice invoice = Invoice.reconstitute(
+                invoiceId, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                new BigDecimal("50.00"), InvoiceReturnStatus.PARTIAL,
+                null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
+
+        Return return_ = mock(Return.class);
+        ReturnLine returnLine = mock(ReturnLine.class);
+        when(return_.getInvoiceId()).thenReturn(invoiceId);
+        when(return_.getTotal()).thenReturn(new BigDecimal("50.00"));
+        when(return_.getLines()).thenReturn(List.of(returnLine));
+        when(returnLine.getInvoiceLineId()).thenReturn(line.getId().value());
+        when(returnLine.getQuantity()).thenReturn(new BigDecimal("5"));
+
+        invoice.revertReturn(return_);
+
+        assertEquals(0, invoice.getReturnedTotal().compareTo(BigDecimal.ZERO));
+        assertEquals(0, line.getReturnedQuantity().compareTo(BigDecimal.ZERO));
+    }
+
+    @Test
+    void should_SetReturnStatusToNull_When_NoReturnsRemain() {
+        InvoiceLine line = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), UUID.randomUUID(), "Product", "CODE",
+                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("5"), List.of());
+        InvoiceId invoiceId = InvoiceId.generate();
+        Invoice invoice = Invoice.reconstitute(
+                invoiceId, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                new BigDecimal("50.00"), InvoiceReturnStatus.PARTIAL,
+                null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
+
+        Return return_ = mock(Return.class);
+        ReturnLine returnLine = mock(ReturnLine.class);
+        when(return_.getInvoiceId()).thenReturn(invoiceId);
+        when(return_.getTotal()).thenReturn(new BigDecimal("50.00"));
+        when(return_.getLines()).thenReturn(List.of(returnLine));
+        when(returnLine.getInvoiceLineId()).thenReturn(line.getId().value());
+        when(returnLine.getQuantity()).thenReturn(new BigDecimal("5"));
+
+        invoice.revertReturn(return_);
+
+        assertNull(invoice.getReturnStatus());
+    }
+
+    @Test
+    void should_SetReturnStatusToPartial_When_SomeReturnsRemain() {
+        InvoiceLine line1 = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), UUID.randomUUID(), "Product A", "CODE-A",
+                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("5"), List.of());
+        InvoiceLine line2 = InvoiceLine.reconstitute(
+                InvoiceLineId.generate(), UUID.randomUUID(), "Product B", "CODE-B",
+                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("3"), List.of());
+        InvoiceId invoiceId = InvoiceId.generate();
+        Invoice invoice = Invoice.reconstitute(
+                invoiceId, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                new BigDecimal("80.00"), InvoiceReturnStatus.PARTIAL,
+                null, null, List.of(line1, line2), LocalDateTime.now(), LocalDateTime.now());
+
+        Return return_ = mock(Return.class);
+        ReturnLine returnLine = mock(ReturnLine.class);
+        when(return_.getInvoiceId()).thenReturn(invoiceId);
+        when(return_.getTotal()).thenReturn(new BigDecimal("20.00"));
+        when(return_.getLines()).thenReturn(List.of(returnLine));
+        when(returnLine.getInvoiceLineId()).thenReturn(line1.getId().value());
+        when(returnLine.getQuantity()).thenReturn(new BigDecimal("2"));
+
+        invoice.revertReturn(return_);
+
+        assertEquals(InvoiceReturnStatus.PARTIAL, invoice.getReturnStatus());
+        assertEquals(new BigDecimal("60.00"), invoice.getReturnedTotal());
+    }
+
+    @Test
+    void should_ThrowException_When_ReturnDoesNotBelongToInvoice() {
+        Invoice invoice = Invoice.reconstitute(
+                InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                BigDecimal.ZERO, null,
+                null, null, validLines, LocalDateTime.now(), LocalDateTime.now());
+
+        Return return_ = mock(Return.class);
+        when(return_.getInvoiceId()).thenReturn(InvoiceId.generate());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> invoice.revertReturn(return_));
+
+        assertEquals("La devolución no pertenece a esta factura", exception.getMessage());
+    }
+
+    @Test
+    void should_ThrowException_When_ReturnIsNull() {
+        Invoice invoice = Invoice.reconstitute(
+                InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null,
+                InvoiceStatus.PAID, PaymentType.CASH, null,
+                BigDecimal.ZERO, null,
+                null, null, validLines, LocalDateTime.now(), LocalDateTime.now());
+
+        assertThrows(NullPointerException.class, () -> invoice.revertReturn(null));
     }
 }

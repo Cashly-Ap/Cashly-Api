@@ -199,6 +199,44 @@ class PaymentUnitTest {
     }
 
     @Nested
+    @DisplayName("reactivate()")
+    class Reactivate {
+
+        @Test
+        void should_Reactivate_When_PaymentIsCancelled() {
+            Payment payment = createValidPayment();
+            payment.apply(AMOUNT);
+            payment.cancel();
+
+            payment.reactivate();
+
+            assertEquals(PaymentStatus.APPLIED, payment.getStatus());
+        }
+
+        @Test
+        void should_ThrowException_When_PaymentIsNotCancelled() {
+            Payment payment = createValidPayment();
+
+            IllegalStateException exception = assertThrows(IllegalStateException.class,
+                    payment::reactivate);
+
+            assertEquals("Only cancelled payments can be reactivated", exception.getMessage());
+        }
+
+        @Test
+        void should_ThrowException_When_PaymentIsRefund() {
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    CREATED_BY, CREATED_BY_NAME, PaymentStatus.REFUND);
+
+            IllegalStateException exception = assertThrows(IllegalStateException.class,
+                    payment::reactivate);
+
+            assertEquals("Only cancelled payments can be reactivated", exception.getMessage());
+        }
+    }
+
+    @Nested
     @DisplayName("apply()")
     class Apply {
 

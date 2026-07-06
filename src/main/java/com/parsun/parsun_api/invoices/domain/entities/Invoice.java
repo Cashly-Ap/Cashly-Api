@@ -219,6 +219,38 @@ public class Invoice {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void revertReturn(Return return_) {
+        Objects.requireNonNull(return_, "Return cannot be null");
+
+        if (!return_.getInvoiceId().value().equals(this.id.value())) {
+            throw new IllegalArgumentException("La devolución no pertenece a esta factura");
+        }
+
+        this.returnedTotal = this.returnedTotal.subtract(return_.getTotal());
+
+        for (ReturnLine returnLine : return_.getLines()) {
+            this.lines.stream()
+                    .filter(l -> l.getId().value().equals(returnLine.getInvoiceLineId()))
+                    .findFirst()
+                    .ifPresent(line -> line.decreaseReturnedQuantity(returnLine.getQuantity()));
+        }
+
+        boolean anyReturned = this.lines.stream()
+                .anyMatch(line -> line.getReturnedQuantity().compareTo(BigDecimal.ZERO) > 0);
+        boolean allFullyReturned = this.lines.stream()
+                .allMatch(line -> line.getReturnedQuantity().compareTo(line.getQuantity()) >= 0);
+
+        if (!anyReturned) {
+            this.returnStatus = null;
+        } else if (allFullyReturned) {
+            this.returnStatus = InvoiceReturnStatus.FULL;
+        } else {
+            this.returnStatus = InvoiceReturnStatus.PARTIAL;
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
     private BigDecimal calculateSubtotal() {
         return lines.stream()
                 .map(InvoiceLine::getLineTotal)
