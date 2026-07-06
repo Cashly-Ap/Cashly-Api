@@ -31,13 +31,23 @@ public record PurchaseDetailResponse(
             BigDecimal quantity,
             BigDecimal unitCost,
             BigDecimal subtotal,
-            List<AllocationDetail> allocations
+            List<AllocationDetail> allocations,
+            List<StockItemDetail> stockItems
     ) {
         public record AllocationDetail(
                 UUID warehouseId,
                 String warehouseCode,
                 String warehouseName,
                 BigDecimal allocatedQuantity
+        ) {}
+
+        public record StockItemDetail(
+                UUID warehouseId,
+                String warehouseCode,
+                String warehouseName,
+                int quantity,
+                int reserved,
+                int available
         ) {}
     }
 }

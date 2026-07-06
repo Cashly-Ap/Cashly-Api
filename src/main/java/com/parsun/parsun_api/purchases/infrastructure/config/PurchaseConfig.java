@@ -26,8 +26,9 @@ public class PurchaseConfig {
 
     @Bean
     public GetPurchaseByIdUseCase getPurchaseByIdUseCase(PurchaseRepository purchaseRepository,
-                                                          WarehouseRepository warehouseRepository) {
-        return new GetPurchaseByIdUseCase(purchaseRepository, warehouseRepository);
+                                                          WarehouseRepository warehouseRepository,
+                                                          WarehouseStockRepository warehouseStockRepository) {
+        return new GetPurchaseByIdUseCase(purchaseRepository, warehouseRepository, warehouseStockRepository);
     }
 
     @Bean
