@@ -27,6 +27,6 @@ public class TogglePaymentMethodUseCase {
         paymentMethod.toggleActive();
         PaymentMethod saved = repository.save(paymentMethod);
 
-        return PaymentMethodMapper.toResponse(saved);
+        return PaymentMethodMapper.toResponse(saved, repository.hasAssociatedRecords(saved.getId()));
     }
 }

@@ -46,6 +46,7 @@ class TogglePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
         when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
 
@@ -69,6 +70,7 @@ class TogglePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
         when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
 

@@ -4,6 +4,7 @@ import com.parsun.parsun_api.payment_methods.application.dto.response.PaymentMet
 import com.parsun.parsun_api.payment_methods.application.mappers.PaymentMethodMapper;
 import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
 import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRepository;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,18 @@ public class ListPaymentMethodsUseCase {
         this.repository = repository;
     }
 
-    public List<PaymentMethodResponse> execute(Boolean active) {
-        List<PaymentMethod> paymentMethods = repository.findAll(active);
-        return PaymentMethodMapper.toResponseList(paymentMethods);
+    public PageResponse<PaymentMethodResponse> execute(String search, Boolean active,
+                                                        int page, int size,
+                                                        String orderBy, String orderDir) {
+        PageResponse<PaymentMethod> pageResult = repository.findAllWithFilters(
+                search, active, page, size, orderBy, orderDir);
+
+        List<PaymentMethodResponse> content = pageResult.content().stream()
+                .map(pm -> PaymentMethodMapper.toResponse(pm, repository.hasAssociatedRecords(pm.getId())))
+                .toList();
+
+        return new PageResponse<>(content, pageResult.totalElements(), pageResult.totalPages(),
+                pageResult.size(), pageResult.number(), pageResult.first(),
+                pageResult.last(), pageResult.empty());
     }
 }

@@ -9,6 +9,7 @@ import com.parsun.parsun_api.payment_methods.application.usecases.GetPaymentMeth
 import com.parsun.parsun_api.payment_methods.application.usecases.ListPaymentMethodsUseCase;
 import com.parsun.parsun_api.payment_methods.application.usecases.TogglePaymentMethodUseCase;
 import com.parsun.parsun_api.payment_methods.application.usecases.UpdatePaymentMethodUseCase;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +57,7 @@ class PaymentMethodControllerTest {
     void should_create_payment_method_and_return_201() {
         UUID id = UUID.randomUUID();
         PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "CASH", "Cash", "Cash payment", true,
+                id, "CASH", "Cash", "Cash payment", true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(createPaymentMethodUseCase.execute(any(CreatePaymentMethodRequest.class))).thenReturn(response);
@@ -74,28 +75,34 @@ class PaymentMethodControllerTest {
     @DisplayName("should list payment methods and return 200")
     void should_list_payment_methods_and_return_200() {
         PaymentMethodResponse pm = new PaymentMethodResponse(
-                UUID.randomUUID(), "CASH", "Cash", null, true,
+                UUID.randomUUID(), "CASH", "Cash", null, true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
-        when(listPaymentMethodsUseCase.execute(any())).thenReturn(List.of(pm));
+        PageResponse<PaymentMethodResponse> pageResult = new PageResponse<>(
+                List.of(pm), 1, 1, 10, 0, true, true, false);
+        when(listPaymentMethodsUseCase.execute(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
+                .thenReturn(pageResult);
 
-        ResponseEntity<List<PaymentMethodResponse>> result = paymentMethodController.list(true);
+        ResponseEntity<PageResponse<PaymentMethodResponse>> result =
+                paymentMethodController.list(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        verify(listPaymentMethodsUseCase).execute(true);
+        assertEquals(1, result.getBody().content().size());
     }
 
     @Test
     @DisplayName("should return empty list when no payment methods")
     void should_return_empty_list_when_no_payment_methods() {
-        when(listPaymentMethodsUseCase.execute(any())).thenReturn(List.of());
+        PageResponse<PaymentMethodResponse> pageResult = new PageResponse<>(
+                List.of(), 0, 0, 10, 0, true, true, true);
+        when(listPaymentMethodsUseCase.execute(any(), any(), anyInt(), anyInt(), any(), any()))
+                .thenReturn(pageResult);
 
-        ResponseEntity<List<PaymentMethodResponse>> result = paymentMethodController.list(null);
+        ResponseEntity<PageResponse<PaymentMethodResponse>> result =
+                paymentMethodController.list(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
-        verify(listPaymentMethodsUseCase).execute(null);
+        assertTrue(result.getBody().content().isEmpty());
     }
 
     @Test
@@ -103,7 +110,7 @@ class PaymentMethodControllerTest {
     void should_get_payment_method_by_id_and_return_200() {
         UUID id = UUID.randomUUID();
         PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "CASH", "Cash", null, true,
+                id, "CASH", "Cash", null, true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(getPaymentMethodByIdUseCase.execute(id)).thenReturn(response);
@@ -120,7 +127,7 @@ class PaymentMethodControllerTest {
     void should_update_payment_method_and_return_200() {
         UUID id = UUID.randomUUID();
         PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "TRANSFER", "Transfer", null, true,
+                id, "TRANSFER", "Transfer", null, true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(updatePaymentMethodUseCase.execute(eq(id), any(UpdatePaymentMethodRequest.class)))
@@ -140,7 +147,7 @@ class PaymentMethodControllerTest {
     void should_toggle_payment_method_and_return_200() {
         UUID id = UUID.randomUUID();
         PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "CASH", "Cash", null, false,
+                id, "CASH", "Cash", null, false, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(togglePaymentMethodUseCase.execute(id)).thenReturn(response);

@@ -15,7 +15,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,9 +41,28 @@ class DeletePaymentMethodUseCaseTest {
     void should_DeletePaymentMethod_When_Exists() {
         when(repository.findById(PaymentMethodId.of(paymentMethodId)))
                 .thenReturn(Optional.of(mock(com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod.class)));
+        when(repository.hasAssociatedRecords(PaymentMethodId.of(paymentMethodId)))
+                .thenReturn(false);
 
         assertDoesNotThrow(() -> useCase.execute(paymentMethodId));
         verify(repository).delete(PaymentMethodId.of(paymentMethodId));
+    }
+
+    @Test
+    void should_Throw_When_HasAssociatedRecords() {
+        when(repository.findById(PaymentMethodId.of(paymentMethodId)))
+                .thenReturn(Optional.of(mock(com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod.class)));
+        when(repository.hasAssociatedRecords(PaymentMethodId.of(paymentMethodId)))
+                .thenReturn(true);
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> useCase.execute(paymentMethodId)
+        );
+
+        assertEquals("No se puede eliminar el método de pago porque tiene pagos o cierres de caja asociados.",
+                exception.getMessage());
+        verify(repository, never()).delete(any());
     }
 
     @Test

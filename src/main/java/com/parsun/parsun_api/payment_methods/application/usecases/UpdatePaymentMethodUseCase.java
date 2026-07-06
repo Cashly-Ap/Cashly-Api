@@ -28,6 +28,6 @@ public class UpdatePaymentMethodUseCase {
         paymentMethod.update(request.name(), request.description(), request.isActive());
         PaymentMethod saved = repository.save(paymentMethod);
 
-        return PaymentMethodMapper.toResponse(saved);
+        return PaymentMethodMapper.toResponse(saved, repository.hasAssociatedRecords(saved.getId()));
     }
 }

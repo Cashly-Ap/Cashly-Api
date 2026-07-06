@@ -4,13 +4,13 @@ import com.parsun.parsun_api.payment_methods.application.dto.request.CreatePayme
 import com.parsun.parsun_api.payment_methods.application.dto.request.UpdatePaymentMethodRequest;
 import com.parsun.parsun_api.payment_methods.application.dto.response.PaymentMethodResponse;
 import com.parsun.parsun_api.payment_methods.application.usecases.*;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -48,10 +48,14 @@ public class PaymentMethodController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
-    public ResponseEntity<List<PaymentMethodResponse>> list(
-            @RequestParam(required = false) Boolean active) {
-        List<PaymentMethodResponse> paymentMethods = listPaymentMethodsUseCase.execute(active);
-        return ResponseEntity.ok(paymentMethods);
+    public ResponseEntity<PageResponse<PaymentMethodResponse>> list(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String orderBy,
+            @RequestParam(defaultValue = "asc") String orderDir) {
+        return ResponseEntity.ok(listPaymentMethodsUseCase.execute(search, active, page, size, orderBy, orderDir));
     }
 
     @GetMapping("/{id}")

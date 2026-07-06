@@ -9,6 +9,7 @@ public record PaymentMethodResponse(
         String name,
         String description,
         boolean isActive,
+        boolean hasAssociatedRecords,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

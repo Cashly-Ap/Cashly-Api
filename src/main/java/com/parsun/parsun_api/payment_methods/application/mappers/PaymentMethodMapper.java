@@ -9,21 +9,22 @@ public class PaymentMethodMapper {
 
     private PaymentMethodMapper() {}
 
-    public static PaymentMethodResponse toResponse(PaymentMethod paymentMethod) {
+    public static PaymentMethodResponse toResponse(PaymentMethod paymentMethod, boolean hasAssociatedRecords) {
         return new PaymentMethodResponse(
                 paymentMethod.getId().value(),
                 paymentMethod.getCode(),
                 paymentMethod.getName(),
                 paymentMethod.getDescription(),
                 paymentMethod.isActive(),
+                hasAssociatedRecords,
                 paymentMethod.getCreatedAt(),
                 paymentMethod.getUpdatedAt()
         );
     }
 
-    public static List<PaymentMethodResponse> toResponseList(List<PaymentMethod> paymentMethods) {
+    public static List<PaymentMethodResponse> toResponseList(List<PaymentMethod> paymentMethods, java.util.function.Function<PaymentMethod, Boolean> hasAssociatedRecords) {
         return paymentMethods.stream()
-                .map(PaymentMethodMapper::toResponse)
+                .map(pm -> toResponse(pm, hasAssociatedRecords.apply(pm)))
                 .toList();
     }
 }

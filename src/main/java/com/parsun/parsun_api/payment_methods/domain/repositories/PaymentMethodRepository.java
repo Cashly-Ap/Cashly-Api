@@ -2,6 +2,7 @@ package com.parsun.parsun_api.payment_methods.domain.repositories;
 
 import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
 import com.parsun.parsun_api.payment_methods.domain.valueobjects.PaymentMethodId;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,4 +14,8 @@ public interface PaymentMethodRepository {
     Optional<PaymentMethod> findByCode(String code);
     Optional<Integer> findMaxCodeNumber();
     void delete(PaymentMethodId id);
+    boolean hasAssociatedRecords(PaymentMethodId id);
+    PageResponse<PaymentMethod> findAllWithFilters(String search, Boolean active,
+                                                    int page, int size,
+                                                    String orderBy, String orderDir);
 }

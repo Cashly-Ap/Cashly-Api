@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +40,7 @@ class GetPaymentMethodByIdUseCaseTest {
                 true, now, now);
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.of(paymentMethod));
+        when(repository.hasAssociatedRecords(paymentMethodId)).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
 

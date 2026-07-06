@@ -24,6 +24,11 @@ public class DeletePaymentMethodUseCase {
             throw new IllegalArgumentException("Payment method not found: " + id);
         }
 
+        if (repository.hasAssociatedRecords(paymentMethodId)) {
+            throw new IllegalStateException(
+                    "No se puede eliminar el método de pago porque tiene pagos o cierres de caja asociados.");
+        }
+
         repository.delete(paymentMethodId);
     }
 }

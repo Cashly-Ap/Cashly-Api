@@ -54,6 +54,7 @@ class UpdatePaymentMethodUseCaseTest {
                 paymentMethodId, "PM-0001", "Credit Card", "Credit card payment",
                 false, now, LocalDateTime.now());
         when(repository.save(any(PaymentMethod.class))).thenReturn(saved);
+        when(repository.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id, request);
 
@@ -85,6 +86,7 @@ class UpdatePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
         when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id, request);
 

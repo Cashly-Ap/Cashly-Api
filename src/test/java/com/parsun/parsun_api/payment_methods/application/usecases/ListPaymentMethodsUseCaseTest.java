@@ -4,6 +4,7 @@ import com.parsun.parsun_api.payment_methods.application.dto.response.PaymentMet
 import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
 import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.parsun.parsun_api.payment_methods.domain.valueobjects.PaymentMethodId;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,16 +40,19 @@ class ListPaymentMethodsUseCaseTest {
                 PaymentMethodId.of(UUID.randomUUID()), "PM-0002", "Credit Card", "Credit card payment",
                 true, now, now);
 
-        when(repository.findAll(null)).thenReturn(List.of(pm1, pm2));
+        PageResponse<PaymentMethod> pageResult = new PageResponse<>(
+                List.of(pm1, pm2), 2, 1, 10, 0, true, true, false);
+        when(repository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
+                .thenReturn(pageResult);
+        when(repository.hasAssociatedRecords(any())).thenReturn(false);
 
-        List<PaymentMethodResponse> result = useCase.execute(null);
+        PageResponse<PaymentMethodResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
         assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("PM-0001", result.get(0).code());
-        assertEquals("PM-0002", result.get(1).code());
-
-        verify(repository).findAll(null);
+        assertEquals(2, result.content().size());
+        assertEquals("PM-0001", result.content().get(0).code());
+        assertEquals("PM-0002", result.content().get(1).code());
+        assertEquals(2, result.totalElements());
     }
 
     @Test
@@ -57,44 +62,30 @@ class ListPaymentMethodsUseCaseTest {
                 PaymentMethodId.of(UUID.randomUUID()), "PM-0001", "Cash", "Cash payment",
                 true, now, now);
 
-        when(repository.findAll(true)).thenReturn(List.of(pm));
+        PageResponse<PaymentMethod> pageResult = new PageResponse<>(
+                List.of(pm), 1, 1, 10, 0, true, true, false);
+        when(repository.findAllWithFilters(isNull(), eq(true), eq(0), eq(10), eq("name"), eq("asc")))
+                .thenReturn(pageResult);
+        when(repository.hasAssociatedRecords(any())).thenReturn(false);
 
-        List<PaymentMethodResponse> result = useCase.execute(true);
+        PageResponse<PaymentMethodResponse> result = useCase.execute(null, true, 0, 10, "name", "asc");
 
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.get(0).isActive());
-
-        verify(repository).findAll(true);
+        assertEquals(1, result.content().size());
+        assertTrue(result.content().get(0).isActive());
     }
 
     @Test
-    void should_ReturnInactivePaymentMethods_When_ActiveFilterIsFalse() {
-        LocalDateTime now = LocalDateTime.now();
-        PaymentMethod pm = PaymentMethod.reconstitute(
-                PaymentMethodId.of(UUID.randomUUID()), "PM-0002", "Credit Card", "Inactive",
-                false, now, now);
+    void should_ReturnEmptyPage_When_NoPaymentMethods() {
+        PageResponse<PaymentMethod> pageResult = new PageResponse<>(
+                List.of(), 0, 0, 10, 0, true, true, true);
+        when(repository.findAllWithFilters(any(), any(), anyInt(), anyInt(), any(), any()))
+                .thenReturn(pageResult);
 
-        when(repository.findAll(false)).thenReturn(List.of(pm));
-
-        List<PaymentMethodResponse> result = useCase.execute(false);
+        PageResponse<PaymentMethodResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertFalse(result.get(0).isActive());
-
-        verify(repository).findAll(false);
-    }
-
-    @Test
-    void should_ReturnEmptyList_When_NoPaymentMethods() {
-        when(repository.findAll(null)).thenReturn(List.of());
-
-        List<PaymentMethodResponse> result = useCase.execute(null);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-
-        verify(repository).findAll(null);
+        assertTrue(result.content().isEmpty());
+        assertEquals(0, result.totalElements());
     }
 }

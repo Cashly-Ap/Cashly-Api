@@ -19,9 +19,11 @@ public class GetPaymentMethodByIdUseCase {
     }
 
     public PaymentMethodResponse execute(UUID id) {
-        PaymentMethod paymentMethod = repository.findById(PaymentMethodId.of(id))
+        PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
+        PaymentMethod paymentMethod = repository.findById(paymentMethodId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + id));
 
-        return PaymentMethodMapper.toResponse(paymentMethod);
+        boolean hasAssociatedRecords = repository.hasAssociatedRecords(paymentMethodId);
+        return PaymentMethodMapper.toResponse(paymentMethod, hasAssociatedRecords);
     }
 }
