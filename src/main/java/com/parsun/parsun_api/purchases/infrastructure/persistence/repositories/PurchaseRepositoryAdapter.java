@@ -91,4 +91,9 @@ public class PurchaseRepositoryAdapter implements PurchaseRepository {
     public void deleteById(PurchaseId id) {
         jpaRepository.deleteById(id.value());
     }
+
+    @Override
+    public boolean existsBySupplierId(UUID supplierId) {
+        return jpaRepository.existsBySupplierId(supplierId);
+    }
 }

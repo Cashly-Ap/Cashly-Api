@@ -24,6 +24,7 @@ import com.parsun.parsun_api.products.application.exceptions.DuplicateProductCom
 import com.parsun.parsun_api.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.parsun.parsun_api.products.application.exceptions.ProductHasStockException;
 import com.parsun.parsun_api.products.application.exceptions.ProductNotFoundException;
+import com.parsun.parsun_api.suppliers.application.exceptions.SupplierHasAssociatedRecordsException;
 import com.parsun.parsun_api.price_types.application.exceptions.DuplicatePriceTypeNameException;
 import com.parsun.parsun_api.price_types.application.exceptions.PriceTypeInUseException;
 import com.parsun.parsun_api.price_types.application.exceptions.PriceTypeNotFoundException;
@@ -170,6 +171,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleProductHasAssociatedRecords(ProductHasAssociatedRecordsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(createErrorResponse(HttpStatus.CONFLICT, "Product has associated records", ex.getMessage()));
+    }
+
+    @ExceptionHandler(SupplierHasAssociatedRecordsException.class)
+    public ResponseEntity<Map<String, Object>> handleSupplierHasAssociatedRecords(SupplierHasAssociatedRecordsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, "Supplier has associated records", ex.getMessage()));
     }
 
     @ExceptionHandler(ProductHasStockException.class)

@@ -17,4 +17,5 @@ public interface PurchaseRepository {
                                        String orderBy, String orderDir);
     int getNextSequenceForYear(int year);
     void deleteById(PurchaseId id);
+    boolean existsBySupplierId(UUID supplierId);
 }

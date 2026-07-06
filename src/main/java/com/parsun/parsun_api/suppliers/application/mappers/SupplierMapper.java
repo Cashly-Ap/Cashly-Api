@@ -6,6 +6,10 @@ import com.parsun.parsun_api.suppliers.domain.entities.Supplier;
 public class SupplierMapper {
 
     public SupplierListResponse toListResponse(Supplier supplier) {
+        return toListResponse(supplier, false);
+    }
+
+    public SupplierListResponse toListResponse(Supplier supplier, boolean hasPurchases) {
         return new SupplierListResponse(
             supplier.getId().toString(),
             supplier.getCode().getValue(),
@@ -14,7 +18,8 @@ public class SupplierMapper {
             supplier.getType().name(),
             supplier.getRif().getValue(),
             supplier.isActive(),
-            supplier.getCreatedAt().toString()
+            supplier.getCreatedAt().toString(),
+            hasPurchases
         );
     }
 

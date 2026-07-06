@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.suppliers.infrastructure.config;
 
+import com.parsun.parsun_api.purchases.domain.repositories.PurchaseRepository;
 import com.parsun.parsun_api.suppliers.application.mappers.SupplierMapper;
 import com.parsun.parsun_api.suppliers.application.usecases.*;
 import com.parsun.parsun_api.suppliers.domain.repositories.SupplierRepository;
@@ -36,8 +37,9 @@ public class SupplierConfig {
 
     @Bean
     public ListSuppliersUseCase listSuppliersUseCase(SupplierRepository supplierRepository,
-                                                      SupplierMapper supplierMapper) {
-        return new ListSuppliersUseCase(supplierRepository, supplierMapper);
+                                                       SupplierMapper supplierMapper,
+                                                       PurchaseRepository purchaseRepository) {
+        return new ListSuppliersUseCase(supplierRepository, supplierMapper, purchaseRepository);
     }
 
     @Bean
@@ -47,7 +49,8 @@ public class SupplierConfig {
     }
 
     @Bean
-    public DeleteSupplierUseCase deleteSupplierUseCase(SupplierRepository supplierRepository) {
-        return new DeleteSupplierUseCase(supplierRepository);
+    public DeleteSupplierUseCase deleteSupplierUseCase(SupplierRepository supplierRepository,
+                                                        PurchaseRepository purchaseRepository) {
+        return new DeleteSupplierUseCase(supplierRepository, purchaseRepository);
     }
 }

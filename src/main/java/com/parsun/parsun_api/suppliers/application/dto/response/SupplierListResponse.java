@@ -8,5 +8,6 @@ public record SupplierListResponse(
     String type,
     String rif,
     boolean active,
-    String createdAt
+    String createdAt,
+    boolean hasPurchases
 ) {}

@@ -51,4 +51,6 @@ public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUI
             @Param("productId") UUID productId,
             @Param("categoryId") UUID categoryId
     );
+
+    boolean existsBySupplierId(UUID supplierId);
 }
