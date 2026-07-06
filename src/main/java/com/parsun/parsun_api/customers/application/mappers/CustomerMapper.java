@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CustomerMapper {
 
-    public CustomerListResponse toListResponse(Customer customer) {
+    public CustomerListResponse toListResponse(Customer customer, boolean deletable) {
         return new CustomerListResponse(
             customer.getId().toString(),
             customer.getCode().getValue(),
@@ -17,7 +17,8 @@ public class CustomerMapper {
             customer.getType().name(),
             customer.isActive(),
             customer.getPaymentType(),
-            customer.isPortalAccess()
+            customer.isPortalAccess(),
+            deletable
         );
     }
 

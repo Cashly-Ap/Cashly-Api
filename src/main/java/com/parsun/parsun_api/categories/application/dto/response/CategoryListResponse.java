@@ -4,5 +4,6 @@ public record CategoryListResponse(
     String id,
     String name,
     String description,
-    boolean active
+    boolean active,
+    boolean deletable
 ) {}

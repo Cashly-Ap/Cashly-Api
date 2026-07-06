@@ -6,11 +6,15 @@ import com.parsun.parsun_api.shared.dto.PageResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface CustomerRepository {
     Customer save(Customer customer);
     Optional<Customer> findById(CustomerId id);
     List<Customer> findAll();
+    boolean hasAssociatedRecords(CustomerId id);
+    Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids);
     PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active, Boolean portalAccess, String state, String municipality, String postalCode, Boolean hasActiveWarehouse, int page, int size, String orderBy, String orderDir);
     void delete(CustomerId id);
     boolean existsById(CustomerId id);

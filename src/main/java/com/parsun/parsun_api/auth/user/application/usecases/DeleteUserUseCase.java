@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.auth.user.application.usecases;
 
+import com.parsun.parsun_api.auth.user.application.exceptions.UserHasAssociatedRecordsException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
@@ -32,6 +33,10 @@ public class DeleteUserUseCase {
 
         if (user.isSuperAdmin()) {
             throw new IllegalArgumentException("Cannot delete another SUPER_ADMIN user");
+        }
+
+        if (userRepository.hasAssociatedRecords(userId)) {
+            throw new UserHasAssociatedRecordsException(id);
         }
 
         userRepository.delete(user);

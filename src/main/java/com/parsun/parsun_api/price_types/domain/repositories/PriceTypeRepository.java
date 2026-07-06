@@ -4,6 +4,7 @@ import com.parsun.parsun_api.price_types.domain.entities.PriceType;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PriceTypeRepository {
@@ -14,5 +15,6 @@ public interface PriceTypeRepository {
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);
     boolean isInUseByProducts(UUID id);
+    Set<UUID> findIdsInUseByProducts(Set<UUID> ids);
     void delete(UUID id);
 }

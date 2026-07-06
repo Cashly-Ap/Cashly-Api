@@ -11,5 +11,6 @@ public record CustomerListResponse(
     String type,
     boolean active,
     PaymentType paymentType,
-    boolean portalAccess
+    boolean portalAccess,
+    boolean deletable
 ) {}

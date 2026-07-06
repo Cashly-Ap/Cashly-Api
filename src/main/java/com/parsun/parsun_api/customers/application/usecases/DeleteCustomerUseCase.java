@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.customers.application.usecases;
 
+import com.parsun.parsun_api.customers.application.exceptions.CustomerHasAssociatedRecordsException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
@@ -18,6 +19,9 @@ public class DeleteCustomerUseCase {
         CustomerId customerId = CustomerId.from(id);
         if (!customerRepository.existsById(customerId)) {
             throw new CustomerNotFoundException("Customer not found with id: " + id);
+        }
+        if (customerRepository.hasAssociatedRecords(customerId)) {
+            throw new CustomerHasAssociatedRecordsException(id);
         }
         customerRepository.delete(customerId);
     }

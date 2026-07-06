@@ -8,6 +8,9 @@ import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ListCustomersUseCase {
 
@@ -29,8 +32,14 @@ public class ListCustomersUseCase {
             search, rif, type, effectiveActive, portalAccess, state, municipality, postalCode, hasActiveWarehouse,
             page, size, orderBy, orderDir);
 
+        Set<UUID> idsWithRecords = customerRepository.findIdsWithAssociatedRecords(
+            customerPage.content().stream()
+                .map(c -> c.getId().getValue())
+                .collect(Collectors.toSet())
+        );
+
         List<CustomerListResponse> content = customerPage.content().stream()
-            .map(customerMapper::toListResponse)
+            .map(c -> customerMapper.toListResponse(c, !idsWithRecords.contains(c.getId().getValue())))
             .toList();
 
         return new PageResponse<>(

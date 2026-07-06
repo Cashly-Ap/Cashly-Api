@@ -4,6 +4,7 @@ import com.parsun.parsun_api.shared.dto.PageResponse;
 import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface WarehouseRepository {
@@ -11,6 +12,8 @@ public interface WarehouseRepository {
     Optional<Warehouse> findById(UUID id);
     boolean existsByCode(String code);
     boolean existsByCodeAndIdNot(String code, UUID id);
+    boolean hasActiveStock(UUID id);
+    Set<UUID> findIdsWithActiveStock(Set<UUID> ids);
     PageResponse<Warehouse> findAllWithFilters(String search, Boolean active,
                                                int page, int size,
                                                String orderBy, String orderDir);

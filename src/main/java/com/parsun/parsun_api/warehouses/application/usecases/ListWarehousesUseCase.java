@@ -5,6 +5,9 @@ import com.parsun.parsun_api.warehouses.application.dto.response.WarehouseListRe
 import com.parsun.parsun_api.warehouses.domain.entities.Warehouse;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 
+import java.util.Set;
+import java.util.UUID;
+
 public class ListWarehousesUseCase {
 
     private final WarehouseRepository warehouseRepository;
@@ -19,8 +22,14 @@ public class ListWarehousesUseCase {
         PageResponse<Warehouse> result =
                 warehouseRepository.findAllWithFilters(search, active, page, size, orderBy, orderDir);
 
+        Set<UUID> idsWithStock = warehouseRepository.findIdsWithActiveStock(
+            result.content().stream().map(Warehouse::getId).collect(java.util.stream.Collectors.toSet())
+        );
+
         return new PageResponse<>(
-                result.content().stream().map(WarehouseListResponse::from).toList(),
+                result.content().stream()
+                    .map(w -> WarehouseListResponse.from(w, !idsWithStock.contains(w.getId())))
+                    .toList(),
                 result.totalElements(),
                 result.totalPages(),
                 result.size(),

@@ -11,13 +11,18 @@ public record WarehouseListResponse(
         String state,
         String municipality,
         boolean active,
+        boolean deletable,
         LocalDateTime createdAt
 ) {
     public static WarehouseListResponse from(Warehouse w) {
+        return from(w, true);
+    }
+
+    public static WarehouseListResponse from(Warehouse w, boolean deletable) {
         return new WarehouseListResponse(
                 w.getId().toString(), w.getCode(), w.getName(),
                 w.getState(), w.getMunicipality(),
-                w.isActive(), w.getCreatedAt()
+                w.isActive(), deletable, w.getCreatedAt()
         );
     }
 }

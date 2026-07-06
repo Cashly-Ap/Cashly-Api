@@ -8,6 +8,8 @@ import com.parsun.parsun_api.shared.dto.PageResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface UserRepository {
 
@@ -15,6 +17,8 @@ public interface UserRepository {
 
     Optional<User> findById(UserId id);
 
+    boolean hasAssociatedRecords(UserId id);
+    Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids);
     Optional<User> findByEmail(Email email);
 
     boolean existsByEmail(Email email);
