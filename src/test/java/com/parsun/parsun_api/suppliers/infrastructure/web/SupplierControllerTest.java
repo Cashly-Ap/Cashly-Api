@@ -72,7 +72,7 @@ class SupplierControllerTest {
     void should_get_all_suppliers_and_return_200() {
         SupplierListResponse supplier = new SupplierListResponse(
                 UUID.randomUUID().toString(), 1001L, "Proveedor C.A.", "Proveedor",
-                "JURIDICO", "J-12345678-9", true, LocalDateTime.now().toString());
+                "JURIDICO", "J-12345678-9", true, LocalDateTime.now().toString(), false);
 
         PageResponse<SupplierListResponse> pageResponse = new PageResponse<>(
                 List.of(supplier), 1L, 1, 10, 0, true, true, false);
