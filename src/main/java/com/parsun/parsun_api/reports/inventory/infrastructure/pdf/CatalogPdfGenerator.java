@@ -50,7 +50,7 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph("Catálogo de Productos")
+            Paragraph title = new Paragraph("Reporte de Productos")
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
