@@ -46,7 +46,7 @@ class ListCustomersUseCaseTest {
         Customer customer = CustomerTestHelper.buildCustomer(id);
         CustomerListResponse listResponse = new CustomerListResponse(
                 id.toString(), 1001L, "Test", "Test Corp", "J-12345678-9",
-                "BUSINESS", true, PaymentType.CASH, false
+                "BUSINESS", true, PaymentType.CASH, false, false
         );
 
         PageResponse<Customer> page = new PageResponse<>(
@@ -58,7 +58,7 @@ class ListCustomersUseCaseTest {
                 isNull(), isNull(), isNull(), isNull(), isNull(),
                 eq(0), eq(10), isNull(), isNull()
         )).thenReturn(page);
-        when(mapper.toListResponse(customer)).thenReturn(listResponse);
+        when(mapper.toListResponse(eq(customer), anyBoolean())).thenReturn(listResponse);
 
         PageResponse<CustomerListResponse> response = useCase.execute(
                 "search", "J-123", "BUSINESS", true, null, null, null, null, null, 0, 10, null, null

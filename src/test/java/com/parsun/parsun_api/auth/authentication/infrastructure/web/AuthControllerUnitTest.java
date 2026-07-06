@@ -79,6 +79,7 @@ class AuthControllerUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            false,
             java.util.Set.of(),
             now,
             now

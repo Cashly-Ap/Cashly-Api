@@ -52,7 +52,7 @@ class PriceTypeControllerTest {
     void should_create_price_type_and_return_201() {
         String id = UUID.randomUUID().toString();
         PriceTypeResponse response = new PriceTypeResponse(
-                id, "Retail", "Retail price", true,
+                id, "Retail", "Retail price", true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(createPriceTypeUseCase.execute(any(CreatePriceTypeRequest.class))).thenReturn(response);
@@ -74,7 +74,7 @@ class PriceTypeControllerTest {
         UUID uuid = UUID.randomUUID();
         String id = uuid.toString();
         PriceTypeResponse response = new PriceTypeResponse(
-                id, "Wholesale", "Wholesale price", true,
+                id, "Wholesale", "Wholesale price", true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(updatePriceTypeUseCase.execute(eq(uuid), any(UpdatePriceTypeRequest.class))).thenReturn(response);
@@ -107,7 +107,7 @@ class PriceTypeControllerTest {
     void should_get_price_type_by_id() {
         String id = UUID.randomUUID().toString();
         PriceTypeResponse response = new PriceTypeResponse(
-                id, "Retail", "Retail price", true,
+                id, "Retail", "Retail price", true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(getPriceTypeUseCase.execute(UUID.fromString(id))).thenReturn(response);
@@ -124,10 +124,10 @@ class PriceTypeControllerTest {
     @DisplayName("should list all price types")
     void should_list_all_price_types() {
         PriceTypeResponse pt1 = new PriceTypeResponse(
-                UUID.randomUUID().toString(), "Retail", null, true,
+                UUID.randomUUID().toString(), "Retail", null, true, false,
                 LocalDateTime.now(), LocalDateTime.now());
         PriceTypeResponse pt2 = new PriceTypeResponse(
-                UUID.randomUUID().toString(), "Wholesale", null, true,
+                UUID.randomUUID().toString(), "Wholesale", null, true, false,
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(listPriceTypesUseCase.execute(anyString(), anyString())).thenReturn(List.of(pt1, pt2));

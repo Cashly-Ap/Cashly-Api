@@ -80,7 +80,7 @@ class CustomerControllerTest {
     void should_get_all_customers_and_return_200() {
         CustomerListResponse customer = new CustomerListResponse(
                 UUID.randomUUID().toString(), 1001L, "Test", "Test Corp",
-                "J-12345678-9", "BUSINESS", true, null, false);
+                "J-12345678-9", "BUSINESS", true, null, false, false);
 
         PageResponse<CustomerListResponse> pageResponse = new PageResponse<>(
                 List.of(customer), 1L, 1, 10, 0, true, true, false);

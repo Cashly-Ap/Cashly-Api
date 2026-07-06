@@ -21,6 +21,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            false,
             Set.of(),
             now,
             now
@@ -48,6 +49,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            false,
             Set.of(),
             now,
             now
@@ -59,6 +61,7 @@ class UserResponseUnitTest {
             "John Doe",
             UserRole.OPERATOR,
             true,
+            false,
             false,
             Set.of(),
             now,
@@ -80,6 +83,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            false,
             Set.of(),
             now,
             now
@@ -91,6 +95,7 @@ class UserResponseUnitTest {
             "John Doe",
             UserRole.OPERATOR,
             true,
+            false,
             false,
             Set.of(),
             now,
@@ -111,6 +116,7 @@ class UserResponseUnitTest {
             UserRole.OPERATOR,
             true,
             false,
+            false,
             Set.of(),
             now,
             now
@@ -122,6 +128,7 @@ class UserResponseUnitTest {
             "John Doe",
             UserRole.OPERATOR,
             true,
+            false,
             false,
             Set.of(),
             now,
@@ -141,6 +148,7 @@ class UserResponseUnitTest {
             "John Doe",
             UserRole.OPERATOR,
             true,
+            false,
             false,
             Set.of(),
             now,

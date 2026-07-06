@@ -28,7 +28,7 @@ class CustomerMapperTest {
     void should_map_customer_to_list_response() {
         Customer customer = buildCustomerWithContacts();
 
-        CustomerListResponse response = mapper.toListResponse(customer);
+        CustomerListResponse response = mapper.toListResponse(customer, false);
 
         assertNotNull(response);
         assertEquals(customer.getId().toString(), response.id());

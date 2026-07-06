@@ -43,8 +43,8 @@ class ListCategoriesUseCaseTest {
         CategorySummary summary1 = new CategorySummary(cat1, 3L);
         CategorySummary summary2 = new CategorySummary(cat2, 1L);
 
-        CategoryListResponse resp1 = new CategoryListResponse(id1.toString(), "Cat 1", "Desc 1", true);
-        CategoryListResponse resp2 = new CategoryListResponse(id2.toString(), "Cat 2", "Desc 2", true);
+        CategoryListResponse resp1 = new CategoryListResponse(id1.toString(), "Cat 1", "Desc 1", true, false);
+        CategoryListResponse resp2 = new CategoryListResponse(id2.toString(), "Cat 2", "Desc 2", true, false);
 
         PageResponse<CategorySummary> summaryPage = new PageResponse<>(
                 List.of(summary1, summary2), 2L, 1, 10, 0, true, true, false);

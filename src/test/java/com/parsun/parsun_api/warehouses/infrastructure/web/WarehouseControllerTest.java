@@ -94,7 +94,7 @@ class WarehouseControllerTest {
     void should_list_warehouses() {
         WarehouseListResponse wh = new WarehouseListResponse(
                 UUID.randomUUID().toString(), "WH-01", "Main", "State",
-                "Municipality", true, LocalDateTime.now());
+                "Municipality", true, false, LocalDateTime.now());
 
         PageResponse<WarehouseListResponse> pageResponse = new PageResponse<>(
                 List.of(wh), 1L, 1, 20, 0, true, true, false);

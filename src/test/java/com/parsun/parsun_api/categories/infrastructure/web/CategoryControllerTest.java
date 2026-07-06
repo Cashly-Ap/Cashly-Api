@@ -73,7 +73,7 @@ class CategoryControllerTest {
     @DisplayName("should get all categories and return 200")
     void should_get_all_categories_and_return_200() {
         CategoryListResponse cat = new CategoryListResponse(
-                UUID.randomUUID().toString(), "Category 1", "Desc", true);
+                UUID.randomUUID().toString(), "Category 1", "Desc", true, false);
         PageResponse<CategoryListResponse> pageResponse = new PageResponse<>(
                 List.of(cat), 1L, 1, 10, 0, true, true, false);
 
