@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -36,5 +37,20 @@ public interface SpringDataUserRepository extends JpaRepository<UserEntity, UUID
         @Param("excludeId") UUID excludeId,
         Pageable pageable
     );
+
+    @Query("""
+        SELECT u.id FROM UserEntity u WHERE u.id IN :ids AND (
+          EXISTS (SELECT 1 FROM OrderEntity o WHERE o.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM QuoteJpaEntity q WHERE q.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM PaymentEntity p WHERE p.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM ReturnEntity r WHERE r.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM CreditNoteEntity cn WHERE cn.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM DebitNoteEntity dn WHERE dn.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM BalanceTransactionEntity bt WHERE bt.createdBy = u.id)
+          OR EXISTS (SELECT 1 FROM PurchaseEntity pch WHERE pch.createdBy = u.id)
+        )
+        """)
+    Set<UUID> findIdsWithAssociatedRecords(@Param("ids") Set<UUID> ids);
 }
 

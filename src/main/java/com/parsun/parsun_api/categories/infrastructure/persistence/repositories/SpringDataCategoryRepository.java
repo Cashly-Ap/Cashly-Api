@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface SpringDataCategoryRepository extends JpaRepository<CategoryEntity, UUID> {
@@ -31,4 +33,11 @@ public interface SpringDataCategoryRepository extends JpaRepository<CategoryEnti
         WHERE p.category_id = :categoryId AND p.active = true
         """, nativeQuery = true)
     long countActiveProductsByCategory(@Param("categoryId") UUID categoryId);
+
+    @Query("""
+        SELECT p.categoryId, COUNT(p) FROM ProductEntity p
+        WHERE p.categoryId IN :ids AND p.active = true
+        GROUP BY p.categoryId
+        """)
+    List<Object[]> countActiveProductsByCategoryIds(@Param("ids") Set<UUID> ids);
 }

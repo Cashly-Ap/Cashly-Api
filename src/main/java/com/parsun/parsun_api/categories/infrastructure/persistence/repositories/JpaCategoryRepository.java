@@ -9,9 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class JpaCategoryRepository implements CategoryRepository {
@@ -65,17 +67,25 @@ public class JpaCategoryRepository implements CategoryRepository {
 
     @Override
     public PageResponse<CategorySummary> findAllWithFilters(String search, Boolean active,
-                                                             int page, int size,
-                                                             String orderBy, String orderDir) {
+                                                              int page, int size,
+                                                              String orderBy, String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "name";
         Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         Page<CategoryEntity> result = springDataRepository.findAllWithFilters(search, active, pageable);
 
+        Set<UUID> ids = result.stream().map(CategoryEntity::getId).collect(Collectors.toSet());
+        Map<UUID, Long> productCounts = springDataRepository.countActiveProductsByCategoryIds(ids).stream()
+                .collect(Collectors.toMap(
+                        row -> (UUID) row[0],
+                        row -> ((Number) row[1]).longValue()
+                ));
+
         Page<CategorySummary> mapped = result.map(entity -> {
             Category category = entity.toDomain();
-            return new CategorySummary(category, 0L);
+            long count = productCounts.getOrDefault(entity.getId(), 0L);
+            return new CategorySummary(category, count);
         });
 
         return PageResponse.from(mapped);

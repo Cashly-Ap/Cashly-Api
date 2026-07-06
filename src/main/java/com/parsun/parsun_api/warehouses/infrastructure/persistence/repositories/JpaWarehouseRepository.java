@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toSet;
+
 @Component
 public class JpaWarehouseRepository implements WarehouseRepository {
 
@@ -62,6 +64,19 @@ public class JpaWarehouseRepository implements WarehouseRepository {
 
         Page<WarehouseEntity> result = springDataRepository.findAllWithFilters(search, active, pageable);
         return PageResponse.from(result.map(WarehouseEntity::toDomain));
+    }
+
+    @Override
+    public boolean hasActiveStock(UUID id) {
+        return !findIdsWithActiveStock(Set.of(id)).isEmpty();
+    }
+
+    @Override
+    public Set<UUID> findIdsWithActiveStock(Set<UUID> ids) {
+        if (ids.isEmpty()) {
+            return Set.of();
+        }
+        return springDataRepository.findIdsWithActiveStock(ids);
     }
 
     @Override

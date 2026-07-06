@@ -74,6 +74,11 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
     }
 
     @Override
+    public Set<UUID> findIdsInUseByProducts(Set<UUID> ids) {
+        return springDataRepository.findIdsInUseByProducts(ids);
+    }
+
+    @Override
     public void delete(UUID id) {
         springDataRepository.deleteById(id);
     }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface SpringDataCustomerRepository extends JpaRepository<CustomerEntity, UUID> {
@@ -49,5 +50,19 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
         @Param("hasActiveWarehouse") Boolean hasActiveWarehouse,
         Pageable pageable
     );
+
+    @Query("""
+        SELECT c.id FROM CustomerEntity c WHERE c.id IN :ids AND (
+          EXISTS (SELECT 1 FROM OrderEntity o WHERE o.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM QuoteJpaEntity q WHERE q.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM PaymentEntity p WHERE p.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM ReturnEntity r WHERE r.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM CreditNoteEntity cn WHERE cn.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM DebitNoteEntity dn WHERE dn.customerId = c.id)
+          OR EXISTS (SELECT 1 FROM BalanceTransactionEntity bt WHERE bt.customerId = c.id)
+        )
+        """)
+    Set<UUID> findIdsWithAssociatedRecords(@Param("ids") Set<UUID> ids);
 }
 

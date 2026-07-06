@@ -5,8 +5,10 @@ import com.parsun.parsun_api.auth.authentication.application.exceptions.InvalidC
 import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenException;
 import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
 import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
+import com.parsun.parsun_api.auth.user.application.exceptions.UserHasAssociatedRecordsException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
 import com.parsun.parsun_api.categories.application.exceptions.CategoryHasActiveProductsException;
+import com.parsun.parsun_api.customers.application.exceptions.CustomerHasAssociatedRecordsException;
 import com.parsun.parsun_api.categories.application.exceptions.CategoryNotFoundException;
 import com.parsun.parsun_api.categories.application.exceptions.DuplicateCategoryNameException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
@@ -37,6 +39,7 @@ import com.parsun.parsun_api.warehouses.application.exceptions.DuplicateWarehous
 import com.parsun.parsun_api.warehouses.application.exceptions.InsufficientStockException;
 import com.parsun.parsun_api.warehouses.application.exceptions.ProductNotInWarehouseException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotActiveException;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseHasActiveStockException;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,6 +176,12 @@ public class GlobalExceptionHandler {
                 .body(createErrorResponse(HttpStatus.CONFLICT, "Product has associated records", ex.getMessage()));
     }
 
+    @ExceptionHandler(UserHasAssociatedRecordsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserHasAssociatedRecords(UserHasAssociatedRecordsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, "User has associated records", ex.getMessage()));
+    }
+
     @ExceptionHandler(SupplierHasAssociatedRecordsException.class)
     public ResponseEntity<Map<String, Object>> handleSupplierHasAssociatedRecords(SupplierHasAssociatedRecordsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -203,6 +212,12 @@ public class GlobalExceptionHandler {
                 .body(createErrorResponse(HttpStatus.CONFLICT, "Price type in use", ex.getMessage()));
     }
 
+    @ExceptionHandler(WarehouseHasActiveStockException.class)
+    public ResponseEntity<Map<String, Object>> handleWarehouseHasActiveStock(WarehouseHasActiveStockException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, "Warehouse has active stock", ex.getMessage()));
+    }
+
     @ExceptionHandler(WarehouseNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleWarehouseNotFound(WarehouseNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -231,6 +246,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleWarehouseNotActive(WarehouseNotActiveException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(createErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Warehouse not active", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CustomerHasAssociatedRecordsException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomerHasAssociatedRecords(CustomerHasAssociatedRecordsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, "Customer has associated records", ex.getMessage()));
     }
 
     @ExceptionHandler(CustomerWarehouseAccessAlreadyExistsException.class)

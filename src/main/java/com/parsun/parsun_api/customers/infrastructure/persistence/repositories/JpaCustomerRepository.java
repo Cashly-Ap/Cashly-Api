@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 public class JpaCustomerRepository implements CustomerRepository {
@@ -68,6 +69,19 @@ public class JpaCustomerRepository implements CustomerRepository {
 
         Page<Customer> mapped = result.map(CustomerEntity::toDomain);
         return PageResponse.from(mapped);
+    }
+
+    @Override
+    public boolean hasAssociatedRecords(CustomerId id) {
+        return !findIdsWithAssociatedRecords(Set.of(id.getValue())).isEmpty();
+    }
+
+    @Override
+    public Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids) {
+        if (ids.isEmpty()) {
+            return Set.of();
+        }
+        return springDataRepository.findIdsWithAssociatedRecords(ids);
     }
 
     @Override

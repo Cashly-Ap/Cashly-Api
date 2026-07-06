@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,6 +78,19 @@ public class JpaUserRepository implements UserRepository {
         }
 
         return springDataUserRepository.existsByEmail(email.getValue());
+    }
+
+    @Override
+    public boolean hasAssociatedRecords(UserId id) {
+        return !findIdsWithAssociatedRecords(Set.of(id.getValue())).isEmpty();
+    }
+
+    @Override
+    public Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids) {
+        if (ids.isEmpty()) {
+            return Set.of();
+        }
+        return springDataUserRepository.findIdsWithAssociatedRecords(ids);
     }
 
     @Override
