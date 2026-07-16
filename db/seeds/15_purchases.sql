@@ -80,6 +80,15 @@ SET @pa15 = UNHEX('0C30000000000000000000000000000F');
 SET @pa16 = UNHEX('0C300000000000000000000000000010');
 
 -- =============================================================================
+-- SUPPLIERS (needed by purchases)
+-- =============================================================================
+INSERT IGNORE INTO suppliers (id, code, legal_name, alias, rif, type, active, created_at, updated_at)
+VALUES
+    (UNHEX('a1000000000000000000000000000001'), 1001, 'Distribuidora Polar S.A.', 'Distribuidora Polar', 'J-12345678-9', 'JURIDICO', TRUE, NOW(), NOW()),
+    (UNHEX('a2000000000000000000000000000002'), 1002, 'Empresas Polar C.A.', 'Empresas Polar', 'J-87654321-0', 'JURIDICO', TRUE, NOW(), NOW()),
+    (UNHEX('a3000000000000000000000000000003'), 1003, 'Carlos Mendoza', 'Carlos Mendoza', 'V-11222333-4', 'NATURAL', TRUE, NOW(), NOW());
+
+-- =============================================================================
 -- PURCHASE NUMBER SEQUENCE
 -- =============================================================================
 REPLACE INTO purchase_number_sequence (year, next_value) VALUES (2026, 9);
