@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public interface SpringDataCustomerRepository extends JpaRepository<CustomerEntity, UUID> {
 
+    Optional<CustomerEntity> findByRif(String rif);
+
     @Query("SELECT MAX(c.code) FROM CustomerEntity c")
     Optional<Long> findMaxCode();
 

@@ -21,6 +21,9 @@ import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,11 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
 
     public JwtAuthenticationFilter(TokenService tokenService,
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository,
+                                   CustomerRepository customerRepository) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -69,6 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         switch (subjectType) {
             case USER -> authenticateUser(request, subjectId);
+            case CUSTOMER -> authenticateCustomer(request, subjectId);
         }
     }
 
@@ -78,6 +85,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userRepository.findById(userId)
             .filter(User::canAuthenticate)
             .ifPresent(user -> setUserAuthentication(request, user));
+    }
+
+    private void authenticateCustomer(HttpServletRequest request, String subjectId) {
+        CustomerId customerId = CustomerId.from(subjectId);
+
+        customerRepository.findById(customerId)
+            .filter(customer -> customer.isActive() && customer.isPortalAccess())
+            .ifPresent(customer -> setCustomerAuthentication(request, customer));
     }
 
     private void setUserAuthentication(HttpServletRequest request, User user) {
@@ -96,6 +111,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             user.getId().getValue().toString(),
+            null,
+            authorities
+        );
+
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void setCustomerAuthentication(HttpServletRequest request, Customer customer) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_PORTAL_CUSTOMER"));
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            customer.getId().getValue().toString(),
             null,
             authorities
         );

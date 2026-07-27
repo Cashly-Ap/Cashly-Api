@@ -3,6 +3,7 @@ package com.parsun.parsun_api.customers.infrastructure.persistence.repositories;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
+import com.parsun.parsun_api.customers.domain.valueobjects.Rif;
 import com.parsun.parsun_api.customers.infrastructure.persistence.entities.CustomerEntity;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,12 @@ public class JpaCustomerRepository implements CustomerRepository {
     @Override
     public Optional<Customer> findById(CustomerId id) {
         return springDataRepository.findById(id.getValue())
+            .map(CustomerEntity::toDomain);
+    }
+
+    @Override
+    public Optional<Customer> findByRif(Rif rif) {
+        return springDataRepository.findByRif(rif.getValue())
             .map(CustomerEntity::toDomain);
     }
 

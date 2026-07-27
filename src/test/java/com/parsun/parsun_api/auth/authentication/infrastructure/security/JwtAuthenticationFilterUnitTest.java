@@ -9,6 +9,9 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +24,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +46,9 @@ class JwtAuthenticationFilterUnitTest {
     private UserRepository userRepository;
 
     @Mock
+    private CustomerRepository customerRepository;
+
+    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -51,18 +61,31 @@ class JwtAuthenticationFilterUnitTest {
 
     private User testUser;
     private UserId testUserId;
+    private Customer testCustomer;
+    private CustomerId testCustomerId;
     private String validToken;
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
 
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userRepository);
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userRepository, customerRepository);
 
         testUserId = UserId.generate();
         Email email = new Email("test@example.com");
         Password password = Password.fromHash("$2a$10$hashedPassword");
         testUser = new User(testUserId, email, new UserName("Test User"), password, UserRole.ADMIN);
+
+        testCustomerId = CustomerId.generate();
+        Rif rif = new Rif("J-12345678-9");
+        testCustomer = Customer.reconstitute(
+            testCustomerId, new CustomerCode(1001L), new LegalName("Test Customer"),
+            CustomerType.BUSINESS, rif, new CustomerAlias("TestAlias"),
+            new CreditDays(30), new CreditLimit(BigDecimal.valueOf(1000)),
+            true, LocalDateTime.now(), LocalDateTime.now(),
+            List.of(), List.of(), List.of(),
+            true, "$2a$10$hashedPassword", null, null
+        );
 
         validToken = "valid-jwt-token";
     }
@@ -128,6 +151,106 @@ class JwtAuthenticationFilterUnitTest {
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
             when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            assertNull(SecurityContextHolder.getContext().getAuthentication());
+            verify(filterChain, times(1)).doFilter(request, response);
+        }
+    }
+
+    @Nested
+    @DisplayName("Customer Authentication Tests")
+    class CustomerAuthenticationTests {
+
+        @Test
+        @DisplayName("should_AuthenticateCustomer_When_ValidTokenProvided")
+        void should_AuthenticateCustomer_When_ValidTokenProvided() throws Exception {
+            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+            when(tokenService.validateToken(validToken)).thenReturn(true);
+            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
+            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
+            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(testCustomer));
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+            assertEquals(testCustomerId.getValue().toString(), SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            verify(filterChain, times(1)).doFilter(request, response);
+        }
+
+        @Test
+        @DisplayName("should_SetPortalCustomerRole_When_CustomerAuthenticated")
+        void should_SetPortalCustomerRole_When_CustomerAuthenticated() throws Exception {
+            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+            when(tokenService.validateToken(validToken)).thenReturn(true);
+            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
+            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
+            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(testCustomer));
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+            assertTrue(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_PORTAL_CUSTOMER")));
+        }
+
+        @Test
+        @DisplayName("should_NotAuthenticate_When_CustomerNotFound")
+        void should_NotAuthenticate_When_CustomerNotFound() throws Exception {
+            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+            when(tokenService.validateToken(validToken)).thenReturn(true);
+            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
+            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
+            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.empty());
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            assertNull(SecurityContextHolder.getContext().getAuthentication());
+            verify(filterChain, times(1)).doFilter(request, response);
+        }
+
+        @Test
+        @DisplayName("should_NotAuthenticate_When_CustomerInactive")
+        void should_NotAuthenticate_When_CustomerInactive() throws Exception {
+            Customer inactiveCustomer = Customer.reconstitute(
+                testCustomerId, new CustomerCode(1001L), new LegalName("Inactive Customer"),
+                CustomerType.BUSINESS, new Rif("J-87654321-0"), new CustomerAlias("Inactive"),
+                new CreditDays(30), new CreditLimit(BigDecimal.valueOf(1000)),
+                false, LocalDateTime.now(), LocalDateTime.now(),
+                List.of(), List.of(), List.of(),
+                true, "$2a$10$hashedPassword", null, null
+            );
+
+            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+            when(tokenService.validateToken(validToken)).thenReturn(true);
+            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
+            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
+            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(inactiveCustomer));
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            assertNull(SecurityContextHolder.getContext().getAuthentication());
+            verify(filterChain, times(1)).doFilter(request, response);
+        }
+
+        @Test
+        @DisplayName("should_NotAuthenticate_When_CustomerPortalAccessDisabled")
+        void should_NotAuthenticate_When_CustomerPortalAccessDisabled() throws Exception {
+            Customer customerNoPortal = Customer.reconstitute(
+                testCustomerId, new CustomerCode(1001L), new LegalName("No Portal Customer"),
+                CustomerType.BUSINESS, new Rif("J-87654321-0"), new CustomerAlias("NoPortal"),
+                new CreditDays(30), new CreditLimit(BigDecimal.valueOf(1000)),
+                true, LocalDateTime.now(), LocalDateTime.now(),
+                List.of(), List.of(), List.of(),
+                false, "$2a$10$hashedPassword", null, null
+            );
+
+            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+            when(tokenService.validateToken(validToken)).thenReturn(true);
+            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
+            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
+            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(customerNoPortal));
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 

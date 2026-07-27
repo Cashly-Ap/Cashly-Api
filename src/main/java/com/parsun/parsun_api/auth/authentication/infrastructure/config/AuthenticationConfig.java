@@ -11,6 +11,7 @@ import com.parsun.parsun_api.auth.token.domain.repositories.RefreshTokenReposito
 import com.parsun.parsun_api.auth.token.domain.services.TokenService;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 
 @Configuration
 public class AuthenticationConfig {
@@ -39,12 +40,14 @@ public class AuthenticationConfig {
     public RefreshTokenUseCase refreshTokenUseCase(
         RefreshTokenRepository refreshTokenRepository,
         UserRepository userRepository,
-        TokenService tokenService
+        TokenService tokenService,
+        CustomerRepository customerRepository
     ) {
         return new RefreshTokenUseCase(
             refreshTokenRepository,
             userRepository,
-            tokenService
+            tokenService,
+            customerRepository
         );
     }
 }

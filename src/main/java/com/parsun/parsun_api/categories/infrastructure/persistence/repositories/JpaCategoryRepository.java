@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -48,6 +49,13 @@ public class JpaCategoryRepository implements CategoryRepository {
     public Optional<Category> findById(UUID id) {
         return springDataRepository.findById(id)
             .map(CategoryEntity::toDomain);
+    }
+
+    @Override
+    public List<Category> findAllById(Set<UUID> ids) {
+        return springDataRepository.findAllById(ids).stream()
+            .map(CategoryEntity::toDomain)
+            .toList();
     }
 
     @Override

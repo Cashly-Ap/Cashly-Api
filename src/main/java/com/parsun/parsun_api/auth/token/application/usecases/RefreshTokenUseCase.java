@@ -4,6 +4,7 @@ import com.parsun.parsun_api.auth.authentication.application.dto.response.Authen
 import com.parsun.parsun_api.auth.authentication.application.dto.response.AuthenticationResponse;
 import com.parsun.parsun_api.auth.authentication.domain.entities.Authenticable;
 import com.parsun.parsun_api.auth.authentication.domain.entities.AuthenticableType;
+import com.parsun.parsun_api.auth.authentication.infrastructure.adapters.CustomerAuthenticableAdapter;
 import com.parsun.parsun_api.auth.authentication.infrastructure.adapters.UserAuthenticableAdapter;
 import com.parsun.parsun_api.auth.token.application.dto.request.RefreshTokenRequest;
 import com.parsun.parsun_api.auth.token.domain.repositories.RefreshTokenRepository;
@@ -14,6 +15,10 @@ import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import org.springframework.transaction.annotation.Transactional;
 
 public class RefreshTokenUseCase {
@@ -21,15 +26,18 @@ public class RefreshTokenUseCase {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final CustomerRepository customerRepository;
 
     public RefreshTokenUseCase(
         RefreshTokenRepository refreshTokenRepository,
         UserRepository userRepository,
-        TokenService tokenService
+        TokenService tokenService,
+        CustomerRepository customerRepository
     ) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
         this.tokenService = tokenService;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional
@@ -72,6 +80,11 @@ public class RefreshTokenUseCase {
                 User user = userRepository.findById(UserId.from(subjectId))
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
                 yield new UserAuthenticableAdapter(user);
+            }
+            case CUSTOMER -> {
+                Customer customer = customerRepository.findById(CustomerId.from(subjectId))
+                    .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                yield new CustomerAuthenticableAdapter(customer);
             }
         };
     }

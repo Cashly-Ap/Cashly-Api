@@ -12,7 +12,11 @@ public interface RefreshTokenRepository {
 
     Optional<RefreshToken> findByToken(String token);
 
+    List<RefreshToken> findBySubjectId(String subjectId);
+
     List<RefreshToken> findByUserId(UserId userId);
+
+    void revokeAllBySubjectId(String subjectId);
 
     void revokeAllByUserId(UserId userId);
 

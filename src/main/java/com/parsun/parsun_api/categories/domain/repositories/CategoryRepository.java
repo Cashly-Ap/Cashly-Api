@@ -3,12 +3,15 @@ package com.parsun.parsun_api.categories.domain.repositories;
 import com.parsun.parsun_api.categories.domain.entities.Category;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface CategoryRepository {
     Category save(Category category);
     Optional<Category> findById(UUID id);
+    List<Category> findAllById(Set<UUID> ids);
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);
     long countActiveProductsByCategory(UUID categoryId);

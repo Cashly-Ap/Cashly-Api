@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface SpringDataWarehouseStockRepository extends JpaRepository<WarehouseStockEntity, UUID> {
@@ -25,6 +26,8 @@ public interface SpringDataWarehouseStockRepository extends JpaRepository<Wareho
     Page<WarehouseStockEntity> findByWarehouseId(UUID warehouseId, Pageable pageable);
 
     List<WarehouseStockEntity> findByProductId(UUID productId);
+
+    List<WarehouseStockEntity> findAllByProductIdIn(Set<UUID> productIds);
 
     boolean existsByProductId(UUID productId);
 

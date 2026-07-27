@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -63,6 +64,12 @@ public class JpaWarehouseStockRepository implements WarehouseStockRepository {
     @Override
     public List<WarehouseStock> findByProductId(UUID productId) {
         return springDataRepository.findByProductId(productId)
+                .stream().map(WarehouseStockEntity::toDomain).toList();
+    }
+
+    @Override
+    public List<WarehouseStock> findAllByProductIdIn(Set<UUID> productIds) {
+        return springDataRepository.findAllByProductIdIn(productIds)
                 .stream().map(WarehouseStockEntity::toDomain).toList();
     }
 

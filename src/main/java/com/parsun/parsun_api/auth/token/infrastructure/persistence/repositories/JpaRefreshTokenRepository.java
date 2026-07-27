@@ -56,6 +56,19 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
     }
 
     @Override
+    public List<RefreshToken> findBySubjectId(String subjectId) {
+        if (subjectId == null || subjectId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Subject ID cannot be null or empty");
+        }
+
+        UUID subjectUuid = UUID.fromString(subjectId);
+        return springDataRefreshTokenRepository.findBySubjectId(subjectUuid)
+            .stream()
+            .map(RefreshTokenEntity::toDomain)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public List<RefreshToken> findByUserId(UserId userId) {
         if (userId == null) {
             throw new IllegalArgumentException("User ID cannot be null");
@@ -66,6 +79,23 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
             .stream()
             .map(RefreshTokenEntity::toDomain)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void revokeAllBySubjectId(String subjectId) {
+        if (subjectId == null || subjectId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Subject ID cannot be null or empty");
+        }
+
+        UUID subjectUuid = UUID.fromString(subjectId);
+        List<RefreshTokenEntity> tokens = springDataRefreshTokenRepository.findBySubjectIdAndRevoked(subjectUuid, false);
+        for (RefreshTokenEntity tokenEntity : tokens) {
+            RefreshToken token = tokenEntity.toDomain();
+            token.revoke();
+            tokenEntity.updateFromDomain(token);
+            springDataRefreshTokenRepository.save(tokenEntity);
+        }
     }
 
     @Override
