@@ -87,6 +87,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/test/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/portal/auth/**").permitAll()
+
+                .requestMatchers("/api/portal/**").hasRole("CUSTOMER")
 
                 .anyRequest().authenticated()
             )

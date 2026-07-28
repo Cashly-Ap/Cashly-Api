@@ -18,6 +18,9 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
     @Query("SELECT MAX(c.code) FROM CustomerEntity c")
     Optional<Long> findMaxCode();
 
+    @Query("SELECT c.active FROM CustomerEntity c WHERE c.id = :id")
+    Optional<Boolean> isActiveById(@Param("id") UUID id);
+
     @Query("""
         SELECT c FROM CustomerEntity c
         WHERE (:search IS NULL OR LOWER(c.legalName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(c.rif) LIKE LOWER(CONCAT('%', :search, '%')))

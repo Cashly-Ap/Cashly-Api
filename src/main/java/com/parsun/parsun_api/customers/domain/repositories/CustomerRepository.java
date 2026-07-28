@@ -18,7 +18,9 @@ public interface CustomerRepository {
     boolean hasAssociatedRecords(CustomerId id);
     Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids);
     PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active, Boolean portalAccess, String state, String municipality, String postalCode, Boolean hasActiveWarehouse, int page, int size, String orderBy, String orderDir);
+    Optional<Customer> findByRif(String rif);
     void delete(CustomerId id);
     boolean existsById(CustomerId id);
+    boolean isActive(CustomerId id);
     long getNextCode();
 }
