@@ -37,6 +37,24 @@ public class GetCustomerInvoicesUseCase {
             .toList();
     }
 
+    public List<PortalInvoiceListResponse> execute(String customerId, String search, String status) {
+        UUID customerUuid = UUID.fromString(customerId);
+        List<String> statuses = status != null && !status.isBlank() ? List.of(status) : null;
+        return invoiceRepository.findAllWithFilters(null, null, customerUuid, statuses, null, null, null, "createdAt", "desc")
+            .stream()
+            .filter(invoice -> search == null || search.isBlank()
+                || invoice.getInvoiceNumber().value().toLowerCase().contains(search.toLowerCase()))
+            .map(invoice -> {
+                BigDecimal paidAmount = paymentAllocationRepository.getAllocatedAmountByInvoiceId(invoice.getId().value());
+                BigDecimal balance = invoice.getSubtotal().subtract(paidAmount);
+                if (balance.compareTo(BigDecimal.ZERO) < 0) {
+                    balance = BigDecimal.ZERO;
+                }
+                return PortalInvoiceMapper.toListResponse(invoice, balance, paidAmount);
+            })
+            .toList();
+    }
+
     public PortalInvoiceDetailResponse execute(String customerId, String invoiceId) {
         UUID customerUuid = UUID.fromString(customerId);
         InvoiceId invoiceIdObj = InvoiceId.of(UUID.fromString(invoiceId));

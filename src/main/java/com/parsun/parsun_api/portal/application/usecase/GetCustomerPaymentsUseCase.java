@@ -44,6 +44,21 @@ public class GetCustomerPaymentsUseCase {
             .toList();
     }
 
+    public List<PortalPaymentListResponse> execute(String customerId, String search, String status) {
+        UUID customerUuid = UUID.fromString(customerId);
+        return paymentRepository.findAllWithFilters(null, null, customerUuid, status)
+            .stream()
+            .filter(payment -> search == null || search.isBlank()
+                || payment.getPaymentNumber().value().toLowerCase().contains(search.toLowerCase()))
+            .map(payment -> {
+                var paymentMethod = payment.getPaymentMethodId() != null
+                    ? paymentMethodRepository.findById(PaymentMethodId.of(payment.getPaymentMethodId())).orElse(null)
+                    : null;
+                return PortalPaymentMapper.toListResponse(payment, paymentMethod);
+            })
+            .toList();
+    }
+
     public PortalPaymentDetailResponse execute(String customerId, String paymentId) {
         UUID customerUuid = UUID.fromString(customerId);
         PaymentId paymentIdObj = PaymentId.of(UUID.fromString(paymentId));

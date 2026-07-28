@@ -25,6 +25,16 @@ public class GetCustomerOrdersUseCase {
             .toList();
     }
 
+    public List<PortalOrderListResponse> execute(String customerId, String search, String status) {
+        UUID customerUuid = UUID.fromString(customerId);
+        return orderRepository.findAllWithFilters(null, null, customerUuid, status, null, null, "createdAt", "desc")
+            .stream()
+            .filter(order -> search == null || search.isBlank()
+                || order.getOrderNumber().value().toLowerCase().contains(search.toLowerCase()))
+            .map(PortalOrderMapper::toListResponse)
+            .toList();
+    }
+
     public PortalOrderDetailResponse execute(String customerId, String orderId) {
         UUID customerUuid = UUID.fromString(customerId);
         OrderId orderIdObj = OrderId.of(UUID.fromString(orderId));

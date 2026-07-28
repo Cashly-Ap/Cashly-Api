@@ -24,6 +24,16 @@ public class GetCustomerQuotesUseCase {
             .toList();
     }
 
+    public List<PortalQuoteListResponse> execute(String customerId, String search, String status) {
+        UUID customerUuid = UUID.fromString(customerId);
+        return quoteRepository.findAllWithFilters(null, null, customerUuid, status, null, null, "createdAt", "desc")
+            .stream()
+            .filter(quote -> search == null || search.isBlank()
+                || quote.getQuoteNumber().value().toLowerCase().contains(search.toLowerCase()))
+            .map(PortalQuoteMapper::toListResponse)
+            .toList();
+    }
+
     public PortalQuoteDetailResponse execute(String customerId, String quoteId) {
         UUID customerUuid = UUID.fromString(customerId);
         UUID quoteUuid = UUID.fromString(quoteId);
