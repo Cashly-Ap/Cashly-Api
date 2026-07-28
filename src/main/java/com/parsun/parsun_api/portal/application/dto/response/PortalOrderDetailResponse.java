@@ -8,13 +8,16 @@ import java.util.UUID;
 public record PortalOrderDetailResponse(
     UUID id,
     String number,
+    String orderNumber,
     LocalDateTime date,
     String status,
     BigDecimal total,
     BigDecimal subtotal,
+    BigDecimal tax,
     String notes,
     String createdByName,
     LocalDateTime createdAt,
     String invoiceNumber,
-    List<PortalOrderItemResponse> items
+    List<PortalOrderItemResponse> items,
+    List<PortalOrderItemResponse> lines
 ) {}

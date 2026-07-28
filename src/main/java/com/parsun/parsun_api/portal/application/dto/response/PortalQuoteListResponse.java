@@ -8,9 +8,12 @@ import java.util.UUID;
 public record PortalQuoteListResponse(
     UUID id,
     String number,
+    String quoteNumber,
     LocalDate date,
+    LocalDate expiryDate,
     String status,
     BigDecimal total,
+    BigDecimal subtotal,
     int items,
     Instant createdAt
 ) {}

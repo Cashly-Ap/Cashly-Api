@@ -9,6 +9,7 @@ import java.util.UUID;
 public record PortalPaymentDetailResponse(
     UUID id,
     String number,
+    String paymentNumber,
     LocalDate date,
     String method,
     String status,

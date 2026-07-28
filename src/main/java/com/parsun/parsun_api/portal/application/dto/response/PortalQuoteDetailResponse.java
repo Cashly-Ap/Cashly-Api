@@ -9,14 +9,17 @@ import java.util.UUID;
 public record PortalQuoteDetailResponse(
     UUID id,
     String number,
+    String quoteNumber,
     LocalDate date,
     String status,
     BigDecimal total,
     BigDecimal subtotal,
+    BigDecimal tax,
     String notes,
     LocalDate expiryDate,
     String orderNumber,
     String createdByName,
     Instant createdAt,
-    List<PortalQuoteItemResponse> items
+    List<PortalQuoteItemResponse> items,
+    List<PortalQuoteItemResponse> lines
 ) {}

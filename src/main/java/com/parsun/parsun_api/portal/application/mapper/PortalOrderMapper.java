@@ -6,6 +6,7 @@ import com.parsun.parsun_api.portal.application.dto.response.PortalOrderDetailRe
 import com.parsun.parsun_api.portal.application.dto.response.PortalOrderItemResponse;
 import com.parsun.parsun_api.portal.application.dto.response.PortalOrderListResponse;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public final class PortalOrderMapper {
@@ -16,9 +17,12 @@ public final class PortalOrderMapper {
         return new PortalOrderListResponse(
             order.getId().value(),
             order.getOrderNumber().value(),
+            order.getOrderNumber().value(),
             order.getCreatedAt(),
             order.getStatus().name(),
             order.getSubtotal(),
+            order.getSubtotal(),
+            order.getLines().size(),
             order.getLines().size(),
             order.getCreatedAt()
         );
@@ -29,17 +33,22 @@ public final class PortalOrderMapper {
             .map(PortalOrderMapper::toItemResponse)
             .toList();
 
+        BigDecimal tax = order.getSubtotal().multiply(new BigDecimal("0.16"));
+
         return new PortalOrderDetailResponse(
             order.getId().value(),
+            order.getOrderNumber().value(),
             order.getOrderNumber().value(),
             order.getCreatedAt(),
             order.getStatus().name(),
             order.getSubtotal(),
             order.getSubtotal(),
+            tax,
             order.getNotes(),
             order.getCreatedByName(),
             order.getCreatedAt(),
             order.getInvoiceNumber(),
+            items,
             items
         );
     }

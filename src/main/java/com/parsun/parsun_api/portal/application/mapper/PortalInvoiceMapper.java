@@ -17,23 +17,6 @@ public final class PortalInvoiceMapper {
         return new PortalInvoiceListResponse(
             invoice.getId().value(),
             invoice.getInvoiceNumber().value(),
-            invoice.getCreatedAt(),
-            invoice.getCreatedAt(),
-            invoice.getStatus().name(),
-            invoice.getSubtotal(),
-            balance,
-            paidAmount,
-            invoice.getCreatedAt()
-        );
-    }
-
-    public static PortalInvoiceDetailResponse toDetailResponse(Invoice invoice, BigDecimal balance, BigDecimal paidAmount) {
-        List<PortalInvoiceItemResponse> items = invoice.getLines().stream()
-            .map(PortalInvoiceMapper::toItemResponse)
-            .toList();
-
-        return new PortalInvoiceDetailResponse(
-            invoice.getId().value(),
             invoice.getInvoiceNumber().value(),
             invoice.getCreatedAt(),
             invoice.getCreatedAt(),
@@ -43,8 +26,33 @@ public final class PortalInvoiceMapper {
             balance,
             paidAmount,
             invoice.getPaymentType().name(),
+            invoice.getCreatedAt()
+        );
+    }
+
+    public static PortalInvoiceDetailResponse toDetailResponse(Invoice invoice, BigDecimal balance, BigDecimal paidAmount) {
+        List<PortalInvoiceItemResponse> items = invoice.getLines().stream()
+            .map(PortalInvoiceMapper::toItemResponse)
+            .toList();
+
+        BigDecimal tax = invoice.getSubtotal().multiply(new BigDecimal("0.16"));
+
+        return new PortalInvoiceDetailResponse(
+            invoice.getId().value(),
+            invoice.getInvoiceNumber().value(),
+            invoice.getInvoiceNumber().value(),
+            invoice.getCreatedAt(),
+            invoice.getCreatedAt(),
+            invoice.getStatus().name(),
+            invoice.getSubtotal(),
+            invoice.getSubtotal(),
+            tax,
+            balance,
+            paidAmount,
+            invoice.getPaymentType().name(),
             invoice.getNotes(),
             invoice.getCreatedAt(),
+            items,
             items
         );
     }

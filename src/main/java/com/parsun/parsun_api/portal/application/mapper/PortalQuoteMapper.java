@@ -6,6 +6,7 @@ import com.parsun.parsun_api.portal.application.dto.response.PortalQuoteListResp
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteLine;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public final class PortalQuoteMapper {
@@ -16,8 +17,11 @@ public final class PortalQuoteMapper {
         return new PortalQuoteListResponse(
             quote.getId(),
             quote.getQuoteNumber().value(),
+            quote.getQuoteNumber().value(),
+            quote.getExpiryDate(),
             quote.getExpiryDate(),
             quote.getStatus().name(),
+            quote.getSubtotal(),
             quote.getSubtotal(),
             quote.getLines().size(),
             quote.getCreatedAt()
@@ -29,18 +33,23 @@ public final class PortalQuoteMapper {
             .map(PortalQuoteMapper::toItemResponse)
             .toList();
 
+        BigDecimal tax = quote.getSubtotal().multiply(new BigDecimal("0.16"));
+
         return new PortalQuoteDetailResponse(
             quote.getId(),
+            quote.getQuoteNumber().value(),
             quote.getQuoteNumber().value(),
             quote.getExpiryDate(),
             quote.getStatus().name(),
             quote.getSubtotal(),
             quote.getSubtotal(),
+            tax,
             quote.getNotes(),
             quote.getExpiryDate(),
             quote.getOrderNumber(),
             quote.getCreatedByName(),
             quote.getCreatedAt(),
+            items,
             items
         );
     }

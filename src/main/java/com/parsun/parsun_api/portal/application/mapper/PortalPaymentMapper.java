@@ -43,6 +43,7 @@ public final class PortalPaymentMapper {
         return new PortalPaymentDetailResponse(
             payment.getId().value(),
             payment.getPaymentNumber().value(),
+            payment.getPaymentNumber().value(),
             payment.getPaymentDate(),
             paymentMethod != null ? paymentMethod.getName() : "",
             payment.getStatus().name(),

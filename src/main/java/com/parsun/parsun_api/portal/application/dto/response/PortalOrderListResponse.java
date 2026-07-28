@@ -7,9 +7,12 @@ import java.util.UUID;
 public record PortalOrderListResponse(
     UUID id,
     String number,
+    String orderNumber,
     LocalDateTime date,
     String status,
     BigDecimal total,
+    BigDecimal subtotal,
     int items,
+    int lineCount,
     LocalDateTime createdAt
 ) {}

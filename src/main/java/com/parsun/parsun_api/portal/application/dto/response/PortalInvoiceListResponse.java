@@ -7,11 +7,14 @@ import java.util.UUID;
 public record PortalInvoiceListResponse(
     UUID id,
     String number,
+    String invoiceNumber,
     LocalDateTime date,
     LocalDateTime dueDate,
     String status,
     BigDecimal total,
+    BigDecimal subtotal,
     BigDecimal balance,
     BigDecimal paidAmount,
+    String paymentType,
     LocalDateTime createdAt
 ) {}
