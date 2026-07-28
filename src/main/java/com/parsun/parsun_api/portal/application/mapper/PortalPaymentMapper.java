@@ -17,10 +17,14 @@ public final class PortalPaymentMapper {
         return new PortalPaymentListResponse(
             payment.getId().value(),
             payment.getPaymentNumber().value(),
+            payment.getPaymentNumber().value(),
+            payment.getPaymentDate(),
             payment.getPaymentDate(),
             paymentMethod != null ? paymentMethod.getName() : "",
             payment.getStatus().name(),
             payment.getAmount(),
+            payment.getAppliedAmount(),
+            payment.getReferenceNumber(),
             payment.getReferenceNumber(),
             payment.getCreatedAt()
         );

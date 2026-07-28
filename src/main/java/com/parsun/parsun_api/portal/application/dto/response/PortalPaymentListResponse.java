@@ -8,10 +8,14 @@ import java.util.UUID;
 public record PortalPaymentListResponse(
     UUID id,
     String number,
+    String paymentNumber,
     LocalDate date,
+    LocalDate paymentDate,
     String method,
     String status,
     BigDecimal amount,
+    BigDecimal appliedAmount,
     String reference,
+    String referenceNumber,
     LocalDateTime createdAt
 ) {}
