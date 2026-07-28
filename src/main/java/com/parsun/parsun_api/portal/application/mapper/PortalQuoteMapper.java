@@ -20,7 +20,6 @@ public final class PortalQuoteMapper {
             quote.getStatus().name(),
             quote.getSubtotal(),
             quote.getLines().size(),
-            quote.getCustomerName(),
             quote.getCreatedAt()
         );
     }
@@ -42,8 +41,6 @@ public final class PortalQuoteMapper {
             quote.getOrderNumber(),
             quote.getCreatedByName(),
             quote.getCreatedAt(),
-            quote.getCustomerName(),
-            quote.getCustomerRif(),
             items
         );
     }

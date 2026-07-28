@@ -18,7 +18,5 @@ public record PortalInvoiceDetailResponse(
     String paymentType,
     String notes,
     LocalDateTime createdAt,
-    String customerName,
-    String customerRif,
     List<PortalInvoiceItemResponse> items
 ) {}

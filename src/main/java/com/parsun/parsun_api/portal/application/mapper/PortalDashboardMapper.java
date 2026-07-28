@@ -36,7 +36,7 @@ public final class PortalDashboardMapper {
             q.getExpiryDate(),
             q.getStatus().name(),
             q.getSubtotal(),
-            null
+            q.getNotes() != null ? q.getNotes() : q.getQuoteNumber().value()
         )));
 
         recentOrders.forEach(o -> activity.add(new PortalRecentActivityResponse(
@@ -45,7 +45,7 @@ public final class PortalDashboardMapper {
             o.getCreatedAt().toLocalDate(),
             o.getStatus().name(),
             o.getSubtotal(),
-            null
+            o.getNotes() != null ? o.getNotes() : o.getOrderNumber().value()
         )));
 
         recentInvoices.forEach(i -> activity.add(new PortalRecentActivityResponse(
@@ -54,7 +54,7 @@ public final class PortalDashboardMapper {
             i.getCreatedAt().toLocalDate(),
             i.getStatus().name(),
             i.getSubtotal(),
-            null
+            i.getNotes() != null ? i.getNotes() : i.getInvoiceNumber().value()
         )));
 
         recentPayments.forEach(p -> activity.add(new PortalRecentActivityResponse(

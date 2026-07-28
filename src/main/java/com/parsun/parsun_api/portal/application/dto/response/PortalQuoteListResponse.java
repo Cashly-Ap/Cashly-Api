@@ -12,6 +12,5 @@ public record PortalQuoteListResponse(
     String status,
     BigDecimal total,
     int items,
-    String customerName,
     Instant createdAt
 ) {}

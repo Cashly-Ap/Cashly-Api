@@ -23,7 +23,6 @@ public final class PortalInvoiceMapper {
             invoice.getSubtotal(),
             balance,
             paidAmount,
-            invoice.getCustomerName(),
             invoice.getCreatedAt()
         );
     }
@@ -46,8 +45,6 @@ public final class PortalInvoiceMapper {
             invoice.getPaymentType().name(),
             invoice.getNotes(),
             invoice.getCreatedAt(),
-            invoice.getCustomerName(),
-            invoice.getCustomerRif(),
             items
         );
     }

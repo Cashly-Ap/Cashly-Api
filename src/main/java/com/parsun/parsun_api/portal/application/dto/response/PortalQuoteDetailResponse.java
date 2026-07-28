@@ -18,7 +18,5 @@ public record PortalQuoteDetailResponse(
     String orderNumber,
     String createdByName,
     Instant createdAt,
-    String customerName,
-    String customerRif,
     List<PortalQuoteItemResponse> items
 ) {}

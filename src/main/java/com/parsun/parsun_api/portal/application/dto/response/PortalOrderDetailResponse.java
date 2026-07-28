@@ -15,8 +15,6 @@ public record PortalOrderDetailResponse(
     String notes,
     String createdByName,
     LocalDateTime createdAt,
-    String customerName,
-    String customerRif,
     String invoiceNumber,
     List<PortalOrderItemResponse> items
 ) {}

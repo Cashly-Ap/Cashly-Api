@@ -11,6 +11,5 @@ public record PortalOrderListResponse(
     String status,
     BigDecimal total,
     int items,
-    String customerName,
     LocalDateTime createdAt
 ) {}

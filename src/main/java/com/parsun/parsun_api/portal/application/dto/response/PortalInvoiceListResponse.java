@@ -13,6 +13,5 @@ public record PortalInvoiceListResponse(
     BigDecimal total,
     BigDecimal balance,
     BigDecimal paidAmount,
-    String customerName,
     LocalDateTime createdAt
 ) {}

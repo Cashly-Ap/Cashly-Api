@@ -20,7 +20,6 @@ public final class PortalOrderMapper {
             order.getStatus().name(),
             order.getSubtotal(),
             order.getLines().size(),
-            order.getCustomerName(),
             order.getCreatedAt()
         );
     }
@@ -40,8 +39,6 @@ public final class PortalOrderMapper {
             order.getNotes(),
             order.getCreatedByName(),
             order.getCreatedAt(),
-            order.getCustomerName(),
-            order.getCustomerRif(),
             order.getInvoiceNumber(),
             items
         );
