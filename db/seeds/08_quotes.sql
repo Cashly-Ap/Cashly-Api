@@ -124,5 +124,37 @@ VALUES (UNHEX('0E300000000000000000000000000016'), UNHEX('0E10000000000000000000
 INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
 VALUES (UNHEX('0E300000000000000000000000000017'), UNHEX('0E100000000000000000000000000006'), UNHEX('0E200000000000000000000000000016'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 4.0000);
 
+-- Quote 7: DRAFT - InvGlobal (multi-line)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000007'), 'PRE-2026-0013', UNHEX('C1000000000000000000000000000011'), 'Inversiones Global S.A.', 'J-99999999-9', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', 'Presupuesto para instalacion electrica', 2800.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000017'), UNHEX('0E100000000000000000000000000007'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 300.0000, 5.50, 1650.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000018'), UNHEX('0E100000000000000000000000000007'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 50.0000, 14.00, 700.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000019'), UNHEX('0E100000000000000000000000000007'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 10.0000, 45.00, 450.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000018'), UNHEX('0E100000000000000000000000000007'), UNHEX('0E200000000000000000000000000017'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 300.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000019'), UNHEX('0E100000000000000000000000000007'), UNHEX('0E200000000000000000000000000018'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 50.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E30000000000000000000000000001a'), UNHEX('0E100000000000000000000000000007'), UNHEX('0E200000000000000000000000000019'), UNHEX('E0000000000000000000000000000003'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 10.0000);
+
+-- Quote 8: DRAFT - InvGlobal (single line)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000008'), 'PRE-2026-0014', UNHEX('C1000000000000000000000000000011'), 'Inversiones Global S.A.', 'J-99999999-9', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', NULL, 875.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E20000000000000000000000000001a'), UNHEX('0E100000000000000000000000000008'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 5.0000, 175.00, 875.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E30000000000000000000000000001b'), UNHEX('0E100000000000000000000000000008'), UNHEX('0E20000000000000000000000000001a'), UNHEX('E0000000000000000000000000000005'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 5.0000);
+
 -- Update sequence
-UPDATE quote_number_sequence SET next_value = 13 WHERE year = 2026;
+UPDATE quote_number_sequence SET next_value = 15 WHERE year = 2026;

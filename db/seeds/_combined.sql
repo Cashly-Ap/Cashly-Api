@@ -190,6 +190,7 @@ VALUES
 -- SumZulia (c5)    -> ALM-MRB-01, ALM-CCS-01
 -- TecSol (c7)      -> ALM-CCS-01, ALM-VLC-01, ALM-BQT-01
 -- AgroLlanos (c8)  -> ALM-VLC-01
+-- InvGlobal (c11)  -> ALM-CCS-01
 -- =============================================================================
 INSERT INTO customer_warehouse_access (id, customer_id, warehouse_id, granted_at, granted_by)
 VALUES
@@ -201,7 +202,8 @@ VALUES
     (UNHEX('d0000000000000000000000000000006'), UNHEX('c1000000000000000000000000000007'), UNHEX('b0000000000000000000000000000001'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a')),
     (UNHEX('d0000000000000000000000000000007'), UNHEX('c1000000000000000000000000000007'), UNHEX('b0000000000000000000000000000003'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a')),
     (UNHEX('d0000000000000000000000000000008'), UNHEX('c1000000000000000000000000000007'), UNHEX('b0000000000000000000000000000004'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a')),
-    (UNHEX('d0000000000000000000000000000009'), UNHEX('c1000000000000000000000000000008'), UNHEX('b0000000000000000000000000000003'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'));
+    (UNHEX('d0000000000000000000000000000009'), UNHEX('c1000000000000000000000000000008'), UNHEX('b0000000000000000000000000000003'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a')),
+    (UNHEX('d000000000000000000000000000000A'), UNHEX('c1000000000000000000000000000011'), UNHEX('b0000000000000000000000000000001'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'));
 -- =============================================================================
 -- Seed: Products (simples y compuestos) + Stock en almacenes
 --
@@ -590,6 +592,8 @@ VALUES
 --   ORD-2026-0005  AgroLlanos      DRAFT
 --   ORD-2026-0006  ComNorte        CANCELLED
 --   ORD-2026-0007  DistCaracas     CONFIRMED
+--   ORD-2026-0008  InvGlobal       CONFIRMED
+--   ORD-2026-0009  InvGlobal       DRAFT
 -- =============================================================================
 
 
@@ -599,9 +603,9 @@ DELETE FROM orders;
 DELETE FROM order_number_sequence;
 
 
--- Sequence: year 2026, next value starts at 8 (7 orders already used)
+-- Sequence: year 2026, next value starts at 10 (9 orders already used)
 INSERT INTO order_number_sequence (year, next_value)
-VALUES (2026, 8);
+VALUES (2026, 10);
 
 -- =============================================================================
 -- ORDERS
@@ -739,6 +743,44 @@ VALUES
         NULL,
         '2026-05-04 11:30:00',
         '2026-05-04 12:00:00'
+    ),
+
+    -- ORD-2026-0008: InvGlobal — CONFIRMED
+    (
+        UNHEX('aa000000000000000000000000000008'),
+        'ORD-2026-0008',
+        UNHEX('c1000000000000000000000000000011'),
+        'Inversiones Global S.A.',
+        'J-99999999-9',
+        UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'),
+        'Gabriel Admin',
+        'CONFIRMED',
+        '2026-06-10',
+        'Primer pedido confirmado',
+        400.00,
+        NULL,
+        NULL,
+        '2026-06-08 10:00:00',
+        '2026-06-08 10:30:00'
+    ),
+
+    -- ORD-2026-0009: InvGlobal — DRAFT
+    (
+        UNHEX('aa000000000000000000000000000009'),
+        'ORD-2026-0009',
+        UNHEX('c1000000000000000000000000000011'),
+        'Inversiones Global S.A.',
+        'J-99999999-9',
+        UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'),
+        'Gabriel Admin',
+        'DRAFT',
+        '2026-06-15',
+        'Pedido en preparacion',
+        306.50,
+        NULL,
+        NULL,
+        '2026-06-10 15:00:00',
+        '2026-06-10 15:00:00'
     );
 
 -- =============================================================================
@@ -818,7 +860,25 @@ VALUES
     --   Total = 238.00
     (UNHEX('ab000000000000000000000000000019'), UNHEX('aa000000000000000000000000000007'), UNHEX('e0000000000000000000000000000019'), 'Kit Herramientas Eléctricas',       'KIT-HERR-01',   1.0000, 185.00, 185.00),
     (UNHEX('ab00000000000000000000000000001a'), UNHEX('aa000000000000000000000000000007'), UNHEX('e0000000000000000000000000000006'), 'Juego llaves combinadas 12pz',      'HERR-002',      1.0000, 35.00,   35.00),
-    (UNHEX('ab00000000000000000000000000001b'), UNHEX('aa000000000000000000000000000007'), UNHEX('e0000000000000000000000000000007'), 'Nivel de burbuja 60cm',             'HERR-003',      1.0000, 18.00,   18.00);
+    (UNHEX('ab00000000000000000000000000001b'), UNHEX('aa000000000000000000000000000007'), UNHEX('e0000000000000000000000000000007'), 'Nivel de burbuja 60cm',             'HERR-003',      1.0000, 18.00,   18.00),
+
+    -- ORD-2026-0008: InvGlobal CONFIRMED
+    --   100x Cable UTP Cat6 @ 2.50 = 250.00
+    --   10x Breaker 20A @ 15.00 = 150.00
+    --   Total = 400.00
+    (UNHEX('ab00000000000000000000000000001c'), UNHEX('aa000000000000000000000000000008'), UNHEX('e0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)',            'ELEC-001',    100.0000, 2.50,   250.00),
+    (UNHEX('ab00000000000000000000000000001d'), UNHEX('aa000000000000000000000000000008'), UNHEX('e0000000000000000000000000000003'), 'Breaker 20A',                       'ELEC-003',     10.0000, 15.00,  150.00),
+
+    -- ORD-2026-0009: InvGlobal DRAFT
+    --   5x Resma papel carta @ 6.50 = 32.50
+    --   3x Tóner HP 85A @ 28.00 = 84.00
+    --   10x Casco de seguridad @ 12.00 = 120.00
+    --   20x Guantes de nitrilo @ 3.50 = 70.00
+    --   Total = 306.50
+    (UNHEX('ab00000000000000000000000000001e'), UNHEX('aa000000000000000000000000000009'), UNHEX('e0000000000000000000000000000008'), 'Resma papel carta',                 'OFIC-001',      5.0000, 6.50,    32.50),
+    (UNHEX('ab00000000000000000000000000001f'), UNHEX('aa000000000000000000000000000009'), UNHEX('e0000000000000000000000000000009'), 'Tóner HP 85A',                      'OFIC-002',      3.0000, 28.00,   84.00),
+    (UNHEX('ab000000000000000000000000000020'), UNHEX('aa000000000000000000000000000009'), UNHEX('e000000000000000000000000000000d'), 'Casco de seguridad',                'SEGUR-001',    10.0000, 12.00,  120.00),
+    (UNHEX('ab000000000000000000000000000021'), UNHEX('aa000000000000000000000000000009'), UNHEX('e000000000000000000000000000000e'), 'Guantes de nitrilo (par)',           'SEGUR-002',    20.0000, 3.50,    70.00);
 
 -- =============================================================================
 -- ORDER LINE ALLOCATIONS
@@ -865,7 +925,17 @@ VALUES
     -- ORD-2026-0007 lines (CONFIRMED) — Caracas
     (UNHEX('ac000000000000000000000000000018'), UNHEX('ab000000000000000000000000000019'), UNHEX('b0000000000000000000000000000001'),  1.0000),
     (UNHEX('ac000000000000000000000000000019'), UNHEX('ab00000000000000000000000000001a'), UNHEX('b0000000000000000000000000000001'),  1.0000),
-    (UNHEX('ac00000000000000000000000000001a'), UNHEX('ab00000000000000000000000000001b'), UNHEX('b0000000000000000000000000000001'),  1.0000);
+    (UNHEX('ac00000000000000000000000000001a'), UNHEX('ab00000000000000000000000000001b'), UNHEX('b0000000000000000000000000000001'),  1.0000),
+
+    -- ORD-2026-0008 lines (CONFIRMED) — Caracas
+    (UNHEX('ac00000000000000000000000000001b'), UNHEX('ab00000000000000000000000000001c'), UNHEX('b0000000000000000000000000000001'), 100.0000),
+    (UNHEX('ac00000000000000000000000000001c'), UNHEX('ab00000000000000000000000000001d'), UNHEX('b0000000000000000000000000000001'),  10.0000),
+
+    -- ORD-2026-0009 lines (DRAFT) — Caracas
+    (UNHEX('ac00000000000000000000000000001d'), UNHEX('ab00000000000000000000000000001e'), UNHEX('b0000000000000000000000000000001'),   5.0000),
+    (UNHEX('ac00000000000000000000000000001e'), UNHEX('ab00000000000000000000000000001f'), UNHEX('b0000000000000000000000000000001'),   3.0000),
+    (UNHEX('ac00000000000000000000000000001f'), UNHEX('ab000000000000000000000000000020'), UNHEX('b0000000000000000000000000000001'),  10.0000),
+    (UNHEX('ac000000000000000000000000000020'), UNHEX('ab000000000000000000000000000021'), UNHEX('b0000000000000000000000000000001'),  20.0000);
 -- =============================================================================
 -- Seed: Invoices (5 facturas con líneas y asignaciones)
 -- =============================================================================
@@ -983,6 +1053,35 @@ VALUES (UNHEX('0F300000000000000000000000000015'), UNHEX('0F20000000000000000000
 
 -- Update sequence
 UPDATE invoice_number_sequence SET next_value = 31 WHERE year = 2026;
+
+-- Invoice 6: PARTIALLY_PAID - CREDIT - InvGlobal (linked to ORD-2026-0008)
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000006'), 'INV-2026-00031', UNHEX('aa000000000000000000000000000008'), 'ORD-2026-0008', UNHEX('C1000000000000000000000000000011'), 'Inversiones Global S.A.', 'J-99999999-9', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'PARTIALLY_PAID', 'CREDIT', 'Credito 30 dias - pago parcial recibido', 1000.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000015'), UNHEX('0F100000000000000000000000000006'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 100.0000, 5.50, 550.00);
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000016'), UNHEX('0F100000000000000000000000000006'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 10.0000, 45.00, 450.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000016'), UNHEX('0F200000000000000000000000000015'), UNHEX('B0000000000000000000000000000001'), 100.0000);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000017'), UNHEX('0F200000000000000000000000000016'), UNHEX('B0000000000000000000000000000001'), 10.0000);
+
+-- Invoice 7: PAID - CASH - InvGlobal (single line)
+INSERT INTO invoices (id, invoice_number, order_id, order_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, payment_type, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0F100000000000000000000000000007'), 'INV-2026-00032', NULL, NULL, UNHEX('C1000000000000000000000000000011'), 'Inversiones Global S.A.', 'J-99999999-9', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'PAID', 'CASH', 'Pago de contado', 350.00, NOW(), NOW());
+
+INSERT INTO invoice_lines (id, invoice_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0F200000000000000000000000000017'), UNHEX('0F100000000000000000000000000007'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 2.0000, 175.00, 350.00);
+
+INSERT INTO invoice_line_allocations (id, invoice_line_id, warehouse_id, allocated)
+VALUES (UNHEX('0F300000000000000000000000000018'), UNHEX('0F200000000000000000000000000017'), UNHEX('B0000000000000000000000000000001'), 2.0000);
+
+-- Update sequence
+UPDATE invoice_number_sequence SET next_value = 33 WHERE year = 2026;
 
 -- =============================================================================
 -- Seed: Quotes (6 presupuestos con líneas y asignaciones)
@@ -1115,8 +1214,40 @@ VALUES (UNHEX('0E300000000000000000000000000016'), UNHEX('0E10000000000000000000
 INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
 VALUES (UNHEX('0E300000000000000000000000000017'), UNHEX('0E100000000000000000000000000006'), UNHEX('0E200000000000000000000000000016'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 4.0000);
 
+-- Quote 7: DRAFT - InvGlobal (multi-line)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000007'), 'PRE-2026-0013', UNHEX('C1000000000000000000000000000011'), 'Inversiones Global S.A.', 'J-99999999-9', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', 'Presupuesto para instalacion electrica', 2800.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000017'), UNHEX('0E100000000000000000000000000007'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 300.0000, 5.50, 1650.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000018'), UNHEX('0E100000000000000000000000000007'), UNHEX('E0000000000000000000000000000002'), 'Toma corriente doble', 'ELEC-002', 50.0000, 14.00, 700.00);
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E200000000000000000000000000019'), UNHEX('0E100000000000000000000000000007'), UNHEX('E0000000000000000000000000000003'), 'Breaker 20A', 'ELEC-003', 10.0000, 45.00, 450.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000018'), UNHEX('0E100000000000000000000000000007'), UNHEX('0E200000000000000000000000000017'), UNHEX('E0000000000000000000000000000001'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 300.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E300000000000000000000000000019'), UNHEX('0E100000000000000000000000000007'), UNHEX('0E200000000000000000000000000018'), UNHEX('E0000000000000000000000000000002'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 50.0000);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E30000000000000000000000000001a'), UNHEX('0E100000000000000000000000000007'), UNHEX('0E200000000000000000000000000019'), UNHEX('E0000000000000000000000000000003'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 10.0000);
+
+-- Quote 8: DRAFT - InvGlobal (single line)
+INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
+VALUES (UNHEX('0E100000000000000000000000000008'), 'PRE-2026-0014', UNHEX('C1000000000000000000000000000011'), 'Inversiones Global S.A.', 'J-99999999-9', UNHEX('A0EEBC999C0B4EF8BB6D6BB9BD380215'), 'Super Admin', 'DRAFT', NULL, 875.00, NOW(), NOW());
+
+INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
+VALUES (UNHEX('0E20000000000000000000000000001a'), UNHEX('0E100000000000000000000000000008'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 5.0000, 175.00, 875.00);
+
+INSERT INTO quote_allocations (id, quote_id, quote_line_id, product_id, warehouse_id, warehouse_name, allocated_quantity)
+VALUES (UNHEX('0E30000000000000000000000000001b'), UNHEX('0E100000000000000000000000000008'), UNHEX('0E20000000000000000000000000001a'), UNHEX('E0000000000000000000000000000005'), UNHEX('B0000000000000000000000000000001'), 'Almacen Principal Caracas', 5.0000);
+
 -- Update sequence
-UPDATE quote_number_sequence SET next_value = 13 WHERE year = 2026;
+UPDATE quote_number_sequence SET next_value = 15 WHERE year = 2026;
 
 -- =============================================================================
 -- Seed: Payment Methods (8 métodos de pago)
@@ -1180,9 +1311,25 @@ VALUES (UNHEX('A1000000000000000000000000000007'), 'PAY-2025-0007', UNHEX('c1000
 INSERT INTO payments (id, payment_number, customer_id, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
 VALUES (UNHEX('A1000000000000000000000000000008'), 'PAY-2025-0008', UNHEX('c1000000000000000000000000000005'), 3500.00, (SELECT id FROM payment_methods WHERE code = 'PM-0006'), 'USD-CASH-20250510', '2025-05-10', 'Anticipo en divisas - SumZulia', 'APPLIED', 3500.00, UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'Operator User', '2025-05-10 15:30:00', '2025-05-10 15:30:00');
 
+-- Payment 9: Partial payment for Invoice 6 (PARTIALLY_PAID, InvGlobal) - Transferencia
+-- Invoice 6 subtotal: 1000.00
+INSERT INTO payments (id, payment_number, customer_id, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A1000000000000000000000000000009'), 'PAY-2025-0009', UNHEX('c1000000000000000000000000000011'), 600.00, (SELECT id FROM payment_methods WHERE code = 'PM-0002'), 'TRF-20250612-0198', '2025-06-12', 'Pago parcial factura INV-2026-00031', 'APPLIED', 600.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-06-12 09:45:00', '2025-06-12 09:45:00');
+
+INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
+VALUES (UNHEX('AA00000000000000000000000000009'), UNHEX('A1000000000000000000000000000009'), UNHEX('0F100000000000000000000000000006'), 600.00);
+
+-- Payment 10: Full payment for Invoice 7 (PAID, InvGlobal) - Efectivo
+-- Invoice 7 subtotal: 350.00
+INSERT INTO payments (id, payment_number, customer_id, amount, payment_method_id, reference_number, payment_date, notes, status, applied_amount, created_by, created_by_name, created_at, updated_at)
+VALUES (UNHEX('A100000000000000000000000000000a'), 'PAY-2025-0010', UNHEX('c1000000000000000000000000000011'), 350.00, (SELECT id FROM payment_methods WHERE code = 'PM-0001'), NULL, '2025-06-20', 'Pago contado factura INV-2026-00032', 'APPLIED', 350.00, UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'Super Admin', '2025-06-20 14:00:00', '2025-06-20 14:00:00');
+
+INSERT INTO payment_allocations (id, payment_id, invoice_id, allocated_amount)
+VALUES (UNHEX('AA0000000000000000000000000000a'), UNHEX('A100000000000000000000000000000a'), UNHEX('0F100000000000000000000000000007'), 350.00);
+
 -- Update sequence
-UPDATE payment_number_sequence SET next_value = 9 WHERE year = 2025;
-INSERT IGNORE INTO payment_number_sequence (year, next_value) VALUES (2025, 9);
+UPDATE payment_number_sequence SET next_value = 11 WHERE year = 2025;
+INSERT IGNORE INTO payment_number_sequence (year, next_value) VALUES (2025, 11);
 
 -- =============================================================================
 -- Seed: Credit Notes & Debit Notes
