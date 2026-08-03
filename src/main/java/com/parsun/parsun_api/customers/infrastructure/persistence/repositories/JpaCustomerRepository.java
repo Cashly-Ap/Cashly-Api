@@ -102,6 +102,16 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
+    public boolean isActive(CustomerId id) {
+        return springDataRepository.isActiveById(id.getValue()).orElse(false);
+    }
+
+    @Override
+    public boolean isActivePortalAccess(CustomerId id) {
+        return springDataRepository.isActivePortalAccessById(id.getValue());
+    }
+
+    @Override
     public long getNextCode() {
         return springDataRepository.findMaxCode().orElse(0L) + 1;
     }

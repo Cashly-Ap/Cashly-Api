@@ -21,7 +21,6 @@ import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
-import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 
@@ -90,9 +89,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void authenticateCustomer(HttpServletRequest request, String subjectId) {
         CustomerId customerId = CustomerId.from(subjectId);
 
-        customerRepository.findById(customerId)
-            .filter(customer -> customer.isActive() && customer.isPortalAccess())
-            .ifPresent(customer -> setCustomerAuthentication(request, customer));
+        if (customerRepository.isActivePortalAccess(customerId)) {
+            setCustomerAuthentication(request, customerId);
+        }
     }
 
     private void setUserAuthentication(HttpServletRequest request, User user) {
@@ -119,12 +118,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private void setCustomerAuthentication(HttpServletRequest request, Customer customer) {
+    private void setCustomerAuthentication(HttpServletRequest request, CustomerId customerId) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_PORTAL_CUSTOMER"));
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            customer.getId().getValue().toString(),
+            customerId.getValue().toString(),
             null,
             authorities
         );
