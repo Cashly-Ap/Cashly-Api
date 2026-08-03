@@ -16,6 +16,7 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.token.domain.valueobjects.RefreshTokenId;
 import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ class RefreshTokenUseCaseUnitTest {
     @Mock
     private TokenService tokenService;
 
+    @Mock
+    private CustomerRepository customerRepository;
+
     private RefreshTokenUseCase refreshTokenUseCase;
 
     private RefreshTokenRequest validRequest;
@@ -56,7 +60,8 @@ class RefreshTokenUseCaseUnitTest {
         refreshTokenUseCase = new RefreshTokenUseCase(
             refreshTokenRepository,
             userRepository,
-            tokenService
+            tokenService,
+            customerRepository
         );
 
         String tokenString = UUID.randomUUID().toString();
