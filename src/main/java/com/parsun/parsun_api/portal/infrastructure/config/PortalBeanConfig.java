@@ -74,7 +74,7 @@ public class PortalBeanConfig {
     }
 
     @Bean
-    public ListProductsUseCase listProductsUseCase(
+    public ListProductsUseCase portalListProductsUseCase(
             CustomerRepository customerRepository,
             CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
             ProductRepository productRepository,
