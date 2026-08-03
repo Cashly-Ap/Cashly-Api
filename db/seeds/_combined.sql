@@ -65,7 +65,7 @@ VALUES
 -- =============================================================================
 -- Seed: Customers (10 clientes con emails, teléfonos y direcciones)
 -- portal_password BCrypt of: 49510561Gabriel.
--- $2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.
+-- $2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu
 -- =============================================================================
 
 
@@ -78,16 +78,17 @@ DELETE FROM customers;
 
 INSERT INTO customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, portal_access, portal_password, created_at, updated_at)
 VALUES
-    (UNHEX('c1000000000000000000000000000001'), 1001, 'Distribuidora Caracas C.A.',          'BUSINESS',  'J-30123456-7', 'DistCaracas',   30,  5000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000002'), 1002, 'Importaciones del Sur C.A.',          'BUSINESS',  'J-20987654-3', 'ImpSur',        60, 10000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000001'), 1001, 'Distribuidora Caracas C.A.',          'BUSINESS',  'J-30123456-7', 'DistCaracas',   30,  5000.00, TRUE,  TRUE,  '$2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000002'), 1002, 'Importaciones del Sur C.A.',          'BUSINESS',  'J-20987654-3', 'ImpSur',        60, 10000.00, TRUE,  TRUE,  '$2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu', NOW(), NOW()),
     (UNHEX('c1000000000000000000000000000003'), 1003, 'Comercializadora Norte S.R.L.',       'BUSINESS',  'J-10555444-1', 'ComNorte',      15,  2500.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
     (UNHEX('c1000000000000000000000000000004'), 1004, 'Carlos Eduardo Mendoza',              'INDIVIDUAL','V-12345678-9', 'CMendoza',       0,     0.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000005'), 1005, 'Suministros Industriales Zulia C.A.', 'BUSINESS',  'J-40234567-8', 'SumZulia',      45,  7500.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000005'), 1005, 'Suministros Industriales Zulia C.A.', 'BUSINESS',  'J-40234567-8', 'SumZulia',      45,  7500.00, TRUE,  TRUE,  '$2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu', NOW(), NOW()),
     (UNHEX('c1000000000000000000000000000006'), 1006, 'Maria Alejandra Torres',              'INDIVIDUAL','V-09876543-2', 'MTorres',        0,     0.00, FALSE, FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000007'), 1007, 'Tecnologia y Soluciones C.A.',        'BUSINESS',  'J-50345678-9', 'TecSol',        90, 20000.00, TRUE,  TRUE,  '$2b$10$7aSAhQNvUbeQOmQsg4aYLeO6E.MGyY1Iv7rFcZWt.Mlat/XlTNQA.', NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000007'), 1007, 'Tecnologia y Soluciones C.A.',        'BUSINESS',  'J-50345678-9', 'TecSol',        90, 20000.00, TRUE,  TRUE,  '$2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu', NOW(), NOW()),
     (UNHEX('c1000000000000000000000000000008'), 1008, 'Agropecuaria Los Llanos S.R.L.',      'BUSINESS',  'J-11456789-0', 'AgroLlanos',    30,  3000.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
     (UNHEX('c1000000000000000000000000000009'), 1009, 'Roberto Jose Perez',                  'INDIVIDUAL','V-15678901-3', 'RPerez',         0,     0.00, TRUE,  FALSE, NULL,                                                           NOW(), NOW()),
-    (UNHEX('c1000000000000000000000000000010'), 1010, 'Constructora Andina C.A.',            'BUSINESS',  'J-60456789-1', 'ConstruAndina', 60, 15000.00, FALSE, FALSE, NULL,                                                           NOW(), NOW());
+    (UNHEX('c1000000000000000000000000000010'), 1010, 'Constructora Andina C.A.',            'BUSINESS',  'J-60456789-1', 'ConstruAndina', 60, 15000.00, FALSE, FALSE, NULL,                                                           NOW(), NOW()),
+    (UNHEX('c1000000000000000000000000000011'), 1011, 'Inversiones Global S.A.',              'BUSINESS',  'J-99999999-9', 'InvGlobal',    30,  5000.00, TRUE,  TRUE,  '$2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu', NOW(), NOW());
 
 INSERT INTO customer_emails (id, customer_id, email)
 VALUES
@@ -105,7 +106,9 @@ VALUES
     (UNHEX('ce000000000000000000000000000012'), UNHEX('c1000000000000000000000000000008'), 'agrollanos@gmail.com'),
     (UNHEX('ce000000000000000000000000000013'), UNHEX('c1000000000000000000000000000009'), 'rjperez@gmail.com'),
     (UNHEX('ce000000000000000000000000000014'), UNHEX('c1000000000000000000000000000010'), 'licitaciones@construandina.com'),
-    (UNHEX('ce000000000000000000000000000015'), UNHEX('c1000000000000000000000000000010'), 'pagos@construandina.com');
+    (UNHEX('ce000000000000000000000000000015'), UNHEX('c1000000000000000000000000000010'), 'pagos@construandina.com'),
+    (UNHEX('ce000000000000000000000000000016'), UNHEX('c1000000000000000000000000000011'), 'contacto@inversionesglobal.com'),
+    (UNHEX('ce000000000000000000000000000017'), UNHEX('c1000000000000000000000000000011'), 'gerencia@inversionesglobal.com');
 
 INSERT INTO customer_phones (id, customer_id, phone)
 VALUES
@@ -122,7 +125,9 @@ VALUES
     (UNHEX('b0000000000000000000000000000011'), UNHEX('c1000000000000000000000000000008'), '0247-6667788'),
     (UNHEX('b0000000000000000000000000000012'), UNHEX('c1000000000000000000000000000009'), '0418-5544332'),
     (UNHEX('b0000000000000000000000000000013'), UNHEX('c1000000000000000000000000000010'), '0274-2223344'),
-    (UNHEX('b0000000000000000000000000000014'), UNHEX('c1000000000000000000000000000010'), '0416-8899001');
+    (UNHEX('b0000000000000000000000000000014'), UNHEX('c1000000000000000000000000000010'), '0416-8899001'),
+    (UNHEX('b0000000000000000000000000000015'), UNHEX('c1000000000000000000000000000011'), '0212-7778899'),
+    (UNHEX('b0000000000000000000000000000016'), UNHEX('c1000000000000000000000000000011'), '0414-5566778');
 
 INSERT INTO customer_addresses (id, customer_id, address, billing, active, state, municipality, postal_code)
 VALUES
@@ -138,7 +143,9 @@ VALUES
     (UNHEX('a0000000000000000000000000000010'), UNHEX('c1000000000000000000000000000008'), 'Carretera Nacional, Km 12, Finca Los Llanos, Calabozo',     TRUE,  TRUE,  'Guarico',          'Mellado',      '2312'),
     (UNHEX('a0000000000000000000000000000011'), UNHEX('c1000000000000000000000000000009'), 'Av. Bolivar Norte, Res. El Bosque, Apto 3-B, Valencia',     TRUE,  TRUE,  'Carabobo',         'Valencia',     '2001'),
     (UNHEX('a0000000000000000000000000000012'), UNHEX('c1000000000000000000000000000010'), 'Av. Las Delicias, Edif. Andino, Piso 3, Maracay',           TRUE,  TRUE,  'Aragua',           'Girardot',     '2101'),
-    (UNHEX('a0000000000000000000000000000013'), UNHEX('c1000000000000000000000000000010'), 'Zona Industrial Sur, Galpón 3, Maracay',                    FALSE, FALSE, 'Aragua',           'Girardot',     '2103');
+    (UNHEX('a0000000000000000000000000000013'), UNHEX('c1000000000000000000000000000010'), 'Zona Industrial Sur, Galpón 3, Maracay',                    FALSE, FALSE, 'Aragua',           'Girardot',     '2103'),
+    (UNHEX('a0000000000000000000000000000014'), UNHEX('c1000000000000000000000000000011'), 'Av. Andrés Bello, Torre Global, Piso 10, Caracas',          TRUE,  TRUE,  'Distrito Capital', 'Libertador',   '1050'),
+    (UNHEX('a0000000000000000000000000000015'), UNHEX('c1000000000000000000000000000011'), 'Zona Industrial Los Cortijos, Galpón 4, Caracas',            FALSE, TRUE,  'Miranda',          'Sucre',        '1070');
 -- =============================================================================
 -- Seed: Categories (10 categorías variadas)
 -- =============================================================================
