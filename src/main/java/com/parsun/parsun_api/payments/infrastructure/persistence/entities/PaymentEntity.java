@@ -56,11 +56,11 @@ public class PaymentEntity {
     @Column(name = "applied_amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal appliedAmount;
 
-    @Column(name = "created_by", columnDefinition = "BINARY(16)", nullable = false)
+    @Column(name = "created_by", columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID createdBy;
 
-    @Column(name = "created_by_name", length = 200, nullable = false)
+    @Column(name = "created_by_name", length = 200)
     private String createdByName;
 
     @Column(name = "created_at", nullable = false, updatable = false)

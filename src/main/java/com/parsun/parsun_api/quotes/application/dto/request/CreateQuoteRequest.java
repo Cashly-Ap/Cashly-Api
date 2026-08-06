@@ -36,7 +36,6 @@ public record CreateQuoteRequest(
             @DecimalMin(value = "0.01", message = "Unit price must be greater than zero")
             BigDecimal unitPrice,
 
-            @NotEmpty(message = "At least one warehouse allocation is required")
             @Valid
             List<WarehouseAllocationRequest> warehouseAllocations
     ) {}

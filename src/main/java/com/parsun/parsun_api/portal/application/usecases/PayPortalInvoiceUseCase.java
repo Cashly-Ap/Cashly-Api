@@ -33,6 +33,6 @@ public class PayPortalInvoiceUseCase {
                 request.balanceAmount()
         );
 
-        return payInvoiceUseCase.execute(invoiceId, internalRequest, customerId, customerId.toString());
+        return payInvoiceUseCase.execute(invoiceId, internalRequest, null, null);
     }
 }

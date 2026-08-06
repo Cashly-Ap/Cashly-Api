@@ -136,19 +136,21 @@ class PaymentUnitTest {
         }
 
         @Test
-        void should_ThrowException_When_CreatedByIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            null, CREATED_BY_NAME, STATUS));
+        void should_AllowNullCreatedBy_When_Creating() {
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    null, CREATED_BY_NAME, STATUS);
+
+            assertNull(payment.getCreatedBy());
         }
 
         @Test
-        void should_ThrowException_When_CreatedByNameIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, null, STATUS));
+        void should_AllowNullCreatedByName_When_Creating() {
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    CREATED_BY, null, STATUS);
+
+            assertNull(payment.getCreatedByName());
         }
 
         @Test

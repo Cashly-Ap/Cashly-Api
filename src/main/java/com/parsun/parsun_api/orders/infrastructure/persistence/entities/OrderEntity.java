@@ -38,11 +38,10 @@ public class OrderEntity {
     @Column(name = "customer_rif", length = 50, nullable = false)
     private String customerRif;
 
-    @Column(name = "created_by", columnDefinition = "BINARY(16)", nullable = false)
-    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "created_by", columnDefinition = "BINARY(16)")
     private UUID createdBy;
 
-    @Column(name = "created_by_name", length = 200, nullable = false)
+    @Column(name = "created_by_name", length = 200)
     private String createdByName;
 
     @Column(name = "status", length = 20, nullable = false)

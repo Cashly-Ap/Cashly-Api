@@ -7,6 +7,7 @@ import com.parsun.parsun_api.quotes.application.dto.response.QuoteDetailResponse
 import com.parsun.parsun_api.quotes.application.usecases.CreateQuoteUseCase;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,16 +35,11 @@ public class CreatePortalQuoteUseCase {
                                 line.productId(),
                                 line.quantity(),
                                 line.unitPrice(),
-                                line.warehouseAllocations().stream()
-                                        .map(wa -> new CreateQuoteRequest.WarehouseAllocationRequest(
-                                                wa.warehouseId(),
-                                                wa.allocatedQuantity()
-                                        ))
-                                        .collect(Collectors.toList())
+                                List.of()
                         ))
                         .collect(Collectors.toList())
         );
 
-        return createQuoteUseCase.execute(internalRequest, customerId);
+        return createQuoteUseCase.executeCustomerDraft(internalRequest);
     }
 }

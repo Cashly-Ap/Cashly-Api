@@ -110,17 +110,19 @@ class OrderUnitTest {
     }
 
     @Test
-    void should_ThrowException_When_CreatedByIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        null, CREATED_BY_NAME, null, validLines));
+    void should_AllowNullCreatedBy_When_Creating() {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                null, CREATED_BY_NAME, null, validLines);
+
+        assertNull(order.getCreatedBy());
     }
 
     @Test
-    void should_ThrowException_When_CreatedByNameIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, null, null, validLines));
+    void should_AllowNullCreatedByName_When_Creating() {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, null, null, validLines);
+
+        assertNull(order.getCreatedByName());
     }
 
     @Test

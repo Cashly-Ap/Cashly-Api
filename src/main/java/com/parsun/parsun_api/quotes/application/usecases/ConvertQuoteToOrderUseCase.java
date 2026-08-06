@@ -51,8 +51,14 @@ public class ConvertQuoteToOrderUseCase {
             throw new IllegalStateException("Only DRAFT quotes can be converted to orders");
         }
 
-        User user = userRepository.findById(new UserId(authenticatedUserId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+        UUID createdById = null;
+        String createdByName = null;
+        if (authenticatedUserId != null) {
+            User user = userRepository.findById(new UserId(authenticatedUserId))
+                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+            createdById = user.getId().getValue();
+            createdByName = user.getUserName().getValue();
+        }
 
         int year = LocalDate.now().getYear();
         int sequence = orderRepository.getNextSequenceForYear(year);
@@ -65,7 +71,7 @@ public class ConvertQuoteToOrderUseCase {
         Order order = Order.reconstitute(
                 OrderId.generate(), orderNumber,
                 quote.getCustomerId(), quote.getCustomerName(), quote.getCustomerRif(),
-                authenticatedUserId, user.getUserName().getValue(),
+                createdById, createdByName,
                 OrderStatus.CONFIRMED, null,
                 null, null, null, null,
                 orderLines, LocalDateTime.now(), LocalDateTime.now()

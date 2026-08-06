@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.quotes.infrastructure.web;
 
+import com.parsun.parsun_api.quotes.application.dto.request.AssignQuoteWarehousesRequest;
 import com.parsun.parsun_api.quotes.application.dto.request.CancelQuoteRequest;
 import com.parsun.parsun_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
 import com.parsun.parsun_api.quotes.application.dto.request.CreateQuoteRequest;
@@ -29,6 +30,7 @@ public class QuoteController {
     private final DeleteQuoteUseCase deleteQuoteUseCase;
     private final CancelQuoteUseCase cancelQuoteUseCase;
     private final GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase;
+    private final AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase;
     private final ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase;
     private final ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase;
 
@@ -39,6 +41,7 @@ public class QuoteController {
                             DeleteQuoteUseCase deleteQuoteUseCase,
                             CancelQuoteUseCase cancelQuoteUseCase,
                             GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
+                            AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase,
                             ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
                             ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
         this.createQuoteUseCase = createQuoteUseCase;
@@ -48,6 +51,7 @@ public class QuoteController {
         this.deleteQuoteUseCase = deleteQuoteUseCase;
         this.cancelQuoteUseCase = cancelQuoteUseCase;
         this.getWarehousesForQuoteUseCase = getWarehousesForQuoteUseCase;
+        this.assignQuoteWarehousesUseCase = assignQuoteWarehousesUseCase;
         this.convertQuoteToOrderUseCase = convertQuoteToOrderUseCase;
         this.convertQuoteToInvoiceUseCase = convertQuoteToInvoiceUseCase;
     }
@@ -115,6 +119,15 @@ public class QuoteController {
             @RequestParam UUID customerId) {
         List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase.execute(customerId);
         return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{id}/allocations")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<QuoteDetailResponse> assignWarehouses(
+            @PathVariable UUID id,
+            @Valid @RequestBody AssignQuoteWarehousesRequest request) {
+        QuoteDetailResponse response = assignQuoteWarehousesUseCase.execute(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/convert-to-order")

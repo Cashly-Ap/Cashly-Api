@@ -32,6 +32,6 @@ public class PayPortalAllDebtUseCase {
                 request.balanceAmount()
         );
 
-        return payAllCustomerDebtUseCase.execute(customerId, internalRequest, customerId, customerId.toString());
+        return payAllCustomerDebtUseCase.execute(customerId, internalRequest, null, null);
     }
 }

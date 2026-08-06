@@ -170,7 +170,7 @@ class JwtAuthenticationFilterUnitTest {
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(testCustomer));
+            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(true);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -186,7 +186,7 @@ class JwtAuthenticationFilterUnitTest {
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(testCustomer));
+            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(true);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -202,7 +202,7 @@ class JwtAuthenticationFilterUnitTest {
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.empty());
+            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(false);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -213,20 +213,11 @@ class JwtAuthenticationFilterUnitTest {
         @Test
         @DisplayName("should_NotAuthenticate_When_CustomerInactive")
         void should_NotAuthenticate_When_CustomerInactive() throws Exception {
-            Customer inactiveCustomer = Customer.reconstitute(
-                testCustomerId, new CustomerCode(1001L), new LegalName("Inactive Customer"),
-                CustomerType.BUSINESS, new Rif("J-87654321-0"), new CustomerAlias("Inactive"),
-                new CreditDays(30), new CreditLimit(BigDecimal.valueOf(1000)),
-                false, LocalDateTime.now(), LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                true, "$2a$10$hashedPassword", null, null
-            );
-
             when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(inactiveCustomer));
+            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(false);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -237,20 +228,11 @@ class JwtAuthenticationFilterUnitTest {
         @Test
         @DisplayName("should_NotAuthenticate_When_CustomerPortalAccessDisabled")
         void should_NotAuthenticate_When_CustomerPortalAccessDisabled() throws Exception {
-            Customer customerNoPortal = Customer.reconstitute(
-                testCustomerId, new CustomerCode(1001L), new LegalName("No Portal Customer"),
-                CustomerType.BUSINESS, new Rif("J-87654321-0"), new CustomerAlias("NoPortal"),
-                new CreditDays(30), new CreditLimit(BigDecimal.valueOf(1000)),
-                true, LocalDateTime.now(), LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                false, "$2a$10$hashedPassword", null, null
-            );
-
             when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.findById(any(CustomerId.class))).thenReturn(Optional.of(customerNoPortal));
+            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(false);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 

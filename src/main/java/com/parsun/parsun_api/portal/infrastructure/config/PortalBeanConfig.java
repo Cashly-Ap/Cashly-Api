@@ -142,9 +142,8 @@ public class PortalBeanConfig {
 
     @Bean
     public ConvertPortalQuoteToOrderUseCase convertPortalQuoteToOrderUseCase(
-            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new ConvertPortalQuoteToOrderUseCase(convertQuoteToOrderUseCase, portalAuthorizationService);
+            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase) {
+        return new ConvertPortalQuoteToOrderUseCase(convertQuoteToOrderUseCase);
     }
 
     @Bean

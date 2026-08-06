@@ -33,6 +33,6 @@ public class PayPortalPartialDebtUseCase {
                 request.balanceAmount()
         );
 
-        return payPartialDebtUseCase.execute(customerId, internalRequest, customerId, customerId.toString());
+        return payPartialDebtUseCase.execute(customerId, internalRequest, null, null);
     }
 }

@@ -39,7 +39,7 @@ public class UpdateQuoteUseCase {
                 .orElseThrow(() -> new QuoteNotFoundException(id));
 
         if (!quote.canBeModified()) {
-            throw new QuoteStateException("Quote can only be modified in DRAFT status");
+            throw new QuoteStateException("Quote can only be modified in DRAFT or CUSTOMER_DRAFT status");
         }
 
         List<QuoteLine> oldLines = new ArrayList<>(quote.getLines());
@@ -59,7 +59,10 @@ public class UpdateQuoteUseCase {
                     lineRequest.unitPrice()
             );
 
-            lineRequest.warehouseAllocations().forEach(allocationRequest -> {
+            List<CreateQuoteRequest.WarehouseAllocationRequest> allocationRequests =
+                    lineRequest.warehouseAllocations() != null ? lineRequest.warehouseAllocations() : List.of();
+
+            allocationRequests.forEach(allocationRequest -> {
                 String warehouseName = warehouseRepository.findById(allocationRequest.warehouseId())
                         .map(w -> w.getName())
                         .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + allocationRequest.warehouseId()));

@@ -64,8 +64,6 @@ public class Order {
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
         Objects.requireNonNull(customerRif, "Customer RIF cannot be null");
-        Objects.requireNonNull(createdBy, "Created by cannot be null");
-        Objects.requireNonNull(createdByName, "Created by name cannot be null");
 
         if (lines == null || lines.isEmpty()) {
             throw new IllegalArgumentException("Order must have at least one line");

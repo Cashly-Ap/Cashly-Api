@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.quotes.domain.entities;
 
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteStateException;
+import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteLineId;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,11 @@ class QuoteTest {
 
     private Quote createDraftQuote() {
         return Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, validLines());
+    }
+
+    private Quote createCustomerDraftQuote() {
+        return Quote.createFromPortal(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
                 CREATED_BY, CREATED_BY_NAME, null, null, validLines());
     }
 
@@ -138,6 +144,18 @@ class QuoteTest {
             assertFalse(quote.getCreatedAt().isBefore(before));
             assertFalse(quote.getCreatedAt().isAfter(after));
             assertEquals(quote.getCreatedAt(), quote.getUpdatedAt());
+        }
+
+        @Test
+        @DisplayName("should create quote from portal in CUSTOMER_DRAFT status")
+        void should_create_quote_from_portal_in_customer_draft_status() {
+            Quote quote = createCustomerDraftQuote();
+
+            assertEquals(QuoteStatus.CUSTOMER_DRAFT, quote.getStatus());
+            assertEquals(2, quote.getLines().size());
+            assertEquals(new BigDecimal("35.00"), quote.getSubtotal());
+            assertTrue(quote.canBeModified());
+            assertTrue(quote.canBeDeleted());
         }
     }
 
@@ -318,6 +336,107 @@ class QuoteTest {
             BigDecimal afterUpdate = quote.getSubtotal();
             quote.removeLine(newLine.getId());
             assertTrue(quote.getSubtotal().compareTo(afterUpdate) < 0);
+        }
+    }
+
+    @Nested
+    @DisplayName("Warehouse Assignment")
+    class WarehouseAssignment {
+
+        @Test
+        @DisplayName("should assign allocation to a line in CUSTOMER_DRAFT")
+        void should_assign_allocation_to_line() {
+            Quote quote = createCustomerDraftQuote();
+            QuoteLine firstLine = quote.getLines().get(0);
+            QuoteAllocation allocation = new QuoteAllocation(
+                    firstLine.getProductId(), UUID.randomUUID(), "Warehouse A", new BigDecimal("2"));
+
+            quote.assignAllocation(firstLine.getId(), allocation);
+
+            assertEquals(1, firstLine.getAllocations().size());
+        }
+
+        @Test
+        @DisplayName("should confirm warehouse assignment and transition to DRAFT")
+        void should_confirm_warehouse_assignment_to_draft() {
+            Quote quote = createCustomerDraftQuote();
+            for (QuoteLine line : quote.getLines()) {
+                quote.assignAllocation(line.getId(), new QuoteAllocation(
+                        line.getProductId(), UUID.randomUUID(), "Warehouse A", line.getQuantity()));
+            }
+
+            quote.confirmWarehouseAssignment();
+
+            assertEquals(QuoteStatus.DRAFT, quote.getStatus());
+        }
+
+        @Test
+        @DisplayName("should throw when confirming with insufficient allocation")
+        void should_throw_when_confirming_insufficient_allocation() {
+            Quote quote = createCustomerDraftQuote();
+            QuoteLine firstLine = quote.getLines().get(0);
+            quote.assignAllocation(firstLine.getId(), new QuoteAllocation(
+                    firstLine.getProductId(), UUID.randomUUID(), "Warehouse A", new BigDecimal("1")));
+
+            assertThrows(QuoteStateException.class, quote::confirmWarehouseAssignment);
+        }
+
+        @Test
+        @DisplayName("should throw when assigning allocation to line not in CUSTOMER_DRAFT")
+        void should_throw_when_assigning_allocation_on_draft() {
+            Quote quote = createDraftQuote();
+            QuoteLine firstLine = quote.getLines().get(0);
+            QuoteAllocation allocation = new QuoteAllocation(
+                    firstLine.getProductId(), UUID.randomUUID(), "Warehouse A", new BigDecimal("1"));
+
+            assertThrows(QuoteStateException.class, () ->
+                    quote.assignAllocation(firstLine.getId(), allocation));
+        }
+
+        @Test
+        @DisplayName("should throw when confirming without any allocation")
+        void should_throw_when_confirming_without_allocations() {
+            Quote quote = createCustomerDraftQuote();
+
+            assertThrows(QuoteStateException.class, quote::confirmWarehouseAssignment);
+        }
+
+        @Test
+        @DisplayName("should throw when assigning allocation to unknown line")
+        void should_throw_when_assigning_allocation_to_unknown_line() {
+            Quote quote = createCustomerDraftQuote();
+            QuoteAllocation allocation = new QuoteAllocation(
+                    UUID.randomUUID(), UUID.randomUUID(), "Warehouse A", new BigDecimal("1"));
+
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                    quote.assignAllocation(QuoteLineId.of(UUID.randomUUID()), allocation));
+
+            assertTrue(exception.getMessage().contains("not found"));
+        }
+
+        @Test
+        @DisplayName("should clear all allocations in CUSTOMER_DRAFT")
+        void should_clear_allocations() {
+            Quote quote = createCustomerDraftQuote();
+            for (QuoteLine line : quote.getLines()) {
+                quote.assignAllocation(line.getId(), new QuoteAllocation(
+                        line.getProductId(), UUID.randomUUID(), "Warehouse A", line.getQuantity()));
+            }
+
+            quote.clearAllocations();
+
+            for (QuoteLine line : quote.getLines()) {
+                assertEquals(0, line.getAllocations().size());
+            }
+            assertEquals(QuoteStatus.CUSTOMER_DRAFT, quote.getStatus());
+        }
+
+        @Test
+        @DisplayName("should throw when clearing allocations not in CUSTOMER_DRAFT")
+        void should_throw_when_clearing_allocations_on_draft() {
+            Quote quote = createDraftQuote();
+
+            assertThrows(QuoteStateException.class, quote::clearAllocations);
         }
     }
 

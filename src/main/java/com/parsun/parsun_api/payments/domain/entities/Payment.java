@@ -74,8 +74,6 @@ public class Payment {
             Objects.requireNonNull(paymentMethodId, "Payment method cannot be null when source is PAYMENT_METHOD");
         }
         Objects.requireNonNull(paymentDate, "Payment date cannot be null");
-        Objects.requireNonNull(createdBy, "Created by cannot be null");
-        Objects.requireNonNull(createdByName, "Created by name cannot be null");
         Objects.requireNonNull(status, "Payment status cannot be null");
 
         LocalDateTime now = LocalDateTime.now();

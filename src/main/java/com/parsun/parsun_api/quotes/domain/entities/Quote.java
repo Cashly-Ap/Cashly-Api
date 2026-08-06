@@ -69,6 +69,23 @@ public class Quote {
     public static Quote create(QuoteNumber quoteNumber, UUID customerId, String customerName,
                                String customerRif, UUID createdBy, String createdByName,
                                LocalDate expiryDate, String notes, List<QuoteLine> lines) {
+        return create(quoteNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, QuoteStatus.DRAFT,
+                expiryDate, notes, lines);
+    }
+
+    public static Quote createFromPortal(QuoteNumber quoteNumber, UUID customerId, String customerName,
+                                         String customerRif, UUID createdBy, String createdByName,
+                                         LocalDate expiryDate, String notes, List<QuoteLine> lines) {
+        return create(quoteNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, QuoteStatus.CUSTOMER_DRAFT,
+                expiryDate, notes, lines);
+    }
+
+    private static Quote create(QuoteNumber quoteNumber, UUID customerId, String customerName,
+                                String customerRif, UUID createdBy, String createdByName,
+                                QuoteStatus status, LocalDate expiryDate, String notes,
+                                List<QuoteLine> lines) {
         if (quoteNumber == null) {
             throw new IllegalArgumentException("quoteNumber must not be null");
         }
@@ -81,12 +98,6 @@ public class Quote {
         if (customerRif == null) {
             throw new IllegalArgumentException("customerRif must not be null");
         }
-        if (createdBy == null) {
-            throw new IllegalArgumentException("createdBy must not be null");
-        }
-        if (createdByName == null) {
-            throw new IllegalArgumentException("createdByName must not be null");
-        }
         if (lines == null || lines.isEmpty()) {
             throw new IllegalArgumentException("Quote must have at least one line");
         }
@@ -96,7 +107,7 @@ public class Quote {
 
         return new Quote(
                 UUID.randomUUID(), quoteNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, QuoteStatus.DRAFT,
+                createdBy, createdByName, status,
                 expiryDate, notes, calculatedSubtotal,
                 null, null, null, null,
                 null, null,
@@ -150,6 +161,45 @@ public class Quote {
         touch();
     }
 
+    public void assignAllocation(QuoteLineId lineId, QuoteAllocation allocation) {
+        assertCustomerDraft();
+        for (QuoteLine line : lines) {
+            if (line.getId().equals(lineId)) {
+                line.addAllocation(allocation);
+                touch();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Quote line not found: " + lineId);
+    }
+
+    public void confirmWarehouseAssignment() {
+        assertCustomerDraft();
+        for (QuoteLine line : lines) {
+            BigDecimal allocatedTotal = line.getAllocations().stream()
+                    .map(QuoteAllocation::getAllocatedQuantity)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (allocatedTotal.compareTo(line.getQuantity()) != 0) {
+                throw new QuoteStateException(
+                        "Allocated quantity must equal line quantity for line " + line.getId()
+                                + " (allocated=" + allocatedTotal + ", required=" + line.getQuantity() + ")");
+            }
+        }
+        assertCanTransition(QuoteStatus.DRAFT);
+        this.status = QuoteStatus.DRAFT;
+        touch();
+    }
+
+    public void clearAllocations() {
+        assertCustomerDraft();
+        for (QuoteLine line : lines) {
+            for (QuoteAllocation allocation : List.copyOf(line.getAllocations())) {
+                line.removeAllocation(allocation.getId());
+            }
+        }
+        touch();
+    }
+
     private void assertCanTransition(QuoteStatus target) {
         if (!this.status.canTransitionTo(target)) {
             throw new QuoteStateException(
@@ -187,8 +237,14 @@ public class Quote {
     }
 
     private void assertDraft() {
-        if (this.status != QuoteStatus.DRAFT) {
-            throw new QuoteStateException("Quote can only be modified in DRAFT status");
+        if (this.status != QuoteStatus.DRAFT && this.status != QuoteStatus.CUSTOMER_DRAFT) {
+            throw new QuoteStateException("Quote can only be modified in DRAFT or CUSTOMER_DRAFT status");
+        }
+    }
+
+    private void assertCustomerDraft() {
+        if (this.status != QuoteStatus.CUSTOMER_DRAFT) {
+            throw new QuoteStateException("Warehouse assignment is only allowed in CUSTOMER_DRAFT status");
         }
     }
 
@@ -211,11 +267,11 @@ public class Quote {
     
 
     public boolean canBeModified() {
-        return this.status == QuoteStatus.DRAFT;
+        return this.status == QuoteStatus.DRAFT || this.status == QuoteStatus.CUSTOMER_DRAFT;
     }
 
     public boolean canBeDeleted() {
-        return this.status == QuoteStatus.DRAFT;
+        return this.status == QuoteStatus.DRAFT || this.status == QuoteStatus.CUSTOMER_DRAFT;
     }
 
     public boolean isActive() {

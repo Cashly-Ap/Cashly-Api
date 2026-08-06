@@ -90,6 +90,14 @@ public class QuoteConfig {
     }
 
     @Bean
+    public AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase(
+            QuoteRepository quoteRepository,
+            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
+            WarehouseRepository warehouseRepository) {
+        return new AssignQuoteWarehousesUseCase(quoteRepository, customerWarehouseAccessRepository, warehouseRepository);
+    }
+
+    @Bean
     public ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase(
             QuoteRepository quoteRepository,
             OrderRepository orderRepository,
@@ -118,12 +126,14 @@ public class QuoteConfig {
                                             DeleteQuoteUseCase deleteQuoteUseCase,
                                             CancelQuoteUseCase cancelQuoteUseCase,
                                             GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
+                                            AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase,
                                             ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
                                             ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
         return new QuoteController(createQuoteUseCase, getQuotesUseCase, getQuoteByIdUseCase,
                 updateQuoteUseCase, deleteQuoteUseCase,
                 cancelQuoteUseCase,
                 getWarehousesForQuoteUseCase,
+                assignQuoteWarehousesUseCase,
                 convertQuoteToOrderUseCase, convertQuoteToInvoiceUseCase);
     }
 }

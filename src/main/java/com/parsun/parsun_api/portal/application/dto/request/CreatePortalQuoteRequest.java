@@ -31,19 +31,6 @@ public record CreatePortalQuoteRequest(
 
         @NotNull(message = "Unit price is required")
         @DecimalMin(value = "0.01", message = "Unit price must be greater than zero")
-        BigDecimal unitPrice,
-
-        @NotEmpty(message = "At least one warehouse allocation is required")
-        @Valid
-        List<PortalWarehouseAllocationRequest> warehouseAllocations
-    ) {}
-
-    public record PortalWarehouseAllocationRequest(
-        @NotNull(message = "Warehouse is required")
-        UUID warehouseId,
-
-        @NotNull(message = "Allocated quantity is required")
-        @DecimalMin(value = "0.0001", message = "Allocated quantity must be greater than zero")
-        BigDecimal allocatedQuantity
+        BigDecimal unitPrice
     ) {}
 }

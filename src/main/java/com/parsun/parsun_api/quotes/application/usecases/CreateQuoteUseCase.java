@@ -19,6 +19,7 @@ import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -51,36 +52,7 @@ public class CreateQuoteUseCase {
         User user = userRepository.findById(new UserId(authenticatedUserId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
 
-        List<QuoteLine> lines = request.lines().stream()
-                .map(lineRequest -> {
-                    Product product = productRepository.findById(lineRequest.productId())
-                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
-
-                    QuoteLine line = new QuoteLine(
-                            product.getId(),
-                            product.getName(),
-                            product.getCode(),
-                            lineRequest.quantity(),
-                            lineRequest.unitPrice()
-                    );
-
-                    lineRequest.warehouseAllocations().forEach(allocationRequest -> {
-                        String warehouseName = warehouseRepository.findById(allocationRequest.warehouseId())
-                                .map(w -> w.getName())
-                                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + allocationRequest.warehouseId()));
-
-                        QuoteAllocation allocation = new QuoteAllocation(
-                                product.getId(),
-                                allocationRequest.warehouseId(),
-                                warehouseName,
-                                allocationRequest.allocatedQuantity()
-                        );
-                        line.addAllocation(allocation);
-                    });
-
-                    return line;
-                })
-                .toList();
+        List<QuoteLine> lines = buildLines(request, true);
 
         int year = LocalDate.now().getYear();
         int sequence = quoteRepository.getNextSequenceForYear(year);
@@ -100,5 +72,80 @@ public class CreateQuoteUseCase {
 
         Quote saved = quoteRepository.save(quote);
         return QuoteMapper.toDetailResponse(saved);
+    }
+
+    @Transactional
+    public QuoteDetailResponse executeCustomerDraft(CreateQuoteRequest request) {
+        Customer customer = customerRepository.findById(new CustomerId(request.customerId()))
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + request.customerId()));
+
+        List<QuoteLine> lines = buildLines(request, false);
+
+        int year = LocalDate.now().getYear();
+        int sequence = quoteRepository.getNextSequenceForYear(year);
+        QuoteNumber quoteNumber = QuoteNumber.of(year, sequence);
+
+        Quote quote = Quote.createFromPortal(
+                quoteNumber,
+                customer.getId().getValue(),
+                customer.getLegalName().getValue(),
+                customer.getRif().getValue(),
+                null,
+                null,
+                request.expiryDate(),
+                request.notes(),
+                lines
+        );
+
+        Quote saved = quoteRepository.save(quote);
+        return QuoteMapper.toDetailResponse(saved);
+    }
+
+    private List<QuoteLine> buildLines(CreateQuoteRequest request, boolean requireAllocations) {
+        return request.lines().stream()
+                .map(lineRequest -> {
+                    Product product = productRepository.findById(lineRequest.productId())
+                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+
+                    QuoteLine line = new QuoteLine(
+                            product.getId(),
+                            product.getName(),
+                            product.getCode(),
+                            lineRequest.quantity(),
+                            lineRequest.unitPrice()
+                    );
+
+                    List<CreateQuoteRequest.WarehouseAllocationRequest> allocationRequests =
+                            lineRequest.warehouseAllocations() != null ? lineRequest.warehouseAllocations() : List.of();
+
+                    if (requireAllocations && allocationRequests.isEmpty()) {
+                        throw new IllegalArgumentException(
+                                "At least one warehouse allocation is required for product " + product.getCode());
+                    }
+
+                    BigDecimal allocatedTotal = BigDecimal.ZERO;
+                    for (CreateQuoteRequest.WarehouseAllocationRequest allocationRequest : allocationRequests) {
+                        String warehouseName = warehouseRepository.findById(allocationRequest.warehouseId())
+                                .map(w -> w.getName())
+                                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + allocationRequest.warehouseId()));
+
+                        QuoteAllocation allocation = new QuoteAllocation(
+                                product.getId(),
+                                allocationRequest.warehouseId(),
+                                warehouseName,
+                                allocationRequest.allocatedQuantity()
+                        );
+                        line.addAllocation(allocation);
+                        allocatedTotal = allocatedTotal.add(allocationRequest.allocatedQuantity());
+                    }
+
+                    if (requireAllocations && allocatedTotal.compareTo(lineRequest.quantity()) != 0) {
+                        throw new IllegalArgumentException(
+                                "Allocated quantity must equal line quantity for product " + product.getCode());
+                    }
+
+                    return line;
+                })
+                .toList();
     }
 }

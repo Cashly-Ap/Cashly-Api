@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
@@ -36,9 +37,14 @@ public class CreatePaymentUseCase {
         customerRepository.findById(new CustomerId(request.customerId()))
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + request.customerId()));
 
-        String createdByName = userRepository.findById(new UserId(authenticatedUserId))
-                .map(user -> user.getUserName().getValue())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+        UUID createdById = null;
+        String createdByName = null;
+        if (authenticatedUserId != null) {
+            User user = userRepository.findById(new UserId(authenticatedUserId))
+                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+            createdById = authenticatedUserId;
+            createdByName = user.getUserName().getValue();
+        }
 
         PaymentStatus status = PaymentStatus.valueOf(request.status());
         validateRefund(request.customerId(), status, request.amount());
@@ -55,7 +61,7 @@ public class CreatePaymentUseCase {
                 request.referenceNumber(),
                 request.paymentDate(),
                 request.notes(),
-                authenticatedUserId,
+                createdById,
                 createdByName,
                 status
         );
