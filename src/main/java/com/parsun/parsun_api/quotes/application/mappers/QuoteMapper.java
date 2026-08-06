@@ -27,6 +27,8 @@ public class QuoteMapper {
                 quote.getStatus().name(),
                 quote.getExpiryDate(),
                 quote.getSubtotal(),
+                quote.getCreatedBy(),
+                quote.getCreatedByName(),
                 quote.getCreatedAt(),
                 quote.getUpdatedAt()
         );

@@ -14,6 +14,8 @@ public record QuoteListResponse(
         String status,
         LocalDate expiryDate,
         BigDecimal subtotal,
+        UUID createdBy,
+        String createdByName,
         Instant createdAt,
         Instant updatedAt
 ) {}

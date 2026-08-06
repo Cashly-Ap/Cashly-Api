@@ -64,6 +64,7 @@ class GetQuotesUseCaseTest {
         assertEquals("PRE-2026-0001", response.quoteNumber());
         assertEquals("Customer", response.customerName());
         assertEquals("DRAFT", response.status());
+        assertEquals(quote.getCreatedByName(), response.createdByName());
         verify(quoteRepository).findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc");
     }
 

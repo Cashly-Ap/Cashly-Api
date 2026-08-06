@@ -97,7 +97,8 @@ class QuoteControllerTest {
     void shouldListQuotes() {
         QuoteListResponse quote = new QuoteListResponse(
                 UUID.randomUUID(), "2026-0001", UUID.randomUUID(), "Customer", "J-12345678-9",
-                "DRAFT", LocalDate.now(), BigDecimal.TEN, Instant.now(), Instant.now()
+                "DRAFT", LocalDate.now(), BigDecimal.TEN,
+                UUID.randomUUID(), "Creator", Instant.now(), Instant.now()
         );
 
         when(getQuotesUseCase.execute(null, null, null, null, null, null, "createdAt", "desc"))

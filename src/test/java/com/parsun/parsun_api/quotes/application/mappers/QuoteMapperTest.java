@@ -44,6 +44,8 @@ class QuoteMapperTest {
         assertEquals("DRAFT", response.status());
         assertEquals(quote.getExpiryDate(), response.expiryDate());
         assertEquals(quote.getSubtotal(), response.subtotal());
+        assertEquals(quote.getCreatedBy(), response.createdBy());
+        assertEquals(quote.getCreatedByName(), response.createdByName());
         assertEquals(quote.getCreatedAt(), response.createdAt());
         assertEquals(quote.getUpdatedAt(), response.updatedAt());
     }
