@@ -74,6 +74,15 @@ public class OrderConfig {
     }
 
     @Bean
+    public AssignOrderWarehousesUseCase assignOrderWarehousesUseCase(
+            OrderRepository orderRepository,
+            WarehouseStockRepository warehouseStockRepository,
+            CustomerWarehouseAccessRepository customerWarehouseAccessRepository) {
+        return new AssignOrderWarehousesUseCase(
+                orderRepository, warehouseStockRepository, customerWarehouseAccessRepository);
+    }
+
+    @Bean
     public GetProductsForOrderUseCase getProductsForOrderUseCase(
             CustomerRepository customerRepository,
             CustomerWarehouseAccessRepository customerWarehouseAccessRepository,

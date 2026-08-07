@@ -41,7 +41,7 @@ public class OrderLine {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.lineTotal = quantity.multiply(unitPrice);
-        this.allocations = allocations != null ? List.copyOf(allocations) : List.of();
+        this.allocations = allocations != null ? new java.util.ArrayList<>(allocations) : new java.util.ArrayList<>();
     }
 
     public static OrderLine create(UUID productId, String productName, String productCode,
@@ -65,4 +65,8 @@ public class OrderLine {
     public BigDecimal getUnitPrice() { return unitPrice; }
     public BigDecimal getLineTotal() { return lineTotal; }
     public List<OrderLineAllocation> getAllocations() { return allocations; }
+
+    public void addAllocation(OrderLineAllocation allocation) {
+        allocations.add(allocation);
+    }
 }

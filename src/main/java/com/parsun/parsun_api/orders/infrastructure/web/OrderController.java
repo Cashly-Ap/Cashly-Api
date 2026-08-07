@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.orders.infrastructure.web;
 
+import com.parsun.parsun_api.orders.application.dto.request.AssignOrderWarehousesRequest;
 import com.parsun.parsun_api.orders.application.dto.request.CancelOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.parsun.parsun_api.orders.application.dto.request.CreateOrderRequest;
@@ -32,6 +33,7 @@ public class OrderController {
     private final CancelOrderUseCase cancelOrderUseCase;
     private final ConvertToInvoiceUseCase convertToInvoiceUseCase;
     private final DeleteOrderUseCase deleteOrderUseCase;
+    private final AssignOrderWarehousesUseCase assignOrderWarehousesUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase,
                             GetOrderByIdUseCase getOrderByIdUseCase,
@@ -40,7 +42,8 @@ public class OrderController {
                             ConfirmOrderUseCase confirmOrderUseCase,
                             CancelOrderUseCase cancelOrderUseCase,
                             ConvertToInvoiceUseCase convertToInvoiceUseCase,
-                            DeleteOrderUseCase deleteOrderUseCase) {
+                            DeleteOrderUseCase deleteOrderUseCase,
+                            AssignOrderWarehousesUseCase assignOrderWarehousesUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.getOrderByIdUseCase = getOrderByIdUseCase;
         this.getOrdersUseCase = getOrdersUseCase;
@@ -49,6 +52,7 @@ public class OrderController {
         this.cancelOrderUseCase = cancelOrderUseCase;
         this.convertToInvoiceUseCase = convertToInvoiceUseCase;
         this.deleteOrderUseCase = deleteOrderUseCase;
+        this.assignOrderWarehousesUseCase = assignOrderWarehousesUseCase;
     }
 
     @PostMapping
@@ -95,6 +99,15 @@ public class OrderController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<OrderDetailResponse> confirm(@PathVariable UUID id) {
         OrderDetailResponse order = confirmOrderUseCase.execute(id);
+        return ResponseEntity.ok(order);
+    }
+
+    @PutMapping("/{id}/allocations")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    public ResponseEntity<OrderDetailResponse> assignWarehouses(
+            @PathVariable UUID id,
+            @Valid @RequestBody AssignOrderWarehousesRequest request) {
+        OrderDetailResponse order = assignOrderWarehousesUseCase.execute(id, request);
         return ResponseEntity.ok(order);
     }
 
