@@ -28,7 +28,7 @@ public interface QuoteJpaRepository extends JpaRepository<QuoteJpaEntity, UUID> 
             WHERE (:dateFrom IS NULL OR q.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR q.createdAt <= :dateTo)
             AND (:customerId IS NULL OR q.customerId = :customerId)
-            AND (:status IS NULL OR q.status = :status)
+            AND (q.status = :status OR (:status IS NULL AND q.status IN ('DRAFT', 'CUSTOMER_DRAFT')))
             AND (:productId IS NULL OR EXISTS (
                 SELECT 1 FROM QuoteLineJpaEntity ql WHERE ql.quote = q AND ql.productId = :productId
             ))
