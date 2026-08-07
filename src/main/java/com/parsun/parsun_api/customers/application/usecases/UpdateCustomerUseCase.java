@@ -60,7 +60,12 @@ public class UpdateCustomerUseCase {
         ));
 
         if (request.portalAccess() != null) {
-            customer.setPortalAccess(request.portalAccess());
+            if (Boolean.TRUE.equals(request.portalAccess()) && customer.getPortalPassword() == null) {
+                String encoded = passwordEncoder.encode(customer.getRif().getValue());
+                customer.enablePortalAccess(encoded);
+            } else {
+                customer.setPortalAccess(request.portalAccess());
+            }
         }
 
         Customer saved = customerRepository.save(customer);

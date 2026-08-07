@@ -57,9 +57,10 @@ class UpdateUserPasswordUseCaseTest {
     @Test
     @DisplayName("should_UpdatePassword_When_UserExists")
     void should_UpdatePassword_When_UserExists() {
-        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("NewSecurePass123!");
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("OldPass123!", "NewSecurePass123!");
 
         when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("OldPass123!", "$2a$10$oldHashedPassword")).thenReturn(true);
         when(passwordEncoder.encode("NewSecurePass123!")).thenReturn("$2a$10$newHashedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -73,7 +74,7 @@ class UpdateUserPasswordUseCaseTest {
     @Test
     @DisplayName("should_ThrowUserNotFoundException_When_UserDoesNotExist")
     void should_ThrowUserNotFoundException_When_UserDoesNotExist() {
-        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("NewSecurePass123!");
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("OldPass123!", "NewSecurePass123!");
 
         when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
 
@@ -91,9 +92,10 @@ class UpdateUserPasswordUseCaseTest {
     @Test
     @DisplayName("should_EncodePassword_When_UpdatingPassword")
     void should_EncodePassword_When_UpdatingPassword() {
-        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("NewSecurePass123!");
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("OldPass123!", "NewSecurePass123!");
 
         when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("OldPass123!", "$2a$10$oldHashedPassword")).thenReturn(true);
         when(passwordEncoder.encode("NewSecurePass123!")).thenReturn("$2a$10$encodedHash");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
