@@ -34,7 +34,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
             WHERE (:dateFrom IS NULL OR o.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR o.createdAt <= :dateTo)
             AND (:customerId IS NULL OR o.customerId = :customerId)
-            AND ((:status IS NULL AND o.status = 'DRAFT') OR (:status IS NOT NULL AND o.status = :status))
+            AND (:status = 'ALL' OR o.status = :status OR (:status IS NULL AND o.status IN ('DRAFT', 'CUSTOMER_DRAFT')))
             AND (:productId IS NULL OR EXISTS (
                 SELECT 1 FROM OrderLineEntity ol WHERE ol.order = o AND ol.productId = :productId
             ))
