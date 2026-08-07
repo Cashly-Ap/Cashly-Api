@@ -60,6 +60,20 @@ public class Order {
     public static Order create(OrderNumber orderNumber, UUID customerId, String customerName,
                                String customerRif, UUID createdBy, String createdByName,
                                String notes, List<OrderLine> lines) {
+        return createWithStatus(orderNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, notes, lines, OrderStatus.DRAFT);
+    }
+
+    public static Order createCustomerDraft(OrderNumber orderNumber, UUID customerId, String customerName,
+                                            String customerRif, UUID createdBy, String createdByName,
+                                            String notes, List<OrderLine> lines) {
+        return createWithStatus(orderNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, notes, lines, OrderStatus.CUSTOMER_DRAFT);
+    }
+
+    private static Order createWithStatus(OrderNumber orderNumber, UUID customerId, String customerName,
+                               String customerRif, UUID createdBy, String createdByName,
+                               String notes, List<OrderLine> lines, OrderStatus status) {
         Objects.requireNonNull(orderNumber, "Order number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
@@ -71,7 +85,7 @@ public class Order {
 
         LocalDateTime now = LocalDateTime.now();
         return new Order(OrderId.generate(), orderNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, OrderStatus.DRAFT, notes,
+                createdBy, createdByName, status, notes,
                 null, null, null, null, lines, now, now);
     }
 
@@ -90,7 +104,7 @@ public class Order {
     }
 
     public void update(String notes, List<OrderLine> lines) {
-        if (this.status != OrderStatus.DRAFT) {
+        if (!isInDraftState()) {
             throw new IllegalStateException("Only DRAFT orders can be updated");
         }
         if (lines == null || lines.isEmpty()) {
@@ -104,7 +118,7 @@ public class Order {
     }
 
     public void confirm() {
-        if (this.status != OrderStatus.DRAFT) {
+        if (!isInDraftState()) {
             throw new IllegalStateException("Only DRAFT orders can be confirmed");
         }
         this.status = OrderStatus.CONFIRMED;
@@ -112,7 +126,7 @@ public class Order {
     }
 
     public void cancel(String reason) {
-        if (this.status != OrderStatus.DRAFT && this.status != OrderStatus.CONFIRMED) {
+        if (!isInDraftState() && this.status != OrderStatus.CONFIRMED) {
             throw new IllegalStateException("Only DRAFT or CONFIRMED orders can be cancelled, current: " + this.status);
         }
         Objects.requireNonNull(reason, "Cancellation reason cannot be null");
@@ -147,6 +161,10 @@ public class Order {
         this.updatedAt = LocalDateTime.now();
     }
 
+    private boolean isInDraftState() {
+        return this.status == OrderStatus.DRAFT || this.status == OrderStatus.CUSTOMER_DRAFT;
+    }
+
     private BigDecimal calculateSubtotal() {
         return lines.stream()
                 .map(OrderLine::getLineTotal)
@@ -154,7 +172,7 @@ public class Order {
     }
 
     public void delete() {
-        if (this.status != OrderStatus.DRAFT) {
+        if (!isInDraftState()) {
             throw new com.parsun.parsun_api.orders.domain.exceptions.OrderCannotBeDeletedException(
                     this.id.value(), this.status);
         }

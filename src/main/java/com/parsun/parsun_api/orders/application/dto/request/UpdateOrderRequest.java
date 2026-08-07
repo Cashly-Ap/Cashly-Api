@@ -27,7 +27,6 @@ public record UpdateOrderRequest(
             @NotNull(message = "Unit price is required")
             BigDecimal unitPrice,
 
-            @NotEmpty(message = "At least one warehouse allocation is required")
             @Valid
             List<WarehouseAllocationRequest> warehouseAllocations
     ) {}

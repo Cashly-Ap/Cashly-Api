@@ -53,23 +53,7 @@ public class CreateOrderUseCase {
         User user = userRepository.findById(new UserId(authenticatedUserId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
 
-        List<OrderLine> lines = request.lines().stream()
-                .map(lineRequest -> {
-                    Product product = productRepository.findById(lineRequest.productId())
-                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
-
-                    List<OrderLineAllocation> allocations = applyStockAllocations(lineRequest, product.getId());
-
-                    return OrderLine.create(
-                            product.getId(),
-                            product.getName(),
-                            product.getCode(),
-                            lineRequest.quantity(),
-                            lineRequest.unitPrice(),
-                            allocations
-                    );
-                })
-                .toList();
+        List<OrderLine> lines = buildOrderLines(request);
 
         int year = LocalDate.now().getYear();
         int sequence = orderRepository.getNextSequenceForYear(year);
@@ -88,6 +72,53 @@ public class CreateOrderUseCase {
 
         Order saved = orderRepository.save(order);
         return OrderMapper.toDetailResponse(saved);
+    }
+
+    @Transactional
+    public OrderDetailResponse executeCustomerDraft(CreateOrderRequest request) {
+        UUID customerId = request.customerId();
+        Customer customer = customerRepository.findById(new CustomerId(customerId))
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
+
+        List<OrderLine> lines = buildOrderLines(request);
+
+        int year = LocalDate.now().getYear();
+        int sequence = orderRepository.getNextSequenceForYear(year);
+        OrderNumber orderNumber = OrderNumber.of(year, sequence);
+
+        Order order = Order.createCustomerDraft(
+                orderNumber,
+                customer.getId().getValue(),
+                customer.getLegalName().getValue(),
+                customer.getRif().getValue(),
+                customerId,
+                customer.getLegalName().getValue(),
+                request.notes(),
+                lines
+        );
+
+        Order saved = orderRepository.save(order);
+        return OrderMapper.toDetailResponse(saved);
+    }
+
+    private List<OrderLine> buildOrderLines(CreateOrderRequest request) {
+        return request.lines().stream()
+                .map(lineRequest -> {
+                    Product product = productRepository.findById(lineRequest.productId())
+                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+
+                    List<OrderLineAllocation> allocations = applyStockAllocations(lineRequest, product.getId());
+
+                    return OrderLine.create(
+                            product.getId(),
+                            product.getName(),
+                            product.getCode(),
+                            lineRequest.quantity(),
+                            lineRequest.unitPrice(),
+                            allocations
+                    );
+                })
+                .toList();
     }
 
     private List<OrderLineAllocation> applyStockAllocations(CreateOrderRequest.OrderLineRequest lineRequest, UUID productId) {

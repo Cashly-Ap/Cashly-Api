@@ -17,8 +17,10 @@ import com.parsun.parsun_api.invoices.application.usecases.GetInvoiceByIdUseCase
 import com.parsun.parsun_api.invoices.application.usecases.GetInvoicesUseCase;
 import com.parsun.parsun_api.orders.application.usecases.CancelOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.ConfirmOrderUseCase;
+import com.parsun.parsun_api.orders.application.usecases.CreateOrderUseCase;
 import com.parsun.parsun_api.orders.application.usecases.GetOrderByIdUseCase;
 import com.parsun.parsun_api.orders.application.usecases.GetOrdersUseCase;
+import com.parsun.parsun_api.orders.application.usecases.UpdateOrderUseCase;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.payments.application.usecases.GetAllPaymentsUseCase;
 import com.parsun.parsun_api.payments.application.usecases.GetPaymentByIdUseCase;
@@ -31,6 +33,7 @@ import com.parsun.parsun_api.portal.application.usecases.CancelPortalQuoteUseCas
 import com.parsun.parsun_api.portal.application.usecases.ConfirmPortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ConvertPortalQuoteToOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ChangeCustomerPasswordUseCase;
+import com.parsun.parsun_api.portal.application.usecases.CreatePortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.CreatePortalQuoteUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetCustomerProfileUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalDashboardUseCase;
@@ -43,6 +46,7 @@ import com.parsun.parsun_api.portal.application.usecases.ListPortalOrdersUseCase
 import com.parsun.parsun_api.portal.application.usecases.ListPortalPaymentsUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ListPortalQuotesUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ListProductsUseCase;
+import com.parsun.parsun_api.portal.application.usecases.UpdatePortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalAllDebtUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalInvoiceUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalPartialDebtUseCase;
@@ -178,6 +182,19 @@ public class PortalBeanConfig {
     public CancelPortalOrderUseCase cancelPortalOrderUseCase(
             CancelOrderUseCase cancelOrderUseCase) {
         return new CancelPortalOrderUseCase(cancelOrderUseCase);
+    }
+
+    @Bean
+    public CreatePortalOrderUseCase createPortalOrderUseCase(
+            CreateOrderUseCase createOrderUseCase,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new CreatePortalOrderUseCase(createOrderUseCase, portalAuthorizationService);
+    }
+
+    @Bean
+    public UpdatePortalOrderUseCase updatePortalOrderUseCase(
+            UpdateOrderUseCase updateOrderUseCase) {
+        return new UpdatePortalOrderUseCase(updateOrderUseCase);
     }
 
     @Bean

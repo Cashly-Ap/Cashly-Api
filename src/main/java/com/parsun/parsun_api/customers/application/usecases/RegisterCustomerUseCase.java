@@ -58,7 +58,7 @@ public class RegisterCustomerUseCase {
         ));
 
         if (Boolean.TRUE.equals(request.portalAccess())) {
-            String encoded = passwordEncoder.encode(UUID.randomUUID().toString());
+            String encoded = passwordEncoder.encode(request.rif());
             customer.enablePortalAccess(encoded);
         }
 

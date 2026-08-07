@@ -209,6 +209,11 @@ public class Customer {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void setPortalAccess(boolean enabled) {
+        this.portalAccess = enabled;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void changePortalPassword(String encodedPassword) {
         this.portalPassword = encodedPassword;
         this.updatedAt = LocalDateTime.now();

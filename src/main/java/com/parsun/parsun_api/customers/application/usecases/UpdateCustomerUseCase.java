@@ -59,11 +59,8 @@ public class UpdateCustomerUseCase {
             a.state(), a.municipality(), a.postalCode()
         ));
 
-        if (Boolean.TRUE.equals(request.portalAccess())) {
-            String encoded = passwordEncoder.encode(UUID.randomUUID().toString());
-            customer.enablePortalAccess(encoded);
-        } else if (Boolean.FALSE.equals(request.portalAccess())) {
-            customer.disablePortalAccess();
+        if (request.portalAccess() != null) {
+            customer.setPortalAccess(request.portalAccess());
         }
 
         Customer saved = customerRepository.save(customer);
