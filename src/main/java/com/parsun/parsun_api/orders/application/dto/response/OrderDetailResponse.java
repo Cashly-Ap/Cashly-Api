@@ -22,7 +22,9 @@ public record OrderDetailResponse(
         String cancelledReason,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<OrderLineDetailResponse> lines
+        List<OrderLineDetailResponse> lines,
+        BigDecimal creditLimit,
+        BigDecimal availableCredit
 ) {
     public record OrderLineDetailResponse(
             UUID id,

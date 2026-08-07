@@ -9,6 +9,7 @@ import com.parsun.parsun_api.orders.application.usecases.*;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -35,6 +36,7 @@ class OrderConfigTest {
     @Mock private CustomerWarehouseAccessRepository customerWarehouseAccessRepository;
     @Mock private CategoryRepository categoryRepository;
     @Mock private WarehouseRepository warehouseRepository;
+    @Mock private CreditGuard creditGuard;
 
     @Test
     void should_CreateCreateOrderUseCase() {
@@ -52,7 +54,7 @@ class OrderConfigTest {
         OrderConfig config = new OrderConfig();
 
         GetOrderByIdUseCase useCase = config.getOrderByIdUseCase(
-                orderRepository, stockEnrichmentService);
+                orderRepository, stockEnrichmentService, customerRepository, creditGuard);
 
         assertNotNull(useCase);
     }

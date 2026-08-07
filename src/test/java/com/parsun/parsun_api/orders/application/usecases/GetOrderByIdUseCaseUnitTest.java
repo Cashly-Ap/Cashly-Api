@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.orders.application.usecases;
 
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
@@ -10,6 +11,7 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,11 +39,17 @@ class GetOrderByIdUseCaseUnitTest {
     @Mock
     private StockEnrichmentService stockEnrichmentService;
 
+    @Mock
+    private CustomerRepository customerRepository;
+
+    @Mock
+    private CreditGuard creditGuard;
+
     private GetOrderByIdUseCase getOrderByIdUseCase;
 
     @BeforeEach
     void setUp() {
-        getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository, stockEnrichmentService);
+        getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, customerRepository, creditGuard);
     }
 
     @Test

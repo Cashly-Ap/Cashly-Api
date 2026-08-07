@@ -10,6 +10,7 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
+import com.parsun.parsun_api.shared.services.CreditGuard;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,10 @@ public class OrderConfig {
 
     @Bean
     public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository,
-                                                      StockEnrichmentService stockEnrichmentService) {
-        return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService);
+                                                      StockEnrichmentService stockEnrichmentService,
+                                                      CustomerRepository customerRepository,
+                                                      CreditGuard creditGuard) {
+        return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, customerRepository, creditGuard);
     }
 
     @Bean

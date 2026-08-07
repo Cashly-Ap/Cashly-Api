@@ -19,9 +19,11 @@ public class OrderMapper {
     private OrderMapper() {}
 
     public static OrderDetailResponse toDetailResponse(Order order,
-                                                          Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
-                                                          Map<WarehouseProductKey, Integer> thisOrderAllocations) {
+                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<WarehouseProductKey, Integer> thisOrderAllocations,
+                                                           java.math.BigDecimal creditLimit,
+                                                           java.math.BigDecimal availableCredit) {
         List<OrderDetailResponse.OrderLineDetailResponse> lineResponses = order.getLines().stream()
                 .map(line -> toLineDetailResponse(line, enrichmentMap, productStocks, thisOrderAllocations))
                 .toList();
@@ -43,14 +45,23 @@ public class OrderMapper {
                 order.getCancelledReason(),
                 order.getCreatedAt(),
                 order.getUpdatedAt(),
-                lineResponses
+                lineResponses,
+                creditLimit,
+                availableCredit
         );
     }
 
     public static OrderDetailResponse toDetailResponse(Order order,
-                                                          Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                          Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
         return toDetailResponse(order, enrichmentMap, productStocks, Map.of());
+    }
+
+    public static OrderDetailResponse toDetailResponse(Order order,
+                                                           Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
+                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<WarehouseProductKey, Integer> thisOrderAllocations) {
+        return toDetailResponse(order, enrichmentMap, productStocks, thisOrderAllocations, null, null);
     }
 
     public static OrderDetailResponse toDetailResponse(Order order) {
