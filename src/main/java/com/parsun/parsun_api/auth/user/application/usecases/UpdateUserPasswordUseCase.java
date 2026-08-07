@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.auth.user.application.usecases;
 
+import com.parsun.parsun_api.auth.authentication.application.exceptions.InvalidCredentialsException;
 import com.parsun.parsun_api.auth.user.application.dto.request.UpdateUserPasswordRequest;
 import com.parsun.parsun_api.auth.user.application.dto.response.UserResponse;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
@@ -29,6 +30,12 @@ public class UpdateUserPasswordUseCase {
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+
+        if (request.currentPassword() != null && !request.currentPassword().isBlank()) {
+            if (!passwordEncoder.matches(request.currentPassword(), user.getPassword().getHashedValue())) {
+                throw new InvalidCredentialsException("Current password is incorrect");
+            }
+        }
 
         Password.validateRawPassword(request.password());
         String hashed = passwordEncoder.encode(request.password());

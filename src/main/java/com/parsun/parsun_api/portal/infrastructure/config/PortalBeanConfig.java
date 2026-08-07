@@ -2,6 +2,7 @@ package com.parsun.parsun_api.portal.infrastructure.config;
 
 import com.parsun.parsun_api.auth.authentication.domain.services.AuthenticableResolver;
 import com.parsun.parsun_api.auth.authentication.infrastructure.adapters.CustomerRifResolver;
+import com.parsun.parsun_api.auth.token.application.usecases.LogoutUserUseCase;
 import com.parsun.parsun_api.auth.token.domain.repositories.RefreshTokenRepository;
 import com.parsun.parsun_api.auth.token.domain.services.TokenService;
 import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
@@ -29,6 +30,7 @@ import com.parsun.parsun_api.portal.application.usecases.CancelPortalOrderUseCas
 import com.parsun.parsun_api.portal.application.usecases.CancelPortalQuoteUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ConfirmPortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ConvertPortalQuoteToOrderUseCase;
+import com.parsun.parsun_api.portal.application.usecases.ChangeCustomerPasswordUseCase;
 import com.parsun.parsun_api.portal.application.usecases.CreatePortalQuoteUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetCustomerProfileUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalDashboardUseCase;
@@ -71,6 +73,13 @@ public class PortalBeanConfig {
                 refreshTokenRepository,
                 tokenService,
                 passwordEncoder);
+    }
+
+    @Bean
+    public ChangeCustomerPasswordUseCase changeCustomerPasswordUseCase(
+            CustomerRepository customerRepository,
+            PasswordEncoder passwordEncoder) {
+        return new ChangeCustomerPasswordUseCase(customerRepository, passwordEncoder);
     }
 
     @Bean

@@ -49,8 +49,9 @@ public class CreateQuoteUseCase {
         Customer customer = customerRepository.findById(new CustomerId(request.customerId()))
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + request.customerId()));
 
-        User user = userRepository.findById(new UserId(authenticatedUserId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+        User user = userRepository.findById(new UserId(authenticatedUserId)).orElse(null);
+        UUID createdById = user != null ? user.getId().getValue() : authenticatedUserId;
+        String createdByName = user != null ? user.getUserName().getValue() : customer.getLegalName().getValue();
 
         List<QuoteLine> lines = buildLines(request, true);
 
@@ -63,8 +64,8 @@ public class CreateQuoteUseCase {
                 customer.getId().getValue(),
                 customer.getLegalName().getValue(),
                 customer.getRif().getValue(),
-                user.getId().getValue(),
-                user.getUserName().getValue(),
+                createdById,
+                createdByName,
                 request.expiryDate(),
                 request.notes(),
                 lines

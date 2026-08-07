@@ -1,0 +1,50 @@
+package com.parsun.parsun_api.portal.application.usecases;
+
+import com.parsun.parsun_api.auth.authentication.application.exceptions.InvalidCredentialsException;
+import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
+import com.parsun.parsun_api.portal.application.dto.request.ChangeCustomerPasswordRequest;
+import com.parsun.parsun_api.portal.application.dto.response.CustomerSummaryResponse;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+public class ChangeCustomerPasswordUseCase {
+
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public ChangeCustomerPasswordUseCase(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+        this.customerRepository = customerRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional
+    public CustomerSummaryResponse execute(String customerId, ChangeCustomerPasswordRequest request) {
+        CustomerId id = CustomerId.from(customerId);
+
+        Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new InvalidCredentialsException("Customer not found"));
+
+        if (!passwordEncoder.matches(request.currentPassword(), customer.getPortalPassword())) {
+            throw new InvalidCredentialsException("Current password is incorrect");
+        }
+
+        Password.validateRawPassword(request.newPassword());
+        String encoded = passwordEncoder.encode(request.newPassword());
+        customer.changePortalPassword(encoded);
+        customerRepository.save(customer);
+
+        return new CustomerSummaryResponse(
+            UUID.fromString(customerId),
+            customer.getLegalName().getValue(),
+            customer.getRif().getValue(),
+            null,
+            null,
+            null
+        );
+    }
+}

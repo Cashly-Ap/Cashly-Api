@@ -55,6 +55,8 @@ public class CorsConfig {
         
         List<String> methods = Arrays.asList(allowedMethods.split(","));
         configuration.setAllowedMethods(methods);
+        configuration.addAllowedMethod("PATCH");
+        configuration.addAllowedMethod("OPTIONS");
         
         if ("*".equals(allowedHeaders)) {
             configuration.addAllowedHeader("*");
