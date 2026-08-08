@@ -141,30 +141,35 @@ class CreateQuoteUseCaseTest {
     }
 
     @Test
-    @DisplayName("should throw when user is not found")
-    void shouldThrowWhenUserNotFound() {
+    @DisplayName("should fallback to authenticated user id when user is not found")
+    void shouldFallbackToAuthenticatedUserIdWhenUserNotFound() {
         UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        UUID warehouseId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
         Customer customer = buildCustomer(customerId);
 
         CreateQuoteRequest request = new CreateQuoteRequest(
                 customerId, null, null,
                 List.of(new CreateQuoteRequest.QuoteLineRequest(
-                        UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN,
-                        List.of(new CreateQuoteRequest.WarehouseAllocationRequest(UUID.randomUUID(), BigDecimal.ONE))
+                        productId, BigDecimal.ONE, BigDecimal.TEN,
+                        List.of(new CreateQuoteRequest.WarehouseAllocationRequest(warehouseId, BigDecimal.ONE))
                 ))
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.empty());
+        when(productRepository.findById(productId)).thenReturn(Optional.of(buildProduct(productId)));
+        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(buildWarehouse(warehouseId)));
+        when(quoteRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
+        when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> createQuoteUseCase.execute(request, authenticatedUserId)
-        );
+        QuoteDetailResponse response = createQuoteUseCase.execute(request, authenticatedUserId);
 
-        assertTrue(exception.getMessage().contains("User not found"));
-        verify(quoteRepository, never()).save(any());
+        assertNotNull(response);
+        assertEquals(authenticatedUserId, response.createdBy());
+        assertEquals(customer.getLegalName().getValue(), response.createdByName());
+        verify(quoteRepository).save(any(Quote.class));
     }
 
     @Test

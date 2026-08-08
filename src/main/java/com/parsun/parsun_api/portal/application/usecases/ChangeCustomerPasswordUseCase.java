@@ -33,7 +33,9 @@ public class ChangeCustomerPasswordUseCase {
             throw new InvalidCredentialsException("Current password is incorrect");
         }
 
-        Password.validateRawPassword(request.newPassword());
+        if (!request.newPassword().equals(customer.getRif().getValue())) {
+            Password.validateRawPassword(request.newPassword());
+        }
         String encoded = passwordEncoder.encode(request.newPassword());
         customer.changePortalPassword(encoded);
         customerRepository.save(customer);

@@ -7,9 +7,13 @@ import com.parsun.parsun_api.customers.application.dto.request.PhoneRequest;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerCreateResponse;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.entities.CustomerWarehouseAccess;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.customers.domain.services.CustomerCodeGenerator;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerCode;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,11 +48,21 @@ class RegisterCustomerUseCaseTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private CustomerWarehouseAccessRepository warehouseAccessRepository;
+
+    @Mock
+    private WarehouseRepository warehouseRepository;
+
     private RegisterCustomerUseCase useCase;
+
+    private static final UUID GRANTED_BY = UUID.randomUUID();
+    private static final UUID WAREHOUSE_ID = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
-        useCase = new RegisterCustomerUseCase(customerRepository, codeGenerator, mapper, passwordEncoder);
+        useCase = new RegisterCustomerUseCase(customerRepository, codeGenerator, mapper, passwordEncoder,
+                warehouseAccessRepository, warehouseRepository);
     }
 
     @Test
@@ -56,12 +72,14 @@ class RegisterCustomerUseCaseTest {
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
+                List.of(WAREHOUSE_ID),
                 false, null, null
         );
 
-        Customer customer = CustomerTestHelper.buildCustomer(java.util.UUID.randomUUID());
+        Customer customer = CustomerTestHelper.buildCustomer(UUID.randomUUID());
 
         when(codeGenerator.generateNext()).thenReturn(new CustomerCode(1001L));
+        when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(WAREHOUSE_ID)));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toCreateResponse(any(Customer.class))).thenReturn(
                 new CustomerCreateResponse(
@@ -72,7 +90,7 @@ class RegisterCustomerUseCaseTest {
                 )
         );
 
-        CustomerCreateResponse response = useCase.execute(request);
+        CustomerCreateResponse response = useCase.execute(request, GRANTED_BY);
 
         assertNotNull(response);
         assertEquals(1001L, response.code());
@@ -84,19 +102,71 @@ class RegisterCustomerUseCaseTest {
     }
 
     @Test
+    @DisplayName("should grant warehouse access for each warehouse id")
+    void shouldGrantWarehouseAccessForEachWarehouse() {
+        UUID warehouseOne = UUID.randomUUID();
+        UUID warehouseTwo = UUID.randomUUID();
+        CreateCustomerRequest request = new CreateCustomerRequest(
+                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
+                30, BigDecimal.ZERO, true,
+                List.of(), List.of(), List.of(),
+                List.of(warehouseOne, warehouseTwo),
+                false, null, null
+        );
+
+        when(codeGenerator.generateNext()).thenReturn(new CustomerCode(1001L));
+        when(warehouseRepository.findById(warehouseOne)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(warehouseOne)));
+        when(warehouseRepository.findById(warehouseTwo)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(warehouseTwo)));
+        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toCreateResponse(any(Customer.class))).thenReturn(new CustomerCreateResponse(
+                UUID.randomUUID().toString(), 1001L, "Test Corp", "BUSINESS",
+                "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
+                null, null, List.of(), List.of(), List.of(), false, null, null
+        ));
+
+        useCase.execute(request, GRANTED_BY);
+
+        verify(warehouseAccessRepository, times(2)).save(any(CustomerWarehouseAccess.class));
+        verify(warehouseRepository).findById(warehouseOne);
+        verify(warehouseRepository).findById(warehouseTwo);
+    }
+
+    @Test
+    @DisplayName("should throw WarehouseNotFoundException when a warehouse does not exist")
+    void shouldThrowWarehouseNotFoundWhenWarehouseDoesNotExist() {
+        UUID missingWarehouse = UUID.randomUUID();
+        CreateCustomerRequest request = new CreateCustomerRequest(
+                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
+                30, BigDecimal.ZERO, true,
+                List.of(), List.of(), List.of(),
+                List.of(missingWarehouse),
+                false, null, null
+        );
+
+        when(codeGenerator.generateNext()).thenReturn(new CustomerCode(1001L));
+        when(warehouseRepository.findById(missingWarehouse)).thenReturn(Optional.empty());
+        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(request, GRANTED_BY));
+        verify(warehouseAccessRepository, never()).save(any(CustomerWarehouseAccess.class));
+    }
+
+    @Test
     @DisplayName("should deactivate customer when active is false")
     void shouldDeactivateCustomerWhenActiveIsFalse() {
         CreateCustomerRequest request = new CreateCustomerRequest(
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, false,
                 List.of(), List.of(), List.of(),
+                List.of(WAREHOUSE_ID),
                 false, null, null
         );
 
-        Customer customer = CustomerTestHelper.buildCustomer(java.util.UUID.randomUUID());
+        Customer customer = CustomerTestHelper.buildCustomer(UUID.randomUUID());
         customer.deactivate();
 
         when(codeGenerator.generateNext()).thenReturn(new CustomerCode(1001L));
+        when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(WAREHOUSE_ID)));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toCreateResponse(any(Customer.class))).thenReturn(
                 new CustomerCreateResponse(
@@ -107,7 +177,7 @@ class RegisterCustomerUseCaseTest {
                 )
         );
 
-        CustomerCreateResponse response = useCase.execute(request);
+        CustomerCreateResponse response = useCase.execute(request, GRANTED_BY);
 
         assertNotNull(response);
         assertFalse(response.active());
@@ -121,13 +191,15 @@ class RegisterCustomerUseCaseTest {
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
+                List.of(WAREHOUSE_ID),
                 true, null, null
         );
 
-        Customer customer = CustomerTestHelper.buildCustomer(java.util.UUID.randomUUID());
+        Customer customer = CustomerTestHelper.buildCustomer(UUID.randomUUID());
 
         when(codeGenerator.generateNext()).thenReturn(new CustomerCode(1001L));
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded-password");
+        when(passwordEncoder.encode("J-12345678-9")).thenReturn("encoded-password");
+        when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(WAREHOUSE_ID)));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toCreateResponse(any(Customer.class))).thenReturn(
                 new CustomerCreateResponse(
@@ -138,11 +210,11 @@ class RegisterCustomerUseCaseTest {
                 )
         );
 
-        CustomerCreateResponse response = useCase.execute(request);
+        CustomerCreateResponse response = useCase.execute(request, GRANTED_BY);
 
         assertNotNull(response);
         assertTrue(response.portalAccess());
-        verify(passwordEncoder).encode(anyString());
+        verify(passwordEncoder).encode("J-12345678-9");
         verify(customerRepository).save(any(Customer.class));
     }
 
@@ -159,12 +231,14 @@ class RegisterCustomerUseCaseTest {
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 emails, phones, addresses,
+                List.of(WAREHOUSE_ID),
                 false, "Some notes", null
         );
 
-        Customer customer = CustomerTestHelper.buildCustomer(java.util.UUID.randomUUID());
+        Customer customer = CustomerTestHelper.buildCustomer(UUID.randomUUID());
 
         when(codeGenerator.generateNext()).thenReturn(new CustomerCode(1001L));
+        when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(WAREHOUSE_ID)));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toCreateResponse(any(Customer.class))).thenReturn(
                 new CustomerCreateResponse(
@@ -175,7 +249,7 @@ class RegisterCustomerUseCaseTest {
                 )
         );
 
-        CustomerCreateResponse response = useCase.execute(request);
+        CustomerCreateResponse response = useCase.execute(request, GRANTED_BY);
 
         assertNotNull(response);
         verify(customerRepository).save(any(Customer.class));
@@ -188,12 +262,14 @@ class RegisterCustomerUseCaseTest {
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
+                List.of(WAREHOUSE_ID),
                 false, null, null
         );
 
-        Customer customer = CustomerTestHelper.buildCustomer(java.util.UUID.randomUUID());
+        Customer customer = CustomerTestHelper.buildCustomer(UUID.randomUUID());
 
         when(codeGenerator.generateNext()).thenReturn(new CustomerCode(2002L));
+        when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(CustomerTestHelper.buildWarehouse(WAREHOUSE_ID)));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toCreateResponse(any(Customer.class))).thenReturn(
                 new CustomerCreateResponse(
@@ -204,7 +280,7 @@ class RegisterCustomerUseCaseTest {
                 )
         );
 
-        CustomerCreateResponse response = useCase.execute(request);
+        CustomerCreateResponse response = useCase.execute(request, GRANTED_BY);
 
         assertNotNull(response);
         assertEquals(2002L, response.code());

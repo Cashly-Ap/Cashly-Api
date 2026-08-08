@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.customers.application.usecases;
 
+import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.customers.application.dto.request.ChangeCustomerPortalPasswordRequest;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
@@ -24,6 +25,10 @@ public class ChangeCustomerPortalPasswordUseCase {
 
         var customer = customerRepository.findById(customerId)
             .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
+
+        if (!request.newPassword().equals(customer.getRif().getValue())) {
+            Password.validateRawPassword(request.newPassword());
+        }
 
         String encoded = passwordEncoder.encode(request.newPassword());
         customer.changePortalPassword(encoded);

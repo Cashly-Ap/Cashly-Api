@@ -46,6 +46,9 @@ public record CreateCustomerRequest(
     @NotEmpty(message = "At least one address is required")
     List<AddressRequest> addresses,
 
+    @NotEmpty(message = "At least one warehouse is required")
+    List<UUID> warehouseIds,
+
     Boolean portalAccess,
 
     String notes,

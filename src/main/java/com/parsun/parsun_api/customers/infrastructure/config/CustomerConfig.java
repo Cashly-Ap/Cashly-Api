@@ -32,8 +32,11 @@ public class CustomerConfig {
     public RegisterCustomerUseCase registerCustomerUseCase(CustomerRepository customerRepository,
                                                              CustomerCodeGenerator customerCodeGenerator,
                                                              CustomerMapper customerMapper,
-                                                             PasswordEncoder passwordEncoder) {
-        return new RegisterCustomerUseCase(customerRepository, customerCodeGenerator, customerMapper, passwordEncoder);
+                                                             PasswordEncoder passwordEncoder,
+                                                             CustomerWarehouseAccessRepository warehouseAccessRepository,
+                                                             WarehouseRepository warehouseRepository) {
+        return new RegisterCustomerUseCase(customerRepository, customerCodeGenerator, customerMapper,
+                passwordEncoder, warehouseAccessRepository, warehouseRepository);
     }
 
     @Bean

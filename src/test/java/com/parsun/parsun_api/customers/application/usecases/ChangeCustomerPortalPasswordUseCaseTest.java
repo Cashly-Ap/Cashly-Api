@@ -44,23 +44,40 @@ class ChangeCustomerPortalPasswordUseCaseTest {
     @DisplayName("should change portal password successfully")
     void shouldChangePortalPasswordSuccessfully() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
-        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("newSecurePassword123");
+        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("NewSecure@123");
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(passwordEncoder.encode("newSecurePassword123")).thenReturn("encoded-new-password");
+        when(passwordEncoder.encode("NewSecure@123")).thenReturn("encoded-new-password");
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
 
         useCase.execute(customerId.toString(), request);
 
         verify(customerRepository).findById(new CustomerId(customerId));
-        verify(passwordEncoder).encode("newSecurePassword123");
+        verify(passwordEncoder).encode("NewSecure@123");
+        verify(customerRepository).save(any(Customer.class));
+    }
+
+    @Test
+    @DisplayName("should accept customer rif as new password")
+    void shouldAcceptCustomerRifAsPassword() {
+        Customer customer = CustomerTestHelper.buildCustomer(customerId);
+        String rif = customer.getRif().getValue();
+        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest(rif);
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+        when(passwordEncoder.encode(rif)).thenReturn("encoded-rif-password");
+        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        useCase.execute(customerId.toString(), request);
+
+        verify(passwordEncoder).encode(rif);
         verify(customerRepository).save(any(Customer.class));
     }
 
     @Test
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
-        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("newSecurePassword123");
+        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("NewSecure@123");
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
 
@@ -70,5 +87,43 @@ class ChangeCustomerPortalPasswordUseCaseTest {
         verify(customerRepository).findById(new CustomerId(customerId));
         verify(passwordEncoder, never()).encode(anyString());
         verify(customerRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("should throw IllegalArgumentException for too short password")
+    void shouldThrowForShortPassword() {
+        Customer customer = CustomerTestHelper.buildCustomer(customerId);
+        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("Ab@123");
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> useCase.execute(customerId.toString(), request));
+
+        verify(passwordEncoder, never()).encode(anyString());
+    }
+
+    @Test
+    @DisplayName("should throw IllegalArgumentException for password without uppercase letter")
+    void shouldThrowForMissingUppercase() {
+        Customer customer = CustomerTestHelper.buildCustomer(customerId);
+        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("abcde@123");
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> useCase.execute(customerId.toString(), request));
+    }
+
+    @Test
+    @DisplayName("should throw IllegalArgumentException for password without special character")
+    void shouldThrowForMissingSpecialCharacter() {
+        Customer customer = CustomerTestHelper.buildCustomer(customerId);
+        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("Abcdef123");
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> useCase.execute(customerId.toString(), request));
     }
 }

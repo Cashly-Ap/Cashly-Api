@@ -4,9 +4,13 @@ import com.parsun.parsun_api.customers.application.dto.request.CreateCustomerReq
 import com.parsun.parsun_api.customers.application.dto.response.CustomerCreateResponse;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.entities.CustomerWarehouseAccess;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.customers.domain.services.CustomerCodeGenerator;
 import com.parsun.parsun_api.customers.domain.valueobjects.*;
+import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
+import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,19 +22,25 @@ public class RegisterCustomerUseCase {
     private final CustomerCodeGenerator customerCodeGenerator;
     private final CustomerMapper customerMapper;
     private final PasswordEncoder passwordEncoder;
+    private final CustomerWarehouseAccessRepository warehouseAccessRepository;
+    private final WarehouseRepository warehouseRepository;
 
     public RegisterCustomerUseCase(CustomerRepository customerRepository,
                                     CustomerCodeGenerator customerCodeGenerator,
                                     CustomerMapper customerMapper,
-                                    PasswordEncoder passwordEncoder) {
+                                    PasswordEncoder passwordEncoder,
+                                    CustomerWarehouseAccessRepository warehouseAccessRepository,
+                                    WarehouseRepository warehouseRepository) {
         this.customerRepository = customerRepository;
         this.customerCodeGenerator = customerCodeGenerator;
         this.customerMapper = customerMapper;
         this.passwordEncoder = passwordEncoder;
+        this.warehouseAccessRepository = warehouseAccessRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     @Transactional
-    public CustomerCreateResponse execute(CreateCustomerRequest request) {
+    public CustomerCreateResponse execute(CreateCustomerRequest request, UUID grantedBy) {
         CustomerCode code = customerCodeGenerator.generateNext();
 
         Customer customer = Customer.create(
@@ -63,6 +73,15 @@ public class RegisterCustomerUseCase {
         }
 
         Customer saved = customerRepository.save(customer);
+        grantWarehouseAccess(saved.getId().getValue(), request.warehouseIds(), grantedBy);
         return customerMapper.toCreateResponse(saved);
+    }
+
+    private void grantWarehouseAccess(UUID customerId, java.util.List<UUID> warehouseIds, UUID grantedBy) {
+        for (UUID warehouseId : warehouseIds) {
+            warehouseRepository.findById(warehouseId)
+                    .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
+            warehouseAccessRepository.save(CustomerWarehouseAccess.create(customerId, warehouseId, grantedBy));
+        }
     }
 }

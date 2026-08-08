@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,25 +55,31 @@ class CustomerControllerTest {
     @DisplayName("should create customer and return 201")
     void should_create_customer_and_return_201() {
         String customerId = UUID.randomUUID().toString();
+        UUID grantedBy = UUID.randomUUID();
         CustomerCreateResponse response = new CustomerCreateResponse(
                 customerId, 1001L, "Test Corp", "BUSINESS", "J-12345678-9",
                 "Test", 30, java.math.BigDecimal.ZERO, true,
                 null, LocalDateTime.now(), List.of(), List.of(), List.of(),
                 false, null, null);
 
-        when(registerCustomerUseCase.execute(any(CreateCustomerRequest.class))).thenReturn(response);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(grantedBy.toString());
+
+        when(registerCustomerUseCase.execute(any(CreateCustomerRequest.class), any(UUID.class))).thenReturn(response);
 
         CreateCustomerRequest request = new CreateCustomerRequest(
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, java.math.BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(), false, null, null);
+                List.of(), List.of(), List.of(),
+                List.of(UUID.randomUUID()),
+                false, null, null);
 
-        ResponseEntity<CustomerCreateResponse> result = customerController.create(request);
+        ResponseEntity<CustomerCreateResponse> result = customerController.create(request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(customerId, result.getBody().id());
-        verify(registerCustomerUseCase).execute(any(CreateCustomerRequest.class));
+        verify(registerCustomerUseCase).execute(any(CreateCustomerRequest.class), eq(grantedBy));
     }
 
     @Test
