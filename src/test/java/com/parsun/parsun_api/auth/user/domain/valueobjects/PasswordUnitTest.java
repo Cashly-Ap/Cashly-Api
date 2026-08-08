@@ -51,7 +51,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(null)
         );
-        assertEquals("Password cannot be null or empty", exception.getMessage());
+        assertEquals("La contraseña es requerida", exception.getMessage());
     }
 
     @Test
@@ -60,7 +60,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword("")
         );
-        assertEquals("Password cannot be null or empty", exception.getMessage());
+        assertEquals("La contraseña es requerida", exception.getMessage());
     }
 
     @Test
@@ -71,7 +71,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(shortPassword)
         );
-        assertEquals("Password must be at least 8 characters long", exception.getMessage());
+        assertEquals("La contraseña debe tener al menos 8 caracteres", exception.getMessage());
     }
 
     @Test
@@ -82,7 +82,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(longPassword)
         );
-        assertEquals("Password cannot exceed 100 characters", exception.getMessage());
+        assertEquals("La contraseña no puede exceder 100 caracteres", exception.getMessage());
     }
 
     @Test
@@ -93,7 +93,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(password)
         );
-        assertEquals("Password must contain at least one uppercase letter", exception.getMessage());
+        assertEquals("La contraseña debe contener: letra mayúscula", exception.getMessage());
     }
 
     @Test
@@ -104,7 +104,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(password)
         );
-        assertEquals("Password must contain at least one lowercase letter", exception.getMessage());
+        assertEquals("La contraseña debe contener: letra minúscula", exception.getMessage());
     }
 
     @Test
@@ -115,7 +115,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(password)
         );
-        assertEquals("Password must contain at least one digit", exception.getMessage());
+        assertEquals("La contraseña debe contener: número", exception.getMessage());
     }
 
     @Test
@@ -126,7 +126,7 @@ class PasswordUnitTest {
             IllegalArgumentException.class,
             () -> Password.validateRawPassword(password)
         );
-        assertEquals("Password must contain at least one special character", exception.getMessage());
+        assertEquals("La contraseña debe contener: carácter especial", exception.getMessage());
     }
 
     @ParameterizedTest
