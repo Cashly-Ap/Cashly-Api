@@ -26,31 +26,31 @@ public class Password {
 
     public static void validateRawPassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {
-            throw new IllegalArgumentException("La contraseña es requerida");
+            throw new IllegalArgumentException("Password cannot be null or empty");
         }
 
         if (rawPassword.length() < MIN_LENGTH) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos " + MIN_LENGTH + " caracteres");
+            throw new IllegalArgumentException("Password must be at least " + MIN_LENGTH + " characters long");
         }
 
         if (rawPassword.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("La contraseña no puede exceder " + MAX_LENGTH + " caracteres");
+            throw new IllegalArgumentException("Password cannot exceed " + MAX_LENGTH + " characters");
         }
 
         if (!UPPERCASE_PATTERN.matcher(rawPassword).matches()) {
-            throw new IllegalArgumentException("La contraseña debe contener: letra mayúscula");
+            throw new IllegalArgumentException("Password must contain at least one uppercase letter");
         }
 
         if (!LOWERCASE_PATTERN.matcher(rawPassword).matches()) {
-            throw new IllegalArgumentException("La contraseña debe contener: letra minúscula");
+            throw new IllegalArgumentException("Password must contain at least one lowercase letter");
         }
 
         if (!DIGIT_PATTERN.matcher(rawPassword).matches()) {
-            throw new IllegalArgumentException("La contraseña debe contener: número");
+            throw new IllegalArgumentException("Password must contain at least one digit");
         }
 
         if (!SPECIAL_CHAR_PATTERN.matcher(rawPassword).matches()) {
-            throw new IllegalArgumentException("La contraseña debe contener: carácter especial");
+            throw new IllegalArgumentException("Password must contain at least one special character");
         }
     }
 
