@@ -47,7 +47,7 @@ class CustomerMapperTest {
     void should_map_customer_to_detail_response() {
         Customer customer = buildCustomerWithContacts();
 
-        CustomerDetailResponse response = mapper.toDetailResponse(customer);
+        CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
 
         assertNotNull(response);
         assertEquals(customer.getId().toString(), response.id());
@@ -95,7 +95,7 @@ class CustomerMapperTest {
     void should_map_customer_with_emails_phones_and_addresses() {
         Customer customer = buildCustomerWithContacts();
 
-        CustomerDetailResponse response = mapper.toDetailResponse(customer);
+        CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
 
         assertEquals(1, response.emails().size());
         assertEquals("test@example.com", response.emails().getFirst().email());
@@ -130,7 +130,7 @@ class CustomerMapperTest {
                 List.of(), List.of(), List.of(),
                 false, null, null, null);
 
-        CustomerDetailResponse response = mapper.toDetailResponse(customer);
+        CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
 
         assertTrue(response.emails().isEmpty());
         assertTrue(response.phones().isEmpty());

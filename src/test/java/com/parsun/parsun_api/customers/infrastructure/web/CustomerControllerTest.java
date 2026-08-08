@@ -130,7 +130,7 @@ class CustomerControllerTest {
                 id, 1001L, "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, java.math.BigDecimal.ZERO, true, null,
                 LocalDateTime.now(), List.of(), List.of(), List.of(),
-                false, null, null);
+                false, null, null, true);
 
         when(getCustomerUseCase.execute(id)).thenReturn(response);
 
@@ -149,7 +149,7 @@ class CustomerControllerTest {
                 id, 1001L, "Updated Corp", "BUSINESS", "J-12345678-9", "Updated",
                 30, java.math.BigDecimal.ZERO, true, null,
                 LocalDateTime.now(), List.of(), List.of(), List.of(),
-                false, null, null);
+                false, null, null, true);
 
         when(updateCustomerUseCase.execute(eq(id), any(UpdateCustomerRequest.class))).thenReturn(response);
 

@@ -46,12 +46,12 @@ class GetCustomerUseCaseTest {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(mapper.toDetailResponse(customer)).thenReturn(
+        when(mapper.toDetailResponse(customer, true)).thenReturn(
                 new CustomerDetailResponse(
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, java.math.BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null
+                        List.of(), List.of(), List.of(), false, null, null, true
                 )
         );
 
@@ -62,7 +62,7 @@ class GetCustomerUseCaseTest {
         assertEquals("Test Corp", response.legalName());
         assertEquals(1001L, response.code());
         verify(customerRepository).findById(new CustomerId(customerId));
-        verify(mapper).toDetailResponse(customer);
+        verify(mapper).toDetailResponse(customer, true);
     }
 
     @Test

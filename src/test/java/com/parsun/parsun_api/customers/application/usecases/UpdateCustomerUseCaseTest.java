@@ -61,17 +61,17 @@ class UpdateCustomerUseCaseTest {
                 List.of(new EmailRequest("new@example.com")),
                 List.of(new PhoneRequest("+58-9876543210")),
                 List.of(new AddressRequest("456 New St", true, true, "State", "Mun", "2000")),
-                false, "Updated notes", null
+                false, "Updated notes", null, true
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class))).thenReturn(
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
                 new CustomerDetailResponse(
                         customer.getId().toString(), 1001L, "Updated Corp", "BUSINESS",
                         "J-98765432-1", "Updated", 45, new BigDecimal("1000.00"), true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, "Updated notes", null
+                        List.of(), List.of(), List.of(), false, "Updated notes", null, true
                 )
         );
 
@@ -81,7 +81,7 @@ class UpdateCustomerUseCaseTest {
         assertEquals("Updated Corp", response.legalName());
         verify(customerRepository).findById(new CustomerId(customerId));
         verify(customerRepository).save(any(Customer.class));
-        verify(mapper).toDetailResponse(any(Customer.class));
+        verify(mapper).toDetailResponse(any(Customer.class), anyBoolean());
     }
 
     @Test
@@ -112,18 +112,18 @@ class UpdateCustomerUseCaseTest {
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
-                true, null, null
+                true, null, null, true
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(passwordEncoder.encode(anyString())).thenReturn("encoded-pw");
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class))).thenReturn(
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
                 new CustomerDetailResponse(
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), true, null, null
+                        List.of(), List.of(), List.of(), true, null, null, true
                 )
         );
 
@@ -148,12 +148,12 @@ class UpdateCustomerUseCaseTest {
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class))).thenReturn(
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
                 new CustomerDetailResponse(
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null
+                        List.of(), List.of(), List.of(), false, null, null, true
                 )
         );
 
@@ -178,12 +178,12 @@ class UpdateCustomerUseCaseTest {
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class))).thenReturn(
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
                 new CustomerDetailResponse(
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null
+                        List.of(), List.of(), List.of(), false, null, null, true
                 )
         );
 
@@ -207,12 +207,12 @@ class UpdateCustomerUseCaseTest {
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class))).thenReturn(
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
                 new CustomerDetailResponse(
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, false,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null
+                        List.of(), List.of(), List.of(), false, null, null, true
                 )
         );
 
