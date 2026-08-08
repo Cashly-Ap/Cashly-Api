@@ -69,6 +69,6 @@ public class UpdateCustomerUseCase {
         }
 
         Customer saved = customerRepository.save(customer);
-        return customerMapper.toDetailResponse(saved);
+        return customerMapper.toDetailResponse(saved, !customerRepository.hasAssociatedRecords(customer.getId()));
     }
 }

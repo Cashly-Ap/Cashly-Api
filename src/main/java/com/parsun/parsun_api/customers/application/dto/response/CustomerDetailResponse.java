@@ -24,5 +24,6 @@ public record CustomerDetailResponse(
     List<AddressResponse> addresses,
     boolean portalAccess,
     String notes,
-    UUID priceTypeId
+    UUID priceTypeId,
+    boolean deletable
 ) {}

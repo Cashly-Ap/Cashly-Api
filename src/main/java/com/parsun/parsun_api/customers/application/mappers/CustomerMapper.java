@@ -22,7 +22,7 @@ public class CustomerMapper {
         );
     }
 
-    public CustomerDetailResponse toDetailResponse(Customer customer) {
+    public CustomerDetailResponse toDetailResponse(Customer customer, boolean deletable) {
         return new CustomerDetailResponse(
             customer.getId().toString(),
             customer.getCode().getValue(),
@@ -40,7 +40,8 @@ public class CustomerMapper {
             toAddressResponses(customer),
             customer.isPortalAccess(),
             customer.getNotes(),
-            customer.getPriceTypeId()
+            customer.getPriceTypeId(),
+            deletable
         );
     }
 
