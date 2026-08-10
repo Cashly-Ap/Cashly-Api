@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.portal.infrastructure.web;
 
+import com.parsun.parsun_api.payment_methods.application.dto.response.PaymentMethodResponse;
+import com.parsun.parsun_api.payment_methods.domain.entities.PaymentMethod;
+import com.parsun.parsun_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentListResponse;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResponse;
@@ -41,19 +44,22 @@ public class PortalPaymentController {
     private final PayPortalAllDebtUseCase payPortalAllDebtUseCase;
     private final PayPortalPartialDebtUseCase payPortalPartialDebtUseCase;
     private final RegisterPortalPaymentUseCase registerPortalPaymentUseCase;
+    private final PaymentMethodRepository paymentMethodRepository;
 
     public PortalPaymentController(ListPortalPaymentsUseCase listPortalPaymentsUseCase,
                                     GetPortalPaymentUseCase getPortalPaymentUseCase,
                                     PayPortalInvoiceUseCase payPortalInvoiceUseCase,
                                     PayPortalAllDebtUseCase payPortalAllDebtUseCase,
                                     PayPortalPartialDebtUseCase payPortalPartialDebtUseCase,
-                                    RegisterPortalPaymentUseCase registerPortalPaymentUseCase) {
+                                    RegisterPortalPaymentUseCase registerPortalPaymentUseCase,
+                                    PaymentMethodRepository paymentMethodRepository) {
         this.listPortalPaymentsUseCase = listPortalPaymentsUseCase;
         this.getPortalPaymentUseCase = getPortalPaymentUseCase;
         this.payPortalInvoiceUseCase = payPortalInvoiceUseCase;
         this.payPortalAllDebtUseCase = payPortalAllDebtUseCase;
         this.payPortalPartialDebtUseCase = payPortalPartialDebtUseCase;
         this.registerPortalPaymentUseCase = registerPortalPaymentUseCase;
+        this.paymentMethodRepository = paymentMethodRepository;
     }
 
     @GetMapping("/payments")
@@ -101,5 +107,22 @@ public class PortalPaymentController {
             @RequestPart(value = "justificante", required = false) MultipartFile justificante) {
         PaymentResponse response = registerPortalPaymentUseCase.execute(request, justificante);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/payment-methods")
+    public ResponseEntity<List<PaymentMethodResponse>> listPaymentMethods() {
+        List<PaymentMethod> methods = paymentMethodRepository.findAll(true);
+        List<PaymentMethodResponse> response = methods.stream()
+                .map(m -> new PaymentMethodResponse(
+                        m.getId().value(),
+                        m.getCode(),
+                        m.getName(),
+                        m.getDescription(),
+                        m.isActive(),
+                        false,
+                        m.getCreatedAt(),
+                        m.getUpdatedAt()))
+                .toList();
+        return ResponseEntity.ok(response);
     }
 }
