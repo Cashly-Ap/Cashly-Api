@@ -1,0 +1,75 @@
+package com.parsun.parsun_api.portal.application.usecases;
+
+import com.parsun.parsun_api.payments.application.dto.request.CreatePaymentRequest;
+import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
+import com.parsun.parsun_api.payments.application.usecases.CreatePaymentUseCase;
+import com.parsun.parsun_api.portal.application.dto.request.RegisterPortalPaymentRequest;
+import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
+import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.UUID;
+
+public class RegisterPortalPaymentUseCase {
+
+    private static final String PAYMENT_STATUS_PENDING = "PENDING";
+    private static final String JUSTIFICANTE_PATH = "payments/justificantes/";
+
+    private final CreatePaymentUseCase createPaymentUseCase;
+    private final PortalAuthorizationService portalAuthorizationService;
+    private final FileStorageService fileStorageService;
+
+    public RegisterPortalPaymentUseCase(CreatePaymentUseCase createPaymentUseCase,
+                                         PortalAuthorizationService portalAuthorizationService,
+                                         FileStorageService fileStorageService) {
+        this.createPaymentUseCase = createPaymentUseCase;
+        this.portalAuthorizationService = portalAuthorizationService;
+        this.fileStorageService = fileStorageService;
+    }
+
+    @Transactional
+    public PaymentResponse execute(RegisterPortalPaymentRequest request, MultipartFile justificante) {
+        request.hasReferenceOrFile(justificante);
+        UUID customerId = portalAuthorizationService.getCurrentCustomerId();
+
+        String storedJustificantePath = null;
+        if (justificante != null && !justificante.isEmpty()) {
+            try {
+                storedJustificantePath = fileStorageService.store(
+                        JUSTIFICANTE_PATH + UUID.randomUUID() + "_" + justificante.getOriginalFilename(),
+                        justificante.getInputStream(),
+                        justificante.getContentType());
+            } catch (IOException e) {
+                throw new RuntimeException("Error storing justificante file", e);
+            }
+        }
+
+        String combinedNotes = buildNotes(request.notes(), storedJustificantePath);
+
+        CreatePaymentRequest createRequest = new CreatePaymentRequest(
+                customerId,
+                PAYMENT_STATUS_PENDING,
+                request.amount(),
+                request.paymentMethodId(),
+                request.referenceNumber(),
+                request.paymentDate(),
+                combinedNotes
+        );
+
+        return createPaymentUseCase.execute(createRequest, null);
+    }
+
+    private String buildNotes(String notes, String justificantePath) {
+        StringBuilder sb = new StringBuilder();
+        if (notes != null && !notes.isBlank()) {
+            sb.append(notes);
+        }
+        if (justificantePath != null) {
+            if (!sb.isEmpty()) sb.append(" | ");
+            sb.append("Justificante: ").append(justificantePath);
+        }
+        return sb.isEmpty() ? null : sb.toString();
+    }
+}

@@ -24,6 +24,7 @@ import com.parsun.parsun_api.orders.application.usecases.UpdateOrderUseCase;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.payments.application.usecases.GetAllPaymentsUseCase;
 import com.parsun.parsun_api.payments.application.usecases.GetPaymentByIdUseCase;
+import com.parsun.parsun_api.payments.application.usecases.CreatePaymentUseCase;
 import com.parsun.parsun_api.payments.application.usecases.PayAllCustomerDebtUseCase;
 import com.parsun.parsun_api.payments.application.usecases.PayInvoiceUseCase;
 import com.parsun.parsun_api.payments.application.usecases.PayPartialDebtUseCase;
@@ -52,6 +53,7 @@ import com.parsun.parsun_api.portal.application.usecases.PayPortalAllDebtUseCase
 import com.parsun.parsun_api.portal.application.usecases.PayPortalInvoiceUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalPartialDebtUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PortalLoginUseCase;
+import com.parsun.parsun_api.portal.application.usecases.RegisterPortalPaymentUseCase;
 import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.reports.inventory.application.port.CommercialCatalogPdfPort;
@@ -257,5 +259,14 @@ public class PortalBeanConfig {
             PayPartialDebtUseCase payPartialDebtUseCase,
             PortalAuthorizationService portalAuthorizationService) {
         return new PayPortalPartialDebtUseCase(payPartialDebtUseCase, portalAuthorizationService);
+    }
+
+    @Bean
+    public RegisterPortalPaymentUseCase registerPortalPaymentUseCase(
+            CreatePaymentUseCase createPaymentUseCase,
+            PortalAuthorizationService portalAuthorizationService,
+            FileStorageService fileStorageService) {
+        return new RegisterPortalPaymentUseCase(
+                createPaymentUseCase, portalAuthorizationService, fileStorageService);
     }
 }

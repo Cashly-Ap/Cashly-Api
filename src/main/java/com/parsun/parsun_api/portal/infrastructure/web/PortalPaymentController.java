@@ -6,13 +6,16 @@ import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResp
 import com.parsun.parsun_api.portal.application.dto.request.PayPortalDebtRequest;
 import com.parsun.parsun_api.portal.application.dto.request.PayPortalInvoiceRequest;
 import com.parsun.parsun_api.portal.application.dto.request.PayPortalPartialDebtRequest;
+import com.parsun.parsun_api.portal.application.dto.request.RegisterPortalPaymentRequest;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalPaymentUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ListPortalPaymentsUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalAllDebtUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalInvoiceUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalPartialDebtUseCase;
+import com.parsun.parsun_api.portal.application.usecases.RegisterPortalPaymentUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,17 +40,20 @@ public class PortalPaymentController {
     private final PayPortalInvoiceUseCase payPortalInvoiceUseCase;
     private final PayPortalAllDebtUseCase payPortalAllDebtUseCase;
     private final PayPortalPartialDebtUseCase payPortalPartialDebtUseCase;
+    private final RegisterPortalPaymentUseCase registerPortalPaymentUseCase;
 
     public PortalPaymentController(ListPortalPaymentsUseCase listPortalPaymentsUseCase,
                                     GetPortalPaymentUseCase getPortalPaymentUseCase,
                                     PayPortalInvoiceUseCase payPortalInvoiceUseCase,
                                     PayPortalAllDebtUseCase payPortalAllDebtUseCase,
-                                    PayPortalPartialDebtUseCase payPortalPartialDebtUseCase) {
+                                    PayPortalPartialDebtUseCase payPortalPartialDebtUseCase,
+                                    RegisterPortalPaymentUseCase registerPortalPaymentUseCase) {
         this.listPortalPaymentsUseCase = listPortalPaymentsUseCase;
         this.getPortalPaymentUseCase = getPortalPaymentUseCase;
         this.payPortalInvoiceUseCase = payPortalInvoiceUseCase;
         this.payPortalAllDebtUseCase = payPortalAllDebtUseCase;
         this.payPortalPartialDebtUseCase = payPortalPartialDebtUseCase;
+        this.registerPortalPaymentUseCase = registerPortalPaymentUseCase;
     }
 
     @GetMapping("/payments")
@@ -84,6 +92,14 @@ public class PortalPaymentController {
     public ResponseEntity<PaymentResultResponse> payPartialDebt(
             @Valid @RequestBody PayPortalPartialDebtRequest request) {
         PaymentResultResponse response = payPortalPartialDebtUseCase.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping(value = "/payments/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PaymentResponse> registerPayment(
+            @Valid @RequestPart("request") RegisterPortalPaymentRequest request,
+            @RequestPart(value = "justificante", required = false) MultipartFile justificante) {
+        PaymentResponse response = registerPortalPaymentUseCase.execute(request, justificante);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
