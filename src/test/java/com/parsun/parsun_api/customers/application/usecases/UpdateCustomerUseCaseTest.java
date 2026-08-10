@@ -61,7 +61,7 @@ class UpdateCustomerUseCaseTest {
                 List.of(new EmailRequest("new@example.com")),
                 List.of(new PhoneRequest("+58-9876543210")),
                 List.of(new AddressRequest("456 New St", true, true, "State", "Mun", "2000")),
-                false, "Updated notes", null, true
+                false, "Updated notes", null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -112,7 +112,7 @@ class UpdateCustomerUseCaseTest {
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
-                true, null, null, true
+                true, null, null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));

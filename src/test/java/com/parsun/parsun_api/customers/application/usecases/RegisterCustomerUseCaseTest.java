@@ -86,7 +86,7 @@ class RegisterCustomerUseCaseTest {
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
+                        List.of(), List.of(), List.of(), false, null, null
                 )
         );
 
@@ -121,7 +121,7 @@ class RegisterCustomerUseCaseTest {
         when(mapper.toCreateResponse(any(Customer.class))).thenReturn(new CustomerCreateResponse(
                 UUID.randomUUID().toString(), 1001L, "Test Corp", "BUSINESS",
                 "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
-                null, null, List.of(), List.of(), List.of(), false, null, null, true
+                null, null, List.of(), List.of(), List.of(), false, null, null
         ));
 
         useCase.execute(request, GRANTED_BY);
@@ -173,7 +173,7 @@ class RegisterCustomerUseCaseTest {
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, false,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
+                        List.of(), List.of(), List.of(), false, null, null
                 )
         );
 
@@ -276,7 +276,7 @@ class RegisterCustomerUseCaseTest {
                         customer.getId().toString(), 2002L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
+                        List.of(), List.of(), List.of(), false, null, null
                 )
         );
 
