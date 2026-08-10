@@ -220,8 +220,9 @@ public class PortalBeanConfig {
 
     @Bean
     public GetPortalInvoiceUseCase getPortalInvoiceUseCase(
-            GetInvoiceByIdUseCase getInvoiceByIdUseCase) {
-        return new GetPortalInvoiceUseCase(getInvoiceByIdUseCase);
+            GetInvoiceByIdUseCase getInvoiceByIdUseCase,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new GetPortalInvoiceUseCase(getInvoiceByIdUseCase, portalAuthorizationService);
     }
 
     @Bean
