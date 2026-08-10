@@ -35,6 +35,7 @@ import com.parsun.parsun_api.portal.application.usecases.ConvertPortalQuoteToOrd
 import com.parsun.parsun_api.portal.application.usecases.ChangeCustomerPasswordUseCase;
 import com.parsun.parsun_api.portal.application.usecases.CreatePortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.CreatePortalQuoteUseCase;
+import com.parsun.parsun_api.portal.application.usecases.GeneratePortalCatalogPdfUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetCustomerProfileUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalDashboardUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalInvoiceUseCase;
@@ -53,6 +54,8 @@ import com.parsun.parsun_api.portal.application.usecases.PayPortalPartialDebtUse
 import com.parsun.parsun_api.portal.application.usecases.PortalLoginUseCase;
 import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
+import com.parsun.parsun_api.reports.inventory.application.port.CommercialCatalogPdfPort;
+import com.parsun.parsun_api.shared.storage.domain.FileStorageService;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import com.parsun.parsun_api.quotes.application.usecases.CancelQuoteUseCase;
 import com.parsun.parsun_api.quotes.application.usecases.ConvertQuoteToOrderUseCase;
@@ -99,6 +102,17 @@ public class PortalBeanConfig {
                 productRepository,
                 categoryRepository,
                 warehouseStockRepository);
+    }
+
+    @Bean
+    public GeneratePortalCatalogPdfUseCase generatePortalCatalogPdfUseCase(
+            ListProductsUseCase portalListProductsUseCase,
+            CommercialCatalogPdfPort commercialCatalogPdfPort,
+            FileStorageService fileStorageService) {
+        return new GeneratePortalCatalogPdfUseCase(
+                portalListProductsUseCase,
+                commercialCatalogPdfPort,
+                fileStorageService);
     }
 
     @Bean

@@ -2,8 +2,12 @@ package com.parsun.parsun_api.portal.infrastructure.web;
 
 import com.parsun.parsun_api.portal.application.dto.response.PortalProductResponse;
 import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
+import com.parsun.parsun_api.portal.application.usecases.GeneratePortalCatalogPdfUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ListProductsUseCase;
 import com.parsun.parsun_api.shared.dto.PageResponse;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +21,14 @@ import java.util.UUID;
 public class PortalProductController {
 
     private final ListProductsUseCase listProductsUseCase;
+    private final GeneratePortalCatalogPdfUseCase generatePortalCatalogPdfUseCase;
     private final PortalAuthorizationService portalAuthorizationService;
 
     public PortalProductController(ListProductsUseCase listProductsUseCase,
+                                    GeneratePortalCatalogPdfUseCase generatePortalCatalogPdfUseCase,
                                     PortalAuthorizationService portalAuthorizationService) {
         this.listProductsUseCase = listProductsUseCase;
+        this.generatePortalCatalogPdfUseCase = generatePortalCatalogPdfUseCase;
         this.portalAuthorizationService = portalAuthorizationService;
     }
 
@@ -35,5 +42,19 @@ public class PortalProductController {
         PageResponse<PortalProductResponse> response = listProductsUseCase.execute(
                 customerId, search, categoryId, page, size);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/catalog/pdf")
+    public ResponseEntity<byte[]> downloadCatalogPdf() {
+        UUID customerId = portalAuthorizationService.getCurrentCustomerId();
+        byte[] pdfBytes = generatePortalCatalogPdfUseCase.execute(customerId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename("catalogo-comercial.pdf")
+                .build());
+
+        return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 }
