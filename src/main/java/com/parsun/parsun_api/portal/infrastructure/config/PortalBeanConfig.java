@@ -243,23 +243,28 @@ public class PortalBeanConfig {
 
     @Bean
     public PayPortalInvoiceUseCase payPortalInvoiceUseCase(
-            PayInvoiceUseCase payInvoiceUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new PayPortalInvoiceUseCase(payInvoiceUseCase, portalAuthorizationService);
+            CreatePaymentUseCase createPaymentUseCase,
+            PortalAuthorizationService portalAuthorizationService,
+            NotificationService notificationService) {
+        return new PayPortalInvoiceUseCase(createPaymentUseCase, portalAuthorizationService, notificationService);
     }
 
     @Bean
     public PayPortalAllDebtUseCase payPortalAllDebtUseCase(
-            PayAllCustomerDebtUseCase payAllCustomerDebtUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new PayPortalAllDebtUseCase(payAllCustomerDebtUseCase, portalAuthorizationService);
+            CreatePaymentUseCase createPaymentUseCase,
+            PortalAuthorizationService portalAuthorizationService,
+            NotificationService notificationService,
+            CustomerRepository customerRepository) {
+        return new PayPortalAllDebtUseCase(createPaymentUseCase, portalAuthorizationService, notificationService, customerRepository);
     }
 
     @Bean
     public PayPortalPartialDebtUseCase payPortalPartialDebtUseCase(
-            PayPartialDebtUseCase payPartialDebtUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new PayPortalPartialDebtUseCase(payPartialDebtUseCase, portalAuthorizationService);
+            CreatePaymentUseCase createPaymentUseCase,
+            PortalAuthorizationService portalAuthorizationService,
+            NotificationService notificationService,
+            CustomerRepository customerRepository) {
+        return new PayPortalPartialDebtUseCase(createPaymentUseCase, portalAuthorizationService, notificationService, customerRepository);
     }
 
     @Bean

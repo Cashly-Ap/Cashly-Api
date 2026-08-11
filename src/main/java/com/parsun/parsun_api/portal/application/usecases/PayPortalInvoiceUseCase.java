@@ -1,8 +1,9 @@
 package com.parsun.parsun_api.portal.application.usecases;
 
-import com.parsun.parsun_api.payments.application.dto.request.PayInvoiceRequest;
-import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResponse;
-import com.parsun.parsun_api.payments.application.usecases.PayInvoiceUseCase;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
+import com.parsun.parsun_api.payments.application.dto.request.CreatePaymentRequest;
+import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
+import com.parsun.parsun_api.payments.application.usecases.CreatePaymentUseCase;
 import com.parsun.parsun_api.portal.application.dto.request.PayPortalInvoiceRequest;
 import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,28 +12,36 @@ import java.util.UUID;
 
 public class PayPortalInvoiceUseCase {
 
-    private final PayInvoiceUseCase payInvoiceUseCase;
-    private final PortalAuthorizationService portalAuthorizationService;
+    private static final String STATUS_PENDING = "PENDING";
 
-    public PayPortalInvoiceUseCase(PayInvoiceUseCase payInvoiceUseCase,
-                                    PortalAuthorizationService portalAuthorizationService) {
-        this.payInvoiceUseCase = payInvoiceUseCase;
+    private final CreatePaymentUseCase createPaymentUseCase;
+    private final PortalAuthorizationService portalAuthorizationService;
+    private final NotificationService notificationService;
+
+    public PayPortalInvoiceUseCase(CreatePaymentUseCase createPaymentUseCase,
+                                    PortalAuthorizationService portalAuthorizationService,
+                                    NotificationService notificationService) {
+        this.createPaymentUseCase = createPaymentUseCase;
         this.portalAuthorizationService = portalAuthorizationService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
-    public PaymentResultResponse execute(UUID invoiceId, PayPortalInvoiceRequest request) {
+    public PaymentResponse execute(UUID invoiceId, PayPortalInvoiceRequest request) {
         UUID customerId = portalAuthorizationService.getCurrentCustomerId();
 
-        PayInvoiceRequest internalRequest = new PayInvoiceRequest(
+        CreatePaymentRequest createRequest = new CreatePaymentRequest(
+                customerId,
+                STATUS_PENDING,
+                request.amount(),
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
-                request.amount(),
-                request.useBalance(),
-                request.balanceAmount()
+                null
         );
 
-        return payInvoiceUseCase.execute(invoiceId, internalRequest, null, null);
+        PaymentResponse response = createPaymentUseCase.execute(createRequest, null);
+        notificationService.notifyAdminsPaymentPending(response.id(), "Cliente", request.amount());
+        return response;
     }
 }

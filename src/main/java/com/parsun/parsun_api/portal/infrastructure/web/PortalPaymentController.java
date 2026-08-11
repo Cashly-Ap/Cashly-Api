@@ -80,24 +80,24 @@ public class PortalPaymentController {
     }
 
     @PostMapping("/invoices/{id}/pay")
-    public ResponseEntity<PaymentResultResponse> payInvoice(
+    public ResponseEntity<PaymentResponse> payInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody PayPortalInvoiceRequest request) {
-        PaymentResultResponse response = payPortalInvoiceUseCase.execute(id, request);
+        PaymentResponse response = payPortalInvoiceUseCase.execute(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/debt/pay")
-    public ResponseEntity<PaymentResultResponse> payAllDebt(
+    public ResponseEntity<PaymentResponse> payAllDebt(
             @Valid @RequestBody PayPortalDebtRequest request) {
-        PaymentResultResponse response = payPortalAllDebtUseCase.execute(request);
+        PaymentResponse response = payPortalAllDebtUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/debt/pay-partial")
-    public ResponseEntity<PaymentResultResponse> payPartialDebt(
+    public ResponseEntity<PaymentResponse> payPartialDebt(
             @Valid @RequestBody PayPortalPartialDebtRequest request) {
-        PaymentResultResponse response = payPortalPartialDebtUseCase.execute(request);
+        PaymentResponse response = payPortalPartialDebtUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
