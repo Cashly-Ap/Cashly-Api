@@ -21,6 +21,9 @@ public interface SpringDataUserRepository extends JpaRepository<UserEntity, UUID
 
     boolean existsByEmail(String email);
 
+    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.id = :id AND u.active = true")
+    boolean canAuthenticate(@Param("id") UUID id);
+
     List<UserEntity> findByRole(UserRole role);
 
     @Query("""
@@ -53,4 +56,3 @@ public interface SpringDataUserRepository extends JpaRepository<UserEntity, UUID
         """)
     Set<UUID> findIdsWithAssociatedRecords(@Param("ids") Set<UUID> ids);
 }
-

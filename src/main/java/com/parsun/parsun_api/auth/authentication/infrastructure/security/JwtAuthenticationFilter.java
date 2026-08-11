@@ -81,9 +81,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void authenticateUser(HttpServletRequest request, String subjectId) {
         UserId userId = new UserId(UUID.fromString(subjectId));
 
+        tokenService.extractUserAccess(extractJwtFromRequest(request))
+            .ifPresentOrElse(
+                access -> authenticateUserFromToken(request, userId, access),
+                () -> authenticateUserFromRepository(request, userId)
+            );
+    }
+
+    private void authenticateUserFromToken(HttpServletRequest request, UserId userId, TokenService.UserAccess access) {
+        if (userRepository.canAuthenticate(userId)) {
+            setUserAuthentication(request, userId.getValue().toString(), access.role(), access.modulePermissions());
+        }
+    }
+
+    private void authenticateUserFromRepository(HttpServletRequest request, UserId userId) {
         userRepository.findById(userId)
             .filter(User::canAuthenticate)
-            .ifPresent(user -> setUserAuthentication(request, user));
+            .ifPresent(user -> setUserAuthentication(
+                request,
+                user.getId().getValue().toString(),
+                user.getRole(),
+                user.getModulePermissions()
+            ));
     }
 
     private void authenticateCustomer(HttpServletRequest request, String subjectId) {
@@ -94,22 +113,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setUserAuthentication(HttpServletRequest request, User user) {
+    private void setUserAuthentication(HttpServletRequest request, String userId, UserRole role,
+                                       java.util.Set<BusinessModule> modulePermissions) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
 
-        if (user.getRole() == UserRole.SUPER_ADMIN) {
+        if (role == UserRole.SUPER_ADMIN) {
             for (BusinessModule module : BusinessModule.values()) {
                 authorities.add(new SimpleGrantedAuthority("MODULE_" + module.name()));
             }
         } else {
-            for (BusinessModule module : user.getModulePermissions()) {
+            for (BusinessModule module : modulePermissions) {
                 authorities.add(new SimpleGrantedAuthority("MODULE_" + module.name()));
             }
         }
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            user.getId().getValue().toString(),
+            userId,
             null,
             authorities
         );

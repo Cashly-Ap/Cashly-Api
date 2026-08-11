@@ -3,6 +3,7 @@ package com.parsun.parsun_api.invoices.infrastructure.persistence.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -51,5 +52,6 @@ public class InvoiceLineEntity {
     private BigDecimal returnedQuantity;
 
     @OneToMany(mappedBy = "invoiceLine", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<InvoiceLineAllocationEntity> allocations = new ArrayList<>();
 }

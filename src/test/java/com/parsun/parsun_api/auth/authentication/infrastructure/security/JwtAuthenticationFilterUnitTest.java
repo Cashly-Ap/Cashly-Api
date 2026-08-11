@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,12 +102,15 @@ class JwtAuthenticationFilterUnitTest {
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(tokenService.extractUserAccess(validToken))
+                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
+            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(true);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
             assertNotNull(SecurityContextHolder.getContext().getAuthentication());
             assertEquals(testUserId.getValue().toString(), SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            verify(userRepository, never()).findById(any(UserId.class));
             verify(filterChain, times(1)).doFilter(request, response);
         }
 
@@ -117,7 +121,9 @@ class JwtAuthenticationFilterUnitTest {
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(tokenService.extractUserAccess(validToken))
+                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
+            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(true);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -128,12 +134,14 @@ class JwtAuthenticationFilterUnitTest {
 
         @Test
         @DisplayName("should_NotAuthenticate_When_UserNotFound")
-        void should_NotAuthenticate_When_UserNotFound() throws Exception {
+        void should_NotAuthenticate_When_UserCannotAuthenticate() throws Exception {
             when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
+            when(tokenService.extractUserAccess(validToken))
+                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
+            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(false);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -144,18 +152,35 @@ class JwtAuthenticationFilterUnitTest {
         @Test
         @DisplayName("should_NotAuthenticate_When_UserInactive")
         void should_NotAuthenticate_When_UserInactive() throws Exception {
-            testUser.deactivate();
-
             when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
             when(tokenService.validateToken(validToken)).thenReturn(true);
             when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
             when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(tokenService.extractUserAccess(validToken))
+                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
+            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(false);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
             assertNull(SecurityContextHolder.getContext().getAuthentication());
             verify(filterChain, times(1)).doFilter(request, response);
+        }
+
+        @Test
+        @DisplayName("should_FallbackToUserLookup_When_LegacyTokenHasNoAccessClaims")
+        void should_FallbackToUserLookup_When_LegacyTokenHasNoAccessClaims() throws Exception {
+            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+            when(tokenService.validateToken(validToken)).thenReturn(true);
+            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
+            when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
+            when(tokenService.extractUserAccess(validToken)).thenReturn(Optional.empty());
+            when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+            verify(userRepository).findById(any(UserId.class));
+            verify(userRepository, never()).canAuthenticate(any(UserId.class));
         }
     }
 

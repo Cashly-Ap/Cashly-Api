@@ -1,0 +1,53 @@
+package com.parsun.parsun_api.auth.token.infrastructure.config;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import com.parsun.parsun_api.auth.authentication.domain.entities.Authenticable;
+import com.parsun.parsun_api.auth.authentication.domain.entities.AuthenticableType;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
+
+class JwtTokenServiceUnitTest {
+
+    private final JwtTokenService tokenService = new JwtTokenService(
+        "testSecretKeyThatIsAtLeast256BitsLongForHS256",
+        900_000,
+        604_800_000
+    );
+
+    @Test
+    void shouldEmbedUserAccessInSignedToken() {
+        Authenticable authenticable = mock(Authenticable.class);
+        when(authenticable.getSubjectId()).thenReturn("f8ccf44b-7508-4757-a907-7d7c149b8f71");
+        when(authenticable.getEmail()).thenReturn("admin@parsun.test");
+        when(authenticable.getType()).thenReturn(AuthenticableType.USER);
+        when(authenticable.getRole()).thenReturn(UserRole.ADMIN);
+        when(authenticable.getModulePermissions()).thenReturn(Set.of(BusinessModule.INVENTORY));
+
+        String token = tokenService.generateAccessToken(authenticable);
+
+        var access = tokenService.extractUserAccess(token);
+        assertTrue(access.isPresent());
+        assertEquals(UserRole.ADMIN, access.orElseThrow().role());
+        assertEquals(Set.of(BusinessModule.INVENTORY), access.orElseThrow().modulePermissions());
+    }
+
+    @Test
+    void shouldRecognizeLegacyTokenWithoutUserAccessClaims() {
+        Authenticable authenticable = mock(Authenticable.class);
+        when(authenticable.getSubjectId()).thenReturn("8be7a004-f2fa-4657-ad7d-3dd4ac3a8ebf");
+        when(authenticable.getEmail()).thenReturn("portal@parsun.test");
+        when(authenticable.getType()).thenReturn(AuthenticableType.CUSTOMER);
+
+        String token = tokenService.generateAccessToken(authenticable);
+
+        assertTrue(tokenService.extractUserAccess(token).isEmpty());
+    }
+}

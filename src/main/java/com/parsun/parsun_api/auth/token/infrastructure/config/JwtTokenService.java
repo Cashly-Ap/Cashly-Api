@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -19,6 +23,8 @@ import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Email;
 import com.parsun.parsun_api.auth.token.domain.valueobjects.RefreshTokenId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.BusinessModule;
+import com.parsun.parsun_api.auth.user.domain.valueobjects.UserRole;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -54,6 +60,8 @@ public class JwtTokenService implements TokenService {
             .subject(user.getId().getValue().toString())
             .claim("email", user.getEmail().getValue())
             .claim("type", AuthenticableType.USER.name())
+            .claim("role", user.getRole().name())
+            .claim("modules", user.getModulePermissions().stream().map(Enum::name).toList())
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey)
@@ -69,11 +77,18 @@ public class JwtTokenService implements TokenService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
-        return Jwts.builder()
+        var builder = Jwts.builder()
             .subject(authenticable.getSubjectId())
             .claim("email", authenticable.getEmail())
             .claim("type", authenticable.getType().name())
-            .issuedAt(now)
+            .issuedAt(now);
+
+        if (authenticable.getType() == AuthenticableType.USER) {
+            builder.claim("role", authenticable.getRole().name())
+                .claim("modules", authenticable.getModulePermissions().stream().map(Enum::name).toList());
+        }
+
+        return builder
             .expiration(expiryDate)
             .signWith(secretKey)
             .compact();
@@ -165,6 +180,23 @@ public class JwtTokenService implements TokenService {
             return AuthenticableType.USER;
         }
         return AuthenticableType.valueOf(type);
+    }
+
+    @Override
+    public Optional<UserAccess> extractUserAccess(String token) {
+        Claims claims = extractClaims(token);
+        String role = claims.get("role", String.class);
+        if (role == null) {
+            return Optional.empty();
+        }
+
+        List<?> modules = claims.get("modules", List.class);
+        Set<BusinessModule> modulePermissions = modules == null ? Set.of() : modules.stream()
+            .map(String::valueOf)
+            .map(BusinessModule::valueOf)
+            .collect(Collectors.toUnmodifiableSet());
+
+        return Optional.of(new UserAccess(UserRole.valueOf(role), modulePermissions));
     }
 
     @Override

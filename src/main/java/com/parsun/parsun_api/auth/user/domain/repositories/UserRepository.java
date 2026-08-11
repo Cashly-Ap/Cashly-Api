@@ -17,6 +17,8 @@ public interface UserRepository {
 
     Optional<User> findById(UserId id);
 
+    boolean canAuthenticate(UserId id);
+
     boolean hasAssociatedRecords(UserId id);
     Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids);
     Optional<User> findByEmail(Email email);
@@ -31,4 +33,3 @@ public interface UserRepository {
 
     PageResponse<User> findAllWithFilters(String search, UserRole role, Boolean active, String excludeId, int page, int size, String orderBy, String orderDir);
 }
-

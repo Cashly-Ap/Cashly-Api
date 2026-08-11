@@ -62,6 +62,14 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
+    public boolean canAuthenticate(UserId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        return springDataUserRepository.canAuthenticate(id.getValue());
+    }
+
+    @Override
     public Optional<User> findByEmail(Email email) {
         if (email == null) {
             throw new IllegalArgumentException("Email cannot be null");
@@ -133,4 +141,3 @@ public class JpaUserRepository implements UserRepository {
         return PageResponse.from(mapped);
     }
 }
-
