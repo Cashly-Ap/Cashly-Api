@@ -1,7 +1,7 @@
 package com.parsun.parsun_api.portal.infrastructure.web;
 
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
-import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
+import com.parsun.parsun_api.portal.application.dto.response.PortalInvoiceListResponse;
 import com.parsun.parsun_api.portal.application.dto.response.PortalInvoiceSummaryResponse;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalInvoiceUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ListPortalInvoicesUseCase;
@@ -31,7 +31,7 @@ public class PortalInvoiceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<InvoiceListResponse>> listInvoices(
+    public ResponseEntity<List<PortalInvoiceListResponse>> listInvoices(
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo,
             @RequestParam(required = false) List<String> statuses,
@@ -40,7 +40,7 @@ public class PortalInvoiceController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) String orderBy,
             @RequestParam(required = false) String orderDir) {
-        List<InvoiceListResponse> response = listPortalInvoicesUseCase.execute(
+        List<PortalInvoiceListResponse> response = listPortalInvoicesUseCase.execute(
                 dateFrom, dateTo, statuses, returnStatus, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(response);
     }
@@ -53,21 +53,23 @@ public class PortalInvoiceController {
 
     @GetMapping("/summary")
     public ResponseEntity<PortalInvoiceSummaryResponse> getSummary() {
-        List<InvoiceListResponse> invoices = listPortalInvoicesUseCase.execute(
+        List<PortalInvoiceListResponse> invoices = listPortalInvoicesUseCase.execute(
                 null, null, null, null, null, null, null, null);
 
         BigDecimal totalDebt = BigDecimal.ZERO;
         long pendingCount = 0;
+        BigDecimal totalPendingApproval = BigDecimal.ZERO;
 
         List<String> debtStatuses = List.of("PENDING_PAYMENT", "PARTIALLY_PAID", "OVERDUE");
-        for (InvoiceListResponse inv : invoices) {
+        for (PortalInvoiceListResponse inv : invoices) {
             if (debtStatuses.contains(inv.status())) {
                 totalDebt = totalDebt.add(inv.total().subtract(inv.paidAmount()));
                 pendingCount++;
             }
+            totalPendingApproval = totalPendingApproval.add(inv.pendingApprovalAmount());
         }
 
         BigDecimal paidThisMonth = BigDecimal.ZERO;
-        return ResponseEntity.ok(new PortalInvoiceSummaryResponse(totalDebt, pendingCount, paidThisMonth));
+        return ResponseEntity.ok(new PortalInvoiceSummaryResponse(totalDebt, pendingCount, paidThisMonth, totalPendingApproval));
     }
 }

@@ -97,8 +97,11 @@ public class PaymentConfig {
 
     @Bean
     public ApprovePaymentUseCase approvePaymentUseCase(PaymentRepository paymentRepository,
+                                                         PaymentAllocationRepository allocationRepository,
+                                                         InvoiceRepository invoiceRepository,
+                                                         InvoiceStatusService invoiceStatusService,
                                                          NotificationService notificationService) {
-        return new ApprovePaymentUseCase(paymentRepository, notificationService);
+        return new ApprovePaymentUseCase(paymentRepository, allocationRepository, invoiceRepository, invoiceStatusService, notificationService);
     }
 
     @Bean

@@ -26,7 +26,8 @@ public final class PortalInvoiceMapper {
             balance,
             paidAmount,
             invoice.getPaymentType().name(),
-            invoice.getCreatedAt()
+            invoice.getCreatedAt(),
+            BigDecimal.ZERO
         );
     }
 

@@ -16,5 +16,6 @@ public record PortalInvoiceListResponse(
     BigDecimal balance,
     BigDecimal paidAmount,
     String paymentType,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    BigDecimal pendingApprovalAmount
 ) {}

@@ -5,5 +5,6 @@ import java.math.BigDecimal;
 public record PortalInvoiceSummaryResponse(
         BigDecimal totalDebt,
         long pendingCount,
-        BigDecimal paidThisMonth
+        BigDecimal paidThisMonth,
+        BigDecimal pendingApprovalAmount
 ) {}

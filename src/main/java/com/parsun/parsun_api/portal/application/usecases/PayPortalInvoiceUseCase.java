@@ -37,7 +37,7 @@ public class PayPortalInvoiceUseCase {
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
-                null
+                "INVOICE_ID:" + invoiceId
         );
 
         PaymentResponse response = createPaymentUseCase.execute(createRequest, null);

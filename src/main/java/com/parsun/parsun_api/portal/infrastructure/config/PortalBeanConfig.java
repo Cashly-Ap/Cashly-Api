@@ -30,6 +30,7 @@ import com.parsun.parsun_api.payments.application.usecases.PayAllCustomerDebtUse
 import com.parsun.parsun_api.payments.application.usecases.PayInvoiceUseCase;
 import com.parsun.parsun_api.payments.application.usecases.PayPartialDebtUseCase;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.portal.application.usecases.CancelPortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.CancelPortalQuoteUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ConfirmPortalOrderUseCase;
@@ -217,8 +218,9 @@ public class PortalBeanConfig {
     @Bean
     public ListPortalInvoicesUseCase listPortalInvoicesUseCase(
             GetInvoicesUseCase getInvoicesUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new ListPortalInvoicesUseCase(getInvoicesUseCase, portalAuthorizationService);
+            PortalAuthorizationService portalAuthorizationService,
+            PaymentRepository paymentRepository) {
+        return new ListPortalInvoicesUseCase(getInvoicesUseCase, portalAuthorizationService, paymentRepository);
     }
 
     @Bean

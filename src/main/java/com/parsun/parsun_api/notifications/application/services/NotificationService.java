@@ -123,31 +123,25 @@ public class NotificationService {
 
     @Transactional
     public void notifyAdminsPaymentPending(UUID paymentId, String customerName, BigDecimal amount) {
-        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
-        for (User admin : admins) {
-            notifyPaymentPendingApproval(admin.getId().getValue(), paymentId, customerName, amount);
+        List<User> allUsers = userRepository.findAll();
+        for (User user : allUsers) {
+            notifyPaymentPendingApproval(user.getId().getValue(), paymentId, customerName, amount);
         }
     }
 
     @Transactional
     public void notifyAdminsQuoteCreated(UUID quoteId, String customerName) {
-        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
-        for (User admin : admins) {
-            create(admin.getId().getValue(), NotificationType.QUOTE_CREATED,
-                    "Cotizacion creada",
-                    customerName + " ha creado una nueva cotizacion.",
-                    "QUOTE", quoteId);
+        List<User> allUsers = userRepository.findAll();
+        for (User user : allUsers) {
+            create(user.getId().getValue(), NotificationType.QUOTE_CREATED, "Cotizacion creada", customerName + " ha creado una nueva cotizacion.", "QUOTE", quoteId);
         }
     }
 
     @Transactional
     public void notifyAdminsOrderCreated(UUID orderId, String customerName) {
-        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
-        for (User admin : admins) {
-            create(admin.getId().getValue(), NotificationType.ORDER_CREATED,
-                    "Pedido creado",
-                    customerName + " ha creado un nuevo pedido.",
-                    "ORDER", orderId);
+        List<User> allUsers = userRepository.findAll();
+        for (User user : allUsers) {
+            create(user.getId().getValue(), NotificationType.ORDER_CREATED, "Pedido creado", customerName + " ha creado un nuevo pedido.", "ORDER", orderId);
         }
     }
 
