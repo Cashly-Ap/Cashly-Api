@@ -10,6 +10,7 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 import com.parsun.parsun_api.shared.services.CreditGuard;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -37,6 +38,7 @@ class OrderConfigTest {
     @Mock private CategoryRepository categoryRepository;
     @Mock private WarehouseRepository warehouseRepository;
     @Mock private CreditGuard creditGuard;
+    @Mock private NotificationService notificationService;
 
     @Test
     void should_CreateCreateOrderUseCase() {
@@ -83,7 +85,7 @@ class OrderConfigTest {
         OrderConfig config = new OrderConfig();
 
         ConfirmOrderUseCase useCase = config.confirmOrderUseCase(
-                orderRepository, warehouseStockRepository, stockMovementRepository);
+                orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
 
         assertNotNull(useCase);
     }
@@ -93,7 +95,7 @@ class OrderConfigTest {
         OrderConfig config = new OrderConfig();
 
         CancelOrderUseCase useCase = config.cancelOrderUseCase(
-                orderRepository, warehouseStockRepository, stockMovementRepository);
+                orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
 
         assertNotNull(useCase);
     }
@@ -103,7 +105,7 @@ class OrderConfigTest {
         OrderConfig config = new OrderConfig();
 
         ConvertToInvoiceUseCase useCase = config.convertToInvoiceUseCase(
-                orderRepository, createInvoiceUseCase);
+                orderRepository, createInvoiceUseCase, notificationService);
 
         assertNotNull(useCase);
     }

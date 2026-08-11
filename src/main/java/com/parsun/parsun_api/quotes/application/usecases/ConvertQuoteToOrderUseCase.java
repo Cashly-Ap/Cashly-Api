@@ -10,6 +10,7 @@ import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.quotes.application.dto.response.QuoteConvertedToOrderResponse;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteAllocation;
@@ -31,15 +32,18 @@ public class ConvertQuoteToOrderUseCase {
     private final OrderRepository orderRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public ConvertQuoteToOrderUseCase(QuoteRepository quoteRepository,
                                        OrderRepository orderRepository,
                                        WarehouseStockRepository warehouseStockRepository,
-                                       UserRepository userRepository) {
+                                       UserRepository userRepository,
+                                       NotificationService notificationService) {
         this.quoteRepository = quoteRepository;
         this.orderRepository = orderRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -96,6 +100,8 @@ public class ConvertQuoteToOrderUseCase {
 
         quote.markConvertedToOrder(savedOrder.getId().value(), savedOrder.getOrderNumber().value());
         quoteRepository.save(quote);
+
+        notificationService.notifyCustomerQuoteConvertedToOrder(quote.getCustomerId(), quote.getId(), savedOrder.getOrderNumber().value());
 
         return new QuoteConvertedToOrderResponse(
                 quote.getId(),

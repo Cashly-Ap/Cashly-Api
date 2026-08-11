@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.orders.application.usecases;
 
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.application.dto.request.CancelOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.application.mappers.OrderMapper;
@@ -24,13 +25,16 @@ public class CancelOrderUseCase {
     private final OrderRepository orderRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final NotificationService notificationService;
 
     public CancelOrderUseCase(OrderRepository orderRepository,
                                WarehouseStockRepository warehouseStockRepository,
-                               StockMovementRepository stockMovementRepository) {
+                               StockMovementRepository stockMovementRepository,
+                               NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -43,6 +47,7 @@ public class CancelOrderUseCase {
         revertStockAllocations(order, previousStatus);
 
         Order saved = orderRepository.save(order);
+        notificationService.notifyCustomerOrderRejected(order.getCustomerId(), saved.getId().value(), request.reason());
         return OrderMapper.toDetailResponse(saved);
     }
 

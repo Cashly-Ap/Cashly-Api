@@ -7,6 +7,7 @@ import com.parsun.parsun_api.notifications.domain.entities.Notification;
 import com.parsun.parsun_api.notifications.domain.repositories.NotificationRepository;
 import com.parsun.parsun_api.notifications.domain.valueobjects.NotificationId;
 import com.parsun.parsun_api.notifications.domain.valueobjects.NotificationType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,25 +20,40 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public NotificationService(NotificationRepository notificationRepository,
-                                UserRepository userRepository) {
+                                UserRepository userRepository,
+                                SimpMessagingTemplate messagingTemplate) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Transactional
     public Notification create(UUID userId, NotificationType type, String title, String message,
                                 String referenceType, UUID referenceId) {
         Notification notification = Notification.create(userId, null, type, title, message, referenceType, referenceId);
-        return notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        pushToUser(userId, saved);
+        return saved;
     }
 
     @Transactional
     public Notification createForCustomer(UUID customerId, NotificationType type, String title,
                                            String message, String referenceType, UUID referenceId) {
         Notification notification = Notification.create(null, customerId, type, title, message, referenceType, referenceId);
-        return notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        pushToCustomer(customerId, saved);
+        return saved;
+    }
+
+    private void pushToUser(UUID userId, Notification notification) {
+        messagingTemplate.convertAndSend("/topic/notifications/user/" + userId, notification);
+    }
+
+    private void pushToCustomer(UUID customerId, Notification notification) {
+        messagingTemplate.convertAndSend("/topic/notifications/customer/" + customerId, notification);
     }
 
     @Transactional(readOnly = true)

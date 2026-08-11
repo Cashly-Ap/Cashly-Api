@@ -4,6 +4,7 @@ import com.parsun.parsun_api.notifications.domain.valueobjects.NotificationId;
 import com.parsun.parsun_api.notifications.domain.valueobjects.NotificationType;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -51,7 +52,7 @@ public class Notification {
 
         return new Notification(NotificationId.generate(), userId, customerId,
                 type, title, message, referenceType, referenceId,
-                false, null, LocalDateTime.now());
+                false, null, LocalDateTime.now(ZoneOffset.UTC));
     }
 
     public static Notification reconstitute(NotificationId id, UUID userId, UUID customerId,
@@ -66,7 +67,7 @@ public class Notification {
     public void markAsRead() {
         if (!this.isRead) {
             this.isRead = true;
-            this.readAt = LocalDateTime.now();
+            this.readAt = LocalDateTime.now(ZoneOffset.UTC);
         }
     }
 

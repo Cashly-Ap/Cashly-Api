@@ -6,6 +6,7 @@ import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
 import com.parsun.parsun_api.orders.domain.entities.OrderLineAllocation;
 import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
@@ -47,6 +48,9 @@ class CancelOrderUseCaseUnitTest {
     @Mock
     private StockMovementRepository stockMovementRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Captor
     private ArgumentCaptor<StockMovement> stockMovementCaptor;
 
@@ -55,7 +59,7 @@ class CancelOrderUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         cancelOrderUseCase = new CancelOrderUseCase(orderRepository,
-                warehouseStockRepository, stockMovementRepository);
+                warehouseStockRepository, stockMovementRepository, notificationService);
     }
 
     @Test

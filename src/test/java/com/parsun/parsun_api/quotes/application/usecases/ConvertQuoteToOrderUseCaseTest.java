@@ -16,6 +16,7 @@ import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteAllocation;
 import com.parsun.parsun_api.quotes.domain.entities.QuoteLine;
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteStatus;
@@ -55,6 +56,9 @@ class ConvertQuoteToOrderUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private ConvertQuoteToOrderUseCase useCase;
 
     private final UUID quoteId = UUID.randomUUID();
@@ -63,7 +67,7 @@ class ConvertQuoteToOrderUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new ConvertQuoteToOrderUseCase(
-                quoteRepository, orderRepository, warehouseStockRepository, userRepository);
+                quoteRepository, orderRepository, warehouseStockRepository, userRepository, notificationService);
     }
 
     @Test

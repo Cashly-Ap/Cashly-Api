@@ -3,6 +3,7 @@ package com.parsun.parsun_api.quotes.application.usecases;
 import com.parsun.parsun_api.quotes.application.dto.request.CancelQuoteRequest;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
 import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteNumber;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,11 +34,14 @@ class CancelQuoteUseCaseTest {
     @Mock
     private QuoteRepository quoteRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private CancelQuoteUseCase cancelQuoteUseCase;
 
     @BeforeEach
     void setUp() {
-        cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository);
+        cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository, notificationService);
     }
 
     @Test

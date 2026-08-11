@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.quotes.application.usecases;
 
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.quotes.application.dto.request.CancelQuoteRequest;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
 import com.parsun.parsun_api.quotes.domain.exceptions.QuoteNotFoundException;
@@ -11,9 +12,11 @@ import java.util.UUID;
 public class CancelQuoteUseCase {
 
     private final QuoteRepository quoteRepository;
+    private final NotificationService notificationService;
 
-    public CancelQuoteUseCase(QuoteRepository quoteRepository) {
+    public CancelQuoteUseCase(QuoteRepository quoteRepository, NotificationService notificationService) {
         this.quoteRepository = quoteRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -23,5 +26,6 @@ public class CancelQuoteUseCase {
 
         quote.cancel(request.reason());
         quoteRepository.save(quote);
+        notificationService.notifyCustomerQuoteRejected(quote.getCustomerId(), id, request.reason());
     }
 }

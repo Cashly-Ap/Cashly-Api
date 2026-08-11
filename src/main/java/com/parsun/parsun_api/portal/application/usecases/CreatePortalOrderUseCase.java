@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.portal.application.usecases;
 
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.application.dto.request.CreateOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.application.usecases.CreateOrderUseCase;
@@ -14,11 +15,14 @@ public class CreatePortalOrderUseCase {
 
     private final CreateOrderUseCase createOrderUseCase;
     private final PortalAuthorizationService portalAuthorizationService;
+    private final NotificationService notificationService;
 
     public CreatePortalOrderUseCase(CreateOrderUseCase createOrderUseCase,
-                                     PortalAuthorizationService portalAuthorizationService) {
+                                     PortalAuthorizationService portalAuthorizationService,
+                                     NotificationService notificationService) {
         this.createOrderUseCase = createOrderUseCase;
         this.portalAuthorizationService = portalAuthorizationService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -38,6 +42,8 @@ public class CreatePortalOrderUseCase {
                         .toList()
         );
 
-        return createOrderUseCase.executeCustomerDraft(internalRequest);
+        OrderDetailResponse response = createOrderUseCase.executeCustomerDraft(internalRequest);
+        notificationService.notifyAdminsOrderCreated(response.id(), response.customerName());
+        return response;
     }
 }

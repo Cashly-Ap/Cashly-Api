@@ -8,6 +8,7 @@ import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceRes
 import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.entities.OrderLine;
 import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderNumber;
@@ -42,6 +43,9 @@ class ConvertToInvoiceUseCaseUnitTest {
     @Mock
     private CreateInvoiceUseCase createInvoiceUseCase;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Captor
     private ArgumentCaptor<CreateInvoiceRequest> invoiceRequestCaptor;
 
@@ -49,7 +53,7 @@ class ConvertToInvoiceUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        convertToInvoiceUseCase = new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase);
+        convertToInvoiceUseCase = new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase, notificationService);
     }
 
     @Test

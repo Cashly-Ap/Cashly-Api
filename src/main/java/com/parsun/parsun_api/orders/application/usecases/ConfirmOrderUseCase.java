@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.orders.application.usecases;
 
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.application.mappers.OrderMapper;
 import com.parsun.parsun_api.orders.domain.entities.Order;
@@ -21,13 +22,16 @@ public class ConfirmOrderUseCase {
     private final OrderRepository orderRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final NotificationService notificationService;
 
     public ConfirmOrderUseCase(OrderRepository orderRepository,
                                 WarehouseStockRepository warehouseStockRepository,
-                                StockMovementRepository stockMovementRepository) {
+                                StockMovementRepository stockMovementRepository,
+                                NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -39,6 +43,7 @@ public class ConfirmOrderUseCase {
         deductStockAllocations(order);
 
         Order saved = orderRepository.save(order);
+        notificationService.notifyCustomerOrderApproved(order.getCustomerId(), saved.getId().value());
         return OrderMapper.toDetailResponse(saved);
     }
 

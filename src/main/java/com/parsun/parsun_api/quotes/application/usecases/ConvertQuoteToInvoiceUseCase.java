@@ -12,6 +12,7 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
 import com.parsun.parsun_api.quotes.application.dto.response.QuoteConvertedToInvoiceResponse;
 import com.parsun.parsun_api.quotes.domain.entities.Quote;
@@ -36,17 +37,20 @@ public class ConvertQuoteToInvoiceUseCase {
     private final WarehouseStockRepository warehouseStockRepository;
     private final UserRepository userRepository;
     private final InvoiceAuthorizationService authorizationService;
+    private final NotificationService notificationService;
 
     public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
                                          InvoiceRepository invoiceRepository,
                                          WarehouseStockRepository warehouseStockRepository,
                                          UserRepository userRepository,
-                                         InvoiceAuthorizationService authorizationService) {
+                                         InvoiceAuthorizationService authorizationService,
+                                         NotificationService notificationService) {
         this.quoteRepository = quoteRepository;
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.userRepository = userRepository;
         this.authorizationService = authorizationService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -112,6 +116,8 @@ public class ConvertQuoteToInvoiceUseCase {
 
         quote.markConvertedToInvoice(savedInvoice.getId().value(), savedInvoice.getInvoiceNumber().value());
         quoteRepository.save(quote);
+
+        notificationService.notifyCustomerQuoteConvertedToInvoice(quote.getCustomerId(), quote.getId(), savedInvoice.getInvoiceNumber().value());
 
         return new QuoteConvertedToInvoiceResponse(
                 quote.getId(),

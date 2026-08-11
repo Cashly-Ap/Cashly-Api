@@ -5,6 +5,7 @@ import com.parsun.parsun_api.categories.domain.repositories.CategoryRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.invoices.application.usecases.CreateInvoiceUseCase;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.application.usecases.*;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
@@ -53,21 +54,24 @@ public class OrderConfig {
     @Bean
     public ConfirmOrderUseCase confirmOrderUseCase(OrderRepository orderRepository,
                                                      WarehouseStockRepository warehouseStockRepository,
-                                                     StockMovementRepository stockMovementRepository) {
-        return new ConfirmOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
+                                                     StockMovementRepository stockMovementRepository,
+                                                     NotificationService notificationService) {
+        return new ConfirmOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
     }
 
     @Bean
     public CancelOrderUseCase cancelOrderUseCase(OrderRepository orderRepository,
                                                    WarehouseStockRepository warehouseStockRepository,
-                                                   StockMovementRepository stockMovementRepository) {
-        return new CancelOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository);
+                                                   StockMovementRepository stockMovementRepository,
+                                                   NotificationService notificationService) {
+        return new CancelOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
     }
 
     @Bean
     public ConvertToInvoiceUseCase convertToInvoiceUseCase(OrderRepository orderRepository,
-                                                             CreateInvoiceUseCase createInvoiceUseCase) {
-        return new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase);
+                                                             CreateInvoiceUseCase createInvoiceUseCase,
+                                                             NotificationService notificationService) {
+        return new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase, notificationService);
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.portal.application.usecases;
 
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.portal.application.dto.request.CreatePortalQuoteRequest;
 import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
 import com.parsun.parsun_api.quotes.application.dto.request.CreateQuoteRequest;
@@ -15,11 +16,14 @@ public class CreatePortalQuoteUseCase {
 
     private final CreateQuoteUseCase createQuoteUseCase;
     private final PortalAuthorizationService portalAuthorizationService;
+    private final NotificationService notificationService;
 
     public CreatePortalQuoteUseCase(CreateQuoteUseCase createQuoteUseCase,
-                                     PortalAuthorizationService portalAuthorizationService) {
+                                     PortalAuthorizationService portalAuthorizationService,
+                                     NotificationService notificationService) {
         this.createQuoteUseCase = createQuoteUseCase;
         this.portalAuthorizationService = portalAuthorizationService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -40,6 +44,8 @@ public class CreatePortalQuoteUseCase {
                         .collect(Collectors.toList())
         );
 
-        return createQuoteUseCase.executeCustomerDraft(internalRequest);
+        QuoteDetailResponse response = createQuoteUseCase.executeCustomerDraft(internalRequest);
+        notificationService.notifyAdminsQuoteCreated(response.id(), response.customerName());
+        return response;
     }
 }

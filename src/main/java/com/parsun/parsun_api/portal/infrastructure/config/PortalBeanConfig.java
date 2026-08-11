@@ -161,8 +161,9 @@ public class PortalBeanConfig {
     @Bean
     public CreatePortalQuoteUseCase createPortalQuoteUseCase(
             CreateQuoteUseCase createQuoteUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new CreatePortalQuoteUseCase(createQuoteUseCase, portalAuthorizationService);
+            PortalAuthorizationService portalAuthorizationService,
+            NotificationService notificationService) {
+        return new CreatePortalQuoteUseCase(createQuoteUseCase, portalAuthorizationService, notificationService);
     }
 
     @Bean
@@ -205,8 +206,9 @@ public class PortalBeanConfig {
     @Bean
     public CreatePortalOrderUseCase createPortalOrderUseCase(
             CreateOrderUseCase createOrderUseCase,
-            PortalAuthorizationService portalAuthorizationService) {
-        return new CreatePortalOrderUseCase(createOrderUseCase, portalAuthorizationService);
+            PortalAuthorizationService portalAuthorizationService,
+            NotificationService notificationService) {
+        return new CreatePortalOrderUseCase(createOrderUseCase, portalAuthorizationService, notificationService);
     }
 
     @Bean

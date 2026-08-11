@@ -6,6 +6,7 @@ import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.quotes.application.usecases.*;
@@ -70,8 +71,9 @@ public class QuoteConfig {
     }
 
     @Bean
-    public CancelQuoteUseCase cancelQuoteUseCase(QuoteRepository quoteRepository) {
-        return new CancelQuoteUseCase(quoteRepository);
+    public CancelQuoteUseCase cancelQuoteUseCase(QuoteRepository quoteRepository,
+                                                  NotificationService notificationService) {
+        return new CancelQuoteUseCase(quoteRepository, notificationService);
     }
 
     @Bean
@@ -102,9 +104,10 @@ public class QuoteConfig {
             QuoteRepository quoteRepository,
             OrderRepository orderRepository,
             WarehouseStockRepository warehouseStockRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            NotificationService notificationService) {
         return new ConvertQuoteToOrderUseCase(quoteRepository, orderRepository,
-                warehouseStockRepository, userRepository);
+                warehouseStockRepository, userRepository, notificationService);
     }
 
     @Bean
@@ -113,9 +116,10 @@ public class QuoteConfig {
             InvoiceRepository invoiceRepository,
             WarehouseStockRepository warehouseStockRepository,
             UserRepository userRepository,
-            InvoiceAuthorizationService authorizationService) {
+            InvoiceAuthorizationService authorizationService,
+            NotificationService notificationService) {
         return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoiceRepository,
-                warehouseStockRepository, userRepository, authorizationService);
+                warehouseStockRepository, userRepository, authorizationService, notificationService);
     }
 
     @Bean

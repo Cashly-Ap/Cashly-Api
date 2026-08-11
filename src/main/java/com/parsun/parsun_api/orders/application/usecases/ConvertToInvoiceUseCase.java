@@ -3,6 +3,7 @@ package com.parsun.parsun_api.orders.application.usecases;
 import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.usecases.CreateInvoiceUseCase;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.parsun.parsun_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.parsun.parsun_api.orders.domain.entities.Order;
@@ -17,11 +18,14 @@ public class ConvertToInvoiceUseCase {
 
     private final OrderRepository orderRepository;
     private final CreateInvoiceUseCase createInvoiceUseCase;
+    private final NotificationService notificationService;
 
     public ConvertToInvoiceUseCase(OrderRepository orderRepository,
-                                    CreateInvoiceUseCase createInvoiceUseCase) {
+                                    CreateInvoiceUseCase createInvoiceUseCase,
+                                    NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.createInvoiceUseCase = createInvoiceUseCase;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -46,6 +50,8 @@ public class ConvertToInvoiceUseCase {
 
         order.markAsInvoiced(invoice.id(), invoice.invoiceNumber());
         orderRepository.save(order);
+
+        notificationService.notifyCustomerOrderConvertedToInvoice(order.getCustomerId(), order.getId().value(), invoice.invoiceNumber());
 
         return new ConvertToInvoiceResponse(
                 order.getId().value(),
