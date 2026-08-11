@@ -19,5 +19,9 @@ public record PaymentResponse(
         UUID createdBy,
         String createdByName,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String cancelledReason,
+        UUID verifiedBy,
+        String verifiedByName,
+        LocalDateTime verifiedAt
 ) {}

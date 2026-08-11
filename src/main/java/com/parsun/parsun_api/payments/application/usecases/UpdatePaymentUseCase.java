@@ -8,6 +8,7 @@ import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class UpdatePaymentUseCase {
@@ -23,13 +24,13 @@ public class UpdatePaymentUseCase {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
 
-        
-        if (request.referenceNumber() != null) {
-            
-            
-        }
+        String referenceNumber = request.referenceNumber() != null ? request.referenceNumber() : payment.getReferenceNumber();
+        LocalDate paymentDate = request.paymentDate() != null ? request.paymentDate() : payment.getPaymentDate();
+        UUID paymentMethodId = request.paymentMethodId() != null ? request.paymentMethodId() : payment.getPaymentMethodId();
+        String notes = request.notes() != null ? request.notes() : payment.getNotes();
 
-        Payment saved = paymentRepository.save(payment);
+        Payment updated = payment.withUpdatedDetails(referenceNumber, paymentDate, paymentMethodId, notes);
+        Payment saved = paymentRepository.save(updated);
         return PaymentMapper.toResponse(saved);
     }
 }

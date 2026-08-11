@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class PaymentStatusTest {
 
     @Test
-    void should_HaveThreeValues() {
+    void should_HaveFiveValues() {
         PaymentStatus[] values = PaymentStatus.values();
-        assertEquals(3, values.length);
+        assertEquals(5, values.length);
     }
 
     @Test
@@ -33,9 +33,23 @@ class PaymentStatusTest {
     }
 
     @Test
+    void should_HavePendingValue() {
+        assertNotNull(PaymentStatus.valueOf("PENDING"));
+        assertEquals(PaymentStatus.PENDING, PaymentStatus.valueOf("PENDING"));
+    }
+
+    @Test
+    void should_HaveRejectedValue() {
+        assertNotNull(PaymentStatus.valueOf("REJECTED"));
+        assertEquals(PaymentStatus.REJECTED, PaymentStatus.valueOf("REJECTED"));
+    }
+
+    @Test
     void should_BeCorrectlyOrdered() {
-        assertSame(PaymentStatus.APPLIED, PaymentStatus.values()[0]);
-        assertSame(PaymentStatus.CANCELLED, PaymentStatus.values()[1]);
-        assertSame(PaymentStatus.REFUND, PaymentStatus.values()[2]);
+        assertSame(PaymentStatus.PENDING, PaymentStatus.values()[0]);
+        assertSame(PaymentStatus.APPLIED, PaymentStatus.values()[1]);
+        assertSame(PaymentStatus.CANCELLED, PaymentStatus.values()[2]);
+        assertSame(PaymentStatus.REJECTED, PaymentStatus.values()[3]);
+        assertSame(PaymentStatus.REFUND, PaymentStatus.values()[4]);
     }
 }

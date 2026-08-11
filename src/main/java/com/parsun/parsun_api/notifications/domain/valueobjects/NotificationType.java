@@ -1,0 +1,16 @@
+package com.parsun.parsun_api.notifications.domain.valueobjects;
+
+public enum NotificationType {
+    PAYMENT_PENDING_APPROVAL,
+    PAYMENT_APPROVED,
+    PAYMENT_REJECTED,
+    QUOTE_CREATED,
+    QUOTE_APPROVED,
+    QUOTE_REJECTED,
+    QUOTE_CONVERTED_TO_ORDER,
+    QUOTE_CONVERTED_TO_INVOICE,
+    ORDER_CREATED,
+    ORDER_APPROVED,
+    ORDER_REJECTED,
+    ORDER_CONVERTED_TO_INVOICE
+}

@@ -87,7 +87,8 @@ class PaymentControllerTest {
                 BigDecimal.TEN, UUID.randomUUID(), "REF-001",
                 LocalDate.now(), "Test payment", "DRAFT",
                 BigDecimal.ZERO, UUID.randomUUID(), "Test User",
-                LocalDateTime.now(), LocalDateTime.now()
+                LocalDateTime.now(), LocalDateTime.now(),
+                null, null, null, null
         );
 
         when(createPaymentUseCase.execute(any(CreatePaymentRequest.class), any(UUID.class)))
@@ -155,7 +156,8 @@ class PaymentControllerTest {
                 BigDecimal.TEN, UUID.randomUUID(), "REF-001",
                 LocalDate.now(), null, "APPLIED",
                 BigDecimal.ZERO, UUID.randomUUID(), "Test User",
-                LocalDateTime.now(), LocalDateTime.now()
+                LocalDateTime.now(), LocalDateTime.now(),
+                null, null, null, null
         );
 
         when(getPaymentByIdUseCase.execute(id)).thenReturn(response);

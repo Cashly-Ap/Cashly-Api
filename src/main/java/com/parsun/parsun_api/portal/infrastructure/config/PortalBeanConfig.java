@@ -12,6 +12,7 @@ import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceReposi
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.application.usecases.GetInvoiceByIdUseCase;
 import com.parsun.parsun_api.invoices.application.usecases.GetInvoicesUseCase;
@@ -265,8 +266,11 @@ public class PortalBeanConfig {
     public RegisterPortalPaymentUseCase registerPortalPaymentUseCase(
             CreatePaymentUseCase createPaymentUseCase,
             PortalAuthorizationService portalAuthorizationService,
-            FileStorageService fileStorageService) {
+            FileStorageService fileStorageService,
+            NotificationService notificationService,
+            CustomerRepository customerRepository) {
         return new RegisterPortalPaymentUseCase(
-                createPaymentUseCase, portalAuthorizationService, fileStorageService);
+                createPaymentUseCase, portalAuthorizationService, fileStorageService,
+                notificationService, customerRepository);
     }
 }

@@ -68,4 +68,17 @@ public class PaymentEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "cancelled_reason", length = 500)
+    private String cancelledReason;
+
+    @Column(name = "verified_by", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID verifiedBy;
+
+    @Column(name = "verified_by_name", length = 200)
+    private String verifiedByName;
+
+    @Column(name = "verified_at")
+    private LocalDateTime verifiedAt;
 }

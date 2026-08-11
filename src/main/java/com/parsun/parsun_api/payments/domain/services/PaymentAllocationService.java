@@ -48,6 +48,16 @@ public class PaymentAllocationService {
         paymentRepository.save(payment);
     }
 
+    public void cancelPayment(UUID paymentId, String reason) {
+        Payment payment = paymentRepository.findById(PaymentId.of(paymentId))
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+
+        allocationRepository.deleteByPaymentId(paymentId);
+        payment.cancel(reason);
+        paymentRepository.save(payment);
+    }
+
+    @Deprecated
     public void cancelPayment(UUID paymentId) {
         Payment payment = paymentRepository.findById(PaymentId.of(paymentId))
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));

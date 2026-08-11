@@ -23,7 +23,11 @@ public class PaymentMapper {
                 payment.getCreatedBy(),
                 payment.getCreatedByName(),
                 payment.getCreatedAt(),
-                payment.getUpdatedAt()
+                payment.getUpdatedAt(),
+                payment.getCancelledReason(),
+                payment.getVerifiedBy(),
+                payment.getVerifiedByName(),
+                payment.getVerifiedAt()
         );
     }
 

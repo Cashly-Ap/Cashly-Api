@@ -28,6 +28,10 @@ public class PaymentJpaMapper {
         entity.setCreatedByName(payment.getCreatedByName());
         entity.setCreatedAt(payment.getCreatedAt());
         entity.setUpdatedAt(payment.getUpdatedAt());
+        entity.setCancelledReason(payment.getCancelledReason());
+        entity.setVerifiedBy(payment.getVerifiedBy());
+        entity.setVerifiedByName(payment.getVerifiedByName());
+        entity.setVerifiedAt(payment.getVerifiedAt());
         return entity;
     }
 
@@ -50,7 +54,11 @@ public class PaymentJpaMapper {
                 entity.getCreatedBy(),
                 entity.getCreatedByName(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getCancelledReason(),
+                entity.getVerifiedBy(),
+                entity.getVerifiedByName(),
+                entity.getVerifiedAt()
         );
     }
 }

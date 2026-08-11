@@ -1,9 +1,11 @@
 package com.parsun.parsun_api.payments.infrastructure.web;
 
+import com.parsun.parsun_api.payments.application.dto.request.ApprovePaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.request.CreatePaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.request.PayCustomerDebtRequest;
 import com.parsun.parsun_api.payments.application.dto.request.PayInvoiceRequest;
 import com.parsun.parsun_api.payments.application.dto.request.PayPartialDebtRequest;
+import com.parsun.parsun_api.payments.application.dto.request.RejectPaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.request.UpdatePaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentListResponse;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
@@ -33,6 +35,8 @@ public class PaymentController {
     private final PayInvoiceUseCase payInvoiceUseCase;
     private final PayAllCustomerDebtUseCase payAllCustomerDebtUseCase;
     private final PayPartialDebtUseCase payPartialDebtUseCase;
+    private final ApprovePaymentUseCase approvePaymentUseCase;
+    private final RejectPaymentUseCase rejectPaymentUseCase;
 
     public PaymentController(CreatePaymentUseCase createPaymentUseCase,
                               GetAllPaymentsUseCase getAllPaymentsUseCase,
@@ -41,7 +45,9 @@ public class PaymentController {
                               DeletePaymentUseCase deletePaymentUseCase,
                               PayInvoiceUseCase payInvoiceUseCase,
                               PayAllCustomerDebtUseCase payAllCustomerDebtUseCase,
-                              PayPartialDebtUseCase payPartialDebtUseCase) {
+                              PayPartialDebtUseCase payPartialDebtUseCase,
+                              ApprovePaymentUseCase approvePaymentUseCase,
+                              RejectPaymentUseCase rejectPaymentUseCase) {
         this.createPaymentUseCase = createPaymentUseCase;
         this.getAllPaymentsUseCase = getAllPaymentsUseCase;
         this.getPaymentByIdUseCase = getPaymentByIdUseCase;
@@ -50,6 +56,8 @@ public class PaymentController {
         this.payInvoiceUseCase = payInvoiceUseCase;
         this.payAllCustomerDebtUseCase = payAllCustomerDebtUseCase;
         this.payPartialDebtUseCase = payPartialDebtUseCase;
+        this.approvePaymentUseCase = approvePaymentUseCase;
+        this.rejectPaymentUseCase = rejectPaymentUseCase;
     }
 
     @PostMapping
@@ -79,6 +87,30 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> getById(@PathVariable UUID id) {
         PaymentResponse payment = getPaymentByIdUseCase.execute(id);
         return ResponseEntity.ok(payment);
+    }
+
+    @PostMapping("/{id}/approve")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<PaymentResponse> approve(
+            @PathVariable UUID id,
+            @Valid @RequestBody ApprovePaymentRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        String userName = authentication.getName();
+        PaymentResponse response = approvePaymentUseCase.execute(id, request, userId, userName);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<PaymentResponse> reject(
+            @PathVariable UUID id,
+            @Valid @RequestBody RejectPaymentRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        String userName = authentication.getName();
+        PaymentResponse response = rejectPaymentUseCase.execute(id, request, userId, userName);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/invoices/{invoiceId}/pay")

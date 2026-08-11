@@ -190,7 +190,7 @@ public class CreateReturnUseCase {
         allocationRepository.findByInvoiceId(invoiceId).stream()
                 .map(PaymentAllocation::getPaymentId)
                 .distinct()
-                .forEach(paymentAllocationService::cancelPayment);
+                .forEach(pid -> paymentAllocationService.cancelPayment(pid, "Return created"));
     }
 
     private List<CancelledAllocation> captureCancelledAllocations(UUID invoiceId) {

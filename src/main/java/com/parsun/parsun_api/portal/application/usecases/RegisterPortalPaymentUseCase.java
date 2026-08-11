@@ -1,5 +1,9 @@
 package com.parsun.parsun_api.portal.application.usecases;
 
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.payments.application.dto.request.CreatePaymentRequest;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResponse;
 import com.parsun.parsun_api.payments.application.usecases.CreatePaymentUseCase;
@@ -20,13 +24,19 @@ public class RegisterPortalPaymentUseCase {
     private final CreatePaymentUseCase createPaymentUseCase;
     private final PortalAuthorizationService portalAuthorizationService;
     private final FileStorageService fileStorageService;
+    private final NotificationService notificationService;
+    private final CustomerRepository customerRepository;
 
     public RegisterPortalPaymentUseCase(CreatePaymentUseCase createPaymentUseCase,
-                                         PortalAuthorizationService portalAuthorizationService,
-                                         FileStorageService fileStorageService) {
+                                          PortalAuthorizationService portalAuthorizationService,
+                                          FileStorageService fileStorageService,
+                                          NotificationService notificationService,
+                                          CustomerRepository customerRepository) {
         this.createPaymentUseCase = createPaymentUseCase;
         this.portalAuthorizationService = portalAuthorizationService;
         this.fileStorageService = fileStorageService;
+        this.notificationService = notificationService;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional
@@ -58,7 +68,15 @@ public class RegisterPortalPaymentUseCase {
                 combinedNotes
         );
 
-        return createPaymentUseCase.execute(createRequest, null);
+        PaymentResponse response = createPaymentUseCase.execute(createRequest, null);
+
+        String customerName = customerRepository.findById(new CustomerId(customerId))
+                .map(Customer::getLegalName)
+                .map(Object::toString)
+                .orElse("Cliente");
+        notificationService.notifyAdminsPaymentPending(response.id(), customerName, request.amount());
+
+        return response;
     }
 
     private String buildNotes(String notes, String justificantePath) {

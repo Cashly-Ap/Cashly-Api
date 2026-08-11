@@ -28,12 +28,17 @@ public class Payment {
     private final String createdByName;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String cancelledReason;
+    private UUID verifiedBy;
+    private String verifiedByName;
+    private LocalDateTime verifiedAt;
 
     private Payment(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
                     BigDecimal amount, UUID paymentMethodId, PaymentSource source,
                     String referenceNumber, LocalDate paymentDate,
                     String notes, PaymentStatus status, BigDecimal appliedAmount,
-                    UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                    UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt,
+                    String cancelledReason, UUID verifiedBy, String verifiedByName, LocalDateTime verifiedAt) {
         this.id = id;
         this.paymentNumber = paymentNumber;
         this.customerId = customerId;
@@ -49,6 +54,10 @@ public class Payment {
         this.createdByName = createdByName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.cancelledReason = cancelledReason;
+        this.verifiedBy = verifiedBy;
+        this.verifiedByName = verifiedByName;
+        this.verifiedAt = verifiedAt;
     }
 
     public static Payment create(PaymentNumber paymentNumber, UUID customerId,
@@ -79,7 +88,8 @@ public class Payment {
         LocalDateTime now = LocalDateTime.now();
         return new Payment(PaymentId.generate(), paymentNumber, customerId,
                 amount, paymentMethodId, source, referenceNumber, paymentDate, notes,
-                status, BigDecimal.ZERO, createdBy, createdByName, now, now);
+                status, BigDecimal.ZERO, createdBy, createdByName, now, now,
+                null, null, null, null);
     }
 
     public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
@@ -87,10 +97,26 @@ public class Payment {
                                         String referenceNumber, LocalDate paymentDate, String notes,
                                         PaymentStatus status, BigDecimal appliedAmount,
                                         UUID createdBy, String createdByName,
-                                        LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                        LocalDateTime createdAt, LocalDateTime updatedAt,
+                                        String cancelledReason, UUID verifiedBy,
+                                        String verifiedByName, LocalDateTime verifiedAt) {
         return new Payment(id, paymentNumber, customerId,
                 amount, paymentMethodId, source, referenceNumber, paymentDate, notes, status, appliedAmount,
-                createdBy, createdByName, createdAt, updatedAt);
+                createdBy, createdByName, createdAt, updatedAt,
+                cancelledReason, verifiedBy, verifiedByName, verifiedAt);
+    }
+
+    @Deprecated
+    public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
+                                        BigDecimal amount, UUID paymentMethodId, PaymentSource source,
+                                        String referenceNumber, LocalDate paymentDate, String notes,
+                                        PaymentStatus status, BigDecimal appliedAmount,
+                                        UUID createdBy, String createdByName,
+                                        LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return reconstitute(id, paymentNumber, customerId,
+                amount, paymentMethodId, source, referenceNumber, paymentDate, notes, status, appliedAmount,
+                createdBy, createdByName, createdAt, updatedAt,
+                null, null, null, null);
     }
 
     public void apply(BigDecimal amount) {
@@ -110,11 +136,63 @@ public class Payment {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void cancel(String reason) {
+        if (this.status == PaymentStatus.CANCELLED) {
+            throw new IllegalStateException("Payment is already cancelled");
+        }
+        if (this.status == PaymentStatus.APPLIED) {
+            throw new IllegalStateException("Cannot cancel an applied payment");
+        }
+        Objects.requireNonNull(reason, "Cancellation reason cannot be null");
+        if (reason.isBlank()) {
+            throw new IllegalArgumentException("Cancellation reason cannot be blank");
+        }
+        this.status = PaymentStatus.CANCELLED;
+        this.cancelledReason = reason;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @Deprecated
     public void cancel() {
         if (this.status == PaymentStatus.CANCELLED) {
             throw new IllegalStateException("Payment is already cancelled");
         }
         this.status = PaymentStatus.CANCELLED;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void approve(String reason, UUID verifiedByUserId, String verifiedByUserName) {
+        if (this.status != PaymentStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING payments can be approved, current: " + this.status);
+        }
+        Objects.requireNonNull(reason, "Approval reason cannot be null");
+        if (reason.isBlank()) {
+            throw new IllegalArgumentException("Approval reason cannot be blank");
+        }
+        Objects.requireNonNull(verifiedByUserId, "Verified by user id cannot be null");
+        Objects.requireNonNull(verifiedByUserName, "Verified by user name cannot be null");
+        this.status = PaymentStatus.APPLIED;
+        this.verifiedBy = verifiedByUserId;
+        this.verifiedByName = verifiedByUserName;
+        this.verifiedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void reject(String reason, UUID verifiedByUserId, String verifiedByUserName) {
+        if (this.status != PaymentStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING payments can be rejected, current: " + this.status);
+        }
+        Objects.requireNonNull(reason, "Rejection reason cannot be null");
+        if (reason.isBlank()) {
+            throw new IllegalArgumentException("Rejection reason cannot be blank");
+        }
+        Objects.requireNonNull(verifiedByUserId, "Verified by user id cannot be null");
+        Objects.requireNonNull(verifiedByUserName, "Verified by user name cannot be null");
+        this.status = PaymentStatus.REJECTED;
+        this.cancelledReason = reason;
+        this.verifiedBy = verifiedByUserId;
+        this.verifiedByName = verifiedByUserName;
+        this.verifiedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -124,6 +202,18 @@ public class Payment {
         }
         this.status = PaymentStatus.APPLIED;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public Payment withUpdatedDetails(String referenceNumber, LocalDate paymentDate, UUID paymentMethodId, String notes) {
+        return reconstitute(
+                this.id, this.paymentNumber, this.customerId,
+                this.amount, paymentMethodId, this.source,
+                referenceNumber, paymentDate, notes,
+                this.status, this.appliedAmount,
+                this.createdBy, this.createdByName,
+                this.createdAt, LocalDateTime.now(),
+                this.cancelledReason, this.verifiedBy, this.verifiedByName, this.verifiedAt
+        );
     }
 
     public PaymentId getId() {
@@ -184,6 +274,22 @@ public class Payment {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getCancelledReason() {
+        return cancelledReason;
+    }
+
+    public UUID getVerifiedBy() {
+        return verifiedBy;
+    }
+
+    public String getVerifiedByName() {
+        return verifiedByName;
+    }
+
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
     }
 
     @Override

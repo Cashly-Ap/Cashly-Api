@@ -6,6 +6,7 @@ import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceReposi
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
@@ -92,6 +93,18 @@ public class PaymentConfig {
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
                 consumeCustomerBalanceUseCase);
+    }
+
+    @Bean
+    public ApprovePaymentUseCase approvePaymentUseCase(PaymentRepository paymentRepository,
+                                                         NotificationService notificationService) {
+        return new ApprovePaymentUseCase(paymentRepository, notificationService);
+    }
+
+    @Bean
+    public RejectPaymentUseCase rejectPaymentUseCase(PaymentRepository paymentRepository,
+                                                       NotificationService notificationService) {
+        return new RejectPaymentUseCase(paymentRepository, notificationService);
     }
 
     @Bean
