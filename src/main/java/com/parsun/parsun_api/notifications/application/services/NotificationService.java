@@ -149,7 +149,7 @@ public class NotificationService {
     public void notifyAdminsQuoteCreated(UUID quoteId, String customerName) {
         List<User> allUsers = userRepository.findAll();
         for (User user : allUsers) {
-            create(user.getId().getValue(), NotificationType.QUOTE_CREATED, "Cotizacion creada", customerName + " ha creado una nueva cotizacion.", "QUOTE", quoteId);
+            create(user.getId().getValue(), NotificationType.QUOTE_CREATED, "Presupuesto creado", customerName + " ha creado un nuevo presupuesto.", "QUOTE", quoteId);
         }
     }
 
@@ -180,32 +180,32 @@ public class NotificationService {
     @Transactional
     public void notifyCustomerQuoteApproved(UUID customerId, UUID quoteId) {
         createForCustomer(customerId, NotificationType.QUOTE_APPROVED,
-                "Cotizacion aprobada",
-                "Tu cotizacion ha sido aprobada.",
+                "Presupuesto aprobado",
+                "Tu presupuesto ha sido aprobado.",
                 "QUOTE", quoteId);
     }
 
     @Transactional
     public void notifyCustomerQuoteRejected(UUID customerId, UUID quoteId, String reason) {
         createForCustomer(customerId, NotificationType.QUOTE_REJECTED,
-                "Cotizacion rechazada",
-                "Tu cotizacion fue rechazada: " + reason,
+                "Presupuesto rechazado",
+                "Tu presupuesto fue rechazado: " + reason,
                 "QUOTE", quoteId);
     }
 
     @Transactional
     public void notifyCustomerQuoteConvertedToOrder(UUID customerId, UUID quoteId, String orderNumber) {
         createForCustomer(customerId, NotificationType.QUOTE_CONVERTED_TO_ORDER,
-                "Cotizacion convertida a pedido",
-                "Tu cotizacion ha sido convertida al pedido #" + orderNumber + ".",
+                "Presupuesto convertido a pedido",
+                "Tu presupuesto ha sido convertido al pedido #" + orderNumber + ".",
                 "QUOTE", quoteId);
     }
 
     @Transactional
     public void notifyCustomerQuoteConvertedToInvoice(UUID customerId, UUID quoteId, String invoiceNumber) {
         createForCustomer(customerId, NotificationType.QUOTE_CONVERTED_TO_INVOICE,
-                "Cotizacion convertida a factura",
-                "Tu cotizacion ha sido convertida a la factura #" + invoiceNumber + ".",
+                "Presupuesto convertido a factura",
+                "Tu presupuesto ha sido convertido a la factura #" + invoiceNumber + ".",
                 "QUOTE", quoteId);
     }
 
