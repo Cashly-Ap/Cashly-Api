@@ -22,6 +22,7 @@ import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,13 +68,17 @@ class CreateInvoiceUseCaseTest {
     @Mock
     private InvoiceAuthorizationService authorizationService;
 
+    @Mock
+    private NotificationService notificationService;
+
     private CreateInvoiceUseCase createInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         createInvoiceUseCase = new CreateInvoiceUseCase(
                 invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository, authorizationService);
+                userRepository, productRepository, warehouseStockRepository, authorizationService,
+                notificationService);
     }
 
     @Test
@@ -99,6 +104,8 @@ class CreateInvoiceUseCaseTest {
 
         assertNotNull(response);
         verify(invoiceRepository, times(1)).save(any(Invoice.class));
+        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(), any());
+        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(), any());
     }
 
     @Test
@@ -129,6 +136,7 @@ class CreateInvoiceUseCaseTest {
 
         assertNotNull(response);
         verify(invoiceRepository).save(any(Invoice.class));
+        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(), any());
     }
 
     @Test

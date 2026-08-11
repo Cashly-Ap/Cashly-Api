@@ -232,4 +232,23 @@ public class NotificationService {
                 "Tu pedido ha sido convertido a la factura #" + invoiceNumber + ".",
                 "ORDER", orderId);
     }
+
+    @Transactional
+    public void notifyCustomerInvoiceCreated(UUID customerId, UUID invoiceId, String invoiceNumber) {
+        createForCustomer(customerId, NotificationType.INVOICE_CREATED,
+                "Factura creada", "Se ha creado la factura #" + invoiceNumber + ".", "INVOICE", invoiceId);
+    }
+
+    @Transactional
+    public void notifyCustomerInvoiceConfirmed(UUID customerId, UUID invoiceId, String invoiceNumber) {
+        createForCustomer(customerId, NotificationType.INVOICE_CONFIRMED,
+                "Factura confirmada", "Tu factura #" + invoiceNumber + " ha sido confirmada.", "INVOICE", invoiceId);
+    }
+
+    @Transactional
+    public void notifyCustomerInvoiceCancelled(UUID customerId, UUID invoiceId, String invoiceNumber, String reason) {
+        createForCustomer(customerId, NotificationType.INVOICE_CANCELLED,
+                "Factura cancelada", "Tu factura #" + invoiceNumber + " fue cancelada: " + reason,
+                "INVOICE", invoiceId);
+    }
 }

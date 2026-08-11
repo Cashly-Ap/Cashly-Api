@@ -10,6 +10,7 @@ import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,12 +43,15 @@ class CancelInvoiceUseCaseUnitTest {
     @Mock
     private StockMovementRepository stockMovementRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private CancelInvoiceUseCase cancelInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         cancelInvoiceUseCase = new CancelInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, stockMovementRepository);
+                warehouseStockRepository, stockMovementRepository, notificationService);
     }
 
     @Test
@@ -65,6 +69,7 @@ class CancelInvoiceUseCaseUnitTest {
         assertEquals("CANCELLED", response.status());
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verify(invoiceRepository).save(invoice);
+        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(), eq("INV-2026-00001"), eq("Duplicate invoice"));
     }
 
     @Test
@@ -95,6 +100,7 @@ class CancelInvoiceUseCaseUnitTest {
         cancelInvoiceUseCase.execute(id, request);
 
         verify(invoiceRepository, times(1)).save(invoice);
+        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(), any(), any());
     }
 
     @Test

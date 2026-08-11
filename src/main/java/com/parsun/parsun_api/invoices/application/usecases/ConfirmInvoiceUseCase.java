@@ -7,6 +7,7 @@ import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequ
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
@@ -31,17 +32,20 @@ public class ConfirmInvoiceUseCase {
     private final StockMovementRepository stockMovementRepository;
     private final UserRepository userRepository;
     private final InvoiceAuthorizationService authorizationService;
+    private final NotificationService notificationService;
 
     public ConfirmInvoiceUseCase(InvoiceRepository invoiceRepository,
                                   WarehouseStockRepository warehouseStockRepository,
                                   StockMovementRepository stockMovementRepository,
                                   InvoiceAuthorizationService authorizationService,
-                                  UserRepository userRepository) {
+                                  UserRepository userRepository,
+                                  NotificationService notificationService) {
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
         this.authorizationService = authorizationService;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -65,6 +69,8 @@ public class ConfirmInvoiceUseCase {
         deductStockAllocations(invoice);
 
         Invoice saved = invoiceRepository.save(invoice);
+        notificationService.notifyCustomerInvoiceConfirmed(
+                saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value());
         return InvoiceMapper.toDetailResponse(saved);
     }
 

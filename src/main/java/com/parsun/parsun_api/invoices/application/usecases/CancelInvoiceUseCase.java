@@ -2,6 +2,7 @@ package com.parsun.parsun_api.invoices.application.usecases;
 
 import com.parsun.parsun_api.invoices.application.dto.request.CancelInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
@@ -26,13 +27,16 @@ public class CancelInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final NotificationService notificationService;
 
     public CancelInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  WarehouseStockRepository warehouseStockRepository,
-                                 StockMovementRepository stockMovementRepository) {
+                                 StockMovementRepository stockMovementRepository,
+                                 NotificationService notificationService) {
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -45,6 +49,8 @@ public class CancelInvoiceUseCase {
         revertStockAllocations(invoice, previousStatus);
 
         Invoice saved = invoiceRepository.save(invoice);
+        notificationService.notifyCustomerInvoiceCancelled(
+                saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value(), request.reason());
         return InvoiceMapper.toDetailResponse(saved);
     }
 

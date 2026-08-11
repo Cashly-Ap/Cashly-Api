@@ -10,6 +10,7 @@ import com.parsun.parsun_api.invoices.application.dto.request.CreateInvoiceReque
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
@@ -43,6 +44,7 @@ public class CreateInvoiceUseCase {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final InvoiceAuthorizationService authorizationService;
+    private final NotificationService notificationService;
 
     public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  OrderRepository orderRepository,
@@ -50,7 +52,8 @@ public class CreateInvoiceUseCase {
                                  UserRepository userRepository,
                                  ProductRepository productRepository,
                                  WarehouseStockRepository warehouseStockRepository,
-                                 InvoiceAuthorizationService authorizationService) {
+                                 InvoiceAuthorizationService authorizationService,
+                                 NotificationService notificationService) {
         this.invoiceRepository = invoiceRepository;
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
@@ -58,6 +61,7 @@ public class CreateInvoiceUseCase {
         this.productRepository = productRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.authorizationService = authorizationService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -163,6 +167,12 @@ public class CreateInvoiceUseCase {
         }
 
         Invoice saved = invoiceRepository.save(invoice);
+        notificationService.notifyCustomerInvoiceCreated(
+                saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value());
+        if (orderId != null) {
+            notificationService.notifyCustomerInvoiceConfirmed(
+                    saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value());
+        }
 
         return InvoiceMapper.toDetailResponse(saved);
     }

@@ -6,6 +6,7 @@ import com.parsun.parsun_api.auth.user.domain.valueobjects.*;
 import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
+import com.parsun.parsun_api.notifications.application.services.NotificationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLineAllocation;
@@ -53,6 +54,9 @@ class ConfirmInvoiceUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private ConfirmInvoiceUseCase confirmInvoiceUseCase;
 
     private final UUID authenticatedUserId = UUID.randomUUID();
@@ -61,7 +65,7 @@ class ConfirmInvoiceUseCaseTest {
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
                 warehouseStockRepository, stockMovementRepository,
-                authorizationService, userRepository);
+                authorizationService, userRepository, notificationService);
     }
 
     @Test
@@ -80,6 +84,7 @@ class ConfirmInvoiceUseCaseTest {
         assertNotNull(response);
         assertEquals("PAID", response.status());
         verify(invoiceRepository).save(any(Invoice.class));
+        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(), any());
     }
 
     @Test
@@ -98,6 +103,7 @@ class ConfirmInvoiceUseCaseTest {
         assertNotNull(response);
         assertEquals("PENDING_PAYMENT", response.status());
         verify(invoiceRepository).save(any(Invoice.class));
+        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(), any());
     }
 
     @Test
