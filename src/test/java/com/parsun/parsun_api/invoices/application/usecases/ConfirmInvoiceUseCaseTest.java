@@ -3,6 +3,9 @@ package com.parsun.parsun_api.invoices.application.usecases;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.*;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
@@ -57,6 +60,9 @@ class ConfirmInvoiceUseCaseTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private CashMovementService cashMovementService;
+
     private ConfirmInvoiceUseCase confirmInvoiceUseCase;
 
     private final UUID authenticatedUserId = UUID.randomUUID();
@@ -65,7 +71,7 @@ class ConfirmInvoiceUseCaseTest {
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
                 warehouseStockRepository, stockMovementRepository,
-                authorizationService, userRepository, notificationService);
+                authorizationService, userRepository, notificationService, cashMovementService);
     }
 
     @Test
@@ -85,6 +91,10 @@ class ConfirmInvoiceUseCaseTest {
         assertEquals("PAID", response.status());
         verify(invoiceRepository).save(any(Invoice.class));
         verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(), any());
+        verify(cashMovementService).record(
+                eq(CashMovementDirection.IN), eq(CashMovementType.INVOICE),
+                any(BigDecimal.class), isNull(), contains("INV-"),
+                eq("INVOICE"), eq(id), eq(authenticatedUserId), eq("testuser"));
     }
 
     @Test
@@ -104,6 +114,10 @@ class ConfirmInvoiceUseCaseTest {
         assertEquals("PENDING_PAYMENT", response.status());
         verify(invoiceRepository).save(any(Invoice.class));
         verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(), any());
+        verify(cashMovementService).record(
+                eq(CashMovementDirection.IN), eq(CashMovementType.INVOICE),
+                any(BigDecimal.class), isNull(), contains("INV-"),
+                eq("INVOICE"), eq(id), eq(authenticatedUserId), eq("testuser"));
     }
 
     @Test

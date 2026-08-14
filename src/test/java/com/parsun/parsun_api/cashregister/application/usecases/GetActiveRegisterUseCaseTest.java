@@ -1,9 +1,5 @@
 package com.parsun.parsun_api.cashregister.application.usecases;
 
-import com.parsun.parsun_api.auth.user.domain.entities.User;
-import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
-import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
-import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterResponse;
 import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
@@ -24,10 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,15 +35,13 @@ class GetActiveRegisterUseCaseTest {
     private CashRegisterRepository closureRepository;
 
     @Mock
-    private UserRepository userRepository;
-
     private GetActiveRegisterUseCase useCase;
 
     private final UUID userId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
-        useCase = new GetActiveRegisterUseCase(closureRepository, userRepository);
+        useCase = new GetActiveRegisterUseCase(closureRepository);
     }
 
     private DailyTotals emptyDailyTotals() {
@@ -75,52 +69,33 @@ class GetActiveRegisterUseCaseTest {
     }
 
     @Test
-    void should_ReturnActiveClosure_When_ActiveClosureExists() {
-        CashRegister activeClosure = openRegister();
+    void should_ReturnActiveRegisterAcrossCalendarDays() {
+        CashRegister activeClosure = CashRegister.reconstitute(
+                RegisterId.generate(), LocalDate.now().minusDays(2), RegisterStatus.OPEN,
+                userId, "Test User", LocalDateTime.now().minusDays(2),
+                null, null, null,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, 0, 0, 0, 0,
+                BigDecimal.ZERO, null, null, null, 0,
+                LocalDateTime.now().minusDays(2), LocalDateTime.now(), List.of());
         when(closureRepository.findActiveClosure()).thenReturn(Optional.of(activeClosure));
-        when(closureRepository.findDailyTotals(activeClosure.getClosureDate())).thenReturn(emptyDailyTotals());
+        when(closureRepository.findSessionTotals(activeClosure.getId())).thenReturn(emptyDailyTotals());
         when(closureRepository.save(any(CashRegister.class))).thenReturn(activeClosure);
 
-        CashRegisterResponse response = useCase.execute(userId);
+        Optional<CashRegisterResponse> response = useCase.execute();
 
-        assertNotNull(response);
+        assertTrue(response.isPresent());
+        assertEquals(activeClosure.getId().value(), response.orElseThrow().id());
         verify(closureRepository).save(any(CashRegister.class));
     }
 
     @Test
-    void should_ReturnTodayClosure_When_NoActiveClosureButTodayClosureExists() {
-        CashRegister todayClosure = openRegister();
+    void should_ReturnEmptyWithoutCreatingRegister_When_NoActiveRegisterExists() {
         when(closureRepository.findActiveClosure()).thenReturn(Optional.empty());
-        when(closureRepository.findByClosureDate(LocalDate.now())).thenReturn(Optional.of(todayClosure));
-        when(closureRepository.findDailyTotals(todayClosure.getClosureDate())).thenReturn(emptyDailyTotals());
 
-        CashRegisterResponse response = useCase.execute(userId);
+        Optional<CashRegisterResponse> response = useCase.execute();
 
-        assertNotNull(response);
-    }
-
-    @Test
-    void should_OpenNewRegister_When_NoActiveOrTodayClosureExists() {
-        User user = mock(User.class);
-        when(user.getUserName()).thenReturn(new UserName("Test User"));
-        when(closureRepository.findActiveClosure()).thenReturn(Optional.empty());
-        when(closureRepository.findByClosureDate(LocalDate.now())).thenReturn(Optional.empty());
-        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(user));
-        when(closureRepository.save(any(CashRegister.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(closureRepository.findDailyTotals(any(LocalDate.class))).thenReturn(emptyDailyTotals());
-
-        CashRegisterResponse response = useCase.execute(userId);
-
-        assertNotNull(response);
-        verify(closureRepository).save(any(CashRegister.class));
-    }
-
-    @Test
-    void should_Throw_When_UserNotFoundAndNoClosures() {
-        when(closureRepository.findActiveClosure()).thenReturn(Optional.empty());
-        when(closureRepository.findByClosureDate(LocalDate.now())).thenReturn(Optional.empty());
-        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.empty());
-
-        assertThrows(IllegalStateException.class, () -> useCase.execute(userId));
+        assertTrue(response.isEmpty());
+        verify(closureRepository, never()).save(any());
     }
 }

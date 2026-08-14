@@ -2,6 +2,9 @@ package com.parsun.parsun_api.invoices.application.services;
 
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
@@ -28,17 +31,20 @@ public class InvoiceAuthorizationService {
     private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository allocationRepository;
+    private final CashMovementService cashMovementService;
 
     public InvoiceAuthorizationService(CreditGuard creditGuard,
                                         PasswordEncoder passwordEncoder,
                                         ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
                                         PaymentRepository paymentRepository,
-                                        PaymentAllocationRepository allocationRepository) {
+                                        PaymentAllocationRepository allocationRepository,
+                                        CashMovementService cashMovementService) {
         this.creditGuard = creditGuard;
         this.passwordEncoder = passwordEncoder;
         this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -47,9 +53,9 @@ public class InvoiceAuthorizationService {
                            UUID paymentMethodId, UUID authenticatedUserId) {
         if (invoice.getPaymentType() == PaymentType.CREDIT) {
             authorizeCredit(invoice, user, confirmationPassword);
-        } else if (invoice.getPaymentType() == PaymentType.CASH
-                && useBalance != null && useBalance) {
-            authorizeCash(invoice, balanceAmount, paymentMethodId, authenticatedUserId, user);
+        } else if (invoice.getPaymentType() == PaymentType.CASH) {
+            authorizeCash(invoice, Boolean.TRUE.equals(useBalance), balanceAmount,
+                    paymentMethodId, authenticatedUserId, user);
         }
     }
 
@@ -66,9 +72,18 @@ public class InvoiceAuthorizationService {
         }
     }
 
-    private void authorizeCash(Invoice invoice, BigDecimal balanceAmount,
+    private void authorizeCash(Invoice invoice, boolean useBalance, BigDecimal balanceAmount,
                                 UUID paymentMethodId, UUID authenticatedUserId, User user) {
-        BigDecimal balanceToUse = balanceAmount != null ? balanceAmount : invoice.calculateTotal();
+        BigDecimal balanceToUse = useBalance
+                ? (balanceAmount != null ? balanceAmount : invoice.calculateTotal())
+                : BigDecimal.ZERO;
+        BigDecimal remaining = invoice.calculateTotal().subtract(balanceToUse);
+        if (remaining.compareTo(BigDecimal.ZERO) > 0 && paymentMethodId == null) {
+            throw new IllegalArgumentException("Debe seleccionar un metodo de pago para el monto restante");
+        }
+        if (remaining.compareTo(BigDecimal.ZERO) > 0) {
+            cashMovementService.requireOpenRegister();
+        }
         if (balanceToUse.compareTo(BigDecimal.ZERO) > 0) {
             consumeCustomerBalanceUseCase.execute(
                     invoice.getCustomerId(),
@@ -82,11 +97,7 @@ public class InvoiceAuthorizationService {
             );
         }
 
-        BigDecimal remaining = invoice.calculateTotal().subtract(balanceToUse);
         if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            if (paymentMethodId == null) {
-                throw new IllegalArgumentException("Debe seleccionar un metodo de pago para el monto restante");
-            }
             int year = LocalDate.now().getYear();
             int seq = paymentRepository.getNextSequenceForYear(year);
             Payment payment = Payment.create(
@@ -102,6 +113,11 @@ public class InvoiceAuthorizationService {
                     PaymentStatus.APPLIED
             );
             Payment savedPayment = paymentRepository.save(payment);
+            cashMovementService.record(
+                    CashMovementDirection.IN, CashMovementType.PAYMENT,
+                    savedPayment.getAmount(), savedPayment.getPaymentMethodId(), savedPayment.getNotes(),
+                    "PAYMENT", savedPayment.getId().value(), authenticatedUserId,
+                    user.getUserName().getValue());
             PaymentAllocation allocation = PaymentAllocation.create(
                     savedPayment.getId().value(), invoice.getId().value(), remaining
             );

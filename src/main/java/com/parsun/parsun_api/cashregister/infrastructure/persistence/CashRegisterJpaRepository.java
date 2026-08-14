@@ -16,7 +16,7 @@ public interface CashRegisterJpaRepository
 
     Optional<CashRegisterJpaEntity> findByClosureDate(LocalDate closureDate);
 
-    @Query("SELECT c FROM CashRegisterJpaEntity c WHERE c.status = 'OPEN' ORDER BY c.openedAt DESC")
+    @Query("SELECT c FROM CashRegisterJpaEntity c WHERE c.status = 'OPEN'")
     Optional<CashRegisterJpaEntity> findActiveClosure();
 
     @Query("SELECT c FROM CashRegisterJpaEntity c WHERE c.status = :status ORDER BY c.openedAt DESC")

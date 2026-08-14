@@ -7,6 +7,7 @@ import com.parsun.parsun_api.cashregister.domain.repositories.CashRegisterReposi
 import com.parsun.parsun_api.cashregister.domain.valueobjects.RegisterId;
 
 import java.util.UUID;
+import java.math.BigDecimal;
 
 public class CloseRegisterUseCase {
 
@@ -16,11 +17,12 @@ public class CloseRegisterUseCase {
         this.closureRepository = closureRepository;
     }
 
-    public CashRegisterResponse execute(UUID closureId, UUID closedBy, String closedByName, String closingNotes) {
+    public CashRegisterResponse execute(UUID closureId, UUID closedBy, String closedByName,
+                                        BigDecimal declaredBalance, String closingNotes) {
         CashRegister closure = closureRepository.findById(RegisterId.of(closureId))
                 .orElseThrow(() -> new IllegalArgumentException("Closure not found: " + closureId));
 
-        var dailyTotals = closureRepository.findDailyTotals(closure.getClosureDate());
+        var dailyTotals = closureRepository.findSessionTotals(closure.getId());
 
         closure.applyTotals(
                 dailyTotals.totalPayments(), dailyTotals.paymentCount(),
@@ -31,9 +33,11 @@ public class CloseRegisterUseCase {
                 dailyTotals.totalInvoices(), dailyTotals.invoiceCount(),
                 dailyTotals.paymentDetails()
         );
+        closure.applyMovementTotals(dailyTotals.totalRevenue(), dailyTotals.totalExpenses());
 
-        closure.close(closedBy, closedByName, closingNotes);
+        closure.close(closedBy, closedByName, declaredBalance, closingNotes);
         CashRegister saved = closureRepository.save(closure);
-        return CashRegisterMapper.toResponse(saved, dailyTotals);
+        return CashRegisterMapper.toResponse(saved, dailyTotals,
+                closureRepository.findMovements(closure.getId()));
     }
 }

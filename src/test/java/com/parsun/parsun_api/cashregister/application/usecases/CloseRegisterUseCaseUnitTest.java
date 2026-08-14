@@ -43,7 +43,7 @@ class CloseRegisterUseCaseUnitTest {
     @Test
     void should_CloseClosure_When_StatusIsOpen() {
         when(closureRepository.findById(RegisterId.of(closureId))).thenReturn(Optional.of(openClosure));
-        when(closureRepository.findDailyTotals(any(LocalDate.class)))
+        when(closureRepository.findSessionTotals(any(RegisterId.class)))
                 .thenReturn(new DailyTotals(
                         BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
                         BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,
@@ -52,13 +52,16 @@ class CloseRegisterUseCaseUnitTest {
         when(closureRepository.save(any(CashRegister.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         UUID closedBy = UUID.randomUUID();
-        var response = useCase.execute(closureId, closedBy, "Supervisor", "Cierre normal");
+        var response = useCase.execute(closureId, closedBy, "Supervisor",
+                new BigDecimal("95.00"), "Cierre normal");
 
         assertNotNull(response);
         assertEquals("CLOSED", response.status().name());
         assertEquals(closedBy, response.closedBy());
         assertEquals("Supervisor", response.closedByName());
         assertEquals("Cierre normal", response.closingNotes());
+        assertEquals(new BigDecimal("95.00"), response.declaredBalance());
+        assertEquals(new BigDecimal("95.00"), response.difference());
     }
 
     @Test
@@ -66,6 +69,6 @@ class CloseRegisterUseCaseUnitTest {
         when(closureRepository.findById(RegisterId.of(closureId))).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
-                () -> useCase.execute(closureId, UUID.randomUUID(), "Test", null));
+                () -> useCase.execute(closureId, UUID.randomUUID(), "Test", BigDecimal.ZERO, null));
     }
 }

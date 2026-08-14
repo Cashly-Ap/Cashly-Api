@@ -1,18 +1,24 @@
 package com.parsun.parsun_api.cashregister.infrastructure.persistence;
 
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterExportRow;
+import com.parsun.parsun_api.cashregister.application.dto.CashRegisterReportFilter;
 import com.parsun.parsun_api.cashregister.application.dto.CustomerSummary;
 import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
+import com.parsun.parsun_api.cashregister.domain.entities.CashMovement;
 import com.parsun.parsun_api.cashregister.domain.repositories.CashRegisterRepository;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.cashregister.domain.valueobjects.RegisterId;
 import com.parsun.parsun_api.cashregister.domain.valueobjects.RegisterStatus;
 import com.parsun.parsun_api.cashregister.infrastructure.persistence.jpa.CashRegisterDetailJpaEntity;
 import com.parsun.parsun_api.cashregister.infrastructure.persistence.jpa.CashRegisterJpaEntity;
+import com.parsun.parsun_api.cashregister.infrastructure.persistence.jpa.CashMovementJpaEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,10 +45,19 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
 
     private final CashRegisterJpaRepository jpaRepository;
     private final EntityManager entityManager;
+    private final CashMovementJpaRepository movementJpaRepository;
 
-    public CashRegisterRepositoryAdapter(CashRegisterJpaRepository jpaRepository, EntityManager entityManager) {
+    @Autowired
+    public CashRegisterRepositoryAdapter(CashRegisterJpaRepository jpaRepository,
+                                         EntityManager entityManager,
+                                         CashMovementJpaRepository movementJpaRepository) {
         this.jpaRepository = jpaRepository;
         this.entityManager = entityManager;
+        this.movementJpaRepository = movementJpaRepository;
+    }
+
+    public CashRegisterRepositoryAdapter(CashRegisterJpaRepository jpaRepository, EntityManager entityManager) {
+        this(jpaRepository, entityManager, null);
     }
 
     @Override
@@ -160,8 +176,9 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 closureDate
         );
 
-        var totalExpenses = returnsTotal.add(refundsTotal).add(creditNotesTotal).add(debitNotesTotal);
+        var totalExpenses = refundsTotal;
         var totalRevenue = paymentsTotal.add(advancesTotal);
+        var totalInvoiced = invoicesTotal.add(debitNotesTotal).subtract(creditNotesTotal).subtract(returnsTotal);
 
         List<?> rawRows = entityManager.createNativeQuery(
                         """
@@ -199,9 +216,88 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 returnsTotal, returnsCount,
                 creditNotesTotal, debitNotesTotal,
                 invoicesTotal, invoicesCount,
-                invoicesTotal, totalRevenue, totalExpenses,
+                totalInvoiced, totalRevenue, totalExpenses,
                 details
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DailyTotals findSessionTotals(RegisterId registerId) {
+        List<CashMovement> movements = findMovements(registerId);
+        BigDecimal payments = sum(movements, CashMovementDirection.IN, CashMovementType.PAYMENT);
+        BigDecimal advances = sum(movements, CashMovementDirection.IN, CashMovementType.ADVANCE);
+        BigDecimal otherIncome = movements.stream()
+                .filter(m -> m.getDirection() == CashMovementDirection.IN)
+                .filter(m -> m.getType().affectsCashBalance())
+                .filter(m -> m.getType() != CashMovementType.PAYMENT && m.getType() != CashMovementType.ADVANCE)
+                .map(CashMovement::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal refunds = movements.stream()
+                .filter(m -> m.getDirection() == CashMovementDirection.OUT)
+                .filter(m -> m.getType() == CashMovementType.REFUND)
+                .map(CashMovement::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal otherExpense = movements.stream()
+                .filter(m -> m.getDirection() == CashMovementDirection.OUT)
+                .filter(m -> m.getType().affectsCashBalance())
+                .filter(m -> m.getType() != CashMovementType.REFUND)
+                .map(CashMovement::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal income = payments.add(advances).add(otherIncome);
+        BigDecimal expense = refunds.add(otherExpense);
+        BigDecimal invoices = sum(movements, CashMovementDirection.IN, CashMovementType.INVOICE);
+        BigDecimal debitNotes = sum(movements, CashMovementDirection.IN, CashMovementType.DEBIT_NOTE);
+        BigDecimal creditNotes = sum(movements, CashMovementDirection.OUT, CashMovementType.CREDIT_NOTE);
+        BigDecimal returns = sum(movements, CashMovementDirection.OUT, CashMovementType.RETURN);
+        BigDecimal netInvoiced = invoices.add(debitNotes).subtract(creditNotes).subtract(returns);
+
+        Map<UUID, List<CashMovement>> byMethod = movements.stream()
+                .filter(m -> m.getPaymentMethodId() != null)
+                .filter(m -> m.getType().affectsCashBalance())
+                .collect(Collectors.groupingBy(CashMovement::getPaymentMethodId, LinkedHashMap::new, Collectors.toList()));
+        List<CashRegisterDetail> details = byMethod.values().stream().map(items -> {
+            CashMovement first = items.getFirst();
+            BigDecimal amount = items.stream()
+                    .map(m -> m.getDirection() == CashMovementDirection.IN ? m.getAmount() : m.getAmount().negate())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            return CashRegisterDetail.create(first.getPaymentMethodId(), first.getPaymentMethodName(),
+                    items.size(), amount.max(BigDecimal.ZERO));
+        }).toList();
+
+        return new DailyTotals(payments, count(movements, CashMovementType.PAYMENT), advances,
+                count(movements, CashMovementType.ADVANCE), returns,
+                count(movements, CashMovementType.RETURN), creditNotes, debitNotes,
+                invoices, count(movements, CashMovementType.INVOICE), netInvoiced, income, expense, details);
+    }
+
+    private BigDecimal sum(List<CashMovement> movements, CashMovementDirection direction,
+                           CashMovementType type) {
+        return movements.stream().filter(m -> m.getDirection() == direction && m.getType() == type)
+                .map(CashMovement::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private int count(List<CashMovement> movements, CashMovementType type) {
+        return Math.toIntExact(movements.stream().filter(m -> m.getType() == type).count());
+    }
+
+    @Override
+    @Transactional
+    public CashMovement saveMovement(CashMovement movement) {
+        if (movementJpaRepository == null) throw new IllegalStateException("Movement repository unavailable");
+        return toMovementDomain(movementJpaRepository.save(toMovementEntity(movement)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CashMovement> findMovements(RegisterId registerId) {
+        if (movementJpaRepository == null) return List.of();
+        return movementJpaRepository.findByRegisterIdOrderByOccurredAtAsc(registerId.value()).stream()
+                .map(this::toMovementDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsMovement(String sourceType, UUID sourceId) {
+        return sourceId != null && movementJpaRepository != null
+                && movementJpaRepository.existsBySourceTypeAndSourceId(sourceType, sourceId);
     }
 
     @Override
@@ -258,8 +354,9 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 dateFrom, dateTo
         );
 
-        var totalExpenses = returnsTotal.add(refundsTotal).add(creditNotesTotal).add(debitNotesTotal);
+        var totalExpenses = refundsTotal;
         var totalRevenue = paymentsTotal.add(advancesTotal);
+        var totalInvoiced = invoicesTotal.add(debitNotesTotal).subtract(creditNotesTotal).subtract(returnsTotal);
 
         var paymentsSummary = findPaymentMethodSummary(dateFrom, dateTo);
 
@@ -269,7 +366,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 returnsTotal, returnsCount,
                 creditNotesTotal, debitNotesTotal,
                 invoicesTotal, invoicesCount,
-                invoicesTotal, totalRevenue, totalExpenses,
+                totalInvoiced, totalRevenue, totalExpenses,
                 paymentsSummary
         );
     }
@@ -390,12 +487,97 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         return rows;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<CashRegisterExportRow> findExportRows(CashRegisterReportFilter filter) {
+        List<CashRegisterExportRow> rows = findExportRows(filter.dateFrom(), filter.dateTo());
+        if (!filter.hasCommercialFilters()) {
+            return rows;
+        }
+        Set<String> allowedDocuments = findAllowedReportDocuments(filter);
+        return rows.stream()
+                .filter(row -> allowedDocuments.contains(row.documentNumber()))
+                .toList();
+    }
+
+    private Set<String> findAllowedReportDocuments(CashRegisterReportFilter filter) {
+        Set<String> documents = new java.util.HashSet<>();
+        String lineFilter = reportLineFilter(filter, "i");
+        addDocumentNumbers(documents, """
+                SELECT DISTINCT i.invoice_number
+                FROM invoices i
+                WHERE i.status NOT IN ('DRAFT', 'CANCELLED')
+                """ + reportCustomerFilter(filter, "i") + lineFilter, filter);
+        addDocumentNumbers(documents, """
+                SELECT DISTINCT r.return_number
+                FROM returns r JOIN invoices i ON i.id = r.invoice_id
+                WHERE 1 = 1
+                """ + reportCustomerFilter(filter, "r") + lineFilter, filter);
+        addDocumentNumbers(documents, """
+                SELECT DISTINCT cn.note_number
+                FROM credit_notes cn JOIN invoices i ON i.id = cn.invoice_id
+                WHERE 1 = 1
+                """ + reportCustomerFilter(filter, "cn") + lineFilter, filter);
+        addDocumentNumbers(documents, """
+                SELECT DISTINCT dn.note_number
+                FROM debit_notes dn JOIN invoices i ON i.id = dn.invoice_id
+                WHERE 1 = 1
+                """ + reportCustomerFilter(filter, "dn") + lineFilter, filter);
+        addDocumentNumbers(documents, """
+                SELECT DISTINCT p.payment_number
+                FROM payments p
+                JOIN payment_allocations pa ON pa.payment_id = p.id
+                JOIN invoices i ON i.id = pa.invoice_id
+                WHERE p.status = 'APPLIED'
+                """ + reportCustomerFilter(filter, "p") + lineFilter, filter);
+        if (filter.productId() == null && filter.categoryId() == null) {
+            addDocumentNumbers(documents, """
+                    SELECT DISTINCT bt.number
+                    FROM balance_transactions bt
+                    WHERE bt.type IN ('ADVANCED', 'REFUND')
+                    """ + reportCustomerFilter(filter, "bt"), filter);
+        }
+        return documents;
+    }
+
+    private String reportCustomerFilter(CashRegisterReportFilter filter, String alias) {
+        return filter.customerId() == null ? "" : " AND " + alias + ".customer_id = :customerId";
+    }
+
+    private String reportLineFilter(CashRegisterReportFilter filter, String invoiceAlias) {
+        if (filter.productId() == null && filter.categoryId() == null) {
+            return "";
+        }
+        StringBuilder condition = new StringBuilder("""
+                 AND EXISTS (
+                    SELECT 1 FROM invoice_lines il
+                    JOIN products pr ON pr.id = il.product_id
+                    WHERE il.invoice_id = %s.id
+                """.formatted(invoiceAlias));
+        if (filter.productId() != null) condition.append(" AND il.product_id = :productId");
+        if (filter.categoryId() != null) condition.append(" AND pr.category_id = :categoryId");
+        return condition.append(")").toString();
+    }
+
+    private void addDocumentNumbers(Set<String> target, String sql, CashRegisterReportFilter filter) {
+        var query = entityManager.createNativeQuery(sql);
+        if (filter.customerId() != null) query.setParameter("customerId", filter.customerId());
+        if (filter.productId() != null) query.setParameter("productId", filter.productId());
+        if (filter.categoryId() != null) query.setParameter("categoryId", filter.categoryId());
+        for (Object result : query.getResultList()) {
+            if (result != null) target.add(result.toString());
+        }
+    }
+
     private List<CashRegisterExportRow> queryInvoices(LocalDate dateFrom, LocalDate dateTo, int baseOrder) {
         String sql = """
-                SELECT i.invoice_number, i.subtotal, i.created_at, i.customer_name
+                SELECT i.invoice_number, i.subtotal, COALESCE(cm.occurred_at, i.updated_at), i.customer_name
                 FROM invoices i
-                WHERE DATE(i.created_at) BETWEEN :dateFrom AND :dateTo AND i.status = 'PAID'
-                ORDER BY i.created_at
+                LEFT JOIN cash_register_movements cm
+                    ON cm.source_type = 'INVOICE' AND cm.source_id = i.id
+                WHERE DATE(COALESCE(cm.occurred_at, i.updated_at)) BETWEEN :dateFrom AND :dateTo
+                  AND i.status NOT IN ('DRAFT', 'CANCELLED')
+                ORDER BY COALESCE(cm.occurred_at, i.updated_at)
                 """;
         var query = entityManager.createNativeQuery(sql);
         query.setParameter("dateFrom", dateFrom);
@@ -669,6 +851,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         entity.setOpenedBy(closure.getOpenedBy());
         entity.setOpenedByName(closure.getOpenedByName());
         entity.setOpenedAt(closure.getOpenedAt());
+        entity.setOpeningBalance(closure.getOpeningBalance());
         if (closure.getClosedBy() != null) entity.setClosedBy(closure.getClosedBy());
         if (closure.getClosedByName() != null) entity.setClosedByName(closure.getClosedByName());
         if (closure.getClosedAt() != null) entity.setClosedAt(closure.getClosedAt());
@@ -685,6 +868,8 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         entity.setExpectedClosingBalance(closure.getExpectedClosingBalance());
         entity.setActualClosingBalance(closure.getActualClosingBalance());
         entity.setDifference(closure.getDifference());
+        entity.setTotalIncome(closure.getTotalIncome());
+        entity.setTotalExpense(closure.getTotalExpense());
         entity.setClosingNotes(closure.getClosingNotes());
         entity.setVersion(closure.getVersion());
         entity.setCreatedAt(closure.getCreatedAt());
@@ -726,6 +911,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 entity.getClosedBy(),
                 entity.getClosedByName(),
                 entity.getClosedAt(),
+                entity.getOpeningBalance(),
                 entity.getTotalPayments(),
                 entity.getTotalAdvances(),
                 entity.getTotalReturns(),
@@ -739,12 +925,40 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
                 entity.getExpectedClosingBalance(),
                 entity.getActualClosingBalance(),
                 entity.getDifference(),
+                entity.getTotalIncome(),
+                entity.getTotalExpense(),
                 entity.getClosingNotes(),
                 entity.getVersion(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 details
         );
+    }
+
+    private CashMovementJpaEntity toMovementEntity(CashMovement movement) {
+        var entity = new CashMovementJpaEntity();
+        entity.setId(movement.getId());
+        entity.setRegisterId(movement.getRegisterId().value());
+        entity.setDirection(movement.getDirection().name());
+        entity.setType(movement.getType().name());
+        entity.setAmount(movement.getAmount());
+        entity.setPaymentMethodId(movement.getPaymentMethodId());
+        entity.setPaymentMethodName(movement.getPaymentMethodName());
+        entity.setDescription(movement.getDescription());
+        entity.setSourceType(movement.getSourceType());
+        entity.setSourceId(movement.getSourceId());
+        entity.setCreatedBy(movement.getCreatedBy());
+        entity.setCreatedByName(movement.getCreatedByName());
+        entity.setOccurredAt(movement.getOccurredAt());
+        return entity;
+    }
+
+    private CashMovement toMovementDomain(CashMovementJpaEntity entity) {
+        return CashMovement.reconstitute(entity.getId(), RegisterId.of(entity.getRegisterId()),
+                CashMovementDirection.valueOf(entity.getDirection()), CashMovementType.valueOf(entity.getType()),
+                entity.getAmount(), entity.getPaymentMethodId(), entity.getPaymentMethodName(),
+                entity.getDescription(), entity.getSourceType(), entity.getSourceId(), entity.getCreatedBy(),
+                entity.getCreatedByName(), entity.getOccurredAt());
     }
 
     private BigDecimal queryDecimal(String sql, LocalDate date) {

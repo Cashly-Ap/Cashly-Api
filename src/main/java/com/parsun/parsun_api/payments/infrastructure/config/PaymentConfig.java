@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.payments.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
@@ -23,8 +24,10 @@ public class PaymentConfig {
     @Bean
     public CreatePaymentUseCase createPaymentUseCase(PaymentRepository paymentRepository,
                                                        CustomerRepository customerRepository,
-                                                       UserRepository userRepository) {
-        return new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository);
+                                                       UserRepository userRepository,
+                                                       CashMovementService cashMovementService) {
+        return new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository,
+                cashMovementService);
     }
 
     @Bean
@@ -60,11 +63,12 @@ public class PaymentConfig {
                                                 InvoiceStatusService invoiceStatusService,
                                                 CreditNoteRepository creditNoteRepository,
                                                 DebitNoteRepository debitNoteRepository,
-                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
+                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                                                CashMovementService cashMovementService) {
         return new PayInvoiceUseCase(paymentRepository, paymentAllocationRepository,
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase);
+                consumeCustomerBalanceUseCase, cashMovementService);
     }
 
     @Bean
@@ -74,11 +78,12 @@ public class PaymentConfig {
                                                                 InvoiceStatusService invoiceStatusService,
                                                                 CreditNoteRepository creditNoteRepository,
                                                                 DebitNoteRepository debitNoteRepository,
-                                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
+                                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                                                                CashMovementService cashMovementService) {
         return new PayAllCustomerDebtUseCase(paymentRepository, paymentAllocationRepository,
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase);
+                consumeCustomerBalanceUseCase, cashMovementService);
     }
 
     @Bean
@@ -88,11 +93,12 @@ public class PaymentConfig {
                                                         InvoiceStatusService invoiceStatusService,
                                                         CreditNoteRepository creditNoteRepository,
                                                         DebitNoteRepository debitNoteRepository,
-                                                        ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
+                                                        ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                                                        CashMovementService cashMovementService) {
         return new PayPartialDebtUseCase(paymentRepository, paymentAllocationRepository,
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase);
+                consumeCustomerBalanceUseCase, cashMovementService);
     }
 
     @Bean
@@ -100,8 +106,10 @@ public class PaymentConfig {
                                                          PaymentAllocationRepository allocationRepository,
                                                          InvoiceRepository invoiceRepository,
                                                          InvoiceStatusService invoiceStatusService,
-                                                         NotificationService notificationService) {
-        return new ApprovePaymentUseCase(paymentRepository, allocationRepository, invoiceRepository, invoiceStatusService, notificationService);
+                                                         NotificationService notificationService,
+                                                         CashMovementService cashMovementService) {
+        return new ApprovePaymentUseCase(paymentRepository, allocationRepository, invoiceRepository,
+                invoiceStatusService, notificationService, cashMovementService);
     }
 
     @Bean

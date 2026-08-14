@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.services.InvoiceStatusService;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
@@ -25,17 +28,20 @@ public class ApprovePaymentUseCase {
     private final InvoiceRepository invoiceRepository;
     private final InvoiceStatusService invoiceStatusService;
     private final NotificationService notificationService;
+    private final CashMovementService cashMovementService;
 
     public ApprovePaymentUseCase(PaymentRepository paymentRepository,
                                    PaymentAllocationRepository allocationRepository,
                                    InvoiceRepository invoiceRepository,
                                    InvoiceStatusService invoiceStatusService,
-                                   NotificationService notificationService) {
+                                   NotificationService notificationService,
+                                   CashMovementService cashMovementService) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoiceStatusService = invoiceStatusService;
         this.notificationService = notificationService;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -43,6 +49,7 @@ public class ApprovePaymentUseCase {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
 
+        cashMovementService.requireOpenRegister();
         payment.approve(request.reason(), userId, userName);
 
         String notes = payment.getNotes();
@@ -52,6 +59,17 @@ public class ApprovePaymentUseCase {
         }
 
         Payment saved = paymentRepository.save(payment);
+        cashMovementService.record(
+                CashMovementDirection.IN,
+                CashMovementType.PAYMENT,
+                saved.getAmount(),
+                saved.getPaymentMethodId(),
+                saved.getNotes(),
+                "PAYMENT",
+                id,
+                userId,
+                userName
+        );
         notificationService.notifyCustomerPaymentApproved(payment.getCustomerId(), id);
         return PaymentMapper.toResponse(saved);
     }

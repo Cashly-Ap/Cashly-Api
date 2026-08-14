@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.returns.infrastructure.config;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
@@ -37,6 +38,7 @@ class ReturnConfigTest {
     @Mock private PaymentRepository paymentRepository;
     @Mock private WarehouseStockRepository warehouseStockRepository;
     @Mock private StockMovementRepository stockMovementRepository;
+    @Mock private CashMovementService cashMovementService;
 
     @Test
     void should_CreateCreateReturnUseCase() {
@@ -46,7 +48,7 @@ class ReturnConfigTest {
                 invoiceRepository, returnMapper, paymentAllocationService,
                 allocationRepository, addToCustomerBalanceUseCase,
                 creditNoteRepository, debitNoteRepository,
-                warehouseStockRepository, stockMovementRepository);
+                warehouseStockRepository, stockMovementRepository, cashMovementService);
 
         assertNotNull(useCase);
     }

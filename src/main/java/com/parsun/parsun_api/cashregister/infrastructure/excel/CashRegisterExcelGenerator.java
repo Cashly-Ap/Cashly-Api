@@ -265,28 +265,36 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
                 rowNum++;
             }
 
-            BigDecimal totalFacturado = rows.stream()
+            BigDecimal grossInvoiced = rows.stream()
                     .filter(r -> "FAC".equals(r.documentType()))
                     .map(CashRegisterExportRow::totalOperation)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalCobrado = rows.stream()
+            BigDecimal debitNotes = rows.stream()
+                    .filter(r -> "ND".equals(r.documentType()))
+                    .map(CashRegisterExportRow::totalOperation)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal commercialReductions = rows.stream()
+                    .filter(r -> "DEV".equals(r.documentType()) || "NC".equals(r.documentType()))
+                    .map(CashRegisterExportRow::totalOperation)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal netInvoiced = grossInvoiced.add(debitNotes).subtract(commercialReductions);
+            BigDecimal totalIncome = rows.stream()
                     .filter(r -> "PAG".equals(r.documentType()) || "ANT".equals(r.documentType()))
                     .map(CashRegisterExportRow::totalOperation)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalDevuelto = rows.stream()
-                    .filter(r -> "DEV".equals(r.documentType()) || "REI".equals(r.documentType())
-                              || "NC".equals(r.documentType()) || "ND".equals(r.documentType()))
+            BigDecimal totalExpense = rows.stream()
+                    .filter(r -> "REI".equals(r.documentType()))
                     .map(CashRegisterExportRow::totalOperation)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal balance = totalCobrado.subtract(totalDevuelto);
+            BigDecimal balance = totalIncome.subtract(totalExpense);
 
             rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "RESUMEN GENERAL");
             rowNum = writeTotalsHeader(sheet, headerStyle, rowNum);
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Facturado", totalFacturado);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Facturación neta", netInvoiced);
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Cobrado", totalCobrado);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Ingresos", totalIncome);
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Devuelto", totalDevuelto);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Egresos", totalExpense);
             rowNum++;
             writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Balance", balance);
 

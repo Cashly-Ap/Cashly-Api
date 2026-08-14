@@ -7,6 +7,7 @@ import com.parsun.parsun_api.cashregister.domain.repositories.CashRegisterReposi
 import com.parsun.parsun_api.cashregister.domain.valueobjects.RegisterId;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class OpenRegisterUseCase {
@@ -17,14 +18,15 @@ public class OpenRegisterUseCase {
         this.closureRepository = closureRepository;
     }
 
-    public CashRegisterResponse execute(UUID openedBy, String openedByName) {
+    public CashRegisterResponse execute(UUID openedBy, String openedByName, BigDecimal openingBalance) {
         LocalDate today = LocalDate.now();
 
-        if (closureRepository.findByClosureDate(today).isPresent()) {
-            throw new IllegalStateException("A closure already exists for today: " + today);
+        if (closureRepository.findActiveClosure().isPresent()) {
+            throw new IllegalStateException("A cash register is already open");
         }
 
-        CashRegister closure = CashRegister.open(RegisterId.generate(), today, openedBy, openedByName);
+        CashRegister closure = CashRegister.open(RegisterId.generate(), today, openedBy,
+                openedByName, openingBalance);
         CashRegister saved = closureRepository.save(closure);
         return CashRegisterMapper.toResponse(saved);
     }

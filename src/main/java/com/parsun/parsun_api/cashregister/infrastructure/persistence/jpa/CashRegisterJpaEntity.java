@@ -26,7 +26,7 @@ public class CashRegisterJpaEntity {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(name = "closure_date", nullable = false, unique = true)
+    @Column(name = "closure_date", nullable = false)
     private LocalDate closureDate;
 
     @Column(name = "status", length = 20, nullable = false)
@@ -41,6 +41,9 @@ public class CashRegisterJpaEntity {
 
     @Column(name = "opened_at", nullable = false)
     private LocalDateTime openedAt;
+
+    @Column(name = "opening_balance", nullable = false, precision = 15, scale = 2)
+    private BigDecimal openingBalance;
 
     @Column(name = "closed_by", columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)
@@ -90,6 +93,12 @@ public class CashRegisterJpaEntity {
 
     @Column(name = "difference", precision = 15, scale = 2)
     private BigDecimal difference;
+
+    @Column(name = "total_income", nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalIncome;
+
+    @Column(name = "total_expense", nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalExpense;
 
     @Column(name = "closing_notes", columnDefinition = "TEXT")
     private String closingNotes;

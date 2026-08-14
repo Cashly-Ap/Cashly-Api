@@ -4,6 +4,9 @@ import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
@@ -27,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +48,9 @@ class CreatePaymentUseCaseUnitTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private CashMovementService cashMovementService;
+
     private CreatePaymentUseCase useCase;
 
     private final UUID customerId = UUID.randomUUID();
@@ -51,7 +59,8 @@ class CreatePaymentUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository);
+        useCase = new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository,
+                cashMovementService);
 
         User user = mock(User.class);
         when(user.getUserName()).thenReturn(new UserName("Test User"));
@@ -71,6 +80,62 @@ class CreatePaymentUseCaseUnitTest {
         assertEquals(PaymentStatus.REFUND.name(), response.status());
         assertEquals(new BigDecimal("50.00"), response.amount());
         verify(paymentRepository).getRefundableAmountByCustomerId(customerId);
+        verify(cashMovementService).record(
+                CashMovementDirection.OUT,
+                CashMovementType.REFUND,
+                new BigDecimal("50.00"),
+                paymentMethodId,
+                "Devolucion por cualquier concepto",
+                "PAYMENT",
+                response.id(),
+                userId,
+                "Test User"
+        );
+    }
+
+    @Test
+    void should_RejectAppliedPaymentBeforeSaving_When_RegisterIsClosed() {
+        CreatePaymentRequest request = paymentRequest(PaymentStatus.APPLIED);
+        doThrow(new IllegalStateException("Debe abrir una caja antes de registrar una operación monetaria"))
+                .when(cashMovementService).requireOpenRegister();
+
+        assertThrows(IllegalStateException.class, () -> useCase.execute(request, userId));
+
+        verify(paymentRepository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    void should_AllowPendingPaymentWithoutOpenRegister() {
+        CreatePaymentRequest request = paymentRequest(PaymentStatus.PENDING);
+        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(request, userId);
+
+        verify(cashMovementService, never()).requireOpenRegister();
+        verify(cashMovementService, never()).record(any(), any(), any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void should_RecordIncomeAfterSavingAppliedPayment() {
+        CreatePaymentRequest request = paymentRequest(PaymentStatus.APPLIED);
+        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = useCase.execute(request, userId);
+
+        verify(cashMovementService).requireOpenRegister();
+        verify(cashMovementService).record(
+                CashMovementDirection.IN,
+                CashMovementType.PAYMENT,
+                new BigDecimal("50.00"),
+                paymentMethodId,
+                "Pago de prueba",
+                "PAYMENT",
+                response.id(),
+                userId,
+                "Test User"
+        );
     }
 
     @Test
@@ -108,6 +173,18 @@ class CreatePaymentUseCaseUnitTest {
                 "REFUND-001",
                 LocalDate.now(),
                 "Devolucion por cualquier concepto"
+        );
+    }
+
+    private CreatePaymentRequest paymentRequest(PaymentStatus status) {
+        return new CreatePaymentRequest(
+                customerId,
+                status.name(),
+                new BigDecimal("50.00"),
+                paymentMethodId,
+                "PAYMENT-001",
+                LocalDate.now(),
+                "Pago de prueba"
         );
     }
 }

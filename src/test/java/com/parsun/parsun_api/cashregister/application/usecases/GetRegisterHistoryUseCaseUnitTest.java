@@ -3,6 +3,8 @@ package com.parsun.parsun_api.cashregister.application.usecases;
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterMapper;
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterResponse;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
+import com.parsun.parsun_api.cashregister.domain.entities.CashMovement;
+import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.domain.repositories.CashRegisterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -116,5 +118,69 @@ class GetRegisterHistoryUseCaseUnitTest {
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());
         assertEquals(0, result.getContent().size());
+    }
+
+    @Test
+    void should_include_session_movements_only_in_detailed_view() {
+        var cashRegister = mock(CashRegister.class);
+        var movements = List.of(mock(CashMovement.class));
+        var page = new PageImpl<>(List.of(cashRegister));
+        var totals = mock(DailyTotals.class);
+        when(repository.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(page);
+        when(repository.findSessionTotals(cashRegister.getId())).thenReturn(totals);
+        when(totals.totalRevenue()).thenReturn(java.math.BigDecimal.ZERO);
+        when(totals.totalExpenses()).thenReturn(java.math.BigDecimal.ZERO);
+        when(repository.findMovements(cashRegister.getId())).thenReturn(movements);
+
+        try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
+            var expected = mock(CashRegisterResponse.class);
+            mockedMapper.when(() -> CashRegisterMapper.toResponse(cashRegister, totals, movements)).thenReturn(expected);
+
+            var result = useCase.execute(0, 20, "openedAt,desc", null, null, true);
+
+            assertEquals(expected, result.getContent().getFirst());
+            verify(repository).findMovements(cashRegister.getId());
+        }
+    }
+
+    @Test
+    void should_use_session_totals_without_exposing_movements_in_simple_view() {
+        var cashRegister = mock(CashRegister.class);
+        var movements = List.of(mock(CashMovement.class));
+        var page = new PageImpl<>(List.of(cashRegister));
+        var totals = mock(DailyTotals.class);
+        when(repository.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(page);
+        when(repository.findSessionTotals(cashRegister.getId())).thenReturn(totals);
+        when(totals.totalRevenue()).thenReturn(java.math.BigDecimal.ZERO);
+        when(totals.totalExpenses()).thenReturn(java.math.BigDecimal.ZERO);
+        when(repository.findMovements(cashRegister.getId())).thenReturn(movements);
+
+        try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
+            var expected = mock(CashRegisterResponse.class);
+            mockedMapper.when(() -> CashRegisterMapper.toResponse(cashRegister, totals, List.of()))
+                    .thenReturn(expected);
+
+            var result = useCase.execute(0, 20, "openedAt,desc", null, null, false);
+
+            assertEquals(expected, result.getContent().getFirst());
+        }
+    }
+
+    @Test
+    void should_preserve_stored_totals_for_legacy_session_without_movements() {
+        var cashRegister = mock(CashRegister.class);
+        var page = new PageImpl<>(List.of(cashRegister));
+        when(repository.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(page);
+        when(repository.findMovements(cashRegister.getId())).thenReturn(List.of());
+
+        try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
+            var expected = mock(CashRegisterResponse.class);
+            mockedMapper.when(() -> CashRegisterMapper.toResponse(cashRegister)).thenReturn(expected);
+
+            var result = useCase.execute(0, 20, "openedAt,desc", null, null, true);
+
+            assertEquals(expected, result.getContent().getFirst());
+            verify(repository, never()).findSessionTotals(any());
+        }
     }
 }

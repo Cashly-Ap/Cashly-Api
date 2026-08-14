@@ -81,6 +81,19 @@ Each module documentation file MUST include:
 
 ## Existing Modules
 
+### CASH REGISTER Module
+**File**: [CASH_REGISTER.md](./CASH_REGISTER.md)
+
+**Purpose**: Session-based ledger for all monetary income, expenses, advances, refunds, withdrawals, and adjustments.
+
+**Features**:
+- Explicit opening and closing with opening, expected, declared, and difference balances
+- One open session at a time, multiple sessions per day, and sessions spanning dates
+- Mandatory open-session guard for monetary operations
+- Simple and detailed history plus PDF and Excel reports per session
+
+---
+
 ### AUTH Module
 **File**: [AUTH.md](./AUTH.md)
 

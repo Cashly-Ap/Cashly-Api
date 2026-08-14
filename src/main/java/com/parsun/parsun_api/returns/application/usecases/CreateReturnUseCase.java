@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.returns.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
@@ -47,6 +50,7 @@ public class CreateReturnUseCase {
     private final DebitNoteRepository debitNoteRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final CashMovementService cashMovementService;
 
     public CreateReturnUseCase(ReturnRepository returnRepository,
                                 InvoiceRepository invoiceRepository,
@@ -57,7 +61,8 @@ public class CreateReturnUseCase {
                                 CreditNoteRepository creditNoteRepository,
                                 DebitNoteRepository debitNoteRepository,
                                 WarehouseStockRepository warehouseStockRepository,
-                                StockMovementRepository stockMovementRepository) {
+                                StockMovementRepository stockMovementRepository,
+                                CashMovementService cashMovementService) {
         this.returnRepository = returnRepository;
         this.invoiceRepository = invoiceRepository;
         this.returnMapper = returnMapper;
@@ -68,6 +73,7 @@ public class CreateReturnUseCase {
         this.debitNoteRepository = debitNoteRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -97,6 +103,17 @@ public class CreateReturnUseCase {
         );
 
         Return saved = returnRepository.save(return_);
+        cashMovementService.record(
+                CashMovementDirection.OUT,
+                CashMovementType.RETURN,
+                saved.getTotal(),
+                null,
+                "Devolución " + saved.getReturnNumber().value(),
+                "RETURN",
+                saved.getId().value(),
+                authenticatedUserId,
+                userName
+        );
 
         
         restoreStockFromReturn(saved);

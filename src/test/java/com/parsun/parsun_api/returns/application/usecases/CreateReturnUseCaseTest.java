@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.returns.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
@@ -75,6 +78,9 @@ class CreateReturnUseCaseTest {
     @Mock
     private StockMovementRepository stockMovementRepository;
 
+    @Mock
+    private CashMovementService cashMovementService;
+
     @Captor
     private ArgumentCaptor<BigDecimal> surplusCaptor;
 
@@ -89,7 +95,7 @@ class CreateReturnUseCaseTest {
                 returnRepository, invoiceRepository, returnMapper,
                 paymentAllocationService, allocationRepository,
                 addToCustomerBalanceUseCase, creditNoteRepository, debitNoteRepository,
-                warehouseStockRepository, stockMovementRepository
+                warehouseStockRepository, stockMovementRepository, cashMovementService
         );
         when(creditNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
         when(debitNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
@@ -165,6 +171,10 @@ class CreateReturnUseCaseTest {
         verify(addToCustomerBalanceUseCase, never()).execute(
                 any(), any(), any(), any(), any(), any(), any(), any()
         );
+        verify(cashMovementService).record(
+                eq(CashMovementDirection.OUT), eq(CashMovementType.RETURN),
+                eq(returnTotal), isNull(), contains("RET-"), eq("RETURN"),
+                any(UUID.class), eq(authenticatedUserId), eq(userName));
     }
 
     @Test

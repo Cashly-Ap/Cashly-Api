@@ -17,6 +17,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CashRegister Domain Entity Unit Tests")
 class CashRegisterUnitTest {
 
+    @Test
+    void should_CalculateExpectedAndDifferenceFromOpeningBalanceAndMovements() {
+        CashRegister register = CashRegister.open(
+                RegisterId.generate(), LocalDate.now(), UUID.randomUUID(), "Operator",
+                new BigDecimal("100.00"));
+
+        register.applyMovementTotals(new BigDecimal("75.00"), new BigDecimal("20.00"));
+        register.close(UUID.randomUUID(), "Supervisor", new BigDecimal("150.00"), "Conteo final");
+
+        assertEquals(new BigDecimal("155.00"), register.getExpectedClosingBalance());
+        assertEquals(new BigDecimal("150.00"), register.getActualClosingBalance());
+        assertEquals(new BigDecimal("-5.00"), register.getDifference());
+    }
+
     private static final LocalDate CLOSURE_DATE = LocalDate.of(2026, 6, 9);
     private static final UUID OPENED_BY = UUID.randomUUID();
     private static final String OPENED_BY_NAME = "Operator Test";

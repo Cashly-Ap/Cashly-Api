@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.debit_notes.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.debit_notes.application.dto.request.CreateDebitNoteRequest;
 import com.parsun.parsun_api.debit_notes.application.dto.response.DebitNoteResponse;
 import com.parsun.parsun_api.debit_notes.application.mappers.DebitNoteMapper;
@@ -23,13 +26,16 @@ public class CreateDebitNoteUseCase {
     private final DebitNoteRepository debitNoteRepository;
     private final InvoiceRepository invoiceRepository;
     private final InvoiceStatusService invoiceStatusService;
+    private final CashMovementService cashMovementService;
 
     public CreateDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
                                   InvoiceRepository invoiceRepository,
-                                  InvoiceStatusService invoiceStatusService) {
+                                  InvoiceStatusService invoiceStatusService,
+                                  CashMovementService cashMovementService) {
         this.debitNoteRepository = debitNoteRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoiceStatusService = invoiceStatusService;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -59,6 +65,17 @@ public class CreateDebitNoteUseCase {
         );
 
         DebitNote saved = debitNoteRepository.save(debitNote);
+        cashMovementService.record(
+                CashMovementDirection.IN,
+                CashMovementType.DEBIT_NOTE,
+                saved.getAmount(),
+                null,
+                "Nota de débito " + saved.getNoteNumber().value(),
+                "DEBIT_NOTE",
+                saved.getId().value(),
+                authenticatedUserId,
+                saved.getCreatedByName()
+        );
 
         invoiceStatusService.recalculate(saved.getInvoiceId());
 

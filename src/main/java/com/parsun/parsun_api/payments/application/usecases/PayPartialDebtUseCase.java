@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.payments.application.dto.request.PayPartialDebtRequest;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResponse;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
@@ -32,6 +35,7 @@ public class PayPartialDebtUseCase {
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
     private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
+    private final CashMovementService cashMovementService;
 
     public PayPartialDebtUseCase(PaymentRepository paymentRepository,
                                   PaymentAllocationRepository allocationRepository,
@@ -39,7 +43,8 @@ public class PayPartialDebtUseCase {
                                   InvoiceStatusService invoiceStatusService,
                                   CreditNoteRepository creditNoteRepository,
                                   DebitNoteRepository debitNoteRepository,
-                                  ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
+                                  ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                                  CashMovementService cashMovementService) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
@@ -47,6 +52,7 @@ public class PayPartialDebtUseCase {
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
         this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -56,18 +62,6 @@ public class PayPartialDebtUseCase {
         BigDecimal balanceUsed = BigDecimal.ZERO;
         if (request.useBalance() != null && request.useBalance() && request.balanceAmount() != null) {
             balanceUsed = request.balanceAmount();
-            if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
-                consumeCustomerBalanceUseCase.execute(
-                    customerId,
-                    BalanceType.INVOICES,
-                    balanceUsed,
-                    BalanceType.INVOICES,
-                    null,
-                    "Pago parcial de deuda",
-                    null,
-                    authenticatedUserId
-                );
-            }
         }
 
         BigDecimal paymentAmount = request.amount().subtract(balanceUsed);
@@ -87,6 +81,21 @@ public class PayPartialDebtUseCase {
 
         if (unpaidInvoices.isEmpty()) {
             throw new IllegalArgumentException("Customer has no unpaid invoices: " + customerId);
+        }
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
+            cashMovementService.requireOpenRegister();
+        }
+        if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
+            consumeCustomerBalanceUseCase.execute(
+                    customerId,
+                    BalanceType.INVOICES,
+                    balanceUsed,
+                    BalanceType.INVOICES,
+                    null,
+                    "Pago parcial de deuda",
+                    null,
+                    authenticatedUserId
+            );
         }
 
         int year = LocalDate.now().getYear();
@@ -109,6 +118,17 @@ public class PayPartialDebtUseCase {
             );
 
             Payment saved = paymentRepository.save(payment);
+            cashMovementService.record(
+                    CashMovementDirection.IN,
+                    CashMovementType.PAYMENT,
+                    saved.getAmount(),
+                    saved.getPaymentMethodId(),
+                    saved.getNotes(),
+                    "PAYMENT",
+                    saved.getId().value(),
+                    authenticatedUserId,
+                    authenticatedUserName
+            );
 
             BigDecimal remaining = paymentAmount;
             for (Invoice invoice : unpaidInvoices) {

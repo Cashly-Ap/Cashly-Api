@@ -1,5 +1,6 @@
 package com.parsun.parsun_api.returns.infrastructure.config;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
@@ -37,10 +38,12 @@ public class ReturnConfig {
                                                           CreditNoteRepository creditNoteRepository,
                                                           DebitNoteRepository debitNoteRepository,
                                                           WarehouseStockRepository warehouseStockRepository,
-                                                          StockMovementRepository stockMovementRepository) {
+                                                          StockMovementRepository stockMovementRepository,
+                                                          CashMovementService cashMovementService) {
         return new CreateReturnUseCase(returnRepository, invoiceRepository, returnMapper,
                 paymentAllocationService, allocationRepository, addToCustomerBalanceUseCase,
-                creditNoteRepository, debitNoteRepository, warehouseStockRepository, stockMovementRepository);
+                creditNoteRepository, debitNoteRepository, warehouseStockRepository, stockMovementRepository,
+                cashMovementService);
     }
 
     @Bean

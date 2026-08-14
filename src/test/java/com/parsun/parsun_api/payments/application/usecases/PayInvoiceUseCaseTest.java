@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
@@ -69,6 +72,9 @@ class PayInvoiceUseCaseTest {
     @Mock
     private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
 
+    @Mock
+    private CashMovementService cashMovementService;
+
     @Captor
     private ArgumentCaptor<Payment> paymentCaptor;
 
@@ -89,7 +95,7 @@ class PayInvoiceUseCaseTest {
                 paymentRepository, allocationRepository,
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase
+                consumeCustomerBalanceUseCase, cashMovementService
         );
     }
 
@@ -139,6 +145,17 @@ class PayInvoiceUseCaseTest {
         verify(paymentRepository, org.mockito.Mockito.atLeast(1)).save(paymentCaptor.capture());
         Payment saved = paymentCaptor.getValue();
         assertEquals(new BigDecimal("500.00"), saved.getAmount());
+        verify(cashMovementService).record(
+                CashMovementDirection.IN,
+                CashMovementType.PAYMENT,
+                new BigDecimal("500.00"),
+                paymentMethodId,
+                "Pago de factura " + invoice.getInvoiceNumber().value(),
+                "PAYMENT",
+                saved.getId().value(),
+                authenticatedUserId,
+                authenticatedUserName
+        );
     }
 
     @Test
@@ -163,6 +180,23 @@ class PayInvoiceUseCaseTest {
                 eq(customerId), eq(BalanceType.INVOICES), eq(balanceAmount),
                 eq(BalanceType.INVOICES), eq(invoiceId), any(), eq(null), eq(authenticatedUserId)
         );
+    }
+
+    @Test
+    void should_NotRequireCashRegister_When_InvoiceIsPaidOnlyWithCustomerBalance() {
+        Invoice invoice = invoiceWithTotal(new BigDecimal("200.00"));
+        PayInvoiceRequest request = new PayInvoiceRequest(
+                null, null, LocalDate.now(),
+                new BigDecimal("200.00"), true, new BigDecimal("200.00")
+        );
+        when(invoiceRepository.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.of(invoice));
+        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(invoiceId, request, authenticatedUserId, authenticatedUserName);
+
+        verify(cashMovementService, never()).requireOpenRegister();
+        verify(cashMovementService, never()).record(any(), any(), any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test

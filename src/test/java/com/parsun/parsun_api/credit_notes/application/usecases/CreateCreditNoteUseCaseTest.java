@@ -1,6 +1,9 @@
 package com.parsun.parsun_api.credit_notes.application.usecases;
 
 import com.parsun.parsun_api.credit_notes.application.dto.request.CreateCreditNoteRequest;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.credit_notes.application.dto.response.CreditNoteResponse;
 import com.parsun.parsun_api.credit_notes.domain.entities.CreditNote;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
@@ -45,6 +48,8 @@ class CreateCreditNoteUseCaseTest {
     private DebitNoteRepository debitNoteRepository;
     @Mock
     private AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
+    @Mock
+    private CashMovementService cashMovementService;
 
     private CreateCreditNoteUseCase createCreditNoteUseCase;
     private UUID authenticatedUserId;
@@ -54,7 +59,8 @@ class CreateCreditNoteUseCaseTest {
     void setUp() {
         createCreditNoteUseCase = new CreateCreditNoteUseCase(
                 creditNoteRepository, invoiceRepository, invoiceStatusService,
-                paymentAllocationRepository, debitNoteRepository, addToCustomerBalanceUseCase
+                paymentAllocationRepository, debitNoteRepository, addToCustomerBalanceUseCase,
+                cashMovementService
         );
         authenticatedUserId = UUID.randomUUID();
         invoiceId = UUID.randomUUID();
@@ -81,6 +87,10 @@ class CreateCreditNoteUseCaseTest {
         assertNotNull(response);
         verify(creditNoteRepository).save(any(CreditNote.class));
         verify(invoiceStatusService).recalculate(any(UUID.class));
+        verify(cashMovementService).record(
+                eq(CashMovementDirection.OUT), eq(CashMovementType.CREDIT_NOTE),
+                eq(new BigDecimal("150.00")), isNull(), contains("CN-"),
+                eq("CREDIT_NOTE"), any(UUID.class), eq(authenticatedUserId), eq("User"));
     }
 
     @Test

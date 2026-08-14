@@ -2,6 +2,7 @@ package com.parsun.parsun_api.cashregister.application.dto;
 
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
+import com.parsun.parsun_api.cashregister.domain.entities.CashMovement;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,6 +18,11 @@ public final class CashRegisterMapper {
     }
 
     public static CashRegisterResponse toResponse(CashRegister closure, DailyTotals dailyTotals) {
+        return toResponse(closure, dailyTotals, List.of());
+    }
+
+    public static CashRegisterResponse toResponse(CashRegister closure, DailyTotals dailyTotals,
+                                                  List<CashMovement> movements) {
         List<CashRegisterDetailResponse> details = closure.getDetails().stream()
                 .map(CashRegisterMapper::toDetailResponse)
                 .collect(Collectors.toList());
@@ -51,8 +57,19 @@ public final class CashRegisterMapper {
                 closure.getClosingNotes(),
                 details,
                 totalInvoiced, totalRevenue, totalExpenses, balance,
-                revenueSummary, expenseSummary
+                revenueSummary, expenseSummary,
+                closure.getOpeningBalance(), closure.getTotalIncome(), closure.getTotalExpense(),
+                closure.getExpectedClosingBalance(), closure.getActualClosingBalance(),
+                closure.getDifference(), movements.stream().map(CashRegisterMapper::toMovementResponse).toList()
         );
+    }
+
+    private static CashMovementResponse toMovementResponse(CashMovement movement) {
+        return new CashMovementResponse(
+                movement.getId(), movement.getDirection(), movement.getType(), movement.getAmount(),
+                movement.getPaymentMethodId(), movement.getPaymentMethodName(), movement.getDescription(),
+                movement.getSourceType(), movement.getSourceId(), movement.getCreatedBy(),
+                movement.getCreatedByName(), movement.getOccurredAt());
     }
 
     private static List<RevenueSummaryItem> buildRevenueSummary(DailyTotals dailyTotals) {

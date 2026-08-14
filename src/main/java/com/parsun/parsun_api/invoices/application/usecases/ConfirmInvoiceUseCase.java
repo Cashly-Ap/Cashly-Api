@@ -3,6 +3,9 @@ package com.parsun.parsun_api.invoices.application.usecases;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.parsun.parsun_api.invoices.application.mappers.InvoiceMapper;
@@ -33,19 +36,22 @@ public class ConfirmInvoiceUseCase {
     private final UserRepository userRepository;
     private final InvoiceAuthorizationService authorizationService;
     private final NotificationService notificationService;
+    private final CashMovementService cashMovementService;
 
     public ConfirmInvoiceUseCase(InvoiceRepository invoiceRepository,
                                   WarehouseStockRepository warehouseStockRepository,
                                   StockMovementRepository stockMovementRepository,
                                   InvoiceAuthorizationService authorizationService,
                                   UserRepository userRepository,
-                                  NotificationService notificationService) {
+                                  NotificationService notificationService,
+                                  CashMovementService cashMovementService) {
         this.invoiceRepository = invoiceRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
         this.authorizationService = authorizationService;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -69,6 +75,17 @@ public class ConfirmInvoiceUseCase {
         deductStockAllocations(invoice);
 
         Invoice saved = invoiceRepository.save(invoice);
+        cashMovementService.record(
+                CashMovementDirection.IN,
+                CashMovementType.INVOICE,
+                saved.calculateTotal(),
+                null,
+                "Factura confirmada " + saved.getInvoiceNumber().value(),
+                "INVOICE",
+                saved.getId().value(),
+                authenticatedUserId,
+                user.getUserName().getValue()
+        );
         notificationService.notifyCustomerInvoiceConfirmed(
                 saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value());
         return InvoiceMapper.toDetailResponse(saved);

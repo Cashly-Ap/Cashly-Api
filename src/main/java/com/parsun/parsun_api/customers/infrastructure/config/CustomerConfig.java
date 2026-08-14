@@ -1,5 +1,7 @@
 package com.parsun.parsun_api.customers.infrastructure.config;
 
+import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.application.services.CreditValidationService;
 import com.parsun.parsun_api.customers.application.usecases.*;
@@ -108,6 +110,24 @@ public class CustomerConfig {
     public ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase(
             CustomerBalanceRepository customerBalanceRepository) {
         return new ConsumeCustomerBalanceUseCase(customerBalanceRepository);
+    }
+
+    @Bean
+    public CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase(
+            AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
+            CashMovementService cashMovementService,
+            UserRepository userRepository) {
+        return new CreateCustomerAdvanceUseCase(
+                addToCustomerBalanceUseCase, cashMovementService, userRepository);
+    }
+
+    @Bean
+    public RefundCustomerBalanceUseCase refundCustomerBalanceUseCase(
+            ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+            CashMovementService cashMovementService,
+            UserRepository userRepository) {
+        return new RefundCustomerBalanceUseCase(
+                consumeCustomerBalanceUseCase, cashMovementService, userRepository);
     }
 
     @Bean

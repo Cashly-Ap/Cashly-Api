@@ -4,10 +4,9 @@ import com.parsun.parsun_api.customers.application.dto.request.CreateAdvanceRequ
 import com.parsun.parsun_api.customers.application.dto.request.CreateRefundRequest;
 import com.parsun.parsun_api.customers.application.dto.response.BalanceTransactionResponse;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerBalanceResponse;
-import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
-import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.application.usecases.CreateCustomerAdvanceUseCase;
+import com.parsun.parsun_api.customers.application.usecases.RefundCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.application.usecases.GetCustomerBalanceUseCase;
-import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,15 +22,15 @@ import java.util.UUID;
 public class CustomerBalanceController {
 
     private final GetCustomerBalanceUseCase getCustomerBalanceUseCase;
-    private final AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
-    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
+    private final CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase;
+    private final RefundCustomerBalanceUseCase refundCustomerBalanceUseCase;
 
     public CustomerBalanceController(GetCustomerBalanceUseCase getCustomerBalanceUseCase,
-                                      AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
-                                      ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
+                                      CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase,
+                                      RefundCustomerBalanceUseCase refundCustomerBalanceUseCase) {
         this.getCustomerBalanceUseCase = getCustomerBalanceUseCase;
-        this.addToCustomerBalanceUseCase = addToCustomerBalanceUseCase;
-        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
+        this.createCustomerAdvanceUseCase = createCustomerAdvanceUseCase;
+        this.refundCustomerBalanceUseCase = refundCustomerBalanceUseCase;
     }
 
     @GetMapping
@@ -56,16 +55,8 @@ public class CustomerBalanceController {
             @Valid @RequestBody CreateAdvanceRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CustomerBalanceResponse response = addToCustomerBalanceUseCase.execute(
-                customerId,
-                BalanceType.ADVANCED,
-                request.amount(),
-                BalanceType.ADVANCED,
-                null,
-                null,
-                null,
-                userId
-        );
+        CustomerBalanceResponse response = createCustomerAdvanceUseCase.execute(
+                customerId, request.amount(), request.paymentMethodId(), request.notes(), userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -76,16 +67,8 @@ public class CustomerBalanceController {
             @Valid @RequestBody CreateRefundRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CustomerBalanceResponse response = consumeCustomerBalanceUseCase.execute(
-                customerId,
-                BalanceType.REFUND,
-                request.amount(),
-                BalanceType.REFUND,
-                null,
-                null,
-                null,
-                userId
-        );
+        CustomerBalanceResponse response = refundCustomerBalanceUseCase.execute(
+                customerId, request.amount(), request.paymentMethodId(), request.notes(), userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

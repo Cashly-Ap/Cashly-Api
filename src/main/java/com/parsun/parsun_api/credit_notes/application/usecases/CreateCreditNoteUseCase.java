@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.credit_notes.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.credit_notes.application.dto.request.CreateCreditNoteRequest;
 import com.parsun.parsun_api.credit_notes.application.dto.response.CreditNoteResponse;
 import com.parsun.parsun_api.credit_notes.application.mappers.CreditNoteMapper;
@@ -31,19 +34,22 @@ public class CreateCreditNoteUseCase {
     private final PaymentAllocationRepository paymentAllocationRepository;
     private final DebitNoteRepository debitNoteRepository;
     private final AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
+    private final CashMovementService cashMovementService;
 
     public CreateCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
                                    InvoiceRepository invoiceRepository,
                                    InvoiceStatusService invoiceStatusService,
                                    PaymentAllocationRepository paymentAllocationRepository,
                                    DebitNoteRepository debitNoteRepository,
-                                   AddToCustomerBalanceUseCase addToCustomerBalanceUseCase) {
+                                   AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
+                                   CashMovementService cashMovementService) {
         this.creditNoteRepository = creditNoteRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoiceStatusService = invoiceStatusService;
         this.paymentAllocationRepository = paymentAllocationRepository;
         this.debitNoteRepository = debitNoteRepository;
         this.addToCustomerBalanceUseCase = addToCustomerBalanceUseCase;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -73,6 +79,17 @@ public class CreateCreditNoteUseCase {
         );
 
         CreditNote saved = creditNoteRepository.save(creditNote);
+        cashMovementService.record(
+                CashMovementDirection.OUT,
+                CashMovementType.CREDIT_NOTE,
+                saved.getAmount(),
+                null,
+                "Nota de crédito " + saved.getNoteNumber().value(),
+                "CREDIT_NOTE",
+                saved.getId().value(),
+                authenticatedUserId,
+                saved.getCreatedByName()
+        );
 
         invoiceStatusService.recalculate(saved.getInvoiceId());
 

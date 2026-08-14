@@ -3,10 +3,13 @@ package com.parsun.parsun_api.cashregister.infrastructure.web;
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterResponse;
 import com.parsun.parsun_api.cashregister.application.dto.CloseRegisterRequest;
 import com.parsun.parsun_api.cashregister.application.dto.OpenRegisterRequest;
+import com.parsun.parsun_api.cashregister.application.dto.CashMovementRequest;
+import com.parsun.parsun_api.cashregister.application.dto.CashMovementResponse;
 import com.parsun.parsun_api.cashregister.application.usecases.CloseRegisterUseCase;
 import com.parsun.parsun_api.cashregister.application.usecases.GetActiveRegisterUseCase;
 import com.parsun.parsun_api.cashregister.application.usecases.GetRegisterHistoryUseCase;
 import com.parsun.parsun_api.cashregister.application.usecases.OpenRegisterUseCase;
+import com.parsun.parsun_api.cashregister.application.usecases.RecordCashMovementUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +30,18 @@ public class CashRegisterController {
     private final GetActiveRegisterUseCase getActiveRegisterUseCase;
     private final CloseRegisterUseCase closeRegisterUseCase;
     private final GetRegisterHistoryUseCase getRegisterHistoryUseCase;
+    private final RecordCashMovementUseCase recordCashMovementUseCase;
 
     public CashRegisterController(OpenRegisterUseCase openRegisterUseCase,
                                   GetActiveRegisterUseCase getActiveRegisterUseCase,
                                   CloseRegisterUseCase closeRegisterUseCase,
-                                  GetRegisterHistoryUseCase getRegisterHistoryUseCase) {
+                                  GetRegisterHistoryUseCase getRegisterHistoryUseCase,
+                                  RecordCashMovementUseCase recordCashMovementUseCase) {
         this.openRegisterUseCase = openRegisterUseCase;
         this.getActiveRegisterUseCase = getActiveRegisterUseCase;
         this.closeRegisterUseCase = closeRegisterUseCase;
         this.getRegisterHistoryUseCase = getRegisterHistoryUseCase;
+        this.recordCashMovementUseCase = recordCashMovementUseCase;
     }
 
     @PostMapping("/open")
@@ -44,16 +50,15 @@ public class CashRegisterController {
             @Valid @RequestBody OpenRegisterRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CashRegisterResponse response = openRegisterUseCase.execute(userId, request.openedByName());
+        CashRegisterResponse response = openRegisterUseCase.execute(userId, request.openedByName(),
+                request.openingBalance());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/active")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
-    public ResponseEntity<CashRegisterResponse> getActive(Authentication authentication) {
-        UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CashRegisterResponse response = getActiveRegisterUseCase.execute(userId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<CashRegisterResponse> getActive() {
+        return ResponseEntity.of(getActiveRegisterUseCase.execute());
     }
 
     @PostMapping("/{id}/close")
@@ -63,8 +68,20 @@ public class CashRegisterController {
             @Valid @RequestBody CloseRegisterRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CashRegisterResponse response = closeRegisterUseCase.execute(id, userId, request.closedByName(), request.closingNotes());
+        CashRegisterResponse response = closeRegisterUseCase.execute(id, userId, request.closedByName(),
+                request.declaredBalance(), request.closingNotes());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/movements")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    public ResponseEntity<CashMovementResponse> addMovement(
+            @PathVariable UUID id,
+            @Valid @RequestBody CashMovementRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(recordCashMovementUseCase.execute(id, request, userId));
     }
 
     @GetMapping("/history")
@@ -74,8 +91,9 @@ public class CashRegisterController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "closureDate,desc") String sort,
             @RequestParam(required = false) LocalDate dateFrom,
-            @RequestParam(required = false) LocalDate dateTo) {
-        var history = getRegisterHistoryUseCase.execute(page, size, sort, dateFrom, dateTo);
+            @RequestParam(required = false) LocalDate dateTo,
+            @RequestParam(defaultValue = "false") boolean detailed) {
+        var history = getRegisterHistoryUseCase.execute(page, size, sort, dateFrom, dateTo, detailed);
         return ResponseEntity.ok(history);
     }
 }

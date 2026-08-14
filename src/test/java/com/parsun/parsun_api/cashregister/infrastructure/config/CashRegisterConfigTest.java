@@ -1,6 +1,5 @@
 package com.parsun.parsun_api.cashregister.infrastructure.config;
 
-import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.cashregister.application.port.CashRegisterExcelPort;
 import com.parsun.parsun_api.cashregister.domain.repositories.CashRegisterRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CashRegisterConfigTest {
 
     @Mock private CashRegisterRepository repository;
-    @Mock private UserRepository userRepository;
 
     @Test
     void should_create_open_register_use_case() {
@@ -29,7 +27,7 @@ class CashRegisterConfigTest {
     @Test
     void should_create_get_active_register_use_case() {
         var config = new CashRegisterConfig();
-        var useCase = config.getActiveClosureUseCase(repository, userRepository);
+        var useCase = config.getActiveClosureUseCase(repository);
         assertNotNull(useCase);
     }
 

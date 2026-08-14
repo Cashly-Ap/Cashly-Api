@@ -5,6 +5,9 @@ import com.parsun.parsun_api.auth.user.domain.services.PasswordEncoder;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.Password;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserName;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
@@ -63,6 +66,9 @@ class InvoiceAuthorizationServiceTest {
     @Mock
     private PaymentAllocationRepository allocationRepository;
 
+    @Mock
+    private CashMovementService cashMovementService;
+
     private InvoiceAuthorizationService service;
 
     private final UUID customerId = UUID.randomUUID();
@@ -78,7 +84,7 @@ class InvoiceAuthorizationServiceTest {
     void setUp() {
         service = new InvoiceAuthorizationService(
                 creditGuard, passwordEncoder, consumeCustomerBalanceUseCase,
-                paymentRepository, allocationRepository
+                paymentRepository, allocationRepository, cashMovementService
         );
 
         user = mock(User.class);
@@ -194,6 +200,37 @@ class InvoiceAuthorizationServiceTest {
     class CashAuthorizationWithBalance {
 
         @Test
+        void should_CreateFullPayment_When_CashInvoiceDoesNotUseBalance() {
+            Invoice cashInvoice = invoice(PaymentType.CASH);
+            when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+            when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            when(allocationRepository.save(any(PaymentAllocation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            service.authorize(cashInvoice, user, null, false, null, paymentMethodId, authenticatedUserId);
+
+            verify(consumeCustomerBalanceUseCase, never()).execute(
+                    any(), any(), any(), any(), any(), any(), any(), any());
+            verify(cashMovementService).record(
+                    eq(CashMovementDirection.IN), eq(CashMovementType.PAYMENT),
+                    eq(new BigDecimal("1000.00")), eq(paymentMethodId),
+                    eq("Pago de factura " + cashInvoice.getInvoiceNumber().value()),
+                    eq("PAYMENT"), org.mockito.ArgumentMatchers.any(UUID.class),
+                    eq(authenticatedUserId), eq("Test User"));
+        }
+
+        @Test
+        void should_RequirePaymentMethod_When_CashInvoiceDoesNotUseBalance() {
+            Invoice cashInvoice = invoice(PaymentType.CASH);
+
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> service.authorize(cashInvoice, user, null, false, null, null, authenticatedUserId)
+            );
+
+            assertEquals("Debe seleccionar un metodo de pago para el monto restante", exception.getMessage());
+        }
+
+        @Test
         void should_ConsumeBalance_When_UseBalanceIsTrue() {
             Invoice cashInvoice = invoice(PaymentType.CASH);
             BigDecimal balanceAmount = new BigDecimal("500.00");
@@ -208,6 +245,12 @@ class InvoiceAuthorizationServiceTest {
                     eq(customerId), eq(BalanceType.INVOICES), eq(balanceAmount),
                     eq(BalanceType.INVOICES), eq(invoiceId), any(), eq(null), eq(authenticatedUserId)
             );
+            verify(cashMovementService).record(
+                    eq(CashMovementDirection.IN), eq(CashMovementType.PAYMENT),
+                    eq(new BigDecimal("500.00")), eq(paymentMethodId),
+                    eq("Pago de factura " + cashInvoice.getInvoiceNumber().value()),
+                    eq("PAYMENT"), org.mockito.ArgumentMatchers.any(UUID.class),
+                    eq(authenticatedUserId), eq("Test User"));
         }
 
         @Test

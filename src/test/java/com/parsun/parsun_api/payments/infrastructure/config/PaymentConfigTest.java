@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.payments.infrastructure.config;
 
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
@@ -33,13 +34,14 @@ class PaymentConfigTest {
     @Mock private DebitNoteRepository debitNoteRepository;
     @Mock private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
     @Mock private CustomerBalanceRepository customerBalanceRepository;
+    @Mock private CashMovementService cashMovementService;
 
     @Test
     void should_CreateCreatePaymentUseCase() {
         PaymentConfig config = new PaymentConfig();
 
         CreatePaymentUseCase useCase = config.createPaymentUseCase(
-                paymentRepository, customerRepository, userRepository);
+                paymentRepository, customerRepository, userRepository, cashMovementService);
 
         assertNotNull(useCase);
     }

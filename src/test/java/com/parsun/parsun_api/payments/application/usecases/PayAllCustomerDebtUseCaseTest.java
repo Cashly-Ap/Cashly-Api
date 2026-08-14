@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
@@ -67,6 +70,9 @@ class PayAllCustomerDebtUseCaseTest {
     @Mock
     private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
 
+    @Mock
+    private CashMovementService cashMovementService;
+
     @Captor
     private ArgumentCaptor<Payment> paymentCaptor;
 
@@ -83,7 +89,7 @@ class PayAllCustomerDebtUseCaseTest {
                 paymentRepository, allocationRepository,
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase
+                consumeCustomerBalanceUseCase, cashMovementService
         );
     }
 
@@ -141,6 +147,11 @@ class PayAllCustomerDebtUseCaseTest {
         verify(paymentRepository, org.mockito.Mockito.atLeast(1)).save(paymentCaptor.capture());
         Payment saved = paymentCaptor.getValue();
         assertEquals(new BigDecimal("800.00"), saved.getAmount());
+        verify(cashMovementService).record(
+                CashMovementDirection.IN, CashMovementType.PAYMENT,
+                new BigDecimal("800.00"), paymentMethodId,
+                "Pago total de deuda del cliente", "PAYMENT",
+                saved.getId().value(), authenticatedUserId, authenticatedUserName);
     }
 
     @Test

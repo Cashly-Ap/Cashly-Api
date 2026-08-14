@@ -1,5 +1,8 @@
 package com.parsun.parsun_api.payments.application.usecases;
 
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.payments.application.dto.request.PayInvoiceRequest;
 import com.parsun.parsun_api.payments.application.dto.response.PaymentResultResponse;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
@@ -32,6 +35,7 @@ public class PayInvoiceUseCase {
     private final CreditNoteRepository creditNoteRepository;
     private final DebitNoteRepository debitNoteRepository;
     private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
+    private final CashMovementService cashMovementService;
 
     public PayInvoiceUseCase(PaymentRepository paymentRepository,
                               PaymentAllocationRepository allocationRepository,
@@ -39,7 +43,8 @@ public class PayInvoiceUseCase {
                               InvoiceStatusService invoiceStatusService,
                               CreditNoteRepository creditNoteRepository,
                               DebitNoteRepository debitNoteRepository,
-                              ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase) {
+                              ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
+                              CashMovementService cashMovementService) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
@@ -47,6 +52,7 @@ public class PayInvoiceUseCase {
         this.creditNoteRepository = creditNoteRepository;
         this.debitNoteRepository = debitNoteRepository;
         this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
+        this.cashMovementService = cashMovementService;
     }
 
     @Transactional
@@ -70,18 +76,6 @@ public class PayInvoiceUseCase {
         BigDecimal balanceUsed = BigDecimal.ZERO;
         if (request.useBalance() != null && request.useBalance() && request.balanceAmount() != null) {
             balanceUsed = request.balanceAmount();
-            if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
-                consumeCustomerBalanceUseCase.execute(
-                    invoice.getCustomerId(),
-                    BalanceType.INVOICES,
-                    balanceUsed,
-                    BalanceType.INVOICES,
-                    invoiceId,
-                    invoice.getInvoiceNumber().value(),
-                    null,
-                    authenticatedUserId
-                );
-            }
         }
 
         BigDecimal paymentAmount = amount.subtract(balanceUsed);
@@ -93,6 +87,22 @@ public class PayInvoiceUseCase {
 
         if (paymentAmount.compareTo(BigDecimal.ZERO) > 0 && request.paymentMethodId() == null) {
             throw new IllegalArgumentException("Payment method is required when payment amount is greater than zero");
+        }
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
+            cashMovementService.requireOpenRegister();
+        }
+
+        if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
+            consumeCustomerBalanceUseCase.execute(
+                    invoice.getCustomerId(),
+                    BalanceType.INVOICES,
+                    balanceUsed,
+                    BalanceType.INVOICES,
+                    invoiceId,
+                    invoice.getInvoiceNumber().value(),
+                    null,
+                    authenticatedUserId
+            );
         }
 
         int year = LocalDate.now().getYear();
@@ -115,6 +125,17 @@ public class PayInvoiceUseCase {
             );
 
             Payment saved = paymentRepository.save(payment);
+            cashMovementService.record(
+                    CashMovementDirection.IN,
+                    CashMovementType.PAYMENT,
+                    saved.getAmount(),
+                    saved.getPaymentMethodId(),
+                    saved.getNotes(),
+                    "PAYMENT",
+                    saved.getId().value(),
+                    authenticatedUserId,
+                    authenticatedUserName
+            );
 
             PaymentAllocation allocation = PaymentAllocation.create(
                     saved.getId().value(),

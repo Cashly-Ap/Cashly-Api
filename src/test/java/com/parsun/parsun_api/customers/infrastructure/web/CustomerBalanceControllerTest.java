@@ -4,10 +4,9 @@ import com.parsun.parsun_api.customers.application.dto.request.CreateAdvanceRequ
 import com.parsun.parsun_api.customers.application.dto.request.CreateRefundRequest;
 import com.parsun.parsun_api.customers.application.dto.response.BalanceTransactionResponse;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerBalanceResponse;
-import com.parsun.parsun_api.customers.application.usecases.AddToCustomerBalanceUseCase;
-import com.parsun.parsun_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
+import com.parsun.parsun_api.customers.application.usecases.CreateCustomerAdvanceUseCase;
+import com.parsun.parsun_api.customers.application.usecases.RefundCustomerBalanceUseCase;
 import com.parsun.parsun_api.customers.application.usecases.GetCustomerBalanceUseCase;
-import com.parsun.parsun_api.customers.domain.valueobjects.BalanceType;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,10 +35,10 @@ class CustomerBalanceControllerTest {
     private GetCustomerBalanceUseCase getCustomerBalanceUseCase;
 
     @Mock
-    private AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
+    private CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase;
 
     @Mock
-    private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
+    private RefundCustomerBalanceUseCase refundCustomerBalanceUseCase;
 
     @InjectMocks
     private CustomerBalanceController customerBalanceController;
@@ -121,6 +120,7 @@ class CustomerBalanceControllerTest {
     void should_create_advance_and_return_201() {
         UUID customerId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
+        UUID paymentMethodId = UUID.randomUUID();
         BigDecimal amount = new BigDecimal("500.00");
 
         CustomerBalanceResponse response = new CustomerBalanceResponse(
@@ -129,12 +129,11 @@ class CustomerBalanceControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userId.toString());
 
-        when(addToCustomerBalanceUseCase.execute(
-                eq(customerId), eq(BalanceType.ADVANCED), eq(amount),
-                eq(BalanceType.ADVANCED), isNull(), isNull(), isNull(), eq(userId)))
+        when(createCustomerAdvanceUseCase.execute(
+                customerId, amount, paymentMethodId, "Anticipo", userId))
                 .thenReturn(response);
 
-        CreateAdvanceRequest request = new CreateAdvanceRequest(amount, null);
+        CreateAdvanceRequest request = new CreateAdvanceRequest(amount, paymentMethodId, "Anticipo");
 
         ResponseEntity<CustomerBalanceResponse> result =
                 customerBalanceController.createAdvance(customerId, request, authentication);
@@ -142,9 +141,8 @@ class CustomerBalanceControllerTest {
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
         assertEquals(amount, result.getBody().totalBalance());
-        verify(addToCustomerBalanceUseCase).execute(
-                eq(customerId), eq(BalanceType.ADVANCED), eq(amount),
-                eq(BalanceType.ADVANCED), isNull(), isNull(), isNull(), eq(userId));
+        verify(createCustomerAdvanceUseCase).execute(
+                customerId, amount, paymentMethodId, "Anticipo", userId);
     }
 
     @Test
@@ -152,6 +150,7 @@ class CustomerBalanceControllerTest {
     void should_create_refund_and_return_201() {
         UUID customerId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
+        UUID paymentMethodId = UUID.randomUUID();
         BigDecimal amount = new BigDecimal("200.00");
 
         CustomerBalanceResponse response = new CustomerBalanceResponse(
@@ -160,12 +159,11 @@ class CustomerBalanceControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userId.toString());
 
-        when(consumeCustomerBalanceUseCase.execute(
-                eq(customerId), eq(BalanceType.REFUND), eq(amount),
-                eq(BalanceType.REFUND), isNull(), isNull(), isNull(), eq(userId)))
+        when(refundCustomerBalanceUseCase.execute(
+                customerId, amount, paymentMethodId, "Devolución", userId))
                 .thenReturn(response);
 
-        CreateRefundRequest request = new CreateRefundRequest(amount);
+        CreateRefundRequest request = new CreateRefundRequest(amount, paymentMethodId, "Devolución");
 
         ResponseEntity<CustomerBalanceResponse> result =
                 customerBalanceController.createRefund(customerId, request, authentication);
@@ -173,8 +171,7 @@ class CustomerBalanceControllerTest {
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
         assertEquals(new BigDecimal("300.00"), result.getBody().totalBalance());
-        verify(consumeCustomerBalanceUseCase).execute(
-                eq(customerId), eq(BalanceType.REFUND), eq(amount),
-                eq(BalanceType.REFUND), isNull(), isNull(), isNull(), eq(userId));
+        verify(refundCustomerBalanceUseCase).execute(
+                customerId, amount, paymentMethodId, "Devolución", userId);
     }
 }

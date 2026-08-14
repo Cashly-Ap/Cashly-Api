@@ -1,10 +1,12 @@
 package com.parsun.parsun_api.cashregister.domain.repositories;
 
 import com.parsun.parsun_api.cashregister.application.dto.CashRegisterExportRow;
+import com.parsun.parsun_api.cashregister.application.dto.CashRegisterReportFilter;
 import com.parsun.parsun_api.cashregister.application.dto.CustomerSummary;
 import com.parsun.parsun_api.cashregister.application.dto.DailyTotals;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegister;
 import com.parsun.parsun_api.cashregister.domain.entities.CashRegisterDetail;
+import com.parsun.parsun_api.cashregister.domain.entities.CashMovement;
 import com.parsun.parsun_api.cashregister.domain.valueobjects.RegisterId;
 import org.springframework.data.domain.Page;
 
@@ -27,9 +29,19 @@ public interface CashRegisterRepository {
 
     DailyTotals findDailyTotals(LocalDate closureDate);
 
+    DailyTotals findSessionTotals(RegisterId registerId);
+
+    CashMovement saveMovement(CashMovement movement);
+
+    List<CashMovement> findMovements(RegisterId registerId);
+
+    boolean existsMovement(String sourceType, java.util.UUID sourceId);
+
     DailyTotals findRangeTotals(LocalDate dateFrom, LocalDate dateTo);
 
     List<CashRegisterExportRow> findExportRows(LocalDate dateFrom, LocalDate dateTo);
+
+    List<CashRegisterExportRow> findExportRows(CashRegisterReportFilter filter);
 
     List<CashRegisterDetail> findPaymentMethodSummary(LocalDate dateFrom, LocalDate dateTo);
 

@@ -1,6 +1,9 @@
 package com.parsun.parsun_api.debit_notes.application.usecases;
 
 import com.parsun.parsun_api.debit_notes.application.dto.request.CreateDebitNoteRequest;
+import com.parsun.parsun_api.cashregister.application.services.CashMovementService;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementDirection;
+import com.parsun.parsun_api.cashregister.domain.valueobjects.CashMovementType;
 import com.parsun.parsun_api.debit_notes.application.dto.response.DebitNoteResponse;
 import com.parsun.parsun_api.debit_notes.domain.entities.DebitNote;
 import com.parsun.parsun_api.debit_notes.domain.repositories.DebitNoteRepository;
@@ -35,6 +38,8 @@ class CreateDebitNoteUseCaseTest {
     private InvoiceRepository invoiceRepository;
     @Mock
     private InvoiceStatusService invoiceStatusService;
+    @Mock
+    private CashMovementService cashMovementService;
 
     private CreateDebitNoteUseCase createDebitNoteUseCase;
     private UUID authenticatedUserId;
@@ -43,7 +48,7 @@ class CreateDebitNoteUseCaseTest {
     @BeforeEach
     void setUp() {
         createDebitNoteUseCase = new CreateDebitNoteUseCase(
-                debitNoteRepository, invoiceRepository, invoiceStatusService
+                debitNoteRepository, invoiceRepository, invoiceStatusService, cashMovementService
         );
         authenticatedUserId = UUID.randomUUID();
         invoiceId = UUID.randomUUID();
@@ -66,6 +71,10 @@ class CreateDebitNoteUseCaseTest {
         assertNotNull(response);
         verify(debitNoteRepository).save(any(DebitNote.class));
         verify(invoiceStatusService).recalculate(any(UUID.class));
+        verify(cashMovementService).record(
+                eq(CashMovementDirection.IN), eq(CashMovementType.DEBIT_NOTE),
+                eq(new BigDecimal("50.00")), isNull(), contains("DN-"),
+                eq("DEBIT_NOTE"), any(UUID.class), eq(authenticatedUserId), eq("User"));
     }
 
     @Test

@@ -95,10 +95,13 @@ public class VerifyCellsTest {
             assertTrue(summaryRow >= 0, "RESUMEN GENERAL section title should exist");
             assertEquals("Concepto", getCellString(sheet, summaryRow + 1, 0));
             assertEquals("Monto", getCellString(sheet, summaryRow + 1, 1));
-            assertEquals("Total Facturado", getCellString(sheet, summaryRow + 2, 0));
-            assertEquals("Total Cobrado", getCellString(sheet, summaryRow + 3, 0));
-            assertEquals("Total Devuelto", getCellString(sheet, summaryRow + 4, 0));
+            assertEquals("Facturación neta", getCellString(sheet, summaryRow + 2, 0));
+            assertEquals("Ingresos", getCellString(sheet, summaryRow + 3, 0));
+            assertEquals("Egresos", getCellString(sheet, summaryRow + 4, 0));
             assertEquals("Balance", getCellString(sheet, summaryRow + 5, 0));
+            assertEquals(850.0, sheet.getRow(summaryRow + 2).getCell(1).getNumericCellValue());
+            assertEquals(500.0, sheet.getRow(summaryRow + 3).getCell(1).getNumericCellValue());
+            assertEquals(0.0, sheet.getRow(summaryRow + 4).getCell(1).getNumericCellValue());
             for (int i = 2; i <= 5; i++) {
                 Cell c = sheet.getRow(summaryRow + i).getCell(1);
                 assertNotNull(c);

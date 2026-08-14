@@ -25,5 +25,12 @@ public record CashRegisterResponse(
         BigDecimal totalExpenses,
         BigDecimal balance,
         List<RevenueSummaryItem> revenueSummary,
-        List<ExpenseSummaryItem> expenseSummary
+        List<ExpenseSummaryItem> expenseSummary,
+        BigDecimal openingBalance,
+        BigDecimal totalIncome,
+        BigDecimal totalExpense,
+        BigDecimal expectedBalance,
+        BigDecimal declaredBalance,
+        BigDecimal difference,
+        List<CashMovementResponse> movements
 ) {}
