@@ -65,7 +65,7 @@ class GetStockMovementsUseCaseTest {
         when(stockMovementRepository.findByWarehouseId(warehouseId, 0, 10)).thenReturn(page);
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
-        PageResponse<StockMovementResponse> response = useCase.execute(warehouseId, null, 0, 10);
+        PageResponse<StockMovementResponse> response = useCase.execute(warehouseId, null, null, 0, 10);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
@@ -94,7 +94,7 @@ class GetStockMovementsUseCaseTest {
                 .thenReturn(page);
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
-        PageResponse<StockMovementResponse> response = useCase.execute(warehouseId, productId, 0, 10);
+        PageResponse<StockMovementResponse> response = useCase.execute(warehouseId, productId, null, 0, 10);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
@@ -114,7 +114,7 @@ class GetStockMovementsUseCaseTest {
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
         when(stockMovementRepository.findByWarehouseId(warehouseId, 0, 10)).thenReturn(page);
 
-        PageResponse<StockMovementResponse> response = useCase.execute(warehouseId, null, 0, 10);
+        PageResponse<StockMovementResponse> response = useCase.execute(warehouseId, null, null, 0, 10);
 
         assertNotNull(response);
         verify(stockMovementRepository).findByWarehouseId(warehouseId, 0, 10);
@@ -122,11 +122,49 @@ class GetStockMovementsUseCaseTest {
     }
 
     @Test
+    @DisplayName("with movement type filter: delegates filtering before pagination")
+    void shouldFilterByMovementTypeBeforePagination() {
+        Warehouse warehouse = buildActiveWarehouse(warehouseId);
+        PageResponse<StockMovement> page = new PageResponse<>(
+                List.of(), 0L, 0, 10, 0, true, true, true
+        );
+
+        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(stockMovementRepository.findByWarehouseIdAndMovementType(
+                warehouseId, MovementType.EXIT, 0, 10)).thenReturn(page);
+
+        useCase.execute(warehouseId, null, MovementType.EXIT, 0, 10);
+
+        verify(stockMovementRepository).findByWarehouseIdAndMovementType(
+                warehouseId, MovementType.EXIT, 0, 10);
+        verify(stockMovementRepository, never()).findByWarehouseId(any(), anyInt(), anyInt());
+    }
+
+    @Test
+    @DisplayName("with product and movement type filters: combines both filters")
+    void shouldCombineProductAndMovementTypeFilters() {
+        Warehouse warehouse = buildActiveWarehouse(warehouseId);
+        PageResponse<StockMovement> page = new PageResponse<>(
+                List.of(), 0L, 0, 10, 0, true, true, true
+        );
+
+        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(stockMovementRepository.findByWarehouseIdAndProductIdAndMovementType(
+                warehouseId, productId, MovementType.ENTRY, 0, 10)).thenReturn(page);
+
+        useCase.execute(warehouseId, productId, MovementType.ENTRY, 0, 10);
+
+        verify(stockMovementRepository).findByWarehouseIdAndProductIdAndMovementType(
+                warehouseId, productId, MovementType.ENTRY, 0, 10);
+    }
+
+    @Test
     @DisplayName("throws WarehouseNotFoundException when warehouse not found")
     void shouldThrowWhenWarehouseNotFound() {
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(warehouseId, null, 0, 10));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(warehouseId, null, null, 0, 10));
 
         verify(warehouseRepository).findById(warehouseId);
         verify(stockMovementRepository, never()).findByWarehouseId(any(), anyInt(), anyInt());

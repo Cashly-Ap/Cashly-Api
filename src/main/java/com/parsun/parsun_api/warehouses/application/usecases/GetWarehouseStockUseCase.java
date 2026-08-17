@@ -36,7 +36,8 @@ public class GetWarehouseStockUseCase {
                     var product = productRepository.findById(stock.getProductId());
                     String code = product.map(p -> p.getCode()).orElse("UNKNOWN");
                     String name = product.map(p -> p.getName()).orElse("Unknown");
-                    return WarehouseStockResponse.from(stock, code, name);
+                    boolean composite = product.map(p -> p.isComposite()).orElse(false);
+                    return WarehouseStockResponse.from(stock, code, name, composite);
                 }).toList(),
                 result.totalElements(),
                 result.totalPages(),

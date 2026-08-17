@@ -180,6 +180,7 @@ public enum MovementType {
   "name": "Main Warehouse",
   "location": "123 Main St, City",
   "active": true,
+  "deletable": true,
   "createdAt": "2025-12-17T10:00:00",
   "updatedAt": "2025-12-17T10:00:00"
 }
@@ -609,6 +610,7 @@ public record WarehouseDetailResponse(
     String name,                                // Warehouse name
     String location,                            // Physical address
     boolean active,                             // Active status
+    boolean deletable,                          // False when active stock prevents deletion
     LocalDateTime createdAt,                    // Creation timestamp
     LocalDateTime updatedAt                     // Last update timestamp
 )
@@ -622,6 +624,7 @@ public record WarehouseDetailResponse(
   "name": "Main Warehouse",
   "location": "123 Main St, City",
   "active": true,
+  "deletable": true,
   "createdAt": "2025-12-17T10:00:00",
   "updatedAt": "2025-12-17T11:30:00"
 }
@@ -692,12 +695,19 @@ public record StockMovementResponse(
 |----------|-------------|--------------|
 | GET /api/warehouses | None | List\<WarehouseListResponse\> |
 | GET /api/warehouses/{id} | None | WarehouseDetailResponse |
+| GET /api/warehouses/{id}/stock | `page`, `size` | PageResponse\<WarehouseStockResponse\> |
+| GET /api/warehouses/{id}/movements | `productId`, `movementType`, `page`, `size` | PageResponse\<StockMovementResponse\> |
 | POST /api/warehouses | CreateWarehouseRequest | WarehouseCreateResponse |
 | PUT /api/warehouses/{id} | UpdateWarehouseRequest | WarehouseDetailResponse |
 | DELETE /api/warehouses/{id} | None | void (204 No Content) |
 | POST /api/warehouses/{id}/stock/entry | StockEntryRequest | void (204 No Content) |
 | POST /api/warehouses/{id}/stock/exit | StockExitRequest | void (204 No Content) |
 | POST /api/warehouses/transfer | TransferStockRequest | TransferStockResponse |
+
+`WarehouseStockResponse` includes `composite`, allowing clients to distinguish simple and
+composite products without issuing an additional product request. Registering an entry for a
+composite product consumes `component quantity × entry quantity` from every configured component
+and records a `COMPONENT_EXIT` movement before recording the composite `ENTRY` movement.
 
 ---
 

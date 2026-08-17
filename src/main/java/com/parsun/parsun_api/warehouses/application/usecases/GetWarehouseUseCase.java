@@ -5,6 +5,7 @@ import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFound
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 
 import java.util.UUID;
+import java.util.Set;
 
 public class GetWarehouseUseCase {
 
@@ -15,8 +16,9 @@ public class GetWarehouseUseCase {
     }
 
     public WarehouseDetailResponse execute(UUID id) {
-        return warehouseRepository.findById(id)
-                .map(WarehouseDetailResponse::from)
+        var warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new WarehouseNotFoundException(id));
+        boolean deletable = !warehouseRepository.findIdsWithActiveStock(Set.of(id)).contains(id);
+        return WarehouseDetailResponse.from(warehouse, deletable);
     }
 }

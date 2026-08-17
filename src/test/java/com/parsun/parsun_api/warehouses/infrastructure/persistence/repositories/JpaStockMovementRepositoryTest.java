@@ -250,6 +250,34 @@ class JpaStockMovementRepositoryTest {
     }
 
     @Nested
+    @DisplayName("FindByWarehouseIdAndMovementType")
+    class FindByWarehouseIdAndMovementType {
+
+        @Test
+        void should_FilterByMovementTypeBeforeMappingThePage() {
+            UUID warehouseId = UUID.randomUUID();
+            StockMovement movement = new StockMovement(
+                    UUID.randomUUID(), warehouseId, UUID.randomUUID(),
+                    MovementType.EXIT, 4, 10, 6,
+                    null, null, null, null, null,
+                    "Exit", LocalDateTime.now()
+            );
+            Page<StockMovementEntity> page = new PageImpl<>(
+                    List.of(StockMovementEntity.fromDomain(movement)), PageRequest.of(0, 10), 1);
+            when(springDataRepository.findByWarehouseIdAndMovementType(
+                    eq(warehouseId), eq(MovementType.EXIT), any(Pageable.class))).thenReturn(page);
+
+            PageResponse<StockMovement> result = adapter.findByWarehouseIdAndMovementType(
+                    warehouseId, MovementType.EXIT, 0, 10);
+
+            assertEquals(1, result.totalElements());
+            assertEquals(MovementType.EXIT, result.content().getFirst().getMovementType());
+            verify(springDataRepository).findByWarehouseIdAndMovementType(
+                    eq(warehouseId), eq(MovementType.EXIT), any(Pageable.class));
+        }
+    }
+
+    @Nested
     @DisplayName("DeleteByProductId")
     class DeleteByProductId {
 

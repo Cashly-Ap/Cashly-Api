@@ -135,7 +135,7 @@ class StockEntryUseCaseTest {
     }
 
     @Test
-    @DisplayName("composite product also adds stock for components")
+    @DisplayName("composite entry consumes each required component and adds the assembled product")
     void shouldHandleCompositeProductComponents() {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         UUID componentId = UUID.randomUUID();
@@ -170,8 +170,13 @@ class StockEntryUseCaseTest {
         List<StockMovementResponse> response = useCase.execute(warehouseId, request);
 
         assertNotNull(response);
-        
         assertEquals(2, response.size());
+        assertEquals(94, componentStock.getQuantity());
+        assertEquals(3, mainStock.getQuantity());
+        assertEquals(MovementType.COMPONENT_EXIT, response.get(0).movementType());
+        assertEquals(6, response.get(0).quantity());
+        assertEquals(MovementType.ENTRY, response.get(1).movementType());
+        assertEquals(3, response.get(1).quantity());
         verify(stockMovementRepository, times(2)).save(any(StockMovement.class));
     }
 

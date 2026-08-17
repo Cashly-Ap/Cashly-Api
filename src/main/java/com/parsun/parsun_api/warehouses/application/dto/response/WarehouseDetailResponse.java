@@ -13,14 +13,19 @@ public record WarehouseDetailResponse(
         String municipality,
         String postalCode,
         boolean active,
+        boolean deletable,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
     public static WarehouseDetailResponse from(Warehouse w) {
+        return from(w, true);
+    }
+
+    public static WarehouseDetailResponse from(Warehouse w, boolean deletable) {
         return new WarehouseDetailResponse(
                 w.getId().toString(), w.getCode(), w.getName(), w.getAddress(),
                 w.getState(), w.getMunicipality(), w.getPostalCode(),
-                w.isActive(), w.getCreatedAt(), w.getUpdatedAt()
+                w.isActive(), deletable, w.getCreatedAt(), w.getUpdatedAt()
         );
     }
 }

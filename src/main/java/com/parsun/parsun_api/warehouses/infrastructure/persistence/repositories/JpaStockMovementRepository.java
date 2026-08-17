@@ -2,6 +2,7 @@ package com.parsun.parsun_api.warehouses.infrastructure.persistence.repositories
 
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import com.parsun.parsun_api.warehouses.domain.entities.StockMovement;
+import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import com.parsun.parsun_api.warehouses.domain.repositories.StockMovementRepository;
 import com.parsun.parsun_api.warehouses.infrastructure.persistence.entities.StockMovementEntity;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,25 @@ public class JpaStockMovementRepository implements StockMovementRepository {
 
     public JpaStockMovementRepository(SpringDataStockMovementRepository springDataRepository) {
         this.springDataRepository = springDataRepository;
+    }
+
+    @Override
+    public PageResponse<StockMovement> findByWarehouseIdAndMovementType(
+            UUID warehouseId, MovementType movementType, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<StockMovementEntity> result = springDataRepository.findByWarehouseIdAndMovementType(
+                warehouseId, movementType, pageable);
+        return PageResponse.from(result.map(StockMovementEntity::toDomain));
+    }
+
+    @Override
+    public PageResponse<StockMovement> findByWarehouseIdAndProductIdAndMovementType(
+            UUID warehouseId, UUID productId, MovementType movementType, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<StockMovementEntity> result =
+                springDataRepository.findByWarehouseIdAndProductIdAndMovementType(
+                        warehouseId, productId, movementType, pageable);
+        return PageResponse.from(result.map(StockMovementEntity::toDomain));
     }
 
     @Override

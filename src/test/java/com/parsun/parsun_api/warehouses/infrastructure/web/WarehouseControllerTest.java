@@ -55,7 +55,7 @@ class WarehouseControllerTest {
         String id = UUID.randomUUID().toString();
         WarehouseDetailResponse response = new WarehouseDetailResponse(
                 id, "WH-01", "Main Warehouse", "Address", "State",
-                "Municipality", "1000", true, LocalDateTime.now(), LocalDateTime.now());
+                "Municipality", "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
 
         when(createWarehouseUseCase.execute(any(CreateWarehouseRequest.class))).thenReturn(response);
 
@@ -77,7 +77,7 @@ class WarehouseControllerTest {
         String id = UUID.randomUUID().toString();
         WarehouseDetailResponse response = new WarehouseDetailResponse(
                 id, "WH-01", "Main", "Addr", "State",
-                "Municipality", "1000", true, LocalDateTime.now(), LocalDateTime.now());
+                "Municipality", "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
 
         when(getWarehouseUseCase.execute(UUID.fromString(id))).thenReturn(response);
 
@@ -134,7 +134,7 @@ class WarehouseControllerTest {
         String id = uuid.toString();
         WarehouseDetailResponse response = new WarehouseDetailResponse(
                 id, "WH-01", "Updated Warehouse", "Addr", "State",
-                "Municipality", "1000", true, LocalDateTime.now(), LocalDateTime.now());
+                "Municipality", "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
 
         when(updateWarehouseUseCase.execute(eq(uuid), any(UpdateWarehouseRequest.class))).thenReturn(response);
 

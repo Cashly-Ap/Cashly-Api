@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +45,7 @@ class GetWarehouseUseCaseTest {
         );
 
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(existing));
+        when(warehouseRepository.findIdsWithActiveStock(Set.of(warehouseId))).thenReturn(Set.of());
 
         WarehouseDetailResponse response = useCase.execute(warehouseId);
 
@@ -56,7 +58,26 @@ class GetWarehouseUseCaseTest {
         assertEquals("Municipality B", response.municipality());
         assertEquals("10001", response.postalCode());
         assertTrue(response.active());
+        assertTrue(response.deletable());
         verify(warehouseRepository).findById(warehouseId);
+        verify(warehouseRepository).findIdsWithActiveStock(Set.of(warehouseId));
+    }
+
+    @Test
+    @DisplayName("marks warehouse as non-deletable when it has active stock")
+    void shouldMarkWarehouseAsNonDeletableWhenItHasActiveStock() {
+        Warehouse existing = Warehouse.reconstitute(
+                warehouseId, "WH-001", "Main Warehouse", "123 Main St",
+                "State A", "Municipality B", "10001",
+                true, LocalDateTime.now(), LocalDateTime.now()
+        );
+        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(existing));
+        when(warehouseRepository.findIdsWithActiveStock(Set.of(warehouseId)))
+                .thenReturn(Set.of(warehouseId));
+
+        WarehouseDetailResponse response = useCase.execute(warehouseId);
+
+        assertFalse(response.deletable());
     }
 
     @Test

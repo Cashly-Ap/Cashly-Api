@@ -51,7 +51,7 @@ class GetWarehouseStockUseCaseTest {
     @DisplayName("returns paginated stock with product names")
     void shouldReturnPaginatedStockWithProductInfo() {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
-        Product product = buildProduct(productId, "PROD-001", "Test Product");
+        Product product = buildProduct(productId, "PROD-001", "Test Product", true);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
         stock.addStock(50);
 
@@ -69,6 +69,7 @@ class GetWarehouseStockUseCaseTest {
         assertEquals(1, response.content().size());
         assertEquals("PROD-001", response.content().get(0).productCode());
         assertEquals("Test Product", response.content().get(0).productName());
+        assertTrue(response.content().get(0).composite());
         assertEquals(50, response.content().get(0).quantity());
         verify(warehouseRepository).findById(warehouseId);
         verify(warehouseStockRepository).findByWarehouseIdPaged(warehouseId, 0, 10);
@@ -115,9 +116,9 @@ class GetWarehouseStockUseCaseTest {
         );
     }
 
-    private Product buildProduct(UUID id, String code, String name) {
+    private Product buildProduct(UUID id, String code, String name, boolean composite) {
         return Product.reconstitute(
-                id, code, name, "Desc", null, false, true, null,
+                id, code, name, "Desc", null, composite, true, null,
                 BigDecimal.ZERO,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
         );

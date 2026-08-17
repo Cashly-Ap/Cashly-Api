@@ -3,6 +3,7 @@ package com.parsun.parsun_api.warehouses.infrastructure.web;
 import com.parsun.parsun_api.shared.dto.PageResponse;
 import com.parsun.parsun_api.warehouses.application.dto.response.StockMovementResponse;
 import com.parsun.parsun_api.warehouses.application.usecases.GetStockMovementsUseCase;
+import com.parsun.parsun_api.warehouses.domain.entities.MovementType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,9 @@ public class StockMovementController {
     public PageResponse<StockMovementResponse> getMovements(
             @PathVariable UUID warehouseId,
             @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) MovementType movementType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return getStockMovementsUseCase.execute(warehouseId, productId, page, size);
+        return getStockMovementsUseCase.execute(warehouseId, productId, movementType, page, size);
     }
 }
