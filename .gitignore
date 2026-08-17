@@ -40,5 +40,6 @@ comprobante-pago-*.txt
 
 ### AI Config ###
 .atl/
+.codex/
 .opencode/
 bin/
