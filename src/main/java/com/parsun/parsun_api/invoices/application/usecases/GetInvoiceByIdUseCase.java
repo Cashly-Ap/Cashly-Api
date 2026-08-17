@@ -75,13 +75,13 @@ public class GetInvoiceByIdUseCase {
         List<InvoiceDetailResponse.NoteInfo> notes = new ArrayList<>();
         for (CreditNote cn : creditNotes) {
             notes.add(new InvoiceDetailResponse.NoteInfo(
-                    cn.getId().value(), "CREDIT",
+                    cn.getId().value(), cn.getNoteNumber().value(), "CREDIT",
                     cn.getAmount(), cn.getReason(), cn.getCreatedAt()
             ));
         }
         for (DebitNote dn : debitNotes) {
             notes.add(new InvoiceDetailResponse.NoteInfo(
-                    dn.getId().value(), "DEBIT",
+                    dn.getId().value(), dn.getNoteNumber().value(), "DEBIT",
                     dn.getAmount(), dn.getReason(), dn.getCreatedAt()
             ));
         }

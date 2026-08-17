@@ -105,6 +105,9 @@ class GetInvoiceByIdUseCaseNotesTest {
         assertThat(response.debitApplied()).isEqualByComparingTo("50");
         assertThat(response.total()).isEqualByComparingTo("850"); 
         assertThat(response.notesList()).hasSize(2);
+        assertThat(response.notesList())
+                .extracting(InvoiceDetailResponse.NoteInfo::noteNumber)
+                .containsExactly("NC-2026-00001", "ND-2026-00001");
         verify(creditNoteRepository).findByInvoiceId(id);
         verify(debitNoteRepository).findByInvoiceId(id);
     }

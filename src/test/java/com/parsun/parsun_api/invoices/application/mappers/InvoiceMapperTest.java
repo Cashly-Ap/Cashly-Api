@@ -29,11 +29,11 @@ class InvoiceMapperTest {
         BigDecimal debitApplied = BigDecimal.valueOf(50);
         List<InvoiceDetailResponse.NoteInfo> notes = List.of(
                 new InvoiceDetailResponse.NoteInfo(
-                        UUID.randomUUID(), "CREDIT", BigDecimal.valueOf(100),
+                        UUID.randomUUID(), "NC-2026-00001", "CREDIT", BigDecimal.valueOf(100),
                         "Test credit", LocalDateTime.now()
                 ),
                 new InvoiceDetailResponse.NoteInfo(
-                        UUID.randomUUID(), "DEBIT", BigDecimal.valueOf(50),
+                        UUID.randomUUID(), "ND-2026-00001", "DEBIT", BigDecimal.valueOf(50),
                         "Test debit", LocalDateTime.now()
                 )
         );
@@ -71,7 +71,7 @@ class InvoiceMapperTest {
         InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(
                 invoice, BigDecimal.valueOf(300), BigDecimal.ZERO, List.of(
                         new InvoiceDetailResponse.NoteInfo(
-                                UUID.randomUUID(), "CREDIT", BigDecimal.valueOf(300),
+                                UUID.randomUUID(), "NC-2026-00002", "CREDIT", BigDecimal.valueOf(300),
                                 "Bulk discount", LocalDateTime.now()
                         )
                 )
@@ -89,7 +89,7 @@ class InvoiceMapperTest {
         InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(
                 invoice, BigDecimal.ZERO, BigDecimal.valueOf(200), List.of(
                         new InvoiceDetailResponse.NoteInfo(
-                                UUID.randomUUID(), "DEBIT", BigDecimal.valueOf(200),
+                                UUID.randomUUID(), "ND-2026-00002", "DEBIT", BigDecimal.valueOf(200),
                                 "Additional charge", LocalDateTime.now()
                         )
                 )

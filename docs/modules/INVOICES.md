@@ -479,35 +479,38 @@ public enum PaymentMethod {
   "customerId": "customer-uuid-here",
   "customerName": "ABC Company S.A.",
   "customerRif": "J-12345678-9",
-  "merchantId": "merchant-uuid-here",
-  "merchantName": "Juan Perez",
-  "merchantCommission": 15.00,
-  "status": "PENDING",
-  "issueDate": "2025-01-09",
-  "dueDate": "2025-02-08",
-  "creditDays": 30,
+  "createdBy": "user-uuid-here",
+  "createdByName": "Juan Perez",
+  "status": "PENDING_PAYMENT",
+  "statusLabel": "Pendiente de pago",
+  "paymentType": "CREDIT",
   "subtotal": 1275.00,
-  "totalPaid": 500.00,
-  "balance": 775.00,
-  "currency": "USD",
+  "creditApplied": 123.00,
+  "debitApplied": 50.00,
+  "total": 1202.00,
+  "notesList": [
+    {
+      "id": "credit-note-uuid",
+      "noteNumber": "NC-2026-00001",
+      "type": "CREDIT",
+      "amount": 123.00,
+      "reason": "Ajuste comercial",
+      "applicationDate": "2026-08-14T10:30:00"
+    }
+  ],
   "notes": "Entrega en horario de oficina",
   "cancelledAt": null,
   "cancelledReason": null,
   "createdAt": "2025-01-09T10:30:00",
   "updatedAt": "2025-01-15T14:00:00",
   "lines": [...],
-  "payments": [
-    {
-      "id": "payment-001-uuid",
-      "amount": 500.00,
-      "paymentDate": "2025-01-15",
-      "paymentMethod": "TRANSFER",
-      "reference": "REF-123456",
-      "createdAt": "2025-01-15T14:00:00"
-    }
-  ]
+  "returnedTotal": 0.00,
+  "returnStatus": null,
+  "returns": []
 }
 ```
+
+Each item in `notesList` includes the human-readable credit or debit note number in `noteNumber`.
 
 **Errors**:
 - `401 Unauthorized`: Missing or invalid JWT token

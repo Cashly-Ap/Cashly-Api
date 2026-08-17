@@ -35,6 +35,7 @@ public record InvoiceDetailResponse(
 ) {
     public record NoteInfo(
             UUID id,
+            String noteNumber,
             String type,
             BigDecimal amount,
             String reason,
