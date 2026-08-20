@@ -4,13 +4,13 @@ import com.parsun.parsun_api.price_types.application.dto.request.CreatePriceType
 import com.parsun.parsun_api.price_types.application.dto.request.UpdatePriceTypeRequest;
 import com.parsun.parsun_api.price_types.application.dto.response.PriceTypeResponse;
 import com.parsun.parsun_api.price_types.application.usecases.*;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -63,9 +63,13 @@ public class PriceTypeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY') or hasAuthority('MODULE_SALES')")
-    public ResponseEntity<List<PriceTypeResponse>> listAll(
-            @RequestParam(defaultValue = "createdAt") String orderBy,
-            @RequestParam(defaultValue = "desc") String orderDir) {
-        return ResponseEntity.ok(listPriceTypesUseCase.execute(orderBy, orderDir));
+    public ResponseEntity<PageResponse<PriceTypeResponse>> listAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String orderBy,
+            @RequestParam(defaultValue = "asc") String orderDir) {
+        return ResponseEntity.ok(listPriceTypesUseCase.execute(search, active, page, size, orderBy, orderDir));
     }
 }

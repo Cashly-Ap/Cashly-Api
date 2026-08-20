@@ -3,6 +3,7 @@ package com.parsun.parsun_api.price_types.application.usecases;
 import com.parsun.parsun_api.price_types.application.dto.response.PriceTypeResponse;
 import com.parsun.parsun_api.price_types.domain.entities.PriceType;
 import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,42 +42,61 @@ class ListPriceTypesUseCaseTest {
         priceType2 = PriceType.reconstitute(UUID.randomUUID(), "Minorista", "Retail pricing", true, now, now);
     }
 
+    private static PageResponse<PriceType> pageOf(List<PriceType> items) {
+        return new PageResponse<>(items, items.size(), 1, 10, 0, true, true, items.isEmpty());
+    }
+
     @Test
     @DisplayName("should_ReturnList_When_PriceTypesExist")
     void should_ReturnList_When_PriceTypesExist() {
-        when(priceTypeRepository.findAll(eq("name"), eq("asc")))
-            .thenReturn(List.of(priceType1, priceType2));
+        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
+            .thenReturn(pageOf(List.of(priceType1, priceType2)));
+        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
-        List<PriceTypeResponse> result = useCase.execute("name", "asc");
+        PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
         assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("Mayorista", result.get(0).name());
-        assertEquals("Minorista", result.get(1).name());
-        verify(priceTypeRepository).findAll(eq("name"), eq("asc"));
+        assertEquals(2, result.content().size());
+        assertEquals("Mayorista", result.content().get(0).name());
+        assertEquals("Minorista", result.content().get(1).name());
+        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc"));
     }
 
     @Test
     @DisplayName("should_ReturnEmptyList_When_NoPriceTypesFound")
     void should_ReturnEmptyList_When_NoPriceTypesFound() {
-        when(priceTypeRepository.findAll(eq("name"), eq("asc")))
-            .thenReturn(List.of());
+        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
+            .thenReturn(pageOf(List.of()));
+        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
-        List<PriceTypeResponse> result = useCase.execute("name", "asc");
+        PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
         assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(priceTypeRepository).findAll(eq("name"), eq("asc"));
+        assertTrue(result.content().isEmpty());
+        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc"));
     }
 
     @Test
     @DisplayName("should_PassOrderByToRepository")
     void should_PassOrderByToRepository() {
-        when(priceTypeRepository.findAll(eq("createdAt"), eq("desc")))
-            .thenReturn(List.of());
+        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
+            .thenReturn(pageOf(List.of()));
+        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
-        useCase.execute("createdAt", "desc");
+        useCase.execute(null, null, 0, 10, "createdAt", "desc");
 
-        verify(priceTypeRepository).findAll(eq("createdAt"), eq("desc"));
+        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc"));
+    }
+
+    @Test
+    @DisplayName("should_PassSearchAndActiveFiltersToRepository")
+    void should_PassSearchAndActiveFiltersToRepository() {
+        when(priceTypeRepository.findAllWithFilters(eq("Mayo"), eq(true), eq(1), eq(5), eq("name"), eq("asc")))
+            .thenReturn(pageOf(List.of(priceType1)));
+        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
+
+        useCase.execute("Mayo", true, 1, 5, "name", "asc");
+
+        verify(priceTypeRepository).findAllWithFilters(eq("Mayo"), eq(true), eq(1), eq(5), eq("name"), eq("asc"));
     }
 }

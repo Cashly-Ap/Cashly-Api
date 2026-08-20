@@ -3,10 +3,12 @@ package com.parsun.parsun_api.price_types.infrastructure.persistence.repositorie
 import com.parsun.parsun_api.price_types.domain.entities.PriceType;
 import com.parsun.parsun_api.price_types.domain.repositories.PriceTypeRepository;
 import com.parsun.parsun_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
+import com.parsun.parsun_api.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -45,12 +47,17 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
     }
 
     @Override
-    public List<PriceType> findAll(String orderBy, String orderDir) {
+    public PageResponse<PriceType> findAllWithFilters(String search, Boolean active,
+                                                        int page, int size,
+                                                        String orderBy, String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "createdAt";
         Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
-        return springDataRepository.findAll(sort).stream()
-            .map(PriceTypeEntity::toDomain)
-            .toList();
+        PageRequest pageable = PageRequest.of(page, size, sort);
+
+        Page<PriceType> result = springDataRepository.findAllWithFilters(search, active, pageable)
+            .map(PriceTypeEntity::toDomain);
+
+        return PageResponse.from(result);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.parsun.parsun_api.price_types.application.usecases.DeletePriceTypeUse
 import com.parsun.parsun_api.price_types.application.usecases.GetPriceTypeUseCase;
 import com.parsun.parsun_api.price_types.application.usecases.ListPriceTypesUseCase;
 import com.parsun.parsun_api.price_types.application.usecases.UpdatePriceTypeUseCase;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,27 +130,36 @@ class PriceTypeControllerTest {
         PriceTypeResponse pt2 = new PriceTypeResponse(
                 UUID.randomUUID().toString(), "Wholesale", null, true, false,
                 LocalDateTime.now(), LocalDateTime.now());
+        PageResponse<PriceTypeResponse> page = new PageResponse<>(
+                List.of(pt1, pt2), 2, 1, 10, 0, true, true, false);
 
-        when(listPriceTypesUseCase.execute(anyString(), anyString())).thenReturn(List.of(pt1, pt2));
+        when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
+                .thenReturn(page);
 
-        ResponseEntity<List<PriceTypeResponse>> result = priceTypeController.listAll("createdAt", "desc");
+        ResponseEntity<PageResponse<PriceTypeResponse>> result =
+                priceTypeController.listAll(null, null, 0, 10, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().size());
-        verify(listPriceTypesUseCase).execute("createdAt", "desc");
+        assertEquals(2, result.getBody().content().size());
+        verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc"));
     }
 
     @Test
     @DisplayName("should return empty list when no price types")
     void should_return_empty_list_when_no_price_types() {
-        when(listPriceTypesUseCase.execute(anyString(), anyString())).thenReturn(List.of());
+        PageResponse<PriceTypeResponse> page = new PageResponse<>(
+                List.of(), 0, 0, 10, 0, true, true, true);
 
-        ResponseEntity<List<PriceTypeResponse>> result = priceTypeController.listAll("createdAt", "desc");
+        when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
+                .thenReturn(page);
+
+        ResponseEntity<PageResponse<PriceTypeResponse>> result =
+                priceTypeController.listAll(null, null, 0, 10, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        assertTrue(result.getBody().isEmpty());
-        verify(listPriceTypesUseCase).execute("createdAt", "desc");
+        assertTrue(result.getBody().content().isEmpty());
+        verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc"));
     }
 }

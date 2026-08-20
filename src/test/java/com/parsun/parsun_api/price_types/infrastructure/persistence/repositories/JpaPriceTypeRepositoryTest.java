@@ -2,6 +2,7 @@ package com.parsun.parsun_api.price_types.infrastructure.persistence.repositorie
 
 import com.parsun.parsun_api.price_types.domain.entities.PriceType;
 import com.parsun.parsun_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
+import com.parsun.parsun_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +12,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -30,6 +34,9 @@ class JpaPriceTypeRepositoryTest {
 
     @Captor
     private ArgumentCaptor<PriceTypeEntity> entityCaptor;
+
+    @Captor
+    private ArgumentCaptor<PageRequest> pageRequestCaptor;
 
     private JpaPriceTypeRepository repository;
 
@@ -146,50 +153,67 @@ class JpaPriceTypeRepositoryTest {
     }
 
     @Nested
-    @DisplayName("FindAll")
-    class FindAll {
+    @DisplayName("FindAllWithFilters")
+    class FindAllWithFilters {
 
         @Test
-        void should_ReturnAllWithDefaultSort_When_OrderByNotAllowed() {
+        void should_ReturnPageResponse_When_EntitiesFound() {
             PriceTypeEntity entity = PriceTypeEntity.fromDomain(
                     PriceType.reconstitute(UUID.randomUUID(), "Standard", "Standard pricing", true,
                             LocalDateTime.now(), LocalDateTime.now())
             );
+            Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of(entity));
+            when(springDataRepository.findAllWithFilters(anyString(), any(), any(PageRequest.class)))
+                    .thenReturn(entityPage);
 
-            when(springDataRepository.findAll(any(Sort.class))).thenReturn(List.of(entity));
-
-            List<PriceType> result = repository.findAll("invalid_field", "asc");
+            PageResponse<PriceType> result = repository.findAllWithFilters(
+                    "Stand", true, 0, 10, "name", "asc");
 
             assertNotNull(result);
-            assertEquals(1, result.size());
-            verify(springDataRepository).findAll(Sort.by("createdAt").ascending());
+            assertEquals(1, result.totalElements());
+            assertEquals(1, result.content().size());
+            assertEquals("Standard", result.content().get(0).getName());
+            verify(springDataRepository).findAllWithFilters(eq("Stand"), eq(true), any(PageRequest.class));
         }
 
         @Test
-        void should_ReturnAllWithDescendingSort_When_OrderDirIsDesc() {
-            PriceTypeEntity entity = PriceTypeEntity.fromDomain(
-                    PriceType.reconstitute(UUID.randomUUID(), "Standard", "Standard pricing", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+        void should_ReturnEmptyPageResponse_When_NoEntities() {
+            Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of());
+            when(springDataRepository.findAllWithFilters(any(), any(), any(PageRequest.class)))
+                    .thenReturn(entityPage);
 
-            when(springDataRepository.findAll(any(Sort.class))).thenReturn(List.of(entity));
-
-            List<PriceType> result = repository.findAll("name", "desc");
+            PageResponse<PriceType> result = repository.findAllWithFilters(
+                    null, null, 0, 10, "name", "asc");
 
             assertNotNull(result);
-            assertEquals(1, result.size());
-            verify(springDataRepository).findAll(Sort.by("name").descending());
+            assertTrue(result.empty());
+            assertEquals(0, result.totalElements());
+            assertTrue(result.content().isEmpty());
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(), any(PageRequest.class));
         }
 
         @Test
-        void should_ReturnEmptyList_When_NoEntities() {
-            when(springDataRepository.findAll(any(Sort.class))).thenReturn(List.of());
+        void should_DefaultToCreatedAtSort_When_OrderByNotAllowed() {
+            Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of());
+            when(springDataRepository.findAllWithFilters(any(), any(), any(PageRequest.class)))
+                    .thenReturn(entityPage);
 
-            List<PriceType> result = repository.findAll("name", "asc");
+            repository.findAllWithFilters(null, null, 0, 10, "invalid_field", "asc");
 
-            assertNotNull(result);
-            assertTrue(result.isEmpty());
-            verify(springDataRepository).findAll(any(Sort.class));
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(), pageRequestCaptor.capture());
+            assertEquals(Sort.by("createdAt").ascending(), pageRequestCaptor.getValue().getSort());
+        }
+
+        @Test
+        void should_UseDescendingSort_When_OrderDirIsDesc() {
+            Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of());
+            when(springDataRepository.findAllWithFilters(any(), any(), any(PageRequest.class)))
+                    .thenReturn(entityPage);
+
+            repository.findAllWithFilters(null, null, 0, 10, "name", "desc");
+
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(), pageRequestCaptor.capture());
+            assertEquals(Sort.by("name").descending(), pageRequestCaptor.getValue().getSort());
         }
     }
 
