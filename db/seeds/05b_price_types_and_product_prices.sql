@@ -159,3 +159,22 @@ VALUES
     (UNHEX('fb000000000000000000000000000049'), UNHEX('e0000000000000000000000000000019'), UNHEX('fa000000000000000000000000000001'), 185.0000, NULL),
     (UNHEX('fb00000000000000000000000000004a'), UNHEX('e0000000000000000000000000000019'), UNHEX('fa000000000000000000000000000002'), 166.5000, NULL),
     (UNHEX('fb00000000000000000000000000004b'), UNHEX('e0000000000000000000000000000019'), UNHEX('fa000000000000000000000000000003'), 151.7000, NULL);
+
+-- =============================================================================
+-- CUSTOMER PRICE TYPE ASSIGNMENT
+-- 02_customers.sql runs before price_types exist, so every customer is
+-- inserted with price_type_id = NULL. Assign one here now that price_types
+-- exist, tiered by credit_limit (the closest signal to customer tier already
+-- present in the seed data):
+--   >= 15000            -> Precio Especial (contract customers)
+--   >= 5000  and < 15000-> Precio Mayor (volume customers)
+--   <  5000             -> Precio Base (retail / individual / low volume)
+-- =============================================================================
+UPDATE customers SET price_type_id = UNHEX('fa000000000000000000000000000003') -- Precio Especial
+WHERE code IN (1007, 1010); -- TecSol, ConstruAndina
+
+UPDATE customers SET price_type_id = UNHEX('fa000000000000000000000000000002') -- Precio Mayor
+WHERE code IN (1001, 1002, 1005, 1011); -- DistCaracas, ImpSur, SumZulia, InvGlobal
+
+UPDATE customers SET price_type_id = UNHEX('fa000000000000000000000000000001') -- Precio Base
+WHERE code IN (1003, 1004, 1006, 1008, 1009); -- ComNorte, CMendoza, MTorres, AgroLlanos, RPerez
