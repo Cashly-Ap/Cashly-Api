@@ -13,7 +13,8 @@ CREATE TABLE customers (
     portal_access BOOLEAN NOT NULL DEFAULT FALSE,
     portal_password VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    updated_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_customers_price_type FOREIGN KEY (price_type_id) REFERENCES price_types(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_customers_code ON customers (code);

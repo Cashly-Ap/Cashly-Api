@@ -1,6 +1,7 @@
 CREATE TABLE notifications (
     id          BINARY(16) PRIMARY KEY,
-    user_id     BINARY(16) NOT NULL,
+    user_id     BINARY(16) NULL,
+    customer_id BINARY(16) NULL,
     type        VARCHAR(50) NOT NULL,
     title       VARCHAR(200) NOT NULL,
     message     VARCHAR(1000) NOT NULL,
@@ -13,6 +14,7 @@ CREATE TABLE notifications (
     INDEX idx_notifications_user_id (user_id),
     INDEX idx_notifications_user_read (user_id, is_read),
     INDEX idx_notifications_created_at (created_at),
+    INDEX idx_notifications_customer_id (customer_id),
 
     CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
