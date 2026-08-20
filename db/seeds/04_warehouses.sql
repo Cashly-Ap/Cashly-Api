@@ -18,21 +18,6 @@ VALUES
     (UNHEX('b0000000000000000000000000000004'), 'ALM-BQT-01', 'Almacén Barquisimeto',        'Av. Intercomunal, Parque Industrial, Local 5',  'Lara',             'Iribarren',    '3001', TRUE),
     (UNHEX('b0000000000000000000000000000005'), 'ALM-MCY-01', 'Almacén Maracay (Inactivo)',  'Urb. Industrial Las Tejerías, Galpón 2',        'Aragua',           'Girardot',     '2101', FALSE);
 
--- =============================================================================
--- Customer Warehouse Access
--- Granted for every warehouse a customer's orders/invoices/quotes/returns
--- actually allocate stock from further down the seed chain (06-12) — a
--- customer can never appear in an allocation for a warehouse they can't
--- access in the real app, so this list must stay a superset of that usage.
--- DistCaracas (c1) -> ALM-CCS-01, ALM-VLC-01, ALM-MRB-01
--- ImpSur (c2)      -> ALM-MRB-01, ALM-CCS-01
--- ComNorte (c3)    -> ALM-VLC-01
--- CMendoza (c4)    -> ALM-CCS-01
--- SumZulia (c5)    -> ALM-MRB-01, ALM-CCS-01, ALM-VLC-01, ALM-BQT-01
--- TecSol (c7)      -> ALM-CCS-01, ALM-VLC-01, ALM-BQT-01
--- AgroLlanos (c8)  -> ALM-VLC-01, ALM-CCS-01
--- InvGlobal (c11)  -> ALM-CCS-01
--- =============================================================================
 INSERT INTO customer_warehouse_access (id, customer_id, warehouse_id, granted_at, granted_by)
 VALUES
     (UNHEX('d0000000000000000000000000000001'), UNHEX('c1000000000000000000000000000001'), UNHEX('b0000000000000000000000000000001'), NOW(), UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a')),
