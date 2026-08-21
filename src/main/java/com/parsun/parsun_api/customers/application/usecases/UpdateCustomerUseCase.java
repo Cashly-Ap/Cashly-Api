@@ -3,6 +3,7 @@ package com.parsun.parsun_api.customers.application.usecases;
 import com.parsun.parsun_api.customers.application.dto.request.UpdateCustomerRequest;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerDetailResponse;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.DuplicateCustomerRifException;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
@@ -33,9 +34,14 @@ public class UpdateCustomerUseCase {
         Customer customer = customerRepository.findById(customerId)
             .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
 
+        Rif rif = new Rif(request.rif());
+        if (customerRepository.existsByRifAndIdNot(rif, customerId)) {
+            throw new DuplicateCustomerRifException(rif.getValue());
+        }
+
         customer.updateLegalName(new LegalName(request.legalName()));
         customer.updateType(CustomerType.valueOf(request.type()));
-        customer.updateRif(new Rif(request.rif()));
+        customer.updateRif(rif);
         customer.updateAlias(new CustomerAlias(request.alias()));
         customer.updateCreditDays(new CreditDays(request.creditDays()));
         customer.updateCreditLimit(new CreditLimit(request.creditLimit()));

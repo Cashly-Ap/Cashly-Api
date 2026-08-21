@@ -5,6 +5,7 @@ import com.parsun.parsun_api.auth.token.application.exceptions.InvalidTokenExcep
 import com.parsun.parsun_api.auth.token.application.exceptions.TokenExpiredException;
 import com.parsun.parsun_api.auth.user.application.exceptions.DuplicateEmailException;
 import com.parsun.parsun_api.auth.user.application.exceptions.UserNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.DuplicateCustomerRifException;
 import com.parsun.parsun_api.infrastructure.config.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -52,6 +54,38 @@ class GlobalExceptionHandlerUnitTest {
         assertEquals("Email already registered", response.getBody().get("error"));
         assertTrue(response.getBody().containsKey("timestamp"));
         assertTrue(response.getBody().containsKey("message"));
+    }
+
+    @Test
+    @DisplayName("should return conflict when customer RIF is already registered")
+    void shouldReturnConflictWhenCustomerRifIsAlreadyRegistered() {
+        DuplicateCustomerRifException exception = new DuplicateCustomerRifException("J-12345678-9");
+
+        ResponseEntity<Map<String, Object>> response =
+                globalExceptionHandler.handleDuplicateCustomerRif(exception);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(409, response.getBody().get("status"));
+        assertEquals("Duplicate customer RIF", response.getBody().get("error"));
+        assertEquals("A customer with RIF J-12345678-9 is already registered",
+                response.getBody().get("message"));
+    }
+
+    @Test
+    @DisplayName("should return duplicate RIF conflict when database constraint rejects a concurrent write")
+    void shouldReturnDuplicateRifConflictWhenDatabaseConstraintRejectsWrite() {
+        DataIntegrityViolationException exception = new DataIntegrityViolationException(
+                "Could not execute statement",
+                new RuntimeException("Duplicate entry for key 'uk_customers_rif'")
+        );
+
+        ResponseEntity<Map<String, Object>> response =
+                globalExceptionHandler.handleDataIntegrityViolation(exception);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Duplicate customer RIF", response.getBody().get("error"));
     }
 
     @Test

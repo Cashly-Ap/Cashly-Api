@@ -127,6 +127,57 @@ class JpaCustomerRepositoryTest {
     }
 
     @Nested
+    @DisplayName("FindActivePortalCustomerByRif")
+    class FindActivePortalCustomerByRif {
+
+        @Test
+        void should_ReturnActivePortalCustomer() {
+            Customer customer = createTestCustomer();
+            CustomerEntity entity = CustomerEntity.fromDomain(customer);
+
+            when(springDataRepository
+                    .findByRifAndActiveTrueAndPortalAccessTrue(
+                            customer.getRif().getValue()))
+                    .thenReturn(Optional.of(entity));
+
+            Optional<Customer> result = adapter.findActivePortalCustomerByRif(customer.getRif());
+
+            assertTrue(result.isPresent());
+            assertEquals(customer.getId(), result.get().getId());
+            verify(springDataRepository)
+                    .findByRifAndActiveTrueAndPortalAccessTrue(
+                            customer.getRif().getValue());
+        }
+    }
+
+    @Nested
+    @DisplayName("Rif uniqueness")
+    class RifUniqueness {
+
+        @Test
+        void should_CheckWhetherRifExists() {
+            Rif rif = new Rif("J-12345678-9");
+            when(springDataRepository.existsByRif(rif.getValue())).thenReturn(true);
+
+            assertTrue(adapter.existsByRif(rif));
+
+            verify(springDataRepository).existsByRif(rif.getValue());
+        }
+
+        @Test
+        void should_ExcludeCurrentCustomer_WhenCheckingRif() {
+            Rif rif = new Rif("J-12345678-9");
+            CustomerId customerId = CustomerId.generate();
+            when(springDataRepository.existsByRifAndIdNot(rif.getValue(), customerId.getValue()))
+                    .thenReturn(false);
+
+            assertFalse(adapter.existsByRifAndIdNot(rif, customerId));
+
+            verify(springDataRepository).existsByRifAndIdNot(rif.getValue(), customerId.getValue());
+        }
+    }
+
+    @Nested
     @DisplayName("FindAll")
     class FindAll {
 

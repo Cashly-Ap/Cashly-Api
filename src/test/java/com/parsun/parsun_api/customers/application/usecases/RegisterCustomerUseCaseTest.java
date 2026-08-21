@@ -6,12 +6,14 @@ import com.parsun.parsun_api.customers.application.dto.request.EmailRequest;
 import com.parsun.parsun_api.customers.application.dto.request.PhoneRequest;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerCreateResponse;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
+import com.parsun.parsun_api.customers.application.exceptions.DuplicateCustomerRifException;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.entities.CustomerWarehouseAccess;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.parsun.parsun_api.customers.domain.services.CustomerCodeGenerator;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerCode;
+import com.parsun.parsun_api.customers.domain.valueobjects.Rif;
 import com.parsun.parsun_api.warehouses.application.exceptions.WarehouseNotFoundException;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,6 +101,26 @@ class RegisterCustomerUseCaseTest {
         verify(codeGenerator).generateNext();
         verify(customerRepository).save(any(Customer.class));
         verify(mapper).toCreateResponse(any(Customer.class));
+    }
+
+    @Test
+    @DisplayName("should reject a customer when the RIF is already registered")
+    void shouldRejectDuplicateRif() {
+        CreateCustomerRequest request = new CreateCustomerRequest(
+                "Duplicate Corp", "BUSINESS", "J-12345678-9", "Duplicate",
+                30, BigDecimal.ZERO, true,
+                List.of(), List.of(), List.of(),
+                List.of(WAREHOUSE_ID),
+                false, null, null
+        );
+
+        when(customerRepository.existsByRif(new Rif("J-12345678-9"))).thenReturn(true);
+
+        assertThrows(DuplicateCustomerRifException.class,
+                () -> useCase.execute(request, GRANTED_BY));
+
+        verify(customerRepository, never()).save(any());
+        verifyNoInteractions(codeGenerator, warehouseRepository, warehouseAccessRepository);
     }
 
     @Test

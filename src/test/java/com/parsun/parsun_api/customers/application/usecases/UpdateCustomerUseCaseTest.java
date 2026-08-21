@@ -6,10 +6,12 @@ import com.parsun.parsun_api.customers.application.dto.request.PhoneRequest;
 import com.parsun.parsun_api.customers.application.dto.request.UpdateCustomerRequest;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerDetailResponse;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.DuplicateCustomerRifException;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
 import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
+import com.parsun.parsun_api.customers.domain.valueobjects.Rif;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,6 +87,27 @@ class UpdateCustomerUseCaseTest {
     }
 
     @Test
+    @DisplayName("should reject a RIF registered by another customer")
+    void shouldRejectRifRegisteredByAnotherCustomer() {
+        Customer customer = CustomerTestHelper.buildCustomer(customerId);
+        UpdateCustomerRequest request = new UpdateCustomerRequest(
+                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated",
+                45, new BigDecimal("1000.00"), true,
+                List.of(), List.of(), List.of(),
+                false, null, null
+        );
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+        when(customerRepository.existsByRifAndIdNot(new Rif("J-98765432-1"), new CustomerId(customerId)))
+                .thenReturn(true);
+
+        assertThrows(DuplicateCustomerRifException.class,
+                () -> useCase.execute(customerId.toString(), request));
+
+        verify(customerRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
         UpdateCustomerRequest request = new UpdateCustomerRequest(
@@ -131,7 +154,7 @@ class UpdateCustomerUseCaseTest {
 
         assertNotNull(response);
         assertTrue(response.portalAccess());
-        verify(passwordEncoder).encode(anyString());
+        verify(passwordEncoder).encode("J-12345678-9");
     }
 
     @Test

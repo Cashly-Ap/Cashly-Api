@@ -72,7 +72,7 @@ The CUSTOMERS module manages customer information for the invoicing system. It h
 **Business Rules**:
 1. Customer code is auto-generated sequentially
 2. Legal name cannot be null or empty
-3. RIF must follow valid format
+3. RIF must follow valid format and be unique across all customers
 4. Customer can have multiple emails, phones, and addresses
 5. Only one address can be marked as billing address
 6. Credit days must be between 0-365
@@ -1169,6 +1169,7 @@ CREATE TABLE customer_addresses (
 
 ### Custom Exceptions
 - `CustomerNotFoundException` - Customer not found by ID (404 Not Found)
+- `DuplicateCustomerRifException` - RIF already assigned to another customer (409 Conflict)
 
 ---
 
@@ -1205,6 +1206,7 @@ CREATE TABLE customer_addresses (
 - Unit tests for use cases with mocked repositories
 - Integration tests for controllers with test database
 - Test customer code generation uniqueness
+- Test RIF uniqueness on customer creation and update
 - Test billing address constraint (only one billing address)
 - Test cascade deletion of related entities
 - **Test aggregate pattern**: Verify no direct access to nested entities

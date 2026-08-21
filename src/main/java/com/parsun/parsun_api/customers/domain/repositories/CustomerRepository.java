@@ -14,6 +14,9 @@ public interface CustomerRepository {
     Customer save(Customer customer);
     Optional<Customer> findById(CustomerId id);
     Optional<Customer> findByRif(Rif rif);
+    Optional<Customer> findActivePortalCustomerByRif(Rif rif);
+    boolean existsByRif(Rif rif);
+    boolean existsByRifAndIdNot(Rif rif, CustomerId id);
     List<Customer> findAll();
     boolean hasAssociatedRecords(CustomerId id);
     Set<UUID> findIdsWithAssociatedRecords(Set<UUID> ids);

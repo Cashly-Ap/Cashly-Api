@@ -2,6 +2,7 @@ package com.parsun.parsun_api.customers.application.usecases;
 
 import com.parsun.parsun_api.customers.application.dto.request.CreateCustomerRequest;
 import com.parsun.parsun_api.customers.application.dto.response.CustomerCreateResponse;
+import com.parsun.parsun_api.customers.application.exceptions.DuplicateCustomerRifException;
 import com.parsun.parsun_api.customers.application.mappers.CustomerMapper;
 import com.parsun.parsun_api.customers.domain.entities.Customer;
 import com.parsun.parsun_api.customers.domain.entities.CustomerWarehouseAccess;
@@ -41,13 +42,18 @@ public class RegisterCustomerUseCase {
 
     @Transactional
     public CustomerCreateResponse execute(CreateCustomerRequest request, UUID grantedBy) {
+        Rif rif = new Rif(request.rif());
+        if (customerRepository.existsByRif(rif)) {
+            throw new DuplicateCustomerRifException(rif.getValue());
+        }
+
         CustomerCode code = customerCodeGenerator.generateNext();
 
         Customer customer = Customer.create(
             code,
             new LegalName(request.legalName()),
             CustomerType.valueOf(request.type()),
-            new Rif(request.rif()),
+            rif,
             new CustomerAlias(request.alias()),
             new CreditDays(request.creditDays()),
             new CreditLimit(request.creditLimit())

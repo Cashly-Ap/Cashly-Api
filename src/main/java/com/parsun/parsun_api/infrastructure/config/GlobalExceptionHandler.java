@@ -12,6 +12,7 @@ import com.parsun.parsun_api.customers.application.exceptions.CustomerHasAssocia
 import com.parsun.parsun_api.categories.application.exceptions.CategoryNotFoundException;
 import com.parsun.parsun_api.categories.application.exceptions.DuplicateCategoryNameException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerNotFoundException;
+import com.parsun.parsun_api.customers.application.exceptions.DuplicateCustomerRifException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
 import com.parsun.parsun_api.customers.application.exceptions.CustomerWarehouseAccessNotFoundException;
 import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -107,6 +109,32 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleCustomerNotFound(CustomerNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(createErrorResponse(HttpStatus.NOT_FOUND, "Customer not found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicateCustomerRifException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateCustomerRif(DuplicateCustomerRifException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, "Duplicate customer RIF", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String causeMessage = ex.getMostSpecificCause().getMessage();
+        if (causeMessage != null && causeMessage.contains("uk_customers_rif")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(createErrorResponse(
+                            HttpStatus.CONFLICT,
+                            "Duplicate customer RIF",
+                            "A customer with that RIF is already registered"
+                    ));
+        }
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(
+                        HttpStatus.CONFLICT,
+                        "Data integrity violation",
+                        "The operation conflicts with existing data"
+                ));
     }
 
     @ExceptionHandler(OrderNotFoundException.class)

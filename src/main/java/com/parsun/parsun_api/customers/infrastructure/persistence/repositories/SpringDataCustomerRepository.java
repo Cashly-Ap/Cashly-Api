@@ -15,6 +15,12 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
 
     Optional<CustomerEntity> findByRif(String rif);
 
+    Optional<CustomerEntity> findByRifAndActiveTrueAndPortalAccessTrue(String rif);
+
+    boolean existsByRif(String rif);
+
+    boolean existsByRifAndIdNot(String rif, UUID id);
+
     @Query("SELECT MAX(c.code) FROM CustomerEntity c")
     Optional<Long> findMaxCode();
 
@@ -73,4 +79,3 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
         """)
     Set<UUID> findIdsWithAssociatedRecords(@Param("ids") Set<UUID> ids);
 }
-

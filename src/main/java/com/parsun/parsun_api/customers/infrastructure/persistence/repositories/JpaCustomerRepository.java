@@ -56,6 +56,23 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
+    public Optional<Customer> findActivePortalCustomerByRif(Rif rif) {
+        return springDataRepository
+            .findByRifAndActiveTrueAndPortalAccessTrue(rif.getValue())
+            .map(CustomerEntity::toDomain);
+    }
+
+    @Override
+    public boolean existsByRif(Rif rif) {
+        return springDataRepository.existsByRif(rif.getValue());
+    }
+
+    @Override
+    public boolean existsByRifAndIdNot(Rif rif, CustomerId id) {
+        return springDataRepository.existsByRifAndIdNot(rif.getValue(), id.getValue());
+    }
+
+    @Override
     public List<Customer> findAll() {
         return springDataRepository.findAll().stream()
             .map(CustomerEntity::toDomain)
