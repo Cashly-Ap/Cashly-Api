@@ -19,6 +19,8 @@ The portal is the customer-facing adapter for authentication, catalog, orders, q
 ## Rules
 
 - Portal identity is customer-scoped and uses its own authentication endpoints.
+- The initial portal password is the normalized customer RIF when access is enabled for the first time.
+- Portal login resolves only active customers with portal access, so inactive historical records with the same RIF cannot block authentication.
 - Portal reads are restricted to the authenticated customer.
 - Payments may include a multipart proof file and require back-office validation.
 - Portal adapters reuse domain/application use cases without exposing internal admin endpoints.

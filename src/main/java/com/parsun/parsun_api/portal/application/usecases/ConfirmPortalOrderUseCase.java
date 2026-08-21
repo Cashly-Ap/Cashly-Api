@@ -9,13 +9,17 @@ import java.util.UUID;
 public class ConfirmPortalOrderUseCase {
 
     private final ConfirmOrderUseCase confirmOrderUseCase;
+    private final GetPortalOrderUseCase getPortalOrderUseCase;
 
-    public ConfirmPortalOrderUseCase(ConfirmOrderUseCase confirmOrderUseCase) {
+    public ConfirmPortalOrderUseCase(ConfirmOrderUseCase confirmOrderUseCase,
+                                    GetPortalOrderUseCase getPortalOrderUseCase) {
         this.confirmOrderUseCase = confirmOrderUseCase;
+        this.getPortalOrderUseCase = getPortalOrderUseCase;
     }
 
     @Transactional
     public OrderDetailResponse execute(UUID id) {
+        getPortalOrderUseCase.execute(id);
         return confirmOrderUseCase.execute(id);
     }
 }

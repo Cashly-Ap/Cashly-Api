@@ -11,13 +11,17 @@ import java.util.UUID;
 public class CancelPortalOrderUseCase {
 
     private final CancelOrderUseCase cancelOrderUseCase;
+    private final GetPortalOrderUseCase getPortalOrderUseCase;
 
-    public CancelPortalOrderUseCase(CancelOrderUseCase cancelOrderUseCase) {
+    public CancelPortalOrderUseCase(CancelOrderUseCase cancelOrderUseCase,
+                                    GetPortalOrderUseCase getPortalOrderUseCase) {
         this.cancelOrderUseCase = cancelOrderUseCase;
+        this.getPortalOrderUseCase = getPortalOrderUseCase;
     }
 
     @Transactional
     public OrderDetailResponse execute(UUID id, CancelPortalOrderRequest request) {
+        getPortalOrderUseCase.execute(id);
         return cancelOrderUseCase.execute(id, new CancelOrderRequest(request.reason()));
     }
 }

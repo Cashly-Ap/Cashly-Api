@@ -49,7 +49,7 @@ class CustomerRifResolverUnitTest {
         Rif rif = new Rif("J-12345678-9");
         Customer customer = createTestCustomer(rif, true, true);
 
-        when(customerRepository.findByRif(any(Rif.class))).thenReturn(Optional.of(customer));
+        when(customerRepository.findActivePortalCustomerByRif(any(Rif.class))).thenReturn(Optional.of(customer));
 
         Optional<Authenticable> result = resolver.resolveByRif(rif);
 
@@ -59,7 +59,7 @@ class CustomerRifResolverUnitTest {
         assertEquals(customer.getLegalName().getValue(), result.get().getUserName());
         assertEquals(customer.getPortalPassword(), result.get().getHashedPassword());
         assertTrue(result.get().canAuthenticate());
-        verify(customerRepository, times(1)).findByRif(rif);
+        verify(customerRepository, times(1)).findActivePortalCustomerByRif(rif);
     }
 
     @Test
@@ -67,12 +67,12 @@ class CustomerRifResolverUnitTest {
     void should_ReturnEmpty_When_CustomerNotFoundByRif() {
         Rif rif = new Rif("J-87654321-0");
 
-        when(customerRepository.findByRif(any(Rif.class))).thenReturn(Optional.empty());
+        when(customerRepository.findActivePortalCustomerByRif(any(Rif.class))).thenReturn(Optional.empty());
 
         Optional<Authenticable> result = resolver.resolveByRif(rif);
 
         assertTrue(result.isEmpty());
-        verify(customerRepository, times(1)).findByRif(rif);
+        verify(customerRepository, times(1)).findActivePortalCustomerByRif(rif);
     }
 
     @Test
@@ -81,7 +81,7 @@ class CustomerRifResolverUnitTest {
         Rif rif = new Rif("V-11111111-1");
         Customer customer = createTestCustomer(rif, true, true);
 
-        when(customerRepository.findByRif(rif)).thenReturn(Optional.of(customer));
+        when(customerRepository.findActivePortalCustomerByRif(rif)).thenReturn(Optional.of(customer));
 
         Optional<Authenticable> result = resolver.resolveByRif(rif);
 

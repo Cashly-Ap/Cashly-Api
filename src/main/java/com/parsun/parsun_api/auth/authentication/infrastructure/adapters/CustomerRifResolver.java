@@ -22,7 +22,7 @@ public class CustomerRifResolver implements AuthenticableResolver {
 
     @Override
     public Optional<Authenticable> resolveByRif(Rif rif) {
-        return customerRepository.findByRif(rif)
+        return customerRepository.findActivePortalCustomerByRif(rif)
             .map(CustomerAuthenticableAdapter::new);
     }
 }

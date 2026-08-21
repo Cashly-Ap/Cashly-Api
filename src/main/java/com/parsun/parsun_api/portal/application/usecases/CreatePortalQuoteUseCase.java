@@ -29,6 +29,7 @@ public class CreatePortalQuoteUseCase {
     @Transactional
     public QuoteDetailResponse execute(CreatePortalQuoteRequest request) {
         UUID customerId = portalAuthorizationService.getCurrentCustomerId();
+        request.lines().forEach(line -> portalAuthorizationService.requireProductAccess(line.productId()));
 
         CreateQuoteRequest internalRequest = new CreateQuoteRequest(
                 customerId,

@@ -20,12 +20,9 @@ public class GetPortalInvoiceUseCase {
 
     @Transactional(readOnly = true)
     public InvoiceDetailResponse execute(UUID id) {
-        UUID currentCustomerId = portalAuthorizationService.getCurrentCustomerId();
         InvoiceDetailResponse invoice = getInvoiceByIdUseCase.execute(id);
 
-        if (!currentCustomerId.equals(invoice.customerId())) {
-            throw new SecurityException("Invoice does not belong to current customer");
-        }
+        portalAuthorizationService.requireOwnership(invoice.customerId(), "Invoice");
 
         return invoice;
     }

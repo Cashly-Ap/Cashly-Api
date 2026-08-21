@@ -19,15 +19,18 @@ public class PayPortalInvoiceUseCase {
     private static final String JUSTIFICANTE_PATH = "payments/justificantes/";
 
     private final CreatePaymentUseCase createPaymentUseCase;
+    private final GetPortalInvoiceUseCase getPortalInvoiceUseCase;
     private final PortalAuthorizationService portalAuthorizationService;
     private final NotificationService notificationService;
     private final FileStorageService fileStorageService;
 
     public PayPortalInvoiceUseCase(CreatePaymentUseCase createPaymentUseCase,
+                                    GetPortalInvoiceUseCase getPortalInvoiceUseCase,
                                     PortalAuthorizationService portalAuthorizationService,
                                     NotificationService notificationService,
                                     FileStorageService fileStorageService) {
         this.createPaymentUseCase = createPaymentUseCase;
+        this.getPortalInvoiceUseCase = getPortalInvoiceUseCase;
         this.portalAuthorizationService = portalAuthorizationService;
         this.notificationService = notificationService;
         this.fileStorageService = fileStorageService;
@@ -36,6 +39,7 @@ public class PayPortalInvoiceUseCase {
     @Transactional
     public PaymentResponse execute(UUID invoiceId, PayPortalInvoiceRequest request, MultipartFile justificante) {
         UUID customerId = portalAuthorizationService.getCurrentCustomerId();
+        getPortalInvoiceUseCase.execute(invoiceId);
         String voucherPath = storeVoucherIfPresent(justificante);
 
         CreatePaymentRequest createRequest = new CreatePaymentRequest(

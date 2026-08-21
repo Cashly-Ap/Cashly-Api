@@ -38,6 +38,9 @@ class PayPortalInvoiceUseCaseTest {
     private CreatePaymentUseCase createPaymentUseCase;
 
     @Mock
+    private GetPortalInvoiceUseCase getPortalInvoiceUseCase;
+
+    @Mock
     private PortalAuthorizationService portalAuthorizationService;
 
     @Mock
@@ -58,7 +61,8 @@ class PayPortalInvoiceUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new PayPortalInvoiceUseCase(createPaymentUseCase, portalAuthorizationService,
+        useCase = new PayPortalInvoiceUseCase(createPaymentUseCase, getPortalInvoiceUseCase,
+                portalAuthorizationService,
                 notificationService, fileStorageService);
         when(portalAuthorizationService.getCurrentCustomerId()).thenReturn(customerId);
         when(createPaymentUseCase.execute(any(), isNull())).thenReturn(stubbedResponse());

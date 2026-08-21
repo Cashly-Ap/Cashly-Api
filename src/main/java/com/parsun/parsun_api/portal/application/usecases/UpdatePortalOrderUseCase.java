@@ -4,6 +4,7 @@ import com.parsun.parsun_api.orders.application.dto.request.UpdateOrderRequest;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.orders.application.usecases.UpdateOrderUseCase;
 import com.parsun.parsun_api.portal.application.dto.request.UpdatePortalOrderRequest;
+import com.parsun.parsun_api.portal.application.services.PortalAuthorizationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,12 +12,20 @@ import java.util.UUID;
 public class UpdatePortalOrderUseCase {
 
     private final UpdateOrderUseCase updateOrderUseCase;
+    private final GetPortalOrderUseCase getPortalOrderUseCase;
+    private final PortalAuthorizationService portalAuthorizationService;
 
-    public UpdatePortalOrderUseCase(UpdateOrderUseCase updateOrderUseCase) {
+    public UpdatePortalOrderUseCase(UpdateOrderUseCase updateOrderUseCase,
+                                    GetPortalOrderUseCase getPortalOrderUseCase,
+                                    PortalAuthorizationService portalAuthorizationService) {
         this.updateOrderUseCase = updateOrderUseCase;
+        this.getPortalOrderUseCase = getPortalOrderUseCase;
+        this.portalAuthorizationService = portalAuthorizationService;
     }
 
     public OrderDetailResponse execute(UUID id, UpdatePortalOrderRequest request) {
+        getPortalOrderUseCase.execute(id);
+        request.lines().forEach(line -> portalAuthorizationService.requireProductAccess(line.productId()));
         UpdateOrderRequest internalRequest = new UpdateOrderRequest(
                 request.notes(),
                 request.lines().stream()

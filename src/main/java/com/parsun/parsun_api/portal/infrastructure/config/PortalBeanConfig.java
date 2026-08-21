@@ -155,8 +155,9 @@ public class PortalBeanConfig {
 
     @Bean
     public GetPortalQuoteUseCase getPortalQuoteUseCase(
-            GetQuoteByIdUseCase getQuoteByIdUseCase) {
-        return new GetPortalQuoteUseCase(getQuoteByIdUseCase);
+            GetQuoteByIdUseCase getQuoteByIdUseCase,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new GetPortalQuoteUseCase(getQuoteByIdUseCase, portalAuthorizationService);
     }
 
     @Bean
@@ -169,14 +170,16 @@ public class PortalBeanConfig {
 
     @Bean
     public CancelPortalQuoteUseCase cancelPortalQuoteUseCase(
-            CancelQuoteUseCase cancelQuoteUseCase) {
-        return new CancelPortalQuoteUseCase(cancelQuoteUseCase);
+            CancelQuoteUseCase cancelQuoteUseCase,
+            GetPortalQuoteUseCase getPortalQuoteUseCase) {
+        return new CancelPortalQuoteUseCase(cancelQuoteUseCase, getPortalQuoteUseCase);
     }
 
     @Bean
     public ConvertPortalQuoteToOrderUseCase convertPortalQuoteToOrderUseCase(
-            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase) {
-        return new ConvertPortalQuoteToOrderUseCase(convertQuoteToOrderUseCase);
+            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
+            GetPortalQuoteUseCase getPortalQuoteUseCase) {
+        return new ConvertPortalQuoteToOrderUseCase(convertQuoteToOrderUseCase, getPortalQuoteUseCase);
     }
 
     @Bean
@@ -188,20 +191,23 @@ public class PortalBeanConfig {
 
     @Bean
     public GetPortalOrderUseCase getPortalOrderUseCase(
-            GetOrderByIdUseCase getOrderByIdUseCase) {
-        return new GetPortalOrderUseCase(getOrderByIdUseCase);
+            GetOrderByIdUseCase getOrderByIdUseCase,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new GetPortalOrderUseCase(getOrderByIdUseCase, portalAuthorizationService);
     }
 
     @Bean
     public ConfirmPortalOrderUseCase confirmPortalOrderUseCase(
-            ConfirmOrderUseCase confirmOrderUseCase) {
-        return new ConfirmPortalOrderUseCase(confirmOrderUseCase);
+            ConfirmOrderUseCase confirmOrderUseCase,
+            GetPortalOrderUseCase getPortalOrderUseCase) {
+        return new ConfirmPortalOrderUseCase(confirmOrderUseCase, getPortalOrderUseCase);
     }
 
     @Bean
     public CancelPortalOrderUseCase cancelPortalOrderUseCase(
-            CancelOrderUseCase cancelOrderUseCase) {
-        return new CancelPortalOrderUseCase(cancelOrderUseCase);
+            CancelOrderUseCase cancelOrderUseCase,
+            GetPortalOrderUseCase getPortalOrderUseCase) {
+        return new CancelPortalOrderUseCase(cancelOrderUseCase, getPortalOrderUseCase);
     }
 
     @Bean
@@ -214,8 +220,11 @@ public class PortalBeanConfig {
 
     @Bean
     public UpdatePortalOrderUseCase updatePortalOrderUseCase(
-            UpdateOrderUseCase updateOrderUseCase) {
-        return new UpdatePortalOrderUseCase(updateOrderUseCase);
+            UpdateOrderUseCase updateOrderUseCase,
+            GetPortalOrderUseCase getPortalOrderUseCase,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new UpdatePortalOrderUseCase(updateOrderUseCase, getPortalOrderUseCase,
+                portalAuthorizationService);
     }
 
     @Bean
@@ -242,17 +251,19 @@ public class PortalBeanConfig {
 
     @Bean
     public GetPortalPaymentUseCase getPortalPaymentUseCase(
-            GetPaymentByIdUseCase getPaymentByIdUseCase) {
-        return new GetPortalPaymentUseCase(getPaymentByIdUseCase);
+            GetPaymentByIdUseCase getPaymentByIdUseCase,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new GetPortalPaymentUseCase(getPaymentByIdUseCase, portalAuthorizationService);
     }
 
     @Bean
     public PayPortalInvoiceUseCase payPortalInvoiceUseCase(
             CreatePaymentUseCase createPaymentUseCase,
+            GetPortalInvoiceUseCase getPortalInvoiceUseCase,
             PortalAuthorizationService portalAuthorizationService,
             NotificationService notificationService,
             FileStorageService fileStorageService) {
-        return new PayPortalInvoiceUseCase(createPaymentUseCase, portalAuthorizationService,
+        return new PayPortalInvoiceUseCase(createPaymentUseCase, getPortalInvoiceUseCase, portalAuthorizationService,
                 notificationService, fileStorageService);
     }
 

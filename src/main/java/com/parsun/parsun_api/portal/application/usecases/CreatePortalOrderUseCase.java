@@ -28,6 +28,7 @@ public class CreatePortalOrderUseCase {
     @Transactional
     public OrderDetailResponse execute(CreatePortalOrderRequest request) {
         UUID customerId = portalAuthorizationService.getCurrentCustomerId();
+        request.lines().forEach(line -> portalAuthorizationService.requireProductAccess(line.productId()));
 
         CreateOrderRequest internalRequest = new CreateOrderRequest(
                 customerId,

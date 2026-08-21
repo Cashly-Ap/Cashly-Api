@@ -9,13 +9,17 @@ import java.util.UUID;
 public class ConvertPortalQuoteToOrderUseCase {
 
     private final ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase;
+    private final GetPortalQuoteUseCase getPortalQuoteUseCase;
 
-    public ConvertPortalQuoteToOrderUseCase(ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase) {
+    public ConvertPortalQuoteToOrderUseCase(ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
+                                            GetPortalQuoteUseCase getPortalQuoteUseCase) {
         this.convertQuoteToOrderUseCase = convertQuoteToOrderUseCase;
+        this.getPortalQuoteUseCase = getPortalQuoteUseCase;
     }
 
     @Transactional
     public QuoteConvertedToOrderResponse execute(UUID quoteId) {
+        getPortalQuoteUseCase.execute(quoteId);
         return convertQuoteToOrderUseCase.execute(quoteId, null);
     }
 }
