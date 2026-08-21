@@ -88,7 +88,8 @@ class PaymentControllerTest {
                 LocalDate.now(), "Test payment", "DRAFT",
                 BigDecimal.ZERO, UUID.randomUUID(), "Test User",
                 LocalDateTime.now(), LocalDateTime.now(),
-                null, null, null, null
+                null, null, null, null,
+                null, null
         );
 
         when(createPaymentUseCase.execute(any(CreatePaymentRequest.class), any(UUID.class)))
@@ -96,7 +97,8 @@ class PaymentControllerTest {
 
         CreatePaymentRequest request = new CreatePaymentRequest(
                 UUID.randomUUID(), "DRAFT", BigDecimal.TEN,
-                UUID.randomUUID(), null, LocalDate.now(), null
+                UUID.randomUUID(), null, LocalDate.now(), null,
+                null, null
         );
 
         ResponseEntity<PaymentResponse> result = paymentController.create(request, authentication);
@@ -112,8 +114,9 @@ class PaymentControllerTest {
     void shouldListPayments() {
         PaymentListResponse payment = new PaymentListResponse(
                 UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(),
-                BigDecimal.TEN, "REF-001", LocalDate.now(),
-                "APPLIED", BigDecimal.ZERO, LocalDateTime.now()
+                BigDecimal.TEN, UUID.randomUUID(), "REF-001", LocalDate.now(),
+                "APPLIED", BigDecimal.ZERO, LocalDateTime.now(),
+                null, null
         );
 
         when(getAllPaymentsUseCase.execute(null, null, null, null, null))
@@ -157,7 +160,8 @@ class PaymentControllerTest {
                 LocalDate.now(), null, "APPLIED",
                 BigDecimal.ZERO, UUID.randomUUID(), "Test User",
                 LocalDateTime.now(), LocalDateTime.now(),
-                null, null, null, null
+                null, null, null, null,
+                null, null
         );
 
         when(getPaymentByIdUseCase.execute(id)).thenReturn(response);

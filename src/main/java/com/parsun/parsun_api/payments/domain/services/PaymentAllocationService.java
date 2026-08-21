@@ -4,10 +4,12 @@ import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
+import com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentId;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,6 +87,28 @@ public class PaymentAllocationService {
 
         advance.apply(amount);
         paymentRepository.save(advance);
+    }
+
+    public List<PaymentAllocation> allocateOldestFirst(UUID paymentId,
+                                                          List<InvoiceRemainingBalance> invoicesOldestFirst,
+                                                          BigDecimal amountToAllocate) {
+        List<PaymentAllocation> allocations = new ArrayList<>();
+        BigDecimal remaining = amountToAllocate;
+
+        for (InvoiceRemainingBalance invoice : invoicesOldestFirst) {
+            if (remaining.compareTo(BigDecimal.ZERO) <= 0) {
+                break;
+            }
+            if (invoice.remainingAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                continue;
+            }
+
+            BigDecimal allocatedAmount = remaining.min(invoice.remainingAmount());
+            allocations.add(PaymentAllocation.create(paymentId, invoice.invoiceId(), allocatedAmount));
+            remaining = remaining.subtract(allocatedAmount);
+        }
+
+        return allocations;
     }
 
     public record AllocationRequest(UUID invoiceId, BigDecimal amount) {}

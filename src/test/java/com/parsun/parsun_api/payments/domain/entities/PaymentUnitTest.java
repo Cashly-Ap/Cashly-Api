@@ -438,6 +438,78 @@ class PaymentUnitTest {
     }
 
     @Nested
+    @DisplayName("targetInvoiceId and voucherPath")
+    class TargetInvoiceAndVoucher {
+
+        @Test
+        void should_DefaultToNull_When_CreatingWithoutTargetInvoiceOrVoucher() {
+            Payment payment = createValidPayment();
+
+            assertNull(payment.getTargetInvoiceId());
+            assertNull(payment.getVoucherPath());
+        }
+
+        @Test
+        void should_SetTargetInvoiceAndVoucher_When_CreatingWithBothProvided() {
+            UUID targetInvoiceId = UUID.randomUUID();
+            String voucherPath = "payments/justificantes/abc.pdf";
+
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    CREATED_BY, CREATED_BY_NAME, STATUS, targetInvoiceId, voucherPath);
+
+            assertEquals(targetInvoiceId, payment.getTargetInvoiceId());
+            assertEquals(voucherPath, payment.getVoucherPath());
+        }
+
+        @Test
+        void should_SetTargetInvoiceAndVoucher_When_ReconstitutingWithBothProvided() {
+            UUID targetInvoiceId = UUID.randomUUID();
+            String voucherPath = "payments/justificantes/abc.pdf";
+            LocalDateTime now = LocalDateTime.now();
+
+            Payment payment = Payment.reconstitute(
+                    PaymentId.generate(), PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
+                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    PaymentStatus.APPLIED, AMOUNT, CREATED_BY, CREATED_BY_NAME, now, now,
+                    null, null, null, null, targetInvoiceId, voucherPath);
+
+            assertEquals(targetInvoiceId, payment.getTargetInvoiceId());
+            assertEquals(voucherPath, payment.getVoucherPath());
+        }
+
+        @Test
+        void should_DefaultToNull_When_ReconstitutingWithDeprecatedNineteenArgOverload() {
+            LocalDateTime now = LocalDateTime.now();
+
+            Payment payment = Payment.reconstitute(
+                    PaymentId.generate(), PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
+                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    PaymentStatus.APPLIED, AMOUNT, CREATED_BY, CREATED_BY_NAME, now, now,
+                    null, null, null, null);
+
+            assertNull(payment.getTargetInvoiceId());
+            assertNull(payment.getVoucherPath());
+        }
+
+        @Test
+        void should_DefaultToNull_When_ReconstitutingWithDeprecatedFifteenArgOverload() {
+            LocalDateTime now = LocalDateTime.now();
+
+            Payment payment = Payment.reconstitute(
+                    PaymentId.generate(), PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
+                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
+                    PaymentStatus.APPLIED, AMOUNT, CREATED_BY, CREATED_BY_NAME, now, now);
+
+            assertNull(payment.getTargetInvoiceId());
+            assertNull(payment.getVoucherPath());
+        }
+    }
+
+    @Nested
     @DisplayName("Getters")
     class Getters {
 

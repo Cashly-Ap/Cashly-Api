@@ -78,7 +78,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         String countSql = "SELECT COUNT(DISTINCT p.id)\n" +
             "            FROM payments p\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
+            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
             "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
             "            WHERE " + whereClauseCond;
         Query countQ = entityManager.createNativeQuery(countSql);
@@ -94,7 +94,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
+            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
             "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
             "            WHERE " + whereClauseCond + "\n" +
             "            ORDER BY p.created_at DESC";
@@ -509,7 +509,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
+            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
             "            WHERE " + conditionsStr;
         Query countQ = entityManager.createNativeQuery(countSql);
         applyParams(countQ, merchantId, status, search, isMerchant);
@@ -522,7 +522,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
+            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
             "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
             "            WHERE " + conditionsStr + "\n" +
             "            ORDER BY p.created_at DESC";

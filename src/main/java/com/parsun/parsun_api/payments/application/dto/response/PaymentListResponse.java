@@ -10,9 +10,12 @@ public record PaymentListResponse(
         String paymentNumber,
         UUID customerId,
         BigDecimal amount,
+        UUID paymentMethodId,
         String referenceNumber,
         LocalDate paymentDate,
         String status,
         BigDecimal appliedAmount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        UUID targetInvoiceId,
+        String voucherUrl
 ) {}

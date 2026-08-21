@@ -229,6 +229,86 @@ class PaymentRepositoryAdapterTest {
     }
 
     @Nested
+    @DisplayName("TargetInvoiceAndVoucherRoundTrip")
+    class TargetInvoiceAndVoucherRoundTrip {
+
+        @Test
+        void should_PersistTargetInvoiceIdAndVoucherPath_When_Saving() {
+            UUID targetInvoiceId = UUID.randomUUID();
+            String voucherPath = "payments/justificantes/abc.pdf";
+            Payment payment = Payment.create(
+                    PaymentNumber.of(2026, 1),
+                    UUID.randomUUID(),
+                    new BigDecimal("500.00"),
+                    UUID.randomUUID(),
+                    "REF-001",
+                    LocalDate.now(),
+                    "Test payment",
+                    UUID.randomUUID(),
+                    "John Doe",
+                    PaymentStatus.PENDING,
+                    targetInvoiceId,
+                    voucherPath
+            );
+
+            PaymentEntity expectedEntity = PaymentJpaMapper.toEntity(payment);
+            when(jpaRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+
+            adapter.save(payment);
+
+            PaymentEntity captured = entityCaptor.getValue();
+            assertEquals(targetInvoiceId, captured.getTargetInvoiceId());
+            assertEquals(voucherPath, captured.getVoucherPath());
+        }
+
+        @Test
+        void should_ReturnDomainWithTargetInvoiceIdAndVoucherPath_When_FindingById() {
+            PaymentId id = PaymentId.generate();
+            UUID targetInvoiceId = UUID.randomUUID();
+            String voucherPath = "payments/justificantes/abc.pdf";
+            Payment payment = Payment.reconstitute(
+                    id, PaymentNumber.of(2026, 1), UUID.randomUUID(),
+                    new BigDecimal("500.00"), UUID.randomUUID(), PaymentSource.PAYMENT_METHOD,
+                    "REF-001", LocalDate.now(), "Test payment",
+                    PaymentStatus.APPLIED, BigDecimal.ZERO,
+                    UUID.randomUUID(), "John Doe",
+                    LocalDateTime.now(), LocalDateTime.now(),
+                    null, null, null, null,
+                    targetInvoiceId, voucherPath
+            );
+            PaymentEntity entity = PaymentJpaMapper.toEntity(payment);
+            when(jpaRepository.findById(id.value())).thenReturn(Optional.of(entity));
+
+            Optional<Payment> result = adapter.findById(id);
+
+            assertTrue(result.isPresent());
+            assertEquals(targetInvoiceId, result.get().getTargetInvoiceId());
+            assertEquals(voucherPath, result.get().getVoucherPath());
+        }
+
+        @Test
+        void should_ReturnDomainWithNullTargetInvoiceAndVoucher_When_NotSet() {
+            PaymentId id = PaymentId.generate();
+            Payment payment = Payment.reconstitute(
+                    id, PaymentNumber.of(2026, 1), UUID.randomUUID(),
+                    new BigDecimal("500.00"), UUID.randomUUID(), PaymentSource.PAYMENT_METHOD,
+                    "REF-001", LocalDate.now(), "Test payment",
+                    PaymentStatus.APPLIED, BigDecimal.ZERO,
+                    UUID.randomUUID(), "John Doe",
+                    LocalDateTime.now(), LocalDateTime.now()
+            );
+            PaymentEntity entity = PaymentJpaMapper.toEntity(payment);
+            when(jpaRepository.findById(id.value())).thenReturn(Optional.of(entity));
+
+            Optional<Payment> result = adapter.findById(id);
+
+            assertTrue(result.isPresent());
+            assertNull(result.get().getTargetInvoiceId());
+            assertNull(result.get().getVoucherPath());
+        }
+    }
+
+    @Nested
     @DisplayName("GetNextSequenceForYear")
     class GetNextSequenceForYear {
 

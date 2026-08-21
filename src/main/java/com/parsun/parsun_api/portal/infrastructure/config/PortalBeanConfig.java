@@ -39,6 +39,7 @@ import com.parsun.parsun_api.portal.application.usecases.ChangeCustomerPasswordU
 import com.parsun.parsun_api.portal.application.usecases.CreatePortalOrderUseCase;
 import com.parsun.parsun_api.portal.application.usecases.CreatePortalQuoteUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GeneratePortalCatalogPdfUseCase;
+import com.parsun.parsun_api.portal.application.usecases.GetPendingPortalPaymentsUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetCustomerProfileUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalDashboardUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalInvoiceUseCase;
@@ -249,8 +250,10 @@ public class PortalBeanConfig {
     public PayPortalInvoiceUseCase payPortalInvoiceUseCase(
             CreatePaymentUseCase createPaymentUseCase,
             PortalAuthorizationService portalAuthorizationService,
-            NotificationService notificationService) {
-        return new PayPortalInvoiceUseCase(createPaymentUseCase, portalAuthorizationService, notificationService);
+            NotificationService notificationService,
+            FileStorageService fileStorageService) {
+        return new PayPortalInvoiceUseCase(createPaymentUseCase, portalAuthorizationService,
+                notificationService, fileStorageService);
     }
 
     @Bean
@@ -258,8 +261,10 @@ public class PortalBeanConfig {
             CreatePaymentUseCase createPaymentUseCase,
             PortalAuthorizationService portalAuthorizationService,
             NotificationService notificationService,
-            CustomerRepository customerRepository) {
-        return new PayPortalAllDebtUseCase(createPaymentUseCase, portalAuthorizationService, notificationService, customerRepository);
+            CustomerRepository customerRepository,
+            FileStorageService fileStorageService) {
+        return new PayPortalAllDebtUseCase(createPaymentUseCase, portalAuthorizationService,
+                notificationService, customerRepository, fileStorageService);
     }
 
     @Bean
@@ -267,8 +272,17 @@ public class PortalBeanConfig {
             CreatePaymentUseCase createPaymentUseCase,
             PortalAuthorizationService portalAuthorizationService,
             NotificationService notificationService,
-            CustomerRepository customerRepository) {
-        return new PayPortalPartialDebtUseCase(createPaymentUseCase, portalAuthorizationService, notificationService, customerRepository);
+            CustomerRepository customerRepository,
+            FileStorageService fileStorageService) {
+        return new PayPortalPartialDebtUseCase(createPaymentUseCase, portalAuthorizationService,
+                notificationService, customerRepository, fileStorageService);
+    }
+
+    @Bean
+    public GetPendingPortalPaymentsUseCase getPendingPortalPaymentsUseCase(
+            PaymentRepository paymentRepository,
+            PortalAuthorizationService portalAuthorizationService) {
+        return new GetPendingPortalPaymentsUseCase(paymentRepository, portalAuthorizationService);
     }
 
     @Bean

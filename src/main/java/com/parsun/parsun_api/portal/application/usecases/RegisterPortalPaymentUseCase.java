@@ -56,8 +56,6 @@ public class RegisterPortalPaymentUseCase {
             }
         }
 
-        String combinedNotes = buildNotes(request.notes(), storedJustificantePath);
-
         CreatePaymentRequest createRequest = new CreatePaymentRequest(
                 customerId,
                 PAYMENT_STATUS_PENDING,
@@ -65,7 +63,9 @@ public class RegisterPortalPaymentUseCase {
                 request.paymentMethodId(),
                 request.referenceNumber(),
                 request.paymentDate(),
-                combinedNotes
+                request.notes(),
+                null,
+                storedJustificantePath
         );
 
         PaymentResponse response = createPaymentUseCase.execute(createRequest, null);
@@ -77,17 +77,5 @@ public class RegisterPortalPaymentUseCase {
         notificationService.notifyAdminsPaymentPending(response.id(), customerName, request.amount());
 
         return response;
-    }
-
-    private String buildNotes(String notes, String justificantePath) {
-        StringBuilder sb = new StringBuilder();
-        if (notes != null && !notes.isBlank()) {
-            sb.append(notes);
-        }
-        if (justificantePath != null) {
-            if (!sb.isEmpty()) sb.append(" | ");
-            sb.append("Justificante: ").append(justificantePath);
-        }
-        return sb.isEmpty() ? null : sb.toString();
     }
 }

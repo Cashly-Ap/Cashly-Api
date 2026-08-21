@@ -10,6 +10,7 @@ import com.parsun.parsun_api.portal.application.dto.request.PayPortalDebtRequest
 import com.parsun.parsun_api.portal.application.dto.request.PayPortalInvoiceRequest;
 import com.parsun.parsun_api.portal.application.dto.request.PayPortalPartialDebtRequest;
 import com.parsun.parsun_api.portal.application.dto.request.RegisterPortalPaymentRequest;
+import com.parsun.parsun_api.portal.application.usecases.GetPendingPortalPaymentsUseCase;
 import com.parsun.parsun_api.portal.application.usecases.GetPortalPaymentUseCase;
 import com.parsun.parsun_api.portal.application.usecases.ListPortalPaymentsUseCase;
 import com.parsun.parsun_api.portal.application.usecases.PayPortalAllDebtUseCase;
@@ -23,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -44,6 +44,7 @@ public class PortalPaymentController {
     private final PayPortalAllDebtUseCase payPortalAllDebtUseCase;
     private final PayPortalPartialDebtUseCase payPortalPartialDebtUseCase;
     private final RegisterPortalPaymentUseCase registerPortalPaymentUseCase;
+    private final GetPendingPortalPaymentsUseCase getPendingPortalPaymentsUseCase;
     private final PaymentMethodRepository paymentMethodRepository;
 
     public PortalPaymentController(ListPortalPaymentsUseCase listPortalPaymentsUseCase,
@@ -52,6 +53,7 @@ public class PortalPaymentController {
                                     PayPortalAllDebtUseCase payPortalAllDebtUseCase,
                                     PayPortalPartialDebtUseCase payPortalPartialDebtUseCase,
                                     RegisterPortalPaymentUseCase registerPortalPaymentUseCase,
+                                    GetPendingPortalPaymentsUseCase getPendingPortalPaymentsUseCase,
                                     PaymentMethodRepository paymentMethodRepository) {
         this.listPortalPaymentsUseCase = listPortalPaymentsUseCase;
         this.getPortalPaymentUseCase = getPortalPaymentUseCase;
@@ -59,6 +61,7 @@ public class PortalPaymentController {
         this.payPortalAllDebtUseCase = payPortalAllDebtUseCase;
         this.payPortalPartialDebtUseCase = payPortalPartialDebtUseCase;
         this.registerPortalPaymentUseCase = registerPortalPaymentUseCase;
+        this.getPendingPortalPaymentsUseCase = getPendingPortalPaymentsUseCase;
         this.paymentMethodRepository = paymentMethodRepository;
     }
 
@@ -79,26 +82,36 @@ public class PortalPaymentController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/invoices/{id}/pay")
+    @PostMapping(value = "/invoices/{id}/pay", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PaymentResponse> payInvoice(
             @PathVariable UUID id,
-            @Valid @RequestBody PayPortalInvoiceRequest request) {
-        PaymentResponse response = payPortalInvoiceUseCase.execute(id, request);
+            @Valid @RequestPart("request") PayPortalInvoiceRequest request,
+            @RequestPart(value = "justificante", required = false) MultipartFile justificante) {
+        PaymentResponse response = payPortalInvoiceUseCase.execute(id, request, justificante);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/debt/pay")
+    @PostMapping(value = "/debt/pay", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PaymentResponse> payAllDebt(
-            @Valid @RequestBody PayPortalDebtRequest request) {
-        PaymentResponse response = payPortalAllDebtUseCase.execute(request);
+            @Valid @RequestPart("request") PayPortalDebtRequest request,
+            @RequestPart(value = "justificante", required = false) MultipartFile justificante) {
+        PaymentResponse response = payPortalAllDebtUseCase.execute(request, justificante);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/debt/pay-partial")
+    @PostMapping(value = "/debt/pay-partial", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PaymentResponse> payPartialDebt(
-            @Valid @RequestBody PayPortalPartialDebtRequest request) {
-        PaymentResponse response = payPortalPartialDebtUseCase.execute(request);
+            @Valid @RequestPart("request") PayPortalPartialDebtRequest request,
+            @RequestPart(value = "justificante", required = false) MultipartFile justificante) {
+        PaymentResponse response = payPortalPartialDebtUseCase.execute(request, justificante);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/payments/pending-check")
+    public ResponseEntity<List<PaymentListResponse>> pendingCheck(
+            @RequestParam(required = false) UUID invoiceId) {
+        List<PaymentListResponse> response = getPendingPortalPaymentsUseCase.execute(invoiceId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/payments/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

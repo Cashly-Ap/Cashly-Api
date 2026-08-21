@@ -23,5 +23,7 @@ public record PaymentResponse(
         String cancelledReason,
         UUID verifiedBy,
         String verifiedByName,
-        LocalDateTime verifiedAt
+        LocalDateTime verifiedAt,
+        UUID targetInvoiceId,
+        String voucherUrl
 ) {}

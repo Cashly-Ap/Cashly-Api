@@ -21,6 +21,7 @@ import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
+import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,11 +89,14 @@ class PayPartialDebtUseCaseTest {
 
     @BeforeEach
     void setUp() {
+        PaymentAllocationService paymentAllocationService =
+                new PaymentAllocationService(paymentRepository, allocationRepository);
         useCase = new PayPartialDebtUseCase(
                 paymentRepository, allocationRepository,
                 invoiceRepository, invoiceStatusService,
                 creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase, cashMovementService
+                consumeCustomerBalanceUseCase, cashMovementService,
+                paymentAllocationService
         );
     }
 

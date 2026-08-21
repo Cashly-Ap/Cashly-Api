@@ -171,4 +171,96 @@ class PaymentAllocationServiceTest {
                     () -> service.applyAdvanceToInvoice(paymentId, invoiceId, new BigDecimal("200.00")));
         }
     }
+
+    @Nested
+    @DisplayName("allocateOldestFirst")
+    class AllocateOldestFirst {
+
+        @Test
+        void should_AllocateExactAmount_When_PaymentExactlyCoversTotalDebt() {
+            UUID invoice1Id = UUID.randomUUID();
+            UUID invoice2Id = UUID.randomUUID();
+            List<com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, new BigDecimal("300.00")),
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
+            );
+
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("500.00"));
+
+            assertEquals(2, allocations.size());
+            assertEquals(invoice1Id, allocations.get(0).getInvoiceId());
+            assertEquals(new BigDecimal("300.00"), allocations.get(0).getAllocatedAmount());
+            assertEquals(invoice2Id, allocations.get(1).getInvoiceId());
+            assertEquals(new BigDecimal("200.00"), allocations.get(1).getAllocatedAmount());
+        }
+
+        @Test
+        void should_AllocateOnlyToOldestInvoice_When_AmountIsSmallerThanTotalDebt() {
+            UUID invoice1Id = UUID.randomUUID();
+            UUID invoice2Id = UUID.randomUUID();
+            List<com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, new BigDecimal("300.00")),
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
+            );
+
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("250.00"));
+
+            assertEquals(1, allocations.size());
+            assertEquals(invoice1Id, allocations.get(0).getInvoiceId());
+            assertEquals(new BigDecimal("250.00"), allocations.get(0).getAllocatedAmount());
+        }
+
+        @Test
+        void should_AllocateOnlyUpToTotalDebt_When_AmountExceedsTotalDebt() {
+            UUID invoice1Id = UUID.randomUUID();
+            UUID invoice2Id = UUID.randomUUID();
+            List<com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, new BigDecimal("300.00")),
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
+            );
+
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("700.00"));
+
+            BigDecimal totalAllocated = allocations.stream()
+                    .map(PaymentAllocation::getAllocatedAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            assertEquals(2, allocations.size());
+            assertEquals(new BigDecimal("500.00"), totalAllocated);
+        }
+
+        @Test
+        void should_ReturnEmptyList_When_NoInvoicesProvided() {
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, List.of(), new BigDecimal("100.00"));
+
+            assertTrue(allocations.isEmpty());
+        }
+
+        @Test
+        void should_AllocateFullAmount_When_SingleInvoiceProvided() {
+            UUID invoiceId = UUID.randomUUID();
+            List<com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoiceId, new BigDecimal("500.00"))
+            );
+
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("500.00"));
+
+            assertEquals(1, allocations.size());
+            assertEquals(new BigDecimal("500.00"), allocations.get(0).getAllocatedAmount());
+        }
+
+        @Test
+        void should_SkipInvoice_When_RemainingAmountIsZero() {
+            UUID invoice1Id = UUID.randomUUID();
+            UUID invoice2Id = UUID.randomUUID();
+            List<com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, BigDecimal.ZERO),
+                    new com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
+            );
+
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("200.00"));
+
+            assertEquals(1, allocations.size());
+            assertEquals(invoice2Id, allocations.get(0).getInvoiceId());
+        }
+    }
 }

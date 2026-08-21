@@ -32,13 +32,16 @@ public class Payment {
     private UUID verifiedBy;
     private String verifiedByName;
     private LocalDateTime verifiedAt;
+    private final UUID targetInvoiceId;
+    private final String voucherPath;
 
     private Payment(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
                     BigDecimal amount, UUID paymentMethodId, PaymentSource source,
                     String referenceNumber, LocalDate paymentDate,
                     String notes, PaymentStatus status, BigDecimal appliedAmount,
                     UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt,
-                    String cancelledReason, UUID verifiedBy, String verifiedByName, LocalDateTime verifiedAt) {
+                    String cancelledReason, UUID verifiedBy, String verifiedByName, LocalDateTime verifiedAt,
+                    UUID targetInvoiceId, String voucherPath) {
         this.id = id;
         this.paymentNumber = paymentNumber;
         this.customerId = customerId;
@@ -58,20 +61,40 @@ public class Payment {
         this.verifiedBy = verifiedBy;
         this.verifiedByName = verifiedByName;
         this.verifiedAt = verifiedAt;
+        this.targetInvoiceId = targetInvoiceId;
+        this.voucherPath = voucherPath;
     }
 
     public static Payment create(PaymentNumber paymentNumber, UUID customerId,
                                   BigDecimal amount, UUID paymentMethodId, String referenceNumber,
                                   LocalDate paymentDate, String notes, UUID createdBy, String createdByName,
                                   PaymentStatus status) {
+        return create(paymentNumber, customerId, amount, paymentMethodId, referenceNumber,
+                paymentDate, notes, createdBy, createdByName, status, null, null);
+    }
+
+    public static Payment create(PaymentNumber paymentNumber, UUID customerId,
+                                  BigDecimal amount, UUID paymentMethodId, String referenceNumber,
+                                  LocalDate paymentDate, String notes, UUID createdBy, String createdByName,
+                                  PaymentStatus status, UUID targetInvoiceId, String voucherPath) {
         return create(paymentNumber, customerId, amount, paymentMethodId, PaymentSource.PAYMENT_METHOD,
-                referenceNumber, paymentDate, notes, createdBy, createdByName, status);
+                referenceNumber, paymentDate, notes, createdBy, createdByName, status,
+                targetInvoiceId, voucherPath);
     }
 
     public static Payment create(PaymentNumber paymentNumber, UUID customerId,
                                   BigDecimal amount, UUID paymentMethodId, PaymentSource source,
                                   String referenceNumber, LocalDate paymentDate, String notes,
                                   UUID createdBy, String createdByName, PaymentStatus status) {
+        return create(paymentNumber, customerId, amount, paymentMethodId, source,
+                referenceNumber, paymentDate, notes, createdBy, createdByName, status, null, null);
+    }
+
+    public static Payment create(PaymentNumber paymentNumber, UUID customerId,
+                                  BigDecimal amount, UUID paymentMethodId, PaymentSource source,
+                                  String referenceNumber, LocalDate paymentDate, String notes,
+                                  UUID createdBy, String createdByName, PaymentStatus status,
+                                  UUID targetInvoiceId, String voucherPath) {
         Objects.requireNonNull(paymentNumber, "Payment number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
@@ -89,7 +112,7 @@ public class Payment {
         return new Payment(PaymentId.generate(), paymentNumber, customerId,
                 amount, paymentMethodId, source, referenceNumber, paymentDate, notes,
                 status, BigDecimal.ZERO, createdBy, createdByName, now, now,
-                null, null, null, null);
+                null, null, null, null, targetInvoiceId, voucherPath);
     }
 
     public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
@@ -99,11 +122,28 @@ public class Payment {
                                         UUID createdBy, String createdByName,
                                         LocalDateTime createdAt, LocalDateTime updatedAt,
                                         String cancelledReason, UUID verifiedBy,
-                                        String verifiedByName, LocalDateTime verifiedAt) {
+                                        String verifiedByName, LocalDateTime verifiedAt,
+                                        UUID targetInvoiceId, String voucherPath) {
         return new Payment(id, paymentNumber, customerId,
                 amount, paymentMethodId, source, referenceNumber, paymentDate, notes, status, appliedAmount,
                 createdBy, createdByName, createdAt, updatedAt,
-                cancelledReason, verifiedBy, verifiedByName, verifiedAt);
+                cancelledReason, verifiedBy, verifiedByName, verifiedAt,
+                targetInvoiceId, voucherPath);
+    }
+
+    @Deprecated
+    public static Payment reconstitute(PaymentId id, PaymentNumber paymentNumber, UUID customerId,
+                                        BigDecimal amount, UUID paymentMethodId, PaymentSource source,
+                                        String referenceNumber, LocalDate paymentDate, String notes,
+                                        PaymentStatus status, BigDecimal appliedAmount,
+                                        UUID createdBy, String createdByName,
+                                        LocalDateTime createdAt, LocalDateTime updatedAt,
+                                        String cancelledReason, UUID verifiedBy,
+                                        String verifiedByName, LocalDateTime verifiedAt) {
+        return reconstitute(id, paymentNumber, customerId,
+                amount, paymentMethodId, source, referenceNumber, paymentDate, notes, status, appliedAmount,
+                createdBy, createdByName, createdAt, updatedAt,
+                cancelledReason, verifiedBy, verifiedByName, verifiedAt, null, null);
     }
 
     @Deprecated
@@ -212,7 +252,8 @@ public class Payment {
                 this.status, this.appliedAmount,
                 this.createdBy, this.createdByName,
                 this.createdAt, LocalDateTime.now(),
-                this.cancelledReason, this.verifiedBy, this.verifiedByName, this.verifiedAt
+                this.cancelledReason, this.verifiedBy, this.verifiedByName, this.verifiedAt,
+                this.targetInvoiceId, this.voucherPath
         );
     }
 
@@ -290,6 +331,14 @@ public class Payment {
 
     public LocalDateTime getVerifiedAt() {
         return verifiedAt;
+    }
+
+    public UUID getTargetInvoiceId() {
+        return targetInvoiceId;
+    }
+
+    public String getVoucherPath() {
+        return voucherPath;
     }
 
     @Override

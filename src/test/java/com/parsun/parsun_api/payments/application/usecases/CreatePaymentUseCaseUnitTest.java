@@ -139,6 +139,29 @@ class CreatePaymentUseCaseUnitTest {
     }
 
     @Test
+    void should_PersistTargetInvoiceIdAndVoucherPath_When_Provided() {
+        UUID targetInvoiceId = UUID.randomUUID();
+        CreatePaymentRequest request = new CreatePaymentRequest(
+                customerId,
+                PaymentStatus.PENDING.name(),
+                new BigDecimal("50.00"),
+                paymentMethodId,
+                "PAYMENT-001",
+                LocalDate.now(),
+                "Pago de prueba",
+                targetInvoiceId,
+                "payments/justificantes/abc.pdf"
+        );
+        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = useCase.execute(request, userId);
+
+        assertEquals(targetInvoiceId, response.targetInvoiceId());
+        assertEquals("/api/files/payments/justificantes/abc.pdf", response.voucherUrl());
+    }
+
+    @Test
     void should_Throw_When_RefundCustomerHasNoAppliedPayments() {
         CreatePaymentRequest request = refundRequest(new BigDecimal("50.00"));
         when(paymentRepository.getRefundableAmountByCustomerId(customerId)).thenReturn(BigDecimal.ZERO);
@@ -172,7 +195,9 @@ class CreatePaymentUseCaseUnitTest {
                 paymentMethodId,
                 "REFUND-001",
                 LocalDate.now(),
-                "Devolucion por cualquier concepto"
+                "Devolucion por cualquier concepto",
+                null,
+                null
         );
     }
 
@@ -184,7 +209,9 @@ class CreatePaymentUseCaseUnitTest {
                 paymentMethodId,
                 "PAYMENT-001",
                 LocalDate.now(),
-                "Pago de prueba"
+                "Pago de prueba",
+                null,
+                null
         );
     }
 }

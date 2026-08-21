@@ -80,6 +80,7 @@ class PaymentMapperTest {
         assertEquals(paymentNumber.value(), response.paymentNumber());
         assertEquals(customerId, response.customerId());
         assertEquals(amount, response.amount());
+        assertEquals(paymentMethodId, response.paymentMethodId());
         assertEquals(referenceNumber, response.referenceNumber());
         assertEquals(paymentDate, response.paymentDate());
         assertEquals(status.name(), response.status());
@@ -117,5 +118,61 @@ class PaymentMapperTest {
         PaymentResponse response = PaymentMapper.toResponse(payment);
 
         assertEquals("CANCELLED", response.status());
+    }
+
+    @Test
+    void should_MapVoucherUrlAndTargetInvoiceId_When_ToResponse_And_BothPresent() {
+        UUID targetInvoiceId = UUID.randomUUID();
+        Payment payment = Payment.reconstitute(
+                paymentId, paymentNumber, customerId, amount,
+                paymentMethodId, PaymentSource.PAYMENT_METHOD,
+                referenceNumber, paymentDate, notes,
+                status, appliedAmount, createdBy, createdByName, createdAt, updatedAt,
+                null, null, null, null,
+                targetInvoiceId, "payments/justificantes/abc.pdf"
+        );
+
+        PaymentResponse response = PaymentMapper.toResponse(payment);
+
+        assertEquals(targetInvoiceId, response.targetInvoiceId());
+        assertEquals("/api/files/payments/justificantes/abc.pdf", response.voucherUrl());
+    }
+
+    @Test
+    void should_MapNullVoucherUrlAndTargetInvoiceId_When_ToResponse_And_BothAbsent() {
+        Payment payment = createPayment();
+
+        PaymentResponse response = PaymentMapper.toResponse(payment);
+
+        assertEquals(null, response.targetInvoiceId());
+        assertEquals(null, response.voucherUrl());
+    }
+
+    @Test
+    void should_MapVoucherUrlAndTargetInvoiceId_When_ToListResponse_And_BothPresent() {
+        UUID targetInvoiceId = UUID.randomUUID();
+        Payment payment = Payment.reconstitute(
+                paymentId, paymentNumber, customerId, amount,
+                paymentMethodId, PaymentSource.PAYMENT_METHOD,
+                referenceNumber, paymentDate, notes,
+                status, appliedAmount, createdBy, createdByName, createdAt, updatedAt,
+                null, null, null, null,
+                targetInvoiceId, "payments/justificantes/abc.pdf"
+        );
+
+        PaymentListResponse response = PaymentMapper.toListResponse(payment);
+
+        assertEquals(targetInvoiceId, response.targetInvoiceId());
+        assertEquals("/api/files/payments/justificantes/abc.pdf", response.voucherUrl());
+    }
+
+    @Test
+    void should_MapNullVoucherUrlAndTargetInvoiceId_When_ToListResponse_And_BothAbsent() {
+        Payment payment = createPayment();
+
+        PaymentListResponse response = PaymentMapper.toListResponse(payment);
+
+        assertEquals(null, response.targetInvoiceId());
+        assertEquals(null, response.voucherUrl());
     }
 }

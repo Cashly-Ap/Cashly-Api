@@ -31,6 +31,11 @@ public record CreatePaymentRequest(
         LocalDate paymentDate,
 
         @Size(max = 1000, message = "Notes must be at most 1000 characters")
-        String notes
+        String notes,
+
+        UUID targetInvoiceId,
+
+        @Size(max = 500, message = "Voucher path must be at most 500 characters")
+        String voucherPath
 
 ) {}

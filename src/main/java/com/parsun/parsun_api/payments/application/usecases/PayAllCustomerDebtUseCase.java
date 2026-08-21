@@ -9,6 +9,8 @@ import com.parsun.parsun_api.payments.domain.entities.PaymentAllocation;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.parsun.parsun_api.payments.domain.entities.Payment;
 import com.parsun.parsun_api.payments.domain.repositories.PaymentRepository;
+import com.parsun.parsun_api.payments.domain.services.PaymentAllocationService;
+import com.parsun.parsun_api.payments.domain.valueobjects.InvoiceRemainingBalance;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentNumber;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentSource;
 import com.parsun.parsun_api.payments.domain.valueobjects.PaymentStatus;
@@ -36,6 +38,7 @@ public class PayAllCustomerDebtUseCase {
     private final DebitNoteRepository debitNoteRepository;
     private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
     private final CashMovementService cashMovementService;
+    private final PaymentAllocationService paymentAllocationService;
 
     public PayAllCustomerDebtUseCase(PaymentRepository paymentRepository,
                                       PaymentAllocationRepository allocationRepository,
@@ -44,7 +47,8 @@ public class PayAllCustomerDebtUseCase {
                                       CreditNoteRepository creditNoteRepository,
                                       DebitNoteRepository debitNoteRepository,
                                       ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                      CashMovementService cashMovementService) {
+                                      CashMovementService cashMovementService,
+                                      PaymentAllocationService paymentAllocationService) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoiceRepository = invoiceRepository;
@@ -53,6 +57,7 @@ public class PayAllCustomerDebtUseCase {
         this.debitNoteRepository = debitNoteRepository;
         this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
         this.cashMovementService = cashMovementService;
+        this.paymentAllocationService = paymentAllocationService;
     }
 
     @Transactional
@@ -68,15 +73,7 @@ public class PayAllCustomerDebtUseCase {
         }
 
         BigDecimal totalAmount = unpaidInvoices.stream()
-                .map(inv -> {
-                    BigDecimal creds = creditNoteRepository.findByInvoiceId(inv.getId().value()).stream()
-                            .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    BigDecimal debits = debitNoteRepository.findByInvoiceId(inv.getId().value()).stream()
-                            .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    return inv.calculateTotal(creds, debits);
-                })
+                .map(this::invoiceGrossTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal balanceUsed = BigDecimal.ZERO;
@@ -142,20 +139,12 @@ public class PayAllCustomerDebtUseCase {
                     authenticatedUserName
             );
 
-            for (Invoice invoice : unpaidInvoices) {
-                BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                        .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                        .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                PaymentAllocation allocation = PaymentAllocation.create(
-                        saved.getId().value(),
-                        invoice.getId().value(),
-                        invoice.calculateTotal(creds, debits)
-                );
-                allocationRepository.save(allocation);
-            }
+            List<InvoiceRemainingBalance> grossBalances = unpaidInvoices.stream()
+                    .map(invoice -> new InvoiceRemainingBalance(invoice.getId().value(), invoiceGrossTotal(invoice)))
+                    .toList();
+            List<PaymentAllocation> allocations = paymentAllocationService.allocateOldestFirst(
+                    saved.getId().value(), grossBalances, totalAmount);
+            allocations.forEach(allocationRepository::save);
 
             payment.apply(paymentAmount);
             paymentRepository.save(payment);
@@ -181,34 +170,12 @@ public class PayAllCustomerDebtUseCase {
 
             Payment savedBalancePayment = paymentRepository.save(balancePayment);
 
-            BigDecimal remainingBalance = balanceUsed;
-            for (Invoice invoice : unpaidInvoices) {
-                if (remainingBalance.compareTo(BigDecimal.ZERO) <= 0) break;
-
-                BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                        .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                        .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                BigDecimal invoiceTotal = invoice.calculateTotal(creds, debits);
-
-                BigDecimal alreadyAllocated = allocationRepository.findByInvoiceId(invoice.getId().value()).stream()
-                        .map(PaymentAllocation::getAllocatedAmount)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                BigDecimal invoiceRemaining = invoiceTotal.subtract(alreadyAllocated);
-                if (invoiceRemaining.compareTo(BigDecimal.ZERO) <= 0) continue;
-
-                BigDecimal allocAmount = remainingBalance.min(invoiceRemaining);
-                PaymentAllocation balanceAllocation = PaymentAllocation.create(
-                        savedBalancePayment.getId().value(),
-                        invoice.getId().value(),
-                        allocAmount
-                );
-                allocationRepository.save(balanceAllocation);
-                remainingBalance = remainingBalance.subtract(allocAmount);
-            }
+            List<InvoiceRemainingBalance> netBalances = unpaidInvoices.stream()
+                    .map(invoice -> new InvoiceRemainingBalance(invoice.getId().value(), invoiceRemainingAfterAllocations(invoice)))
+                    .toList();
+            List<PaymentAllocation> balanceAllocations = paymentAllocationService.allocateOldestFirst(
+                    savedBalancePayment.getId().value(), netBalances, balanceUsed);
+            balanceAllocations.forEach(allocationRepository::save);
 
             balancePayment.apply(balanceUsed);
             paymentRepository.save(balancePayment);
@@ -224,5 +191,23 @@ public class PayAllCustomerDebtUseCase {
                 "Pago total registrado exitosamente",
                 true
         );
+    }
+
+    private BigDecimal invoiceGrossTotal(Invoice invoice) {
+        BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
+                .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return invoice.calculateTotal(creds, debits);
+    }
+
+    private BigDecimal invoiceRemainingAfterAllocations(Invoice invoice) {
+        BigDecimal invoiceTotal = invoiceGrossTotal(invoice);
+        BigDecimal alreadyAllocated = allocationRepository.findByInvoiceId(invoice.getId().value()).stream()
+                .map(PaymentAllocation::getAllocatedAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return invoiceTotal.subtract(alreadyAllocated);
     }
 }

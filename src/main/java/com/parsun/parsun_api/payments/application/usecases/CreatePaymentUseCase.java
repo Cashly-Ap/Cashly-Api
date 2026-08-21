@@ -72,7 +72,9 @@ public class CreatePaymentUseCase {
                 request.notes(),
                 createdById,
                 createdByName,
-                status
+                status,
+                request.targetInvoiceId(),
+                request.voucherPath()
         );
 
         Payment saved = paymentRepository.save(payment);

@@ -81,4 +81,11 @@ public class PaymentEntity {
 
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
+
+    @Column(name = "target_invoice_id", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID targetInvoiceId;
+
+    @Column(name = "voucher_path", length = 500)
+    private String voucherPath;
 }
