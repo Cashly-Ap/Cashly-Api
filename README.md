@@ -1,119 +1,81 @@
-# 📦 Parsun API
+# Parsun API
 
-> Enterprise invoicing system with customer management, suppliers, products, orders, and warehouse management. Built with Clean Architecture and Spring Boot 3.x 
-## 🚀 Quick Start
+Parsun API is the private backend for the Parsun business management platform. It exposes the business rules and HTTP contracts used by the back-office application and the customer portal. The repository exists to centralize transactional data, enforce domain invariants, manage persistence, and provide authenticated integrations for sales, inventory, billing, payments, purchasing, and reporting.
 
-### Prerequisites
-- Java 24+
-- Docker & Docker Compose
-- Git
+## Scope and modules
 
-### Get Started in 30 seconds
+| Area | Responsibility |
+| --- | --- |
+| Authentication and users | JWT authentication, refresh tokens, roles, permissions, and user administration. |
+| Customers and merchants | Customer records, contacts, merchants, and related commercial information. |
+| Catalog | Categories, products, price types, and differential pricing. |
+| Inventory | Warehouses, stock, transfers, and inventory availability. |
+| Sales | Quotes, orders, invoices, dispatchers, returns, credit notes, and debit notes. |
+| Payments and cash | Payment methods, payment registration, receivables, payables, collections, and cash-register sessions. |
+| Purchasing | Suppliers and purchase workflows. |
+| Reporting and dashboard | Operational indicators and report data for the applications. |
+| Notifications and audit | User notifications and traceability of relevant operations. |
+| Portal | Authenticated endpoints consumed by the customer portal. |
 
-1. **Clone and run:**
-   ```bash
-   git clone https://github.com/GabrielEVP/parsun-api.git
-   cd parsun-api
-   docker compose up --build
-   ```
+The complete module index is available in [docs/modules/README.md](docs/modules/README.md).
 
-2. **Verify it's working:**
-   ```bash
-   curl http://localhost:8080/actuator/health
-   # Response: {"status":"UP"}
-   ```
+## Architecture
 
-3. **Start developing:**
-   ```bash
-   DOCKERFILE=Dockerfile.dev SPRING_PROFILES_ACTIVE=dev docker compose up --build
-   ```
+The code follows Clean/Hexagonal Architecture with domain-driven boundaries:
 
-## 📚 Documentation
+- `domain` contains aggregates, value objects, domain services, and repository ports.
+- `application` coordinates use cases, input/output DTOs, validation, and application ports.
+- `infrastructure` contains REST controllers, persistence adapters, security, configuration, storage, and external integrations.
+- `shared` contains cross-cutting types used by more than one bounded context.
 
-### Core Documentation
-- **[🏗️ Architecture & Design](docs/ARCHITECTURE.md)** - Clean Architecture, DDD, SOLID principles
-- **[⚙️ Setup & Configuration](docs/SETUP.md)** - Installation, Docker environments, configuration
-- **[🔌 API Documentation](docs/API.md)** - Endpoints, Postman collection, OpenAPI
-- **[🧪 Testing Guide](docs/TESTING.md)** - Testing strategy, TDD, test execution
-- **[📋 Business Rules](docs/BUSINESS_RULES.md)** - Complete business logic and validation rules
-- **[🔄 Workflows](docs/WORKFLOWS.md)** - System workflows, diagrams, and process flows
+Each business module is organized under `src/main/java/com/parsun/parsun_api/` and should keep framework-specific code outside the domain layer.
 
-### Module Documentation
-- **[🔐 AUTH Module](docs/modules/AUTH.md)** - Authentication and authorization (✅ Implemented)
-- **[👥 CUSTOMERS Module](docs/modules/CUSTOMERS.md)** - Customer management with DDD aggregate pattern (✅ Implemented)
-- **[📝 Module Template](docs/modules/TEMPLATE.md)** - Template for creating new module documentation
+## Runtime stack
 
----
+| Concern | Technology |
+| --- | --- |
+| Language and framework | Java 24, Spring Boot 3.5.5 |
+| Build | Maven Wrapper (`mvnw`) |
+| Database | MySQL 8.0 with Flyway migrations |
+| Security | Spring Security and JWT |
+| File storage | S3-compatible storage through MinIO in local environments |
+| Testing | JUnit 5, Spring tests, and Testcontainers |
+| Runtime | Docker Compose |
 
-### Core
-- **Java 24** - Latest LTS with modern features
-- **Spring Boot 3.5.5** - Enterprise framework
-- **MySQL** - Relational database
-- **JWT** - Authentication & authorization
+## Local runtime
 
-### Quality & Testing
-- **JUnit 5** - Unit testing
-- **Testcontainers** - Integration testing
-- **Docker** - Containerization
+Prerequisites: Docker with Compose and Git. The default Compose service runs the development profile with MySQL and MinIO:
 
-## 🏃‍♂️ Development Environments
-
-| Environment | Command | Use Case |
-|-------------|---------|----------|
-| **🚀 Production** | `docker compose up --build` | Deployment, staging |
-| **🔧 Development** | `DOCKERFILE=Dockerfile.dev docker compose up --build` | Local coding, debug |
-| **🧪 Testing** | `docker compose --profile test up --build` | Test automation |
-
-> 💡 **Tip**: Create `.env` file with `DOCKERFILE=Dockerfile.dev` for persistent dev mode
-
-## 🌟 Main Features
-
-- **🏛️ Clean Architecture** - Separation of concerns, testable, maintainable
-- **🎯 Domain-Driven Design** - Aggregate pattern, value objects, domain events
-- **🔐 JWT Authentication** - Token-based security with refresh tokens
-- **👥 Customer Management** - Complete customer data control with DDD aggregate pattern
-- **📦 Product Catalog** - Inventory and pricing management (planned)
-- **📋 Orders & Sales** - Order system for sales representatives (planned)
-- **🧾 Invoicing** - Invoice generation and management (planned)
-- **🏭 Warehouse Management** - Multi-warehouse stock control and transfers (planned)
-- **👤 User Management** - Role-based permissions (ADMIN, SALES_REP, WAREHOUSE_WORKER)
-- **☁️ Cloud Database** - Remote access for sales representatives
-
----
-
-## 📁 Project Structure
-
-```
-src/main/java/com/parsun/parsun_api/
-├── auth/           # Authentication & authorization ✅
-│   ├── application/ # DTOs, use cases, ports
-│   ├── domain/      # Entities, services, value objects
-│   └── infrastructure/ # Web, persistence, configuration
-├── customers/      # Customer management ✅
-│   ├── application/ # DTOs, use cases, ports
-│   ├── domain/      # Entities, services, value objects
-│   └── infrastructure/ # Web, persistence, configuration
-├── products/       # Product catalog (planned)
-├── orders/         # Order management (planned)
-├── invoices/       # Invoicing (planned)
-├── warehouses/     # Warehouse and inventory management (planned)
-└── shared/         # Shared utilities and domain events
+```bash
+docker compose up --build
 ```
 
----
+The API is available at `http://localhost:8080`. Verify the service with:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+```bash
+curl http://localhost:8080/actuator/health
+```
 
-## 📄 License
+Production-image and test profiles are defined in `docker-compose.yaml`:
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```bash
+docker compose --profile prod up --build
+docker compose --profile test up --build
+```
 
----
+Environment variables, database initialization, storage, and seed procedures are documented in [docs/SETUP.md](docs/SETUP.md) and [docs/STORAGE.md](docs/STORAGE.md).
 
-**Built with ❤️ using Clean Architecture principles and modern Java technologies.**
+## Database and migrations
 
-For detailed documentation, visit our [docs folder](docs/) or check individual guides above.
+MySQL schema changes are versioned with Flyway. Initialization scripts are under `db/init`, and seed files are under `db/seeds`. Do not modify a deployed schema manually; add a migration and run it through the application startup process.
+
+## Verification
+
+Use the repository Docker workflow and the commands described in [docs/TESTING.md](docs/TESTING.md). The main technical references are:
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Setup and configuration](docs/SETUP.md)
+- [API contracts](docs/API.md)
+- [Business rules](docs/BUSINESS_RULES.md)
+- [Workflows](docs/WORKFLOWS.md)
+- [Testing](docs/TESTING.md)

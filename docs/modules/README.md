@@ -81,6 +81,27 @@ Each module documentation file MUST include:
 
 ## Existing Modules
 
+## Complete module map
+
+The implementation also includes these module references:
+
+| Module | Documentation |
+|---|---|
+| Cash register | [CASH_REGISTER.md](./CASH_REGISTER.md) |
+| Credit notes | [CREDIT_NOTES.md](./CREDIT_NOTES.md) |
+| Debit notes | [DEBIT_NOTES.md](./DEBIT_NOTES.md) |
+| Notifications | [NOTIFICATIONS.md](./NOTIFICATIONS.md) |
+| Payment methods | [PAYMENT_METHODS.md](./PAYMENT_METHODS.md) |
+| Payments | [PAYMENTS.md](./PAYMENTS.md) |
+| Customer portal | [PORTAL.md](./PORTAL.md) |
+| Price types | [PRICE_TYPES.md](./PRICE_TYPES.md) |
+| Purchases | [PURCHASES.md](./PURCHASES.md) |
+| Quotes | [QUOTES.md](./QUOTES.md) |
+| Returns | [RETURNS.md](./RETURNS.md) |
+| Suppliers | [SUPPLIERS.md](./SUPPLIERS.md) |
+
+Existing references for customers, invoices, orders, products, receivables, reports, and warehouses remain the detailed source of truth below.
+
 ### CASH REGISTER Module
 **File**: [CASH_REGISTER.md](./CASH_REGISTER.md)
 
