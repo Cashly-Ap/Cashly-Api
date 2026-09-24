@@ -139,7 +139,8 @@ public class GetDashboardUseCase {
                         + "LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_debit FROM debit_notes GROUP BY invoice_id) dn ON dn.invoice_id = i.id "
                         + "WHERE i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID') "
                         + "AND " + balanceExpression + " > 0 "
-                        + "ORDER BY due_date ASC, c.legal_name ASC, i.invoice_number ASC",
+                        + "ORDER BY due_date ASC, c.legal_name ASC, i.invoice_number ASC "
+                        + "LIMIT 10",
                 (rs, rowNum) -> new InvoiceDueResponse(
                     UUID.fromString(rs.getString("invoice_id")),
                         rs.getString("invoice_number"),
