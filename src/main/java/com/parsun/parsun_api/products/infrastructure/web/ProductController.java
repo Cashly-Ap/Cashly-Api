@@ -83,6 +83,7 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<PageResponse<ProductWithStockResponse>> getForTransaction(
             @RequestParam UUID customerId,
+            @RequestParam(required = false) List<UUID> customerIds,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) Boolean composite,
@@ -90,7 +91,9 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         PageResponse<ProductWithStockResponse> response =
-                getProductsForTransactionUseCase.execute(customerId, search, categoryId, composite, withStock, page, size);
+                getProductsForTransactionUseCase.execute(
+                        customerIds == null || customerIds.isEmpty() ? List.of(customerId) : customerIds,
+                        search, categoryId, composite, withStock, page, size);
         return ResponseEntity.ok(response);
     }
 

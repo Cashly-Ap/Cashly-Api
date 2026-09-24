@@ -18,6 +18,20 @@ public interface InvoiceRepository {
                                      List<String> returnStatus,
                                      UUID productId, UUID categoryId,
                                      String orderBy, String orderDir);
+
+    default List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
+                                              UUID customerId, List<String> statuses, String search,
+                                              List<String> returnStatus, UUID productId, UUID categoryId,
+                                              String orderBy, String orderDir) {
+        String normalizedSearch = search == null ? "" : search.trim().toLowerCase();
+        return findAllWithFilters(dateFrom, dateTo, customerId, statuses, returnStatus, productId,
+                categoryId, orderBy, orderDir).stream()
+                .filter(invoice -> normalizedSearch.isBlank()
+                        || invoice.getInvoiceNumber().value().toLowerCase().contains(normalizedSearch)
+                        || invoice.getCustomerName().toLowerCase().contains(normalizedSearch)
+                        || invoice.getCustomerRif().toLowerCase().contains(normalizedSearch))
+                .toList();
+    }
     void deleteById(InvoiceId id);
     int getNextSequenceForYear(int year);
 }

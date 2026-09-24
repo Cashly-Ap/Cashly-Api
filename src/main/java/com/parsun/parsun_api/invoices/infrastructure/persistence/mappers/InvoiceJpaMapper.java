@@ -30,6 +30,8 @@ public class InvoiceJpaMapper {
         entity.setCreatedByName(invoice.getCreatedByName());
         entity.setOrderId(invoice.getOrderId());
         entity.setOrderNumber(invoice.getOrderNumber());
+        entity.setOrderIds(invoice.getOrderIds());
+        entity.setQuoteIds(invoice.getQuoteIds());
         entity.setStatus(invoice.getStatus().name());
         entity.setPaymentType(invoice.getPaymentType().name());
         entity.setNotes(invoice.getNotes());
@@ -69,6 +71,8 @@ public class InvoiceJpaMapper {
                 entity.getCreatedByName(),
                 entity.getOrderId(),
                 entity.getOrderNumber(),
+                entity.getOrderIds(),
+                entity.getQuoteIds(),
                 InvoiceStatus.valueOf(entity.getStatus()),
                 PaymentType.valueOf(entity.getPaymentType()),
                 entity.getNotes(),

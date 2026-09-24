@@ -67,14 +67,25 @@ public class InvoiceController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) UUID customerId,
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> status,
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) List<String> returnStatus,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
-        List<InvoiceListResponse> invoices = getInvoicesUseCase.execute(fromDate, toDate, customerId, status, returnStatus, productId, categoryId, orderBy, orderDir);
+        List<InvoiceListResponse> invoices = search == null || search.isBlank()
+                ? getInvoicesUseCase.execute(fromDate, toDate, customerId, status, returnStatus, productId, categoryId, orderBy, orderDir)
+                : getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(invoices);
+    }
+
+    public ResponseEntity<List<InvoiceListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID customerId, List<String> status,
+            UUID productId, UUID categoryId, List<String> returnStatus,
+            String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, customerId, null, status, productId, categoryId,
+                returnStatus, orderBy, orderDir);
     }
 
     @GetMapping("/{id}")

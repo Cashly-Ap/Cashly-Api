@@ -29,6 +29,8 @@ public class Invoice {
     private final String createdByName;
     private final UUID orderId;
     private final String orderNumber;
+    private final List<UUID> orderIds;
+    private final List<UUID> quoteIds;
     private InvoiceStatus status;
     private PaymentType paymentType;
     private String notes;
@@ -44,6 +46,7 @@ public class Invoice {
     private Invoice(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId, String customerName,
                     String customerRif, UUID createdBy, String createdByName,
                     UUID orderId, String orderNumber,
+                    List<UUID> orderIds, List<UUID> quoteIds,
                     InvoiceStatus status, PaymentType paymentType, String notes,
                     BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
                     LocalDateTime cancelledAt, String cancelledReason,
@@ -57,6 +60,8 @@ public class Invoice {
         this.createdByName = createdByName;
         this.orderId = orderId;
         this.orderNumber = orderNumber;
+        this.orderIds = new ArrayList<>(orderIds != null ? orderIds : List.of());
+        this.quoteIds = new ArrayList<>(quoteIds != null ? quoteIds : List.of());
         this.status = status;
         this.paymentType = paymentType;
         this.notes = notes;
@@ -74,6 +79,15 @@ public class Invoice {
                                   String customerRif, UUID createdBy, String createdByName,
                                   UUID orderId, String orderNumber,
                                   PaymentType paymentType, String notes, List<InvoiceLine> lines) {
+        return create(invoiceNumber, customerId, customerName, customerRif, createdBy, createdByName,
+                orderId, orderNumber, List.of(), List.of(), paymentType, notes, lines);
+    }
+
+    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId, String customerName,
+                                  String customerRif, UUID createdBy, String createdByName,
+                                  UUID orderId, String orderNumber, List<UUID> orderIds,
+                                  List<UUID> quoteIds, PaymentType paymentType, String notes,
+                                  List<InvoiceLine> lines) {
         Objects.requireNonNull(invoiceNumber, "Invoice number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
@@ -89,6 +103,7 @@ public class Invoice {
         LocalDateTime now = LocalDateTime.now();
         return new Invoice(InvoiceId.generate(), invoiceNumber, customerId, customerName, customerRif,
                 createdBy, createdByName, orderId, orderNumber,
+                orderIds, quoteIds,
                 InvoiceStatus.DRAFT, paymentType, notes,
                 BigDecimal.ZERO, null,
                 null, null, lines, now, now);
@@ -103,8 +118,24 @@ public class Invoice {
                                         LocalDateTime cancelledAt, String cancelledReason,
                                         List<InvoiceLine> lines, LocalDateTime createdAt,
                                         LocalDateTime updatedAt) {
+        return reconstitute(id, invoiceNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, orderId, orderNumber, List.of(), List.of(), status,
+                paymentType, notes, returnedTotal, returnStatus, cancelledAt, cancelledReason,
+                lines, createdAt, updatedAt);
+    }
+
+    public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
+                                        String customerName, String customerRif,
+                                        UUID createdBy, String createdByName,
+                                        UUID orderId, String orderNumber, List<UUID> orderIds,
+                                        List<UUID> quoteIds, InvoiceStatus status, PaymentType paymentType, String notes,
+                                        BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
+                                        LocalDateTime cancelledAt, String cancelledReason,
+                                        List<InvoiceLine> lines, LocalDateTime createdAt,
+                                        LocalDateTime updatedAt) {
         return new Invoice(id, invoiceNumber, customerId, customerName, customerRif,
                 createdBy, createdByName, orderId, orderNumber,
+                orderIds, quoteIds,
                 status, paymentType, notes,
                 returnedTotal, returnStatus,
                 cancelledAt, cancelledReason,
@@ -279,6 +310,8 @@ public class Invoice {
     public String getCreatedByName() { return createdByName; }
     public UUID getOrderId() { return orderId; }
     public String getOrderNumber() { return orderNumber; }
+    public List<UUID> getOrderIds() { return Collections.unmodifiableList(orderIds); }
+    public List<UUID> getQuoteIds() { return Collections.unmodifiableList(quoteIds); }
     public InvoiceStatus getStatus() { return status; }
     public PaymentType getPaymentType() { return paymentType; }
     public String getNotes() { return notes; }

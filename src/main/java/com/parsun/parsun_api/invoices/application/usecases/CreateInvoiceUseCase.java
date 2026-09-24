@@ -21,11 +21,16 @@ import com.parsun.parsun_api.orders.domain.entities.Order;
 import com.parsun.parsun_api.orders.domain.exceptions.OrderNotFoundException;
 import com.parsun.parsun_api.orders.domain.repositories.OrderRepository;
 import com.parsun.parsun_api.orders.domain.valueobjects.OrderId;
+import com.parsun.parsun_api.orders.domain.valueobjects.OrderStatus;
+import com.parsun.parsun_api.quotes.domain.entities.Quote;
+import com.parsun.parsun_api.quotes.domain.repositories.QuoteRepository;
+import com.parsun.parsun_api.quotes.domain.valueobjects.QuoteStatus;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,7 +50,9 @@ public class CreateInvoiceUseCase {
     private final WarehouseStockRepository warehouseStockRepository;
     private final InvoiceAuthorizationService authorizationService;
     private final NotificationService notificationService;
+    private final QuoteRepository quoteRepository;
 
+    @Autowired
     public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
                                  OrderRepository orderRepository,
                                  CustomerRepository customerRepository,
@@ -53,7 +60,8 @@ public class CreateInvoiceUseCase {
                                  ProductRepository productRepository,
                                  WarehouseStockRepository warehouseStockRepository,
                                  InvoiceAuthorizationService authorizationService,
-                                 NotificationService notificationService) {
+                                 NotificationService notificationService,
+                                 QuoteRepository quoteRepository) {
         this.invoiceRepository = invoiceRepository;
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
@@ -62,6 +70,19 @@ public class CreateInvoiceUseCase {
         this.warehouseStockRepository = warehouseStockRepository;
         this.authorizationService = authorizationService;
         this.notificationService = notificationService;
+        this.quoteRepository = quoteRepository;
+    }
+
+    public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
+                                OrderRepository orderRepository,
+                                CustomerRepository customerRepository,
+                                UserRepository userRepository,
+                                ProductRepository productRepository,
+                                WarehouseStockRepository warehouseStockRepository,
+                                InvoiceAuthorizationService authorizationService,
+                                NotificationService notificationService) {
+        this(invoiceRepository, orderRepository, customerRepository, userRepository, productRepository,
+                warehouseStockRepository, authorizationService, notificationService, null);
     }
 
     @Transactional
@@ -73,6 +94,8 @@ public class CreateInvoiceUseCase {
         String createdByName;
         UUID orderId = null;
         String orderNumber = null;
+        List<UUID> orderIds = request.orderIds() == null ? List.of() : request.orderIds();
+        List<UUID> quoteIds = request.quoteIds() == null ? List.of() : request.quoteIds();
         List<InvoiceLine> lines;
 
         if (request.orderId() != null) {
@@ -136,6 +159,8 @@ public class CreateInvoiceUseCase {
                     .toList();
         }
 
+        validateSources(orderIds, quoteIds, resolvedCustomerId);
+
         PaymentType paymentType = PaymentType.valueOf(request.paymentType());
 
         int year = LocalDate.now().getYear();
@@ -151,6 +176,8 @@ public class CreateInvoiceUseCase {
                 createdByName,
                 orderId,
                 orderNumber,
+                orderIds,
+                quoteIds,
                 paymentType,
                 request.notes(),
                 lines
@@ -177,13 +204,40 @@ public class CreateInvoiceUseCase {
         return InvoiceMapper.toDetailResponse(saved);
     }
 
+    private void validateSources(List<UUID> orderIds, List<UUID> quoteIds, UUID customerId) {
+        for (UUID sourceId : orderIds) {
+            Order order = orderRepository.findById(OrderId.of(sourceId))
+                    .orElseThrow(() -> new OrderNotFoundException(sourceId));
+            if (!customerId.equals(order.getCustomerId())) {
+                throw new IllegalArgumentException("Order does not belong to the invoice customer: " + sourceId);
+            }
+            if (order.getStatus() != OrderStatus.DRAFT && order.getStatus() != OrderStatus.CONFIRMED) {
+                throw new IllegalArgumentException("Only draft or confirmed orders can be linked to an invoice: " + sourceId);
+            }
+        }
+        for (UUID sourceId : quoteIds) {
+            if (quoteRepository == null) {
+                throw new IllegalStateException("Quote repository is not configured");
+            }
+            Quote quote = quoteRepository.findById(sourceId)
+                    .orElseThrow(() -> new IllegalArgumentException("Quote not found: " + sourceId));
+            if (!customerId.equals(quote.getCustomerId())) {
+                throw new IllegalArgumentException("Quote does not belong to the invoice customer: " + sourceId);
+            }
+            if (quote.getStatus() != QuoteStatus.DRAFT && quote.getStatus() != QuoteStatus.CUSTOMER_DRAFT) {
+                throw new IllegalArgumentException("Only draft quotes can be linked to an invoice: " + sourceId);
+            }
+        }
+    }
+
     private List<InvoiceLineAllocation> applyStockAllocations(CreateInvoiceRequest.InvoiceLineRequest lineRequest, UUID productId) {
         List<InvoiceLineAllocation> allocations = new ArrayList<>();
         for (CreateInvoiceRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
             WarehouseStock stock = warehouseStockRepository
                     .findByWarehouseIdAndProductId(allocation.warehouseId(), productId)
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "Stock not found for warehouse=" + allocation.warehouseId() + " product=" + productId));
+                            "No stock available for warehouse=" + allocation.warehouseId()
+                                    + " product=" + productId));
 
             stock.reserve(allocation.allocated());
             warehouseStockRepository.save(stock);

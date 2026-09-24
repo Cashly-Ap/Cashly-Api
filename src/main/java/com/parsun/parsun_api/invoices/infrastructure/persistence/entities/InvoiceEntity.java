@@ -52,6 +52,18 @@ public class InvoiceEntity {
     @Column(name = "order_number", length = 20)
     private String orderNumber;
 
+    @ElementCollection
+    @CollectionTable(name = "invoice_order_links", joinColumns = @JoinColumn(name = "invoice_id"))
+    @Column(name = "order_id", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private List<UUID> orderIds = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "invoice_quote_links", joinColumns = @JoinColumn(name = "invoice_id"))
+    @Column(name = "quote_id", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private List<UUID> quoteIds = new ArrayList<>();
+
     @Column(name = "status", length = 20, nullable = false)
     private String status;
 

@@ -1385,6 +1385,8 @@ CREATE TABLE invoice_payments (
 7. **Role-Based Access**: Merchants can only view invoices from their orders
 
 ### API Design Rules
+- **Invoice sources**: A draft invoice may link multiple draft or confirmed orders and draft customer or administrative quotes belonging to the selected customer. Links are stored in `invoice_order_links` and `invoice_quote_links`.
+- **Invoice search**: The list endpoint accepts `search` and matches invoice number, customer name, and customer RIF.
 - **DO**: Validate customer exists before creating invoice
 - **DO**: Apply differential pricing automatically
 - **DO**: Deduct stock at invoice creation (if warehouseId provided)

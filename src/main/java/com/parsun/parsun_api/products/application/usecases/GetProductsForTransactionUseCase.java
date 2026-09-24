@@ -52,11 +52,22 @@ public class GetProductsForTransactionUseCase {
     public PageResponse<ProductWithStockResponse> execute(UUID customerId, String search,
                                                        UUID categoryId, Boolean composite,
                                                        Boolean withStock, int page, int size) {
-        Customer customer = customerRepository.findById(new CustomerId(customerId))
-                .orElseThrow(() -> new CustomerNotFoundException("Cliente no encontrado: " + customerId));
+        return execute(List.of(customerId), search, categoryId, composite, withStock, page, size);
+    }
 
-        Set<UUID> allowedWarehouseIds = customerWarehouseAccessRepository
-                .findByCustomerId(customerId).stream()
+    @Transactional(readOnly = true)
+    public PageResponse<ProductWithStockResponse> execute(List<UUID> customerIds, String search,
+                                                       UUID categoryId, Boolean composite,
+                                                       Boolean withStock, int page, int size) {
+        if (customerIds == null || customerIds.isEmpty()) {
+            throw new CustomerNotFoundException("Debe indicar al menos un cliente");
+        }
+
+        Customer customer = customerRepository.findById(new CustomerId(customerIds.get(0)))
+                .orElseThrow(() -> new CustomerNotFoundException("Cliente no encontrado: " + customerIds.get(0)));
+
+        Set<UUID> allowedWarehouseIds = customerIds.stream()
+                .flatMap(customerId -> customerWarehouseAccessRepository.findByCustomerId(customerId).stream())
                 .map(CustomerWarehouseAccess::getWarehouseId)
                 .collect(Collectors.toSet());
 

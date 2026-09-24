@@ -235,6 +235,43 @@ class CreateInvoiceUseCaseTest {
         verify(invoiceRepository, never()).save(any());
     }
 
+    @Test
+    void should_RejectInvoice_When_AllocatedQuantityExceedsAvailableStock() {
+        UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        UUID warehouseId = UUID.randomUUID();
+        UUID authenticatedUserId = UUID.randomUUID();
+
+        Customer customer = buildCustomer(customerId);
+        User user = buildUser(authenticatedUserId);
+        Product product = buildProduct(productId);
+        WarehouseStock stock = new WarehouseStock(
+                UUID.randomUUID(), warehouseId, productId, 2, 0,
+                LocalDateTime.now(), LocalDateTime.now());
+        CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
+                productId, BigDecimal.valueOf(3), BigDecimal.TEN,
+                List.of(new CreateInvoiceRequest.WarehouseAllocationRequest(warehouseId, 3))
+        );
+        CreateInvoiceRequest request = new CreateInvoiceRequest(
+                null, customerId, null, "CASH", null,
+                null, null, null, null, List.of(lineRequest)
+        );
+
+        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+                .thenReturn(Optional.of(stock));
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> createInvoiceUseCase.execute(request, authenticatedUserId)
+        );
+
+        assertTrue(exception.getMessage().contains("Insufficient available stock"));
+        verify(invoiceRepository, never()).save(any());
+    }
+
     private Order buildOrder(UUID orderId, UUID customerId) {
         OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A", "PROD-001",
                 BigDecimal.ONE, BigDecimal.TEN, List.of());

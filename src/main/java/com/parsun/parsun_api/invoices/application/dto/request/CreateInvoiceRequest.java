@@ -13,6 +13,10 @@ import java.util.UUID;
 public record CreateInvoiceRequest(
         UUID orderId,
 
+        List<UUID> orderIds,
+
+        List<UUID> quoteIds,
+
         UUID customerId,
 
         UUID createdBy,
@@ -35,6 +39,14 @@ public record CreateInvoiceRequest(
         @Valid
         List<InvoiceLineRequest> lines
 ) {
+    public CreateInvoiceRequest(UUID orderId, UUID customerId, UUID createdBy, String paymentType,
+                                String notes, Boolean useBalance, BigDecimal balanceAmount,
+                                UUID paymentMethodId, String confirmationPassword,
+                                List<InvoiceLineRequest> lines) {
+        this(orderId, List.of(), List.of(), customerId, createdBy, paymentType, notes, useBalance,
+                balanceAmount, paymentMethodId, confirmationPassword, lines);
+    }
+
     public record InvoiceLineRequest(
             @NotNull(message = "Product is required")
             UUID productId,
