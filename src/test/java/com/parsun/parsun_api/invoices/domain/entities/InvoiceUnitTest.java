@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -67,6 +68,19 @@ class InvoiceUnitTest {
         assertNotNull(invoice.getCreatedAt());
         assertNotNull(invoice.getUpdatedAt());
         assertEquals(1, invoice.getLines().size());
+    }
+
+    @Test
+    void should_PreserveConfiguredIssueAndDueDates() {
+        LocalDate issueDate = LocalDate.of(2026, 9, 1);
+        LocalDate dueDate = issueDate.plusDays(29);
+
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, List.of(), List.of(), PaymentType.CREDIT,
+                null, validLines, issueDate, dueDate);
+
+        assertEquals(issueDate, invoice.getIssueDate());
+        assertEquals(LocalDate.of(2026, 9, 30), invoice.getDueDate());
     }
 
     @Test

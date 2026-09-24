@@ -10,7 +10,7 @@ The INVOICES module manages sales invoices (facturas) in the invoicing system. I
 - **Delivery Required**: Invoice must be delivered (`DELIVERED` status) before payments can be registered
 - **Differential Pricing**: Invoice lines apply differential pricing rules based on customer/product
 - **Stock Management**: Stock is deducted when invoice is created (if products are from warehouse)
-- **Credit Days**: Due date can be calculated from `Customer.creditDays` OR set manually
+- **Invoice Dates**: Issue date defaults to today and can be edited before saving. The due date is calculated once as `issueDate + Customer.creditDays` and persisted in `invoices.due_date`.
 - **Payment Tracking**: Supports partial and full payments
 - **Receivables Integration**: Invoices with balance > 0 appear in Receivables (customer debt view)
 
@@ -242,8 +242,8 @@ invoices/
 6. Invoice must have at least 1 line item
 7. Customer is REQUIRED for all invoices
 8. Merchant is OPTIONAL (for commission tracking)
-9. `dueDate = issueDate + creditDays`
-10. If `creditDays` not provided, use `Customer.creditDays` (default: 0)
+9. `issueDate` defaults to today but can be edited when creating a draft invoice
+10. `dueDate = issueDate + Customer.creditDays` and is stored on the invoice; later customer credit-day changes do not modify existing invoices
 11. Differential pricing is applied to each line at creation time
 12. Stock is deducted when invoice is created
 13. Invoices with `hasPendingPayment = true` are excluded from all receivables debt queries until the payment is approved or rejected

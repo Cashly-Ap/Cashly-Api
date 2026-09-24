@@ -42,6 +42,8 @@ public class InvoiceJpaMapper {
         entity.setCancelledReason(invoice.getCancelledReason());
         entity.setCreatedAt(invoice.getCreatedAt());
         entity.setUpdatedAt(invoice.getUpdatedAt());
+        entity.setIssueDate(invoice.getIssueDate());
+        entity.setDueDate(invoice.getDueDate());
 
         List<InvoiceLineEntity> lineEntities = invoice.getLines().stream()
                 .map(line -> toLineEntity(line, entity))
@@ -82,7 +84,9 @@ public class InvoiceJpaMapper {
                 entity.getCancelledReason(),
                 lines,
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getIssueDate(),
+                entity.getDueDate()
         );
     }
 

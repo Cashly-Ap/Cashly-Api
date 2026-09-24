@@ -2,6 +2,7 @@ package com.parsun.parsun_api.quotes.application.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record ConvertQuoteToInvoiceRequest(
@@ -14,5 +15,13 @@ public record ConvertQuoteToInvoiceRequest(
 
         BigDecimal balanceAmount,
 
-        UUID paymentMethodId
-) {}
+        UUID paymentMethodId,
+
+        LocalDate issueDate
+) {
+    public ConvertQuoteToInvoiceRequest(String paymentType, String confirmationPassword,
+                                        Boolean useBalance, BigDecimal balanceAmount,
+                                        UUID paymentMethodId) {
+        this(paymentType, confirmationPassword, useBalance, balanceAmount, paymentMethodId, null);
+    }
+}

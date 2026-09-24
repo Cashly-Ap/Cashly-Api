@@ -3,6 +3,9 @@ package com.parsun.parsun_api.quotes.application.usecases;
 import com.parsun.parsun_api.auth.user.domain.entities.User;
 import com.parsun.parsun_api.auth.user.domain.repositories.UserRepository;
 import com.parsun.parsun_api.auth.user.domain.valueobjects.UserId;
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.invoices.application.services.InvoiceAuthorizationService;
 import com.parsun.parsun_api.invoices.domain.entities.Invoice;
 import com.parsun.parsun_api.invoices.domain.entities.InvoiceLine;
@@ -38,6 +41,23 @@ public class ConvertQuoteToInvoiceUseCase {
     private final UserRepository userRepository;
     private final InvoiceAuthorizationService authorizationService;
     private final NotificationService notificationService;
+    private final CustomerRepository customerRepository;
+
+    public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
+                                         InvoiceRepository invoiceRepository,
+                                         WarehouseStockRepository warehouseStockRepository,
+                                         UserRepository userRepository,
+                                         InvoiceAuthorizationService authorizationService,
+                                         NotificationService notificationService,
+                                         CustomerRepository customerRepository) {
+        this.quoteRepository = quoteRepository;
+        this.invoiceRepository = invoiceRepository;
+        this.warehouseStockRepository = warehouseStockRepository;
+        this.userRepository = userRepository;
+        this.authorizationService = authorizationService;
+        this.notificationService = notificationService;
+        this.customerRepository = customerRepository;
+    }
 
     public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
                                          InvoiceRepository invoiceRepository,
@@ -45,12 +65,8 @@ public class ConvertQuoteToInvoiceUseCase {
                                          UserRepository userRepository,
                                          InvoiceAuthorizationService authorizationService,
                                          NotificationService notificationService) {
-        this.quoteRepository = quoteRepository;
-        this.invoiceRepository = invoiceRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.userRepository = userRepository;
-        this.authorizationService = authorizationService;
-        this.notificationService = notificationService;
+        this(quoteRepository, invoiceRepository, warehouseStockRepository, userRepository,
+                authorizationService, notificationService, null);
     }
 
     @Transactional
@@ -71,6 +87,13 @@ public class ConvertQuoteToInvoiceUseCase {
 
         User user = userRepository.findById(new UserId(authenticatedUserId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+        LocalDate issueDate = request.issueDate() != null ? request.issueDate() : LocalDate.now();
+        LocalDate dueDate = issueDate;
+        if (customerRepository != null) {
+            Customer customer = customerRepository.findById(new CustomerId(quote.getCustomerId()))
+                    .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + quote.getCustomerId()));
+            dueDate = issueDate.plusDays(customer.getCreditDays().getValue());
+        }
 
         int year = LocalDate.now().getYear();
         int sequence = invoiceRepository.getNextSequenceForYear(year);
@@ -85,10 +108,11 @@ public class ConvertQuoteToInvoiceUseCase {
                 quote.getCustomerId(), quote.getCustomerName(), quote.getCustomerRif(),
                 authenticatedUserId, user.getUserName().getValue(),
                 null, null,
+                List.of(), List.of(),
                 InvoiceStatus.DRAFT, resolvedPaymentType, null,
                 BigDecimal.ZERO, null,
                 null, null,
-                invoiceLines, LocalDateTime.now(), LocalDateTime.now()
+                invoiceLines, LocalDateTime.now(), LocalDateTime.now(), issueDate, dueDate
         );
 
         authorizationService.authorize(invoice, user,

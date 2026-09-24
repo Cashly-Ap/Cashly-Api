@@ -43,7 +43,8 @@ public class ConvertToInvoiceUseCase {
                 request.balanceAmount(),
                 request.paymentMethodId(),
                 request.confirmationPassword(),
-                null
+                null,
+                request.issueDate()
         );
 
         InvoiceDetailResponse invoice = createInvoiceUseCase.execute(createRequest, authenticatedUserId);

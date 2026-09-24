@@ -161,7 +161,12 @@ public class CreateInvoiceUseCase {
 
         validateSources(orderIds, quoteIds, resolvedCustomerId);
 
+        Customer customer = customerRepository.findById(new CustomerId(resolvedCustomerId))
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + resolvedCustomerId));
+
         PaymentType paymentType = PaymentType.valueOf(request.paymentType());
+        LocalDate issueDate = request.issueDate() != null ? request.issueDate() : LocalDate.now();
+        LocalDate dueDate = issueDate.plusDays(customer.getCreditDays().getValue());
 
         int year = LocalDate.now().getYear();
         int sequence = invoiceRepository.getNextSequenceForYear(year);
@@ -180,7 +185,9 @@ public class CreateInvoiceUseCase {
                 quoteIds,
                 paymentType,
                 request.notes(),
-                lines
+                lines,
+                issueDate,
+                dueDate
         );
 
         if (orderId != null) {

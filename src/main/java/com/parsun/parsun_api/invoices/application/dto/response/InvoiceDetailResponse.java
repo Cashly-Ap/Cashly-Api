@@ -2,6 +2,7 @@ package com.parsun.parsun_api.invoices.application.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,11 +29,30 @@ public record InvoiceDetailResponse(
         String cancelledReason,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
+        LocalDate issueDate,
+        LocalDate dueDate,
         List<InvoiceLineDetailResponse> lines,
         BigDecimal returnedTotal,
         String returnStatus,
         List<ReturnDetail> returns
 ) {
+    public InvoiceDetailResponse(UUID id, String invoiceNumber, UUID customerId, String customerName,
+                                 String customerRif, UUID createdBy, String createdByName,
+                                 UUID orderId, String orderNumber, String status, String statusLabel,
+                                 String paymentType, String notes, BigDecimal subtotal,
+                                 BigDecimal creditApplied, BigDecimal debitApplied, BigDecimal total,
+                                 List<NoteInfo> notesList, LocalDateTime cancelledAt,
+                                 String cancelledReason, LocalDateTime createdAt, LocalDateTime updatedAt,
+                                 List<InvoiceLineDetailResponse> lines, BigDecimal returnedTotal,
+                                 String returnStatus, List<ReturnDetail> returns) {
+        this(id, invoiceNumber, customerId, customerName, customerRif, createdBy, createdByName,
+                orderId, orderNumber, status, statusLabel, paymentType, notes, subtotal,
+                creditApplied, debitApplied, total, notesList, cancelledAt, cancelledReason,
+                createdAt, updatedAt, createdAt != null ? createdAt.toLocalDate() : null,
+                createdAt != null ? createdAt.toLocalDate() : null, lines, returnedTotal,
+                returnStatus, returns);
+    }
+
     public record NoteInfo(
             UUID id,
             String noteNumber,

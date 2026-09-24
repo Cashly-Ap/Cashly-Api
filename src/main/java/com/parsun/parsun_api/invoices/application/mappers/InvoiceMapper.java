@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.time.LocalDate;
 
 public class InvoiceMapper {
 
@@ -72,6 +73,8 @@ public class InvoiceMapper {
                 invoice.getCancelledReason(),
                 invoice.getCreatedAt(),
                 invoice.getUpdatedAt(),
+                invoice.getIssueDate(),
+                invoice.getDueDate(),
                 lineResponses,
                 invoice.getReturnedTotal(),
                 returnStatus,
@@ -114,6 +117,10 @@ public class InvoiceMapper {
         }
 
         BigDecimal paidAmount = paidAmountByInvoiceId.getOrDefault(invoice.getId().value(), BigDecimal.ZERO);
+        boolean overdue = invoice.getDueDate() != null
+                && invoice.getDueDate().isBefore(LocalDate.now())
+                && (invoice.getStatus().name().equals("PENDING_PAYMENT")
+                    || invoice.getStatus().name().equals("PARTIALLY_PAID"));
 
         return new InvoiceListResponse(
                 invoice.getId().value(),
@@ -132,7 +139,10 @@ public class InvoiceMapper {
                 invoice.getOrderId(),
                 invoice.getOrderNumber(),
                 invoice.getCreatedAt(),
-                returnStatus
+                invoice.getIssueDate(),
+                invoice.getDueDate(),
+                returnStatus,
+                overdue
         );
     }
 

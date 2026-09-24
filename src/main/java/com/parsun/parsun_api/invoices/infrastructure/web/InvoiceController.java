@@ -72,11 +72,12 @@ public class InvoiceController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) List<String> returnStatus,
+            @RequestParam(required = false) String dueStatus,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
         List<InvoiceListResponse> invoices = search == null || search.isBlank()
-                ? getInvoicesUseCase.execute(fromDate, toDate, customerId, status, returnStatus, productId, categoryId, orderBy, orderDir)
-                : getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, productId, categoryId, orderBy, orderDir);
+                ? getInvoicesUseCase.execute(fromDate, toDate, customerId, status, null, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir)
+                : getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir);
         return ResponseEntity.ok(invoices);
     }
 
@@ -85,7 +86,7 @@ public class InvoiceController {
             UUID productId, UUID categoryId, List<String> returnStatus,
             String orderBy, String orderDir) {
         return getAll(fromDate, toDate, customerId, null, status, productId, categoryId,
-                returnStatus, orderBy, orderDir);
+                returnStatus, null, orderBy, orderDir);
     }
 
     @GetMapping("/{id}")

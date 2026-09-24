@@ -42,6 +42,7 @@ public class GetDashboardUseCase {
             "  LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_credit FROM credit_notes GROUP BY invoice_id) cn ON cn.invoice_id = i.id" +
             "  LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_debit FROM debit_notes GROUP BY invoice_id) dn ON dn.invoice_id = i.id" +
             "  WHERE i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')" +
+            "    AND i.due_date < CURDATE()" +
             ") t WHERE t.balance > 0",
             BigDecimal.class
         );
@@ -129,7 +130,7 @@ public class GetDashboardUseCase {
 
         return jdbc.query(
             "SELECT BIN_TO_UUID(i.id) AS invoice_id, i.invoice_number, BIN_TO_UUID(c.id) AS customer_id, c.legal_name, "
-                        + "DATE_ADD(DATE(i.created_at), INTERVAL c.credit_days DAY) AS due_date, "
+                        + "i.due_date, "
                         + balanceExpression + " AS balance "
                         + "FROM invoices i "
                         + "JOIN customers c ON c.id = i.customer_id "

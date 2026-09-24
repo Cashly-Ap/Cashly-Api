@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,14 +38,24 @@ public record CreateInvoiceRequest(
 
         @NotEmpty(message = "At least one invoice line is required")
         @Valid
-        List<InvoiceLineRequest> lines
+        List<InvoiceLineRequest> lines,
+
+        LocalDate issueDate
 ) {
     public CreateInvoiceRequest(UUID orderId, UUID customerId, UUID createdBy, String paymentType,
-                                String notes, Boolean useBalance, BigDecimal balanceAmount,
+                String notes, Boolean useBalance, BigDecimal balanceAmount,
                                 UUID paymentMethodId, String confirmationPassword,
                                 List<InvoiceLineRequest> lines) {
         this(orderId, List.of(), List.of(), customerId, createdBy, paymentType, notes, useBalance,
-                balanceAmount, paymentMethodId, confirmationPassword, lines);
+                balanceAmount, paymentMethodId, confirmationPassword, lines, null);
+    }
+
+    public CreateInvoiceRequest(UUID orderId, UUID customerId, UUID createdBy, String paymentType,
+                                String notes, Boolean useBalance, BigDecimal balanceAmount,
+                                UUID paymentMethodId, String confirmationPassword,
+                                List<InvoiceLineRequest> lines, LocalDate issueDate) {
+        this(orderId, List.of(), List.of(), customerId, createdBy, paymentType, notes, useBalance,
+                balanceAmount, paymentMethodId, confirmationPassword, lines, issueDate);
     }
 
     public record InvoiceLineRequest(

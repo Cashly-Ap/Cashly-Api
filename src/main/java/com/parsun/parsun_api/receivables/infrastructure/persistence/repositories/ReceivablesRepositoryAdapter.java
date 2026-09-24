@@ -178,7 +178,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                        SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                            - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total_debt,
                        COUNT(DISTINCT i.id) AS invoice_count,
-                       MIN(i.created_at) AS oldest_invoice_date
+                       MIN(i.due_date) AS oldest_invoice_date
                 FROM invoices i
                 LEFT JOIN (
                     SELECT invoice_id, SUM(allocated_amount) AS total_paid
@@ -273,7 +273,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 : BigDecimal.ZERO;
 
         Query invoicesQuery = entityManager.createNativeQuery("""
-            SELECT i.id, i.invoice_number, i.status, i.created_at,
+            SELECT i.id, i.invoice_number, i.status, i.due_date, i.created_at,
                    i.subtotal,
                    COALESCE(i.returned_total, 0) AS returned_total,
                    COALESCE(pa.total_paid, 0) AS total_paid,
@@ -324,16 +324,17 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         toUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
-                        row[3] != null ? ((java.sql.Timestamp) row[3]).toLocalDateTime().toLocalDate() : null,
-                        (BigDecimal) row[4],
+                        row[4] != null ? ((java.sql.Timestamp) row[4]).toLocalDateTime().toLocalDate() : null,
+                        row[3] != null ? ((java.sql.Date) row[3]).toLocalDate() : null,
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
                         (BigDecimal) row[7],
                         (BigDecimal) row[8],
                         (BigDecimal) row[9],
                         (BigDecimal) row[10],
-                        toUuid(row[11]),
-                        (String) row[12]
+                        (BigDecimal) row[11],
+                        toUuid(row[12]),
+                        (String) row[13]
                 ))
                 .toList();
 
@@ -404,6 +405,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                     case "PENDING" -> " AND i.status IN ('PENDING_PAYMENT') AND " + balanceExpr + " > 0";
                     case "PARTIAL" -> " AND i.status IN ('PARTIALLY_PAID', 'PENDING_PAYMENT') AND " + partialBalanceExpr + " > 0 AND " + partialBalanceExpr + " < i.subtotal";
                     case "PAID" -> " AND i.status = 'PAID'";
+                    case "OVERDUE" -> " AND i.due_date < CURDATE() AND " + balanceExpr + " > 0";
+                    case "CURRENT" -> " AND i.due_date >= CURDATE() AND " + balanceExpr + " > 0";
                     default -> " AND " + balanceExpr + " > 0";
                 };
             } else {
@@ -430,7 +433,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         }
         long total = ((Number) countQ.getSingleResult()).longValue();
 
-        String dataSql =             "SELECT i.id, i.invoice_number, i.status, i.created_at,\n" +
+        String dataSql =             "SELECT i.id, i.invoice_number, i.status, i.due_date, i.created_at,\n" +
             "                   i.subtotal,\n" +
             "                   COALESCE(i.returned_total, 0) AS returned_total,\n" +
             "                   COALESCE(pa.total_paid, 0) AS total_paid,\n" +
@@ -472,16 +475,17 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         toUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
-                        row[3] != null ? ((java.sql.Timestamp) row[3]).toLocalDateTime().toLocalDate() : null,
-                        (BigDecimal) row[4],
+                        row[4] != null ? ((java.sql.Timestamp) row[4]).toLocalDateTime().toLocalDate() : null,
+                        row[3] != null ? ((java.sql.Date) row[3]).toLocalDate() : null,
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
                         (BigDecimal) row[7],
                         (BigDecimal) row[8],
                         (BigDecimal) row[9],
                         (BigDecimal) row[10],
-                        toUuid(row[11]),
-                        (String) row[12]
+                        (BigDecimal) row[11],
+                        toUuid(row[12]),
+                        (String) row[13]
                 ))
                 .toList();
 
@@ -591,19 +595,19 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                     i.customer_id,
                     SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                         - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS pending_balance,
-                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 0 AND 30
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.due_date) BETWEEN 0 AND 30
                         THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age0_30,
-                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 31 AND 60
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.due_date) BETWEEN 31 AND 60
                         THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age31_60,
-                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 61 AND 90
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.due_date) BETWEEN 61 AND 90
                         THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age61_90,
-                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) BETWEEN 91 AND 120
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.due_date) BETWEEN 91 AND 120
                         THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age91_120,
-                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.created_at) >= 121
+                    SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.due_date) >= 121
                         THEN i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                             - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0) ELSE 0 END) AS age120_plus
                 FROM invoices i

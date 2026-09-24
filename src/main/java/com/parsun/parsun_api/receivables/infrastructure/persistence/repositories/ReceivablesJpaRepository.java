@@ -113,7 +113,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
                    SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                        - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total_debt,
                    COUNT(DISTINCT i.id) AS invoice_count,
-                   MIN(i.created_at) AS oldest_invoice_date
+                   MIN(i.due_date) AS oldest_invoice_date
             FROM invoices i
             LEFT JOIN (
                 SELECT invoice_id, SUM(allocated_amount) AS total_paid
@@ -170,7 +170,7 @@ public interface ReceivablesJpaRepository extends JpaRepository<PaymentAllocatio
                    SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
                        - COALESCE(cn.total_credit, 0) + COALESCE(dn.total_debit, 0)) AS total_debt,
                    COUNT(DISTINCT i.id) AS invoice_count,
-                   MIN(i.created_at) AS oldest_invoice_date
+                   MIN(i.due_date) AS oldest_invoice_date
             FROM invoices i
             LEFT JOIN (
                 SELECT invoice_id, SUM(allocated_amount) AS total_paid

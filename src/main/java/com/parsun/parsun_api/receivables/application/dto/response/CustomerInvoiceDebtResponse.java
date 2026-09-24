@@ -9,6 +9,7 @@ public record CustomerInvoiceDebtResponse(
         String invoiceNumber,
         String status,
         LocalDate invoiceDate,
+        LocalDate dueDate,
         BigDecimal subtotal,
         BigDecimal returnedTotal,
         BigDecimal totalPaid,
@@ -18,4 +19,15 @@ public record CustomerInvoiceDebtResponse(
         BigDecimal balance,
         UUID pendingPaymentId,
         String pendingPaymentStatus
-) {}
+) {
+    public CustomerInvoiceDebtResponse(UUID invoiceId, String invoiceNumber, String status,
+                                       LocalDate invoiceDate, BigDecimal subtotal,
+                                       BigDecimal returnedTotal, BigDecimal totalPaid,
+                                       BigDecimal creditApplied, BigDecimal debitApplied,
+                                       BigDecimal total, BigDecimal balance,
+                                       UUID pendingPaymentId, String pendingPaymentStatus) {
+        this(invoiceId, invoiceNumber, status, invoiceDate, invoiceDate, subtotal, returnedTotal,
+                totalPaid, creditApplied, debitApplied, total, balance, pendingPaymentId,
+                pendingPaymentStatus);
+    }
+}

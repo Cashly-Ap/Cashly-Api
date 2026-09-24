@@ -60,8 +60,6 @@ public class CreditValidationService implements com.parsun.parsun_api.customers.
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
 
         BigDecimal creditLimit = customer.getCreditLimit().getValue();
-        int creditDays = customer.getCreditDays().getValue();
-
         BigDecimal pendingBalance = calculatePendingBalance(customerId);
         BigDecimal customerBalance = customerBalanceRepository.findByCustomerId(customerId)
                 .map(CustomerBalance::getTotalBalance)
@@ -69,7 +67,7 @@ public class CreditValidationService implements com.parsun.parsun_api.customers.
         BigDecimal availableCredit = creditLimit.add(customerBalance).subtract(pendingBalance)
                 .max(BigDecimal.ZERO);
 
-        List<OverdueInvoiceResponse> overdueInvoices = findOverdueInvoices(customerId, creditDays);
+        List<OverdueInvoiceResponse> overdueInvoices = findOverdueInvoices(customerId);
 
         boolean hasOverdue = !overdueInvoices.isEmpty();
         boolean canCreateCreditInvoice = availableCredit.compareTo(BigDecimal.ZERO) >= 0 && !hasOverdue;
@@ -101,15 +99,7 @@ public class CreditValidationService implements com.parsun.parsun_api.customers.
                 continue;
             }
 
-            Customer customer = customerRepository.findById(new CustomerId(invoice.getCustomerId()))
-                    .orElse(null);
-            if (customer == null) {
-                continue;
-            }
-
-            int creditDays = customer.getCreditDays().getValue();
-            LocalDate invoiceDate = invoice.getCreatedAt().toLocalDate();
-            LocalDate dueDate = invoiceDate.plusDays(creditDays);
+            LocalDate dueDate = invoice.getDueDate();
 
             if (dueDate.isBefore(now)) {
                 int daysOverdue = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, now);
@@ -170,7 +160,7 @@ public class CreditValidationService implements com.parsun.parsun_api.customers.
         return totalApplied;
     }
 
-    private List<OverdueInvoiceResponse> findOverdueInvoices(UUID customerId, int creditDays) {
+    private List<OverdueInvoiceResponse> findOverdueInvoices(UUID customerId) {
         List<Invoice> allInvoices = invoiceRepository.findAllWithFilters(null, null, customerId, null, null, null, null, "createdAt", "desc");
         List<OverdueInvoiceResponse> result = new ArrayList<>();
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -181,8 +171,7 @@ public class CreditValidationService implements com.parsun.parsun_api.customers.
                 continue;
             }
 
-            LocalDate invoiceDate = invoice.getCreatedAt().toLocalDate();
-            LocalDate dueDate = invoiceDate.plusDays(creditDays);
+            LocalDate dueDate = invoice.getDueDate();
 
             if (dueDate.isBefore(now)) {
                 int daysOverdue = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, now);

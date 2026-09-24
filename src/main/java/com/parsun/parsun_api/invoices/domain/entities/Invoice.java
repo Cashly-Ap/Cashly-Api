@@ -12,6 +12,7 @@ import com.parsun.parsun_api.returns.domain.entities.ReturnType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,8 @@ public class Invoice {
     private final List<InvoiceLine> lines;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDate issueDate;
+    private LocalDate dueDate;
 
     private Invoice(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId, String customerName,
                     String customerRif, UUID createdBy, String createdByName,
@@ -72,6 +75,8 @@ public class Invoice {
         this.lines = new ArrayList<>(lines != null ? lines : List.of());
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.issueDate = createdAt.toLocalDate();
+        this.dueDate = createdAt.toLocalDate();
         this.subtotal = calculateSubtotal();
     }
 
@@ -109,6 +114,17 @@ public class Invoice {
                 null, null, lines, now, now);
     }
 
+    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId, String customerName,
+                                  String customerRif, UUID createdBy, String createdByName,
+                                  UUID orderId, String orderNumber, List<UUID> orderIds,
+                                  List<UUID> quoteIds, PaymentType paymentType, String notes,
+                                  List<InvoiceLine> lines, LocalDate issueDate, LocalDate dueDate) {
+        Invoice invoice = create(invoiceNumber, customerId, customerName, customerRif, createdBy,
+                createdByName, orderId, orderNumber, orderIds, quoteIds, paymentType, notes, lines);
+        invoice.setDates(issueDate, dueDate);
+        return invoice;
+    }
+
     public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
                                         String customerName, String customerRif,
                                         UUID createdBy, String createdByName,
@@ -122,6 +138,41 @@ public class Invoice {
                 createdBy, createdByName, orderId, orderNumber, List.of(), List.of(), status,
                 paymentType, notes, returnedTotal, returnStatus, cancelledAt, cancelledReason,
                 lines, createdAt, updatedAt);
+    }
+
+    public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
+                                        String customerName, String customerRif,
+                                        UUID createdBy, String createdByName,
+                                        UUID orderId, String orderNumber, List<UUID> orderIds,
+                                        List<UUID> quoteIds, InvoiceStatus status, PaymentType paymentType,
+                                        String notes, BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
+                                        LocalDateTime cancelledAt, String cancelledReason,
+                                        List<InvoiceLine> lines, LocalDateTime createdAt,
+                                        LocalDateTime updatedAt, LocalDate issueDate, LocalDate dueDate) {
+        Invoice invoice = reconstitute(id, invoiceNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, orderId, orderNumber, orderIds, quoteIds, status,
+                paymentType, notes, returnedTotal, returnStatus, cancelledAt, cancelledReason,
+                lines, createdAt, updatedAt);
+        invoice.setDates(issueDate, dueDate);
+        return invoice;
+    }
+
+    private void setDates(LocalDate issueDate, LocalDate dueDate) {
+        Objects.requireNonNull(issueDate, "Issue date cannot be null");
+        Objects.requireNonNull(dueDate, "Due date cannot be null");
+        if (dueDate.isBefore(issueDate)) {
+            throw new IllegalArgumentException("Due date cannot be before issue date");
+        }
+        this.issueDate = issueDate;
+        this.dueDate = dueDate;
+    }
+
+    public void updateDates(LocalDate issueDate, LocalDate dueDate) {
+        if (this.status != InvoiceStatus.DRAFT) {
+            throw new IllegalStateException("Only DRAFT invoices can be updated");
+        }
+        setDates(issueDate, dueDate);
+        this.updatedAt = LocalDateTime.now();
     }
 
     public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
@@ -323,4 +374,6 @@ public class Invoice {
     public List<InvoiceLine> getLines() { return Collections.unmodifiableList(lines); }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDate getIssueDate() { return issueDate; }
+    public LocalDate getDueDate() { return dueDate; }
 }

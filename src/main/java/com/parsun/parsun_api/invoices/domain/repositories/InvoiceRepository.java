@@ -16,15 +16,34 @@ public interface InvoiceRepository {
     List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                      UUID customerId, List<String> statuses,
                                      List<String> returnStatus,
+                                     String dueStatus,
                                      UUID productId, UUID categoryId,
                                      String orderBy, String orderDir);
+
+    default List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
+                                              UUID customerId, List<String> statuses,
+                                              List<String> returnStatus,
+                                              UUID productId, UUID categoryId,
+                                              String orderBy, String orderDir) {
+        return findAllWithFilters(dateFrom, dateTo, customerId, statuses, returnStatus, null,
+                productId, categoryId, orderBy, orderDir);
+    }
 
     default List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                               UUID customerId, List<String> statuses, String search,
                                               List<String> returnStatus, UUID productId, UUID categoryId,
                                               String orderBy, String orderDir) {
+        return findAllWithFilters(dateFrom, dateTo, customerId, statuses, search, returnStatus, null,
+                productId, categoryId, orderBy, orderDir);
+    }
+
+    default List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
+                                              UUID customerId, List<String> statuses, String search,
+                                              List<String> returnStatus, String dueStatus,
+                                              UUID productId, UUID categoryId,
+                                              String orderBy, String orderDir) {
         String normalizedSearch = search == null ? "" : search.trim().toLowerCase();
-        return findAllWithFilters(dateFrom, dateTo, customerId, statuses, returnStatus, productId,
+        return findAllWithFilters(dateFrom, dateTo, customerId, statuses, returnStatus, dueStatus, productId,
                 categoryId, orderBy, orderDir).stream()
                 .filter(invoice -> normalizedSearch.isBlank()
                         || invoice.getInvoiceNumber().value().toLowerCase().contains(normalizedSearch)

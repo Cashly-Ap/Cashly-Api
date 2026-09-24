@@ -38,12 +38,13 @@ public class GetInvoicesUseCase {
     public List<InvoiceListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                               UUID customerId, List<String> statuses, String search,
                                               List<String> returnStatus,
+                                              String dueStatus,
                                               UUID productId, UUID categoryId,
                                               String orderBy, String orderDir) {
         List<String> effectiveStatuses = (statuses == null || statuses.isEmpty()) ? DEFAULT_STATUSES : statuses;
         List<Invoice> invoices = search == null || search.isBlank()
-                ? invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, returnStatus, productId, categoryId, orderBy, orderDir)
-                : invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, search, returnStatus, productId, categoryId, orderBy, orderDir);
+                ? invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir)
+                : invoiceRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatuses, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir);
 
         List<UUID> invoiceIds = invoices.stream()
                 .map(invoice -> invoice.getId().value())
@@ -65,7 +66,7 @@ public class GetInvoicesUseCase {
                                               UUID customerId, List<String> statuses,
                                               List<String> returnStatus, UUID productId,
                                               UUID categoryId, String orderBy, String orderDir) {
-        return execute(dateFrom, dateTo, customerId, statuses, null, returnStatus, productId,
+        return execute(dateFrom, dateTo, customerId, statuses, null, returnStatus, null, productId,
                 categoryId, orderBy, orderDir);
     }
 }

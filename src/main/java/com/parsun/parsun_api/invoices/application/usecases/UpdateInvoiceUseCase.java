@@ -10,12 +10,16 @@ import com.parsun.parsun_api.invoices.domain.exceptions.InvoiceNotFoundException
 import com.parsun.parsun_api.invoices.domain.repositories.InvoiceRepository;
 import com.parsun.parsun_api.invoices.domain.valueobjects.InvoiceId;
 import com.parsun.parsun_api.invoices.domain.valueobjects.PaymentType;
+import com.parsun.parsun_api.customers.domain.entities.Customer;
+import com.parsun.parsun_api.customers.domain.repositories.CustomerRepository;
+import com.parsun.parsun_api.customers.domain.valueobjects.CustomerId;
 import com.parsun.parsun_api.products.domain.entities.Product;
 import com.parsun.parsun_api.products.domain.repositories.ProductRepository;
 import com.parsun.parsun_api.shared.application.StockEnrichmentService;
 import com.parsun.parsun_api.warehouses.domain.entities.WarehouseStock;
 import com.parsun.parsun_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.time.LocalDate;
 
 @Service
 public class UpdateInvoiceUseCase {
@@ -32,15 +37,26 @@ public class UpdateInvoiceUseCase {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockEnrichmentService stockEnrichmentService;
+    private final CustomerRepository customerRepository;
 
+    @Autowired
     public UpdateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                 ProductRepository productRepository,
-                                 WarehouseStockRepository warehouseStockRepository,
-                                 StockEnrichmentService stockEnrichmentService) {
+                                ProductRepository productRepository,
+                                WarehouseStockRepository warehouseStockRepository,
+                                StockEnrichmentService stockEnrichmentService,
+                                CustomerRepository customerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.productRepository = productRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockEnrichmentService = stockEnrichmentService;
+        this.customerRepository = customerRepository;
+    }
+
+    public UpdateInvoiceUseCase(InvoiceRepository invoiceRepository,
+                                ProductRepository productRepository,
+                                WarehouseStockRepository warehouseStockRepository,
+                                StockEnrichmentService stockEnrichmentService) {
+        this(invoiceRepository, productRepository, warehouseStockRepository, stockEnrichmentService, null);
     }
 
     @Transactional
@@ -72,6 +88,11 @@ public class UpdateInvoiceUseCase {
 
         PaymentType paymentType = PaymentType.valueOf(request.paymentType());
         invoice.update(paymentType, request.notes(), newLines);
+        if (request.issueDate() != null && customerRepository != null) {
+            Customer customer = customerRepository.findById(new CustomerId(invoice.getCustomerId()))
+                    .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + invoice.getCustomerId()));
+            invoice.updateDates(request.issueDate(), request.issueDate().plusDays(customer.getCreditDays().getValue()));
+        }
 
         Invoice saved = invoiceRepository.save(invoice);
 

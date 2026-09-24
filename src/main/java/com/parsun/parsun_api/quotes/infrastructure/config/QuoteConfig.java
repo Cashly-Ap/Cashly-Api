@@ -117,9 +117,11 @@ public class QuoteConfig {
             WarehouseStockRepository warehouseStockRepository,
             UserRepository userRepository,
             InvoiceAuthorizationService authorizationService,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            CustomerRepository customerRepository) {
         return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoiceRepository,
-                warehouseStockRepository, userRepository, authorizationService, notificationService);
+                warehouseStockRepository, userRepository, authorizationService, notificationService,
+                customerRepository);
     }
 
     @Bean
