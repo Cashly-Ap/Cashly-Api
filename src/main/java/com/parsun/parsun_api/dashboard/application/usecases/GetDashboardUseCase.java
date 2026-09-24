@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.dashboard.application.usecases;
 
 import com.parsun.parsun_api.dashboard.application.dto.response.DashboardSummaryResponse;
+import com.parsun.parsun_api.dashboard.application.dto.response.InvoiceDueResponse;
 import com.parsun.parsun_api.dashboard.application.dto.response.MonthlySalesResponse;
 import com.parsun.parsun_api.dashboard.application.dto.response.TopItemResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class GetDashboardUseCase {
@@ -117,6 +119,34 @@ public class GetDashboardUseCase {
             "(SELECT 'order' AS type, o.id, o.order_number AS number, c.legal_name AS customer, o.subtotal AS amount, o.created_at " +
             "FROM orders o JOIN customers c ON c.id = o.customer_id ORDER BY o.created_at DESC LIMIT 5) " +
             "ORDER BY created_at DESC LIMIT 10"
+        );
+    }
+
+    public List<InvoiceDueResponse> getInvoiceDueSchedule() {
+        String balanceExpression = "(i.subtotal - COALESCE(i.returned_total, 0) "
+                + "- COALESCE(pa.total_paid, 0) - COALESCE(cn.total_credit, 0) "
+                + "+ COALESCE(dn.total_debit, 0))";
+
+        return jdbc.query(
+            "SELECT BIN_TO_UUID(i.id) AS invoice_id, i.invoice_number, BIN_TO_UUID(c.id) AS customer_id, c.legal_name, "
+                        + "DATE_ADD(DATE(i.created_at), INTERVAL c.credit_days DAY) AS due_date, "
+                        + balanceExpression + " AS balance "
+                        + "FROM invoices i "
+                        + "JOIN customers c ON c.id = i.customer_id "
+                        + "LEFT JOIN (SELECT invoice_id, SUM(allocated_amount) AS total_paid FROM payment_allocations GROUP BY invoice_id) pa ON pa.invoice_id = i.id "
+                        + "LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_credit FROM credit_notes GROUP BY invoice_id) cn ON cn.invoice_id = i.id "
+                        + "LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_debit FROM debit_notes GROUP BY invoice_id) dn ON dn.invoice_id = i.id "
+                        + "WHERE i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID') "
+                        + "AND " + balanceExpression + " > 0 "
+                        + "ORDER BY due_date ASC, c.legal_name ASC, i.invoice_number ASC",
+                (rs, rowNum) -> new InvoiceDueResponse(
+                    UUID.fromString(rs.getString("invoice_id")),
+                        rs.getString("invoice_number"),
+                        UUID.fromString(rs.getString("customer_id")),
+                        rs.getString("legal_name"),
+                        rs.getDate("due_date").toLocalDate(),
+                        rs.getBigDecimal("balance")
+                )
         );
     }
 }

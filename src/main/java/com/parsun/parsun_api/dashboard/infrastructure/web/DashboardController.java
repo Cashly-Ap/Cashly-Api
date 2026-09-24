@@ -1,6 +1,7 @@
 package com.parsun.parsun_api.dashboard.infrastructure.web;
 
 import com.parsun.parsun_api.dashboard.application.dto.response.DashboardSummaryResponse;
+import com.parsun.parsun_api.dashboard.application.dto.response.InvoiceDueResponse;
 import com.parsun.parsun_api.dashboard.application.dto.response.MonthlySalesResponse;
 import com.parsun.parsun_api.dashboard.application.dto.response.TopItemResponse;
 import com.parsun.parsun_api.dashboard.application.usecases.GetDashboardUseCase;
@@ -49,5 +50,11 @@ public class DashboardController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
     public ResponseEntity<List<Map<String, Object>>> getRecentActivity() {
         return ResponseEntity.ok(getDashboardUseCase.getRecentActivity());
+    }
+
+    @GetMapping("/invoice-due-schedule")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    public ResponseEntity<List<InvoiceDueResponse>> getInvoiceDueSchedule() {
+        return ResponseEntity.ok(getDashboardUseCase.getInvoiceDueSchedule());
     }
 }
