@@ -24,6 +24,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.parsun.parsun_api.orders.application.dto.response.OrderDetailResponse;
 import com.parsun.parsun_api.reports.orders.application.port.OrderPdfPort;
+import com.parsun.parsun_api.reports.infrastructure.pdf.PdfBranding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
         header.setMarginBottom(20);
 
         Cell logoCell = new Cell()
-                .add(new Paragraph("PARSUN").setFont(bold).setFontSize(26).setMarginBottom(0))
+                .add(PdfBranding.logo())
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
