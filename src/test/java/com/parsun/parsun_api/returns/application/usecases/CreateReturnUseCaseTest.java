@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -142,7 +143,7 @@ class CreateReturnUseCaseTest {
                 InvoiceStatus.PENDING_PAYMENT, null, null,
                 returnedTotal, null,
                 null, null,
-                List.of(line), null, null
+                List.of(line), LocalDateTime.now(), LocalDateTime.now()
         );
     }
 

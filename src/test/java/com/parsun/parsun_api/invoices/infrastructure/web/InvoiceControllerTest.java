@@ -101,7 +101,7 @@ class InvoiceControllerTest {
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 2,
                 UUID.randomUUID(), "ORD-00001", LocalDateTime.now(), null);
 
-        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of(invoice));
 
         ResponseEntity<List<InvoiceListResponse>> result = invoiceController.getAll(
@@ -109,13 +109,13 @@ class InvoiceControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, "createdAt", "desc");
+        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, null, null, "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no invoices")
     void should_return_empty_list_when_no_invoices() {
-        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         ResponseEntity<List<InvoiceListResponse>> result = invoiceController.getAll(
@@ -123,7 +123,7 @@ class InvoiceControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, "createdAt", "desc");
+        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, null, null, "createdAt", "desc");
     }
 
     @Test

@@ -324,8 +324,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         toUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
-                        row[4] != null ? ((java.sql.Timestamp) row[4]).toLocalDateTime().toLocalDate() : null,
-                        row[3] != null ? ((java.sql.Date) row[3]).toLocalDate() : null,
+                        toLocalDate(row[4]),
+                        toLocalDate(row[3]),
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
                         (BigDecimal) row[7],
@@ -475,8 +475,8 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                         toUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
-                        row[4] != null ? ((java.sql.Timestamp) row[4]).toLocalDateTime().toLocalDate() : null,
-                        row[3] != null ? ((java.sql.Date) row[3]).toLocalDate() : null,
+                        toLocalDate(row[4]),
+                        toLocalDate(row[3]),
                         (BigDecimal) row[5],
                         (BigDecimal) row[6],
                         (BigDecimal) row[7],
@@ -658,5 +658,13 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             return new UUID(bb.getLong(), bb.getLong());
         }
         throw new IllegalArgumentException("Cannot convert " + value.getClass() + " to UUID");
+    }
+
+    private LocalDate toLocalDate(Object value) {
+        if (value == null) return null;
+        if (value instanceof LocalDate localDate) return localDate;
+        if (value instanceof Timestamp timestamp) return timestamp.toLocalDateTime().toLocalDate();
+        if (value instanceof java.sql.Date date) return date.toLocalDate();
+        throw new IllegalArgumentException("Cannot convert " + value.getClass() + " to LocalDate");
     }
 }

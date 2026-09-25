@@ -61,7 +61,7 @@ class GetInvoicesUseCaseTest {
                 buildInvoice(UUID.randomUUID(), customerId, InvoiceStatus.PENDING_PAYMENT)
         );
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(invoices);
         when(paymentAllocationRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
         when(debitNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
@@ -74,44 +74,44 @@ class GetInvoicesUseCaseTest {
         assertEquals(2, result.size());
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null);
+                (List<String>) null, (String) null, null, null, null, null);
     }
 
     @Test
     void should_UseDefaultStatuses_When_StatusFilterIsNull() {
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         getInvoicesUseCase.execute(null, null, null, null, null, null, null, null, null);
 
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null);
+                (List<String>) null, (String) null, null, null, null, null);
     }
 
     @Test
     void should_UseDefaultStatuses_When_StatusFilterIsEmpty() {
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         getInvoicesUseCase.execute(null, null, null, List.of(), null, null, null, null, null);
 
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null);
+                (List<String>) null, (String) null, null, null, null, null);
     }
 
     @Test
     void should_PassCustomStatuses_When_Provided() {
         List<String> customStatuses = List.of("PAID", "CANCELLED");
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         getInvoicesUseCase.execute(null, null, null, customStatuses, null, null, null, null, null);
 
         verify(invoiceRepository).findAllWithFilters(
-                null, null, null, customStatuses, null, null, null, null, null);
+                null, null, null, customStatuses, (List<String>) null, (String) null, null, null, null, null);
     }
 
     @Test
@@ -122,19 +122,19 @@ class GetInvoicesUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         getInvoicesUseCase.execute(dateFrom, dateTo, customerId, null, null, productId, categoryId, "createdAt", "desc");
 
         verify(invoiceRepository).findAllWithFilters(
                 dateFrom, dateTo, customerId, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, productId, categoryId, "createdAt", "desc");
+                (List<String>) null, (String) null, productId, categoryId, "createdAt", "desc");
     }
 
     @Test
     void should_ReturnEmptyList_When_NoInvoicesMatch() {
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
@@ -149,7 +149,7 @@ class GetInvoicesUseCaseTest {
         UUID customerId = UUID.randomUUID();
         Invoice invoice = buildInvoice(UUID.randomUUID(), customerId, InvoiceStatus.DRAFT);
 
-        when(invoiceRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of(invoice));
         when(paymentAllocationRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
         when(debitNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
@@ -161,7 +161,7 @@ class GetInvoicesUseCaseTest {
         assertEquals(1, result.size());
         verify(invoiceRepository).findAllWithFilters(
                 null, null, customerId, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null);
+                (List<String>) null, (String) null, null, null, null, null);
     }
 
     private Invoice buildInvoice(UUID id, UUID customerId, InvoiceStatus status) {

@@ -145,7 +145,7 @@ class ReceivablesRepositoryAdapterTest {
             UUID invoiceId = UUID.randomUUID();
             Timestamp invoiceDate = Timestamp.valueOf(LocalDateTime.now().minusDays(30));
             Object[] invoiceRow = new Object[]{
-                invoiceId, "FAC-001", "PENDING_PAYMENT", invoiceDate,
+                invoiceId, "FAC-001", "PENDING_PAYMENT", invoiceDate, invoiceDate,
                 BigDecimal.valueOf(15000), BigDecimal.ZERO, BigDecimal.valueOf(5000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(15000), BigDecimal.valueOf(10000),
@@ -230,7 +230,7 @@ class ReceivablesRepositoryAdapterTest {
             UUID invoiceId = UUID.randomUUID();
             Timestamp invoiceDate = Timestamp.valueOf(LocalDateTime.now().minusDays(30));
             Object[] invoiceRow = new Object[]{
-                invoiceId, "FAC-001", "PENDING_PAYMENT", invoiceDate,
+                invoiceId, "FAC-001", "PENDING_PAYMENT", invoiceDate, invoiceDate,
                 BigDecimal.valueOf(15000), BigDecimal.ZERO, BigDecimal.valueOf(5000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(15000), BigDecimal.valueOf(10000),
@@ -261,7 +261,7 @@ class ReceivablesRepositoryAdapterTest {
 
             UUID invoiceId = UUID.randomUUID();
             Object[] invoiceRow = new Object[]{
-                invoiceId, "FAC-NULL-DATE", "PENDING_PAYMENT", null,
+                invoiceId, "FAC-NULL-DATE", "PENDING_PAYMENT", null, null,
                 BigDecimal.valueOf(5000), BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(5000), BigDecimal.valueOf(5000),
@@ -604,6 +604,7 @@ class ReceivablesRepositoryAdapterTest {
             Object[] row = new Object[]{
                 invId, "FAC-100", "PENDING_PAYMENT",
                 Timestamp.valueOf(LocalDateTime.now().minusDays(10)),
+                Timestamp.valueOf(LocalDateTime.now().minusDays(10)),
                 BigDecimal.valueOf(5000), BigDecimal.ZERO, BigDecimal.valueOf(1000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(5000), BigDecimal.valueOf(4000),
@@ -635,6 +636,7 @@ class ReceivablesRepositoryAdapterTest {
             Object[] row = new Object[]{
                 invId, "FAC-200", "FULLY_RETURNED",
                 Timestamp.valueOf(LocalDateTime.now().minusDays(5)),
+                Timestamp.valueOf(LocalDateTime.now().minusDays(5)),
                 BigDecimal.valueOf(3000), BigDecimal.valueOf(3000), BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO,
@@ -658,6 +660,7 @@ class ReceivablesRepositoryAdapterTest {
             UUID invId = UUID.randomUUID();
             Object[] row = new Object[]{
                 invId, "FAC-300", "PAID",
+                Timestamp.valueOf(LocalDateTime.now().minusDays(3)),
                 Timestamp.valueOf(LocalDateTime.now().minusDays(3)),
                 BigDecimal.valueOf(2000), BigDecimal.ZERO, BigDecimal.valueOf(2000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
@@ -685,6 +688,7 @@ class ReceivablesRepositoryAdapterTest {
             Object[] row = new Object[]{
                 invId, "FAC-400", "CANCELLED",
                 Timestamp.valueOf(LocalDateTime.now().minusDays(2)),
+                Timestamp.valueOf(LocalDateTime.now().minusDays(2)),
                 BigDecimal.valueOf(1000), BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
@@ -710,6 +714,7 @@ class ReceivablesRepositoryAdapterTest {
             Object[] row = new Object[]{
                 invId, "FAC-500", "PENDING_PAYMENT",
                 Timestamp.valueOf(LocalDateTime.now().minusDays(7)),
+                Timestamp.valueOf(LocalDateTime.now().minusDays(7)),
                 BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), BigDecimal.valueOf(2000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(3000), BigDecimal.valueOf(1000),
@@ -733,6 +738,7 @@ class ReceivablesRepositoryAdapterTest {
             UUID invId = UUID.randomUUID();
             Object[] row = new Object[]{
                 invId, "FAC-600", "PARTIALLY_PAID",
+                Timestamp.valueOf(LocalDateTime.now().minusDays(14)),
                 Timestamp.valueOf(LocalDateTime.now().minusDays(14)),
                 BigDecimal.valueOf(10000), BigDecimal.ZERO, BigDecimal.valueOf(3000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
@@ -760,6 +766,7 @@ class ReceivablesRepositoryAdapterTest {
             Object[] row = new Object[]{
                 invId, "FAC-700", "SOME_STATUS",
                 Timestamp.valueOf(LocalDateTime.now().minusDays(1)),
+                Timestamp.valueOf(LocalDateTime.now().minusDays(1)),
                 BigDecimal.valueOf(2000), BigDecimal.ZERO, BigDecimal.valueOf(500),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(2000), BigDecimal.valueOf(1500),
@@ -785,6 +792,7 @@ class ReceivablesRepositoryAdapterTest {
             Object[] row = new Object[]{
                 invId, "FAC-800", "PENDING_PAYMENT",
                 Timestamp.valueOf(LocalDateTime.now().minusDays(20)),
+                Timestamp.valueOf(LocalDateTime.now().minusDays(20)),
                 BigDecimal.valueOf(8000), BigDecimal.ZERO, BigDecimal.valueOf(2000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(8000), BigDecimal.valueOf(6000),
@@ -808,7 +816,7 @@ class ReceivablesRepositoryAdapterTest {
         void shouldHandleNullInvoiceDateInRows() {
             UUID invId = UUID.randomUUID();
             Object[] row = new Object[]{
-                invId, "FAC-NULL-DT", "PENDING_PAYMENT", null,
+                invId, "FAC-NULL-DT", "PENDING_PAYMENT", null, null,
                 BigDecimal.valueOf(5000), BigDecimal.ZERO, BigDecimal.valueOf(1000),
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.valueOf(5000), BigDecimal.valueOf(4000),

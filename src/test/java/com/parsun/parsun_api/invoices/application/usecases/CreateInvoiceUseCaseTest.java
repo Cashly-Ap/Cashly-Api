@@ -96,6 +96,8 @@ class CreateInvoiceUseCaseTest {
         );
 
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(buildCustomer(customerId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
