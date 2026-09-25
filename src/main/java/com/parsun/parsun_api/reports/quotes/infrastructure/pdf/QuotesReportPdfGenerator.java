@@ -21,6 +21,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.parsun.parsun_api.quotes.application.dto.response.QuoteListResponse;
 import com.parsun.parsun_api.reports.quotes.application.port.QuotesReportPdfPort;
+import com.parsun.parsun_api.reports.infrastructure.pdf.PdfStatusColors;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,10 +37,6 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
-    private static final DeviceRgb STATUS_DRAFT = new DeviceRgb(128, 128, 128);
-    private static final DeviceRgb STATUS_CONVERTED = new DeviceRgb(34, 139, 34);
-    private static final DeviceRgb STATUS_CANCELLED = new DeviceRgb(220, 20, 60);
-
     @Override
     public byte[] generatePdf(List<QuoteListResponse> quotes, String mode) {
         boolean detailed = "detailed".equalsIgnoreCase(mode);
@@ -105,7 +102,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
                 addCell(table, quote.customerName(), regular, rowColor, TextAlignment.LEFT);
 
                 if (detailed) {
-                    addCell(table, formatStatus(quote.status()), regular, rowColor, TextAlignment.CENTER);
+                    addStatusCell(table, formatStatus(quote.status()), regular, rowColor, TextAlignment.CENTER, quote.status());
                 }
 
                 addCell(table, "$" + formatDecimal(quote.subtotal()), regular, rowColor, TextAlignment.RIGHT);
@@ -168,6 +165,23 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
     private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
         Cell cell = new Cell()
                 .add(new Paragraph(text != null ? text : "-").setFont(font).setFontSize(8))
+                .setTextAlignment(align)
+                .setPaddingTop(4)
+                .setPaddingBottom(4)
+                .setPaddingLeft(5)
+                .setPaddingRight(5);
+        if (bg != null) {
+            cell.setBackgroundColor(bg);
+        }
+        table.addCell(cell);
+    }
+
+    private void addStatusCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align, String status) {
+        Cell cell = new Cell()
+                .add(new Paragraph(text != null ? text : "-")
+                        .setFont(font)
+                        .setFontSize(8)
+                        .setFontColor(PdfStatusColors.forStatus(status)))
                 .setTextAlignment(align)
                 .setPaddingTop(4)
                 .setPaddingBottom(4)

@@ -21,6 +21,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.parsun.parsun_api.invoices.application.dto.response.InvoiceListResponse;
 import com.parsun.parsun_api.reports.invoices.application.port.InvoicesReportPdfPort;
+import com.parsun.parsun_api.reports.infrastructure.pdf.PdfStatusColors;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,11 +36,6 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
-    private static final DeviceRgb STATUS_PAID = new DeviceRgb(34, 139, 34);
-    private static final DeviceRgb STATUS_DRAFT = new DeviceRgb(128, 128, 128);
-    private static final DeviceRgb STATUS_CANCELLED = new DeviceRgb(220, 20, 60);
-    private static final DeviceRgb STATUS_PENDING = new DeviceRgb(70, 130, 180);
-
     @Override
     public byte[] generatePdf(List<InvoiceListResponse> invoices, String mode) {
         boolean detailed = "detailed".equalsIgnoreCase(mode);
@@ -78,13 +74,13 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
             document.add(subtitle);
 
             float[] columnWidths = detailed
-                    ? new float[]{2f, 3f, 1.5f, 1.5f, 2f, 1.5f}
+                    ? new float[]{2f, 3f, 1.5f, 1.5f, 1.5f, 2f, 1.5f}
                     : new float[]{2f, 3f, 2f, 2f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{"N° Factura", "Cliente", "Tipo Pago", "Líneas", "Total", "Fecha"}
+                    ? new String[]{"N° Factura", "Cliente", "Tipo Pago", "Líneas", "Estado", "Total", "Fecha"}
                     : new String[]{"N° Factura", "Cliente", "Total", "Fecha"};
 
             for (String h : headers) {
@@ -107,6 +103,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                 if (detailed) {
                     addCell(table, invoice.paymentType() != null ? formatPaymentType(invoice.paymentType()) : "-", regular, rowColor, TextAlignment.CENTER);
                     addCell(table, String.valueOf(invoice.lineCount()), regular, rowColor, TextAlignment.CENTER);
+                    addStatusCell(table, formatStatus(invoice.status()), regular, rowColor, TextAlignment.CENTER, invoice.status());
                 }
 
                 addCell(table, "$" + formatDecimal(invoice.total()), regular, rowColor, TextAlignment.RIGHT);
@@ -160,6 +157,18 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
         };
     }
 
+    private static String formatStatus(String status) {
+        if (status == null) return "-";
+        return switch (status) {
+            case "PAID" -> "Pagada";
+            case "PENDING_PAYMENT" -> "Pendiente de Pago";
+            case "PARTIALLY_PAID" -> "Parcialmente Pagada";
+            case "CANCELLED" -> "Cancelada";
+            case "OVERDUE" -> "Vencida";
+            default -> status;
+        };
+    }
+
     private static String formatDecimal(BigDecimal value) {
         return String.format(Locale.US, "%.2f", value);
     }
@@ -167,6 +176,23 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
     private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
         Cell cell = new Cell()
                 .add(new Paragraph(text != null ? text : "-").setFont(font).setFontSize(8))
+                .setTextAlignment(align)
+                .setPaddingTop(4)
+                .setPaddingBottom(4)
+                .setPaddingLeft(5)
+                .setPaddingRight(5);
+        if (bg != null) {
+            cell.setBackgroundColor(bg);
+        }
+        table.addCell(cell);
+    }
+
+    private void addStatusCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align, String status) {
+        Cell cell = new Cell()
+                .add(new Paragraph(text != null ? text : "-")
+                        .setFont(font)
+                        .setFontSize(8)
+                        .setFontColor(PdfStatusColors.forStatus(status)))
                 .setTextAlignment(align)
                 .setPaddingTop(4)
                 .setPaddingBottom(4)
