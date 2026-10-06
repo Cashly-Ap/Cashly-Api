@@ -1,0 +1,71 @@
+package com.cashly.cashly_api.warehouses.application.usecases;
+
+import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
+import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
+import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
+import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
+import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
+import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+
+import java.util.UUID;
+
+public class GetStockMovementsUseCase {
+
+    private final WarehouseRepository warehouseRepository;
+    private final StockMovementRepository stockMovementRepository;
+    private final ProductRepository productRepository;
+
+    public GetStockMovementsUseCase(WarehouseRepository warehouseRepository,
+                                     StockMovementRepository stockMovementRepository,
+                                     ProductRepository productRepository) {
+        this.warehouseRepository = warehouseRepository;
+        this.stockMovementRepository = stockMovementRepository;
+        this.productRepository = productRepository;
+    }
+
+    public PageResponse<StockMovementResponse> execute(UUID warehouseId, UUID productId,
+                                                        MovementType movementType,
+                                                        int page, int size) {
+        warehouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
+
+        PageResponse<StockMovement> result = findMovements(
+                warehouseId, productId, movementType, page, size);
+
+        return new PageResponse<>(
+                result.content().stream().map(m -> {
+                    var product = productRepository.findById(m.getProductId());
+                    String code = product.map(p -> p.getCode()).orElse("UNKNOWN");
+                    String name = product.map(p -> p.getName()).orElse("Unknown");
+                    return StockMovementResponse.from(m, code, name);
+                }).toList(),
+                result.totalElements(),
+                result.totalPages(),
+                result.size(),
+                result.number(),
+                result.first(),
+                result.last(),
+                result.empty()
+        );
+    }
+
+    private PageResponse<StockMovement> findMovements(UUID warehouseId, UUID productId,
+                                                       MovementType movementType,
+                                                       int page, int size) {
+        if (productId != null && movementType != null) {
+            return stockMovementRepository.findByWarehouseIdAndProductIdAndMovementType(
+                    warehouseId, productId, movementType, page, size);
+        }
+        if (productId != null) {
+            return stockMovementRepository.findByWarehouseIdAndProductId(
+                    warehouseId, productId, page, size);
+        }
+        if (movementType != null) {
+            return stockMovementRepository.findByWarehouseIdAndMovementType(
+                    warehouseId, movementType, page, size);
+        }
+        return stockMovementRepository.findByWarehouseId(warehouseId, page, size);
+    }
+}

@@ -9,7 +9,7 @@ variables:
 
   SPRING_PROFILES_ACTIVE: "test"
 
-  RAILWAY_SERVICE: "parsun-api"
+  RAILWAY_SERVICE: "cashly-api"
 
 cache:
   paths:
@@ -39,13 +39,13 @@ test:docker:
   <<: *docker_template
   stage: test
   script:
-    - docker build -f Dockerfile.test -t parsun-test:$CI_COMMIT_SHA .
+    - docker build -f Dockerfile.test -t cashly-test:$CI_COMMIT_SHA .
     - docker run --rm
       -v /var/run/docker.sock:/var/run/docker.sock
       -e TESTCONTAINERS_RYUK_DISABLED=true
-      parsun-test:$CI_COMMIT_SHA
+      cashly-test:$CI_COMMIT_SHA
   after_script:
-    - docker rmi parsun-test:$CI_COMMIT_SHA || true
+    - docker rmi cashly-test:$CI_COMMIT_SHA || true
   only:
     - merge_requests
     - main

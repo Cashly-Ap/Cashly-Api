@@ -1,6 +1,6 @@
-# Parsun API
+# Cashly API
 
-Parsun API is the private backend for the Parsun business management platform. It exposes the business rules and HTTP contracts used by the back-office application and the customer portal. The repository exists to centralize transactional data, enforce domain invariants, manage persistence, and provide authenticated integrations for sales, inventory, billing, payments, purchasing, and reporting.
+Cashly API is the private backend for the Cashly business management platform. It exposes the business rules and HTTP contracts used by the back-office application and the customer portal. The repository exists to centralize transactional data, enforce domain invariants, manage persistence, and provide authenticated integrations for sales, inventory, billing, payments, purchasing, and reporting.
 
 ## Scope and modules
 
@@ -28,7 +28,7 @@ The code follows Clean/Hexagonal Architecture with domain-driven boundaries:
 - `infrastructure` contains REST controllers, persistence adapters, security, configuration, storage, and external integrations.
 - `shared` contains cross-cutting types used by more than one bounded context.
 
-Each business module is organized under `src/main/java/com/parsun/parsun_api/` and should keep framework-specific code outside the domain layer.
+Each business module is organized under `src/main/java/com/cashly/cashly_api/` and should keep framework-specific code outside the domain layer.
 
 ## Runtime stack
 

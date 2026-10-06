@@ -56,14 +56,14 @@ type NotificationDestination = { collection: string; resourceId: string | null }
 
 | Repository / files | Action | Description |
 |---|---|---|
-| `parsun-api/.../notifications/application/services/NotificationService.java` | Modify | Replace quote-related visible copy with “Presupuesto”. |
-| `parsun-api/.../notifications/application/services/NotificationServiceTest.java` | Create | Lock producer copy and unchanged technical references. |
-| `parsun-app/src/app/core/notifications/services/navigation/notification-destination.resolver.ts` and `.spec.ts` | Create | Typed mapping, detail navigation, fallbacks. |
-| `parsun-app/src/app/core/notifications/components/notification-bell/notification-bell.component.{ts,html,spec.ts}` | Modify/Create | Contextual action, inert card body, popover close, resolver delegation. |
-| `parsun-portal-web/src/app/core/notifications/services/navigation/notification-destination.resolver.ts` and `.spec.ts` | Create | Typed collection/focus mapping and fallbacks. |
-| `parsun-portal-web/src/app/core/notifications/components/notification-bell/notification-bell.component.{ts,html,spec.ts}` | Modify/Create | Contextual action, inert card body and delegation. |
-| `parsun-portal-web/src/app/features/{quotes,orders,payments}/pages/*.component.{ts,spec.ts}` | Modify | Consume and clear focus; open existing detail dialog. |
-| `parsun-portal-web/src/app/features/auth/pages/login/login-page.component.html` | Modify | Use “presupuestos”. |
+| `cashly-api/.../notifications/application/services/NotificationService.java` | Modify | Replace quote-related visible copy with “Presupuesto”. |
+| `cashly-api/.../notifications/application/services/NotificationServiceTest.java` | Create | Lock producer copy and unchanged technical references. |
+| `cashly-app/src/app/core/notifications/services/navigation/notification-destination.resolver.ts` and `.spec.ts` | Create | Typed mapping, detail navigation, fallbacks. |
+| `cashly-app/src/app/core/notifications/components/notification-bell/notification-bell.component.{ts,html,spec.ts}` | Modify/Create | Contextual action, inert card body, popover close, resolver delegation. |
+| `cashly-portal-web/src/app/core/notifications/services/navigation/notification-destination.resolver.ts` and `.spec.ts` | Create | Typed collection/focus mapping and fallbacks. |
+| `cashly-portal-web/src/app/core/notifications/components/notification-bell/notification-bell.component.{ts,html,spec.ts}` | Modify/Create | Contextual action, inert card body and delegation. |
+| `cashly-portal-web/src/app/features/{quotes,orders,payments}/pages/*.component.{ts,spec.ts}` | Modify | Consume and clear focus; open existing detail dialog. |
+| `cashly-portal-web/src/app/features/auth/pages/login/login-page.component.html` | Modify | Use “presupuestos”. |
 
 Invoices need no focus consumer because no existing notification references `INVOICE`.
 

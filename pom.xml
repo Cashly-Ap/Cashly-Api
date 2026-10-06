@@ -8,10 +8,10 @@
 		<version>3.5.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.parsun</groupId>
-	<artifactId>parsun-api</artifactId>
+	<groupId>com.cashly</groupId>
+	<artifactId>cashly-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>parsun</name>
+	<name>cashly</name>
 	<description>Api </description>
 	<url/>
 	<licenses>

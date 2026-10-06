@@ -71,11 +71,11 @@ ALTER TABLE payments
   )
   ```
 
-## Frontend contract impact (for the sibling `parsun-app`/`parsun-portal-web` changes)
+## Frontend contract impact (for the sibling `cashly-app`/`cashly-portal-web` changes)
 
 - `PaymentResponse` / `PaymentListResponse` gain `voucherUrl: string | null` and `targetInvoiceId: string | null` — additive, no existing consumer breaks.
-- The 3 portal payment endpoints now require `multipart/form-data` with a `request` part (JSON, `Content-Type: application/json` within the part) and an optional `justificante` file part — this is a breaking wire-format change for `parsun-portal-web` only.
-- New `GET /api/portal/payments/pending-check?invoiceId={optional}` endpoint for `parsun-portal-web`'s payment dialogs.
+- The 3 portal payment endpoints now require `multipart/form-data` with a `request` part (JSON, `Content-Type: application/json` within the part) and an optional `justificante` file part — this is a breaking wire-format change for `cashly-portal-web` only.
+- New `GET /api/portal/payments/pending-check?invoiceId={optional}` endpoint for `cashly-portal-web`'s payment dialogs.
 
 ## Alternatives considered
 

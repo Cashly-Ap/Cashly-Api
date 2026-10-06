@@ -12,11 +12,11 @@ DELETE FROM users;
 INSERT INTO users (id, email, user_name, password_hash, role, active, email_verified, commission_deduction_percentage, created_at, updated_at)
 VALUES
     (UNHEX('f5ddea444b5a7ed3cc1b1aaed175f76a'), 'gabriel@gmail.com',     'Gabriel',       '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'superadmin@parsun.com', 'Super Admin',   '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'admin@parsun.com',      'Admin User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'ADMIN',       TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'operator@parsun.com',   'Operator User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'sales@parsun.com',      'Sales User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
-    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@parsun.com',    'No Sales User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('a0eebc999c0b4ef8bb6d6bb9bd380215'), 'superadmin@cashly.com', 'Super Admin',   '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('b1ffcd000d1c4fa9bc7e7ccace31b326'), 'admin@cashly.com',      'Admin User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'ADMIN',       TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('c2aade111e2d4ba0dd8f8ddbdf42c437'), 'operator@cashly.com',   'Operator User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('d3bbef222f3e5cb1ee9f9eecf053d548'), 'sales@cashly.com',      'Sales User',    '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
+    (UNHEX('e4ccf0333a4f6dc2ff0a0ffd0164e659'), 'nosales@cashly.com',    'No Sales User', '$2b$10$kj93/sav2JgMUQGcKaerpeO2FewR5vEqLAQuVcb0YquBbzxwB86WW', 'OPERATOR',    TRUE, TRUE, 1.00, NOW(), NOW()),
     (UNHEX('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'), 'admin@gmail.com',       'Admin',         '$2b$10$BZhETvZ1oxZw//ZRnV3kAubwJd/B/s6JrmLjX.Fr5z8KdVltKxy7e', 'SUPER_ADMIN', TRUE, TRUE, 1.00, NOW(), NOW());
 
 INSERT INTO user_module_permissions (id, user_id, module)
@@ -1344,18 +1344,18 @@ DELETE FROM credit_note_number_sequence;
 
 INSERT INTO credit_notes (id, note_number, customer_id, invoice_id, amount, reason, created_by, created_by_name, created_at, updated_at)
 VALUES
-    (UNHEX('da000000000000000000000000000001'), 'CN-2025-0001', (SELECT id FROM customers WHERE code = 1001), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 500.00, 'Devolucion de productos', (SELECT id FROM users WHERE email = 'superadmin@parsun.com'), 'Super Admin', NOW(), NOW()),
-    (UNHEX('da000000000000000000000000000002'), 'CN-2025-0002', (SELECT id FROM customers WHERE code = 1002), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00027'), 200.00, 'Descuento por defecto de fabrica', (SELECT id FROM users WHERE email = 'admin@parsun.com'), 'Admin User', NOW(), NOW()),
-    (UNHEX('da000000000000000000000000000003'), 'CN-2025-0003', (SELECT id FROM customers WHERE code = 1003), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00028'), 150.00, 'Correccion de precio', (SELECT id FROM users WHERE email = 'operator@parsun.com'), 'Operator User', NOW(), NOW());
+    (UNHEX('da000000000000000000000000000001'), 'CN-2025-0001', (SELECT id FROM customers WHERE code = 1001), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 500.00, 'Devolucion de productos', (SELECT id FROM users WHERE email = 'superadmin@cashly.com'), 'Super Admin', NOW(), NOW()),
+    (UNHEX('da000000000000000000000000000002'), 'CN-2025-0002', (SELECT id FROM customers WHERE code = 1002), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00027'), 200.00, 'Descuento por defecto de fabrica', (SELECT id FROM users WHERE email = 'admin@cashly.com'), 'Admin User', NOW(), NOW()),
+    (UNHEX('da000000000000000000000000000003'), 'CN-2025-0003', (SELECT id FROM customers WHERE code = 1003), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00028'), 150.00, 'Correccion de precio', (SELECT id FROM users WHERE email = 'operator@cashly.com'), 'Operator User', NOW(), NOW());
 
 INSERT INTO credit_note_number_sequence (year, next_value)
 VALUES (2025, 4);
 
 INSERT INTO debit_notes (id, note_number, customer_id, invoice_id, amount, reason, created_by, created_by_name, created_at, updated_at)
 VALUES
-    (UNHEX('db000000000000000000000000000001'), 'DN-2025-0001', (SELECT id FROM customers WHERE code = 1004), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00029'), 75.00, 'Recargo por pago tardio', (SELECT id FROM users WHERE email = 'sales@parsun.com'), 'Sales User', NOW(), NOW()),
-    (UNHEX('db000000000000000000000000000002'), 'DN-2025-0002', (SELECT id FROM customers WHERE code = 1005), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00030'), 120.00, 'Intereses por credito vencido', (SELECT id FROM users WHERE email = 'superadmin@parsun.com'), 'Super Admin', NOW(), NOW()),
-    (UNHEX('db000000000000000000000000000003'), 'DN-2025-0003', (SELECT id FROM customers WHERE code = 1007), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 50.00, 'Ajuste de precio', (SELECT id FROM users WHERE email = 'admin@parsun.com'), 'Admin User', NOW(), NOW());
+    (UNHEX('db000000000000000000000000000001'), 'DN-2025-0001', (SELECT id FROM customers WHERE code = 1004), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00029'), 75.00, 'Recargo por pago tardio', (SELECT id FROM users WHERE email = 'sales@cashly.com'), 'Sales User', NOW(), NOW()),
+    (UNHEX('db000000000000000000000000000002'), 'DN-2025-0002', (SELECT id FROM customers WHERE code = 1005), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00030'), 120.00, 'Intereses por credito vencido', (SELECT id FROM users WHERE email = 'superadmin@cashly.com'), 'Super Admin', NOW(), NOW()),
+    (UNHEX('db000000000000000000000000000003'), 'DN-2025-0003', (SELECT id FROM customers WHERE code = 1007), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 50.00, 'Ajuste de precio', (SELECT id FROM users WHERE email = 'admin@cashly.com'), 'Admin User', NOW(), NOW());
 
 INSERT INTO debit_note_number_sequence (year, next_value)
 VALUES (2025, 4);

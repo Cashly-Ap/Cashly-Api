@@ -1,0 +1,108 @@
+package com.cashly.cashly_api.orders.infrastructure.config;
+
+import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
+import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
+import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.invoices.application.usecases.CreateInvoiceUseCase;
+import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.orders.application.usecases.*;
+import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
+import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
+import com.cashly.cashly_api.shared.application.StockEnrichmentService;
+import com.cashly.cashly_api.shared.services.CreditGuard;
+import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OrderConfig {
+
+    @Bean
+    public CreateOrderUseCase createOrderUseCase(OrderRepository orderRepository,
+                                                    CustomerRepository customerRepository,
+                                                    ProductRepository productRepository,
+                                                    UserRepository userRepository,
+                                                    WarehouseStockRepository warehouseStockRepository) {
+        return new CreateOrderUseCase(orderRepository, customerRepository, productRepository,
+                userRepository, warehouseStockRepository);
+    }
+
+    @Bean
+    public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository,
+                                                      StockEnrichmentService stockEnrichmentService,
+                                                      CustomerRepository customerRepository,
+                                                      CreditGuard creditGuard) {
+        return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, customerRepository, creditGuard);
+    }
+
+    @Bean
+    public GetOrdersUseCase getOrdersUseCase(OrderRepository orderRepository) {
+        return new GetOrdersUseCase(orderRepository);
+    }
+
+    @Bean
+    public UpdateOrderUseCase updateOrderUseCase(OrderRepository orderRepository,
+                                                    ProductRepository productRepository,
+                                                    WarehouseStockRepository warehouseStockRepository) {
+        return new UpdateOrderUseCase(orderRepository, productRepository,
+                warehouseStockRepository);
+    }
+
+    @Bean
+    public ConfirmOrderUseCase confirmOrderUseCase(OrderRepository orderRepository,
+                                                     WarehouseStockRepository warehouseStockRepository,
+                                                     StockMovementRepository stockMovementRepository,
+                                                     NotificationService notificationService) {
+        return new ConfirmOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
+    }
+
+    @Bean
+    public CancelOrderUseCase cancelOrderUseCase(OrderRepository orderRepository,
+                                                   WarehouseStockRepository warehouseStockRepository,
+                                                   StockMovementRepository stockMovementRepository,
+                                                   NotificationService notificationService) {
+        return new CancelOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
+    }
+
+    @Bean
+    public ConvertToInvoiceUseCase convertToInvoiceUseCase(OrderRepository orderRepository,
+                                                             CreateInvoiceUseCase createInvoiceUseCase,
+                                                             NotificationService notificationService) {
+        return new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase, notificationService);
+    }
+
+    @Bean
+    public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository,
+                                                   WarehouseStockRepository warehouseStockRepository) {
+        return new DeleteOrderUseCase(orderRepository, warehouseStockRepository);
+    }
+
+    @Bean
+    public AssignOrderWarehousesUseCase assignOrderWarehousesUseCase(
+            OrderRepository orderRepository,
+            WarehouseStockRepository warehouseStockRepository,
+            CustomerWarehouseAccessRepository customerWarehouseAccessRepository) {
+        return new AssignOrderWarehousesUseCase(
+                orderRepository, warehouseStockRepository, customerWarehouseAccessRepository);
+    }
+
+    @Bean
+    public GetProductsForOrderUseCase getProductsForOrderUseCase(
+            CustomerRepository customerRepository,
+            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
+            ProductRepository productRepository,
+            CategoryRepository categoryRepository,
+            WarehouseStockRepository warehouseStockRepository,
+            WarehouseRepository warehouseRepository) {
+        return new GetProductsForOrderUseCase(
+                customerRepository,
+                customerWarehouseAccessRepository,
+                productRepository,
+                categoryRepository,
+                warehouseStockRepository,
+                warehouseRepository);
+    }
+}

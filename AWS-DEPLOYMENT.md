@@ -29,20 +29,20 @@ aws configure
 
 ```bash
 # 1. Crear bucket S3 para almacenar el deploy
-aws s3 mb s3://parsun-api-test-$(date +%s) --region eu-north-1
+aws s3 mb s3://cashly-api-test-$(date +%s) --region eu-north-1
 
 # 2. Crear rol para Elastic Beanstalk (si no existe)
 aws iam create-service-linked-role --aws-service-name elasticbeanstalk.amazonaws.com 2>/dev/null || echo "Rol ya existe"
 
 # 3. Crear aplicación Elastic Beanstalk
 aws elasticbeanstalk create-application \
-  --application-name "Parsun-API-Test" \
-  --description "Parsun API para testing"
+  --application-name "Cashly-API-Test" \
+  --description "Cashly API para testing"
 
 # 4. Crear entorno (esto toma ~10 minutos)
 aws elasticbeanstalk create-environment \
-  --application-name "Parsun-API-Test" \
-  --environment-name "parsun-test-env" \
+  --application-name "Cashly-API-Test" \
+  --environment-name "cashly-test-env" \
   --solution-stack-name "64bit Amazon Linux 2023 v3.1.0 running Docker" \
   --region eu-north-1
 ```
@@ -52,7 +52,7 @@ aws elasticbeanstalk create-environment \
 1. Ve a https://console.aws.amazon.com/elasticbeanstalk
 2. Click "Create application"
 3. Configura:
-   - **Application name**: `Parsun-API-Test`
+   - **Application name**: `Cashly-API-Test`
    - **Platform**: Docker
    - **Region**: eu-north-1 (Stockholm - tiene Free Tier)
 4. Click "Create environment"
@@ -69,12 +69,12 @@ aws elasticbeanstalk create-environment \
 3. Configura:
    - **Engine**: MySQL
    - **Templates**: Free tier
-   - **DB instance identifier**: `parsun-db`
+   - **DB instance identifier**: `cashly-db`
    - **Master username**: `admin`
    - **Master password**: `tu_password_seguro`
    - **Instance class**: db.t3.micro
 4. Espera ~10 minutos
-5. Copia el endpoint (algo como `parsun-db.xxxxx.eu-north-1.rds.amazonaws.com`)
+5. Copia el endpoint (algo como `cashly-db.xxxxx.eu-north-1.rds.amazonaws.com`)
 
 ### Opción B: MySQL embebido en el contenedor (para testing rápido)
 
@@ -84,13 +84,13 @@ Edita el `Dockerrun.aws.json`:
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "registry.gitlab.com/personal-proyect-gabriel/parsun/parsun-api:latest",
+    "Name": "registry.gitlab.com/personal-proyect-gabriel/cashly/cashly-api:latest",
     "Update": "true"
   },
   "Ports": [{ "ContainerPort": "8080" }],
   "EnvironmentVariables": [
     { "Key": "SPRING_PROFILES_ACTIVE", "Value": "production" },
-    { "Key": "SPRING_DATASOURCE_URL", "Value": "jdbc:mysql://TU-RDS-ENDPOINT:3306/parsun?createDatabaseIfNotExist=true" },
+    { "Key": "SPRING_DATASOURCE_URL", "Value": "jdbc:mysql://TU-RDS-ENDPOINT:3306/cashly?createDatabaseIfNotExist=true" },
     { "Key": "SPRING_DATASOURCE_USERNAME", "Value": "admin" },
     { "Key": "SPRING_DATASOURCE_PASSWORD", "Value": "tu_password" },
     { "Key": "JWT_SECRET", "Value": "tu_jwt_secret_largo_y_seguro" }
@@ -105,25 +105,25 @@ Edita el `Dockerrun.aws.json`:
 ### 4.1. Construir imagen localmente
 
 ```bash
-docker build -t parsun-api:latest .
+docker build -t cashly-api:latest .
 ```
 
 ### 4.2. Etiquetar para ECR (Elastic Container Registry)
 
 ```bash
 # Crear repositorio en ECR (solo una vez)
-aws ecr create-repository --repository-name parsun-api --region eu-north-1
+aws ecr create-repository --repository-name cashly-api --region eu-north-1
 
 # Etiquetar imagen
 aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com
 
-docker tag parsun-api:latest TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/parsun-api:latest
+docker tag cashly-api:latest TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/cashly-api:latest
 ```
 
 ### 4.3. Subir imagen a ECR
 
 ```bash
-docker push TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/parsun-api:latest
+docker push TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/cashly-api:latest
 ```
 
 ### 4.4. Actualizar Dockerrun.json
@@ -132,7 +132,7 @@ docker push TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/parsun-api:latest
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/parsun-api:latest",
+    "Name": "TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/cashly-api:latest",
     "Update": "true"
   },
   "Ports": [{ "ContainerPort": "8080" }],
@@ -146,19 +146,19 @@ docker push TU_AWS_ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/parsun-api:latest
 
 ```bash
 # Empaquetar
-zip -r parsun-deploy.zip Dockerrun.aws.json
+zip -r cashly-deploy.zip Dockerrun.aws.json
 
 # Subir a S3
-aws s3 cp parsun-deploy.zip s3://TU_BUCKET_NAME/
+aws s3 cp cashly-deploy.zip s3://TU_BUCKET_NAME/
 
 # Crear versión y deployar
 aws elasticbeanstalk create-application-version \
-  --application-name "Parsun-API-Test" \
+  --application-name "Cashly-API-Test" \
   --version-label "v1-$(date +%Y%m%d%H%M%S)" \
-  --source-bundle S3Bucket=TU_BUCKET_NAME,S3Key=parsun-deploy.zip
+  --source-bundle S3Bucket=TU_BUCKET_NAME,S3Key=cashly-deploy.zip
 
 aws elasticbeanstalk update-environment \
-  --environment-name "parsun-test-env" \
+  --environment-name "cashly-test-env" \
   --version-label "v1-$(date +%Y%m%d%H%M%S)"
 ```
 
@@ -169,16 +169,16 @@ aws elasticbeanstalk update-environment \
 ```bash
 # Ver estado del entorno
 aws elasticbeanstalk describe-environments \
-  --environment-names "parsun-test-env" \
+  --environment-names "cashly-test-env" \
   --query 'Environments[0].Status'
 
 # Ver URL del entorno
 aws elasticbeanstalk describe-environments \
-  --environment-names "parsun-test-env" \
+  --environment-names "cashly-test-env" \
   --query 'Environments[0].EndpointURL'
 ```
 
-La URL será algo como: `parsun-test-env.XXXX.eu-north-1.elasticbeanstalk.com`
+La URL será algo como: `cashly-test-env.XXXX.eu-north-1.elasticbeanstalk.com`
 
 ---
 
@@ -200,11 +200,11 @@ open https://TU-ENDPOINT.elasticbeanstalk.com/swagger-ui.html
 
 ```bash
 # Ver logs
-aws elasticbeanstalk describe-instance-health --environment-name "parsun-test-env"
+aws elasticbeanstalk describe-instance-health --environment-name "cashly-test-env"
 
 # Descargar logs completos
-aws elasticbeanstalk request-environment-info --environment-name "parsun-test-env" --info-type tail
-aws elasticbeanstalk retrieve-environment-info --environment-name "parsun-test-env" --info-type tail
+aws elasticbeanstalk request-environment-info --environment-name "cashly-test-env" --info-type tail
+aws elasticbeanstalk retrieve-environment-info --environment-name "cashly-test-env" --info-type tail
 ```
 
 ### Error de memoria
@@ -216,7 +216,7 @@ Edita la configuración en la consola EB:
 
 Verifica que el bucket ECR tenga la imagen correcta:
 ```bash
-aws ecr describe-images --repository-name parsun-api
+aws ecr describe-images --repository-name cashly-api
 ```
 
 ### La base de datos no conecta
@@ -234,7 +234,7 @@ Verifica:
 .
 ├── Dockerfile                 # Imagen Docker
 ├── Dockerrun.aws.json        # Configuración EB
-└── parsun-deploy.zip         # Generado al hacer deploy
+└── cashly-deploy.zip         # Generado al hacer deploy
 ```
 
 ---
@@ -245,19 +245,19 @@ Para evitar cargos, elimina todo:
 
 ```bash
 # Eliminar entorno EB
-aws elasticbeanstalk terminate-environment --environment-name "parsun-test-env"
+aws elasticbeanstalk terminate-environment --environment-name "cashly-test-env"
 
 # Eliminar aplicación
-aws elasticbeanstalk delete-application --application-name "Parsun-API-Test"
+aws elasticbeanstalk delete-application --application-name "Cashly-API-Test"
 
 # Eliminar RDS (si lo creaste)
-aws rds delete-db-instance --db-instance-identifier "parsun-db" --skip-final-snapshot
+aws rds delete-db-instance --db-instance-identifier "cashly-db" --skip-final-snapshot
 
 # Eliminar bucket S3
 aws s3 rb s3://TU_BUCKET_NAME --force
 
 # Eliminar ECR repository
-aws ecr delete-repository --repository-name parsun-api --force
+aws ecr delete-repository --repository-name cashly-api --force
 ```
 
 ---

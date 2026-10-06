@@ -1,0 +1,168 @@
+package com.cashly.cashly_api.quotes.application.usecases;
+
+import com.cashly.cashly_api.auth.user.domain.entities.User;
+import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.customers.domain.entities.Customer;
+import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
+import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
+import com.cashly.cashly_api.invoices.domain.entities.Invoice;
+import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
+import com.cashly.cashly_api.invoices.domain.entities.InvoiceLineAllocation;
+import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
+import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
+import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
+import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
+import com.cashly.cashly_api.quotes.application.dto.response.QuoteConvertedToInvoiceResponse;
+import com.cashly.cashly_api.quotes.domain.entities.Quote;
+import com.cashly.cashly_api.quotes.domain.entities.QuoteAllocation;
+import com.cashly.cashly_api.quotes.domain.entities.QuoteLine;
+import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;
+import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
+import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
+import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+public class ConvertQuoteToInvoiceUseCase {
+
+    private final QuoteRepository quoteRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final UserRepository userRepository;
+    private final InvoiceAuthorizationService authorizationService;
+    private final NotificationService notificationService;
+    private final CustomerRepository customerRepository;
+
+    public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
+                                         InvoiceRepository invoiceRepository,
+                                         WarehouseStockRepository warehouseStockRepository,
+                                         UserRepository userRepository,
+                                         InvoiceAuthorizationService authorizationService,
+                                         NotificationService notificationService,
+                                         CustomerRepository customerRepository) {
+        this.quoteRepository = quoteRepository;
+        this.invoiceRepository = invoiceRepository;
+        this.warehouseStockRepository = warehouseStockRepository;
+        this.userRepository = userRepository;
+        this.authorizationService = authorizationService;
+        this.notificationService = notificationService;
+        this.customerRepository = customerRepository;
+    }
+
+    public ConvertQuoteToInvoiceUseCase(QuoteRepository quoteRepository,
+                                         InvoiceRepository invoiceRepository,
+                                         WarehouseStockRepository warehouseStockRepository,
+                                         UserRepository userRepository,
+                                         InvoiceAuthorizationService authorizationService,
+                                         NotificationService notificationService) {
+        this(quoteRepository, invoiceRepository, warehouseStockRepository, userRepository,
+                authorizationService, notificationService, null);
+    }
+
+    @Transactional
+    public QuoteConvertedToInvoiceResponse execute(UUID quoteId, ConvertQuoteToInvoiceRequest request, UUID authenticatedUserId) {
+        Quote quote = quoteRepository.findById(quoteId)
+                .orElseThrow(() -> new QuoteNotFoundException(quoteId));
+
+        if (quote.getStatus() != com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus.DRAFT) {
+            throw new IllegalStateException("Only DRAFT quotes can be converted to invoices");
+        }
+
+        PaymentType resolvedPaymentType;
+        try {
+            resolvedPaymentType = PaymentType.valueOf(request.paymentType().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid payment type: " + request.paymentType() + ". Must be CASH or CREDIT");
+        }
+
+        User user = userRepository.findById(new UserId(authenticatedUserId))
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+        LocalDate issueDate = request.issueDate() != null ? request.issueDate() : LocalDate.now();
+        LocalDate dueDate = issueDate;
+        if (customerRepository != null) {
+            Customer customer = customerRepository.findById(new CustomerId(quote.getCustomerId()))
+                    .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + quote.getCustomerId()));
+            dueDate = issueDate.plusDays(customer.getCreditDays().getValue());
+        }
+
+        int year = LocalDate.now().getYear();
+        int sequence = invoiceRepository.getNextSequenceForYear(year);
+        InvoiceNumber invoiceNumber = InvoiceNumber.of(year, sequence);
+
+        List<InvoiceLine> invoiceLines = quote.getLines().stream()
+                .map(this::toInvoiceLine)
+                .toList();
+
+        Invoice invoice = Invoice.reconstitute(
+                InvoiceId.generate(), invoiceNumber,
+                quote.getCustomerId(), quote.getCustomerName(), quote.getCustomerRif(),
+                authenticatedUserId, user.getUserName().getValue(),
+                null, null,
+                List.of(), List.of(),
+                InvoiceStatus.DRAFT, resolvedPaymentType, null,
+                BigDecimal.ZERO, null,
+                null, null,
+                invoiceLines, LocalDateTime.now(), LocalDateTime.now(), issueDate, dueDate
+        );
+
+        authorizationService.authorize(invoice, user,
+                request.confirmationPassword(), request.useBalance(),
+                request.balanceAmount(), request.paymentMethodId(),
+                authenticatedUserId);
+
+        invoice.confirm();
+
+        for (QuoteLine quoteLine : quote.getLines()) {
+            for (QuoteAllocation allocation : quoteLine.getAllocations()) {
+                WarehouseStock stock = warehouseStockRepository
+                        .findByWarehouseIdAndProductId(allocation.getWarehouseId(), allocation.getProductId())
+                        .orElseThrow(() -> new IllegalStateException(
+                                "No stock found for product " + allocation.getProductId() +
+                                " in warehouse " + allocation.getWarehouseId()));
+
+                int amount = allocation.getAllocatedQuantity().intValue();
+                stock.removeStock(amount);
+                warehouseStockRepository.save(stock);
+            }
+        }
+
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+
+        quote.markConvertedToInvoice(savedInvoice.getId().value(), savedInvoice.getInvoiceNumber().value());
+        quoteRepository.save(quote);
+
+        notificationService.notifyCustomerQuoteConvertedToInvoice(quote.getCustomerId(), quote.getId(), savedInvoice.getInvoiceNumber().value());
+
+        return new QuoteConvertedToInvoiceResponse(
+                quote.getId(),
+                quote.getQuoteNumber().value(),
+                savedInvoice.getId().value(),
+                savedInvoice.getInvoiceNumber().value()
+        );
+    }
+
+    private InvoiceLine toInvoiceLine(QuoteLine quoteLine) {
+        List<InvoiceLineAllocation> allocations = quoteLine.getAllocations().stream()
+                .map(a -> InvoiceLineAllocation.create(a.getWarehouseId(), a.getAllocatedQuantity()))
+                .toList();
+
+        return InvoiceLine.create(
+                quoteLine.getProductId(),
+                quoteLine.getProductName(),
+                quoteLine.getProductCode(),
+                quoteLine.getQuantity(),
+                quoteLine.getUnitPrice(),
+                allocations
+        );
+    }
+}

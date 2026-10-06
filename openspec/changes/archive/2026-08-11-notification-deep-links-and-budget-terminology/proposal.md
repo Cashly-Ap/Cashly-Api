@@ -41,10 +41,10 @@ Each frontend maps current `referenceType` values to its destinations. Backoffic
 | Area | Impact | Description |
 |------|--------|-------------|
 | `notifications/application/services/NotificationService.java` | Modified | Standardize visible budget copy. |
-| `parsun-app/src/app/core/notifications/` | Modified | Route clicks and fallback. |
-| `parsun-portal-web/src/app/core/notifications/` | Modified | Route clicks with focus and fallback. |
-| `parsun-portal-web/src/app/features/{quotes,orders,invoices,payments}/` | Modified | Consume focus and open detail. |
-| `parsun-portal-web/src/app/features/auth/pages/login/` | Modified | Replace remaining visible terminology. |
+| `cashly-app/src/app/core/notifications/` | Modified | Route clicks and fallback. |
+| `cashly-portal-web/src/app/core/notifications/` | Modified | Route clicks with focus and fallback. |
+| `cashly-portal-web/src/app/features/{quotes,orders,invoices,payments}/` | Modified | Consume focus and open detail. |
+| `cashly-portal-web/src/app/features/auth/pages/login/` | Modified | Replace remaining visible terminology. |
 
 ## Risks
 

@@ -20,19 +20,19 @@ Chain strategy: pending
 
 | Unit | Goal | Likely PR | Notes |
 |---|---|---|---|
-| 1 | Backend terminology contract | API PR | `parsun-api` change and tests. |
-| 2 | Backoffice deep links | App PR | `parsun-app` change and tests. |
+| 1 | Backend terminology contract | API PR | `cashly-api` change and tests. |
+| 2 | Backoffice deep links | App PR | `cashly-app` change and tests. |
 | 3 | Portal resolver and bell | Portal PR 1 | Base per selected chain strategy. |
 | 4 | Portal focus consumers | Portal PR 2 | Immediate parent Portal PR 1; includes UI tests. |
 
 ## Phase 1: Backend
 
 - [x] 1.1 Confirm artifact matrices match `NotificationType`, producers, payload DTOs, and routes; record drift.
-- [x] 1.2 RED: create `parsun-api/src/test/java/com/parsun/parsun_api/notifications/application/services/NotificationServiceTest.java` covering all `QUOTE_*` visible copy and unchanged `QUOTE` references.
-- [x] 1.3 GREEN: update `parsun-api/src/main/java/com/parsun/parsun_api/notifications/application/services/NotificationService.java` to emit “Presupuesto” copy only.
+- [x] 1.2 RED: create `cashly-api/src/test/java/com/cashly/cashly_api/notifications/application/services/NotificationServiceTest.java` covering all `QUOTE_*` visible copy and unchanged `QUOTE` references.
+- [x] 1.3 GREEN: update `cashly-api/src/main/java/com/cashly/cashly_api/notifications/application/services/NotificationService.java` to emit “Presupuesto” copy only.
 - [x] 1.4 REFACTOR: consolidate fixtures without payload changes; run `./run-tests.sh NotificationServiceTest`, then the Docker suite. Evidence: 2/2 tests and Docker compile passed.
 
-## Phase 2: Backoffice (`parsun-app`)
+## Phase 2: Backoffice (`cashly-app`)
 
 - [x] 2.1 RED: test `PAYMENT`, `QUOTE`, `ORDER`, conversions, null/unknown references, rejected navigation, and fallback.
 - [x] 2.2 GREEN: create `src/app/core/notifications/services/navigation/notification-destination.resolver.ts` with typed validation and detail-route navigation.

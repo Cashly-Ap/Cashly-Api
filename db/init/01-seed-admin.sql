@@ -1,4 +1,4 @@
--- Seed admin user for Parsun API
+-- Seed admin user for Cashly API
 -- Password: 49510561Gabriel. (BCrypt hash)
 -- Role: SUPER_ADMIN
 INSERT INTO users (id, email, user_name, password_hash, role, active, email_verified, commission_deduction_percentage, created_at, updated_at)

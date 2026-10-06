@@ -1,4 +1,4 @@
--- SEED DATA — Parsun API
+-- SEED DATA — Cashly API
 -- Admin user is already in 01-seed-admin.sql
 -- Admin ID: a0eebc99-9c0b-4ef8-bb6d-6bb9bd20a215
 

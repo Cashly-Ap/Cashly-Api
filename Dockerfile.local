@@ -1,0 +1,6 @@
+FROM maven:3.9.9-amazoncorretto-24
+WORKDIR /app
+COPY pom.xml ./
+COPY src ./src
+EXPOSE 8080
+CMD ["mvn", "-B", "spring-boot:run", "-DskipTests", "-Dmaven.test.skip=true"]

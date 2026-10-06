@@ -1,0 +1,49 @@
+package com.cashly.cashly_api.reports.quotes.infrastructure.config;
+
+import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
+import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
+import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
+import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCase;
+import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotesReportPdfUseCase;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("QuotesReportConfig Unit Tests")
+class QuotesReportConfigTest {
+
+    @Mock
+    private QuoteRepository quoteRepository;
+
+    @Mock
+    private QuotePdfPort quotePdfPort;
+
+    @Mock
+    private QuotesReportPdfPort quotesReportPdfPort;
+
+    @Test
+    @DisplayName("should create use case beans")
+    void should_create_use_case_beans() {
+        var config = new QuotesReportConfig();
+
+        var quotePdfUseCase = config.generateQuotePdfUseCase(quoteRepository, quotePdfPort);
+        assertNotNull(quotePdfUseCase);
+
+        var reportPdfUseCase = config.generateQuotesReportPdfUseCase(quotesReportPdfPort);
+        assertNotNull(reportPdfUseCase);
+    }
+
+    @Test
+    @DisplayName("should create port beans")
+    void should_create_port_beans() {
+        var config = new QuotesReportConfig();
+
+        assertNotNull(config.quotePdfPort());
+        assertNotNull(config.quotesReportPdfPort());
+    }
+}

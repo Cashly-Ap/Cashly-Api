@@ -1,6 +1,6 @@
-# Tasks: Portal Payment Invoice Allocation (parsun-api)
+# Tasks: Portal Payment Invoice Allocation (cashly-api)
 
-TDD throughout: failing test first, minimal implementation, refactor. Run `./run-tests.sh` (never `mvn test` directly) from `parsun-api/`.
+TDD throughout: failing test first, minimal implementation, refactor. Run `./run-tests.sh` (never `mvn test` directly) from `cashly-api/`.
 
 1. [ ] Flyway migration `V24__add_target_invoice_and_voucher_to_payments.sql` (confirm exact style/FK naming against `V14`/most recent migration before writing).
 2. [ ] `Payment` domain entity: add `targetInvoiceId`/`voucherPath` fields, extend `create`/`reconstitute`, unit tests in `PaymentUnitTest` for both new fields (default null, set via create/reconstitute, getters).

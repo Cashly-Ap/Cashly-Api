@@ -1,5 +1,5 @@
 -- =============================================================================
--- Parsun API - Master Seed File
+-- Cashly API - Master Seed File
 -- Loads all seed files in order.
 --
 -- Run manually:
