@@ -14,6 +14,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collection;
+import java.util.Set;
 
 @Repository
 public class PurchaseRepositoryAdapter implements PurchaseRepository {
@@ -95,5 +97,13 @@ public class PurchaseRepositoryAdapter implements PurchaseRepository {
     @Override
     public boolean existsBySupplierId(UUID supplierId) {
         return jpaRepository.existsBySupplierId(supplierId);
+    }
+
+    @Override
+    public Set<UUID> findSupplierIdsWithPurchases(Collection<UUID> supplierIds) {
+        if (supplierIds.isEmpty()) {
+            return Set.of();
+        }
+        return jpaRepository.findSupplierIdsWithPurchases(supplierIds);
     }
 }

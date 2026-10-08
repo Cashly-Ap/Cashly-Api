@@ -1,40 +1,31 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
+
 import com.cashly.cashly_api.purchases.application.dto.request.CancelPurchaseRequest;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
-import com.cashly.cashly_api.purchases.application.mappers.PurchaseMapper;
+import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;
 import com.cashly.cashly_api.purchases.domain.entities.Purchase;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLineAllocation;
 import com.cashly.cashly_api.purchases.domain.exceptions.PurchaseNotFoundException;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseStatus;
-import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
-import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
+import com.cashly.cashly_api.purchases.application.contracts.InventoryGateway;
 import java.util.UUID;
 
 public class CancelPurchaseUseCase {
 
     private final PurchaseRepository purchaseRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final InventoryGateway inventoryGateway;
+    private final PurchaseDetailResponseAssembler responseAssembler;
 
     public CancelPurchaseUseCase(PurchaseRepository purchaseRepository,
-                                  WarehouseStockRepository warehouseStockRepository,
-                                  StockMovementRepository stockMovementRepository,
-                                  WarehouseRepository warehouseRepository) {
+                                  InventoryGateway inventoryGateway,
+                                  PurchaseDetailResponseAssembler responseAssembler) {
         this.purchaseRepository = purchaseRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.inventoryGateway = inventoryGateway;
+        this.responseAssembler = responseAssembler;
     }
 
     @Transactional
@@ -47,39 +38,16 @@ public class CancelPurchaseUseCase {
         revertStockIfConfirmed(purchase, previousStatus);
 
         Purchase saved = purchaseRepository.save(purchase);
-        return PurchaseMapper.toDetailResponse(saved, warehouseRepository);
+        return responseAssembler.toDetailResponse(saved);
     }
 
     private void revertStockIfConfirmed(Purchase purchase, PurchaseStatus previousStatus) {
         if (previousStatus != PurchaseStatus.CONFIRMED) {
             return;
         }
-
-        for (PurchaseLine line : purchase.getLines()) {
-            for (PurchaseLineAllocation alloc : line.getAllocations()) {
-                warehouseStockRepository
-                        .findByWarehouseIdAndProductId(alloc.getWarehouseId(), line.getProductId())
-                        .ifPresent(stock -> {
-                            int previous = stock.getQuantity();
-                            stock.removeStock(alloc.getQuantity().intValue());
-                            warehouseStockRepository.save(stock);
-
-                            stockMovementRepository.save(StockMovement.createWithReference(
-                                    alloc.getWarehouseId(),
-                                    line.getProductId(),
-                                    MovementType.CANCEL_ENTRY,
-                                    alloc.getQuantity().intValue(),
-                                    previous,
-                                    stock.getQuantity(),
-                                    null,
-                                    null,
-                                    ReferenceType.PURCHASE,
-                                    purchase.getId().getValue(),
-                                    purchase.getPurchaseNumber().getValue(),
-                                    "Compra cancelada"
-                            ));
-                        });
-            }
-        }
+        inventoryGateway.reverseReceipt(purchase.getId().getValue(), purchase.getPurchaseNumber().getValue(),
+                purchase.getLines().stream().flatMap(line -> line.getAllocations().stream()
+                        .map(allocation -> new InventoryGateway.Allocation(allocation.getWarehouseId(), line.getProductId(),
+                                allocation.getQuantity().intValue()))).toList());
     }
 }

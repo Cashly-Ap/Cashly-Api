@@ -18,6 +18,8 @@ import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.purchases.infrastructure.integration.WarehouseInventoryAdapter;
+import com.cashly.cashly_api.warehouses.application.services.PurchaseInventoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,7 @@ class CancelPurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         cancelPurchaseUseCase = new CancelPurchaseUseCase(purchaseRepository,
-                warehouseStockRepository, stockMovementRepository, warehouseRepository);
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.application.queries.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
     }
 
     @Test
@@ -89,7 +91,7 @@ class CancelPurchaseUseCaseUnitTest {
 
         when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
         when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
         cancelPurchaseUseCase.execute(id, request);
@@ -100,7 +102,11 @@ class CancelPurchaseUseCaseUnitTest {
         verify(stockMovementRepository).save(argThat(movement ->
                 movement.getMovementType() == MovementType.CANCEL_ENTRY &&
                 movement.getReferenceType() == ReferenceType.PURCHASE &&
-                movement.getQuantity() == 10
+                movement.getQuantity() == 10 &&
+                movement.getPreviousStock() == 10 && movement.getNewStock() == 0 &&
+                movement.getReferenceId().equals(id) &&
+                movement.getReferenceNumber().equals(purchase.getPurchaseNumber().getValue()) &&
+                movement.getNotes().equals("Compra cancelada")
         ));
     }
 
@@ -118,7 +124,7 @@ class CancelPurchaseUseCaseUnitTest {
         cancelPurchaseUseCase.execute(id, request);
 
         verify(purchaseRepository).save(any(Purchase.class));
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(any(), any());
         verify(stockMovementRepository, never()).save(any());
     }
 
@@ -162,6 +168,38 @@ class CancelPurchaseUseCaseUnitTest {
         cancelPurchaseUseCase.execute(id, request);
 
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
+    }
+
+    @Test
+    void shouldRejectCancellationWhenReceivedStockIsMissing() {
+        UUID id = UUID.randomUUID();
+        UUID warehouseId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.CONFIRMED, warehouseId, productId);
+        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)).thenReturn(Optional.empty());
+        assertThrows(IllegalStateException.class,
+                () -> cancelPurchaseUseCase.execute(id, new CancelPurchaseRequest("Missing stock")));
+        verify(purchaseRepository, never()).save(any());
+        verify(stockMovementRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldRejectReversalWhenPurchaseStockHasAlreadyBeenConsumed() {
+        UUID id = UUID.randomUUID();
+        UUID warehouseId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.CONFIRMED, warehouseId, productId);
+        WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
+        stock.addStock(5);
+        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)).thenReturn(Optional.of(stock));
+        assertThrows(IllegalStateException.class,
+                () -> cancelPurchaseUseCase.execute(id, new CancelPurchaseRequest("Consumed stock")));
+        assertEquals(5, stock.getQuantity());
+        verify(purchaseRepository, never()).save(any());
+        verify(warehouseStockRepository, never()).save(any());
+        verify(stockMovementRepository, never()).save(any());
     }
 
     private Purchase buildPurchase(UUID id, PurchaseStatus status) {

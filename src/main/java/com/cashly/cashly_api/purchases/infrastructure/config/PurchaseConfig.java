@@ -1,14 +1,16 @@
 package com.cashly.cashly_api.purchases.infrastructure.config;
 
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway;
+
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseActorGateway;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductCatalogGateway;
+
 import com.cashly.cashly_api.purchases.application.usecases.*;
+import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductGateway;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
-import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseSupplierGateway;
+import com.cashly.cashly_api.purchases.application.contracts.InventoryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,19 +18,23 @@ import org.springframework.context.annotation.Configuration;
 public class PurchaseConfig {
 
     @Bean
+    public PurchaseDetailResponseAssembler purchaseDetailResponseAssembler(PurchaseWarehouseGateway warehouseGateway) {
+        return new PurchaseDetailResponseAssembler(warehouseGateway);
+    }
+
+    @Bean
     public CreatePurchaseUseCase createPurchaseUseCase(PurchaseRepository purchaseRepository,
-                                                        SupplierRepository supplierRepository,
-                                                        ProductRepository productRepository,
-                                                        UserRepository userRepository,
-                                                        WarehouseRepository warehouseRepository) {
-        return new CreatePurchaseUseCase(purchaseRepository, supplierRepository, productRepository, userRepository, warehouseRepository);
+                                                        PurchaseSupplierGateway supplierGateway,
+                                                        PurchaseProductGateway productRepository,
+                                                        PurchaseActorGateway userRepository,
+                                                        PurchaseDetailResponseAssembler responseAssembler) {
+        return new CreatePurchaseUseCase(purchaseRepository, supplierGateway, productRepository, userRepository, responseAssembler);
     }
 
     @Bean
     public GetPurchaseByIdUseCase getPurchaseByIdUseCase(PurchaseRepository purchaseRepository,
-                                                          WarehouseRepository warehouseRepository,
-                                                          WarehouseStockRepository warehouseStockRepository) {
-        return new GetPurchaseByIdUseCase(purchaseRepository, warehouseRepository, warehouseStockRepository);
+                                                          PurchaseWarehouseGateway warehouseRepository) {
+        return new GetPurchaseByIdUseCase(purchaseRepository, warehouseRepository);
     }
 
     @Bean
@@ -38,25 +44,23 @@ public class PurchaseConfig {
 
     @Bean
     public UpdatePurchaseUseCase updatePurchaseUseCase(PurchaseRepository purchaseRepository,
-                                                        ProductRepository productRepository,
-                                                        WarehouseRepository warehouseRepository) {
-        return new UpdatePurchaseUseCase(purchaseRepository, productRepository, warehouseRepository);
+                                                        PurchaseProductGateway productRepository,
+                                                        PurchaseDetailResponseAssembler responseAssembler) {
+        return new UpdatePurchaseUseCase(purchaseRepository, productRepository, responseAssembler);
     }
 
     @Bean
     public ConfirmPurchaseUseCase confirmPurchaseUseCase(PurchaseRepository purchaseRepository,
-                                                          WarehouseStockRepository warehouseStockRepository,
-                                                          StockMovementRepository stockMovementRepository,
-                                                          WarehouseRepository warehouseRepository) {
-        return new ConfirmPurchaseUseCase(purchaseRepository, warehouseStockRepository, stockMovementRepository, warehouseRepository);
+                                                          InventoryGateway inventoryGateway,
+                                                          PurchaseDetailResponseAssembler responseAssembler) {
+        return new ConfirmPurchaseUseCase(purchaseRepository, inventoryGateway, responseAssembler);
     }
 
     @Bean
     public CancelPurchaseUseCase cancelPurchaseUseCase(PurchaseRepository purchaseRepository,
-                                                        WarehouseStockRepository warehouseStockRepository,
-                                                        StockMovementRepository stockMovementRepository,
-                                                        WarehouseRepository warehouseRepository) {
-        return new CancelPurchaseUseCase(purchaseRepository, warehouseStockRepository, stockMovementRepository, warehouseRepository);
+                                                        InventoryGateway inventoryGateway,
+                                                        PurchaseDetailResponseAssembler responseAssembler) {
+        return new CancelPurchaseUseCase(purchaseRepository, inventoryGateway, responseAssembler);
     }
 
     @Bean
@@ -65,10 +69,9 @@ public class PurchaseConfig {
     }
 
     @Bean
-    public GetProductsForPurchaseUseCase getProductsForPurchaseUseCase(ProductRepository productRepository,
-                                                                        CategoryRepository categoryRepository,
-                                                                        WarehouseStockRepository warehouseStockRepository,
-                                                                        WarehouseRepository warehouseRepository) {
-        return new GetProductsForPurchaseUseCase(productRepository, categoryRepository, warehouseStockRepository, warehouseRepository);
+    public GetProductsForPurchaseUseCase getProductsForPurchaseUseCase(PurchaseProductCatalogGateway productRepository,
+
+                                                                        PurchaseWarehouseGateway warehouseRepository) {
+        return new GetProductsForPurchaseUseCase(productRepository, warehouseRepository);
     }
 }

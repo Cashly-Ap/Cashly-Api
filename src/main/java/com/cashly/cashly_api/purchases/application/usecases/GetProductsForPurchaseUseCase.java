@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway.Warehouse;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway.Stock;
+
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductCatalogGateway;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductCatalogGateway.Entry;
+
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseProductResponse;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseProductResponse.WarehouseStockItem;
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,29 +19,25 @@ import java.util.stream.Collectors;
 
 public class GetProductsForPurchaseUseCase {
 
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final PurchaseProductCatalogGateway productRepository;
 
-    public GetProductsForPurchaseUseCase(ProductRepository productRepository,
-                                          CategoryRepository categoryRepository,
-                                          WarehouseStockRepository warehouseStockRepository,
-                                          WarehouseRepository warehouseRepository) {
+    private final PurchaseWarehouseGateway warehouseRepository;
+
+    public GetProductsForPurchaseUseCase(PurchaseProductCatalogGateway productRepository,
+
+                                          PurchaseWarehouseGateway warehouseRepository) {
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
+
         this.warehouseRepository = warehouseRepository;
     }
 
     @Transactional(readOnly = true)
     public PageResponse<PurchaseProductResponse> execute(String search, UUID categoryId,
                                                           int page, int size) {
-        List<Warehouse> allWarehouses = warehouseRepository.findAllWithFilters(
-                null, true, 0, 1000, "name", "asc").content();
+        List<Warehouse> allWarehouses = warehouseRepository.activeWarehouses();
 
-        PageResponse<Product> productsPage = productRepository.findAllWithFilters(
-                search, categoryId, true, false, page, size, "name", "asc");
+        PageResponse<Entry> productsPage = productRepository.find(
+                search, categoryId, page, size);
 
         List<PurchaseProductResponse> content = productsPage.content().stream()
                 .map(product -> toResponse(product, allWarehouses))
@@ -52,25 +48,23 @@ public class GetProductsForPurchaseUseCase {
                 productsPage.last(), productsPage.empty());
     }
 
-    private PurchaseProductResponse toResponse(Product product, List<Warehouse> allWarehouses) {
-        String categoryName = categoryRepository.findById(product.getCategoryId())
-                .map(c -> c.getName())
-                .orElse("");
+    private PurchaseProductResponse toResponse(Entry product, List<Warehouse> allWarehouses) {
+        String categoryName = product.categoryName();
 
-        Map<UUID, WarehouseStock> stockByWarehouse = warehouseStockRepository
-                .findByProductId(product.getId()).stream()
-                .collect(Collectors.toMap(WarehouseStock::getWarehouseId, s -> s));
+        Map<UUID, Stock> stockByWarehouse = warehouseRepository
+                .findByProductId(product.id()).stream()
+                .collect(Collectors.toMap(Stock::warehouseId, s -> s));
 
         List<WarehouseStockItem> stockItems = allWarehouses.stream()
                 .map(warehouse -> {
-                    WarehouseStock stock = stockByWarehouse.get(warehouse.getId());
-                    int quantity = stock != null ? stock.getQuantity() : 0;
-                    int reserved = stock != null ? stock.getReserved() : 0;
-                    int available = stock != null ? stock.getAvailableQuantity() : 0;
+                    Stock stock = stockByWarehouse.get(warehouse.id());
+                    int quantity = stock != null ? stock.quantity() : 0;
+                    int reserved = stock != null ? stock.reserved() : 0;
+                    int available = stock != null ? stock.available() : 0;
                     return new WarehouseStockItem(
-                            warehouse.getId().toString(),
-                            warehouse.getCode(),
-                            warehouse.getName(),
+                            warehouse.id().toString(),
+                            warehouse.code(),
+                            warehouse.name(),
                             quantity,
                             reserved,
                             available
@@ -81,15 +75,15 @@ public class GetProductsForPurchaseUseCase {
         int totalStock = stockItems.stream().mapToInt(WarehouseStockItem::quantity).sum();
 
         return new PurchaseProductResponse(
-                product.getId().toString(),
-                product.getCode(),
-                product.getName(),
-                product.getCategoryId().toString(),
+                product.id().toString(),
+                product.code(),
+                product.name(),
+                product.categoryId().toString(),
                 categoryName,
-                product.isActive(),
+                product.active(),
                 totalStock,
                 stockItems,
-                product.getPurchasePrice()
+                product.purchasePrice()
         );
     }
 }

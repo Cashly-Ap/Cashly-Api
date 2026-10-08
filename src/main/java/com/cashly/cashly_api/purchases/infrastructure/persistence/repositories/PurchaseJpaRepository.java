@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collection;
+import java.util.Set;
 
 public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUID> {
 
@@ -53,4 +55,7 @@ public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUI
     );
 
     boolean existsBySupplierId(UUID supplierId);
+
+    @Query("SELECT DISTINCT p.supplierId FROM PurchaseEntity p WHERE p.supplierId IN :supplierIds")
+    Set<UUID> findSupplierIdsWithPurchases(@Param("supplierIds") Collection<UUID> supplierIds);
 }

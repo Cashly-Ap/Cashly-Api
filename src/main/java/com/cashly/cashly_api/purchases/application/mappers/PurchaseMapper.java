@@ -1,19 +1,16 @@
 package com.cashly.cashly_api.purchases.application.mappers;
 
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway.Warehouse;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway.Stock;
+
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;
 import com.cashly.cashly_api.purchases.domain.entities.Purchase;
 import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLineAllocation;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,21 +23,8 @@ public class PurchaseMapper {
     }
 
     public static PurchaseDetailResponse toDetailResponse(Purchase purchase,
-                                                           WarehouseRepository warehouseRepository) {
-        Map<UUID, Warehouse> warehouses = purchase.getLines().stream()
-                .flatMap(line -> line.getAllocations().stream())
-                .map(PurchaseLineAllocation::getWarehouseId)
-                .distinct()
-                .map(warehouseRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toMap(Warehouse::getId, w -> w));
-        return toDetailResponse(purchase, warehouses, Collections.emptyMap());
-    }
-
-    public static PurchaseDetailResponse toDetailResponse(Purchase purchase,
                                                            Map<UUID, Warehouse> allWarehouses,
-                                                           Map<UUID, List<WarehouseStock>> stockByProductId) {
+                                                           Map<UUID, List<Stock>> stockByProductId) {
         List<PurchaseDetailResponse.LineDetailResponse> lineResponses = purchase.getLines().stream()
                 .map(line -> toLineDetailResponse(line, allWarehouses, stockByProductId))
                 .toList();
@@ -81,7 +65,7 @@ public class PurchaseMapper {
     private static PurchaseDetailResponse.LineDetailResponse toLineDetailResponse(
             PurchaseLine line,
             Map<UUID, Warehouse> allWarehouses,
-            Map<UUID, List<WarehouseStock>> stockByProductId) {
+            Map<UUID, List<Stock>> stockByProductId) {
 
         List<PurchaseDetailResponse.LineDetailResponse.AllocationDetail> allocationDetails =
                 line.getAllocations().stream()
@@ -89,8 +73,8 @@ public class PurchaseMapper {
                             Warehouse w = allWarehouses.get(a.getWarehouseId());
                             return new PurchaseDetailResponse.LineDetailResponse.AllocationDetail(
                                     a.getWarehouseId(),
-                                    w != null ? w.getCode() : "",
-                                    w != null ? w.getName() : "",
+                                    w != null ? w.code() : "",
+                                    w != null ? w.name() : "",
                                     a.getQuantity()
                             );
                         })
@@ -115,24 +99,24 @@ public class PurchaseMapper {
     private static List<PurchaseDetailResponse.LineDetailResponse.StockItemDetail> buildStockItems(
             UUID productId,
             Map<UUID, Warehouse> allWarehouses,
-            Map<UUID, List<WarehouseStock>> stockByProductId) {
+            Map<UUID, List<Stock>> stockByProductId) {
 
-        Map<UUID, WarehouseStock> stockByWarehouse = stockByProductId
+        Map<UUID, Stock> stockByWarehouse = stockByProductId
                 .getOrDefault(productId, Collections.emptyList()).stream()
                 .collect(java.util.stream.Collectors.toMap(
-                        WarehouseStock::getWarehouseId, s -> s, (a, b) -> a));
+                        Stock::warehouseId, s -> s, (a, b) -> a));
 
         List<PurchaseDetailResponse.LineDetailResponse.StockItemDetail> result = new ArrayList<>();
         for (Map.Entry<UUID, Warehouse> entry : allWarehouses.entrySet()) {
             Warehouse warehouse = entry.getValue();
-            WarehouseStock stock = stockByWarehouse.get(entry.getKey());
-            int quantity = stock != null ? stock.getQuantity() : 0;
-            int reserved = stock != null ? stock.getReserved() : 0;
-            int available = stock != null ? stock.getAvailableQuantity() : 0;
+            Stock stock = stockByWarehouse.get(entry.getKey());
+            int quantity = stock != null ? stock.quantity() : 0;
+            int reserved = stock != null ? stock.reserved() : 0;
+            int available = stock != null ? stock.available() : 0;
             result.add(new PurchaseDetailResponse.LineDetailResponse.StockItemDetail(
-                    warehouse.getId(),
-                    warehouse.getCode(),
-                    warehouse.getName(),
+                    warehouse.id(),
+                    warehouse.code(),
+                    warehouse.name(),
                     quantity,
                     reserved,
                     available

@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -214,6 +215,27 @@ class PurchaseRepositoryIntegrationTest {
             adapter.deleteById(PurchaseId.of(id));
 
             verify(jpaRepository).deleteById(id);
+        }
+    }
+
+    @Nested
+    @DisplayName("FindSupplierIdsWithPurchases")
+    class FindSupplierIdsWithPurchases {
+
+        @Test
+        void shouldQueryAllUsedSupplierIdsInOneBatch() {
+            Set<UUID> supplierIds = Set.of(UUID.randomUUID(), UUID.randomUUID());
+            Set<UUID> usedSupplierIds = Set.of(supplierIds.iterator().next());
+            when(jpaRepository.findSupplierIdsWithPurchases(supplierIds)).thenReturn(usedSupplierIds);
+
+            assertEquals(usedSupplierIds, adapter.findSupplierIdsWithPurchases(supplierIds));
+            verify(jpaRepository).findSupplierIdsWithPurchases(supplierIds);
+        }
+
+        @Test
+        void shouldSkipQueryWhenSupplierIdBatchIsEmpty() {
+            assertEquals(Set.of(), adapter.findSupplierIdsWithPurchases(Set.of()));
+            verifyNoInteractions(jpaRepository);
         }
     }
 

@@ -1,17 +1,18 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductGateway;
+
+
 import com.cashly.cashly_api.purchases.application.dto.request.UpdatePurchaseRequest;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
-import com.cashly.cashly_api.purchases.application.mappers.PurchaseMapper;
+import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;
 import com.cashly.cashly_api.purchases.domain.entities.Purchase;
 import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
 import com.cashly.cashly_api.purchases.domain.entities.PurchaseLineAllocation;
 import com.cashly.cashly_api.purchases.domain.exceptions.PurchaseNotFoundException;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -20,15 +21,15 @@ import java.util.UUID;
 public class UpdatePurchaseUseCase {
 
     private final PurchaseRepository purchaseRepository;
-    private final ProductRepository productRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final PurchaseProductGateway productRepository;
+    private final PurchaseDetailResponseAssembler responseAssembler;
 
     public UpdatePurchaseUseCase(PurchaseRepository purchaseRepository,
-                                  ProductRepository productRepository,
-                                  WarehouseRepository warehouseRepository) {
+                                  PurchaseProductGateway productRepository,
+                                  PurchaseDetailResponseAssembler responseAssembler) {
         this.purchaseRepository = purchaseRepository;
         this.productRepository = productRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.responseAssembler = responseAssembler;
     }
 
     @Transactional
@@ -38,7 +39,7 @@ public class UpdatePurchaseUseCase {
 
         List<PurchaseLine> lines = request.lines().stream()
                 .map(lineRequest -> {
-                    Product product = productRepository.findById(lineRequest.productId())
+                    PurchaseProductGateway.Entry product = productRepository.findById(lineRequest.productId())
                             .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
 
                     List<PurchaseLineAllocation> allocations = lineRequest.warehouseAllocations().stream()
@@ -46,9 +47,9 @@ public class UpdatePurchaseUseCase {
                             .toList();
 
                     return PurchaseLine.create(
-                            product.getId(),
-                            product.getName(),
-                            product.getCode(),
+                            product.id(),
+                            product.name(),
+                            product.code(),
                             lineRequest.quantity(),
                             lineRequest.unitCost(),
                             allocations
@@ -59,6 +60,6 @@ public class UpdatePurchaseUseCase {
         purchase.update(request.notes(), lines);
 
         Purchase saved = purchaseRepository.save(purchase);
-        return PurchaseMapper.toDetailResponse(saved, warehouseRepository);
+        return responseAssembler.toDetailResponse(saved);
     }
 }

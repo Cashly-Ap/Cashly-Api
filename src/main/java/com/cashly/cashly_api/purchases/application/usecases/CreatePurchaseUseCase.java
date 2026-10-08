@@ -1,22 +1,19 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductGateway;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseSupplierGateway;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseActorGateway;
+
+
 import com.cashly.cashly_api.purchases.application.dto.request.CreatePurchaseRequest;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
-import com.cashly.cashly_api.purchases.application.mappers.PurchaseMapper;
+import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;
 import com.cashly.cashly_api.purchases.domain.entities.Purchase;
 import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
 import com.cashly.cashly_api.purchases.domain.entities.PurchaseLineAllocation;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseNumber;
-import com.cashly.cashly_api.suppliers.domain.entities.Supplier;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
-import com.cashly.cashly_api.suppliers.domain.valueobjects.SupplierId;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
@@ -26,34 +23,34 @@ import java.util.UUID;
 public class CreatePurchaseUseCase {
 
     private final PurchaseRepository purchaseRepository;
-    private final SupplierRepository supplierRepository;
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final PurchaseSupplierGateway supplierGateway;
+    private final PurchaseProductGateway productRepository;
+    private final PurchaseActorGateway userRepository;
+    private final PurchaseDetailResponseAssembler responseAssembler;
 
     public CreatePurchaseUseCase(PurchaseRepository purchaseRepository,
-                                  SupplierRepository supplierRepository,
-                                  ProductRepository productRepository,
-                                  UserRepository userRepository,
-                                  WarehouseRepository warehouseRepository) {
+                                  PurchaseSupplierGateway supplierGateway,
+                                  PurchaseProductGateway productRepository,
+                                  PurchaseActorGateway userRepository,
+                                  PurchaseDetailResponseAssembler responseAssembler) {
         this.purchaseRepository = purchaseRepository;
-        this.supplierRepository = supplierRepository;
+        this.supplierGateway = supplierGateway;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.responseAssembler = responseAssembler;
     }
 
     @Transactional
     public PurchaseDetailResponse execute(CreatePurchaseRequest request, UUID authenticatedUserId) {
-        Supplier supplier = supplierRepository.findById(new SupplierId(request.supplierId()))
+        PurchaseSupplierGateway.Entry supplier = supplierGateway.findById(request.supplierId())
                 .orElseThrow(() -> new IllegalArgumentException("Supplier not found: " + request.supplierId()));
 
-        User user = userRepository.findById(new UserId(authenticatedUserId))
+        PurchaseActorGateway.Entry user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
 
         List<PurchaseLine> lines = request.lines().stream()
                 .map(lineRequest -> {
-                    Product product = productRepository.findById(lineRequest.productId())
+                    PurchaseProductGateway.Entry product = productRepository.findById(lineRequest.productId())
                             .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
 
                     List<PurchaseLineAllocation> allocations = lineRequest.warehouseAllocations().stream()
@@ -61,9 +58,9 @@ public class CreatePurchaseUseCase {
                             .toList();
 
                     return PurchaseLine.create(
-                            product.getId(),
-                            product.getName(),
-                            product.getCode(),
+                            product.id(),
+                            product.name(),
+                            product.code(),
                             lineRequest.quantity(),
                             lineRequest.unitCost(),
                             allocations
@@ -77,16 +74,16 @@ public class CreatePurchaseUseCase {
 
         Purchase purchase = Purchase.create(
                 purchaseNumber,
-                supplier.getId().getValue(),
-                supplier.getLegalName().getValue(),
-                supplier.getRif().getValue(),
-                user.getId().getValue(),
-                user.getUserName().getValue(),
+                supplier.id(),
+                supplier.name(),
+                supplier.rif(),
+                user.id(),
+                user.name(),
                 request.notes(),
                 lines
         );
 
         Purchase saved = purchaseRepository.save(purchase);
-        return PurchaseMapper.toDetailResponse(saved, warehouseRepository);
+        return responseAssembler.toDetailResponse(saved);
     }
 }

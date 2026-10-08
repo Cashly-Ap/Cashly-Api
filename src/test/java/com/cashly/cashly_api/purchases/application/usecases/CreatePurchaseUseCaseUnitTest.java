@@ -10,11 +10,9 @@ import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.purchases.application.dto.request.CreatePurchaseRequest;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
+import com.cashly.cashly_api.purchases.application.contracts.PurchaseSupplierGateway;
 import com.cashly.cashly_api.purchases.domain.entities.Purchase;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
-import com.cashly.cashly_api.suppliers.domain.entities.Supplier;
-import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
-import com.cashly.cashly_api.suppliers.domain.valueobjects.*;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +39,7 @@ class CreatePurchaseUseCaseUnitTest {
     private PurchaseRepository purchaseRepository;
 
     @Mock
-    private SupplierRepository supplierRepository;
+    private PurchaseSupplierGateway supplierGateway;
 
     @Mock
     private ProductRepository productRepository;
@@ -57,8 +55,14 @@ class CreatePurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         createPurchaseUseCase = new CreatePurchaseUseCase(
-                purchaseRepository, supplierRepository, productRepository,
-                userRepository, warehouseRepository);
+                purchaseRepository,
+                supplierGateway,
+                new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseProductGatewayAdapter(
+                        new com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery(productRepository)),
+                new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseActorGatewayAdapter(
+                        new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository, null)),
+                new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(
+                        new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.application.queries.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository.class)))));
     }
 
     @Test
@@ -68,7 +72,6 @@ class CreatePurchaseUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        Supplier supplier = buildSupplier(supplierId);
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
@@ -80,7 +83,7 @@ class CreatePurchaseUseCaseUnitTest {
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, "Notas de compra", List.of(lineRequest));
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.of(supplier));
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
@@ -100,7 +103,7 @@ class CreatePurchaseUseCaseUnitTest {
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, null, List.of());
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.empty());
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -116,11 +119,10 @@ class CreatePurchaseUseCaseUnitTest {
         UUID supplierId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        Supplier supplier = buildSupplier(supplierId);
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, null, List.of());
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.of(supplier));
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
@@ -138,7 +140,6 @@ class CreatePurchaseUseCaseUnitTest {
         UUID productId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        Supplier supplier = buildSupplier(supplierId);
         User user = buildUser(authenticatedUserId);
 
         CreatePurchaseRequest.LineRequest lineRequest =
@@ -146,7 +147,7 @@ class CreatePurchaseUseCaseUnitTest {
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, null, List.of(lineRequest));
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.of(supplier));
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
@@ -166,7 +167,6 @@ class CreatePurchaseUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        Supplier supplier = buildSupplier(supplierId);
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
@@ -178,7 +178,7 @@ class CreatePurchaseUseCaseUnitTest {
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, null, List.of(lineRequest));
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.of(supplier));
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
@@ -196,7 +196,6 @@ class CreatePurchaseUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        Supplier supplier = buildSupplier(supplierId);
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
@@ -208,7 +207,7 @@ class CreatePurchaseUseCaseUnitTest {
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, null, List.of(lineRequest));
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.of(supplier));
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(42);
@@ -229,7 +228,6 @@ class CreatePurchaseUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        Supplier supplier = buildSupplier(supplierId);
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
@@ -241,7 +239,7 @@ class CreatePurchaseUseCaseUnitTest {
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 supplierId, null, List.of(lineRequest));
 
-        when(supplierRepository.findById(new SupplierId(supplierId))).thenReturn(Optional.of(supplier));
+        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
@@ -254,22 +252,8 @@ class CreatePurchaseUseCaseUnitTest {
         assertEquals("J-12345678-9", response.supplierRif());
     }
 
-    private Supplier buildSupplier(UUID id) {
-        return Supplier.reconstitute(
-                new SupplierId(id),
-                SupplierCode.from(1001L),
-                new LegalName("Proveedor Test C.A."),
-                SupplierType.JURIDICO,
-                new Rif("J-12345678-9"),
-                new SupplierAlias("Test Prov"),
-                "Notas de prueba",
-                true,
-                LocalDateTime.now().minusDays(5),
-                LocalDateTime.now().minusDays(5),
-                List.of(),
-                List.of(),
-                List.of()
-        );
+    private PurchaseSupplierGateway.Entry supplier(UUID id) {
+        return new PurchaseSupplierGateway.Entry(id, "Proveedor Test C.A.", "J-12345678-9");
     }
 
     private User buildUser(UUID userId) {

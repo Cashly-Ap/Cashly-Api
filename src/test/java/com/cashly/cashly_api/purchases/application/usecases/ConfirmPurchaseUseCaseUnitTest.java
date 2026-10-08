@@ -17,6 +17,8 @@ import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.purchases.infrastructure.integration.WarehouseInventoryAdapter;
+import com.cashly.cashly_api.warehouses.application.services.PurchaseInventoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,7 +57,7 @@ class ConfirmPurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         confirmPurchaseUseCase = new ConfirmPurchaseUseCase(purchaseRepository,
-                warehouseStockRepository, stockMovementRepository, warehouseRepository);
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.application.queries.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
     }
 
     @Test
@@ -101,14 +103,14 @@ class ConfirmPurchaseUseCaseUnitTest {
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
 
         when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(stock);
         when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
 
         confirmPurchaseUseCase.execute(id);
 
-        verify(warehouseStockRepository).findByWarehouseIdAndProductId(warehouseId, productId);
+        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
         verify(warehouseStockRepository).save(argThat(savedStock ->
                 savedStock.getQuantity() == 10));
         verify(stockMovementRepository).save(argThat(movement ->
@@ -116,7 +118,11 @@ class ConfirmPurchaseUseCaseUnitTest {
                 movement.getReferenceType() == ReferenceType.PURCHASE &&
                 movement.getQuantity() == 10 &&
                 movement.getProductId().equals(productId) &&
-                movement.getWarehouseId().equals(warehouseId)
+                movement.getWarehouseId().equals(warehouseId) &&
+                movement.getPreviousStock() == 0 && movement.getNewStock() == 10 &&
+                movement.getReferenceId().equals(id) &&
+                movement.getReferenceNumber().equals(purchase.getPurchaseNumber().getValue()) &&
+                movement.getNotes().equals("Compra confirmada")
         ));
     }
 
@@ -128,13 +134,14 @@ class ConfirmPurchaseUseCaseUnitTest {
         Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.DRAFT, warehouseId, productId);
 
         when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.empty());
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(WarehouseStock.create(warehouseId, productId));
         when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
 
         confirmPurchaseUseCase.execute(id);
 
+        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
         verify(warehouseStockRepository).save(argThat(savedStock ->
                 savedStock.getQuantity() == 10));
         verify(stockMovementRepository).save(argThat(movement ->

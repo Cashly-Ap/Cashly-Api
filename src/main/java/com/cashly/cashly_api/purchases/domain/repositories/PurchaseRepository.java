@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collection;
+import java.util.Set;
 
 public interface PurchaseRepository {
     Purchase save(Purchase purchase);
@@ -18,4 +20,5 @@ public interface PurchaseRepository {
     int getNextSequenceForYear(int year);
     void deleteById(PurchaseId id);
     boolean existsBySupplierId(UUID supplierId);
+    Set<UUID> findSupplierIdsWithPurchases(Collection<UUID> supplierIds);
 }
