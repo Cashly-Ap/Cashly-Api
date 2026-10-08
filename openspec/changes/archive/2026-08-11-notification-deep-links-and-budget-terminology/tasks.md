@@ -7,7 +7,7 @@
 | Estimated lines | 600–850 |
 | 400-line budget risk | High |
 | Chained PRs recommended | Yes |
-| Suggested split | API → app → portal foundation → portal focus |
+| Suggested split | API → back-office app |
 | Delivery strategy | ask-on-risk |
 | Chain strategy | pending |
 
@@ -22,8 +22,6 @@ Chain strategy: pending
 |---|---|---|---|
 | 1 | Backend terminology contract | API PR | `cashly-api` change and tests. |
 | 2 | Backoffice deep links | App PR | `cashly-app` change and tests. |
-| 3 | Portal resolver and bell | Portal PR 1 | Base per selected chain strategy. |
-| 4 | Portal focus consumers | Portal PR 2 | Immediate parent Portal PR 1; includes UI tests. |
 
 ## Phase 1: Backend
 
@@ -40,20 +38,7 @@ Chain strategy: pending
 - [x] 2.4 GREEN: update the notification bell with contextual `Ver pago`, `Ver pedido`, or `Ver presupuesto` actions; keep card bodies non-interactive.
 - [x] 2.5 REFACTOR: remove duplicated mapping/error branches; run focused specs, Docker `bun test --run`, and `bun run build`. Evidence: focused 4/4 final iteration (previously 9/9) and build passed.
 
-## Phase 3: Portal Foundation
-
-- [x] 3.1 RED: test collection routes, `focus`, null/unknown references, navigation failure, and conversion origins.
-- [x] 3.2 GREEN: create the typed resolver; update bell TS/HTML/spec for inert card bodies, contextual actions, read, close, focus, and read failures.
-- [x] 3.3 REFACTOR: centralize mapping and ensure unsupported references never throw; run focused Vitest specs.
-
-## Phase 4: Portal Focus and Copy
-
-- [x] 4.1 RED: test quotes, orders, and payments focus consumption, deduplication, cleanup, close, and load failure.
-- [x] 4.2 GREEN: call existing `openDetail(id)` once and clear `focus` with replacement navigation preserving other parameters and synchronizing Angular Router state after canceled/rejected cleanup.
-- [x] 4.3 GREEN: change login copy from “cotizaciones” to “presupuestos”; verify no visible occurrence remains.
-- [x] 4.4 REFACTOR: share only genuinely identical focus behavior; run portal Docker `bun test --run` and `bun run build`. Evidence: 58/58 tests and build passed.
-
-## Phase 5: Documentation, Verification, Archive
+## Phase 3: Documentation, Verification, Archive
 
 - [x] 5.1 Review each repository diff; confirm no migration, contract, route, table, or technical rename. Evidence: all repository diff checks passed.
 - [x] 5.2 Manual IAB verification confirmed copy and guards. Authenticated deep-link traversal remained unverified because no session or credentials were available.

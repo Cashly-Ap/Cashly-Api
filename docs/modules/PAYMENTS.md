@@ -1,6 +1,6 @@
 # Payments
 
-Payments record customer money, support invoice allocation, and expose approval workflows for portal payments.
+Payments record customer money, support invoice allocation, and expose approval workflows for pending payments.
 
 ## API
 
@@ -22,7 +22,7 @@ Base path: `/api/payments`.
 
 - Amounts must be positive and cannot exceed the applicable balance.
 - Allocation is explicit and prevents overpayment.
-- Portal-originated payments remain pending until validation.
+- Pending payments require approval before allocation.
 - Approval/rejection and invoice allocation are transactional.
 
 ## Code map

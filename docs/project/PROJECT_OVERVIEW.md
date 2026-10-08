@@ -2,7 +2,7 @@
 
 ## Project Vision
 
-The Cashly project aims to develop a **B2B Web Administrative System** that digitizes and centralizes the company's complete operational cycle — from inventory management to collections — including a **Customer Self-Service Web Portal**.
+The Cashly project aims to develop a **B2B Web Administrative System** that digitizes and centralizes the company's complete operational cycle — from inventory management to collections.
 
 The system is built from scratch, drawing inspiration from key modules of the **Valery ERP**, adapted to a modern, scalable, and growth-oriented architecture.
 
@@ -16,7 +16,6 @@ The system is built from scratch, drawing inspiration from key modules of the **
 | **Commercial Automation** | Streamlined flow from quotation to invoice with minimal friction |
 | **Credit & Payment Management** | Structured financial control with partial payments and credit limits |
 | **Document Automation** | PDF generation for every operational document |
-| **Customer Self-Service** | B2B portal for clients to manage their own orders and invoices |
 | **Scalability** | Modular architecture prepared for future growth |
 
 ---
@@ -30,7 +29,6 @@ The system is built from scratch, drawing inspiration from key modules of the **
 - Role assignment: Super Admin, Administration, Operators, Customers
 - Module-level access control
 - Secure login panel
-- Internal customer account management for portal access
 
 **Impact:** Ensures operational security and hierarchical control across the system.
 
@@ -104,23 +102,7 @@ The system is built from scratch, drawing inspiration from key modules of the **
 
 ---
 
-### Module 6 – Customer Web Portal
-
-**Features:**
-- Customer login
-- Available product catalog browsing
-- Automatic price type application based on customer profile
-- Quotation creation
-- Order placement
-- Invoice visualization
-- Payment reports
-- Full document history
-
-**Impact:** Reduces administrative workload and enables B2B self-service.
-
----
-
-### Module 7 – Global Document Manager
+### Module 6 – Global Document Manager
 
 **Features:**
 - Invoice listing
@@ -140,7 +122,6 @@ The project is developed in **critical phases**, enabling progressive testing an
 ```
 Phase 1 → Operational Core        (Inventory + Sales)
 Phase 2 → Finance & Credit        (Payments, Credit, Returns)
-Phase 3 → Customer Portal         (B2B Self-Service)
 ```
 
 ### Benefits of Phased Delivery
@@ -164,7 +145,6 @@ graph TD
     B --> C[Sales & Commercial]
     C --> D[Finance & Credit Control]
     B --> E[Purchasing]
-    C --> F[Customer Web Portal]
     C --> G[Global Document Manager]
     D --> G
 ```
@@ -178,7 +158,6 @@ graph TD
 | **Automated Document Management** | PDF generation and document lifecycle tracking |
 | **Composite Product Logic** | Dynamic kit pricing with per-unit discount rules |
 | **Full Commercial Flow** | Quotation → Order → Invoice pipeline |
-| **Integrated Customer Portal** | B2B self-service with profile-based pricing |
 
 ---
 

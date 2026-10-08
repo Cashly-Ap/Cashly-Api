@@ -93,7 +93,6 @@ The implementation also includes these module references:
 | Notifications | [NOTIFICATIONS.md](./NOTIFICATIONS.md) |
 | Payment methods | [PAYMENT_METHODS.md](./PAYMENT_METHODS.md) |
 | Payments | [PAYMENTS.md](./PAYMENTS.md) |
-| Customer portal | [PORTAL.md](./PORTAL.md) |
 | Price types | [PRICE_TYPES.md](./PRICE_TYPES.md) |
 | Purchases | [PURCHASES.md](./PURCHASES.md) |
 | Quotes | [QUOTES.md](./QUOTES.md) |

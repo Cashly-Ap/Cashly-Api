@@ -31,17 +31,25 @@ Los puertos se publican únicamente en la interfaz de loopback. App consume API 
 
 ## Datos y arranque
 
-Flyway crea el esquema al iniciar API. Los SQL heredados de `db/init` no se montan durante la inicialización de MySQL: contienen INSERT sobre tablas que todavía no existen antes de Flyway. No se importan usuarios, contraseñas, facturas ni archivos del proyecto original.
+Flyway crea el esquema completo al iniciar API. Las migraciones son scripts de creación para una base de desarrollo nueva; no conservan el historial de alteraciones anterior. La base debe inicializarse desde cero con este conjunto de migraciones antes de cargar datos.
 
 ### Seed SQL de desarrollo
 
-El seed existente `db/seed.sql` carga los archivos de `db/seeds` en orden. Docker monta el archivo como `/seed.sql` y la carpeta como `/seeds`. Con API iniciada y las migraciones Flyway aplicadas, carga los datos directamente en MySQL desde Cashly:
+El seed `db/seed.sql` carga los archivos de `db/seeds` en orden. Docker monta el archivo como `/seed.sql` y la carpeta como `/seeds`. Con API iniciada y las migraciones Flyway aplicadas, carga los datos directamente en MySQL desde Cashly:
 
 ```powershell
 docker compose --env-file .env exec -T mysql sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql --default-character-set=utf8mb4 --user="$MYSQL_USER" "$MYSQL_DATABASE" < /seed.sql'
 ```
 
-Acceso local: `superadmin@cashly.com`, contraseña `49510561Gabriel.`, rol `SUPER_ADMIN`. El seed también crea usuarios y datos de demostración. Reinicializa las tablas indicadas por los SQL: úsalo sobre el entorno de desarrollo, no sobre datos reales. No se cargará antes de Flyway ni se ejecutará automáticamente en cada arranque.
+Acceso local: `superadmin@cashly.com`, contraseña `49510561Gabriel.`, rol `SUPER_ADMIN`. El seed también crea usuarios y datos de demostración. Reinicializa las tablas indicadas por los SQL: úsalo sobre el entorno de desarrollo, no sobre datos reales. No se carga antes de Flyway ni se ejecuta automáticamente en cada arranque.
+
+La reconstrucción de esquema vacía requiere eliminar el volumen MySQL local y volver a levantar la API. Este proceso elimina todos los datos locales de Cashly; no debe usarse sobre una base que necesite conservar información. Desde la carpeta Cashly:
+
+```powershell
+docker compose --env-file .env down
+docker volume rm cashly_mysql_data
+docker compose --env-file .env up -d --build
+```
 MinIO se construye desde las versiones fijadas del servidor y cliente en `Dockerfile.minio`, porque la descarga del repositorio de imágenes original no estaba disponible durante esta entrega. App usa Bun 1.3.3 y `bun.lock` para instalaciones reproducibles. Los cambios de código requieren reconstruir la imagen; este Compose no monta el código del host ni ofrece recarga automática.
 
 ## Operación

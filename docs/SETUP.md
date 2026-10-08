@@ -239,27 +239,9 @@ docker compose up --build
 ./mvnw flyway:repair
 ```
 
-### Creating New Migrations
+### Current Development Baseline
 
-1. Create new migration file:
-   ```sql
-   -- V003__add_user_preferences.sql
-   CREATE TABLE user_preferences (
-       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-       user_id VARCHAR(36) NOT NULL,
-       preference_key VARCHAR(100) NOT NULL,
-       preference_value TEXT,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-       FOREIGN KEY (user_id) REFERENCES users(id),
-       UNIQUE KEY uk_user_preference (user_id, preference_key)
-   );
-   ```
-
-2. Restart application to apply:
-   ```bash
-   docker compose down
-   docker compose up --build
-   ```
+The current Flyway set is a fresh-database baseline for the non-production Cashly environment. It creates the final schema through V24 and intentionally does not upgrade databases with the previous Flyway history. Recreate only the local development database before using this baseline. Once a migration set is deployed to a shared or production database, keep its applied files immutable and add a forward migration for later schema changes.
 
 ### Database Access
 

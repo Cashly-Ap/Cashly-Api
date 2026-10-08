@@ -1,5 +1,9 @@
 # Verificación de la migración Cashly
 
+## Estado de reconstrucción de esquema: 2026-10-08
+
+Estado actual verificado el 2026-10-08: Flyway aplica V1–V25 desde una base MySQL vacía. V25 crea las tablas de snapshots históricos y rellena las categorías existentes de pedidos y ofertas. Hibernate validó JPA. El seed canónico cargó correctamente: 6 usuarios, 11 clientes, 25 productos y 7 facturas; además, los 33 renglones de pedidos y 20 de ofertas tienen snapshot de categoría. `clean verify` de API pasó 3.136 pruebas, con el JAR generado. Las cifras y la descripción anteriores de V1–V24 son evidencia histórica y no describen el esquema vigente.
+
 Verificado el 2026-10-06. Alcance: cambio de nombre de App/API, configuración Docker local y sustitución de marca. La especificación de microservicios y arquitectura hexagonal propone una implementación futura; esta migración no ejecuta ni certifica esa transformación.
 
 ## Evidencia automática
@@ -19,9 +23,9 @@ Los contadores de líneas JaCoCo proceden de `api-coverage/jacoco.xml` y se agre
 
 | Capa | Líneas cubiertas / totales | Cobertura de líneas | Requisito | Resultado |
 | --- | ---: | ---: | ---: | --- |
-| Domain | 2.898 / 3.211 | 90,25 % | >90 % | CUMPLE |
-| Application | 4.373 / 5.752 | 76,03 % | >80 % | INFERIOR AL OBJETIVO |
-| Infrastructure | 3.713 / 7.541 | 49,24 % | >60 % | INFERIOR AL OBJETIVO |
+| Domain | 2.945 / 3.129 | 94,12 % | >90 % | CUMPLE |
+| Application | 4.479 / 4.981 | 89,92 % | >80 % | CUMPLE |
+| Infrastructure | 5.852 / 8.254 | 70,90 % | >60 % | CUMPLE |
 | Frontend (LCOV) | 16.414 / 27.499 | 59,69 % | >75 % | INFERIOR AL OBJETIVO |
 
 Las carencias de Application, Infrastructure y Frontend siguen pendientes en la suite existente. Esta migración de nombre/configuración no incluye una expansión indiscriminada de pruebas ajenas al cambio. Los umbrales no sustituyen la evidencia de comportamiento, concurrencia, seguridad y contratos.
@@ -57,9 +61,16 @@ En la verificación inicial no se ejecutó un flujo de negocio autenticado satis
 
 Se ha cargado el seed existente `db/seed.sql` directamente en el contenedor MySQL, con `db/seeds` montado en `/seeds`, después de las migraciones Flyway. Se eliminó el script PowerShell y las variables de administrador añadidas anteriormente.
 
-La carga terminó sin errores SQL. Resultado: 6 usuarios, 11 clientes y 7 facturas de demostración. Las credenciales de acceso son las definidas en `db/seeds/01_users.sql`. No se modificaron migraciones Flyway.
+La carga terminó sin errores SQL. Resultado: 6 usuarios, 11 clientes, 25 productos, 7 facturas y categorías históricas en 33/33 líneas de pedidos y 20/20 líneas de ofertas. Las credenciales de acceso son las definidas en `db/seeds/01_users.sql`. El resultado fue reconfirmado sobre un contenedor `mysql-test` recreado desde cero el 2026-10-08.
 ## Verificación final
 
-La imagen final `cashly-app:local` se construyó correctamente con instalación congelada desde `bun.lock`. La compilación Angular de producción final pasó, al igual que 37 pruebas enfocadas: 21 de login y 16 de main-layout (`cashly-final-app-check.log`). La API rechazó `{}` en `/api/auth/login` con HTTP 400. La captura final contiene el login vacío sin validaciones activadas. No hay diferencias preparadas en migraciones Flyway aplicadas.
+La imagen `cashly-app:local` se construyó correctamente con instalación congelada desde `bun.lock`. Esa captura histórica cubrió 37 pruebas enfocadas y precede a la suite completa ejecutada el 2026-10-08. Las conclusiones de ese momento no representan el esquema Flyway actual.
 
 La ejecución Docker V8 terminó con código 0: 257 archivos y 2.541 pruebas correctas. Su tabla global muestra 59,68 % de líneas/statements, 84,25 % de branches y 70,30 % de functions; el frontend no alcanza >75 % de líneas. La suma exacta de contadores LCOV es 16.414/27.499 líneas (59,69 % redondeado); la tabla de consola V8 publica 59,68 %. Ambos resultados quedan por debajo del objetivo. Los informes HTML, JSON y LCOV se copiaron a `coverage-output/` en el directorio de trabajo. Los porcentajes reflejan las exclusiones y el descubrimiento configurados en `vitest.config.mts`; no son cobertura exhaustiva de todos los flujos de negocio.
+
+
+## Integración de devoluciones (2026-10-08)
+
+ReturnsFinancialRollbackMySqlIT ejecutó 4 escenarios en MySQL 8.0.46 aislado, verificando rollback tras caja, stock, ajuste de factura y saldo. Queda fuera la cancelación automática de pagos aplicados porque Payments lanza IllegalStateException: Cannot cancel an applied payment; no se modificó ese flujo.
+
+`OrderHistoricalCategoryMySqlIT` ejecutó 3 escenarios contra MySQL, incluida la modificación de categoría de un producto tras crear líneas de pedido y oferta. Los documentos conservaron la categoría original mediante snapshots. `ProductPersistenceQueriesMySqlIT` ejecutó 2 escenarios. En total, los IT dirigidos a MySQL para estos tres casos ejecutaron 9 tests sin fallos.

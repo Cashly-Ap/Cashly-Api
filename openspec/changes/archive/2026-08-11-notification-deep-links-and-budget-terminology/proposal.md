@@ -9,7 +9,7 @@ Notifications become read without opening their resource. Visible copy mixes “
 ### In Scope
 
 - Resolve every existing `PAYMENT_*`, `QUOTE_*`, and `ORDER_*` notification through its current `referenceType` and `referenceId`.
-- Open backoffice detail routes and focus existing portal detail dialogs through list routes.
+- Open back-office detail routes for referenced resources.
 - Fall back safely for null, unknown, inaccessible, missing, or failed references.
 - Replace detected visible “cotización(es)” with “presupuesto(s)”.
 - Test copy, routing, focus, read behavior, and fallbacks.
@@ -34,7 +34,7 @@ None; no existing main specs are present.
 
 ## Approach
 
-Each frontend maps current `referenceType` values to its destinations. Backoffice uses existing `/{resource}/:id` routes. Portal uses the collection with `focus=<id>`; its page invokes existing `openDetail(id)` behavior and clears focus when appropriate. A click marks the notification read and closes the popover. Unsupported or failed targets use the known collection, or remain in place without a mapping.
+The back-office client maps current `referenceType` values to existing `/{resource}/:id` routes. A click marks the notification read and closes the popover. Unsupported or failed targets use the known collection, or remain in place without a mapping.
 
 ## Affected Areas
 
@@ -42,9 +42,6 @@ Each frontend maps current `referenceType` values to its destinations. Backoffic
 |------|--------|-------------|
 | `notifications/application/services/NotificationService.java` | Modified | Standardize visible budget copy. |
 | `cashly-app/src/app/core/notifications/` | Modified | Route clicks and fallback. |
-| `cashly-portal-web/src/app/core/notifications/` | Modified | Route clicks with focus and fallback. |
-| `cashly-portal-web/src/app/features/{quotes,orders,invoices,payments}/` | Modified | Consume focus and open detail. |
-| `cashly-portal-web/src/app/features/auth/pages/login/` | Modified | Replace remaining visible terminology. |
 
 ## Risks
 
@@ -60,7 +57,7 @@ Revert click/focus and copy changes independently; API payload and persistence r
 
 ## Dependencies
 
-- Existing detail endpoints, routes, guards, and portal `openDetail(id)` services.
+- Existing back-office detail endpoints, routes, and guards.
 
 ## Success Criteria
 

@@ -1,6 +1,6 @@
 # Cashly API
 
-Cashly API is the private backend for the Cashly business management platform. It exposes the business rules and HTTP contracts used by the back-office application and the customer portal. The repository exists to centralize transactional data, enforce domain invariants, manage persistence, and provide authenticated integrations for sales, inventory, billing, payments, purchasing, and reporting.
+Cashly API is the private backend for the Cashly business management platform. It exposes the business rules and HTTP contracts used by the back-office application. The repository centralizes transactional data, enforces domain invariants, manages persistence, and provides authenticated integrations for sales, inventory, billing, payments, purchasing, and reporting.
 
 ## Scope and modules
 
@@ -15,7 +15,6 @@ Cashly API is the private backend for the Cashly business management platform. I
 | Purchasing | Suppliers and purchase workflows. |
 | Reporting and dashboard | Operational indicators and report data for the applications. |
 | Notifications and audit | User notifications and traceability of relevant operations. |
-| Portal | Authenticated endpoints consumed by the customer portal. |
 
 The complete module index is available in [docs/modules/README.md](docs/modules/README.md).
 
@@ -67,7 +66,7 @@ Environment variables, database initialization, storage, and seed procedures are
 
 ## Database and migrations
 
-MySQL schema changes are versioned with Flyway. Initialization scripts are under `db/init`, and seed files are under `db/seeds`. Do not modify a deployed schema manually; add a migration and run it through the application startup process.
+MySQL schema is created by Flyway migrations under `src/main/resources/db/migration`; each migration creates final tables and indexes for a fresh development database. Development seed data lives under `db/seeds` and is loaded through `db/seed.sql` after API startup. This migration set is for fresh, non-production databases and is not compatible with databases that retain the previous Flyway history.
 
 ## Verification
 
