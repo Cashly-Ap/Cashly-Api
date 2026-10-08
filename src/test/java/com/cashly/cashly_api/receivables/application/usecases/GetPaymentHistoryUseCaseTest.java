@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.PendingPaymentResponse;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class GetPaymentHistoryUseCaseTest {
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private ReceivablesQueryGateway receivablesRepository;
 
     private GetPaymentHistoryUseCase useCase;
 
@@ -43,9 +43,9 @@ class GetPaymentHistoryUseCaseTest {
                 new BigDecimal("500.00"), "Efectivo", "APPLIED", "PAYMENT_METHOD",
                 LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
         );
-        Page<PendingPaymentResponse> paymentPage = new PageImpl<>(
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
                 List.of(payment), PageRequest.of(0, 20), 1
-        );
+        ));
 
         when(receivablesRepository.findPaymentHistory(null, 0, 20)).thenReturn(paymentPage);
 
@@ -66,9 +66,9 @@ class GetPaymentHistoryUseCaseTest {
                 new BigDecimal("500.00"), "Efectivo", "APPLIED", "PAYMENT_METHOD",
                 LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
         );
-        Page<PendingPaymentResponse> paymentPage = new PageImpl<>(
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
                 List.of(payment), PageRequest.of(0, 10), 1
-        );
+        ));
 
         when(receivablesRepository.findPaymentHistory("PAY-2026", 0, 10)).thenReturn(paymentPage);
 
@@ -87,9 +87,9 @@ class GetPaymentHistoryUseCaseTest {
                 new BigDecimal("500.00"), "Transferencia", "APPLIED", "PAYMENT_METHOD",
                 LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
         );
-        Page<PendingPaymentResponse> paymentPage = new PageImpl<>(
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
                 List.of(payment), PageRequest.of(0, 100), 1
-        );
+        ));
 
         when(receivablesRepository.findCustomerPaymentHistory(customerId, invoiceId, 0, 100))
                 .thenReturn(paymentPage);
@@ -106,7 +106,7 @@ class GetPaymentHistoryUseCaseTest {
     void should_ReturnCustomerPaymentHistory_When_OnlyCustomerIdProvided() {
         UUID customerId = UUID.randomUUID();
 
-        Page<PendingPaymentResponse> paymentPage = new PageImpl<>(List.of(), PageRequest.of(0, 100), 0);
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(List.of(), PageRequest.of(0, 100), 0));
 
         when(receivablesRepository.findCustomerPaymentHistory(customerId, null, 0, 100))
                 .thenReturn(paymentPage);
@@ -120,7 +120,7 @@ class GetPaymentHistoryUseCaseTest {
 
     @Test
     void should_ReturnEmptyHistory_When_NoPaymentsExist() {
-        Page<PendingPaymentResponse> emptyPage = Page.empty();
+        PageResponse<PendingPaymentResponse> emptyPage = toPageResponse(org.springframework.data.domain.Page.empty());
 
         when(receivablesRepository.findPaymentHistory(null, 0, 20)).thenReturn(emptyPage);
 
@@ -138,9 +138,9 @@ class GetPaymentHistoryUseCaseTest {
                 new BigDecimal("500.00"), "Efectivo", "APPLIED", "PAYMENT_METHOD",
                 LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
         );
-        Page<PendingPaymentResponse> paymentPage = new PageImpl<>(
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
                 List.of(payment), PageRequest.of(2, 10), 35
-        );
+        ));
 
         when(receivablesRepository.findPaymentHistory(null, 2, 10)).thenReturn(paymentPage);
 
@@ -151,5 +151,9 @@ class GetPaymentHistoryUseCaseTest {
         assertEquals(4, result.totalPages());
         assertEquals(2, result.number());
         assertFalse(result.first());
+    }
+    private static <T> PageResponse<T> toPageResponse(org.springframework.data.domain.Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
+                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
     }
 }

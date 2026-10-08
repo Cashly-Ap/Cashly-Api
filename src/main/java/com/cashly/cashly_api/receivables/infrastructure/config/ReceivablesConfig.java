@@ -5,7 +5,7 @@ import com.cashly.cashly_api.receivables.application.usecases.GetCustomerInvoice
 import com.cashly.cashly_api.receivables.application.usecases.GetPaymentHistoryUseCase;
 import com.cashly.cashly_api.receivables.application.usecases.GetReceivablesSummaryUseCase;
 import com.cashly.cashly_api.receivables.application.usecases.SearchCustomerDebtUseCase;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,27 +13,27 @@ import org.springframework.context.annotation.Configuration;
 public class ReceivablesConfig {
 
     @Bean
-    public GetReceivablesSummaryUseCase getReceivablesSummaryUseCase(ReceivablesRepository receivablesRepository) {
+    public GetReceivablesSummaryUseCase getReceivablesSummaryUseCase(ReceivablesQueryGateway receivablesRepository) {
         return new GetReceivablesSummaryUseCase(receivablesRepository);
     }
 
     @Bean
-    public SearchCustomerDebtUseCase searchCustomerDebtUseCase(ReceivablesRepository receivablesRepository) {
+    public SearchCustomerDebtUseCase searchCustomerDebtUseCase(ReceivablesQueryGateway receivablesRepository) {
         return new SearchCustomerDebtUseCase(receivablesRepository);
     }
 
     @Bean
-    public GetCustomerDebtUseCase getCustomerDebtUseCase(ReceivablesRepository receivablesRepository) {
+    public GetCustomerDebtUseCase getCustomerDebtUseCase(ReceivablesQueryGateway receivablesRepository) {
         return new GetCustomerDebtUseCase(receivablesRepository);
     }
 
     @Bean
-    public GetCustomerInvoicesUseCase getCustomerInvoicesUseCase(ReceivablesRepository receivablesRepository) {
+    public GetCustomerInvoicesUseCase getCustomerInvoicesUseCase(ReceivablesQueryGateway receivablesRepository) {
         return new GetCustomerInvoicesUseCase(receivablesRepository);
     }
 
     @Bean
-    public GetPaymentHistoryUseCase getPaymentHistoryUseCase(ReceivablesRepository receivablesRepository) {
+    public GetPaymentHistoryUseCase getPaymentHistoryUseCase(ReceivablesQueryGateway receivablesRepository) {
         return new GetPaymentHistoryUseCase(receivablesRepository);
     }
 }

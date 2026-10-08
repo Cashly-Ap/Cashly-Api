@@ -1,24 +1,24 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerInvoiceDebtResponse;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import org.springframework.data.domain.Page;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 public class GetCustomerInvoicesUseCase {
 
-    private final ReceivablesRepository receivablesRepository;
+    private final ReceivablesQueryGateway receivablesRepository;
 
-    public GetCustomerInvoicesUseCase(ReceivablesRepository receivablesRepository) {
+    public GetCustomerInvoicesUseCase(ReceivablesQueryGateway receivablesRepository) {
         this.receivablesRepository = receivablesRepository;
     }
 
     @Transactional(readOnly = true)
     public PageResponse<CustomerInvoiceDebtResponse> execute(UUID customerId, String search, String status, int page, int size) {
-        Page<CustomerInvoiceDebtResponse> result = receivablesRepository.findCustomerInvoices(customerId, search, status, page, size);
-        return PageResponse.from(result);
+        PageResponse<CustomerInvoiceDebtResponse> result = receivablesRepository.findCustomerInvoices(customerId, search, status, page, size);
+        return result;
     }
 }

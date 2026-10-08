@@ -1,12 +1,10 @@
 package com.cashly.cashly_api.receivables.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.customers.domain.entities.CustomerBalance;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
-import com.cashly.cashly_api.customers.infrastructure.persistence.entities.CustomerEntity;
-import com.cashly.cashly_api.customers.infrastructure.persistence.entities.CustomerPhoneEntity;
-import com.cashly.cashly_api.customers.infrastructure.persistence.entities.CustomerEmailEntity;
 import com.cashly.cashly_api.receivables.application.dto.response.*;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
+import com.cashly.cashly_api.receivables.application.contracts.AccountsReceivableRow;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesCustomerProfileGateway;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,18 +21,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
+public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
 
     private final EntityManager entityManager;
     private final ReceivablesJpaRepository receivablesJpaRepository;
-    private final CustomerBalanceRepository customerBalanceRepository;
+    private final ReceivablesCustomerProfileGateway customerProfiles;
 
     public ReceivablesRepositoryAdapter(EntityManager entityManager,
                                          ReceivablesJpaRepository receivablesJpaRepository,
-                                         CustomerBalanceRepository customerBalanceRepository) {
+                                         ReceivablesCustomerProfileGateway customerProfiles) {
         this.entityManager = entityManager;
         this.receivablesJpaRepository = receivablesJpaRepository;
-        this.customerBalanceRepository = customerBalanceRepository;
+        this.customerProfiles = customerProfiles;
     }
 
     @Override
@@ -62,12 +60,12 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     }
 
     @Override
-    public Page<PendingPaymentResponse> findPaymentHistory(String search, int page, int size) {
+    public PageResponse<PendingPaymentResponse> findPaymentHistory(String search, int page, int size) {
         return findPaymentsWithFilters(null, null, search, page, size, false);
     }
 
     @Override
-    public Page<PendingPaymentResponse> findCustomerPaymentHistory(UUID customerId, UUID invoiceId, int page, int size) {
+    public PageResponse<PendingPaymentResponse> findCustomerPaymentHistory(UUID customerId, UUID invoiceId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
         String whereClauseCond = "p.customer_id = :customerId";
@@ -78,7 +76,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         String countSql = "SELECT COUNT(DISTINCT p.id)\n" +
             "            FROM payments p\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
+            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
             "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
             "            WHERE " + whereClauseCond;
         Query countQ = entityManager.createNativeQuery(countSql);
@@ -94,7 +92,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
+            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
             "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
             "            WHERE " + whereClauseCond + "\n" +
             "            ORDER BY p.created_at DESC";
@@ -110,11 +108,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         List<Object[]> rows = dataQ.getResultList();
         List<PendingPaymentResponse> content = mapPendingPaymentRows(rows);
 
-        return new PageImpl<>(content, pageable, total);
+        return toPageResponse(new PageImpl<>(content, pageable, total));
     }
 
     @Override
-    public Page<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort) {
+    public PageResponse<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort) {
         PageRequest pageable = PageRequest.of(page, size);
 
         String sql = buildCustomersWithDebtQuery(search, sort);
@@ -158,7 +156,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 })
                 .toList();
 
-        return new PageImpl<>(content, pageable, total);
+        return toPageResponse(new PageImpl<>(content, pageable, total));
     }
 
     private String buildCustomersWithDebtQuery(String search, String sort) {
@@ -237,7 +235,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
 
     @Override
     public CustomerDebtSummaryResponse findCustomerDebt(UUID customerId) {
-        CustomerEntity customer = entityManager.find(CustomerEntity.class, customerId);
+        var customer = customerProfiles.findById(customerId);
 
         Query debtQuery = entityManager.createNativeQuery("""
             SELECT COALESCE(SUM(i.subtotal - COALESCE(i.returned_total, 0) - COALESCE(pa.total_paid, 0)
@@ -268,8 +266,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         BigDecimal totalDebt = (BigDecimal) debtQuery.getSingleResult();
         if (totalDebt == null) totalDebt = BigDecimal.ZERO;
 
-        BigDecimal availableDebt = customer != null
-                ? customer.getCreditLimit().subtract(totalDebt).max(BigDecimal.ZERO)
+        BigDecimal creditLimit = customer.map(ReceivablesCustomerProfileGateway.CustomerProfile::creditLimit)
+                .orElse(BigDecimal.ZERO);
+        BigDecimal availableDebt = customer.isPresent()
+                ? creditLimit.subtract(totalDebt).max(BigDecimal.ZERO)
                 : BigDecimal.ZERO;
 
         Query invoicesQuery = entityManager.createNativeQuery("""
@@ -338,23 +338,15 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 ))
                 .toList();
 
-        String phone = customer != null && !customer.getPhones().isEmpty()
-                ? customer.getPhones().get(0).getPhone()
-                : null;
-        String email = customer != null && !customer.getEmails().isEmpty()
-                ? customer.getEmails().get(0).getEmail()
-                : null;
-
-        BigDecimal creditLimit = customer != null ? customer.getCreditLimit() : BigDecimal.ZERO;
-
-        BigDecimal customerBalance = customerBalanceRepository.findByCustomerId(customerId)
-                .map(CustomerBalance::getTotalBalance)
+        String phone = customer.flatMap(profile -> profile.phones().stream().findFirst()).orElse(null);
+        String email = customer.flatMap(profile -> profile.emails().stream().findFirst()).orElse(null);
+        BigDecimal customerBalance = customer.map(ReceivablesCustomerProfileGateway.CustomerProfile::currentBalance)
                 .orElse(BigDecimal.ZERO);
 
         return new CustomerDebtSummaryResponse(
                 customerId,
-                customer != null ? customer.getLegalName() : null,
-                customer != null ? customer.getRif() : null,
+                customer.map(ReceivablesCustomerProfileGateway.CustomerProfile::legalName).orElse(null),
+                customer.map(ReceivablesCustomerProfileGateway.CustomerProfile::rif).orElse(null),
                 phone,
                 email,
                 totalDebt,
@@ -369,7 +361,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     }
 
     @Override
-    public Page<CustomerInvoiceDebtResponse> findCustomerInvoices(UUID customerId, String search, String status, int page, int size) {
+    public PageResponse<CustomerInvoiceDebtResponse> findCustomerInvoices(UUID customerId, String search, String status, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
         String notesJoinClause = """
@@ -489,10 +481,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
                 ))
                 .toList();
 
-        return new PageImpl<>(content, pageable, total);
+        return toPageResponse(new PageImpl<>(content, pageable, total));
     }
 
-    private Page<PendingPaymentResponse> findPaymentsWithFilters(UUID merchantId, String status,
+    private PageResponse<PendingPaymentResponse> findPaymentsWithFilters(UUID merchantId, String status,
                                                                    String search, int page, int size,
                                                                    boolean isMerchant) {
         PageRequest pageable = PageRequest.of(page, size);
@@ -513,7 +505,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
+            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
             "            WHERE " + conditionsStr;
         Query countQ = entityManager.createNativeQuery(countSql);
         applyParams(countQ, merchantId, status, search, isMerchant);
@@ -526,7 +518,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
             "            FROM payments p\n" +
             "            JOIN customers c ON c.id = p.customer_id\n" +
             "            LEFT JOIN payment_allocations pa ON pa.payment_id = p.id\n" +
-            "            LEFT JOIN invoices i ON i.id = COALESCE(pa.invoice_id, p.target_invoice_id)\n" +
+            "            LEFT JOIN invoices i ON i.id = pa.invoice_id\n" +
             "            LEFT JOIN payment_methods pm ON pm.id = p.payment_method_id\n" +
             "            WHERE " + conditionsStr + "\n" +
             "            ORDER BY p.created_at DESC";
@@ -539,7 +531,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         List<Object[]> rows = dataQ.getResultList();
         List<PendingPaymentResponse> content = mapPendingPaymentRows(rows);
 
-        return new PageImpl<>(content, pageable, total);
+        return toPageResponse(new PageImpl<>(content, pageable, total));
     }
 
     private void applyParams(Query query, UUID merchantId, String status, String search, boolean isMerchant) {
@@ -578,7 +570,7 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
     }
 
     @Override
-    public List<Object[]> findAccountsReceivableForReport(UUID customerId, boolean overdueOnly) {
+    public List<AccountsReceivableRow> findAccountsReceivableForReport(UUID customerId, boolean overdueOnly) {
         String sql = """
             SELECT c.id, c.legal_name, c.rif, c.credit_limit,
                    COALESCE(sub.pending_balance, 0) AS pending_balance,
@@ -647,7 +639,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
 
         @SuppressWarnings("unchecked")
         List<Object[]> rows = query.getResultList();
-        return rows;
+        return rows.stream().map(row -> new AccountsReceivableRow(toUuid(row[0]), (String) row[1],
+                (String) row[2], reportAmount(row[3]), reportAmount(row[4]), reportAmount(row[5]),
+                reportAmount(row[6]), reportAmount(row[7]), reportAmount(row[8]), reportAmount(row[9]),
+                reportAmount(row[10]))).toList();
     }
 
     private UUID toUuid(Object value) {
@@ -666,5 +661,12 @@ public class ReceivablesRepositoryAdapter implements ReceivablesRepository {
         if (value instanceof Timestamp timestamp) return timestamp.toLocalDateTime().toLocalDate();
         if (value instanceof java.sql.Date date) return date.toLocalDate();
         throw new IllegalArgumentException("Cannot convert " + value.getClass() + " to LocalDate");
+    }
+    private static <T> PageResponse<T> toPageResponse(Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
+                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
+    }
+    private static BigDecimal reportAmount(Object value) {
+        return value == null ? BigDecimal.ZERO : (BigDecimal) value;
     }
 }

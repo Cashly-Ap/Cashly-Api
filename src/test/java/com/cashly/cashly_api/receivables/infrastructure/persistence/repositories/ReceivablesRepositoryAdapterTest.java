@@ -1,10 +1,6 @@
 package com.cashly.cashly_api.receivables.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.customers.domain.entities.CustomerBalance;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
-import com.cashly.cashly_api.customers.infrastructure.persistence.entities.CustomerEmailEntity;
-import com.cashly.cashly_api.customers.infrastructure.persistence.entities.CustomerEntity;
-import com.cashly.cashly_api.customers.infrastructure.persistence.entities.CustomerPhoneEntity;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesCustomerProfileGateway;
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerDebtListResponse;
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerDebtSummaryResponse;
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerInvoiceDebtResponse;
@@ -19,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -50,19 +46,17 @@ class ReceivablesRepositoryAdapterTest {
     private ReceivablesJpaRepository receivablesJpaRepository;
 
     @Mock
-    private CustomerBalanceRepository customerBalanceRepository;
+    private ReceivablesCustomerProfileGateway customerProfiles;
 
     @Mock
     private Query nativeQuery;
 
     @Mock
-    private CustomerEntity customerEntity;
-
     private ReceivablesRepositoryAdapter adapter;
 
     @BeforeEach
     void setUp() {
-        adapter = new ReceivablesRepositoryAdapter(entityManager, receivablesJpaRepository, customerBalanceRepository);
+        adapter = new ReceivablesRepositoryAdapter(entityManager, receivablesJpaRepository, customerProfiles);
     }
 
     @Nested
@@ -128,17 +122,9 @@ class ReceivablesRepositoryAdapterTest {
         @Test
         @DisplayName("should return full debt summary for existing customer with invoices and balance")
         void shouldReturnFullDebtSummaryForExistingCustomer() {
-            CustomerPhoneEntity phone = new CustomerPhoneEntity();
-            phone.setPhone("+584141234567");
-            CustomerEmailEntity email = new CustomerEmailEntity();
-            email.setEmail("test@example.com");
-
-            when(customerEntity.getLegalName()).thenReturn("Test Customer S.A.");
-            when(customerEntity.getRif()).thenReturn("J-12345678-9");
-            when(customerEntity.getPhones()).thenReturn(List.of(phone));
-            when(customerEntity.getEmails()).thenReturn(List.of(email));
-            when(customerEntity.getCreditLimit()).thenReturn(new BigDecimal("100000.00"));
-            when(entityManager.find(CustomerEntity.class, customerId)).thenReturn(customerEntity);
+            when(customerProfiles.findById(customerId)).thenReturn(Optional.of(new ReceivablesCustomerProfileGateway.CustomerProfile(
+                    "Test Customer S.A.", "J-12345678-9", new BigDecimal("100000.00"),
+                    new BigDecimal("5000.00"), List.of("+584141234567"), List.of("test@example.com"))));
 
             doReturn(new BigDecimal("30000.00")).when(nativeQuery).getSingleResult();
 
@@ -152,13 +138,6 @@ class ReceivablesRepositoryAdapterTest {
                 null, null
             };
             doReturn(Collections.singletonList(invoiceRow)).when(nativeQuery).getResultList();
-
-            CustomerBalance balance = CustomerBalance.reconstitute(
-                    UUID.randomUUID(), customerId, BigDecimal.valueOf(5000),
-                    LocalDateTime.now(), LocalDateTime.now()
-            );
-            when(customerBalanceRepository.findByCustomerId(customerId))
-                    .thenReturn(Optional.of(balance));
 
             CustomerDebtSummaryResponse result = adapter.findCustomerDebt(customerId);
 
@@ -188,13 +167,10 @@ class ReceivablesRepositoryAdapterTest {
         @Test
         @DisplayName("should handle customer not found gracefully")
         void shouldHandleCustomerNotFound() {
-            when(entityManager.find(CustomerEntity.class, customerId)).thenReturn(null);
+            when(customerProfiles.findById(customerId)).thenReturn(Optional.empty());
 
             doReturn(new BigDecimal("30000.00")).when(nativeQuery).getSingleResult();
             doReturn(Collections.emptyList()).when(nativeQuery).getResultList();
-
-            when(customerBalanceRepository.findByCustomerId(customerId))
-                    .thenReturn(Optional.empty());
 
             CustomerDebtSummaryResponse result = adapter.findCustomerDebt(customerId);
 
@@ -213,17 +189,9 @@ class ReceivablesRepositoryAdapterTest {
         @Test
         @DisplayName("should default to ZERO when totalDebt query returns null")
         void shouldDefaultToZeroWhenTotalDebtQueryReturnsNull() {
-            CustomerPhoneEntity phone = new CustomerPhoneEntity();
-            phone.setPhone("+584141234567");
-            CustomerEmailEntity email = new CustomerEmailEntity();
-            email.setEmail("test@example.com");
-
-            when(customerEntity.getLegalName()).thenReturn("Test Customer");
-            when(customerEntity.getRif()).thenReturn("J-00000000-0");
-            when(customerEntity.getPhones()).thenReturn(List.of(phone));
-            when(customerEntity.getEmails()).thenReturn(List.of(email));
-            when(customerEntity.getCreditLimit()).thenReturn(new BigDecimal("100000.00"));
-            when(entityManager.find(CustomerEntity.class, customerId)).thenReturn(customerEntity);
+            when(customerProfiles.findById(customerId)).thenReturn(Optional.of(new ReceivablesCustomerProfileGateway.CustomerProfile(
+                    "Test Customer", "J-00000000-0", new BigDecimal("100000.00"), BigDecimal.ZERO,
+                    List.of("+584141234567"), List.of("test@example.com"))));
 
             doReturn(null).when(nativeQuery).getSingleResult();
 
@@ -238,9 +206,6 @@ class ReceivablesRepositoryAdapterTest {
             };
             doReturn(Collections.singletonList(invoiceRow)).when(nativeQuery).getResultList();
 
-            when(customerBalanceRepository.findByCustomerId(customerId))
-                    .thenReturn(Optional.empty());
-
             CustomerDebtSummaryResponse result = adapter.findCustomerDebt(customerId);
 
             assertThat(result.totalDebt()).isEqualByComparingTo(BigDecimal.ZERO);
@@ -250,12 +215,9 @@ class ReceivablesRepositoryAdapterTest {
         @Test
         @DisplayName("should handle null invoice date and empty collections")
         void shouldHandleNullInvoiceDateAndEmptyCollections() {
-            when(customerEntity.getLegalName()).thenReturn("Edge Case Customer");
-            when(customerEntity.getRif()).thenReturn("J-00000000-0");
-            when(customerEntity.getPhones()).thenReturn(Collections.emptyList());
-            when(customerEntity.getEmails()).thenReturn(Collections.emptyList());
-            when(customerEntity.getCreditLimit()).thenReturn(BigDecimal.ZERO);
-            when(entityManager.find(CustomerEntity.class, customerId)).thenReturn(customerEntity);
+            when(customerProfiles.findById(customerId)).thenReturn(Optional.of(new ReceivablesCustomerProfileGateway.CustomerProfile(
+                    "Edge Case Customer", "J-00000000-0", BigDecimal.ZERO, BigDecimal.ZERO,
+                    Collections.emptyList(), Collections.emptyList())));
 
             doReturn(BigDecimal.ZERO).when(nativeQuery).getSingleResult();
 
@@ -268,9 +230,6 @@ class ReceivablesRepositoryAdapterTest {
                 null, null
             };
             doReturn(Collections.singletonList(invoiceRow)).when(nativeQuery).getResultList();
-
-            when(customerBalanceRepository.findByCustomerId(customerId))
-                    .thenReturn(Optional.empty());
 
             CustomerDebtSummaryResponse result = adapter.findCustomerDebt(customerId);
 
@@ -314,12 +273,12 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(42L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, null);
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, null);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getTotalElements()).isEqualTo(42L);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalElements()).isEqualTo(42L);
 
-            CustomerDebtListResponse dto = result.getContent().get(0);
+            CustomerDebtListResponse dto = result.content().get(0);
             assertThat(dto.customerId()).isEqualTo(custId);
             assertThat(dto.customerName()).isEqualTo("Customer Uno");
             assertThat(dto.customerRif()).isEqualTo("J-11111111-1");
@@ -338,10 +297,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.emptyList()).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(0L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, null);
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, null);
 
-            assertThat(result.getContent()).isEmpty();
-            assertThat(result.getTotalElements()).isZero();
+            assertThat(result.content()).isEmpty();
+            assertThat(result.totalElements()).isZero();
         }
 
         @Test
@@ -356,11 +315,11 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countCustomersWithDebtBySearch("Customer")).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt("Customer", 0, 10, null);
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt("Customer", 0, 10, null);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getTotalElements()).isEqualTo(1L);
-            assertThat(result.getContent().get(0).customerName()).isEqualTo("Customer Dos");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalElements()).isEqualTo(1L);
+            assertThat(result.content().get(0).customerName()).isEqualTo("Customer Dos");
         }
 
         @Test
@@ -375,10 +334,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, null);
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, null);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).oldestInvoiceDate()).isNull();
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).oldestInvoiceDate()).isNull();
         }
 
         @Test
@@ -394,10 +353,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "customerName,asc");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "customerName,asc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).customerName()).isEqualTo("Customer Alpha");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).customerName()).isEqualTo("Customer Alpha");
         }
 
         @Test
@@ -413,10 +372,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "totalDebt,desc");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "totalDebt,desc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).totalDebt()).isEqualByComparingTo(new BigDecimal("50000"));
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).totalDebt()).isEqualByComparingTo(new BigDecimal("50000"));
         }
 
         @Test
@@ -432,10 +391,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "creditLimit,asc");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "creditLimit,asc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).creditLimit()).isEqualByComparingTo(new BigDecimal("60000"));
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).creditLimit()).isEqualByComparingTo(new BigDecimal("60000"));
         }
 
         @Test
@@ -451,10 +410,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "availableCredit,asc");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "availableCredit,asc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).availableCredit()).isEqualByComparingTo(new BigDecimal("80000"));
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).availableCredit()).isEqualByComparingTo(new BigDecimal("80000"));
         }
 
         @Test
@@ -470,10 +429,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "pendingInvoicesCount,desc");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "pendingInvoicesCount,desc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).pendingInvoicesCount()).isEqualTo(7L);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).pendingInvoicesCount()).isEqualTo(7L);
         }
 
         @Test
@@ -494,10 +453,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "customerName,asc");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "customerName,asc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).customerId()).isEqualTo(custId);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).customerId()).isEqualTo(custId);
         }
 
         @Test
@@ -513,10 +472,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "customerName");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "customerName");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).customerId()).isEqualTo(custId);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).customerId()).isEqualTo(custId);
         }
 
         @Test
@@ -532,10 +491,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "");
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(null, 0, 10, "");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).customerId()).isEqualTo(custId);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).customerId()).isEqualTo(custId);
         }
 
         @Test
@@ -551,14 +510,14 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
             when(receivablesJpaRepository.countAllCustomers()).thenReturn(1L);
 
-            Page<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(
+            PageResponse<CustomerDebtListResponse> result = adapter.findCustomersWithDebt(
                     null, 0, 10, "nonexistentField,asc");
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).customerId()).isEqualTo(custId);
-            assertThat(result.getContent().get(0).creditLimit()).isEqualByComparingTo(BigDecimal.ZERO);
-            assertThat(result.getContent().get(0).availableCredit()).isEqualByComparingTo(BigDecimal.ZERO);
-            assertThat(result.getContent().get(0).customerBalance()).isEqualByComparingTo(BigDecimal.ZERO);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).customerId()).isEqualTo(custId);
+            assertThat(result.content().get(0).creditLimit()).isEqualByComparingTo(BigDecimal.ZERO);
+            assertThat(result.content().get(0).availableCredit()).isEqualByComparingTo(BigDecimal.ZERO);
+            assertThat(result.content().get(0).customerBalance()).isEqualByComparingTo(BigDecimal.ZERO);
         }
 
         @Test
@@ -614,14 +573,14 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, "PENDING", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getTotalElements()).isEqualTo(1L);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalElements()).isEqualTo(1L);
 
-            CustomerInvoiceDebtResponse dto = result.getContent().get(0);
+            CustomerInvoiceDebtResponse dto = result.content().get(0);
             assertThat(dto.invoiceId()).isEqualTo(invId);
             assertThat(dto.invoiceNumber()).isEqualTo("FAC-100");
             assertThat(dto.status()).isEqualTo("PENDING_PAYMENT");
@@ -646,12 +605,12 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, "RETURNED", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).status()).isEqualTo("FULLY_RETURNED");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).status()).isEqualTo("FULLY_RETURNED");
         }
 
         @Test
@@ -671,14 +630,14 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, "300", "PAID", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceNumber()).isEqualTo("FAC-300");
-            assertThat(result.getContent().get(0).status()).isEqualTo("PAID");
-            assertThat(result.getContent().get(0).balance()).isEqualByComparingTo(BigDecimal.ZERO);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceNumber()).isEqualTo("FAC-300");
+            assertThat(result.content().get(0).status()).isEqualTo("PAID");
+            assertThat(result.content().get(0).balance()).isEqualByComparingTo(BigDecimal.ZERO);
         }
 
         @Test
@@ -698,13 +657,13 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, "CANCELLED", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceNumber()).isEqualTo("FAC-400");
-            assertThat(result.getContent().get(0).status()).isEqualTo("CANCELLED");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceNumber()).isEqualTo("FAC-400");
+            assertThat(result.content().get(0).status()).isEqualTo("CANCELLED");
         }
 
         @Test
@@ -724,12 +683,12 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, "PARTIAL_RETURN", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceNumber()).isEqualTo("FAC-500");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceNumber()).isEqualTo("FAC-500");
         }
 
         @Test
@@ -749,14 +708,14 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, "PARTIAL", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceNumber()).isEqualTo("FAC-600");
-            assertThat(result.getContent().get(0).status()).isEqualTo("PARTIALLY_PAID");
-            assertThat(result.getContent().get(0).balance()).isEqualByComparingTo(new BigDecimal("7000"));
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceNumber()).isEqualTo("FAC-600");
+            assertThat(result.content().get(0).status()).isEqualTo("PARTIALLY_PAID");
+            assertThat(result.content().get(0).balance()).isEqualByComparingTo(new BigDecimal("7000"));
         }
 
         @Test
@@ -776,13 +735,13 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, "UNKNOWN", 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceNumber()).isEqualTo("FAC-700");
-            assertThat(result.getContent().get(0).balance()).isEqualByComparingTo(new BigDecimal("1500"));
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceNumber()).isEqualTo("FAC-700");
+            assertThat(result.content().get(0).balance()).isEqualByComparingTo(new BigDecimal("1500"));
         }
 
         @Test
@@ -802,13 +761,13 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, "800", null, 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceNumber()).isEqualTo("FAC-800");
-            assertThat(result.getContent().get(0).balance()).isEqualByComparingTo(new BigDecimal("6000"));
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceNumber()).isEqualTo("FAC-800");
+            assertThat(result.content().get(0).balance()).isEqualByComparingTo(new BigDecimal("6000"));
         }
 
         @Test
@@ -826,12 +785,12 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
+            PageResponse<CustomerInvoiceDebtResponse> result = adapter.findCustomerInvoices(
                     customerId, null, null, 0, 10
             );
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).invoiceDate()).isNull();
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).invoiceDate()).isNull();
         }
     }
 
@@ -867,12 +826,12 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<PendingPaymentResponse> result = adapter.findCustomerPaymentHistory(customerId, null, 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findCustomerPaymentHistory(customerId, null, 0, 10);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getTotalElements()).isEqualTo(1L);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalElements()).isEqualTo(1L);
 
-            PendingPaymentResponse dto = result.getContent().get(0);
+            PendingPaymentResponse dto = result.content().get(0);
             assertThat(dto.id()).isEqualTo(paymentId);
             assertThat(dto.paymentNumber()).isEqualTo("PAG-001");
             assertThat(dto.customerId()).isEqualTo(customerId);
@@ -904,11 +863,11 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
             UUID invoiceId = UUID.randomUUID();
-            Page<PendingPaymentResponse> result = adapter.findCustomerPaymentHistory(customerId, invoiceId, 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findCustomerPaymentHistory(customerId, invoiceId, 0, 10);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).paymentNumber()).isEqualTo("PAG-002");
-            assertThat(result.getContent().get(0).status()).isEqualTo("PENDING_APPROVAL");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).paymentNumber()).isEqualTo("PAG-002");
+            assertThat(result.content().get(0).status()).isEqualTo("PENDING_APPROVAL");
         }
 
         @Test
@@ -917,10 +876,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(0L).when(nativeQuery).getSingleResult();
             doReturn(Collections.emptyList()).when(nativeQuery).getResultList();
 
-            Page<PendingPaymentResponse> result = adapter.findCustomerPaymentHistory(customerId, null, 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findCustomerPaymentHistory(customerId, null, 0, 10);
 
-            assertThat(result.getContent()).isEmpty();
-            assertThat(result.getTotalElements()).isZero();
+            assertThat(result.content()).isEmpty();
+            assertThat(result.totalElements()).isZero();
         }
     }
 
@@ -946,7 +905,7 @@ class ReceivablesRepositoryAdapterTest {
             UUID custId = UUID.randomUUID();
             Object[] row = new Object[]{
                 paymentId, "PAG-010", custId, "Customer Tres",
-                BigDecimal.valueOf(1200), "Zelle", "APPLIED", "PORTAL",
+                BigDecimal.valueOf(1200), "Zelle", "APPLIED", "PAYMENT_METHOD",
                 Date.valueOf(LocalDate.now().minusDays(5)),
                 Timestamp.valueOf(LocalDateTime.now().minusDays(5)),
                 "FAC-300"
@@ -955,12 +914,12 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<PendingPaymentResponse> result = adapter.findPaymentHistory("Customer Tres", 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findPaymentHistory("Customer Tres", 0, 10);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getTotalElements()).isEqualTo(1L);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalElements()).isEqualTo(1L);
 
-            PendingPaymentResponse dto = result.getContent().get(0);
+            PendingPaymentResponse dto = result.content().get(0);
             assertThat(dto.id()).isEqualTo(paymentId);
             assertThat(dto.paymentNumber()).isEqualTo("PAG-010");
             assertThat(dto.customerId()).isEqualTo(custId);
@@ -968,7 +927,7 @@ class ReceivablesRepositoryAdapterTest {
             assertThat(dto.amount()).isEqualByComparingTo(new BigDecimal("1200"));
             assertThat(dto.paymentMethodName()).isEqualTo("Zelle");
             assertThat(dto.status()).isEqualTo("APPLIED");
-            assertThat(dto.source()).isEqualTo("PORTAL");
+            assertThat(dto.source()).isEqualTo("PAYMENT_METHOD");
             assertThat(dto.paymentDate()).isEqualTo(LocalDate.now().minusDays(5));
             assertThat(dto.createdAt())
                     .isCloseTo(LocalDateTime.now().minusDays(5),
@@ -982,10 +941,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(0L).when(nativeQuery).getSingleResult();
             doReturn(Collections.emptyList()).when(nativeQuery).getResultList();
 
-            Page<PendingPaymentResponse> result = adapter.findPaymentHistory("NONEXISTENT", 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findPaymentHistory("NONEXISTENT", 0, 10);
 
-            assertThat(result.getContent()).isEmpty();
-            assertThat(result.getTotalElements()).isZero();
+            assertThat(result.content()).isEmpty();
+            assertThat(result.totalElements()).isZero();
         }
 
         @Test
@@ -1003,10 +962,10 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<PendingPaymentResponse> result = adapter.findPaymentHistory(null, 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findPaymentHistory(null, 0, 10);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).id()).isEqualTo(paymentId);
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).id()).isEqualTo(paymentId);
         }
 
         @Test
@@ -1025,11 +984,11 @@ class ReceivablesRepositoryAdapterTest {
             doReturn(1L).when(nativeQuery).getSingleResult();
             doReturn(Collections.singletonList(row)).when(nativeQuery).getResultList();
 
-            Page<PendingPaymentResponse> result = adapter.findPaymentHistory("Customer Null Date", 0, 10);
+            PageResponse<PendingPaymentResponse> result = adapter.findPaymentHistory("Customer Null Date", 0, 10);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).paymentDate()).isNull();
-            assertThat(result.getContent().get(0).createdAt()).isNull();
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).paymentDate()).isNull();
+            assertThat(result.content().get(0).createdAt()).isNull();
         }
 
         @Test
@@ -1054,12 +1013,39 @@ class ReceivablesRepositoryAdapterTest {
             method.setAccessible(true);
 
             @SuppressWarnings("unchecked")
-            Page<PendingPaymentResponse> result = (Page<PendingPaymentResponse>) method.invoke(
+            PageResponse<PendingPaymentResponse> result = (PageResponse<PendingPaymentResponse>) method.invoke(
                     adapter, merchantId, "APPLIED", null, 0, 10, true);
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).id()).isEqualTo(paymentId);
-            assertThat(result.getContent().get(0).paymentNumber()).isEqualTo("PAG-MERCHANT");
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.content().get(0).id()).isEqualTo(paymentId);
+            assertThat(result.content().get(0).paymentNumber()).isEqualTo("PAG-MERCHANT");
         }
+    }
+    @Test
+    void should_map_report_rows_to_typed_contract_and_normalize_null_amounts() {
+        UUID customerId = UUID.randomUUID();
+        when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
+        when(nativeQuery.getResultList()).thenReturn(List.<Object[]>of(new Object[]{customerId, "Customer", "J-123",
+                BigDecimal.TEN, null, BigDecimal.ONE, null, null, null, null, null}));
+
+        var rows = adapter.findAccountsReceivableForReport(customerId, false);
+
+        assertThat(rows).containsExactly(new com.cashly.cashly_api.receivables.application.contracts.AccountsReceivableRow(
+                customerId, "Customer", "J-123", BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ONE,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO));
+        org.mockito.Mockito.verify(nativeQuery).setParameter("customerId", customerId);
+    }
+
+    @Test
+    void should_map_binary_customer_ids_at_persistence_boundary() {
+        UUID customerId = UUID.randomUUID();
+        byte[] bytes = ByteBuffer.allocate(16).putLong(customerId.getMostSignificantBits())
+                .putLong(customerId.getLeastSignificantBits()).array();
+        when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
+        when(nativeQuery.getResultList()).thenReturn(List.<Object[]>of(new Object[]{bytes, "Customer", "J-123",
+                BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO}));
+
+        assertThat(adapter.findAccountsReceivableForReport(null, false).getFirst().customerId()).isEqualTo(customerId);
     }
 }

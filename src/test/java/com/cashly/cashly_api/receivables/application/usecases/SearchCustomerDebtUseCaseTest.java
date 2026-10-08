@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerDebtListResponse;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageImpl;
 
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 class SearchCustomerDebtUseCaseTest {
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private ReceivablesQueryGateway receivablesRepository;
 
     private SearchCustomerDebtUseCase useCase;
 
@@ -47,7 +47,7 @@ class SearchCustomerDebtUseCaseTest {
                 LocalDate.now().minusMonths(2), new BigDecimal("10000.00"),
                 new BigDecimal("5000.00"), BigDecimal.ZERO
         );
-        Page<CustomerDebtListResponse> customerPage = new PageImpl<>(List.of(customer));
+        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(new PageImpl<>(List.of(customer)));
 
         when(receivablesRepository.findCustomersWithDebt(search, page, size, sort))
                 .thenReturn(customerPage);
@@ -64,7 +64,7 @@ class SearchCustomerDebtUseCaseTest {
 
     @Test
     void should_ReturnEmptyResults_When_NoCustomersMatch() {
-        Page<CustomerDebtListResponse> emptyPage = Page.empty();
+        PageResponse<CustomerDebtListResponse> emptyPage = toPageResponse(org.springframework.data.domain.Page.empty());
 
         when(receivablesRepository.findCustomersWithDebt("nonexistent", 0, 20, null))
                 .thenReturn(emptyPage);
@@ -88,7 +88,7 @@ class SearchCustomerDebtUseCaseTest {
                 BigDecimal.valueOf(20), BigDecimal.ZERO, 2L,
                 LocalDate.now().minusWeeks(3), BigDecimal.valueOf(200), BigDecimal.valueOf(180), BigDecimal.ZERO
         );
-        Page<CustomerDebtListResponse> customerPage = new PageImpl<>(List.of(customer1, customer2));
+        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(new PageImpl<>(List.of(customer1, customer2)));
 
         when(receivablesRepository.findCustomersWithDebt(null, 0, 20, null))
                 .thenReturn(customerPage);
@@ -109,9 +109,9 @@ class SearchCustomerDebtUseCaseTest {
                 LocalDate.now().minusMonths(2), new BigDecimal("10000.00"),
                 new BigDecimal("5000.00"), BigDecimal.ZERO
         );
-        Page<CustomerDebtListResponse> customerPage = new PageImpl<>(
+        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(new PageImpl<>(
                 List.of(customer), org.springframework.data.domain.PageRequest.of(1, 10), 25
-        );
+        ));
 
         when(receivablesRepository.findCustomersWithDebt(null, 1, 10, null))
                 .thenReturn(customerPage);
@@ -125,5 +125,9 @@ class SearchCustomerDebtUseCaseTest {
         assertEquals(1, result.number());
         assertFalse(result.first());
         assertFalse(result.last());
+    }
+    private static <T> PageResponse<T> toPageResponse(org.springframework.data.domain.Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
+                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
     }
 }

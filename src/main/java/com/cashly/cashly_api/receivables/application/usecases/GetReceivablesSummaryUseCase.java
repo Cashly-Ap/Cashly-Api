@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.ReceivablesSummaryResponse;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 public class GetReceivablesSummaryUseCase {
 
-    private final ReceivablesRepository receivablesRepository;
+    private final ReceivablesQueryGateway receivablesRepository;
 
-    public GetReceivablesSummaryUseCase(ReceivablesRepository receivablesRepository) {
+    public GetReceivablesSummaryUseCase(ReceivablesQueryGateway receivablesRepository) {
         this.receivablesRepository = receivablesRepository;
     }
 

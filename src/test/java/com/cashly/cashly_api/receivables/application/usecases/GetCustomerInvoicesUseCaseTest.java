@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerInvoiceDebtResponse;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 class GetCustomerInvoicesUseCaseTest {
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private ReceivablesQueryGateway receivablesRepository;
 
     private GetCustomerInvoicesUseCase useCase;
 
@@ -45,9 +45,9 @@ class GetCustomerInvoicesUseCaseTest {
                 new BigDecimal("1000.00"), new BigDecimal("500.00"),
                 null, null
         );
-        Page<CustomerInvoiceDebtResponse> invoicePage = new PageImpl<>(
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(new PageImpl<>(
                 List.of(invoice), PageRequest.of(0, 20), 1
-        );
+        ));
 
         when(receivablesRepository.findCustomerInvoices(customerId, null, null, 0, 20))
                 .thenReturn(invoicePage);
@@ -67,7 +67,7 @@ class GetCustomerInvoicesUseCaseTest {
         UUID customerId = UUID.randomUUID();
         String status = "PENDING";
 
-        Page<CustomerInvoiceDebtResponse> invoicePage = Page.empty();
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(org.springframework.data.domain.Page.empty());
 
         when(receivablesRepository.findCustomerInvoices(customerId, null, status, 0, 20))
                 .thenReturn(invoicePage);
@@ -83,7 +83,7 @@ class GetCustomerInvoicesUseCaseTest {
         UUID customerId = UUID.randomUUID();
         String search = "INV-2026";
 
-        Page<CustomerInvoiceDebtResponse> invoicePage = Page.empty();
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(org.springframework.data.domain.Page.empty());
 
         when(receivablesRepository.findCustomerInvoices(customerId, search, null, 0, 20))
                 .thenReturn(invoicePage);
@@ -103,9 +103,9 @@ class GetCustomerInvoicesUseCaseTest {
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.TEN, BigDecimal.TEN, null, null
         );
-        Page<CustomerInvoiceDebtResponse> invoicePage = new PageImpl<>(
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(new PageImpl<>(
                 List.of(invoice), PageRequest.of(1, 5), 12
-        );
+        ));
 
         when(receivablesRepository.findCustomerInvoices(customerId, null, "PARTIAL", 1, 5))
                 .thenReturn(invoicePage);
@@ -117,5 +117,9 @@ class GetCustomerInvoicesUseCaseTest {
         assertEquals(3, result.totalPages());
         assertEquals(1, result.number());
         assertFalse(result.first());
+    }
+    private static <T> PageResponse<T> toPageResponse(org.springframework.data.domain.Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
+                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
     }
 }

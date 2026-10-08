@@ -5,7 +5,7 @@ import com.cashly.cashly_api.receivables.application.usecases.GetCustomerInvoice
 import com.cashly.cashly_api.receivables.application.usecases.GetPaymentHistoryUseCase;
 import com.cashly.cashly_api.receivables.application.usecases.GetReceivablesSummaryUseCase;
 import com.cashly.cashly_api.receivables.application.usecases.SearchCustomerDebtUseCase;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ReceivablesConfigTest {
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private ReceivablesQueryGateway receivablesRepository;
 
     @Test
     void should_CreateGetReceivablesSummaryUseCase() {

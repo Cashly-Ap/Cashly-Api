@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.ReceivablesSummaryResponse;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 class GetReceivablesSummaryUseCaseTest {
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private ReceivablesQueryGateway receivablesRepository;
 
     private GetReceivablesSummaryUseCase useCase;
 
