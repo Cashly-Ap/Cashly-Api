@@ -102,8 +102,8 @@ services:
       - '${DB_PORT:-3306}:3306'
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db/init:/docker-entrypoint-initdb.d
       - ./db/seeds:/seeds
+      - ./db/seed.sql:/seed.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-verysecret}"]
       interval: 10s
