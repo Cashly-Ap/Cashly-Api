@@ -3,7 +3,7 @@ package com.cashly.cashly_api.debit_notes.application.usecases;
 import com.cashly.cashly_api.debit_notes.domain.entities.DebitNote;
 import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteId;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
+import com.cashly.cashly_api.debit_notes.application.contracts.DebitNoteInvoiceGateway;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ import java.util.UUID;
 public class DeleteDebitNoteUseCase {
 
     private final DebitNoteRepository debitNoteRepository;
-    private final InvoiceStatusService invoiceStatusService;
+    private final DebitNoteInvoiceGateway invoices;
 
     public DeleteDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
-                                  InvoiceStatusService invoiceStatusService) {
+                                  DebitNoteInvoiceGateway invoices) {
         this.debitNoteRepository = debitNoteRepository;
-        this.invoiceStatusService = invoiceStatusService;
+        this.invoices = invoices;
     }
 
     @Transactional
@@ -30,6 +30,6 @@ public class DeleteDebitNoteUseCase {
         UUID invoiceId = debitNote.getInvoiceId();
         debitNoteRepository.delete(id);
 
-        invoiceStatusService.recalculate(invoiceId);
+        invoices.recalculate(invoiceId);
     }
 }

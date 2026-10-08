@@ -1,16 +1,14 @@
 package com.cashly.cashly_api.debit_notes.application.usecases;
 
 import com.cashly.cashly_api.debit_notes.application.dto.response.DebitNoteResponse;
+import com.cashly.cashly_api.debit_notes.application.contracts.DebitNoteInvoiceGateway;
 import com.cashly.cashly_api.debit_notes.application.mappers.DebitNoteMapper;
 import com.cashly.cashly_api.debit_notes.domain.entities.DebitNote;
 import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -19,33 +17,31 @@ import org.springframework.stereotype.Service;
 public class GetDebitNotesUseCase {
 
     private final DebitNoteRepository debitNoteRepository;
-    private final InvoiceRepository invoiceRepository;
+    private final DebitNoteInvoiceGateway invoices;
 
     public GetDebitNotesUseCase(DebitNoteRepository debitNoteRepository,
-                                  InvoiceRepository invoiceRepository) {
+                                  DebitNoteInvoiceGateway invoices) {
         this.debitNoteRepository = debitNoteRepository;
-        this.invoiceRepository = invoiceRepository;
+        this.invoices = invoices;
     }
 
     public List<DebitNoteResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                               UUID customerId) {
         List<DebitNote> debitNotes = debitNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId);
 
-        List<InvoiceId> invoiceIds = debitNotes.stream()
+        Set<UUID> invoiceIds = debitNotes.stream()
                 .map(DebitNote::getInvoiceId)
                 .distinct()
-                .map(InvoiceId::of)
-                .toList();
+                .collect(Collectors.toSet());
 
-        Map<UUID, Invoice> invoices = invoiceRepository.findAllById(invoiceIds).stream()
-                .collect(Collectors.toMap(inv -> inv.getId().value(), inv -> inv));
+        var invoiceContexts = invoices.findAll(invoiceIds);
 
         return debitNotes.stream()
                 .map(dn -> {
-                    Invoice invoice = invoices.get(dn.getInvoiceId());
-                    String customerName = invoice != null ? invoice.getCustomerName() : null;
-                    String customerRif = invoice != null ? invoice.getCustomerRif() : null;
-                    String invoiceNumber = invoice != null ? invoice.getInvoiceNumber().value() : null;
+                    var invoice = invoiceContexts.get(dn.getInvoiceId());
+                    String customerName = invoice != null ? invoice.customerName() : null;
+                    String customerRif = invoice != null ? invoice.customerRif() : null;
+                    String invoiceNumber = invoice != null ? invoice.number() : null;
                     return DebitNoteMapper.toDebitNoteResponse(dn, customerName, customerRif, invoiceNumber);
                 })
                 .toList();

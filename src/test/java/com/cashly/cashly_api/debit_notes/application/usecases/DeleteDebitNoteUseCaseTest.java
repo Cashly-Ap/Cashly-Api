@@ -3,7 +3,7 @@ package com.cashly.cashly_api.debit_notes.application.usecases;
 import com.cashly.cashly_api.debit_notes.domain.entities.DebitNote;
 import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteId;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
+import com.cashly.cashly_api.debit_notes.application.contracts.DebitNoteInvoiceGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,14 +25,14 @@ class DeleteDebitNoteUseCaseTest {
     @Mock
     private DebitNoteRepository debitNoteRepository;
     @Mock
-    private InvoiceStatusService invoiceStatusService;
+    private DebitNoteInvoiceGateway invoices;
 
     private DeleteDebitNoteUseCase deleteDebitNoteUseCase;
 
     @BeforeEach
     void setUp() {
         deleteDebitNoteUseCase = new DeleteDebitNoteUseCase(
-                debitNoteRepository, invoiceStatusService
+                debitNoteRepository, invoices
         );
     }
 
@@ -52,7 +52,7 @@ class DeleteDebitNoteUseCaseTest {
             deleteDebitNoteUseCase.execute(noteId);
 
             verify(debitNoteRepository).delete(new DebitNoteId(noteId));
-            verify(invoiceStatusService).recalculate(invoiceId);
+            verify(invoices).recalculate(invoiceId);
         }
 
         @Test
