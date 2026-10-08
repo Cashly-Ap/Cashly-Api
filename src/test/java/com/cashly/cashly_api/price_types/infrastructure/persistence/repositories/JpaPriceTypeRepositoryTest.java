@@ -297,33 +297,6 @@ class JpaPriceTypeRepositoryTest {
     }
 
     @Nested
-    @DisplayName("IsInUseByProducts")
-    class IsInUseByProducts {
-
-        @Test
-        void should_ReturnTrue_When_PriceTypeIsInUse() {
-            UUID id = UUID.randomUUID();
-            when(springDataRepository.isInUseByProducts(id)).thenReturn(true);
-
-            boolean result = repository.isInUseByProducts(id);
-
-            assertTrue(result);
-            verify(springDataRepository).isInUseByProducts(id);
-        }
-
-        @Test
-        void should_ReturnFalse_When_PriceTypeIsNotInUse() {
-            UUID id = UUID.randomUUID();
-            when(springDataRepository.isInUseByProducts(id)).thenReturn(false);
-
-            boolean result = repository.isInUseByProducts(id);
-
-            assertFalse(result);
-            verify(springDataRepository).isInUseByProducts(id);
-        }
-    }
-
-    @Nested
     @DisplayName("Delete")
     class Delete {
 

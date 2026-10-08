@@ -2,6 +2,7 @@ package com.cashly.cashly_api.price_types.application.usecases;
 
 import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeInUseException;
 import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException;
+import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ class DeletePriceTypeUseCaseUnitTest {
     @Mock
     private PriceTypeRepository priceTypeRepository;
 
+    @Mock private PriceTypeUsageGateway usageGateway;
+
     @InjectMocks
     private DeletePriceTypeUseCase deletePriceTypeUseCase;
 
@@ -30,12 +33,12 @@ class DeletePriceTypeUseCaseUnitTest {
         UUID id = UUID.randomUUID();
 
         when(priceTypeRepository.existsById(id)).thenReturn(true);
-        when(priceTypeRepository.isInUseByProducts(id)).thenReturn(false);
+        when(usageGateway.isInUseByProducts(id)).thenReturn(false);
 
         assertDoesNotThrow(() -> deletePriceTypeUseCase.execute(id));
 
         verify(priceTypeRepository).existsById(id);
-        verify(priceTypeRepository).isInUseByProducts(id);
+        verify(usageGateway).isInUseByProducts(id);
         verify(priceTypeRepository).delete(id);
     }
 
@@ -52,7 +55,7 @@ class DeletePriceTypeUseCaseUnitTest {
 
         assertEquals("Price type not found with id: " + id, exception.getMessage());
         verify(priceTypeRepository).existsById(id);
-        verify(priceTypeRepository, never()).isInUseByProducts(any());
+        verify(usageGateway, never()).isInUseByProducts(any());
         verify(priceTypeRepository, never()).delete(any());
     }
 
@@ -61,7 +64,7 @@ class DeletePriceTypeUseCaseUnitTest {
         UUID id = UUID.randomUUID();
 
         when(priceTypeRepository.existsById(id)).thenReturn(true);
-        when(priceTypeRepository.isInUseByProducts(id)).thenReturn(true);
+        when(usageGateway.isInUseByProducts(id)).thenReturn(true);
 
         PriceTypeInUseException exception = assertThrows(
             PriceTypeInUseException.class,
@@ -70,7 +73,7 @@ class DeletePriceTypeUseCaseUnitTest {
 
         assertEquals("Price type is in use by products and cannot be deleted: " + id, exception.getMessage());
         verify(priceTypeRepository).existsById(id);
-        verify(priceTypeRepository).isInUseByProducts(id);
+        verify(usageGateway).isInUseByProducts(id);
         verify(priceTypeRepository, never()).delete(any());
     }
 }

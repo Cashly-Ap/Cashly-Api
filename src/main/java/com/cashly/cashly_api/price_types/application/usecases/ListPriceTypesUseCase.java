@@ -2,6 +2,7 @@ package com.cashly.cashly_api.price_types.application.usecases;
 
 import com.cashly.cashly_api.price_types.application.dto.response.PriceTypeResponse;
 import com.cashly.cashly_api.price_types.domain.entities.PriceType;
+import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 
@@ -12,9 +13,11 @@ import java.util.stream.Collectors;
 
 public class ListPriceTypesUseCase {
 
+    private final PriceTypeUsageGateway usageGateway;
     private final PriceTypeRepository priceTypeRepository;
 
-    public ListPriceTypesUseCase(PriceTypeRepository priceTypeRepository) {
+    public ListPriceTypesUseCase(PriceTypeUsageGateway usageGateway, PriceTypeRepository priceTypeRepository) {
+        this.usageGateway = usageGateway;
         this.priceTypeRepository = priceTypeRepository;
     }
 
@@ -24,7 +27,7 @@ public class ListPriceTypesUseCase {
         PageResponse<PriceType> priceTypePage = priceTypeRepository.findAllWithFilters(
             search, active, page, size, orderBy, orderDir);
 
-        Set<UUID> inUseIds = priceTypeRepository.findIdsInUseByProducts(
+        Set<UUID> inUseIds = usageGateway.findIdsInUseByProducts(
             priceTypePage.content().stream().map(PriceType::getId).collect(Collectors.toSet())
         );
 

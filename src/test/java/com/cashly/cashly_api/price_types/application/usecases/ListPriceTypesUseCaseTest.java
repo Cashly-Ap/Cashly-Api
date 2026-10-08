@@ -2,6 +2,7 @@ package com.cashly.cashly_api.price_types.application.usecases;
 
 import com.cashly.cashly_api.price_types.application.dto.response.PriceTypeResponse;
 import com.cashly.cashly_api.price_types.domain.entities.PriceType;
+import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,8 @@ class ListPriceTypesUseCaseTest {
     @Mock
     private PriceTypeRepository priceTypeRepository;
 
+    @Mock private PriceTypeUsageGateway usageGateway;
+
     @InjectMocks
     private ListPriceTypesUseCase useCase;
 
@@ -51,7 +54,7 @@ class ListPriceTypesUseCaseTest {
     void should_ReturnList_When_PriceTypesExist() {
         when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
             .thenReturn(pageOf(List.of(priceType1, priceType2)));
-        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
+        when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
         PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
@@ -67,7 +70,7 @@ class ListPriceTypesUseCaseTest {
     void should_ReturnEmptyList_When_NoPriceTypesFound() {
         when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
             .thenReturn(pageOf(List.of()));
-        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
+        when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
         PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
@@ -81,7 +84,7 @@ class ListPriceTypesUseCaseTest {
     void should_PassOrderByToRepository() {
         when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
             .thenReturn(pageOf(List.of()));
-        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
+        when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
         useCase.execute(null, null, 0, 10, "createdAt", "desc");
 
@@ -93,10 +96,22 @@ class ListPriceTypesUseCaseTest {
     void should_PassSearchAndActiveFiltersToRepository() {
         when(priceTypeRepository.findAllWithFilters(eq("Mayo"), eq(true), eq(1), eq(5), eq("name"), eq("asc")))
             .thenReturn(pageOf(List.of(priceType1)));
-        when(priceTypeRepository.findIdsInUseByProducts(any())).thenReturn(Set.of());
+        when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
         useCase.execute("Mayo", true, 1, 5, "name", "asc");
 
         verify(priceTypeRepository).findAllWithFilters(eq("Mayo"), eq(true), eq(1), eq(5), eq("name"), eq("asc"));
+    }
+    @Test
+    void shouldPreserveDeletabilityUsingOneUsageBatchForReturnedPage() {
+        Set<UUID> ids = Set.of(priceType1.getId(), priceType2.getId());
+        when(priceTypeRepository.findAllWithFilters(null, null, 0, 10, "name", "asc"))
+                .thenReturn(pageOf(List.of(priceType1, priceType2)));
+        when(usageGateway.findIdsInUseByProducts(ids)).thenReturn(Set.of(priceType1.getId()));
+        var result = useCase.execute(null, null, 0, 10, "name", "asc");
+        assertFalse(result.content().get(0).deletable());
+        assertTrue(result.content().get(1).deletable());
+        verify(usageGateway).findIdsInUseByProducts(ids);
+        verifyNoMoreInteractions(usageGateway);
     }
 }

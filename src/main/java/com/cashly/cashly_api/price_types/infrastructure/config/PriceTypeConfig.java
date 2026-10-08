@@ -2,6 +2,7 @@ package com.cashly.cashly_api.price_types.infrastructure.config;
 
 import com.cashly.cashly_api.price_types.application.usecases.*;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
+import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,8 +20,8 @@ public class PriceTypeConfig {
     }
 
     @Bean
-    public DeletePriceTypeUseCase deletePriceTypeUseCase(PriceTypeRepository priceTypeRepository) {
-        return new DeletePriceTypeUseCase(priceTypeRepository);
+    public DeletePriceTypeUseCase deletePriceTypeUseCase(PriceTypeUsageGateway usageGateway, PriceTypeRepository priceTypeRepository) {
+        return new DeletePriceTypeUseCase(usageGateway, priceTypeRepository);
     }
 
     @Bean
@@ -29,7 +30,7 @@ public class PriceTypeConfig {
     }
 
     @Bean
-    public ListPriceTypesUseCase listPriceTypesUseCase(PriceTypeRepository priceTypeRepository) {
-        return new ListPriceTypesUseCase(priceTypeRepository);
+    public ListPriceTypesUseCase listPriceTypesUseCase(PriceTypeUsageGateway usageGateway, PriceTypeRepository priceTypeRepository) {
+        return new ListPriceTypesUseCase(usageGateway, priceTypeRepository);
     }
 }

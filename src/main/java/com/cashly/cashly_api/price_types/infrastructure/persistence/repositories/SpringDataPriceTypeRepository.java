@@ -27,15 +27,4 @@ public interface SpringDataPriceTypeRepository extends JpaRepository<PriceTypeEn
             @Param("active") Boolean active,
             Pageable pageable);
 
-    @Query("""
-        SELECT COUNT(pp) > 0 FROM ProductPriceEntity pp
-        WHERE pp.priceType.id = :priceTypeId
-        """)
-    boolean isInUseByProducts(@Param("priceTypeId") UUID priceTypeId);
-
-    @Query("""
-        SELECT DISTINCT pp.priceType.id FROM ProductPriceEntity pp
-        WHERE pp.priceType.id IN :priceTypeIds
-        """)
-    Set<UUID> findIdsInUseByProducts(@Param("priceTypeIds") Set<UUID> priceTypeIds);
 }

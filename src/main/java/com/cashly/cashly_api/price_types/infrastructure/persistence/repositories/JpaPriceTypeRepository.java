@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.price_types.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.price_types.domain.entities.PriceType;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import com.cashly.cashly_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
@@ -57,7 +59,7 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
         Page<PriceType> result = springDataRepository.findAllWithFilters(search, active, pageable)
             .map(PriceTypeEntity::toDomain);
 
-        return PageResponse.from(result);
+        return PageResponseMapper.from(result);
     }
 
     @Override
@@ -73,16 +75,6 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
     @Override
     public boolean existsByNameAndIdNot(String name, UUID id) {
         return springDataRepository.existsByNameAndIdNot(name, id);
-    }
-
-    @Override
-    public boolean isInUseByProducts(UUID id) {
-        return springDataRepository.isInUseByProducts(id);
-    }
-
-    @Override
-    public Set<UUID> findIdsInUseByProducts(Set<UUID> ids) {
-        return springDataRepository.findIdsInUseByProducts(ids);
     }
 
     @Override

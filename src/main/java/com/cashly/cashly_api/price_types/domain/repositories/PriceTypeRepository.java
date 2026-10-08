@@ -16,7 +16,5 @@ public interface PriceTypeRepository {
     boolean existsById(UUID id);
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);
-    boolean isInUseByProducts(UUID id);
-    Set<UUID> findIdsInUseByProducts(Set<UUID> ids);
     void delete(UUID id);
 }
