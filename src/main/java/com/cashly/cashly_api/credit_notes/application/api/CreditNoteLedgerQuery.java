@@ -1,0 +1,7 @@
+package com.cashly.cashly_api.credit_notes.application.api;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+public interface CreditNoteLedgerQuery {
+    List<BigDecimal> amountsByInvoiceId(UUID invoiceId);
+}

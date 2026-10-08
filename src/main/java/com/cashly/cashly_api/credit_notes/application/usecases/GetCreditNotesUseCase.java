@@ -1,16 +1,14 @@
 package com.cashly.cashly_api.credit_notes.application.usecases;
 
 import com.cashly.cashly_api.credit_notes.application.dto.response.CreditNoteResponse;
+import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteInvoiceGateway;
 import com.cashly.cashly_api.credit_notes.application.mappers.CreditNoteMapper;
 import com.cashly.cashly_api.credit_notes.domain.entities.CreditNote;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -19,33 +17,31 @@ import org.springframework.stereotype.Service;
 public class GetCreditNotesUseCase {
 
     private final CreditNoteRepository creditNoteRepository;
-    private final InvoiceRepository invoiceRepository;
+    private final CreditNoteInvoiceGateway invoices;
 
     public GetCreditNotesUseCase(CreditNoteRepository creditNoteRepository,
-                                  InvoiceRepository invoiceRepository) {
+                                  CreditNoteInvoiceGateway invoices) {
         this.creditNoteRepository = creditNoteRepository;
-        this.invoiceRepository = invoiceRepository;
+        this.invoices = invoices;
     }
 
     public List<CreditNoteResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                               UUID customerId) {
         List<CreditNote> creditNotes = creditNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId);
 
-        List<InvoiceId> invoiceIds = creditNotes.stream()
+        Set<UUID> invoiceIds = creditNotes.stream()
                 .map(CreditNote::getInvoiceId)
                 .distinct()
-                .map(InvoiceId::of)
-                .toList();
+                .collect(Collectors.toSet());
 
-        Map<UUID, Invoice> invoices = invoiceRepository.findAllById(invoiceIds).stream()
-                .collect(Collectors.toMap(inv -> inv.getId().value(), inv -> inv));
+        var invoiceContexts = invoices.findAll(invoiceIds);
 
         return creditNotes.stream()
                 .map(cn -> {
-                    Invoice invoice = invoices.get(cn.getInvoiceId());
-                    String customerName = invoice != null ? invoice.getCustomerName() : null;
-                    String customerRif = invoice != null ? invoice.getCustomerRif() : null;
-                    String invoiceNumber = invoice != null ? invoice.getInvoiceNumber().value() : null;
+                    var invoice = invoiceContexts.get(cn.getInvoiceId());
+                    String customerName = invoice != null ? invoice.customerName() : null;
+                    String customerRif = invoice != null ? invoice.customerRif() : null;
+                    String invoiceNumber = invoice != null ? invoice.number() : null;
                     return CreditNoteMapper.toCreditNoteResponse(cn, customerName, customerRif, invoiceNumber);
                 })
                 .toList();

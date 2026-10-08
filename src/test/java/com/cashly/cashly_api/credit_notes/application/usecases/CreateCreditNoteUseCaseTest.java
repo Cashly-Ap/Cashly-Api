@@ -1,141 +1,126 @@
 package com.cashly.cashly_api.credit_notes.application.usecases;
 
+import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteEffectsGateway;
+import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteFinancialPositionGateway;
+import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteInvoiceGateway;
 import com.cashly.cashly_api.credit_notes.application.dto.request.CreateCreditNoteRequest;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.credit_notes.application.dto.response.CreditNoteResponse;
 import com.cashly.cashly_api.credit_notes.domain.entities.CreditNote;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("CreateCreditNoteUseCase Unit Tests")
 class CreateCreditNoteUseCaseTest {
+    @Mock private CreditNoteRepository notes;
+    @Mock private CreditNoteInvoiceGateway invoices;
+    @Mock private CreditNoteFinancialPositionGateway position;
+    @Mock private CreditNoteEffectsGateway effects;
 
-    @Mock
-    private CreditNoteRepository creditNoteRepository;
-    @Mock
-    private InvoiceRepository invoiceRepository;
-    @Mock
-    private InvoiceStatusService invoiceStatusService;
-    @Mock
-    private PaymentAllocationRepository paymentAllocationRepository;
-    @Mock
-    private DebitNoteRepository debitNoteRepository;
-    @Mock
-    private AddToCustomerBalanceUseCase addToCustomerBalanceUseCase;
-    @Mock
-    private CashMovementService cashMovementService;
-
-    private CreateCreditNoteUseCase createCreditNoteUseCase;
-    private UUID authenticatedUserId;
+    private CreateCreditNoteUseCase useCase;
     private UUID invoiceId;
+    private UUID customerId;
+    private UUID userId;
 
     @BeforeEach
     void setUp() {
-        createCreditNoteUseCase = new CreateCreditNoteUseCase(
-                creditNoteRepository, invoiceRepository, invoiceStatusService,
-                paymentAllocationRepository, debitNoteRepository, addToCustomerBalanceUseCase,
-                cashMovementService
-        );
-        authenticatedUserId = UUID.randomUUID();
+        useCase = new CreateCreditNoteUseCase(notes, invoices, position, effects);
         invoiceId = UUID.randomUUID();
+        customerId = UUID.randomUUID();
+        userId = UUID.randomUUID();
+        when(invoices.find(invoiceId)).thenReturn(new CreditNoteInvoiceGateway.CreditNoteInvoiceContext(
+                invoiceId, "FAC-001", "PENDING_PAYMENT", "Pendiente", "Customer", "RIF",
+                new BigDecimal("100.00")));
     }
 
     @Test
-    void should_CreateCreditNote_When_ValidRequest() {
-        CreateCreditNoteRequest request = new CreateCreditNoteRequest(
-                invoiceId, UUID.randomUUID(), new BigDecimal("150.00"), "Product damaged"
-        );
-        Invoice invoice = mock(Invoice.class);
-        when(invoice.getStatus()).thenReturn(InvoiceStatus.PENDING_PAYMENT);
-        when(invoice.calculateTotal(any(), any())).thenReturn(new BigDecimal("1000.00"));
+    void givenValidInvoiceAndPaidSurplus_whenCreatingCreditNote_thenKeepsFinancialEffects() {
+        stubNotePersistence();
+        when(position.findByInvoiceId(invoiceId)).thenReturn(new CreditNoteFinancialPositionGateway.Position(
+                new BigDecimal("150.00"), new BigDecimal("20.00"), new BigDecimal("5.00")));
 
-        when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
-        when(creditNoteRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(creditNoteRepository.save(any(CreditNote.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(creditNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
-        when(paymentAllocationRepository.findByInvoiceId(any())).thenReturn(List.of());
+        useCase.execute(request("30.00"), userId);
 
-        CreditNoteResponse response = createCreditNoteUseCase.execute(request, authenticatedUserId);
-
-        assertNotNull(response);
-        verify(creditNoteRepository).save(any(CreditNote.class));
-        verify(invoiceStatusService).recalculate(any(UUID.class));
-        verify(cashMovementService).record(
-                eq(CashMovementDirection.OUT), eq(CashMovementType.CREDIT_NOTE),
-                eq(new BigDecimal("150.00")), isNull(), contains("CN-"),
-                eq("CREDIT_NOTE"), any(UUID.class), eq(authenticatedUserId), eq("User"));
+        verify(notes).save(any(CreditNote.class));
+        verify(invoices).recalculate(invoiceId);
+        verify(effects).recordCashOut(eq(new BigDecimal("30.00")), contains("CN-"), any(), eq(userId), eq("User"));
+        verify(effects).addCustomerCredit(eq(customerId), eq(new BigDecimal("65.00")), any(),
+                contains("CN-"), eq("FAC-001"), eq(userId));
     }
 
     @Test
-    void should_ThrowException_When_InvoiceNotFound() {
-        CreateCreditNoteRequest request = new CreateCreditNoteRequest(
-                invoiceId, UUID.randomUUID(), new BigDecimal("150.00"), "Product damaged"
-        );
+    void givenNoSurplus_whenCreatingCreditNote_thenDoesNotAddCustomerCredit() {
+        stubNotePersistence();
+        when(position.findByInvoiceId(invoiceId)).thenReturn(new CreditNoteFinancialPositionGateway.Position(
+                new BigDecimal("10.00"), new BigDecimal("20.00"), BigDecimal.ZERO));
 
-        when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.empty());
+        useCase.execute(request("30.00"), userId);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> createCreditNoteUseCase.execute(request, authenticatedUserId));
+        verify(effects, never()).addCustomerCredit(any(), any(), any(), any(), any(), any());
     }
 
     @Test
-    void should_ThrowException_When_InvoiceIsCancelled() {
-        CreateCreditNoteRequest request = new CreateCreditNoteRequest(
-                invoiceId, UUID.randomUUID(), new BigDecimal("150.00"), "Product damaged"
-        );
-        Invoice invoice = mock(Invoice.class);
-        InvoiceNumber invNum = mock(InvoiceNumber.class);
-        when(invoice.getStatus()).thenReturn(InvoiceStatus.CANCELLED);
-        when(invoice.getInvoiceNumber()).thenReturn(invNum);
-        when(invNum.value()).thenReturn("FAC-001");
+    void givenCancelledInvoice_whenCreatingCreditNote_thenRejectsBeforeAnyEffect() {
+        when(invoices.find(invoiceId)).thenReturn(new CreditNoteInvoiceGateway.CreditNoteInvoiceContext(
+                invoiceId, "FAC-001", "CANCELLED", "Anulada", "Customer", "RIF",
+                new BigDecimal("100.00")));
 
-        when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
+        assertThrows(IllegalStateException.class, () -> useCase.execute(request("30.00"), userId));
 
-        assertThrows(IllegalStateException.class,
-                () -> createCreditNoteUseCase.execute(request, authenticatedUserId));
+        verify(notes, never()).save(any());
+        verify(effects, never()).recordCashOut(any(), any(), any(), any(), any());
+        verify(invoices, never()).recalculate(any());
     }
 
     @Test
-    void should_ThrowException_When_InvoiceIsFullyReturned() {
-        CreateCreditNoteRequest request = new CreateCreditNoteRequest(
-                invoiceId, UUID.randomUUID(), new BigDecimal("150.00"), "Product damaged"
-        );
-        Invoice invoice = mock(Invoice.class);
-        InvoiceNumber invNum = mock(InvoiceNumber.class);
-        when(invoice.getStatus()).thenReturn(InvoiceStatus.FULLY_RETURNED);
-        when(invoice.getInvoiceNumber()).thenReturn(invNum);
-        when(invNum.value()).thenReturn("FAC-001");
+    void givenFullyReturnedInvoice_whenCreatingCreditNote_thenRejectsBeforeAnyEffect() {
+        when(invoices.find(invoiceId)).thenReturn(new CreditNoteInvoiceGateway.CreditNoteInvoiceContext(
+                invoiceId, "FAC-001", "FULLY_RETURNED", "Devuelta", "Customer", "RIF",
+                new BigDecimal("100.00")));
 
-        when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
+        assertThrows(IllegalStateException.class, () -> useCase.execute(request("30.00"), userId));
 
-        assertThrows(IllegalStateException.class,
-                () -> createCreditNoteUseCase.execute(request, authenticatedUserId));
+        verify(notes, never()).save(any());
+        verifyNoInteractions(effects);
+    }
+
+    @Test
+    void givenCreditNotesExceedInvoiceTotal_whenCreatingCreditNote_thenClampsEffectiveTotalToZero() {
+        stubNotePersistence();
+        when(position.findByInvoiceId(invoiceId)).thenReturn(new CreditNoteFinancialPositionGateway.Position(
+                new BigDecimal("10.00"), new BigDecimal("150.00"), BigDecimal.ZERO));
+
+        useCase.execute(request("30.00"), userId);
+
+        verify(effects).addCustomerCredit(eq(customerId), eq(new BigDecimal("10.00")), any(),
+                contains("CN-"), eq("FAC-001"), eq(userId));
+    }
+
+    @Test
+    void givenMissingInvoice_whenCreatingCreditNote_thenRejectsWithoutEffects() {
+        when(invoices.find(invoiceId)).thenThrow(new IllegalArgumentException("Invoice not found: " + invoiceId));
+
+        assertThrows(IllegalArgumentException.class, () -> useCase.execute(request("30.00"), userId));
+
+        verify(notes, never()).save(any());
+        verify(effects, never()).recordCashOut(any(), any(), any(), any(), any());
+    }
+
+    private CreateCreditNoteRequest request(String amount) {
+        return new CreateCreditNoteRequest(customerId, invoiceId, new BigDecimal(amount), "Damaged product");
+    }
+
+    private void stubNotePersistence() {
+        when(notes.getNextSequenceForYear(anyInt())).thenReturn(1);
+        when(notes.save(any(CreditNote.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
 }
