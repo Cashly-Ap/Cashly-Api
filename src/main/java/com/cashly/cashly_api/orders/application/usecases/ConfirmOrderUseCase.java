@@ -1,18 +1,13 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
 import com.cashly.cashly_api.orders.domain.entities.Order;
-import com.cashly.cashly_api.orders.domain.entities.OrderLine;
-import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
-import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
-import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
@@ -20,18 +15,15 @@ import java.util.UUID;
 public class ConfirmOrderUseCase {
 
     private final OrderRepository orderRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
-    private final NotificationService notificationService;
+    private final OrderInventoryGateway inventory;
+    private final OrderNotificationGateway notifications;
 
     public ConfirmOrderUseCase(OrderRepository orderRepository,
-                                WarehouseStockRepository warehouseStockRepository,
-                                StockMovementRepository stockMovementRepository,
-                                NotificationService notificationService) {
+                                OrderInventoryGateway inventory,
+                                OrderNotificationGateway notifications) {
         this.orderRepository = orderRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
-        this.notificationService = notificationService;
+        this.inventory = inventory;
+        this.notifications = notifications;
     }
 
     @Transactional
@@ -40,37 +32,14 @@ public class ConfirmOrderUseCase {
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
         order.confirm();
-        deductStockAllocations(order);
+        inventory.deductReservations(order.getLines().stream().flatMap(line -> line.getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
+                        line.getProductId(), allocation.getAllocated().intValue()))).toList(),
+                new OrderInventoryGateway.Reference(order.getId().value(), order.getOrderNumber().value(), "Order confirmed"));
 
         Order saved = orderRepository.save(order);
-        notificationService.notifyCustomerOrderApproved(order.getCustomerId(), saved.getId().value());
+        notifications.notifyCustomerOrderApproved(order.getCustomerId(), saved.getId().value());
         return OrderMapper.toDetailResponse(saved);
     }
 
-    private void deductStockAllocations(Order order) {
-        for (OrderLine line : order.getLines()) {
-            for (OrderLineAllocation allocation : line.getAllocations()) {
-                warehouseStockRepository
-                        .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
-                        .ifPresent(stock -> {
-                            int previousQuantity = stock.getQuantity();
-                            int previousReserved = stock.getReserved();
-                            stock.deductReserved(allocation.getAllocated().intValue());
-                            warehouseStockRepository.save(stock);
-
-                            stockMovementRepository.save(StockMovement.create(
-                                    allocation.getWarehouseId(),
-                                    line.getProductId(),
-                                    MovementType.EXIT,
-                                    allocation.getAllocated().intValue(),
-                                    previousQuantity,
-                                    stock.getQuantity(),
-                                    null,
-                                    null,
-                                    "Pedido confirmado"
-                            ));
-                        });
-            }
-        }
-    }
 }

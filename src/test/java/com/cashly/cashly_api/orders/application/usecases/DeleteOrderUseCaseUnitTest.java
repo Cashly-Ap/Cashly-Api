@@ -9,8 +9,7 @@ import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ class DeleteOrderUseCaseUnitTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private WarehouseStockRepository warehouseStockRepository;
+    private OrderInventoryGateway warehouseStockRepository;
 
     private DeleteOrderUseCase deleteOrderUseCase;
 
@@ -69,17 +68,11 @@ class DeleteOrderUseCaseUnitTest {
                 LocalDateTime.now()
         );
 
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 10,
-                LocalDateTime.now(), LocalDateTime.now());
-
         when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
 
         deleteOrderUseCase.execute(id);
 
-        assertEquals(5, stock.getReserved()); 
-        verify(warehouseStockRepository).save(stock);
+        verify(warehouseStockRepository).release(List.of(new OrderInventoryGateway.Allocation(warehouseId, productId, 5)));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 
@@ -154,22 +147,13 @@ class DeleteOrderUseCaseUnitTest {
                 LocalDateTime.now()
         );
 
-        WarehouseStock stock1 = new WarehouseStock(UUID.randomUUID(), warehouseId1, productId, 30, 5,
-                LocalDateTime.now(), LocalDateTime.now());
-        WarehouseStock stock2 = new WarehouseStock(UUID.randomUUID(), warehouseId2, productId, 20, 10,
-                LocalDateTime.now(), LocalDateTime.now());
-
         when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId1, productId))
-                .thenReturn(Optional.of(stock1));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId2, productId))
-                .thenReturn(Optional.of(stock2));
 
         deleteOrderUseCase.execute(id);
 
-        assertEquals(2, stock1.getReserved()); 
-        assertEquals(3, stock2.getReserved()); 
-        verify(warehouseStockRepository, times(2)).save(any(WarehouseStock.class));
+        verify(warehouseStockRepository).release(List.of(
+                new OrderInventoryGateway.Allocation(warehouseId1, productId, 3),
+                new OrderInventoryGateway.Allocation(warehouseId2, productId, 7)));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 
@@ -198,12 +182,9 @@ class DeleteOrderUseCaseUnitTest {
         );
 
         when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.empty());
-
         deleteOrderUseCase.execute(id);
 
-        verify(warehouseStockRepository, never()).save(any());
+        verify(warehouseStockRepository).release(List.of(new OrderInventoryGateway.Allocation(warehouseId, productId, 5)));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 }

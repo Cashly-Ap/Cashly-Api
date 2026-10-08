@@ -46,12 +46,15 @@ public class OrderRepositoryAdapter implements OrderRepository {
     @Override
     public List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
                                            UUID customerId, String status,
-                                           UUID productId, UUID categoryId,
+                                           UUID productId, UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
                                            String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<OrderEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId);
+        List<OrderEntity> entities = currentCategoryProductIds.isEmpty()
+                ? jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId)
+                : jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId,
+                        currentCategoryProductIds);
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<OrderEntity> comparator = switch (orderBy) {

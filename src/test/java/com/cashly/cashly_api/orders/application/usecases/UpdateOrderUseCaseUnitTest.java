@@ -2,6 +2,8 @@ package com.cashly.cashly_api.orders.application.usecases;
 
 import com.cashly.cashly_api.orders.application.dto.request.UpdateOrderRequest;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;
@@ -13,7 +15,6 @@ import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,10 +40,10 @@ class UpdateOrderUseCaseUnitTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private ProductRepository productRepository;
+    private OrderProductCatalogGateway productRepository;
 
     @Mock
-    private WarehouseStockRepository warehouseStockRepository;
+    private OrderInventoryGateway warehouseStockRepository;
 
     private UpdateOrderUseCase updateOrderUseCase;
 
@@ -82,9 +83,7 @@ class UpdateOrderUseCaseUnitTest {
         );
 
         when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.of(productRef(product)));
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
         OrderDetailResponse response = updateOrderUseCase.execute(id, request);
@@ -170,21 +169,16 @@ class UpdateOrderUseCaseUnitTest {
         );
 
         when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(oldWarehouseId, productId))
-                .thenReturn(Optional.of(oldStock));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(newWarehouseId, productId))
-                .thenReturn(Optional.of(newStock));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.of(productRef(product)));
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
 
         updateOrderUseCase.execute(id, request);
 
         
-        assertEquals(2, oldStock.getReserved());
-        
-        assertEquals(2, newStock.getReserved());
-
-        verify(warehouseStockRepository, times(2)).save(any(WarehouseStock.class));
+        verify(warehouseStockRepository).release(List.of(new OrderInventoryGateway.Allocation(oldWarehouseId,
+                productId, 3)));
+        verify(warehouseStockRepository).reserve(List.of(new OrderInventoryGateway.Allocation(newWarehouseId,
+                productId, 2)));
     }
 
     @Test
@@ -210,7 +204,7 @@ class UpdateOrderUseCaseUnitTest {
         );
 
         when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findProduct(productId)).thenReturn(Optional.empty());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -228,5 +222,10 @@ class UpdateOrderUseCaseUnitTest {
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
+    }
+
+    private OrderProductCatalogGateway.ProductReference productRef(Product product) {
+        return new OrderProductCatalogGateway.ProductReference(product.getId(), product.getCode(), product.getName(),
+                product.getCategoryId());
     }
 }

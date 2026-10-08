@@ -1,21 +1,15 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.application.dto.request.CancelOrderRequest;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
 import com.cashly.cashly_api.orders.domain.entities.Order;
-import com.cashly.cashly_api.orders.domain.entities.OrderLine;
-import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
-import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
-import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
-import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
@@ -23,18 +17,15 @@ import java.util.UUID;
 public class CancelOrderUseCase {
 
     private final OrderRepository orderRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
-    private final NotificationService notificationService;
+    private final OrderInventoryGateway inventory;
+    private final OrderNotificationGateway notifications;
 
     public CancelOrderUseCase(OrderRepository orderRepository,
-                               WarehouseStockRepository warehouseStockRepository,
-                               StockMovementRepository stockMovementRepository,
-                               NotificationService notificationService) {
+                               OrderInventoryGateway inventory,
+                               OrderNotificationGateway notifications) {
         this.orderRepository = orderRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
-        this.notificationService = notificationService;
+        this.inventory = inventory;
+        this.notifications = notifications;
     }
 
     @Transactional
@@ -47,7 +38,7 @@ public class CancelOrderUseCase {
         revertStockAllocations(order, previousStatus);
 
         Order saved = orderRepository.save(order);
-        notificationService.notifyCustomerOrderRejected(order.getCustomerId(), saved.getId().value(), request.reason());
+        notifications.notifyCustomerOrderRejected(order.getCustomerId(), saved.getId().value(), request.reason());
         return OrderMapper.toDetailResponse(saved);
     }
 
@@ -55,39 +46,14 @@ public class CancelOrderUseCase {
         boolean wasConfirmedOrInvoiced = previousStatus == OrderStatus.CONFIRMED
                 || previousStatus == OrderStatus.INVOICED;
 
-        for (OrderLine line : order.getLines()) {
-            for (OrderLineAllocation allocation : line.getAllocations()) {
-                warehouseStockRepository
-                        .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
-                        .ifPresent(stock -> {
-                            if (wasConfirmedOrInvoiced) {
-                                int previous = stock.getQuantity();
-                                stock.addStock(allocation.getAllocated().intValue());
-                                
-                                
-                                
-                                warehouseStockRepository.save(stock);
-
-                                stockMovementRepository.save(StockMovement.createWithReference(
-                                        allocation.getWarehouseId(),
-                                        line.getProductId(),
-                                        MovementType.CANCEL_ENTRY,
-                                        allocation.getAllocated().intValue(),
-                                        previous,
-                                        stock.getQuantity(),
-                                        null,
-                                        null,
-                                        ReferenceType.ORDER,
-                                        order.getId().value(),
-                                        order.getOrderNumber().value(),
-                                        "Order cancelled"
-                                ));
-                            } else {
-                                stock.releaseReserved(allocation.getAllocated().intValue());
-                                warehouseStockRepository.save(stock);
-                            }
-                        });
-            }
+        var allocations = order.getLines().stream().flatMap(line -> line.getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
+                        line.getProductId(), allocation.getAllocated().intValue()))).toList();
+        if (wasConfirmedOrInvoiced) {
+            inventory.restore(allocations, new OrderInventoryGateway.Reference(order.getId().value(),
+                    order.getOrderNumber().value(), "Order cancelled"));
+        } else {
+            inventory.release(allocations);
         }
     }
 }

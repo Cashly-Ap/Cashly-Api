@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
@@ -10,8 +9,8 @@ import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
-import com.cashly.cashly_api.shared.services.CreditGuard;
+import com.cashly.cashly_api.orders.application.contracts.StockAvailabilityGateway;
+import com.cashly.cashly_api.orders.application.contracts.CustomerCreditGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,19 +36,16 @@ class GetOrderByIdUseCaseUnitTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private StockEnrichmentService stockEnrichmentService;
+    private StockAvailabilityGateway stockEnrichmentService;
 
     @Mock
-    private CustomerRepository customerRepository;
-
-    @Mock
-    private CreditGuard creditGuard;
+    private CustomerCreditGateway creditGuard;
 
     private GetOrderByIdUseCase getOrderByIdUseCase;
 
     @BeforeEach
     void setUp() {
-        getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, customerRepository, creditGuard);
+        getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, creditGuard);
     }
 
     @Test

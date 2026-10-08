@@ -1,19 +1,10 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
-import com.cashly.cashly_api.invoices.application.usecases.CreateInvoiceUseCase;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.orders.application.contracts.InvoiceCreationGateway;
 import com.cashly.cashly_api.orders.application.usecases.*;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
-import com.cashly.cashly_api.shared.services.CreditGuard;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.orders.application.contracts.StockAvailabilityGateway;
+import com.cashly.cashly_api.orders.application.contracts.CustomerCreditGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,87 +13,72 @@ public class OrderConfig {
 
     @Bean
     public CreateOrderUseCase createOrderUseCase(OrderRepository orderRepository,
-                                                    CustomerRepository customerRepository,
-                                                    ProductRepository productRepository,
-                                                    UserRepository userRepository,
-                                                    WarehouseStockRepository warehouseStockRepository) {
-        return new CreateOrderUseCase(orderRepository, customerRepository, productRepository,
-                userRepository, warehouseStockRepository);
+            com.cashly.cashly_api.orders.application.contracts.OrderCustomerGateway customers,
+            com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway products,
+            com.cashly.cashly_api.orders.application.contracts.OrderActorGateway actors,
+            com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway inventory) {
+        return new CreateOrderUseCase(orderRepository, customers, products, actors, inventory);
     }
 
     @Bean
     public GetOrderByIdUseCase getOrderByIdUseCase(OrderRepository orderRepository,
-                                                      StockEnrichmentService stockEnrichmentService,
-                                                      CustomerRepository customerRepository,
-                                                      CreditGuard creditGuard) {
-        return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, customerRepository, creditGuard);
+                                                      StockAvailabilityGateway stockEnrichmentService,
+                                                      CustomerCreditGateway creditGuard) {
+        return new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, creditGuard);
     }
 
     @Bean
-    public GetOrdersUseCase getOrdersUseCase(OrderRepository orderRepository) {
-        return new GetOrdersUseCase(orderRepository);
+    public GetOrdersUseCase getOrdersUseCase(OrderRepository orderRepository,
+                                              com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway products) {
+        return new GetOrdersUseCase(orderRepository, products);
     }
 
     @Bean
     public UpdateOrderUseCase updateOrderUseCase(OrderRepository orderRepository,
-                                                    ProductRepository productRepository,
-                                                    WarehouseStockRepository warehouseStockRepository) {
-        return new UpdateOrderUseCase(orderRepository, productRepository,
-                warehouseStockRepository);
+            com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway products,
+            com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway inventory) {
+        return new UpdateOrderUseCase(orderRepository, products, inventory);
     }
 
     @Bean
     public ConfirmOrderUseCase confirmOrderUseCase(OrderRepository orderRepository,
-                                                     WarehouseStockRepository warehouseStockRepository,
-                                                     StockMovementRepository stockMovementRepository,
-                                                     NotificationService notificationService) {
-        return new ConfirmOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
+            com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway inventory,
+            com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway notifications) {
+        return new ConfirmOrderUseCase(orderRepository, inventory, notifications);
     }
 
     @Bean
     public CancelOrderUseCase cancelOrderUseCase(OrderRepository orderRepository,
-                                                   WarehouseStockRepository warehouseStockRepository,
-                                                   StockMovementRepository stockMovementRepository,
-                                                   NotificationService notificationService) {
-        return new CancelOrderUseCase(orderRepository, warehouseStockRepository, stockMovementRepository, notificationService);
+            com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway inventory,
+            com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway notifications) {
+        return new CancelOrderUseCase(orderRepository, inventory, notifications);
     }
 
     @Bean
     public ConvertToInvoiceUseCase convertToInvoiceUseCase(OrderRepository orderRepository,
-                                                             CreateInvoiceUseCase createInvoiceUseCase,
-                                                             NotificationService notificationService) {
-        return new ConvertToInvoiceUseCase(orderRepository, createInvoiceUseCase, notificationService);
+                                                             InvoiceCreationGateway invoiceCreationGateway,
+            com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway notifications) {
+        return new ConvertToInvoiceUseCase(orderRepository, invoiceCreationGateway, notifications);
     }
 
     @Bean
     public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository,
-                                                   WarehouseStockRepository warehouseStockRepository) {
-        return new DeleteOrderUseCase(orderRepository, warehouseStockRepository);
+            com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway inventory) {
+        return new DeleteOrderUseCase(orderRepository, inventory);
     }
 
     @Bean
     public AssignOrderWarehousesUseCase assignOrderWarehousesUseCase(
             OrderRepository orderRepository,
-            WarehouseStockRepository warehouseStockRepository,
-            CustomerWarehouseAccessRepository customerWarehouseAccessRepository) {
-        return new AssignOrderWarehousesUseCase(
-                orderRepository, warehouseStockRepository, customerWarehouseAccessRepository);
+            com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway inventory,
+            com.cashly.cashly_api.orders.application.contracts.OrderWarehouseGateway warehouses) {
+        return new AssignOrderWarehousesUseCase(orderRepository, inventory, warehouses);
     }
 
     @Bean
     public GetProductsForOrderUseCase getProductsForOrderUseCase(
-            CustomerRepository customerRepository,
-            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
-            ProductRepository productRepository,
-            CategoryRepository categoryRepository,
-            WarehouseStockRepository warehouseStockRepository,
-            WarehouseRepository warehouseRepository) {
-        return new GetProductsForOrderUseCase(
-                customerRepository,
-                customerWarehouseAccessRepository,
-                productRepository,
-                categoryRepository,
-                warehouseStockRepository,
-                warehouseRepository);
+            com.cashly.cashly_api.orders.application.contracts.OrderCustomerGateway customers,
+            com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway products) {
+        return new GetProductsForOrderUseCase(customers, products);
     }
 }

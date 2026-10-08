@@ -11,6 +11,10 @@ import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.*;
 import com.cashly.cashly_api.orders.application.dto.request.CreateOrderRequest;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
+import com.cashly.cashly_api.orders.application.contracts.OrderActorGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderCustomerGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
@@ -42,16 +46,16 @@ class CreateOrderUseCaseUnitTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private OrderCustomerGateway customerRepository;
 
     @Mock
-    private ProductRepository productRepository;
+    private OrderProductCatalogGateway productRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private OrderActorGateway userRepository;
 
     @Mock
-    private WarehouseStockRepository warehouseStockRepository;
+    private OrderInventoryGateway warehouseStockRepository;
 
     private CreateOrderUseCase createOrderUseCase;
 
@@ -83,11 +87,9 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId)).thenReturn(Optional.of(actorRef(authenticatedUserId, user)));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.of(productRef(product)));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(orderRepository.save(any(com.cashly.cashly_api.orders.domain.entities.Order.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
@@ -122,20 +124,17 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId)).thenReturn(Optional.of(actorRef(authenticatedUserId, user)));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.of(productRef(product)));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(orderRepository.save(any(com.cashly.cashly_api.orders.domain.entities.Order.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
         createOrderUseCase.execute(request, authenticatedUserId);
 
-        assertEquals(7, stock.getReserved());  
-        assertEquals(50, stock.getQuantity());  
-        verify(warehouseStockRepository).save(stock);
+        verify(warehouseStockRepository).reserve(List.of(new OrderInventoryGateway.Allocation(warehouseId,
+                productId, 5)));
     }
 
     @Test
@@ -149,7 +148,7 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -173,8 +172,8 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId)).thenReturn(Optional.empty());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -200,9 +199,9 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId)).thenReturn(Optional.of(actorRef(authenticatedUserId, user)));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.empty());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -231,11 +230,10 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.empty());
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId)).thenReturn(Optional.of(actorRef(authenticatedUserId, user)));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.of(productRef(product)));
+        doThrow(new IllegalArgumentException("Stock not found")).when(warehouseStockRepository).reserve(anyList());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -266,11 +264,9 @@ class CreateOrderUseCaseUnitTest {
                 ))
         );
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId)).thenReturn(Optional.of(actorRef(authenticatedUserId, user)));
+        when(productRepository.findProduct(productId)).thenReturn(Optional.of(productRef(product)));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(orderRepository.save(any(com.cashly.cashly_api.orders.domain.entities.Order.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
@@ -294,7 +290,7 @@ class CreateOrderUseCaseUnitTest {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 List.of(), List.of(), List.of(),
-                false, null, null, null
+                null, null
         );
     }
 
@@ -315,5 +311,18 @@ class CreateOrderUseCaseUnitTest {
                 List.of(), List.of(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
+    }
+
+    private OrderCustomerGateway.Customer customerRef(UUID id, Customer customer) {
+        return new OrderCustomerGateway.Customer(id, customer.getLegalName().getValue(), customer.getRif().getValue());
+    }
+
+    private OrderActorGateway.Actor actorRef(UUID id, User user) {
+        return new OrderActorGateway.Actor(id, user.getUserName().getValue());
+    }
+
+    private OrderProductCatalogGateway.ProductReference productRef(Product product) {
+        return new OrderProductCatalogGateway.ProductReference(product.getId(), product.getCode(), product.getName(),
+                product.getCategoryId());
     }
 }

@@ -1,9 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.dto.request.CreateInvoiceRequest;
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.invoices.application.usecases.CreateInvoiceUseCase;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.orders.application.contracts.InvoiceCreationGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.cashly.cashly_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.cashly.cashly_api.orders.domain.entities.Order;
@@ -17,15 +15,15 @@ import java.util.UUID;
 public class ConvertToInvoiceUseCase {
 
     private final OrderRepository orderRepository;
-    private final CreateInvoiceUseCase createInvoiceUseCase;
-    private final NotificationService notificationService;
+    private final InvoiceCreationGateway invoiceCreationGateway;
+    private final OrderNotificationGateway notifications;
 
     public ConvertToInvoiceUseCase(OrderRepository orderRepository,
-                                    CreateInvoiceUseCase createInvoiceUseCase,
-                                    NotificationService notificationService) {
+                                    InvoiceCreationGateway invoiceCreationGateway,
+                                    OrderNotificationGateway notifications) {
         this.orderRepository = orderRepository;
-        this.createInvoiceUseCase = createInvoiceUseCase;
-        this.notificationService = notificationService;
+        this.invoiceCreationGateway = invoiceCreationGateway;
+        this.notifications = notifications;
     }
 
     @Transactional
@@ -33,26 +31,22 @@ public class ConvertToInvoiceUseCase {
         Order order = orderRepository.findById(OrderId.of(orderId))
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
-        CreateInvoiceRequest createRequest = new CreateInvoiceRequest(
+        InvoiceCreationGateway.Command createRequest = new InvoiceCreationGateway.Command(
                 order.getId().value(),
-                null,
-                null,
                 request.paymentType(),
-                null,
                 request.useBalance(),
                 request.balanceAmount(),
                 request.paymentMethodId(),
                 request.confirmationPassword(),
-                null,
                 request.issueDate()
         );
 
-        InvoiceDetailResponse invoice = createInvoiceUseCase.execute(createRequest, authenticatedUserId);
+        InvoiceCreationGateway.CreatedInvoice invoice = invoiceCreationGateway.create(createRequest, authenticatedUserId);
 
         order.markAsInvoiced(invoice.id(), invoice.invoiceNumber());
         orderRepository.save(order);
 
-        notificationService.notifyCustomerOrderConvertedToInvoice(order.getCustomerId(), order.getId().value(), invoice.invoiceNumber());
+        notifications.notifyCustomerOrderConvertedToInvoice(order.getCustomerId(), order.getId().value(), invoice.invoiceNumber());
 
         return new ConvertToInvoiceResponse(
                 order.getId().value(),

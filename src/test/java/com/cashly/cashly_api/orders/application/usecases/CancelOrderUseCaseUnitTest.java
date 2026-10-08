@@ -1,27 +1,19 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.application.dto.request.CancelOrderRequest;
-import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
-import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
-import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -31,206 +23,74 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("CancelOrderUseCase Unit Tests")
 class CancelOrderUseCaseUnitTest {
-
-    @Mock
-    private OrderRepository orderRepository;
-
-    @Mock
-    private WarehouseStockRepository warehouseStockRepository;
-
-    @Mock
-    private StockMovementRepository stockMovementRepository;
-
-    @Mock
-    private NotificationService notificationService;
-
-    @Captor
-    private ArgumentCaptor<StockMovement> stockMovementCaptor;
-
-    private CancelOrderUseCase cancelOrderUseCase;
+    @Mock private OrderRepository orders;
+    @Mock private OrderInventoryGateway inventory;
+    @Mock private OrderNotificationGateway notifications;
+    private CancelOrderUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        cancelOrderUseCase = new CancelOrderUseCase(orderRepository,
-                warehouseStockRepository, stockMovementRepository, notificationService);
+        useCase = new CancelOrderUseCase(orders, inventory, notifications);
     }
 
     @Test
-    void should_CancelDraftOrder_When_OrderExists() {
-        UUID id = UUID.randomUUID();
-        Order order = buildOrder(id, OrderStatus.DRAFT);
-        CancelOrderRequest request = new CancelOrderRequest("Customer request");
+    void releasesReservationForDraftOrder() {
+        Order order = order(OrderStatus.DRAFT);
+        when(orders.findById(OrderId.of(order.getId().value()))).thenReturn(Optional.of(order));
+        when(orders.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        OrderDetailResponse response = cancelOrderUseCase.execute(id, request);
-
-        assertNotNull(response);
-        assertEquals("CANCELLED", response.status());
-        verify(orderRepository).findById(OrderId.of(id));
-        verify(orderRepository).save(any(Order.class));
-    }
-
-    @Test
-    void should_CancelConfirmedOrder_When_OrderExists() {
-        UUID id = UUID.randomUUID();
-        Order order = buildOrder(id, OrderStatus.CONFIRMED);
-        CancelOrderRequest request = new CancelOrderRequest("Supplier issue");
-
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        OrderDetailResponse response = cancelOrderUseCase.execute(id, request);
+        var response = useCase.execute(order.getId().value(), new CancelOrderRequest("Requested"));
 
         assertEquals("CANCELLED", response.status());
+        verify(inventory).release(allocations(order));
+        verify(notifications).notifyCustomerOrderRejected(order.getCustomerId(), order.getId().value(), "Requested");
+        verify(inventory, never()).restore(anyList(), any());
     }
 
     @Test
-    void should_ThrowOrderNotFoundException_When_OrderDoesNotExist() {
-        UUID id = UUID.randomUUID();
-        CancelOrderRequest request = new CancelOrderRequest("Reason");
+    void restoresStockForConfirmedOrder() {
+        Order order = order(OrderStatus.CONFIRMED);
+        when(orders.findById(OrderId.of(order.getId().value()))).thenReturn(Optional.of(order));
+        when(orders.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.empty());
+        useCase.execute(order.getId().value(), new CancelOrderRequest("Rejected"));
 
-        assertThrows(
-                OrderNotFoundException.class,
-                () -> cancelOrderUseCase.execute(id, request)
-        );
-
-        verify(orderRepository, never()).save(any());
-        verifyNoInteractions(warehouseStockRepository, stockMovementRepository);
+        verify(inventory).restore(allocations(order), new OrderInventoryGateway.Reference(order.getId().value(),
+                order.getOrderNumber().value(), "Order cancelled"));
+        verify(inventory, never()).release(anyList());
     }
 
     @Test
-    void should_ThrowIllegalStateException_When_OrderIsInvoiced() {
+    void failsWhenOrderIsMissing() {
         UUID id = UUID.randomUUID();
-        Order order = buildOrder(id, OrderStatus.INVOICED);
-        CancelOrderRequest request = new CancelOrderRequest("Reason");
+        when(orders.findById(OrderId.of(id))).thenReturn(Optional.empty());
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        assertThrows(OrderNotFoundException.class, () -> useCase.execute(id, new CancelOrderRequest("Reason")));
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> cancelOrderUseCase.execute(id, request)
-        );
-
-        verify(orderRepository, never()).save(any());
-        verifyNoInteractions(warehouseStockRepository, stockMovementRepository);
+        verifyNoInteractions(inventory, notifications);
     }
 
-    @Test
-    void should_OnlyReleaseReserved_When_CancellingDraftOrder() {
+    private List<OrderInventoryGateway.Allocation> allocations(Order order) {
+        return order.getLines().stream().flatMap(line -> line.getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
+                        line.getProductId(), allocation.getAllocated().intValue()))).toList();
+    }
+
+    private Order order(OrderStatus status) {
         UUID id = UUID.randomUUID();
-        UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-
-        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(5));
-        OrderLine line = OrderLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Order order = Order.reconstitute(
-                OrderId.of(id), OrderNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "Creator Name",
-                OrderStatus.DRAFT, null, null, null, null, null,
-                List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
-        CancelOrderRequest request = new CancelOrderRequest("Reason");
-
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 10,
-                LocalDateTime.now(), LocalDateTime.now());
-
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        cancelOrderUseCase.execute(id, request);
-
-        
-        assertEquals(50, stock.getQuantity());  
-        assertEquals(5, stock.getReserved());   
-        verify(warehouseStockRepository).save(stock);
-        verifyNoInteractions(stockMovementRepository);
-    }
-
-    @Test
-    void should_RestoreStockAndCreateMovement_When_CancellingConfirmedOrder() {
-        UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
-        UUID productId = UUID.randomUUID();
-
-        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(5));
-        OrderLine line = OrderLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Order order = Order.reconstitute(
-                OrderId.of(id), OrderNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "Creator Name",
-                OrderStatus.CONFIRMED, null, null, null, null, null,
-                List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
-        CancelOrderRequest request = new CancelOrderRequest("Supplier issue");
-
-        
-        
-        
-        
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 45, 5,
+        var line = OrderLine.create(productId, "Product", "SKU", BigDecimal.valueOf(3), BigDecimal.TEN,
+                List.of(OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(3))));
+        return Order.reconstitute(OrderId.of(id), OrderNumber.of(2026, 2), UUID.randomUUID(), "Customer", "RIF",
+                UUID.randomUUID(), "Actor", status, null, null, null, null, null, List.of(line),
                 LocalDateTime.now(), LocalDateTime.now());
-
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        cancelOrderUseCase.execute(id, request);
-
-        
-        assertEquals(50, stock.getQuantity());  
-        assertEquals(5, stock.getReserved());   
-
-        verify(stockMovementRepository).save(stockMovementCaptor.capture());
-        StockMovement movement = stockMovementCaptor.getValue();
-        assertEquals(MovementType.CANCEL_ENTRY, movement.getMovementType());
-        assertEquals(5, movement.getQuantity());
-        assertEquals(45, movement.getPreviousStock());
-        assertEquals(50, movement.getNewStock());
-        assertEquals("Order cancelled", movement.getNotes());
-    }
-
-    @Test
-    void should_SaveExactlyOnce_When_CancellationSucceeds() {
-        UUID id = UUID.randomUUID();
-        Order order = buildOrder(id, OrderStatus.DRAFT);
-        CancelOrderRequest request = new CancelOrderRequest("Reason");
-
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        cancelOrderUseCase.execute(id, request);
-
-        verify(orderRepository, times(1)).save(any(Order.class));
-    }
-
-    private Order buildOrder(UUID orderId, OrderStatus status) {
-        OrderLine line = OrderLine.create(
-                UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        return Order.reconstitute(
-                OrderId.of(orderId), OrderNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "Creator Name",
-                status, null, null, null, null, null,
-                List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
     }
 }

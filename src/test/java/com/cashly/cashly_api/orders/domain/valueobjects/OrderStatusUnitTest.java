@@ -12,9 +12,8 @@ class OrderStatusUnitTest {
     void should_HaveAllExpectedEnumValues() {
         OrderStatus[] values = OrderStatus.values();
 
-        assertEquals(5, values.length);
+        assertEquals(4, values.length);
         assertNotNull(OrderStatus.valueOf("DRAFT"));
-        assertNotNull(OrderStatus.valueOf("CUSTOMER_DRAFT"));
         assertNotNull(OrderStatus.valueOf("CONFIRMED"));
         assertNotNull(OrderStatus.valueOf("INVOICED"));
         assertNotNull(OrderStatus.valueOf("CANCELLED"));

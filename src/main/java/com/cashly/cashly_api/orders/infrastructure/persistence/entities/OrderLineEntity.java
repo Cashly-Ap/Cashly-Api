@@ -47,6 +47,17 @@ public class OrderLineEntity {
     @Column(name = "line_total", nullable = false, precision = 15, scale = 2)
     private BigDecimal lineTotal;
 
+    @OneToOne(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private OrderLineCategorySnapshotEntity categorySnapshot;
+
     @OneToMany(mappedBy = "orderLine", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderLineAllocationEntity> allocations = new ArrayList<>();
+
+    public void setCategorySnapshot(UUID categoryId) {
+        categorySnapshot = categoryId == null ? null : new OrderLineCategorySnapshotEntity(this, categoryId);
+    }
+
+    public UUID getCategoryIdSnapshot() {
+        return categorySnapshot == null ? null : categorySnapshot.getCategoryId();
+    }
 }

@@ -121,4 +121,22 @@ class OrderLineUnitTest {
 
         assertNotEquals(first.getId(), second.getId());
     }
+
+    @Test
+    void should_KeepCategorySnapshot_When_Created() {
+        UUID categoryId = UUID.randomUUID();
+
+        OrderLine line = OrderLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, categoryId,
+                QUANTITY, UNIT_PRICE, List.of());
+
+        assertEquals(categoryId, line.getCategoryId());
+    }
+
+    @Test
+    void should_AllowMissingCategorySnapshot_ForLegacyLine() {
+        OrderLine line = OrderLine.reconstitute(OrderLineId.generate(), PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, QUANTITY, UNIT_PRICE, List.of());
+
+        assertNull(line.getCategoryId());
+    }
 }

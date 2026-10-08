@@ -1,12 +1,10 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
 import com.cashly.cashly_api.orders.domain.entities.Order;
-import com.cashly.cashly_api.orders.domain.entities.OrderLine;
-import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
@@ -14,12 +12,12 @@ import java.util.UUID;
 public class DeleteOrderUseCase {
 
     private final OrderRepository orderRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
+    private final OrderInventoryGateway inventory;
 
     public DeleteOrderUseCase(OrderRepository orderRepository,
-                               WarehouseStockRepository warehouseStockRepository) {
+                               OrderInventoryGateway inventory) {
         this.orderRepository = orderRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
+        this.inventory = inventory;
     }
 
     @Transactional
@@ -34,15 +32,8 @@ public class DeleteOrderUseCase {
     }
 
     private void revertStockAllocations(Order order) {
-        for (OrderLine line : order.getLines()) {
-            for (OrderLineAllocation allocation : line.getAllocations()) {
-                warehouseStockRepository
-                        .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
-                        .ifPresent(stock -> {
-                            stock.releaseReserved(allocation.getAllocated().intValue());
-                            warehouseStockRepository.save(stock);
-                        });
-            }
-        }
+        inventory.release(order.getLines().stream().flatMap(line -> line.getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
+                        line.getProductId(), allocation.getAllocated().intValue()))).toList());
     }
 }

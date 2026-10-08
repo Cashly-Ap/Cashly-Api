@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
+import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,11 +34,14 @@ class GetOrdersUseCaseTest {
     @Mock
     private OrderRepository orderRepository;
 
+    @Mock
+    private OrderProductCatalogGateway products;
+
     private GetOrdersUseCase getOrdersUseCase;
 
     @BeforeEach
     void setUp() {
-        getOrdersUseCase = new GetOrdersUseCase(orderRepository);
+        getOrdersUseCase = new GetOrdersUseCase(orderRepository, products);
     }
 
     @Test
@@ -47,7 +52,7 @@ class GetOrdersUseCaseTest {
                 buildOrder(UUID.randomUUID(), customerId, OrderStatus.CONFIRMED)
         );
 
-        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), anySet(), any(), any()))
                 .thenReturn(orders);
 
         List<OrderListResponse> result = getOrdersUseCase.execute(
@@ -55,7 +60,7 @@ class GetOrdersUseCaseTest {
 
         assertNotNull(result);
         assertEquals(2, result.size());
-        verify(orderRepository).findAllWithFilters(null, null, null, null, null, null, null, null);
+        verify(orderRepository).findAllWithFilters(null, null, null, null, null, null, Set.of(), null, null);
     }
 
     @Test
@@ -67,17 +72,19 @@ class GetOrdersUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(products.findProductIdsByCurrentCategory(categoryId)).thenReturn(Set.of());
+        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), anySet(), any(), any()))
                 .thenReturn(List.of());
 
         getOrdersUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
 
-        verify(orderRepository).findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
+        verify(orderRepository).findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId,
+                Set.of(), "createdAt", "desc");
     }
 
     @Test
     void should_ReturnEmptyList_When_NoOrdersMatch() {
-        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), anySet(), any(), any()))
                 .thenReturn(List.of());
 
         List<OrderListResponse> result = getOrdersUseCase.execute(
@@ -92,24 +99,24 @@ class GetOrdersUseCaseTest {
         UUID customerId = UUID.randomUUID();
         Order order = buildOrder(UUID.randomUUID(), customerId, OrderStatus.DRAFT);
 
-        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), anySet(), any(), any()))
                 .thenReturn(List.of(order));
 
         List<OrderListResponse> result = getOrdersUseCase.execute(
                 null, null, customerId, null, null, null, null, null);
 
         assertEquals(1, result.size());
-        verify(orderRepository).findAllWithFilters(null, null, customerId, null, null, null, null, null);
+        verify(orderRepository).findAllWithFilters(null, null, customerId, null, null, null, Set.of(), null, null);
     }
 
     @Test
     void should_FilterByStatus_When_StatusProvided() {
-        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(orderRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), anySet(), any(), any()))
                 .thenReturn(List.of());
 
         getOrdersUseCase.execute(null, null, null, "CONFIRMED", null, null, null, null);
 
-        verify(orderRepository).findAllWithFilters(null, null, null, "CONFIRMED", null, null, null, null);
+        verify(orderRepository).findAllWithFilters(null, null, null, "CONFIRMED", null, null, Set.of(), null, null);
     }
 
     private Order buildOrder(UUID id, UUID customerId, OrderStatus status) {

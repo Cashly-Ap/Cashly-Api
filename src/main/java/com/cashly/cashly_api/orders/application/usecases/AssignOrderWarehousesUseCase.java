@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.contracts.OrderWarehouseGateway;
 import com.cashly.cashly_api.orders.application.dto.request.AssignOrderWarehousesRequest;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
@@ -9,8 +10,6 @@ import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -19,15 +18,15 @@ import java.util.UUID;
 public class AssignOrderWarehousesUseCase {
 
     private final OrderRepository orderRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final CustomerWarehouseAccessRepository customerWarehouseAccessRepository;
+    private final OrderInventoryGateway inventory;
+    private final OrderWarehouseGateway warehouses;
 
     public AssignOrderWarehousesUseCase(OrderRepository orderRepository,
-                                         WarehouseStockRepository warehouseStockRepository,
-                                         CustomerWarehouseAccessRepository customerWarehouseAccessRepository) {
+                                         OrderInventoryGateway inventory,
+                                         OrderWarehouseGateway warehouses) {
         this.orderRepository = orderRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.customerWarehouseAccessRepository = customerWarehouseAccessRepository;
+        this.inventory = inventory;
+        this.warehouses = warehouses;
     }
 
     @Transactional
@@ -47,13 +46,9 @@ public class AssignOrderWarehousesUseCase {
             for (var allocationRequest : lineRequest.allocations()) {
                 assertCustomerWarehouseAccess(customerId, allocationRequest.warehouseId());
 
-                WarehouseStock stock = warehouseStockRepository
-                        .findByWarehouseIdAndProductId(allocationRequest.warehouseId(), line.getProductId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Stock not found for warehouse=" + allocationRequest.warehouseId() + " product=" + line.getProductId()));
-
-                stock.reserve(allocationRequest.allocatedQuantity().intValue());
-                warehouseStockRepository.save(stock);
+                inventory.reserve(java.util.List.of(new OrderInventoryGateway.Allocation(
+                        allocationRequest.warehouseId(), line.getProductId(),
+                        allocationRequest.allocatedQuantity().intValue())));
 
                 OrderLineAllocation allocation = OrderLineAllocation.create(
                         allocationRequest.warehouseId(),
@@ -75,8 +70,7 @@ public class AssignOrderWarehousesUseCase {
     }
 
     private void assertCustomerWarehouseAccess(UUID customerId, UUID warehouseId) {
-        boolean hasAccess = customerWarehouseAccessRepository
-                .existsByCustomerIdAndWarehouseId(customerId, warehouseId);
+        boolean hasAccess = warehouses.hasCustomerAccess(customerId, warehouseId);
         if (!hasAccess) {
             throw new IllegalArgumentException(
                     "Customer " + customerId + " does not have access to warehouse " + warehouseId);

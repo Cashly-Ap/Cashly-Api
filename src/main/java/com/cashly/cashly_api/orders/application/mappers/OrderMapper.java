@@ -4,7 +4,7 @@ import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
+import com.cashly.cashly_api.orders.application.contracts.StockAvailabilityGateway;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class OrderMapper {
 
     public static OrderDetailResponse toDetailResponse(Order order,
                                                            Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
                                                            Map<WarehouseProductKey, Integer> thisOrderAllocations,
                                                            java.math.BigDecimal creditLimit,
                                                            java.math.BigDecimal availableCredit) {
@@ -53,13 +53,13 @@ public class OrderMapper {
 
     public static OrderDetailResponse toDetailResponse(Order order,
                                                            Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+                                                           Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks) {
         return toDetailResponse(order, enrichmentMap, productStocks, Map.of());
     }
 
     public static OrderDetailResponse toDetailResponse(Order order,
                                                            Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
                                                            Map<WarehouseProductKey, Integer> thisOrderAllocations) {
         return toDetailResponse(order, enrichmentMap, productStocks, thisOrderAllocations, null, null);
     }
@@ -84,7 +84,7 @@ public class OrderMapper {
 
     private static OrderDetailResponse.OrderLineDetailResponse toLineDetailResponse(
             OrderLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+            Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
             Map<WarehouseProductKey, Integer> thisOrderAllocations) {
 
         List<OrderDetailResponse.OrderLineDetailResponse.AllocationDetail> allocationDetails =

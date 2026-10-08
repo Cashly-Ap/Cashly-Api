@@ -81,6 +81,7 @@ public class OrderJpaMapper {
         entity.setQuantity(line.getQuantity());
         entity.setUnitPrice(line.getUnitPrice());
         entity.setLineTotal(line.getLineTotal());
+        entity.setCategorySnapshot(line.getCategoryId());
 
         List<OrderLineAllocationEntity> allocationEntities = line.getAllocations().stream()
                 .map(a -> toAllocationEntity(a, entity))
@@ -111,6 +112,7 @@ public class OrderJpaMapper {
                 entity.getProductId(),
                 entity.getProductName(),
                 entity.getProductCode(),
+                entity.getCategoryIdSnapshot(),
                 entity.getQuantity(),
                 entity.getUnitPrice(),
                 allocations

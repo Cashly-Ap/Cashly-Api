@@ -13,12 +13,13 @@ public class OrderLine {
     private final UUID productId;
     private final String productName;
     private final String productCode;
+    private final UUID categoryId;
     private final BigDecimal quantity;
     private final BigDecimal unitPrice;
     private final BigDecimal lineTotal;
     private final List<OrderLineAllocation> allocations;
 
-    private OrderLine(OrderLineId id, UUID productId, String productName, String productCode,
+    private OrderLine(OrderLineId id, UUID productId, String productName, String productCode, UUID categoryId,
                       BigDecimal quantity, BigDecimal unitPrice, List<OrderLineAllocation> allocations) {
         Objects.requireNonNull(id, "OrderLine id cannot be null");
         Objects.requireNonNull(productId, "Product id cannot be null");
@@ -38,6 +39,7 @@ public class OrderLine {
         this.productId = productId;
         this.productName = productName;
         this.productCode = productCode;
+        this.categoryId = categoryId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.lineTotal = quantity.multiply(unitPrice);
@@ -47,20 +49,33 @@ public class OrderLine {
     public static OrderLine create(UUID productId, String productName, String productCode,
                                    BigDecimal quantity, BigDecimal unitPrice,
                                    List<OrderLineAllocation> allocations) {
-        return new OrderLine(OrderLineId.generate(), productId, productName, productCode,
+        return create(productId, productName, productCode, null, quantity, unitPrice, allocations);
+    }
+
+    public static OrderLine create(UUID productId, String productName, String productCode, UUID categoryId,
+                                   BigDecimal quantity, BigDecimal unitPrice,
+                                   List<OrderLineAllocation> allocations) {
+        return new OrderLine(OrderLineId.generate(), productId, productName, productCode, categoryId,
                 quantity, unitPrice, allocations);
     }
 
     public static OrderLine reconstitute(OrderLineId id, UUID productId, String productName,
                                          String productCode, BigDecimal quantity,
                                          BigDecimal unitPrice, List<OrderLineAllocation> allocations) {
-        return new OrderLine(id, productId, productName, productCode, quantity, unitPrice, allocations);
+        return reconstitute(id, productId, productName, productCode, null, quantity, unitPrice, allocations);
+    }
+
+    public static OrderLine reconstitute(OrderLineId id, UUID productId, String productName,
+                                         String productCode, UUID categoryId, BigDecimal quantity,
+                                         BigDecimal unitPrice, List<OrderLineAllocation> allocations) {
+        return new OrderLine(id, productId, productName, productCode, categoryId, quantity, unitPrice, allocations);
     }
 
     public OrderLineId getId() { return id; }
     public UUID getProductId() { return productId; }
     public String getProductName() { return productName; }
     public String getProductCode() { return productCode; }
+    public UUID getCategoryId() { return categoryId; }
     public BigDecimal getQuantity() { return quantity; }
     public BigDecimal getUnitPrice() { return unitPrice; }
     public BigDecimal getLineTotal() { return lineTotal; }
