@@ -4,14 +4,14 @@ import com.cashly.cashly_api.cashregister.application.dto.CashRegisterReportFilt
 import com.cashly.cashly_api.cashregister.application.dto.ReportFormat;
 import com.cashly.cashly_api.cashregister.application.dto.ReportType;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterRangeReportPort;
-import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 
 public class GenerateCashRegisterRangeReportUseCase {
 
-    private final CashRegisterRepository repository;
+    private final CashRegisterQueryGateway repository;
     private final CashRegisterRangeReportPort reportPort;
 
-    public GenerateCashRegisterRangeReportUseCase(CashRegisterRepository repository,
+    public GenerateCashRegisterRangeReportUseCase(CashRegisterQueryGateway repository,
                                                    CashRegisterRangeReportPort reportPort) {
         this.repository = repository;
         this.reportPort = reportPort;

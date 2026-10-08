@@ -3,6 +3,7 @@ package com.cashly.cashly_api.cashregister.application.usecases;
 import com.cashly.cashly_api.cashregister.application.dto.CashRegisterMapper;
 import com.cashly.cashly_api.cashregister.application.dto.CashRegisterResponse;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterId;
 
@@ -12,9 +13,11 @@ import java.math.BigDecimal;
 public class CloseRegisterUseCase {
 
     private final CashRegisterRepository closureRepository;
+    private final CashRegisterQueryGateway queries;
 
-    public CloseRegisterUseCase(CashRegisterRepository closureRepository) {
+    public CloseRegisterUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
         this.closureRepository = closureRepository;
+        this.queries = queries;
     }
 
     public CashRegisterResponse execute(UUID closureId, UUID closedBy, String closedByName,
@@ -22,7 +25,7 @@ public class CloseRegisterUseCase {
         CashRegister closure = closureRepository.findById(RegisterId.of(closureId))
                 .orElseThrow(() -> new IllegalArgumentException("Closure not found: " + closureId));
 
-        var dailyTotals = closureRepository.findSessionTotals(closure.getId());
+        var dailyTotals = queries.findSessionTotals(closure.getId());
 
         closure.applyTotals(
                 dailyTotals.totalPayments(), dailyTotals.paymentCount(),

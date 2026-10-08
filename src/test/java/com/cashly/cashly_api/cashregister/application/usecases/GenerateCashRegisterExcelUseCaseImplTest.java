@@ -6,7 +6,7 @@ import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
 import com.cashly.cashly_api.cashregister.application.dto.ReportType;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterExcelPort;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegisterDetail;
-import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class GenerateCashRegisterExcelUseCaseImplTest {
 
     @Mock
-    private CashRegisterRepository repository;
+    private CashRegisterQueryGateway repository;
 
     @Mock
     private CashRegisterExcelPort excelPort;

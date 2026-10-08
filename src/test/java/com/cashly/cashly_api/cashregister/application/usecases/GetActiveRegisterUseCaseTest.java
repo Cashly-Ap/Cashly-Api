@@ -3,6 +3,7 @@ package com.cashly.cashly_api.cashregister.application.usecases;
 import com.cashly.cashly_api.cashregister.application.dto.CashRegisterResponse;
 import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterId;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterStatus;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.when;
 @DisplayName("GetActiveRegisterUseCase Unit Tests")
 class GetActiveRegisterUseCaseTest {
 
+    @Mock private CashRegisterQueryGateway queries;
+
     @Mock
     private CashRegisterRepository closureRepository;
 
@@ -41,7 +44,7 @@ class GetActiveRegisterUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GetActiveRegisterUseCase(closureRepository);
+        useCase = new GetActiveRegisterUseCase(closureRepository, queries);
     }
 
     private DailyTotals emptyDailyTotals() {
@@ -79,7 +82,7 @@ class GetActiveRegisterUseCaseTest {
                 BigDecimal.ZERO, null, null, null, 0,
                 LocalDateTime.now().minusDays(2), LocalDateTime.now(), List.of());
         when(closureRepository.findActiveClosure()).thenReturn(Optional.of(activeClosure));
-        when(closureRepository.findSessionTotals(activeClosure.getId())).thenReturn(emptyDailyTotals());
+        when(queries.findSessionTotals(activeClosure.getId())).thenReturn(emptyDailyTotals());
         when(closureRepository.save(any(CashRegister.class))).thenReturn(activeClosure);
 
         Optional<CashRegisterResponse> response = useCase.execute();

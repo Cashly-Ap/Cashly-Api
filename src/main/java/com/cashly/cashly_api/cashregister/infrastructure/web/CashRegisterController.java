@@ -18,6 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -94,6 +97,10 @@ public class CashRegisterController {
             @RequestParam(required = false) LocalDate dateTo,
             @RequestParam(defaultValue = "false") boolean detailed) {
         var history = getRegisterHistoryUseCase.execute(page, size, sort, dateFrom, dateTo, detailed);
-        return ResponseEntity.ok(history);
+        String[] sortParts = sort == null || sort.isBlank() ? new String[0] : sort.split(",");
+        Sort historySort = sortParts.length == 0 ? Sort.unsorted() : sortParts.length < 2 ? Sort.by(sortParts[0].trim())
+                : Sort.by(Sort.Direction.fromString(sortParts[1].trim()), sortParts[0].trim());
+        return ResponseEntity.ok(new PageImpl<>(history.content(),
+                PageRequest.of(page, size, historySort), history.totalElements()));
     }
 }

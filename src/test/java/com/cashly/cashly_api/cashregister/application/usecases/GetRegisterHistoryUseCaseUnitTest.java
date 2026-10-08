@@ -5,6 +5,7 @@ import com.cashly.cashly_api.cashregister.application.dto.CashRegisterResponse;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
 import com.cashly.cashly_api.cashregister.domain.entities.CashMovement;
 import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDate;
@@ -29,6 +31,8 @@ import static org.mockito.Mockito.*;
 @DisplayName("GetRegisterHistoryUseCase Unit Tests")
 class GetRegisterHistoryUseCaseUnitTest {
 
+    @Mock private CashRegisterQueryGateway queries;
+
     @Mock
     private CashRegisterRepository repository;
 
@@ -36,7 +40,7 @@ class GetRegisterHistoryUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GetRegisterHistoryUseCase(repository);
+        useCase = new GetRegisterHistoryUseCase(repository, queries);
     }
 
     @Test
@@ -44,8 +48,8 @@ class GetRegisterHistoryUseCaseUnitTest {
         var cashRegister = mock(CashRegister.class);
         var page = new PageImpl<>(List.of(cashRegister));
 
-        when(repository.findAll(eq(0), eq(20), eq("closureDate,desc"), isNull(), isNull()))
-                .thenReturn(page);
+        when(queries.findAll(eq(0), eq(20), eq("closureDate,desc"), isNull(), isNull()))
+                .thenReturn(PageResponseMapper.from(page));
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
             var expectedResponse = mock(CashRegisterResponse.class);
@@ -55,9 +59,9 @@ class GetRegisterHistoryUseCaseUnitTest {
             var result = useCase.execute(0, 20, "closureDate,desc", null, null);
 
             assertNotNull(result);
-            assertEquals(1, result.getTotalElements());
-            assertEquals(expectedResponse, result.getContent().getFirst());
-            verify(repository).findAll(0, 20, "closureDate,desc", null, null);
+            assertEquals(1, result.totalElements());
+            assertEquals(expectedResponse, result.content().getFirst());
+            verify(queries).findAll(0, 20, "closureDate,desc", null, null);
         }
     }
 
@@ -68,8 +72,8 @@ class GetRegisterHistoryUseCaseUnitTest {
         var dateFrom = LocalDate.of(2025, 1, 1);
         var dateTo = LocalDate.of(2025, 12, 31);
 
-        when(repository.findAll(eq(0), eq(10), eq("closureDate,desc"), eq(dateFrom), eq(dateTo)))
-                .thenReturn(page);
+        when(queries.findAll(eq(0), eq(10), eq("closureDate,desc"), eq(dateFrom), eq(dateTo)))
+                .thenReturn(PageResponseMapper.from(page));
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
             var expectedResponse = mock(CashRegisterResponse.class);
@@ -79,8 +83,8 @@ class GetRegisterHistoryUseCaseUnitTest {
             var result = useCase.execute(0, 10, "closureDate,desc", dateFrom, dateTo);
 
             assertNotNull(result);
-            assertEquals(1, result.getTotalElements());
-            verify(repository).findAll(0, 10, "closureDate,desc", dateFrom, dateTo);
+            assertEquals(1, result.totalElements());
+            verify(queries).findAll(0, 10, "closureDate,desc", dateFrom, dateTo);
         }
     }
 
@@ -90,8 +94,8 @@ class GetRegisterHistoryUseCaseUnitTest {
         var page = new PageImpl<>(List.of(cashRegister));
         var dateFrom = LocalDate.of(2025, 6, 1);
 
-        when(repository.findAll(eq(0), eq(20), anyString(), eq(dateFrom), isNull()))
-                .thenReturn(page);
+        when(queries.findAll(eq(0), eq(20), anyString(), eq(dateFrom), isNull()))
+                .thenReturn(PageResponseMapper.from(page));
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
             var expectedResponse = mock(CashRegisterResponse.class);
@@ -101,23 +105,23 @@ class GetRegisterHistoryUseCaseUnitTest {
             var result = useCase.execute(0, 20, "closureDate,desc", dateFrom, null);
 
             assertNotNull(result);
-            assertEquals(1, result.getTotalElements());
-            verify(repository).findAll(0, 20, "closureDate,desc", dateFrom, null);
+            assertEquals(1, result.totalElements());
+            verify(queries).findAll(0, 20, "closureDate,desc", dateFrom, null);
         }
     }
 
     @Test
     void should_return_empty_page_when_no_results() {
-        Page<CashRegister> emptyPage = new PageImpl<>(List.<CashRegister>of());
+        org.springframework.data.domain.Page<CashRegister> emptyPage = new PageImpl<>(List.<CashRegister>of());
 
-        when(repository.findAll(eq(0), eq(20), anyString(), isNull(), isNull()))
-                .thenReturn(emptyPage);
+        when(queries.findAll(eq(0), eq(20), anyString(), isNull(), isNull()))
+                .thenReturn(PageResponseMapper.from(emptyPage));
 
         var result = useCase.execute(0, 20, "closureDate,desc", null, null);
 
         assertNotNull(result);
-        assertEquals(0, result.getTotalElements());
-        assertEquals(0, result.getContent().size());
+        assertEquals(0, result.totalElements());
+        assertEquals(0, result.content().size());
     }
 
     @Test
@@ -126,8 +130,8 @@ class GetRegisterHistoryUseCaseUnitTest {
         var movements = List.of(mock(CashMovement.class));
         var page = new PageImpl<>(List.of(cashRegister));
         var totals = mock(DailyTotals.class);
-        when(repository.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(page);
-        when(repository.findSessionTotals(cashRegister.getId())).thenReturn(totals);
+        when(queries.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(PageResponseMapper.from(page));
+        when(queries.findSessionTotals(cashRegister.getId())).thenReturn(totals);
         when(totals.totalRevenue()).thenReturn(java.math.BigDecimal.ZERO);
         when(totals.totalExpenses()).thenReturn(java.math.BigDecimal.ZERO);
         when(repository.findMovements(cashRegister.getId())).thenReturn(movements);
@@ -138,7 +142,7 @@ class GetRegisterHistoryUseCaseUnitTest {
 
             var result = useCase.execute(0, 20, "openedAt,desc", null, null, true);
 
-            assertEquals(expected, result.getContent().getFirst());
+            assertEquals(expected, result.content().getFirst());
             verify(repository).findMovements(cashRegister.getId());
         }
     }
@@ -149,8 +153,8 @@ class GetRegisterHistoryUseCaseUnitTest {
         var movements = List.of(mock(CashMovement.class));
         var page = new PageImpl<>(List.of(cashRegister));
         var totals = mock(DailyTotals.class);
-        when(repository.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(page);
-        when(repository.findSessionTotals(cashRegister.getId())).thenReturn(totals);
+        when(queries.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(PageResponseMapper.from(page));
+        when(queries.findSessionTotals(cashRegister.getId())).thenReturn(totals);
         when(totals.totalRevenue()).thenReturn(java.math.BigDecimal.ZERO);
         when(totals.totalExpenses()).thenReturn(java.math.BigDecimal.ZERO);
         when(repository.findMovements(cashRegister.getId())).thenReturn(movements);
@@ -162,7 +166,7 @@ class GetRegisterHistoryUseCaseUnitTest {
 
             var result = useCase.execute(0, 20, "openedAt,desc", null, null, false);
 
-            assertEquals(expected, result.getContent().getFirst());
+            assertEquals(expected, result.content().getFirst());
         }
     }
 
@@ -170,7 +174,7 @@ class GetRegisterHistoryUseCaseUnitTest {
     void should_preserve_stored_totals_for_legacy_session_without_movements() {
         var cashRegister = mock(CashRegister.class);
         var page = new PageImpl<>(List.of(cashRegister));
-        when(repository.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(page);
+        when(queries.findAll(0, 20, "openedAt,desc", null, null)).thenReturn(PageResponseMapper.from(page));
         when(repository.findMovements(cashRegister.getId())).thenReturn(List.of());
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(CashRegisterMapper.class)) {
@@ -179,8 +183,21 @@ class GetRegisterHistoryUseCaseUnitTest {
 
             var result = useCase.execute(0, 20, "openedAt,desc", null, null, true);
 
-            assertEquals(expected, result.getContent().getFirst());
-            verify(repository, never()).findSessionTotals(any());
+            assertEquals(expected, result.content().getFirst());
+            verify(queries, never()).findSessionTotals(any());
+        }
+    }
+    @Test
+    void should_preserve_all_history_pagination_metadata() {
+        var cashRegister = mock(CashRegister.class);
+        var response = mock(CashRegisterResponse.class);
+        var page = new PageResponse<>(List.of(cashRegister), 12L, 3, 5, 1, false, false, false);
+        when(queries.findAll(1, 5, "openedAt,desc", null, null)).thenReturn(page);
+        when(repository.findMovements(cashRegister.getId())).thenReturn(List.of());
+        try (MockedStatic<CashRegisterMapper> mapper = mockStatic(CashRegisterMapper.class)) {
+            mapper.when(() -> CashRegisterMapper.toResponse(cashRegister)).thenReturn(response);
+            assertEquals(new PageResponse<>(List.of(response), 12L, 3, 5, 1, false, false, false),
+                    useCase.execute(1, 5, "openedAt,desc", null, null));
         }
     }
 }

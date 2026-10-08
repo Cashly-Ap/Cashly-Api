@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.cashregister.infrastructure.excel;
 
 import com.cashly.cashly_api.cashregister.application.dto.CashRegisterExportRow;
-import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 class CashRegisterExcelExportServiceUnitTest {
 
     @Mock
-    private CashRegisterRepository repository;
+    private CashRegisterQueryGateway repository;
 
     private CashRegisterExcelExportService service;
 

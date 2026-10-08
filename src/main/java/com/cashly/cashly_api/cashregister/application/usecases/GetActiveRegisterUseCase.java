@@ -4,19 +4,22 @@ import com.cashly.cashly_api.cashregister.application.dto.CashRegisterMapper;
 import com.cashly.cashly_api.cashregister.application.dto.CashRegisterResponse;
 import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import java.util.Optional;
 
 public class GetActiveRegisterUseCase {
 
     private final CashRegisterRepository closureRepository;
-    public GetActiveRegisterUseCase(CashRegisterRepository closureRepository) {
+    private final CashRegisterQueryGateway queries;
+    public GetActiveRegisterUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
         this.closureRepository = closureRepository;
+        this.queries = queries;
     }
 
     public Optional<CashRegisterResponse> execute() {
         return closureRepository.findActiveClosure().map(closure -> {
-            var sessionTotals = closureRepository.findSessionTotals(closure.getId());
+            var sessionTotals = queries.findSessionTotals(closure.getId());
 
             closure.applyTotals(
                     sessionTotals.totalPayments(), sessionTotals.paymentCount(),

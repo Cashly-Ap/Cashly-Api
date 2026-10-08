@@ -2,6 +2,7 @@ package com.cashly.cashly_api.cashregister.application.usecases;
 
 import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterId;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,8 @@ import static org.mockito.Mockito.*;
 @DisplayName("CloseRegisterUseCase Unit Tests")
 class CloseRegisterUseCaseUnitTest {
 
+    @Mock private CashRegisterQueryGateway queries;
+
     @Mock
     private CashRegisterRepository closureRepository;
 
@@ -36,14 +39,14 @@ class CloseRegisterUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CloseRegisterUseCase(closureRepository);
+        useCase = new CloseRegisterUseCase(closureRepository, queries);
         openClosure = CashRegister.open(RegisterId.of(closureId), LocalDate.now(), userId, "Operator");
     }
 
     @Test
     void should_CloseClosure_When_StatusIsOpen() {
         when(closureRepository.findById(RegisterId.of(closureId))).thenReturn(Optional.of(openClosure));
-        when(closureRepository.findSessionTotals(any(RegisterId.class)))
+        when(queries.findSessionTotals(any(RegisterId.class)))
                 .thenReturn(new DailyTotals(
                         BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
                         BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,

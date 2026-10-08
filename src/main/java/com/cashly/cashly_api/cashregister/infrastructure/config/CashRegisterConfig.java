@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.cashregister.infrastructure.config;
 
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterActorGateway;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterPaymentMethodGateway;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterExcelPort;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterReportPort;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterRangeReportPort;
@@ -14,9 +15,9 @@ import com.cashly.cashly_api.cashregister.application.usecases.GetActiveRegister
 import com.cashly.cashly_api.cashregister.application.usecases.GetRegisterHistoryUseCase;
 import com.cashly.cashly_api.cashregister.application.usecases.OpenRegisterUseCase;
 import com.cashly.cashly_api.cashregister.application.usecases.RecordCashMovementUseCase;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.infrastructure.excel.CashRegisterExcelGenerator;
-import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,31 +30,31 @@ public class CashRegisterConfig {
     }
 
     @Bean
-    GetActiveRegisterUseCase getActiveClosureUseCase(CashRegisterRepository closureRepository) {
-        return new GetActiveRegisterUseCase(closureRepository);
+    GetActiveRegisterUseCase getActiveClosureUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+        return new GetActiveRegisterUseCase(closureRepository, queries);
     }
 
     @Bean
-    CloseRegisterUseCase closeClosureUseCase(CashRegisterRepository closureRepository) {
-        return new CloseRegisterUseCase(closureRepository);
+    CloseRegisterUseCase closeClosureUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+        return new CloseRegisterUseCase(closureRepository, queries);
     }
 
     @Bean
-    GetRegisterHistoryUseCase getClosureHistoryUseCase(CashRegisterRepository closureRepository) {
-        return new GetRegisterHistoryUseCase(closureRepository);
+    GetRegisterHistoryUseCase getClosureHistoryUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+        return new GetRegisterHistoryUseCase(closureRepository, queries);
     }
 
     @Bean
     CashMovementService cashMovementService(CashRegisterRepository registerRepository,
-                                            PaymentMethodRepository paymentMethodRepository) {
-        return new CashMovementService(registerRepository, paymentMethodRepository);
+                                            CashRegisterPaymentMethodGateway paymentMethods) {
+        return new CashMovementService(registerRepository, paymentMethods);
     }
 
     @Bean
     RecordCashMovementUseCase recordCashMovementUseCase(CashRegisterRepository registerRepository,
-                                                        UserRepository userRepository,
+                                                        CashRegisterActorGateway actors,
                                                         CashMovementService movementService) {
-        return new RecordCashMovementUseCase(registerRepository, userRepository, movementService);
+        return new RecordCashMovementUseCase(registerRepository, actors, movementService);
     }
 
     @Bean
@@ -63,21 +64,21 @@ public class CashRegisterConfig {
 
     @Bean
     GenerateCashRegisterExcelUseCase generateCashRegisterExcelUseCase(
-            CashRegisterRepository repository,
+            CashRegisterQueryGateway repository,
             CashRegisterExcelPort excelPort) {
         return new GenerateCashRegisterExcelUseCaseImpl(repository, excelPort);
     }
 
     @Bean
     GenerateCashRegisterReportUseCase generateCashRegisterReportUseCase(
-            CashRegisterRepository repository,
+            CashRegisterRepository repository, CashRegisterQueryGateway queries,
             CashRegisterReportPort reportPort) {
-        return new GenerateCashRegisterReportUseCase(repository, reportPort);
+        return new GenerateCashRegisterReportUseCase(repository, queries, reportPort);
     }
 
     @Bean
     GenerateCashRegisterRangeReportUseCase generateCashRegisterRangeReportUseCase(
-            CashRegisterRepository repository,
+            CashRegisterQueryGateway repository,
             CashRegisterRangeReportPort reportPort) {
         return new GenerateCashRegisterRangeReportUseCase(repository, reportPort);
     }

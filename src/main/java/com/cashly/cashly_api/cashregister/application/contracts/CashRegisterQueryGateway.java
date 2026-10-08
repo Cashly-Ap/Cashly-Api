@@ -1,0 +1,23 @@
+package com.cashly.cashly_api.cashregister.application.contracts;
+
+import com.cashly.cashly_api.cashregister.application.dto.CashRegisterExportRow;
+import com.cashly.cashly_api.cashregister.application.dto.CashRegisterReportFilter;
+import com.cashly.cashly_api.cashregister.application.dto.CustomerSummary;
+import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
+import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
+import com.cashly.cashly_api.cashregister.domain.entities.CashRegisterDetail;
+import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterId;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import java.time.LocalDate;
+import java.util.List;
+
+public interface CashRegisterQueryGateway {
+    PageResponse<CashRegister> findAll(int page, int size, String sort, LocalDate dateFrom, LocalDate dateTo);
+    DailyTotals findDailyTotals(LocalDate closureDate);
+    DailyTotals findSessionTotals(RegisterId registerId);
+    DailyTotals findRangeTotals(LocalDate dateFrom, LocalDate dateTo);
+    List<CashRegisterExportRow> findExportRows(LocalDate dateFrom, LocalDate dateTo);
+    List<CashRegisterExportRow> findExportRows(CashRegisterReportFilter filter);
+    List<CashRegisterDetail> findPaymentMethodSummary(LocalDate dateFrom, LocalDate dateTo);
+    List<CustomerSummary> findCustomerSummary(LocalDate dateFrom, LocalDate dateTo);
+}

@@ -6,6 +6,7 @@ import com.cashly.cashly_api.cashregister.application.dto.ReportType;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterReportPort;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
 import com.cashly.cashly_api.cashregister.domain.entities.CashMovement;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterId;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GenerateCashRegisterReportUseCaseTest {
 
+    @Mock private CashRegisterQueryGateway queries;
+
     @Mock private CashRegisterRepository repository;
     @Mock private CashRegisterReportPort reportPort;
 
@@ -35,7 +38,7 @@ class GenerateCashRegisterReportUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GenerateCashRegisterReportUseCase(repository, reportPort);
+        useCase = new GenerateCashRegisterReportUseCase(repository, queries, reportPort);
     }
 
     @Test
@@ -53,7 +56,7 @@ class GenerateCashRegisterReportUseCaseTest {
                 BigDecimal.ZERO, new BigDecimal("70.00"), new BigDecimal("20.00"),
                 List.of());
         when(repository.findById(RegisterId.of(id))).thenReturn(Optional.of(register));
-        when(repository.findSessionTotals(register.getId())).thenReturn(totals);
+        when(queries.findSessionTotals(register.getId())).thenReturn(totals);
         when(repository.findMovements(register.getId())).thenReturn(List.of(org.mockito.Mockito.mock(CashMovement.class)));
         when(reportPort.generateExcel(argThat(response ->
                 response.expectedBalance().compareTo(new BigDecimal("150.00")) == 0),
@@ -83,6 +86,6 @@ class GenerateCashRegisterReportUseCaseTest {
         byte[] result = useCase.execute(id, ReportFormat.PDF, ReportType.DETAILED);
 
         assertArrayEquals(new byte[]{4, 5, 6}, result);
-        verify(repository, org.mockito.Mockito.never()).findSessionTotals(register.getId());
+        verify(queries, org.mockito.Mockito.never()).findSessionTotals(register.getId());
     }
 }

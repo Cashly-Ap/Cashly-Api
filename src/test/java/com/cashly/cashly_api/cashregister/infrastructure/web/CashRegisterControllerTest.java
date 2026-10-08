@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,7 +114,7 @@ class CashRegisterControllerTest {
         Page<CashRegisterResponse> page = new PageImpl<>(List.of(response));
 
         when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(), any(), any(), anyBoolean()))
-                .thenReturn(page);
+                .thenReturn(PageResponseMapper.from(page));
 
         ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController.getHistory(
                 0, 20, "closureDate,desc", null, null, true);
@@ -130,7 +131,7 @@ class CashRegisterControllerTest {
         Page<CashRegisterResponse> emptyPage = Page.empty();
 
         when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(), any(), any(), anyBoolean()))
-                .thenReturn(emptyPage);
+                .thenReturn(PageResponseMapper.from(emptyPage));
 
         ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController.getHistory(
                 0, 20, "closureDate,desc", null, null, false);
@@ -138,5 +139,22 @@ class CashRegisterControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
         verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc", null, null, false);
+    }
+    @Test
+    void should_preserve_web_history_page_and_sort_metadata() {
+        var response = mock(CashRegisterResponse.class);
+        when(getRegisterHistoryUseCase.execute(1, 5, "openedAt,desc", null, null, false))
+                .thenReturn(new com.cashly.cashly_api.shared.dto.PageResponse<>(List.of(response), 12L,
+                        3, 5, 1, false, false, false));
+        var page = cashRegisterController.getHistory(1, 5, "openedAt,desc", null, null, false).getBody();
+        assertNotNull(page);
+        assertEquals(1, page.getNumber());
+        assertEquals(5, page.getSize());
+        assertEquals(12L, page.getTotalElements());
+        assertEquals(3, page.getTotalPages());
+        assertFalse(page.isFirst());
+        assertFalse(page.isLast());
+        assertEquals(org.springframework.data.domain.Sort.Direction.DESC,
+                page.getSort().getOrderFor("openedAt").getDirection());
     }
 }

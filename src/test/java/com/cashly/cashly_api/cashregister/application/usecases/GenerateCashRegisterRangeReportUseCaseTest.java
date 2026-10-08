@@ -5,7 +5,7 @@ import com.cashly.cashly_api.cashregister.application.dto.CashRegisterReportFilt
 import com.cashly.cashly_api.cashregister.application.dto.ReportFormat;
 import com.cashly.cashly_api.cashregister.application.dto.ReportType;
 import com.cashly.cashly_api.cashregister.application.port.CashRegisterRangeReportPort;
-import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ class GenerateCashRegisterRangeReportUseCaseTest {
 
     @Test
     void should_generate_filtered_pdf_report() {
-        CashRegisterRepository repository = mock(CashRegisterRepository.class);
+        CashRegisterQueryGateway repository = mock(CashRegisterQueryGateway.class);
         CashRegisterRangeReportPort reportPort = mock(CashRegisterRangeReportPort.class);
         var useCase = new GenerateCashRegisterRangeReportUseCase(repository, reportPort);
         var filter = new CashRegisterReportFilter(

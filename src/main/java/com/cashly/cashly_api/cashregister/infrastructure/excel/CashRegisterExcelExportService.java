@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.cashregister.infrastructure.excel;
 
 import com.cashly.cashly_api.cashregister.application.dto.CashRegisterExportRow;
-import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -46,9 +46,9 @@ public class CashRegisterExcelExportService {
     private static final String MSG_NO_DATA = "No se encontraron transacciones para la fecha especificada";
     private static final String ERROR_EXCEL = "Error al generar el archivo Excel";
 
-    private final CashRegisterRepository repository;
+    private final CashRegisterQueryGateway repository;
 
-    public CashRegisterExcelExportService(CashRegisterRepository repository) {
+    public CashRegisterExcelExportService(CashRegisterQueryGateway repository) {
         this.repository = repository;
     }
 

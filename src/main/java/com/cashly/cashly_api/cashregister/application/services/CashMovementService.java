@@ -4,8 +4,7 @@ import com.cashly.cashly_api.cashregister.domain.entities.CashMovement;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
-import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterPaymentMethodGateway;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -13,12 +12,12 @@ import java.util.UUID;
 public class CashMovementService {
 
     private final CashRegisterRepository registerRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
+    private final CashRegisterPaymentMethodGateway paymentMethods;
 
     public CashMovementService(CashRegisterRepository registerRepository,
-                               PaymentMethodRepository paymentMethodRepository) {
+                               CashRegisterPaymentMethodGateway paymentMethods) {
         this.registerRepository = registerRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
+        this.paymentMethods = paymentMethods;
     }
 
     public void requireOpenRegister() {
@@ -33,9 +32,9 @@ public class CashMovementService {
             throw new IllegalStateException("The monetary operation is already registered in cash");
         }
         var registerId = activeRegisterId();
-        String paymentMethodName = paymentMethodId == null ? "Sin método" : paymentMethodRepository
-                .findById(PaymentMethodId.of(paymentMethodId))
-                .map(method -> method.getName())
+        String paymentMethodName = paymentMethodId == null ? "Sin método" : paymentMethods
+                .findById(paymentMethodId)
+                .map(CashRegisterPaymentMethodGateway.PaymentMethod::name)
                 .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + paymentMethodId));
         CashMovement movement = CashMovement.create(registerId, direction, type, amount,
                 paymentMethodId, paymentMethodName, normalizeDescription(description, type),

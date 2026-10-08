@@ -1,7 +1,6 @@
 package com.cashly.cashly_api.cashregister.application.usecases;
 
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterActorGateway;
 import com.cashly.cashly_api.cashregister.application.dto.CashMovementRequest;
 import com.cashly.cashly_api.cashregister.application.dto.CashMovementResponse;
 import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
@@ -14,14 +13,14 @@ import java.util.UUID;
 public class RecordCashMovementUseCase {
 
     private final CashRegisterRepository registerRepository;
-    private final UserRepository userRepository;
+    private final CashRegisterActorGateway actors;
     private final CashMovementService movementService;
 
     public RecordCashMovementUseCase(CashRegisterRepository registerRepository,
-                                     UserRepository userRepository,
+                                     CashRegisterActorGateway actors,
                                      CashMovementService movementService) {
         this.registerRepository = registerRepository;
-        this.userRepository = userRepository;
+        this.actors = actors;
         this.movementService = movementService;
     }
 
@@ -33,8 +32,8 @@ public class RecordCashMovementUseCase {
         if (!active.getId().equals(RegisterId.of(registerId))) {
             throw new IllegalStateException("Movements can only be added to the active register");
         }
-        String userName = userRepository.findById(new UserId(userId))
-                .map(user -> user.getUserName().getValue())
+        String userName = actors.findById(userId)
+                .map(CashRegisterActorGateway.Actor::name)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
         var movement = movementService.record(request.direction(), request.type(), request.amount(),
                 request.paymentMethodId(), request.description(), "MANUAL", null, userId, userName);

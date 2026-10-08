@@ -6,9 +6,7 @@ import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterReposi
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.RegisterId;
-import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
-import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
-import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterPaymentMethodGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,13 +29,13 @@ import static org.mockito.Mockito.when;
 class CashMovementServiceTest {
 
     @Mock CashRegisterRepository registerRepository;
-    @Mock PaymentMethodRepository paymentMethodRepository;
+    @Mock CashRegisterPaymentMethodGateway paymentMethods;
 
     private CashMovementService service;
 
     @BeforeEach
     void setUp() {
-        service = new CashMovementService(registerRepository, paymentMethodRepository);
+        service = new CashMovementService(registerRepository, paymentMethods);
     }
 
     @Test
@@ -57,10 +55,9 @@ class CashMovementServiceTest {
         CashRegister register = CashRegister.open(RegisterId.generate(), LocalDate.now(),
                 UUID.randomUUID(), "Operator", BigDecimal.ZERO);
         UUID paymentMethodId = UUID.randomUUID();
-        PaymentMethod method = PaymentMethod.reconstitute(PaymentMethodId.of(paymentMethodId),
-                "PM-0001", "Efectivo", null, true, java.time.LocalDateTime.now(), java.time.LocalDateTime.now());
         when(registerRepository.findActiveClosure()).thenReturn(Optional.of(register));
-        when(paymentMethodRepository.findById(PaymentMethodId.of(paymentMethodId))).thenReturn(Optional.of(method));
+        when(paymentMethods.findById(paymentMethodId)).thenReturn(Optional.of(
+                new CashRegisterPaymentMethodGateway.PaymentMethod(paymentMethodId, "Efectivo")));
         when(registerRepository.saveMovement(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         CashMovement movement = service.record(CashMovementDirection.IN, CashMovementType.PAYMENT,
@@ -83,5 +80,20 @@ class CashMovementServiceTest {
                 UUID.randomUUID(), "Operator");
 
         assertEquals("PAYMENT", movement.getDescription());
+    }
+
+    @Test
+    void should_RejectUnknownPaymentMethodWithoutSavingMovement() {
+        CashRegister register = CashRegister.open(RegisterId.generate(), LocalDate.now(),
+                UUID.randomUUID(), "Operator", BigDecimal.ZERO);
+        UUID paymentMethodId = UUID.randomUUID();
+        when(registerRepository.findActiveClosure()).thenReturn(Optional.of(register));
+        when(paymentMethods.findById(paymentMethodId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> service.record(
+                CashMovementDirection.IN, CashMovementType.PAYMENT, BigDecimal.TEN,
+                paymentMethodId, "Pago", "PAYMENT", UUID.randomUUID(), UUID.randomUUID(), "Operator"));
+
+        verify(registerRepository, never()).saveMovement(any());
     }
 }

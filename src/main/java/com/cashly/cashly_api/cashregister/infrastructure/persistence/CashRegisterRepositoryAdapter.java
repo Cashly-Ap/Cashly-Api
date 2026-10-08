@@ -7,6 +7,9 @@ import com.cashly.cashly_api.cashregister.application.dto.DailyTotals;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegister;
 import com.cashly.cashly_api.cashregister.domain.entities.CashRegisterDetail;
 import com.cashly.cashly_api.cashregister.domain.entities.CashMovement;
+import com.cashly.cashly_api.cashregister.application.contracts.CashRegisterQueryGateway;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 import com.cashly.cashly_api.cashregister.domain.repositories.CashRegisterRepository;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
@@ -41,7 +44,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
+public class CashRegisterRepositoryAdapter implements CashRegisterRepository, CashRegisterQueryGateway {
 
     private final CashRegisterJpaRepository jpaRepository;
     private final EntityManager entityManager;
@@ -88,7 +91,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CashRegister> findAll(int page, int size, String sort,
+    public PageResponse<CashRegister> findAll(int page, int size, String sort,
                                       LocalDate dateFrom, LocalDate dateTo) {
         Specification<CashRegisterJpaEntity> spec = withDateBetween(dateFrom, dateTo);
         var pageable = PageRequest.of(page, size, parseSort(sort));
@@ -96,7 +99,7 @@ public class CashRegisterRepositoryAdapter implements CashRegisterRepository {
         var domains = entityPage.getContent().stream()
                 .map(this::toDomain)
                 .toList();
-        return new PageImpl<>(domains, pageable, entityPage.getTotalElements());
+        return PageResponseMapper.from(new PageImpl<>(domains, pageable, entityPage.getTotalElements()));
     }
 
     private Specification<CashRegisterJpaEntity> withDateBetween(LocalDate dateFrom, LocalDate dateTo) {
