@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
 import com.cashly.cashly_api.payments.application.dto.request.PayInvoiceRequest;
 import com.cashly.cashly_api.payments.application.dto.response.PaymentResultResponse;
 import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
@@ -12,14 +12,6 @@ import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentNumber;
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentSource;
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentStatus;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -30,47 +22,32 @@ public class PayInvoiceUseCase {
 
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository allocationRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final InvoiceStatusService invoiceStatusService;
-    private final CreditNoteRepository creditNoteRepository;
-    private final DebitNoteRepository debitNoteRepository;
-    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-    private final CashMovementService cashMovementService;
+    private final PaymentInvoiceGateway invoices;
+    private final PaymentCustomerGateway customers;
+    private final CashRegisterGateway cashRegister;
 
     public PayInvoiceUseCase(PaymentRepository paymentRepository,
                               PaymentAllocationRepository allocationRepository,
-                              InvoiceRepository invoiceRepository,
-                              InvoiceStatusService invoiceStatusService,
-                              CreditNoteRepository creditNoteRepository,
-                              DebitNoteRepository debitNoteRepository,
-                              ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                              CashMovementService cashMovementService) {
+                              PaymentInvoiceGateway invoices,
+                              PaymentCustomerGateway customers,
+                              CashRegisterGateway cashRegister) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
-        this.invoiceRepository = invoiceRepository;
-        this.invoiceStatusService = invoiceStatusService;
-        this.creditNoteRepository = creditNoteRepository;
-        this.debitNoteRepository = debitNoteRepository;
-        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
-        this.cashMovementService = cashMovementService;
+        this.invoices = invoices;
+        this.customers = customers;
+        this.cashRegister = cashRegister;
     }
 
     @Transactional
     public PaymentResultResponse execute(UUID invoiceId, PayInvoiceRequest request,
                                           UUID authenticatedUserId,
                                           String authenticatedUserName) {
-        Invoice invoice = invoiceRepository.findById(new InvoiceId(invoiceId))
+        PaymentInvoiceGateway.InvoiceSnapshot invoice = invoices.findById(invoiceId)
                 .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + invoiceId));
 
         BigDecimal amount = request.amount();
         if (amount == null) {
-            BigDecimal totalCreditNotes = creditNoteRepository.findByInvoiceId(invoiceId).stream()
-                    .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalDebitNotes = debitNoteRepository.findByInvoiceId(invoiceId).stream()
-                    .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            amount = invoice.calculateTotal(totalCreditNotes, totalDebitNotes);
+            amount = invoice.total();
         }
 
         BigDecimal balanceUsed = BigDecimal.ZERO;
@@ -89,20 +66,12 @@ public class PayInvoiceUseCase {
             throw new IllegalArgumentException("Payment method is required when payment amount is greater than zero");
         }
         if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
-            cashMovementService.requireOpenRegister();
+            cashRegister.requireOpenRegister();
         }
 
         if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
-            consumeCustomerBalanceUseCase.execute(
-                    invoice.getCustomerId(),
-                    BalanceType.INVOICES,
-                    balanceUsed,
-                    BalanceType.INVOICES,
-                    invoiceId,
-                    invoice.getInvoiceNumber().value(),
-                    null,
-                    authenticatedUserId
-            );
+            customers.consumeInvoiceBalance(new PaymentCustomerGateway.BalanceConsumption(
+                    invoice.customerId(), balanceUsed, invoiceId, invoice.number(), authenticatedUserId));
         }
 
         int year = LocalDate.now().getYear();
@@ -113,29 +82,22 @@ public class PayInvoiceUseCase {
 
             Payment payment = Payment.create(
                     paymentNumber,
-                    invoice.getCustomerId(),
+                    invoice.customerId(),
                     paymentAmount,
                     request.paymentMethodId(),
                     request.referenceNumber(),
                     request.paymentDate(),
-                    "Pago de factura " + invoice.getInvoiceNumber().value(),
+                    "Pago de factura " + invoice.number(),
                     authenticatedUserId,
                     authenticatedUserName,
                     PaymentStatus.APPLIED
             );
 
             Payment saved = paymentRepository.save(payment);
-            cashMovementService.record(
-                    CashMovementDirection.IN,
-                    CashMovementType.PAYMENT,
-                    saved.getAmount(),
-                    saved.getPaymentMethodId(),
-                    saved.getNotes(),
-                    "PAYMENT",
-                    saved.getId().value(),
-                    authenticatedUserId,
-                    authenticatedUserName
-            );
+            cashRegister.recordMovement(new CashRegisterGateway.Movement(CashRegisterGateway.Direction.IN,
+                    CashRegisterGateway.Type.PAYMENT, new CashRegisterGateway.PaymentEntry(saved.getAmount(),
+                    saved.getPaymentMethodId(), saved.getNotes(), saved.getId().value(), authenticatedUserId,
+                    authenticatedUserName)));
 
             PaymentAllocation allocation = PaymentAllocation.create(
                     saved.getId().value(),
@@ -154,13 +116,13 @@ public class PayInvoiceUseCase {
 
             Payment balancePayment = Payment.create(
                     balancePaymentNumber,
-                    invoice.getCustomerId(),
+                    invoice.customerId(),
                     balanceUsed,
                     null,
                     PaymentSource.CUSTOMER_BALANCE,
                     null,
                     request.paymentDate(),
-                    "Pago con saldo a favor - Factura " + invoice.getInvoiceNumber().value(),
+                    "Pago con saldo a favor - Factura " + invoice.number(),
                     authenticatedUserId,
                     authenticatedUserName,
                     PaymentStatus.APPLIED
@@ -179,7 +141,7 @@ public class PayInvoiceUseCase {
             paymentRepository.save(balancePayment);
         }
 
-        invoiceStatusService.recalculate(invoiceId);
+        invoices.recalculateStatus(invoiceId);
 
         return new PaymentResultResponse(
                 null,

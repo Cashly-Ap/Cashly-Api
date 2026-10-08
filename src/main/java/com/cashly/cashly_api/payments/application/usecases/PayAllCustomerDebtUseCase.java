@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
 import com.cashly.cashly_api.payments.application.dto.request.PayCustomerDebtRequest;
 import com.cashly.cashly_api.payments.application.dto.response.PaymentResultResponse;
 import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
@@ -14,13 +14,6 @@ import com.cashly.cashly_api.payments.domain.valueobjects.InvoiceRemainingBalanc
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentNumber;
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentSource;
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentStatus;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -32,31 +25,22 @@ public class PayAllCustomerDebtUseCase {
 
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository allocationRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final InvoiceStatusService invoiceStatusService;
-    private final CreditNoteRepository creditNoteRepository;
-    private final DebitNoteRepository debitNoteRepository;
-    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-    private final CashMovementService cashMovementService;
+    private final PaymentInvoiceGateway invoices;
+    private final PaymentCustomerGateway customers;
+    private final CashRegisterGateway cashRegister;
     private final PaymentAllocationService paymentAllocationService;
 
     public PayAllCustomerDebtUseCase(PaymentRepository paymentRepository,
                                       PaymentAllocationRepository allocationRepository,
-                                      InvoiceRepository invoiceRepository,
-                                      InvoiceStatusService invoiceStatusService,
-                                      CreditNoteRepository creditNoteRepository,
-                                      DebitNoteRepository debitNoteRepository,
-                                      ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                      CashMovementService cashMovementService,
+                                      PaymentInvoiceGateway invoices,
+                                      PaymentCustomerGateway customers,
+                                      CashRegisterGateway cashRegister,
                                       PaymentAllocationService paymentAllocationService) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
-        this.invoiceRepository = invoiceRepository;
-        this.invoiceStatusService = invoiceStatusService;
-        this.creditNoteRepository = creditNoteRepository;
-        this.debitNoteRepository = debitNoteRepository;
-        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
-        this.cashMovementService = cashMovementService;
+        this.invoices = invoices;
+        this.customers = customers;
+        this.cashRegister = cashRegister;
         this.paymentAllocationService = paymentAllocationService;
     }
 
@@ -64,16 +48,14 @@ public class PayAllCustomerDebtUseCase {
     public PaymentResultResponse execute(UUID customerId, PayCustomerDebtRequest request,
                                           UUID authenticatedUserId,
                                           String authenticatedUserName) {
-        List<String> statuses = List.of("PENDING_PAYMENT", "PARTIALLY_PAID");
-        List<Invoice> unpaidInvoices = invoiceRepository.findAllWithFilters(
-                null, null, customerId, statuses, null, null, null, null, null);
+        List<PaymentInvoiceGateway.InvoiceSnapshot> unpaidInvoices = invoices.findUnpaidByCustomerId(customerId);
 
         if (unpaidInvoices.isEmpty()) {
             throw new IllegalArgumentException("Customer has no unpaid invoices: " + customerId);
         }
 
         BigDecimal totalAmount = unpaidInvoices.stream()
-                .map(this::invoiceGrossTotal)
+                .map(PaymentInvoiceGateway.InvoiceSnapshot::total)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal balanceUsed = BigDecimal.ZERO;
@@ -91,20 +73,10 @@ public class PayAllCustomerDebtUseCase {
         if (paymentAmount.compareTo(BigDecimal.ZERO) > 0 && request.paymentMethodId() == null) {
             throw new IllegalArgumentException("Payment method is required when payment amount is greater than zero");
         }
-        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
-            cashMovementService.requireOpenRegister();
-        }
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) cashRegister.requireOpenRegister();
         if (balanceUsed.compareTo(BigDecimal.ZERO) > 0) {
-            consumeCustomerBalanceUseCase.execute(
-                    customerId,
-                    BalanceType.INVOICES,
-                    balanceUsed,
-                    BalanceType.INVOICES,
-                    null,
-                    "Pago total de deuda",
-                    null,
-                    authenticatedUserId
-            );
+            customers.consumeInvoiceBalance(new PaymentCustomerGateway.BalanceConsumption(customerId,
+                    balanceUsed, null, "Pago total de deuda", authenticatedUserId));
         }
 
         int year = LocalDate.now().getYear();
@@ -127,20 +99,13 @@ public class PayAllCustomerDebtUseCase {
             );
 
             Payment saved = paymentRepository.save(payment);
-            cashMovementService.record(
-                    CashMovementDirection.IN,
-                    CashMovementType.PAYMENT,
-                    saved.getAmount(),
-                    saved.getPaymentMethodId(),
-                    saved.getNotes(),
-                    "PAYMENT",
-                    saved.getId().value(),
-                    authenticatedUserId,
-                    authenticatedUserName
-            );
+            cashRegister.recordMovement(new CashRegisterGateway.Movement(CashRegisterGateway.Direction.IN,
+                    CashRegisterGateway.Type.PAYMENT, new CashRegisterGateway.PaymentEntry(saved.getAmount(),
+                    saved.getPaymentMethodId(), saved.getNotes(), saved.getId().value(), authenticatedUserId,
+                    authenticatedUserName)));
 
             List<InvoiceRemainingBalance> grossBalances = unpaidInvoices.stream()
-                    .map(invoice -> new InvoiceRemainingBalance(invoice.getId().value(), invoiceGrossTotal(invoice)))
+                    .map(invoice -> new InvoiceRemainingBalance(invoice.id(), invoice.total()))
                     .toList();
             List<PaymentAllocation> allocations = paymentAllocationService.allocateOldestFirst(
                     saved.getId().value(), grossBalances, totalAmount);
@@ -171,7 +136,7 @@ public class PayAllCustomerDebtUseCase {
             Payment savedBalancePayment = paymentRepository.save(balancePayment);
 
             List<InvoiceRemainingBalance> netBalances = unpaidInvoices.stream()
-                    .map(invoice -> new InvoiceRemainingBalance(invoice.getId().value(), invoiceRemainingAfterAllocations(invoice)))
+                    .map(invoice -> new InvoiceRemainingBalance(invoice.id(), invoiceRemainingAfterAllocations(invoice)))
                     .toList();
             List<PaymentAllocation> balanceAllocations = paymentAllocationService.allocateOldestFirst(
                     savedBalancePayment.getId().value(), netBalances, balanceUsed);
@@ -181,8 +146,8 @@ public class PayAllCustomerDebtUseCase {
             paymentRepository.save(balancePayment);
         }
 
-        for (Invoice invoice : unpaidInvoices) {
-            invoiceStatusService.recalculate(invoice.getId().value());
+        for (PaymentInvoiceGateway.InvoiceSnapshot invoice : unpaidInvoices) {
+            invoices.recalculateStatus(invoice.id());
         }
 
         return new PaymentResultResponse(
@@ -193,21 +158,10 @@ public class PayAllCustomerDebtUseCase {
         );
     }
 
-    private BigDecimal invoiceGrossTotal(Invoice invoice) {
-        BigDecimal creds = creditNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal debits = debitNoteRepository.findByInvoiceId(invoice.getId().value()).stream()
-                .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return invoice.calculateTotal(creds, debits);
-    }
-
-    private BigDecimal invoiceRemainingAfterAllocations(Invoice invoice) {
-        BigDecimal invoiceTotal = invoiceGrossTotal(invoice);
-        BigDecimal alreadyAllocated = allocationRepository.findByInvoiceId(invoice.getId().value()).stream()
+    private BigDecimal invoiceRemainingAfterAllocations(PaymentInvoiceGateway.InvoiceSnapshot invoice) {
+        BigDecimal alreadyAllocated = allocationRepository.findByInvoiceId(invoice.id()).stream()
                 .map(PaymentAllocation::getAllocatedAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return invoiceTotal.subtract(alreadyAllocated);
+        return invoice.total().subtract(alreadyAllocated);
     }
 }

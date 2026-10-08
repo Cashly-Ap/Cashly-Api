@@ -1,13 +1,8 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentActorGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
 import com.cashly.cashly_api.payments.application.dto.request.CreatePaymentRequest;
 import com.cashly.cashly_api.payments.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.payments.application.mappers.PaymentMapper;
@@ -24,38 +19,39 @@ import java.util.UUID;
 public class CreatePaymentUseCase {
 
     private final PaymentRepository paymentRepository;
-    private final CustomerRepository customerRepository;
-    private final UserRepository userRepository;
-    private final CashMovementService cashMovementService;
+    private final PaymentCustomerGateway customers;
+    private final PaymentActorGateway actors;
+    private final CashRegisterGateway cashRegister;
 
     public CreatePaymentUseCase(PaymentRepository paymentRepository,
-                                 CustomerRepository customerRepository,
-                                 UserRepository userRepository,
-                                 CashMovementService cashMovementService) {
+                                 PaymentCustomerGateway customers,
+                                 PaymentActorGateway actors,
+                                 CashRegisterGateway cashRegister) {
         this.paymentRepository = paymentRepository;
-        this.customerRepository = customerRepository;
-        this.userRepository = userRepository;
-        this.cashMovementService = cashMovementService;
+        this.customers = customers;
+        this.actors = actors;
+        this.cashRegister = cashRegister;
     }
 
     @Transactional
     public PaymentResponse execute(CreatePaymentRequest request, UUID authenticatedUserId) {
-        customerRepository.findById(new CustomerId(request.customerId()))
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + request.customerId()));
+        if (!customers.exists(request.customerId())) {
+            throw new IllegalArgumentException("Customer not found: " + request.customerId());
+        }
 
         UUID createdById = null;
         String createdByName = null;
         if (authenticatedUserId != null) {
-            User user = userRepository.findById(new UserId(authenticatedUserId))
+            String userName = actors.findName(authenticatedUserId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
             createdById = authenticatedUserId;
-            createdByName = user.getUserName().getValue();
+            createdByName = userName;
         }
 
         PaymentStatus status = PaymentStatus.valueOf(request.status());
         validateRefund(request.customerId(), status, request.amount());
         if (affectsCash(status)) {
-            cashMovementService.requireOpenRegister();
+            cashRegister.requireOpenRegister();
         }
 
         int year = LocalDate.now().getYear();
@@ -72,9 +68,7 @@ public class CreatePaymentUseCase {
                 request.notes(),
                 createdById,
                 createdByName,
-                status,
-                request.targetInvoiceId(),
-                request.voucherPath()
+                status
         );
 
         Payment saved = paymentRepository.save(payment);
@@ -91,17 +85,11 @@ public class CreatePaymentUseCase {
             return;
         }
         boolean refund = payment.getStatus() == PaymentStatus.REFUND;
-        cashMovementService.record(
-                refund ? CashMovementDirection.OUT : CashMovementDirection.IN,
-                refund ? CashMovementType.REFUND : CashMovementType.PAYMENT,
-                payment.getAmount(),
-                payment.getPaymentMethodId(),
-                payment.getNotes(),
-                "PAYMENT",
-                payment.getId().value(),
-                payment.getCreatedBy(),
-                payment.getCreatedByName()
-        );
+        cashRegister.recordMovement(new CashRegisterGateway.Movement(
+                refund ? CashRegisterGateway.Direction.OUT : CashRegisterGateway.Direction.IN,
+                refund ? CashRegisterGateway.Type.REFUND : CashRegisterGateway.Type.PAYMENT,
+                new CashRegisterGateway.PaymentEntry(payment.getAmount(), payment.getPaymentMethodId(),
+                        payment.getNotes(), payment.getId().value(), payment.getCreatedBy(), payment.getCreatedByName())));
     }
 
     private void validateRefund(UUID customerId, PaymentStatus status, BigDecimal amount) {

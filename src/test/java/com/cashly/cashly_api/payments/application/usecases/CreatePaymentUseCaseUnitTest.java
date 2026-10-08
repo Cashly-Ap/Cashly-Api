@@ -1,15 +1,8 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.customers.domain.entities.Customer;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentActorGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
 import com.cashly.cashly_api.payments.application.dto.request.CreatePaymentRequest;
 import com.cashly.cashly_api.payments.domain.entities.Payment;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
@@ -43,13 +36,13 @@ class CreatePaymentUseCaseUnitTest {
     private PaymentRepository paymentRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private PaymentCustomerGateway customerRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private PaymentActorGateway userRepository;
 
     @Mock
-    private CashMovementService cashMovementService;
+    private CashRegisterGateway cashMovementService;
 
     private CreatePaymentUseCase useCase;
 
@@ -62,10 +55,8 @@ class CreatePaymentUseCaseUnitTest {
         useCase = new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository,
                 cashMovementService);
 
-        User user = mock(User.class);
-        when(user.getUserName()).thenReturn(new UserName("Test User"));
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(mock(Customer.class)));
-        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(user));
+        when(customerRepository.exists(customerId)).thenReturn(true);
+        when(userRepository.findName(userId)).thenReturn(Optional.of("Test User"));
     }
 
     @Test
@@ -80,17 +71,10 @@ class CreatePaymentUseCaseUnitTest {
         assertEquals(PaymentStatus.REFUND.name(), response.status());
         assertEquals(new BigDecimal("50.00"), response.amount());
         verify(paymentRepository).getRefundableAmountByCustomerId(customerId);
-        verify(cashMovementService).record(
-                CashMovementDirection.OUT,
-                CashMovementType.REFUND,
-                new BigDecimal("50.00"),
-                paymentMethodId,
-                "Devolucion por cualquier concepto",
-                "PAYMENT",
-                response.id(),
-                userId,
-                "Test User"
-        );
+        verify(cashMovementService).recordMovement(new CashRegisterGateway.Movement(
+                CashRegisterGateway.Direction.OUT, CashRegisterGateway.Type.REFUND,
+                new CashRegisterGateway.PaymentEntry(new BigDecimal("50.00"), paymentMethodId,
+                        "Devolucion por cualquier concepto", response.id(), userId, "Test User")));
     }
 
     @Test
@@ -113,7 +97,7 @@ class CreatePaymentUseCaseUnitTest {
         useCase.execute(request, userId);
 
         verify(cashMovementService, never()).requireOpenRegister();
-        verify(cashMovementService, never()).record(any(), any(), any(), any(), any(), any(), any(), any(), any());
+        verify(cashMovementService, never()).recordMovement(any());
     }
 
     @Test
@@ -125,40 +109,10 @@ class CreatePaymentUseCaseUnitTest {
         var response = useCase.execute(request, userId);
 
         verify(cashMovementService).requireOpenRegister();
-        verify(cashMovementService).record(
-                CashMovementDirection.IN,
-                CashMovementType.PAYMENT,
-                new BigDecimal("50.00"),
-                paymentMethodId,
-                "Pago de prueba",
-                "PAYMENT",
-                response.id(),
-                userId,
-                "Test User"
-        );
-    }
-
-    @Test
-    void should_PersistTargetInvoiceIdAndVoucherPath_When_Provided() {
-        UUID targetInvoiceId = UUID.randomUUID();
-        CreatePaymentRequest request = new CreatePaymentRequest(
-                customerId,
-                PaymentStatus.PENDING.name(),
-                new BigDecimal("50.00"),
-                paymentMethodId,
-                "PAYMENT-001",
-                LocalDate.now(),
-                "Pago de prueba",
-                targetInvoiceId,
-                "payments/justificantes/abc.pdf"
-        );
-        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        var response = useCase.execute(request, userId);
-
-        assertEquals(targetInvoiceId, response.targetInvoiceId());
-        assertEquals("/api/files/payments/justificantes/abc.pdf", response.voucherUrl());
+        verify(cashMovementService).recordMovement(new CashRegisterGateway.Movement(
+                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
+                new CashRegisterGateway.PaymentEntry(new BigDecimal("50.00"), paymentMethodId,
+                        "Pago de prueba", response.id(), userId, "Test User")));
     }
 
     @Test
@@ -195,9 +149,7 @@ class CreatePaymentUseCaseUnitTest {
                 paymentMethodId,
                 "REFUND-001",
                 LocalDate.now(),
-                "Devolucion por cualquier concepto",
-                null,
-                null
+                "Devolucion por cualquier concepto"
         );
     }
 
@@ -209,9 +161,7 @@ class CreatePaymentUseCaseUnitTest {
                 paymentMethodId,
                 "PAYMENT-001",
                 LocalDate.now(),
-                "Pago de prueba",
-                null,
-                null
+                "Pago de prueba"
         );
     }
 }

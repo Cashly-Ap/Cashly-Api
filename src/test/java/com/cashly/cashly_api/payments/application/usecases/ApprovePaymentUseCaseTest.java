@@ -1,19 +1,14 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentNotificationGateway;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.payments.application.dto.request.ApprovePaymentRequest;
 import com.cashly.cashly_api.payments.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.payments.domain.entities.Payment;
@@ -50,12 +45,9 @@ class ApprovePaymentUseCaseTest {
 
     @Mock private PaymentRepository paymentRepository;
     @Mock private PaymentAllocationRepository allocationRepository;
-    @Mock private InvoiceRepository invoiceRepository;
-    @Mock private InvoiceStatusService invoiceStatusService;
-    @Mock private NotificationService notificationService;
-    @Mock private CashMovementService cashMovementService;
-    @Mock private CreditNoteRepository creditNoteRepository;
-    @Mock private DebitNoteRepository debitNoteRepository;
+    @Mock private PaymentInvoiceGateway invoiceGateway;
+    @Mock private PaymentNotificationGateway notificationGateway;
+    @Mock private CashRegisterGateway cashRegisterGateway;
 
     private ApprovePaymentUseCase useCase;
     private final UUID userId = UUID.randomUUID();
@@ -67,15 +59,14 @@ class ApprovePaymentUseCaseTest {
         PaymentAllocationService paymentAllocationService =
                 new PaymentAllocationService(paymentRepository, allocationRepository);
         useCase = new ApprovePaymentUseCase(paymentRepository, allocationRepository,
-                invoiceRepository, invoiceStatusService, notificationService, cashMovementService,
-                creditNoteRepository, debitNoteRepository, paymentAllocationService);
+                invoiceGateway, notificationGateway, cashRegisterGateway, paymentAllocationService);
     }
 
-    private Payment pendingPayment(BigDecimal amount, UUID targetInvoiceId) {
+    private Payment pendingPayment(BigDecimal amount) {
         return Payment.create(
                 PaymentNumber.of(2026, 1), customerId, amount, paymentMethodId,
                 "REF-001", LocalDate.now(), null, userId, "Admin",
-                PaymentStatus.PENDING, targetInvoiceId, null
+                PaymentStatus.PENDING
         );
     }
 
@@ -101,16 +92,22 @@ class ApprovePaymentUseCaseTest {
         );
     }
 
+    private List<PaymentInvoiceGateway.InvoiceSnapshot> snapshots(Invoice... invoices) {
+        return java.util.Arrays.stream(invoices).map(invoice -> new PaymentInvoiceGateway.InvoiceSnapshot(
+                invoice.getId().value(), invoice.getCustomerId(), invoice.getInvoiceNumber().value(),
+                invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))).toList();
+    }
+
     private void stubSave() {
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
     void should_NotApprovePendingPayment_When_RegisterIsClosed() {
-        Payment payment = pendingPayment(new BigDecimal("125.00"), null);
+        Payment payment = pendingPayment(new BigDecimal("125.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
         doThrow(new IllegalStateException("Debe abrir una caja antes de registrar una operación monetaria"))
-                .when(cashMovementService).requireOpenRegister();
+                .when(cashRegisterGateway).requireOpenRegister();
 
         assertThrows(IllegalStateException.class,
                 () -> useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin"));
@@ -120,29 +117,26 @@ class ApprovePaymentUseCaseTest {
     }
 
     @Test
-    void should_AllocateFullAmountToTargetInvoice_When_TargetInvoiceIdIsSet() {
+    void should_AllocateFullAmountToOldestInvoice_When_PaymentMatchesDebt() {
         UUID invoiceId = UUID.randomUUID();
-        Payment payment = pendingPayment(new BigDecimal("500.00"), invoiceId);
+        Payment payment = pendingPayment(new BigDecimal("500.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceRepository.findById(new InvoiceId(invoiceId))).thenReturn(Optional.of(unpaidInvoice(invoiceId, BigDecimal.ONE, new BigDecimal("500.00"))));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(unpaidInvoice(invoiceId, BigDecimal.ONE, new BigDecimal("500.00"))));
         stubSave();
 
         PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("500.00"), response.appliedAmount());
-        verify(invoiceStatusService).recalculate(invoiceId);
+        verify(invoiceGateway).recalculateStatus(invoiceId);
     }
 
     @Test
     void should_AllocateExactAmount_When_PaymentExactlyCoversTotalDebt() {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
-        Payment payment = pendingPayment(new BigDecimal("500.00"), null);
+        Payment payment = pendingPayment(new BigDecimal("500.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of(
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(
                         unpaidInvoice(invoice1Id, BigDecimal.ONE, new BigDecimal("300.00")),
                         unpaidInvoice(invoice2Id, BigDecimal.ONE, new BigDecimal("200.00"))
                 ));
@@ -151,20 +145,17 @@ class ApprovePaymentUseCaseTest {
         PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("500.00"), response.appliedAmount());
-        verify(invoiceStatusService).recalculate(invoice1Id);
-        verify(invoiceStatusService).recalculate(invoice2Id);
+        verify(invoiceGateway).recalculateStatus(invoice1Id);
+        verify(invoiceGateway).recalculateStatus(invoice2Id);
     }
 
     @Test
     void should_AllocateOnlyToOldestInvoice_When_PaymentIsSmallerThanTotalDebt() {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
-        Payment payment = pendingPayment(new BigDecimal("250.00"), null);
+        Payment payment = pendingPayment(new BigDecimal("250.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of(
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(
                         unpaidInvoice(invoice1Id, BigDecimal.ONE, new BigDecimal("300.00")),
                         unpaidInvoice(invoice2Id, BigDecimal.ONE, new BigDecimal("200.00"))
                 ));
@@ -173,20 +164,17 @@ class ApprovePaymentUseCaseTest {
         PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("250.00"), response.appliedAmount());
-        verify(invoiceStatusService, times(1)).recalculate(invoice1Id);
-        verify(invoiceStatusService, never()).recalculate(invoice2Id);
+        verify(invoiceGateway, times(1)).recalculateStatus(invoice1Id);
+        verify(invoiceGateway, never()).recalculateStatus(invoice2Id);
     }
 
     @Test
     void should_AllocateOnlyUpToTotalDebt_When_PaymentIsLargerThanTotalDebt() {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
-        Payment payment = pendingPayment(new BigDecimal("700.00"), null);
+        Payment payment = pendingPayment(new BigDecimal("700.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of(
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(
                         unpaidInvoice(invoice1Id, BigDecimal.ONE, new BigDecimal("300.00")),
                         unpaidInvoice(invoice2Id, BigDecimal.ONE, new BigDecimal("200.00"))
                 ));
@@ -199,12 +187,9 @@ class ApprovePaymentUseCaseTest {
 
     @Test
     void should_SucceedWithZeroAppliedAmount_When_CustomerHasNoUnpaidInvoices() {
-        Payment payment = pendingPayment(new BigDecimal("500.00"), null);
+        Payment payment = pendingPayment(new BigDecimal("500.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots());
         stubSave();
 
         PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
@@ -216,19 +201,17 @@ class ApprovePaymentUseCaseTest {
 
     @Test
     void should_RecordIncome_When_PendingPaymentIsApproved() {
-        Payment payment = pendingPayment(new BigDecimal("125.00"), null);
+        Payment payment = pendingPayment(new BigDecimal("125.00"));
         when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots());
         stubSave();
 
         useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
-        verify(cashMovementService).record(
-                CashMovementDirection.IN, CashMovementType.PAYMENT,
-                new BigDecimal("125.00"), paymentMethodId, null,
-                "PAYMENT", payment.getId().value(), userId, "Admin");
+        verify(cashRegisterGateway).recordMovement(new CashRegisterGateway.Movement(
+                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
+                new CashRegisterGateway.PaymentEntry(new BigDecimal("125.00"), paymentMethodId,
+                        null, payment.getId().value(), userId, "Admin")));
+        verify(notificationGateway).approved(customerId, payment.getId().value());
     }
 }

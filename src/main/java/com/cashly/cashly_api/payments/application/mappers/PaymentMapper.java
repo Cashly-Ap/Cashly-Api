@@ -6,8 +6,6 @@ import com.cashly.cashly_api.payments.domain.entities.Payment;
 
 public class PaymentMapper {
 
-    private static final String VOUCHER_URL_PREFIX = "/api/files/";
-
     private PaymentMapper() {}
 
     public static PaymentResponse toResponse(Payment payment) {
@@ -29,9 +27,7 @@ public class PaymentMapper {
                 payment.getCancelledReason(),
                 payment.getVerifiedBy(),
                 payment.getVerifiedByName(),
-                payment.getVerifiedAt(),
-                payment.getTargetInvoiceId(),
-                toVoucherUrl(payment.getVoucherPath())
+                payment.getVerifiedAt()
         );
     }
 
@@ -46,13 +42,7 @@ public class PaymentMapper {
                 payment.getPaymentDate(),
                 payment.getStatus().name(),
                 payment.getAppliedAmount(),
-                payment.getCreatedAt(),
-                payment.getTargetInvoiceId(),
-                toVoucherUrl(payment.getVoucherPath())
+                payment.getCreatedAt()
         );
-    }
-
-    private static String toVoucherUrl(String voucherPath) {
-        return voucherPath == null ? null : VOUCHER_URL_PREFIX + voucherPath;
     }
 }

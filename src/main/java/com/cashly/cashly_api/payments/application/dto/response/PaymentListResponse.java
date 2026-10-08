@@ -15,7 +15,5 @@ public record PaymentListResponse(
         LocalDate paymentDate,
         String status,
         BigDecimal appliedAmount,
-        LocalDateTime createdAt,
-        UUID targetInvoiceId,
-        String voucherUrl
+        LocalDateTime createdAt
 ) {}

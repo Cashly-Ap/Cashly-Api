@@ -1,16 +1,10 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
@@ -58,22 +52,13 @@ class PayInvoiceUseCaseTest {
     private PaymentAllocationRepository allocationRepository;
 
     @Mock
-    private InvoiceRepository invoiceRepository;
+    private PaymentInvoiceGateway invoiceGateway;
 
     @Mock
-    private InvoiceStatusService invoiceStatusService;
+    private PaymentCustomerGateway customerGateway;
 
     @Mock
-    private CreditNoteRepository creditNoteRepository;
-
-    @Mock
-    private DebitNoteRepository debitNoteRepository;
-
-    @Mock
-    private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-
-    @Mock
-    private CashMovementService cashMovementService;
+    private CashRegisterGateway cashRegisterGateway;
 
     @Captor
     private ArgumentCaptor<Payment> paymentCaptor;
@@ -93,9 +78,7 @@ class PayInvoiceUseCaseTest {
     void setUp() {
         useCase = new PayInvoiceUseCase(
                 paymentRepository, allocationRepository,
-                invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase, cashMovementService
+                invoiceGateway, customerGateway, cashRegisterGateway
         );
     }
 
@@ -124,6 +107,11 @@ class PayInvoiceUseCaseTest {
         );
     }
 
+    private PaymentInvoiceGateway.InvoiceSnapshot snapshot(Invoice invoice) {
+        return new PaymentInvoiceGateway.InvoiceSnapshot(invoice.getId().value(), invoice.getCustomerId(),
+                invoice.getInvoiceNumber().value(), invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO));
+    }
+
     @Test
     void should_PayInvoice_When_ValidRequest() {
         Invoice invoice = invoiceWithTotal(new BigDecimal("500.00"));
@@ -131,8 +119,8 @@ class PayInvoiceUseCaseTest {
                 paymentMethodId, "REF-001", LocalDate.now(),
                 new BigDecimal("500.00"), false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -145,17 +133,11 @@ class PayInvoiceUseCaseTest {
         verify(paymentRepository, org.mockito.Mockito.atLeast(1)).save(paymentCaptor.capture());
         Payment saved = paymentCaptor.getValue();
         assertEquals(new BigDecimal("500.00"), saved.getAmount());
-        verify(cashMovementService).record(
-                CashMovementDirection.IN,
-                CashMovementType.PAYMENT,
-                new BigDecimal("500.00"),
-                paymentMethodId,
-                "Pago de factura " + invoice.getInvoiceNumber().value(),
-                "PAYMENT",
-                saved.getId().value(),
-                authenticatedUserId,
-                authenticatedUserName
-        );
+        verify(cashRegisterGateway).recordMovement(new CashRegisterGateway.Movement(
+                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
+                new CashRegisterGateway.PaymentEntry(new BigDecimal("500.00"), paymentMethodId,
+                        "Pago de factura " + invoice.getInvoiceNumber().value(), saved.getId().value(),
+                        authenticatedUserId, authenticatedUserName)));
     }
 
     @Test
@@ -166,8 +148,8 @@ class PayInvoiceUseCaseTest {
                 paymentMethodId, "REF-001", LocalDate.now(),
                 new BigDecimal("500.00"), true, balanceAmount
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1, 2);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -176,10 +158,8 @@ class PayInvoiceUseCaseTest {
 
         assertNotNull(response);
         assertNotNull(response.message());
-        verify(consumeCustomerBalanceUseCase).execute(
-                eq(customerId), eq(BalanceType.INVOICES), eq(balanceAmount),
-                eq(BalanceType.INVOICES), eq(invoiceId), any(), eq(null), eq(authenticatedUserId)
-        );
+        verify(customerGateway).consumeInvoiceBalance(new PaymentCustomerGateway.BalanceConsumption(
+                customerId, balanceAmount, invoiceId, invoice.getInvoiceNumber().value(), authenticatedUserId));
     }
 
     @Test
@@ -189,14 +169,14 @@ class PayInvoiceUseCaseTest {
                 null, null, LocalDate.now(),
                 new BigDecimal("200.00"), true, new BigDecimal("200.00")
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId)).thenReturn(Optional.of(snapshot(invoice)));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(invoiceId, request, authenticatedUserId, authenticatedUserName);
 
-        verify(cashMovementService, never()).requireOpenRegister();
-        verify(cashMovementService, never()).record(any(), any(), any(), any(), any(), any(), any(), any(), any());
+        verify(cashRegisterGateway, never()).requireOpenRegister();
+        verify(cashRegisterGateway, never()).recordMovement(any());
     }
 
     @Test
@@ -206,10 +186,8 @@ class PayInvoiceUseCaseTest {
                 paymentMethodId, "REF-001", LocalDate.now(),
                 null, false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
-        when(creditNoteRepository.findByInvoiceId(invoiceId)).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(invoiceId)).thenReturn(List.of());
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -226,7 +204,7 @@ class PayInvoiceUseCaseTest {
                 paymentMethodId, "REF-001", LocalDate.now(),
                 new BigDecimal("500.00"), false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
+        when(invoiceGateway.findById(invoiceId))
                 .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
@@ -244,8 +222,8 @@ class PayInvoiceUseCaseTest {
                 null, null, LocalDate.now(),
                 BigDecimal.ZERO, false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -262,8 +240,8 @@ class PayInvoiceUseCaseTest {
                 null, null, LocalDate.now(),
                 new BigDecimal("500.00"), false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -280,15 +258,15 @@ class PayInvoiceUseCaseTest {
                 paymentMethodId, null, LocalDate.now(),
                 new BigDecimal("500.00"), false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(invoiceId, request, authenticatedUserId, authenticatedUserName);
 
-        verify(invoiceStatusService).recalculate(invoiceId);
+        verify(invoiceGateway).recalculateStatus(invoiceId);
     }
 
     @Test
@@ -298,8 +276,8 @@ class PayInvoiceUseCaseTest {
                 paymentMethodId, "REF-001", LocalDate.now(),
                 new BigDecimal("500.00"), false, null
         );
-        when(invoiceRepository.findById(InvoiceId.of(invoiceId)))
-                .thenReturn(Optional.of(invoice));
+        when(invoiceGateway.findById(invoiceId))
+                .thenReturn(Optional.of(snapshot(invoice)));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));

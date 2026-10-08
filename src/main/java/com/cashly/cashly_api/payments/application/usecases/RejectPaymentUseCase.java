@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.payments.application.contracts.PaymentNotificationGateway;
 import com.cashly.cashly_api.payments.application.dto.request.RejectPaymentRequest;
 import com.cashly.cashly_api.payments.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.payments.application.mappers.PaymentMapper;
@@ -14,12 +14,12 @@ import java.util.UUID;
 public class RejectPaymentUseCase {
 
     private final PaymentRepository paymentRepository;
-    private final NotificationService notificationService;
+    private final PaymentNotificationGateway notifications;
 
     public RejectPaymentUseCase(PaymentRepository paymentRepository,
-                                  NotificationService notificationService) {
+                                  PaymentNotificationGateway notifications) {
         this.paymentRepository = paymentRepository;
-        this.notificationService = notificationService;
+        this.notifications = notifications;
     }
 
     @Transactional
@@ -30,7 +30,7 @@ public class RejectPaymentUseCase {
         payment.reject(request.reason(), userId, userName);
 
         Payment saved = paymentRepository.save(payment);
-        notificationService.notifyCustomerPaymentRejected(payment.getCustomerId(), id, request.reason());
+        notifications.rejected(payment.getCustomerId(), id, request.reason());
         return PaymentMapper.toResponse(saved);
     }
 }

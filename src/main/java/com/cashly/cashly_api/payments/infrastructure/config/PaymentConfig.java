@@ -1,19 +1,19 @@
 package com.cashly.cashly_api.payments.infrastructure.config;
 
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
 import com.cashly.cashly_api.payments.application.usecases.*;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
-import com.cashly.cashly_api.payments.domain.services.CreditValidationService;
+import com.cashly.cashly_api.payments.application.contracts.CustomerCreditContextGateway;
+import com.cashly.cashly_api.payments.application.contracts.InvoiceCreditLedgerGateway;
+import com.cashly.cashly_api.payments.application.contracts.CreditNoteLedgerGateway;
+import com.cashly.cashly_api.payments.application.contracts.DebitNoteLedgerGateway;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentActorGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentNotificationGateway;
+import com.cashly.cashly_api.payments.application.api.CustomerCreditQuery;
+import com.cashly.cashly_api.payments.application.services.CustomerCreditQueryService;
 import com.cashly.cashly_api.payments.domain.services.PaymentAllocationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +23,10 @@ public class PaymentConfig {
 
     @Bean
     public CreatePaymentUseCase createPaymentUseCase(PaymentRepository paymentRepository,
-                                                       CustomerRepository customerRepository,
-                                                       UserRepository userRepository,
-                                                       CashMovementService cashMovementService) {
-        return new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository,
-                cashMovementService);
+                                                       PaymentCustomerGateway customerGateway,
+                                                       PaymentActorGateway actorGateway,
+                                                       CashRegisterGateway cashRegisterGateway) {
+        return new CreatePaymentUseCase(paymentRepository, customerGateway, actorGateway, cashRegisterGateway);
     }
 
     @Bean
@@ -59,81 +58,59 @@ public class PaymentConfig {
     @Bean
     public PayInvoiceUseCase payInvoiceUseCase(PaymentRepository paymentRepository,
                                                 PaymentAllocationRepository paymentAllocationRepository,
-                                                InvoiceRepository invoiceRepository,
-                                                InvoiceStatusService invoiceStatusService,
-                                                CreditNoteRepository creditNoteRepository,
-                                                DebitNoteRepository debitNoteRepository,
-                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                                CashMovementService cashMovementService) {
+                                                PaymentInvoiceGateway invoiceGateway,
+                                                PaymentCustomerGateway customerGateway,
+                                                CashRegisterGateway cashRegisterGateway) {
         return new PayInvoiceUseCase(paymentRepository, paymentAllocationRepository,
-                invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase, cashMovementService);
+                invoiceGateway, customerGateway, cashRegisterGateway);
     }
 
     @Bean
     public PayAllCustomerDebtUseCase payAllCustomerDebtUseCase(PaymentRepository paymentRepository,
                                                                 PaymentAllocationRepository paymentAllocationRepository,
-                                                                InvoiceRepository invoiceRepository,
-                                                                InvoiceStatusService invoiceStatusService,
-                                                                CreditNoteRepository creditNoteRepository,
-                                                                DebitNoteRepository debitNoteRepository,
-                                                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                                                CashMovementService cashMovementService,
+                                                                PaymentInvoiceGateway invoiceGateway,
+                                                                PaymentCustomerGateway customerGateway,
+                                                                CashRegisterGateway cashRegisterGateway,
                                                                 PaymentAllocationService paymentAllocationService) {
         return new PayAllCustomerDebtUseCase(paymentRepository, paymentAllocationRepository,
-                invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase, cashMovementService, paymentAllocationService);
+                invoiceGateway, customerGateway, cashRegisterGateway, paymentAllocationService);
     }
 
     @Bean
     public PayPartialDebtUseCase payPartialDebtUseCase(PaymentRepository paymentRepository,
                                                         PaymentAllocationRepository paymentAllocationRepository,
-                                                        InvoiceRepository invoiceRepository,
-                                                        InvoiceStatusService invoiceStatusService,
-                                                        CreditNoteRepository creditNoteRepository,
-                                                        DebitNoteRepository debitNoteRepository,
-                                                        ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                                        CashMovementService cashMovementService,
+                                                        PaymentInvoiceGateway invoiceGateway,
+                                                        PaymentCustomerGateway customerGateway,
+                                                        CashRegisterGateway cashRegisterGateway,
                                                         PaymentAllocationService paymentAllocationService) {
         return new PayPartialDebtUseCase(paymentRepository, paymentAllocationRepository,
-                invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase, cashMovementService, paymentAllocationService);
+                invoiceGateway, customerGateway, cashRegisterGateway, paymentAllocationService);
     }
 
     @Bean
     public ApprovePaymentUseCase approvePaymentUseCase(PaymentRepository paymentRepository,
                                                          PaymentAllocationRepository allocationRepository,
-                                                         InvoiceRepository invoiceRepository,
-                                                         InvoiceStatusService invoiceStatusService,
-                                                         NotificationService notificationService,
-                                                         CashMovementService cashMovementService,
-                                                         CreditNoteRepository creditNoteRepository,
-                                                         DebitNoteRepository debitNoteRepository,
+                                                         PaymentInvoiceGateway invoiceGateway,
+                                                         PaymentNotificationGateway notificationGateway,
+                                                         CashRegisterGateway cashRegisterGateway,
                                                          PaymentAllocationService paymentAllocationService) {
-        return new ApprovePaymentUseCase(paymentRepository, allocationRepository, invoiceRepository,
-                invoiceStatusService, notificationService, cashMovementService,
-                creditNoteRepository, debitNoteRepository, paymentAllocationService);
+        return new ApprovePaymentUseCase(paymentRepository, allocationRepository, invoiceGateway,
+                notificationGateway, cashRegisterGateway, paymentAllocationService);
     }
 
     @Bean
     public RejectPaymentUseCase rejectPaymentUseCase(PaymentRepository paymentRepository,
-                                                       NotificationService notificationService) {
-        return new RejectPaymentUseCase(paymentRepository, notificationService);
+                                                       PaymentNotificationGateway notificationGateway) {
+        return new RejectPaymentUseCase(paymentRepository, notificationGateway);
     }
 
     @Bean
-    public CreditValidationService creditValidationService(CustomerRepository customerRepository,
-                                                             CustomerBalanceRepository customerBalanceRepository,
-                                                             PaymentRepository paymentRepository,
-                                                             PaymentAllocationRepository paymentAllocationRepository,
-                                                             InvoiceRepository invoiceRepository,
-                                                             CreditNoteRepository creditNoteRepository,
-                                                             DebitNoteRepository debitNoteRepository) {
-        return new CreditValidationService(customerRepository, customerBalanceRepository,
-                paymentRepository, paymentAllocationRepository,
-                invoiceRepository, creditNoteRepository, debitNoteRepository);
+    public CustomerCreditQuery customerCreditQuery(
+            CustomerCreditContextGateway customers,
+            PaymentRepository payments, PaymentAllocationRepository allocations,
+            InvoiceCreditLedgerGateway invoices,
+            CreditNoteLedgerGateway credits,
+            DebitNoteLedgerGateway debits) {
+        return new CustomerCreditQueryService(customers, payments, allocations, invoices, credits, debits);
     }
 }

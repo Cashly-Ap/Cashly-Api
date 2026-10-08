@@ -1,16 +1,10 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentCustomerGateway;
+import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
@@ -57,22 +51,13 @@ class PayAllCustomerDebtUseCaseTest {
     private PaymentAllocationRepository allocationRepository;
 
     @Mock
-    private InvoiceRepository invoiceRepository;
+    private PaymentInvoiceGateway invoiceGateway;
 
     @Mock
-    private InvoiceStatusService invoiceStatusService;
+    private PaymentCustomerGateway customerGateway;
 
     @Mock
-    private CreditNoteRepository creditNoteRepository;
-
-    @Mock
-    private DebitNoteRepository debitNoteRepository;
-
-    @Mock
-    private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-
-    @Mock
-    private CashMovementService cashMovementService;
+    private CashRegisterGateway cashRegisterGateway;
 
     @Captor
     private ArgumentCaptor<Payment> paymentCaptor;
@@ -90,9 +75,7 @@ class PayAllCustomerDebtUseCaseTest {
                 new PaymentAllocationService(paymentRepository, allocationRepository);
         useCase = new PayAllCustomerDebtUseCase(
                 paymentRepository, allocationRepository,
-                invoiceRepository, invoiceStatusService,
-                creditNoteRepository, debitNoteRepository,
-                consumeCustomerBalanceUseCase, cashMovementService,
+                invoiceGateway, customerGateway, cashRegisterGateway,
                 paymentAllocationService
         );
     }
@@ -119,6 +102,12 @@ class PayAllCustomerDebtUseCaseTest {
         );
     }
 
+    private List<PaymentInvoiceGateway.InvoiceSnapshot> snapshots(Invoice... invoices) {
+        return java.util.Arrays.stream(invoices).map(invoice -> new PaymentInvoiceGateway.InvoiceSnapshot(
+                invoice.getId().value(), invoice.getCustomerId(), invoice.getInvoiceNumber().value(),
+                invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))).toList();
+    }
+
     @Test
     void should_PayAllCustomerDebt_When_UnpaidInvoicesExist() {
         UUID invoice1Id = UUID.randomUUID();
@@ -131,14 +120,7 @@ class PayAllCustomerDebtUseCaseTest {
                 false, null
         );
 
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of(invoice1, invoice2));
-        when(creditNoteRepository.findByInvoiceId(invoice1Id)).thenReturn(List.of());
-        when(creditNoteRepository.findByInvoiceId(invoice2Id)).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(invoice1Id)).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(invoice2Id)).thenReturn(List.of());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(invoice1, invoice2));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -151,11 +133,11 @@ class PayAllCustomerDebtUseCaseTest {
         verify(paymentRepository, org.mockito.Mockito.atLeast(1)).save(paymentCaptor.capture());
         Payment saved = paymentCaptor.getValue();
         assertEquals(new BigDecimal("800.00"), saved.getAmount());
-        verify(cashMovementService).record(
-                CashMovementDirection.IN, CashMovementType.PAYMENT,
-                new BigDecimal("800.00"), paymentMethodId,
-                "Pago total de deuda del cliente", "PAYMENT",
-                saved.getId().value(), authenticatedUserId, authenticatedUserName);
+        verify(cashRegisterGateway).recordMovement(new CashRegisterGateway.Movement(
+                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
+                new CashRegisterGateway.PaymentEntry(new BigDecimal("800.00"), paymentMethodId,
+                        "Pago total de deuda del cliente", saved.getId().value(), authenticatedUserId,
+                        authenticatedUserName)));
     }
 
     @Test
@@ -165,10 +147,7 @@ class PayAllCustomerDebtUseCaseTest {
                 false, null
         );
 
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -187,12 +166,7 @@ class PayAllCustomerDebtUseCaseTest {
                 false, null
         );
 
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of(invoice));
-        when(creditNoteRepository.findByInvoiceId(invoice.getId().value())).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(invoice.getId().value())).thenReturn(List.of());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(invoice));
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -212,18 +186,13 @@ class PayAllCustomerDebtUseCaseTest {
                 false, null
         );
 
-        when(invoiceRepository.findAllWithFilters(
-                null, null, customerId, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
-                null, null, null, null, null))
-                .thenReturn(List.of(invoice1));
-        when(creditNoteRepository.findByInvoiceId(invoice1Id)).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(invoice1Id)).thenReturn(List.of());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(invoice1));
         when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(customerId, request, authenticatedUserId, authenticatedUserName);
 
-        verify(invoiceStatusService).recalculate(invoice1.getId().value());
+        verify(invoiceGateway).recalculateStatus(invoice1.getId().value());
     }
 }
