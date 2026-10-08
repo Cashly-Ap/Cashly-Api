@@ -1,43 +1,34 @@
 package com.cashly.cashly_api.returns.application.mappers;
 
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+import com.cashly.cashly_api.returns.application.contracts.ReturnProjectionQueryGateway.InvoiceLabels;
 import com.cashly.cashly_api.returns.application.dto.request.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
 import com.cashly.cashly_api.returns.domain.entities.Return;
 import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
 import com.cashly.cashly_api.returns.domain.entities.ReturnLineAllocation;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class ReturnMapper {
 
-    private final InvoiceRepository invoiceRepository;
-    private final WarehouseRepository warehouseRepository;
-
-    public ReturnMapper(InvoiceRepository invoiceRepository, WarehouseRepository warehouseRepository) {
-        this.invoiceRepository = invoiceRepository;
-        this.warehouseRepository = warehouseRepository;
-    }
-
-    public ReturnResponse toResponse(Return return_) {
-        var invoiceOpt = invoiceRepository.findById(return_.getInvoiceId());
-        String invoiceNumber = invoiceOpt.map(inv -> inv.getInvoiceNumber().value()).orElse("");
-        String customerName = invoiceOpt.map(inv -> inv.getCustomerName()).orElse("");
-        String customerRif = invoiceOpt.map(inv -> inv.getCustomerRif()).orElse("");
+    public ReturnResponse toResponse(Return return_, InvoiceLabels invoice, Map<UUID, String> warehouseNames) {
+        String invoiceNumber = invoice != null ? invoice.number() : "";
+        String customerName = invoice != null ? invoice.customerName() : "";
+        String customerRif = invoice != null ? invoice.customerRif() : "";
 
         List<ReturnResponse.ReturnLineResponse> lineResponses = return_.getLines().stream()
-                .map(this::toLineResponse)
+                .map(line -> toLineResponse(line, warehouseNames))
                 .toList();
 
         return new ReturnResponse(
                 return_.getId().value(),
                 return_.getReturnNumber().value(),
-                return_.getInvoiceId().value(),
+                return_.getInvoiceId(),
                 invoiceNumber,
                 return_.getCustomerId(),
                 customerName,
@@ -53,15 +44,14 @@ public class ReturnMapper {
         );
     }
 
-    public ReturnListResponse toListResponse(Return return_) {
-        var invoiceOpt = invoiceRepository.findById(return_.getInvoiceId());
-        String invoiceNumber = invoiceOpt.map(inv -> inv.getInvoiceNumber().value()).orElse("");
-        String customerName = invoiceOpt.map(inv -> inv.getCustomerName()).orElse("");
+    public ReturnListResponse toListResponse(Return return_, InvoiceLabels invoice) {
+        String invoiceNumber = invoice != null ? invoice.number() : "";
+        String customerName = invoice != null ? invoice.customerName() : "";
 
         return new ReturnListResponse(
                 return_.getId().value(),
                 return_.getReturnNumber().value(),
-                return_.getInvoiceId().value(),
+                return_.getInvoiceId(),
                 invoiceNumber,
                 return_.getCustomerId(),
                 customerName,
@@ -73,9 +63,9 @@ public class ReturnMapper {
         );
     }
 
-    private ReturnResponse.ReturnLineResponse toLineResponse(ReturnLine line) {
+    private ReturnResponse.ReturnLineResponse toLineResponse(ReturnLine line, Map<UUID, String> warehouseNames) {
         List<ReturnResponse.ReturnLineResponse.AllocationResponse> allocationResponses = line.getAllocations().stream()
-                .map(this::toAllocationResponse)
+                .map(allocation -> toAllocationResponse(allocation, warehouseNames))
                 .toList();
 
         return new ReturnResponse.ReturnLineResponse(
@@ -87,10 +77,9 @@ public class ReturnMapper {
         );
     }
 
-    private ReturnResponse.ReturnLineResponse.AllocationResponse toAllocationResponse(ReturnLineAllocation alloc) {
-        String warehouseName = warehouseRepository.findById(alloc.getWarehouseId())
-                .map(wh -> wh.getName())
-                .orElse("");
+    private ReturnResponse.ReturnLineResponse.AllocationResponse toAllocationResponse(
+            ReturnLineAllocation alloc, Map<UUID, String> warehouseNames) {
+        String warehouseName = warehouseNames.getOrDefault(alloc.getWarehouseId(), "");
         return new ReturnResponse.ReturnLineResponse.AllocationResponse(
                 alloc.getWarehouseId(),
                 warehouseName,

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
-import com.cashly.cashly_api.returns.application.mappers.ReturnMapper;
+import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import com.cashly.cashly_api.returns.domain.entities.Return;
 import com.cashly.cashly_api.returns.domain.entities.ReturnId;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
@@ -11,18 +11,18 @@ import java.util.UUID;
 public class GetReturnByIdUseCase {
 
     private final ReturnRepository returnRepository;
-    private final ReturnMapper returnMapper;
+    private final ReturnResponseAssembler responses;
 
-    public GetReturnByIdUseCase(ReturnRepository returnRepository, ReturnMapper returnMapper) {
+    public GetReturnByIdUseCase(ReturnRepository returnRepository, ReturnResponseAssembler responses) {
         this.returnRepository = returnRepository;
-        this.returnMapper = returnMapper;
+        this.responses = responses;
     }
 
     public ReturnResponse execute(UUID id) {
         Return return_ = returnRepository.findById(ReturnId.of(id))
                 .orElseThrow(() -> new ReturnNotFoundException(id));
 
-        return returnMapper.toResponse(return_);
+        return responses.toResponse(return_);
     }
 
     public static class ReturnNotFoundException extends RuntimeException {

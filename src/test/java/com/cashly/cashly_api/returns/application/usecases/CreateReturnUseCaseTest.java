@@ -1,5 +1,8 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
+import com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInventoryGatewayAdapter;
+import com.cashly.cashly_api.warehouses.application.services.ReturnInventoryService;
+
 import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
@@ -19,7 +22,11 @@ import com.cashly.cashly_api.payments.domain.services.PaymentAllocationService;
 import com.cashly.cashly_api.returns.application.dto.request.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
 import com.cashly.cashly_api.returns.application.mappers.ReturnMapper;
+import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import com.cashly.cashly_api.returns.domain.entities.Return;
+import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.infrastructure.integration.InvoiceReturnAdjustmentAdapter;
+import com.cashly.cashly_api.invoices.application.services.RepositoryInvoiceReturnAdjustments;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
@@ -53,10 +60,13 @@ class CreateReturnUseCaseTest {
     private ReturnRepository returnRepository;
 
     @Mock
+    private ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
+
+    @Mock
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private ReturnMapper returnMapper;
+    private ReturnResponseAssembler returnMapper;
 
     @Mock
     private PaymentAllocationService paymentAllocationService;
@@ -87,23 +97,21 @@ class CreateReturnUseCaseTest {
 
     private CreateReturnUseCase useCase;
 
+    private final java.util.Map<UUID, UUID> invoiceLineIds = new java.util.HashMap<>();
+
     private final UUID authenticatedUserId = UUID.randomUUID();
     private final String userName = "Test User";
 
     @BeforeEach
     void setUp() {
-        useCase = new CreateReturnUseCase(
-                returnRepository, invoiceRepository, returnMapper,
-                paymentAllocationService, allocationRepository,
-                addToCustomerBalanceUseCase, creditNoteRepository, debitNoteRepository,
-                warehouseStockRepository, stockMovementRepository, cashMovementService
-        );
+        invoiceAdjustmentGateway = new InvoiceReturnAdjustmentAdapter(new RepositoryInvoiceReturnAdjustments(invoiceRepository));
+        useCase = createUseCase(returnRepository);
         when(creditNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
         when(debitNoteRepository.findByInvoiceId(any())).thenReturn(List.of());
-        
-        
+
+
         WarehouseStock mockStock = WarehouseStock.create(UUID.randomUUID(), UUID.randomUUID());
-        mockStock.addStock(1000); 
+        mockStock.addStock(1000);
         when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(any(), any()))
                 .thenReturn(Optional.of(mockStock));
         when(warehouseStockRepository.save(any(WarehouseStock.class)))
@@ -117,7 +125,7 @@ class CreateReturnUseCaseTest {
                 returnType,
                 "Test reason",
                 List.of(new CreateReturnRequest.ReturnLineRequest(
-                        UUID.randomUUID(),
+                        invoiceLineIds.computeIfAbsent(invoiceId, ignored -> UUID.randomUUID()),
                         UUID.randomUUID(),
                         BigDecimal.ONE,
                         total,
@@ -133,7 +141,7 @@ class CreateReturnUseCaseTest {
 
     private Invoice buildInvoice(BigDecimal subtotal, BigDecimal returnedTotal, UUID invoiceId) {
         InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), UUID.randomUUID(), "Product", "CODE",
+                InvoiceLineId.of(invoiceLineIds.computeIfAbsent(invoiceId, ignored -> UUID.randomUUID())), UUID.randomUUID(), "Product", "CODE",
                 BigDecimal.ONE, subtotal, BigDecimal.ZERO, List.of()
         );
         return Invoice.reconstitute(
@@ -161,7 +169,6 @@ class CreateReturnUseCaseTest {
         when(returnRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(returnRepository.save(any(Return.class))).thenAnswer(inv -> inv.getArgument(0));
         when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
-        when(invoiceRepository.save(any(Invoice.class))).thenReturn(invoice);
         when(allocationRepository.findByInvoiceId(invoiceId)).thenReturn(List.of());
         when(allocationRepository.getAllocatedAmountByInvoiceId(invoiceId)).thenReturn(totalPaid);
         when(returnMapper.toResponse(any())).thenReturn(mock(ReturnResponse.class));
@@ -192,7 +199,6 @@ class CreateReturnUseCaseTest {
         when(returnRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(returnRepository.save(any(Return.class))).thenAnswer(inv -> inv.getArgument(0));
         when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
-        when(invoiceRepository.save(any(Invoice.class))).thenReturn(invoice);
         when(allocationRepository.findByInvoiceId(invoiceId)).thenReturn(List.of());
         when(allocationRepository.getAllocatedAmountByInvoiceId(invoiceId)).thenReturn(totalPaid);
         when(returnMapper.toResponse(any())).thenReturn(mock(ReturnResponse.class));
@@ -227,7 +233,6 @@ class CreateReturnUseCaseTest {
         when(returnRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(returnRepository.save(any(Return.class))).thenAnswer(inv -> inv.getArgument(0));
         when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
-        when(invoiceRepository.save(any(Invoice.class))).thenReturn(invoice);
         when(allocationRepository.getAllocatedAmountByInvoiceId(invoiceId)).thenReturn(totalPaid);
         when(returnMapper.toResponse(any())).thenReturn(mock(ReturnResponse.class));
 
@@ -262,7 +267,6 @@ class CreateReturnUseCaseTest {
         when(returnRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
         when(returnRepository.save(any(Return.class))).thenAnswer(inv -> inv.getArgument(0));
         when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
-        when(invoiceRepository.save(any(Invoice.class))).thenReturn(invoice);
         when(allocationRepository.getAllocatedAmountByInvoiceId(invoiceId)).thenReturn(totalPaid);
         when(returnMapper.toResponse(any())).thenReturn(mock(ReturnResponse.class));
 
@@ -274,4 +278,53 @@ class CreateReturnUseCaseTest {
                 any(), any(), any(), any(), any(), any(), any(), any()
         );
     }
-}
+    @Test
+    void should_persist_cancelled_payment_snapshot_for_subsequent_deletion() {
+        UUID invoiceId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID paymentId = UUID.randomUUID();
+        var request = buildRequest(new BigDecimal("10.00"), "AUTOMATIC", invoiceId, customerId);
+        var invoice = buildInvoice(new BigDecimal("50.00"), BigDecimal.ZERO, invoiceId);
+        var entityManager = mock(jakarta.persistence.EntityManager.class);
+        var stored = new java.util.concurrent.atomic.AtomicReference<com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity>();
+        when(entityManager.find(eq(com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity.class), any()))
+                .thenAnswer(invocation -> stored.get());
+        doAnswer(invocation -> { stored.set(invocation.getArgument(0)); return null; }).when(entityManager)
+                .persist(any(com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity.class));
+        when(entityManager.merge(any())).thenAnswer(invocation -> {
+            Object entity = invocation.getArgument(0);
+            if (entity instanceof com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity returnEntity) stored.set(returnEntity);
+            return entity;
+        });
+        when(entityManager.find(eq(com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnNumberSequenceEntity.class),
+                any(), eq(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE))).thenReturn(null);
+        var repository = new com.cashly.cashly_api.returns.infrastructure.persistence.repositories.JpaReturnRepository(entityManager);
+        var persistedUseCase = createUseCase(repository);
+        when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
+        when(allocationRepository.getAllocatedAmountByInvoiceId(invoiceId)).thenReturn(new BigDecimal("15.00"));
+        when(allocationRepository.findByInvoiceId(invoiceId)).thenReturn(List.of(
+                com.cashly.cashly_api.payments.domain.entities.PaymentAllocation.create(paymentId, invoiceId, new BigDecimal("15.00"))));
+        when(returnMapper.toResponse(any())).thenReturn(mock(ReturnResponse.class));
+        persistedUseCase.execute(request, authenticatedUserId, userName);
+        var reloaded = repository.findById(com.cashly.cashly_api.returns.domain.entities.ReturnId.of(stored.get().getId())).orElseThrow();
+        assertEquals(1, reloaded.getCancelledAllocations().size(), "Cancelled allocations must survive repository reload for deletion");
+        assertEquals(paymentId, reloaded.getCancelledAllocations().getFirst().getPaymentId());
+        assertEquals(invoiceId, reloaded.getCancelledAllocations().getFirst().getInvoiceId());
+        assertEquals(new BigDecimal("15.00"), reloaded.getCancelledAllocations().getFirst().getAmount());
+    }
+    private CreateReturnUseCase createUseCase(ReturnRepository repository) {
+        var query = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInvoiceQueryGateway(
+                new com.cashly.cashly_api.invoices.application.services.RepositoryReturnInvoiceQuery(invoiceRepository),
+                new com.cashly.cashly_api.credit_notes.application.services.RepositoryCreditNoteLedgerQuery(creditNoteRepository),
+                new com.cashly.cashly_api.debit_notes.application.services.RepositoryDebitNoteLedgerQuery(debitNoteRepository));
+        var payments = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnPaymentSettlementGateway(
+                new com.cashly.cashly_api.payments.application.services.ReturnPaymentOperationsService(
+                        mock(com.cashly.cashly_api.payments.domain.repositories.PaymentRepository.class), allocationRepository, paymentAllocationService));
+        var balances = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnBalanceGateway(
+                new com.cashly.cashly_api.customers.application.services.ReturnBalanceMutationService(addToCustomerBalanceUseCase,
+                        mock(com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase.class)));
+        var cash = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnCashGateway(
+                new com.cashly.cashly_api.cashregister.application.services.ReturnCashRecordingService(cashMovementService));
+        return new CreateReturnUseCase(invoiceAdjustmentGateway, repository, returnMapper, query, payments, balances,
+                new LocalReturnInventoryGatewayAdapter(new ReturnInventoryService(warehouseStockRepository, stockMovementRepository)), cash);
+    }}

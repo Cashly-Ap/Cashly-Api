@@ -1,5 +1,8 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
+import com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInventoryGatewayAdapter;
+import com.cashly.cashly_api.warehouses.application.services.ReturnInventoryService;
+
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
@@ -21,6 +24,7 @@ import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
 import com.cashly.cashly_api.returns.domain.entities.ReturnLineAllocation;
 import com.cashly.cashly_api.returns.domain.entities.ReturnNumber;
 import com.cashly.cashly_api.returns.domain.entities.ReturnType;
+import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
 import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
 import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
@@ -51,6 +55,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("DeleteReturnUseCase Unit Tests")
 class DeleteReturnUseCaseTest {
 
+    @Mock private ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
     @Mock private ReturnRepository returnRepository;
     @Mock private InvoiceRepository invoiceRepository;
     @Mock private WarehouseStockRepository warehouseStockRepository;
@@ -82,17 +87,18 @@ class DeleteReturnUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new DeleteReturnUseCase(
-                returnRepository,
-                invoiceRepository,
-                warehouseStockRepository,
-                stockMovementRepository,
-                consumeCustomerBalanceUseCase,
-                paymentRepository,
-                allocationRepository,
-                creditNoteRepository,
-                debitNoteRepository
-        );
+        useCase = new DeleteReturnUseCase(invoiceAdjustmentGateway, returnRepository,
+                new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInvoiceQueryGateway(
+                        new com.cashly.cashly_api.invoices.application.services.RepositoryReturnInvoiceQuery(invoiceRepository),
+                        new com.cashly.cashly_api.credit_notes.application.services.RepositoryCreditNoteLedgerQuery(creditNoteRepository),
+                        new com.cashly.cashly_api.debit_notes.application.services.RepositoryDebitNoteLedgerQuery(debitNoteRepository)),
+                new LocalReturnInventoryGatewayAdapter(new ReturnInventoryService(warehouseStockRepository, stockMovementRepository)),
+                new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnPaymentSettlementGateway(
+                        new com.cashly.cashly_api.payments.application.services.ReturnPaymentOperationsService(paymentRepository, allocationRepository,
+                                new com.cashly.cashly_api.payments.domain.services.PaymentAllocationService(paymentRepository, allocationRepository))),
+                new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnBalanceGateway(
+                        new com.cashly.cashly_api.customers.application.services.ReturnBalanceMutationService(
+                                mock(com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase.class), consumeCustomerBalanceUseCase)));
     }
 
     // ------------------------------------------------------------------------
@@ -131,13 +137,13 @@ class DeleteReturnUseCaseTest {
         assertTrue(movement.getNotes().contains("Return deleted:"));
 
         // Then — invoice reverted
-        verify(invoice).revertReturn(return_);
-        verify(invoice).recalculatePaymentStatus(
-                BigDecimal.valueOf(150),
-                BigDecimal.ZERO,
-                BigDecimal.ZERO
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_),
+                eq(BigDecimal.valueOf(150)),
+                eq(BigDecimal.ZERO),
+                eq(BigDecimal.ZERO)
         );
-        verify(invoiceRepository).save(invoice);
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
 
         // Then — customer balance consumed with surplus = 150 - 100 = 50
         verify(consumeCustomerBalanceUseCase).execute(
@@ -194,8 +200,8 @@ class DeleteReturnUseCaseTest {
         assertEquals(MovementType.CANCEL_ENTRY, stockMovementCaptor.getValue().getMovementType());
 
         // Then — invoice reverted
-        verify(invoice).revertReturn(return_);
-        verify(invoiceRepository).save(invoice);
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
 
         // Then — payment reactivated
         verify(payment).reactivate();
@@ -289,7 +295,7 @@ class DeleteReturnUseCaseTest {
         verify(stockMovementRepository).save(any(StockMovement.class));
 
         // Then — invoice revert SKIPPED
-        verify(invoice, never()).revertReturn(any());
+        verifyNoInteractions(invoiceAdjustmentGateway);
         verify(invoiceRepository, never()).save(any());
 
         // Then — return deleted
@@ -324,8 +330,8 @@ class DeleteReturnUseCaseTest {
         assertEquals(7, stock.getQuantity());
 
         // Then — invoice reverted normally
-        verify(invoice).revertReturn(return_);
-        verify(invoiceRepository).save(invoice);
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
 
         // Then — customer balance NOT consumed
         verify(consumeCustomerBalanceUseCase, never()).execute(
@@ -363,7 +369,7 @@ class DeleteReturnUseCaseTest {
         return Return.reconstitute(
                 returnIdObj,
                 ReturnNumber.of(2026, 1),
-                invoiceIdObj,
+                invoiceIdObj.value(),
                 CUSTOMER_ID,
                 type,
                 "Test reason",
@@ -414,6 +420,7 @@ class DeleteReturnUseCaseTest {
     }
 
     private void stubCalculateTotal(Invoice invoice, BigDecimal effectiveTotal) {
+        when(invoice.getSubtotal()).thenReturn(effectiveTotal);
         when(invoice.calculateTotal(any(BigDecimal.class), any(BigDecimal.class)))
                 .thenReturn(effectiveTotal);
     }

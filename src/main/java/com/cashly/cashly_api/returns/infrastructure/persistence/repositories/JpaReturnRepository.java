@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+
 import com.cashly.cashly_api.returns.domain.entities.CancelledAllocation;
 import com.cashly.cashly_api.returns.domain.entities.Return;
 import com.cashly.cashly_api.returns.domain.entities.ReturnId;
@@ -131,7 +131,7 @@ public class JpaReturnRepository implements ReturnRepository {
         ReturnEntity entity = new ReturnEntity();
         entity.setId(return_.getId().value());
         entity.setReturnNumber(return_.getReturnNumber().value());
-        entity.setInvoiceId(return_.getInvoiceId().value());
+        entity.setInvoiceId(return_.getInvoiceId());
         entity.setCustomerId(return_.getCustomerId());
         entity.setReturnType(return_.getReturnType().name());
         entity.setReason(return_.getReason());
@@ -196,7 +196,7 @@ public class JpaReturnRepository implements ReturnRepository {
         return Return.reconstitute(
                 ReturnId.of(entity.getId()),
                 new ReturnNumber(entity.getReturnNumber()),
-                InvoiceId.of(entity.getInvoiceId()),
+                entity.getInvoiceId(),
                 entity.getCustomerId(),
                 ReturnType.valueOf(entity.getReturnType()),
                 entity.getReason(),

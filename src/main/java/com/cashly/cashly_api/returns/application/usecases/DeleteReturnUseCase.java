@@ -1,64 +1,33 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.payments.domain.entities.Payment;
-import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
-import com.cashly.cashly_api.payments.domain.valueobjects.PaymentId;
 import com.cashly.cashly_api.returns.domain.entities.CancelledAllocation;
 import com.cashly.cashly_api.returns.domain.entities.Return;
 import com.cashly.cashly_api.returns.domain.entities.ReturnId;
-import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
-import com.cashly.cashly_api.returns.domain.entities.ReturnLineAllocation;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
-import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
-import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
-import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
 
+import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceQueryGateway;
+import com.cashly.cashly_api.returns.application.contracts.ReturnPaymentSettlementGateway;
+import com.cashly.cashly_api.returns.application.contracts.ReturnBalanceGateway;
+import com.cashly.cashly_api.returns.application.contracts.ReturnInventoryGateway;
 import java.math.BigDecimal;
 import java.util.UUID;
 
 public class DeleteReturnUseCase {
 
+    private final ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
     private final ReturnRepository returnRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final StockMovementRepository stockMovementRepository;
-    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-    private final PaymentRepository paymentRepository;
-    private final PaymentAllocationRepository allocationRepository;
-    private final CreditNoteRepository creditNoteRepository;
-    private final DebitNoteRepository debitNoteRepository;
-
-    public DeleteReturnUseCase(ReturnRepository returnRepository,
-                                InvoiceRepository invoiceRepository,
-                                WarehouseStockRepository warehouseStockRepository,
-                                StockMovementRepository stockMovementRepository,
-                                ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                PaymentRepository paymentRepository,
-                                PaymentAllocationRepository allocationRepository,
-                                CreditNoteRepository creditNoteRepository,
-                                DebitNoteRepository debitNoteRepository) {
-        this.returnRepository = returnRepository;
-        this.invoiceRepository = invoiceRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.stockMovementRepository = stockMovementRepository;
-        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
-        this.paymentRepository = paymentRepository;
-        this.allocationRepository = allocationRepository;
-        this.creditNoteRepository = creditNoteRepository;
-        this.debitNoteRepository = debitNoteRepository;
+    private final ReturnInvoiceQueryGateway invoiceQueries;
+    private final ReturnInventoryGateway inventoryGateway;
+    private final ReturnPaymentSettlementGateway paymentSettlements;
+    private final ReturnBalanceGateway balances;
+    public DeleteReturnUseCase(ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway, ReturnRepository returnRepository,
+            ReturnInvoiceQueryGateway invoiceQueries, ReturnInventoryGateway inventoryGateway,
+            ReturnPaymentSettlementGateway paymentSettlements, ReturnBalanceGateway balances) {
+        this.invoiceAdjustmentGateway = invoiceAdjustmentGateway; this.returnRepository = returnRepository;
+        this.invoiceQueries = invoiceQueries; this.inventoryGateway = inventoryGateway;
+        this.paymentSettlements = paymentSettlements; this.balances = balances;
     }
 
     @Transactional
@@ -67,7 +36,7 @@ public class DeleteReturnUseCase {
         Return return_ = returnRepository.findById(returnId)
                 .orElseThrow(() -> new GetReturnByIdUseCase.ReturnNotFoundException(id));
 
-        revertStockFromReturn(return_, userName);
+        inventoryGateway.reverseStock(ReturnInventoryGateway.Command.from(return_, userName));
 
         revertInvoiceReturn(return_);
 
@@ -78,93 +47,43 @@ public class DeleteReturnUseCase {
         returnRepository.delete(returnId);
     }
 
-    private void revertStockFromReturn(Return return_, String userName) {
-        for (ReturnLine line : return_.getLines()) {
-            for (ReturnLineAllocation allocation : line.getAllocations()) {
-                int quantity = allocation.getAllocated().intValue();
-                if (quantity <= 0) {
-                    continue;
-                }
-
-                WarehouseStock stock = warehouseStockRepository
-                        .findByWarehouseIdAndProductIdForUpdate(allocation.getWarehouseId(), line.getProductId())
-                        .orElseThrow(() -> new IllegalStateException(
-                                "Stock not found for warehouse=" + allocation.getWarehouseId()
-                                + " product=" + line.getProductId()));
-
-                int previousStock = stock.getQuantity();
-                stock.removeStock(quantity);
-                warehouseStockRepository.save(stock);
-
-                stockMovementRepository.save(StockMovement.createWithReference(
-                        allocation.getWarehouseId(),
-                        line.getProductId(),
-                        MovementType.CANCEL_ENTRY,
-                        quantity,
-                        previousStock,
-                        stock.getQuantity(),
-                        null,
-                        null,
-                        ReferenceType.RETURN,
-                        return_.getId().value(),
-                        return_.getReturnNumber().value(),
-                        "Return deleted: " + return_.getReturnNumber().value() + " by " + userName
-                ));
-            }
-        }
-    }
-
     private void revertInvoiceReturn(Return return_) {
-        Invoice invoice = invoiceRepository.findById(return_.getInvoiceId())
-                .orElse(null);
+        var invoice = invoiceQueries.findById(return_.getInvoiceId()).orElse(null);
 
-        if (invoice == null || invoice.getStatus() == InvoiceStatus.CANCELLED) {
+        if (invoice == null || invoice.cancelled()) {
             return;
         }
 
-        invoice.revertReturn(return_);
 
-        BigDecimal totalPaid = allocationRepository.getAllocatedAmountByInvoiceId(return_.getInvoiceId().value());
+        BigDecimal totalPaid = paymentSettlements.allocatedAmount(return_.getInvoiceId());
 
-        BigDecimal totalCreditNotes = creditNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
-                .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+        BigDecimal totalCreditNotes = invoiceQueries.creditNoteAmounts(return_.getInvoiceId()).stream()
+                .map(c -> c != null ? c : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalDebitNotes = debitNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
-                .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+        BigDecimal totalDebitNotes = invoiceQueries.debitNoteAmounts(return_.getInvoiceId()).stream()
+                .map(d -> d != null ? d : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        invoice.recalculatePaymentStatus(totalPaid, totalDebitNotes, totalCreditNotes);
-        invoiceRepository.save(invoice);
+        invoiceAdjustmentGateway.reverse(return_, totalPaid, totalDebitNotes, totalCreditNotes);
     }
 
     private void revertCancelledPayments(Return return_) {
-        for (CancelledAllocation ca : return_.getCancelledAllocations()) {
-            Payment payment = paymentRepository.findById(PaymentId.of(ca.getPaymentId()))
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Payment not found: " + ca.getPaymentId()));
-
-            payment.reactivate();
-            paymentRepository.save(payment);
-
-            PaymentAllocation allocation = PaymentAllocation.create(
-                    ca.getPaymentId(), ca.getInvoiceId(), ca.getAmount());
-            allocationRepository.save(allocation);
-        }
+        paymentSettlements.restore(return_.getCancelledAllocations());
     }
 
     private void revertCustomerBalance(Return return_) {
-        BigDecimal totalPaid = allocationRepository.getAllocatedAmountByInvoiceId(return_.getInvoiceId().value());
+        BigDecimal totalPaid = paymentSettlements.allocatedAmount(return_.getInvoiceId());
 
-        BigDecimal totalCreditNotes = creditNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
-                .map(c -> c.getAmount() != null ? c.getAmount() : BigDecimal.ZERO)
+        BigDecimal totalCreditNotes = invoiceQueries.creditNoteAmounts(return_.getInvoiceId()).stream()
+                .map(c -> c != null ? c : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalDebitNotes = debitNoteRepository.findByInvoiceId(return_.getInvoiceId().value()).stream()
-                .map(d -> d.getAmount() != null ? d.getAmount() : BigDecimal.ZERO)
+        BigDecimal totalDebitNotes = invoiceQueries.debitNoteAmounts(return_.getInvoiceId()).stream()
+                .map(d -> d != null ? d : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Invoice invoice = invoiceRepository.findById(return_.getInvoiceId()).orElse(null);
+        var invoice = invoiceQueries.findById(return_.getInvoiceId()).orElse(null);
         if (invoice == null) {
             return;
         }
@@ -176,16 +95,8 @@ public class DeleteReturnUseCase {
         BigDecimal surplus = totalPaid.subtract(effectiveTotal);
 
         if (surplus.compareTo(BigDecimal.ZERO) > 0) {
-            consumeCustomerBalanceUseCase.execute(
-                    return_.getCustomerId(),
-                    BalanceType.RETURNS,
-                    surplus,
-                    BalanceType.RETURNS,
-                    return_.getId().value(),
-                    "REV-" + return_.getReturnNumber().value(),
-                    invoice.getInvoiceNumber().value(),
-                    return_.getCreatedBy()
-            );
+            balances.debit(new ReturnBalanceGateway.Command(return_.getCustomerId(), surplus, return_.getId().value(),
+                    "REV-" + return_.getReturnNumber().value(), invoice.number(), return_.getCreatedBy()));
         }
     }
 }

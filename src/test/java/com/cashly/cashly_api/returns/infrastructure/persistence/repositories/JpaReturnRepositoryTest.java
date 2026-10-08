@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+
 import com.cashly.cashly_api.returns.domain.entities.Return;
 import com.cashly.cashly_api.returns.domain.entities.ReturnId;
 import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
@@ -60,7 +60,7 @@ class JpaReturnRepositoryTest {
     private Return createTestReturn() {
         ReturnId id = ReturnId.of(UUID.randomUUID());
         ReturnNumber returnNumber = ReturnNumber.of(2026, 1);
-        InvoiceId invoiceId = InvoiceId.of(UUID.randomUUID());
+        UUID invoiceId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         ReturnType returnType = ReturnType.AUTOMATIC;
         String reason = "Product damaged during shipping";
@@ -102,7 +102,7 @@ class JpaReturnRepositoryTest {
         ReturnEntity entity = new ReturnEntity();
         entity.setId(domain.getId().value());
         entity.setReturnNumber(domain.getReturnNumber().value());
-        entity.setInvoiceId(domain.getInvoiceId().value());
+        entity.setInvoiceId(domain.getInvoiceId());
         entity.setCustomerId(domain.getCustomerId());
         entity.setReturnType(domain.getReturnType().name());
         entity.setReason(domain.getReason());
@@ -168,7 +168,7 @@ class JpaReturnRepositoryTest {
             ReturnEntity captured = entityCaptor.getValue();
             assertEquals(return_.getId().value(), captured.getId());
             assertEquals(return_.getReturnNumber().value(), captured.getReturnNumber());
-            assertEquals(return_.getInvoiceId().value(), captured.getInvoiceId());
+            assertEquals(return_.getInvoiceId(), captured.getInvoiceId());
             assertEquals(return_.getCustomerId(), captured.getCustomerId());
             assertEquals(return_.getReturnType().name(), captured.getReturnType());
             assertEquals(return_.getReason(), captured.getReason());

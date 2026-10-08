@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.domain.entities;
 
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ public class Return {
 
     private final ReturnId id;
     private final ReturnNumber returnNumber;
-    private final InvoiceId invoiceId;
+    private final UUID invoiceId;
     private final UUID customerId;
     private final ReturnType returnType;
     private final String reason;
@@ -26,7 +26,7 @@ public class Return {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Return(ReturnId id, ReturnNumber returnNumber, InvoiceId invoiceId, UUID customerId,
+    private Return(ReturnId id, ReturnNumber returnNumber, UUID invoiceId, UUID customerId,
                    ReturnType returnType, String reason, BigDecimal total,
                    List<ReturnLine> lines,
                    List<CancelledAllocation> cancelledAllocations,
@@ -47,7 +47,7 @@ public class Return {
         this.updatedAt = updatedAt;
     }
 
-    public static Return create(ReturnNumber returnNumber, InvoiceId invoiceId, UUID customerId,
+    public static Return create(ReturnNumber returnNumber, UUID invoiceId, UUID customerId,
                                 ReturnType returnType, String reason, BigDecimal total,
                                 List<ReturnLine> lines,
                                 UUID createdBy, String createdByName) {
@@ -81,7 +81,7 @@ public class Return {
                 lines, List.of(), createdBy, createdByName, now, now);
     }
 
-    public static Return reconstitute(ReturnId id, ReturnNumber returnNumber, InvoiceId invoiceId,
+    public static Return reconstitute(ReturnId id, ReturnNumber returnNumber, UUID invoiceId,
                                        UUID customerId,
                                        ReturnType returnType, String reason, BigDecimal total,
                                        List<ReturnLine> lines,
@@ -95,7 +95,7 @@ public class Return {
 
     public ReturnId getId() { return id; }
     public ReturnNumber getReturnNumber() { return returnNumber; }
-    public InvoiceId getInvoiceId() { return invoiceId; }
+    public UUID getInvoiceId() { return invoiceId; }
     public UUID getCustomerId() { return customerId; }
     public ReturnType getReturnType() { return returnType; }
     public String getReason() { return reason; }

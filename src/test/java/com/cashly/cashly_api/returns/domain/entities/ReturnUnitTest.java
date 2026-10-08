@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.domain.entities;
 
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReturnUnitTest {
 
     private static final ReturnNumber RETURN_NUMBER = ReturnNumber.of(2026, 1);
-    private static final InvoiceId INVOICE_ID = InvoiceId.of(UUID.randomUUID());
+    private static final UUID INVOICE_ID = UUID.randomUUID();
     private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final ReturnType RETURN_TYPE = ReturnType.AUTOMATIC;
     private static final String REASON = "Producto defectuoso";

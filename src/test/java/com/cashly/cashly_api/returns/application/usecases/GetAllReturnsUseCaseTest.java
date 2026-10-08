@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
-import com.cashly.cashly_api.returns.application.mappers.ReturnMapper;
+import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import com.cashly.cashly_api.returns.domain.entities.Return;
 import com.cashly.cashly_api.returns.domain.entities.ReturnId;
 import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
 import com.cashly.cashly_api.returns.domain.entities.ReturnNumber;
 import com.cashly.cashly_api.returns.domain.entities.ReturnType;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class GetAllReturnsUseCaseTest {
     private ReturnRepository returnRepository;
 
     @Mock
-    private ReturnMapper returnMapper;
+    private ReturnResponseAssembler returnMapper;
 
     private GetAllReturnsUseCase useCase;
 
@@ -142,7 +142,7 @@ class GetAllReturnsUseCaseTest {
         return Return.reconstitute(
                 ReturnId.generate(),
                 ReturnNumber.of(2026, 1),
-                InvoiceId.of(UUID.randomUUID()),
+                UUID.randomUUID(),
                 UUID.randomUUID(),
                 ReturnType.AUTOMATIC,
                 "Producto defectuoso",
