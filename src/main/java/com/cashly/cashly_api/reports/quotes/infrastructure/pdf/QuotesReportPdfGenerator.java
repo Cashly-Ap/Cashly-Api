@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportRow;
 import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
 import com.cashly.cashly_api.reports.infrastructure.pdf.PdfStatusColors;
 
@@ -38,7 +38,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     @Override
-    public byte[] generatePdf(List<QuoteListResponse> quotes, String mode) {
+    public byte[] generatePdf(List<QuoteReportRow> quotes, String mode) {
         boolean detailed = "detailed".equalsIgnoreCase(mode);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -94,7 +94,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
             }
 
             for (int i = 0; i < quotes.size(); i++) {
-                QuoteListResponse quote = quotes.get(i);
+                QuoteReportRow quote = quotes.get(i);
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 

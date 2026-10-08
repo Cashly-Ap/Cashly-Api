@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportRow;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
 import com.cashly.cashly_api.reports.infrastructure.pdf.PdfStatusColors;
 
@@ -37,7 +37,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     @Override
-    public byte[] generatePdf(List<InvoiceListResponse> invoices, String mode) {
+    public byte[] generatePdf(List<InvoiceReportRow> invoices, String mode) {
         boolean detailed = "detailed".equalsIgnoreCase(mode);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -93,7 +93,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
             }
 
             for (int i = 0; i < invoices.size(); i++) {
-                InvoiceListResponse invoice = invoices.get(i);
+                InvoiceReportRow invoice = invoices.get(i);
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 

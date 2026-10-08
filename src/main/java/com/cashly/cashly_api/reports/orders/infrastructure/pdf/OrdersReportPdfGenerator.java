@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportRow;
 import com.cashly.cashly_api.reports.orders.application.port.OrdersReportPdfPort;
 import com.cashly.cashly_api.reports.infrastructure.pdf.PdfStatusColors;
 
@@ -37,7 +37,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     @Override
-    public byte[] generatePdf(List<OrderListResponse> orders, String mode) {
+    public byte[] generatePdf(List<OrderReportRow> orders, String mode) {
         boolean detailed = "detailed".equalsIgnoreCase(mode);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -97,7 +97,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             
             for (int i = 0; i < orders.size(); i++) {
-                OrderListResponse order = orders.get(i);
+                OrderReportRow order = orders.get(i);
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 
@@ -163,7 +163,6 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
         if (status == null) return "-";
         return switch (status) {
             case "DRAFT" -> "Borrador";
-            case "CUSTOMER_DRAFT" -> "Borrador por Cliente";
             case "CONFIRMED" -> "Confirmado";
             case "INVOICED" -> "Facturado";
             case "IN_PREPARATION" -> "En Preparación";

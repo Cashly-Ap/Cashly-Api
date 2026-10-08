@@ -1,7 +1,5 @@
 package com.cashly.cashly_api.reports.purchases.infrastructure.config;
-
-import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
-import com.cashly.cashly_api.purchases.application.usecases.ListPurchasesUseCase;
+import com.cashly.cashly_api.reports.purchases.application.contracts.PurchaseReportQueryGateway;
 import com.cashly.cashly_api.reports.purchases.application.port.PurchasePdfPort;
 import com.cashly.cashly_api.reports.purchases.application.port.PurchasesReportPdfPort;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasePdfUseCase;
@@ -12,30 +10,18 @@ import com.cashly.cashly_api.reports.purchases.infrastructure.pdf.PurchasePdfGen
 import com.cashly.cashly_api.reports.purchases.infrastructure.pdf.PurchasesReportPdfGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class PurchasesReportConfig {
-
     @Bean
-    public PurchasePdfPort purchasePdfPort() {
-        return new PurchasePdfGenerator();
+    public PurchasePdfPort purchasePdfPort() { return new PurchasePdfGenerator(); }
+    @Bean
+    public PurchasesReportPdfPort purchasesReportPdfPort() { return new PurchasesReportPdfGenerator(); }
+    @Bean
+    public GeneratePurchasePdfUseCase generatePurchasePdfUseCase(PurchaseReportQueryGateway query, PurchasePdfPort pdf) {
+        return new GeneratePurchasePdfUseCaseImpl(query, pdf);
     }
-
     @Bean
-    public PurchasesReportPdfPort purchasesReportPdfPort() {
-        return new PurchasesReportPdfGenerator();
-    }
-
-    @Bean
-    public GeneratePurchasePdfUseCase generatePurchasePdfUseCase(
-            PurchaseRepository purchaseRepository,
-            PurchasePdfPort purchasePdfPort) {
-        return new GeneratePurchasePdfUseCaseImpl(purchaseRepository, purchasePdfPort);
-    }
-
-    @Bean
-    public GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase(
-            PurchasesReportPdfPort purchasesReportPdfPort) {
-        return new GeneratePurchasesReportPdfUseCaseImpl(purchasesReportPdfPort);
+    public GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase(PurchaseReportQueryGateway query, PurchasesReportPdfPort pdf) {
+        return new GeneratePurchasesReportPdfUseCaseImpl(query, pdf);
     }
 }

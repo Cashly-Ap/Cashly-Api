@@ -27,7 +27,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.cashly.cashly_api.reports.inventory.application.dto.response.CommercialCatalogResponse;
 import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogPdfPort;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.reports.inventory.application.contracts.MediaGateway;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,8 +48,12 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
     private static final float IMAGE_SIZE = 120f;
     private static final DecimalFormat PRICE_FORMAT = new DecimalFormat("#,##0.00");
 
+    private final MediaGateway media;
+
+    public CommercialCatalogPdfGenerator(MediaGateway media) { this.media = media; }
+
     @Override
-    public byte[] generatePdf(List<CommercialCatalogResponse> items, FileStorageService fileStorageService) {
+    public byte[] generatePdf(List<CommercialCatalogResponse> items) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             PdfWriter writer = new PdfWriter(baos);
@@ -91,7 +95,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                 document.add(createCategoryHeader(entry.getKey(), bold));
 
                 for (CommercialCatalogResponse item : entry.getValue()) {
-                    document.add(createProductCard(item, bold, regular, fileStorageService));
+                    document.add(createProductCard(item, bold, regular, media));
                 }
             }
 
@@ -117,7 +121,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
     }
 
     private Table createProductCard(CommercialCatalogResponse item, PdfFont bold, PdfFont regular,
-                                    FileStorageService fileStorageService) throws IOException {
+                                    MediaGateway fileStorageService) throws IOException {
         float[] columnWidths = {IMAGE_SIZE + 20, 1f};
         Table card = new Table(UnitValue.createPointArray(columnWidths))
                 .useAllAvailableWidth()
@@ -135,7 +139,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
     }
 
     private Cell createImageCell(CommercialCatalogResponse item, PdfFont regular,
-                                  FileStorageService fileStorageService) {
+                                  MediaGateway fileStorageService) {
         Cell cell = new Cell()
                 .setWidth(IMAGE_SIZE + 20)
                 .setHeight(IMAGE_SIZE + 20)

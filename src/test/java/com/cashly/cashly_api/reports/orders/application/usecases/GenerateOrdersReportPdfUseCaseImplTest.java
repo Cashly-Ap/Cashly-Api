@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.orders.application.usecases;
 
-import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportRow;
 import com.cashly.cashly_api.reports.orders.application.port.OrdersReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import com.cashly.cashly_api.reports.orders.application.contracts.OrderReportQueryGateway;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportFilter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,18 +23,21 @@ class GenerateOrdersReportPdfUseCaseImplTest {
     @Mock
     private OrdersReportPdfPort ordersReportPdfPort;
 
+    @Mock private OrderReportQueryGateway query;
     @InjectMocks
     private GenerateOrdersReportPdfUseCaseImpl useCase;
 
     @Test
     @DisplayName("should generate orders report PDF with mode")
     void should_generate_orders_report_pdf() {
-        List<OrderListResponse> orders = List.of(mock(OrderListResponse.class));
+        List<OrderReportRow> orders = List.of(mock(OrderReportRow.class));
+        var filter = new OrderReportFilter(null, null, null, null, null, null);
+        when(query.findAll(filter)).thenReturn(orders);
         byte[] expectedPdf = "Orders report PDF".getBytes();
 
         when(ordersReportPdfPort.generatePdf(orders, "DETAILED")).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(orders, "DETAILED");
+        byte[] result = useCase.execute(filter, "DETAILED");
 
         assertArrayEquals(expectedPdf, result);
         verify(ordersReportPdfPort).generatePdf(orders, "DETAILED");
@@ -41,12 +46,14 @@ class GenerateOrdersReportPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate orders report PDF with null mode defaulting to simple")
     void should_generate_orders_report_pdf_with_null_mode() {
-        List<OrderListResponse> orders = List.of();
+        List<OrderReportRow> orders = List.of();
+        var filter = new OrderReportFilter(null, null, null, null, null, null);
+        when(query.findAll(filter)).thenReturn(orders);
         byte[] expectedPdf = "Default PDF".getBytes();
 
         when(ordersReportPdfPort.generatePdf(orders, "simple")).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(orders, null);
+        byte[] result = useCase.execute(filter, null);
 
         assertArrayEquals(expectedPdf, result);
         verify(ordersReportPdfPort).generatePdf(orders, "simple");

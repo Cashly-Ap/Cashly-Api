@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.payments.application.dto.response.PaymentResponse;
+import com.cashly.cashly_api.reports.finance.application.dto.PaymentReportData;
 import com.cashly.cashly_api.reports.finance.application.port.PaymentPdfPort;
 
 import java.io.ByteArrayOutputStream;
@@ -40,7 +40,7 @@ public class PaymentPdfGenerator implements PaymentPdfPort {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
-    public byte[] generatePaymentPdf(PaymentResponse payment) {
+    public byte[] generatePaymentPdf(PaymentReportData payment) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             PdfWriter writer = new PdfWriter(baos);
@@ -71,7 +71,7 @@ public class PaymentPdfGenerator implements PaymentPdfPort {
         return baos.toByteArray();
     }
 
-    private Table buildHeader(PaymentResponse payment, PdfFont bold, PdfFont regular) {
+    private Table buildHeader(PaymentReportData payment, PdfFont bold, PdfFont regular) {
         Table header = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         header.setMarginBottom(20);
 
@@ -101,7 +101,7 @@ public class PaymentPdfGenerator implements PaymentPdfPort {
                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1));
     }
 
-    private Table buildPaymentDetailTable(PaymentResponse payment, PdfFont bold, PdfFont regular) {
+    private Table buildPaymentDetailTable(PaymentReportData payment, PdfFont bold, PdfFont regular) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 

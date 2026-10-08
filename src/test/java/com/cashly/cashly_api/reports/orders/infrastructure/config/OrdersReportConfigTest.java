@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.orders.infrastructure.config;
 
-import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
+import com.cashly.cashly_api.reports.orders.application.contracts.OrderReportQueryGateway;
 import com.cashly.cashly_api.reports.orders.application.port.OrderPdfPort;
 import com.cashly.cashly_api.reports.orders.application.port.OrdersReportPdfPort;
 import com.cashly.cashly_api.reports.orders.application.usecases.GenerateOrderPdfUseCase;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class OrdersReportConfigTest {
 
     @Mock
-    private OrderRepository orderRepository;
+    private OrderReportQueryGateway query;
 
     @Mock
     private WarehouseStockRepository warehouseStockRepository;
@@ -40,10 +40,10 @@ class OrdersReportConfigTest {
         var config = new OrdersReportConfig();
 
         var orderPdfUseCase = config.generateOrderPdfUseCase(
-                orderRepository, warehouseStockRepository, warehouseRepository, orderPdfPort);
+                query, orderPdfPort);
         assertNotNull(orderPdfUseCase);
 
-        var reportPdfUseCase = config.generateOrdersReportPdfUseCase(ordersReportPdfPort);
+        var reportPdfUseCase = config.generateOrdersReportPdfUseCase(query, ordersReportPdfPort);
         assertNotNull(reportPdfUseCase);
     }
 

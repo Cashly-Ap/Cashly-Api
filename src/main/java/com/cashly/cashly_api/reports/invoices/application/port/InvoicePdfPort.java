@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.invoices.application.port;
 
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportData;
 
 public interface InvoicePdfPort {
-    byte[] generatePdf(InvoiceDetailResponse invoice);
+    byte[] generatePdf(InvoiceReportData invoice);
 }

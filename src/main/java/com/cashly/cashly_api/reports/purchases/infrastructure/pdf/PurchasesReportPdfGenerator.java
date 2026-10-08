@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;
+import com.cashly.cashly_api.reports.purchases.application.dto.PurchaseReportRow;
 import com.cashly.cashly_api.reports.purchases.application.port.PurchasesReportPdfPort;
 
 import java.io.ByteArrayOutputStream;
@@ -41,7 +41,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
     private static final DeviceRgb STATUS_CANCELLED = new DeviceRgb(220, 20, 60);
 
     @Override
-    public byte[] generatePdf(List<PurchaseListResponse> purchases, String mode) {
+    public byte[] generatePdf(List<PurchaseReportRow> purchases, String mode) {
         boolean detailed = "detailed".equalsIgnoreCase(mode);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -97,7 +97,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
             }
 
             for (int i = 0; i < purchases.size(); i++) {
-                PurchaseListResponse purchase = purchases.get(i);
+                PurchaseReportRow purchase = purchases.get(i);
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 

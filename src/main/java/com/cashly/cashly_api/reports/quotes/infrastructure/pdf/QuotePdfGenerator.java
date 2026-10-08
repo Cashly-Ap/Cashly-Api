@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportData;
 import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
 import com.cashly.cashly_api.reports.infrastructure.pdf.PdfBranding;
 
@@ -44,7 +44,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
-    public byte[] generatePdf(QuoteDetailResponse quote) {
+    public byte[] generatePdf(QuoteReportData quote) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             PdfWriter writer = new PdfWriter(baos);
@@ -83,7 +83,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
         return baos.toByteArray();
     }
 
-    private Table buildHeader(QuoteDetailResponse quote, PdfFont bold, PdfFont regular) {
+    private Table buildHeader(QuoteReportData quote, PdfFont bold, PdfFont regular) {
         Table header = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         header.setMarginBottom(20);
 
@@ -113,7 +113,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1));
     }
 
-    private Table buildClientTable(QuoteDetailResponse quote, PdfFont bold, PdfFont regular) {
+    private Table buildClientTable(QuoteReportData quote, PdfFont bold, PdfFont regular) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
@@ -137,7 +137,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
         return cell;
     }
 
-    private Table buildLinesTable(QuoteDetailResponse quote, PdfFont bold, PdfFont regular) {
+    private Table buildLinesTable(QuoteReportData quote, PdfFont bold, PdfFont regular) {
         float[] columnWidths = {2f, 4f, 2f, 2f, 2f};
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
@@ -166,7 +166,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
         return table;
     }
 
-    private Table buildTotalsTable(QuoteDetailResponse quote, PdfFont bold, PdfFont regular) {
+    private Table buildTotalsTable(QuoteReportData quote, PdfFont bold, PdfFont regular) {
         float[] widths = {70f, 30f};
         Table table = new Table(UnitValue.createPercentArray(widths));
         table.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT);

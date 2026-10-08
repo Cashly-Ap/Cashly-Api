@@ -1,10 +1,9 @@
 package com.cashly.cashly_api.reports.purchases.application.usecases;
 
-import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;
+import com.cashly.cashly_api.reports.purchases.application.dto.PurchaseReportFilter;
 
-import java.util.List;
 
 
 public interface GeneratePurchasesReportPdfUseCase {
-    byte[] execute(List<PurchaseListResponse> purchases, String mode);
+    byte[] execute(PurchaseReportFilter filter, String mode);
 }

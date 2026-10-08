@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportData;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicePdfPort;
 import com.cashly.cashly_api.reports.infrastructure.pdf.PdfBranding;
 
@@ -43,7 +43,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
-    public byte[] generatePdf(InvoiceDetailResponse invoice) {
+    public byte[] generatePdf(InvoiceReportData invoice) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             PdfWriter writer = new PdfWriter(baos);
@@ -82,7 +82,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
         return baos.toByteArray();
     }
 
-    private Table buildHeader(InvoiceDetailResponse invoice, PdfFont bold, PdfFont regular) {
+    private Table buildHeader(InvoiceReportData invoice, PdfFont bold, PdfFont regular) {
         Table header = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         header.setMarginBottom(20);
 
@@ -117,7 +117,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1));
     }
 
-    private Table buildClientTable(InvoiceDetailResponse invoice, PdfFont bold, PdfFont regular) {
+    private Table buildClientTable(InvoiceReportData invoice, PdfFont bold, PdfFont regular) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
@@ -141,7 +141,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
         return cell;
     }
 
-    private Table buildLinesTable(InvoiceDetailResponse invoice, PdfFont bold, PdfFont regular) {
+    private Table buildLinesTable(InvoiceReportData invoice, PdfFont bold, PdfFont regular) {
         float[] columnWidths = {2f, 4f, 2f, 2f, 2f};
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
@@ -170,7 +170,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
         return table;
     }
 
-    private Table buildTotalsTable(InvoiceDetailResponse invoice, PdfFont bold, PdfFont regular) {
+    private Table buildTotalsTable(InvoiceReportData invoice, PdfFont bold, PdfFont regular) {
         float[] widths = {70f, 30f};
         Table table = new Table(UnitValue.createPercentArray(widths));
         table.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT);

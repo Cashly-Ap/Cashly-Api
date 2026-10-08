@@ -1,25 +1,25 @@
 package com.cashly.cashly_api.reports.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportData;
+import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicePdfPort;
 
 import java.util.UUID;
 
 public class GenerateInvoicePdfUseCaseImpl implements GenerateInvoicePdfUseCase {
 
-    private final GetInvoiceByIdUseCase getInvoiceByIdUseCase;
+    private final InvoiceReportQueryGateway query;
     private final InvoicePdfPort invoicePdfPort;
 
-    public GenerateInvoicePdfUseCaseImpl(GetInvoiceByIdUseCase getInvoiceByIdUseCase,
+    public GenerateInvoicePdfUseCaseImpl(InvoiceReportQueryGateway query,
                                           InvoicePdfPort invoicePdfPort) {
-        this.getInvoiceByIdUseCase = getInvoiceByIdUseCase;
+        this.query = query;
         this.invoicePdfPort = invoicePdfPort;
     }
 
     @Override
     public byte[] execute(UUID invoiceId) {
-        InvoiceDetailResponse invoice = getInvoiceByIdUseCase.execute(invoiceId);
+        InvoiceReportData invoice = query.find(invoiceId);
         return invoicePdfPort.generatePdf(invoice);
     }
 }

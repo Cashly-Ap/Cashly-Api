@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.finance.infrastructure.config;
 
-import com.cashly.cashly_api.payments.application.usecases.GetPaymentByIdUseCase;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.reports.finance.application.contracts.PaymentReportQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.contracts.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
 import com.cashly.cashly_api.reports.finance.application.port.CollectionsReportPdfPort;
 import com.cashly.cashly_api.reports.finance.application.port.PaymentHistoryReportPdfPort;
@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class FinancesReportConfigTest {
 
     @Mock
-    private GetPaymentByIdUseCase getPaymentByIdUseCase;
+    private PaymentReportQueryGateway getPaymentByIdUseCase;
 
     @Mock
     private PaymentPdfPort paymentPdfPort;
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private AccountsReceivableQueryGateway receivablesRepository;
 
     @Mock
     private AccountsReceivableReportPdfPort accountsReceivableReportPdfPort;

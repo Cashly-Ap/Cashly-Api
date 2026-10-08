@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.orders.infrastructure.web;
 
-import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
-import com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportRow;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportFilter;
 import com.cashly.cashly_api.reports.orders.application.usecases.GenerateOrderPdfUseCase;
 import com.cashly.cashly_api.reports.orders.application.usecases.GenerateOrdersReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +31,7 @@ class OrdersReportControllerTest {
     @Mock
     private GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase;
 
-    @Mock
-    private GetOrdersUseCase getOrdersUseCase;
+
 
     @InjectMocks
     private OrdersReportController controller;
@@ -64,11 +63,10 @@ class OrdersReportControllerTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         byte[] pdfContent = "Orders report PDF".getBytes();
-        List<OrderListResponse> orders = List.of();
+        List<OrderReportRow> orders = List.of();
 
-        when(getOrdersUseCase.execute(dateFrom, dateTo, customerId, "PENDING", productId, categoryId,
-                "createdAt", "desc")).thenReturn(orders);
-        when(generateOrdersReportPdfUseCase.execute(orders, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new OrderReportFilter(dateFrom, dateTo, customerId, "PENDING", productId, categoryId);
+        when(generateOrdersReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getOrdersReportPdf(
                 dateFrom, dateTo, customerId, "PENDING", productId, categoryId, "SIMPLE");
@@ -77,25 +75,23 @@ class OrdersReportControllerTest {
         assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
                 .contains("reporte-pedidos-"));
         assertArrayEquals(pdfContent, result.getBody());
-        verify(getOrdersUseCase).execute(dateFrom, dateTo, customerId, "PENDING", productId, categoryId,
-                "createdAt", "desc");
-        verify(generateOrdersReportPdfUseCase).execute(orders, "SIMPLE");
+
+        verify(generateOrdersReportPdfUseCase).execute(filter, "SIMPLE");
     }
 
     @Test
     @DisplayName("should return orders report PDF without optional params")
     void should_get_orders_report_pdf_without_optional_params() {
         byte[] pdfContent = "PDF no filters".getBytes();
-        List<OrderListResponse> orders = List.of();
+        List<OrderReportRow> orders = List.of();
 
-        when(getOrdersUseCase.execute(null, null, null, null, null, null,
-                "createdAt", "desc")).thenReturn(orders);
-        when(generateOrdersReportPdfUseCase.execute(orders, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new OrderReportFilter(null, null, null, null, null, null);
+        when(generateOrdersReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getOrdersReportPdf(
                 null, null, null, null, null, null, "SIMPLE");
 
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateOrdersReportPdfUseCase).execute(orders, "SIMPLE");
+        verify(generateOrdersReportPdfUseCase).execute(filter, "SIMPLE");
     }
 }

@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.reports.inventory.application.usecases;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.reports.inventory.application.dto.response.CatalogReportResponse;
 import com.cashly.cashly_api.reports.inventory.application.port.CatalogPdfPort;
 import com.cashly.cashly_api.reports.inventory.application.port.CatalogReportRepositoryPort;
@@ -46,7 +48,7 @@ class GenerateCatalogPdfUseCaseImplTest {
         byte[] expectedPdf = "Catalog PDF".getBytes();
 
         when(catalogReportRepositoryPort.findCatalog(any(CatalogReportQuery.class)))
-                .thenReturn(PageResponse.from(new PageImpl<>(items)));
+                .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
         when(catalogPdfPort.generatePdf(items)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(query);
@@ -65,7 +67,7 @@ class GenerateCatalogPdfUseCaseImplTest {
         byte[] expectedPdf = "Empty PDF".getBytes();
 
         when(catalogReportRepositoryPort.findCatalog(any(CatalogReportQuery.class)))
-                .thenReturn(PageResponse.from(new PageImpl<>(items)));
+                .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
         when(catalogPdfPort.generatePdf(items)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(query);

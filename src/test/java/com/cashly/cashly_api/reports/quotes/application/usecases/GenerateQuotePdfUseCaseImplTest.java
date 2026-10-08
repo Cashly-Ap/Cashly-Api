@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportData;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
@@ -9,6 +9,11 @@ import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus;
 import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import com.cashly.cashly_api.quotes.application.services.QuoteDocumentQueryService;
+import com.cashly.cashly_api.quotes.application.usecases.GetQuotesUseCase;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
+import com.cashly.cashly_api.reports.quotes.infrastructure.integration.QuoteDocumentQueryAdapter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,8 +39,17 @@ class GenerateQuotePdfUseCaseImplTest {
     @Mock
     private QuotePdfPort quotePdfPort;
 
-    @InjectMocks
+    @Mock
+    private QuoteProductCatalogGateway quoteProductCatalogGateway;
+
+
     private GenerateQuotePdfUseCaseImpl useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new GenerateQuotePdfUseCaseImpl(new QuoteDocumentQueryAdapter(new QuoteDocumentQueryService(
+                quoteRepository, new GetQuotesUseCase(quoteRepository, quoteProductCatalogGateway))), quotePdfPort);
+    }
 
     @Test
     @DisplayName("should generate quote PDF for given quote ID")
@@ -66,13 +80,21 @@ class GenerateQuotePdfUseCaseImplTest {
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
         byte[] expectedPdf = "Quote PDF".getBytes();
-        when(quotePdfPort.generatePdf(any(QuoteDetailResponse.class))).thenReturn(expectedPdf);
+        when(quotePdfPort.generatePdf(any(QuoteReportData.class))).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(quoteId);
 
         assertArrayEquals(expectedPdf, result);
         verify(quoteRepository).findById(quoteId);
-        verify(quotePdfPort).generatePdf(any(QuoteDetailResponse.class));
+        verify(quotePdfPort).generatePdf(any(QuoteReportData.class));
+        var projection = org.mockito.ArgumentCaptor.forClass(QuoteReportData.class);
+        verify(quotePdfPort).generatePdf(projection.capture());
+        assertEquals("Customer A", projection.getValue().customerName());
+        assertEquals("J-12345678", projection.getValue().customerRif());
+        assertEquals("Some notes", projection.getValue().notes());
+        assertEquals(BigDecimal.valueOf(500), projection.getValue().subtotal());
+        assertTrue(projection.getValue().lines().isEmpty());
+        assertThrows(UnsupportedOperationException.class, () -> projection.getValue().lines().clear());
     }
 
     @Test

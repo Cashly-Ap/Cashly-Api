@@ -4,7 +4,6 @@ import com.cashly.cashly_api.reports.inventory.application.dto.response.Commerci
 import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogPdfPort;
 import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogRepositoryPort;
 import com.cashly.cashly_api.reports.inventory.application.query.CommercialCatalogQuery;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +27,7 @@ class GenerateCommercialCatalogPdfUseCaseImplTest {
     @Mock
     private CommercialCatalogPdfPort pdfPort;
 
-    @Mock
-    private FileStorageService fileStorageService;
+
 
     @InjectMocks
     private GenerateCommercialCatalogPdfUseCaseImpl useCase;
@@ -45,13 +43,13 @@ class GenerateCommercialCatalogPdfUseCaseImplTest {
         byte[] expectedPdf = "PDF".getBytes();
 
         when(repositoryPort.findCatalog(query)).thenReturn(items);
-        when(pdfPort.generatePdf(items, fileStorageService)).thenReturn(expectedPdf);
+        when(pdfPort.generatePdf(items)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(query);
 
         assertArrayEquals(expectedPdf, result);
         verify(repositoryPort).findCatalog(query);
-        verify(pdfPort).generatePdf(items, fileStorageService);
+        verify(pdfPort).generatePdf(items);
     }
 
     @Test
@@ -62,12 +60,12 @@ class GenerateCommercialCatalogPdfUseCaseImplTest {
         byte[] expectedPdf = "Empty PDF".getBytes();
 
         when(repositoryPort.findCatalog(query)).thenReturn(items);
-        when(pdfPort.generatePdf(items, fileStorageService)).thenReturn(expectedPdf);
+        when(pdfPort.generatePdf(items)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(query);
 
         assertArrayEquals(expectedPdf, result);
         verify(repositoryPort).findCatalog(query);
-        verify(pdfPort).generatePdf(items, fileStorageService);
+        verify(pdfPort).generatePdf(items);
     }
 }

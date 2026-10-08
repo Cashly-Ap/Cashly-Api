@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportData;
+import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicePdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 class GenerateInvoicePdfUseCaseImplTest {
 
     @Mock
-    private GetInvoiceByIdUseCase getInvoiceByIdUseCase;
+    private InvoiceReportQueryGateway getInvoiceByIdUseCase;
 
     @Mock
     private InvoicePdfPort invoicePdfPort;
@@ -32,16 +32,16 @@ class GenerateInvoicePdfUseCaseImplTest {
     @DisplayName("should generate invoice PDF for given invoice ID")
     void should_generate_invoice_pdf() {
         UUID invoiceId = UUID.randomUUID();
-        InvoiceDetailResponse invoice = mock(InvoiceDetailResponse.class);
+        InvoiceReportData invoice = mock(InvoiceReportData.class);
         byte[] expectedPdf = "Invoice PDF".getBytes();
 
-        when(getInvoiceByIdUseCase.execute(invoiceId)).thenReturn(invoice);
+        when(getInvoiceByIdUseCase.find(invoiceId)).thenReturn(invoice);
         when(invoicePdfPort.generatePdf(invoice)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(invoiceId);
 
         assertArrayEquals(expectedPdf, result);
-        verify(getInvoiceByIdUseCase).execute(invoiceId);
+        verify(getInvoiceByIdUseCase).find(invoiceId);
         verify(invoicePdfPort).generatePdf(invoice);
     }
 }

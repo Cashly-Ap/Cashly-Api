@@ -1,9 +1,8 @@
 package com.cashly.cashly_api.reports.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportFilter;
 
-import java.util.List;
 
 public interface GenerateInvoicesReportPdfUseCase {
-    byte[] execute(List<InvoiceListResponse> invoices, String mode);
+    byte[] execute(InvoiceReportFilter filter, String mode);
 }

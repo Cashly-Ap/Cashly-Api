@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.quotes.infrastructure.config;
 
-import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
+import com.cashly.cashly_api.reports.quotes.application.contracts.QuoteReportQueryGateway;
 import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
 import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCase;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class QuotesReportConfigTest {
 
     @Mock
-    private QuoteRepository quoteRepository;
+    private QuoteReportQueryGateway query;
 
     @Mock
     private QuotePdfPort quotePdfPort;
@@ -31,10 +31,10 @@ class QuotesReportConfigTest {
     void should_create_use_case_beans() {
         var config = new QuotesReportConfig();
 
-        var quotePdfUseCase = config.generateQuotePdfUseCase(quoteRepository, quotePdfPort);
+        var quotePdfUseCase = config.generateQuotePdfUseCase(query, quotePdfPort);
         assertNotNull(quotePdfUseCase);
 
-        var reportPdfUseCase = config.generateQuotesReportPdfUseCase(quotesReportPdfPort);
+        var reportPdfUseCase = config.generateQuotesReportPdfUseCase(query, quotesReportPdfPort);
         assertNotNull(reportPdfUseCase);
     }
 

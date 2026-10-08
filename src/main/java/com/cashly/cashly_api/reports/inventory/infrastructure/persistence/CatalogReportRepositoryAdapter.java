@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.reports.inventory.infrastructure.persistence;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.reports.inventory.application.dto.response.CatalogReportResponse;
 import com.cashly.cashly_api.reports.inventory.application.port.CatalogReportRepositoryPort;
 import com.cashly.cashly_api.reports.inventory.application.query.CatalogReportQuery;
@@ -29,7 +31,7 @@ public class CatalogReportRepositoryAdapter implements CatalogReportRepositoryPo
                 pageable
         );
         Page<CatalogReportResponse> mapped = page.map(this::toResponse);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 
     private CatalogReportResponse toResponse(CatalogReportProjection p) {

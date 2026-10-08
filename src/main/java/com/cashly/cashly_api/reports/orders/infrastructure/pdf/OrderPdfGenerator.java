@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportData;
 import com.cashly.cashly_api.reports.orders.application.port.OrderPdfPort;
 import com.cashly.cashly_api.reports.infrastructure.pdf.PdfBranding;
 
@@ -43,7 +43,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
-    public byte[] generatePdf(OrderDetailResponse order) {
+    public byte[] generatePdf(OrderReportData order) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             PdfWriter writer = new PdfWriter(baos);
@@ -82,7 +82,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
         return baos.toByteArray();
     }
 
-    private Table buildHeader(OrderDetailResponse order, PdfFont bold, PdfFont regular) {
+    private Table buildHeader(OrderReportData order, PdfFont bold, PdfFont regular) {
         Table header = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         header.setMarginBottom(20);
 
@@ -112,7 +112,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1));
     }
 
-    private Table buildClientTable(OrderDetailResponse order, PdfFont bold, PdfFont regular) {
+    private Table buildClientTable(OrderReportData order, PdfFont bold, PdfFont regular) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
@@ -136,7 +136,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
         return cell;
     }
 
-    private Table buildLinesTable(OrderDetailResponse order, PdfFont bold, PdfFont regular) {
+    private Table buildLinesTable(OrderReportData order, PdfFont bold, PdfFont regular) {
         float[] columnWidths = {2f, 4f, 2f, 2f, 2f};
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
@@ -165,7 +165,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
         return table;
     }
 
-    private Table buildTotalsTable(OrderDetailResponse order, PdfFont bold, PdfFont regular) {
+    private Table buildTotalsTable(OrderReportData order, PdfFont bold, PdfFont regular) {
         float[] widths = {70f, 30f};
         Table table = new Table(UnitValue.createPercentArray(widths));
         table.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT);

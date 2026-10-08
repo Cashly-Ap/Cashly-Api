@@ -16,7 +16,7 @@ import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.Catalo
 import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CatalogReportRepositoryAdapter;
 import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CommercialCatalogJpaRepository;
 import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CommercialCatalogRepositoryAdapter;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.reports.inventory.application.contracts.MediaGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -54,16 +54,15 @@ public class InventoryReportConfig {
     }
 
     @Bean
-    public CommercialCatalogPdfPort commercialCatalogPdfPort() {
-        return new CommercialCatalogPdfGenerator();
+    public CommercialCatalogPdfPort commercialCatalogPdfPort(MediaGateway media) {
+        return new CommercialCatalogPdfGenerator(media);
     }
 
     @Bean
     public GenerateCommercialCatalogPdfUseCase generateCommercialCatalogPdfUseCase(
             CommercialCatalogRepositoryPort commercialCatalogRepositoryPort,
-            CommercialCatalogPdfPort commercialCatalogPdfPort,
-            FileStorageService fileStorageService) {
+            CommercialCatalogPdfPort commercialCatalogPdfPort) {
         return new GenerateCommercialCatalogPdfUseCaseImpl(
-                commercialCatalogRepositoryPort, commercialCatalogPdfPort, fileStorageService);
+                commercialCatalogRepositoryPort, commercialCatalogPdfPort);
     }
 }

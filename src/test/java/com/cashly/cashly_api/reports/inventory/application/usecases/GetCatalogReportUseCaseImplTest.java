@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.reports.inventory.application.usecases;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.reports.inventory.application.dto.response.CatalogReportResponse;
 import com.cashly.cashly_api.reports.inventory.application.port.CatalogReportRepositoryPort;
 import com.cashly.cashly_api.reports.inventory.application.query.CatalogReportQuery;
@@ -41,7 +43,7 @@ class GetCatalogReportUseCaseImplTest {
                         UUID.randomUUID(), "Warehouse", BigDecimal.TEN, true));
 
         when(catalogReportRepositoryPort.findCatalog(query))
-                .thenReturn(PageResponse.from(new PageImpl<>(items)));
+                .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
 
         PageResponse<CatalogReportResponse> result = useCase.execute(query);
 
@@ -58,7 +60,7 @@ class GetCatalogReportUseCaseImplTest {
         List<CatalogReportResponse> items = List.of();
 
         when(catalogReportRepositoryPort.findCatalog(query))
-                .thenReturn(PageResponse.from(new PageImpl<>(items)));
+                .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
 
         PageResponse<CatalogReportResponse> result = useCase.execute(query);
 

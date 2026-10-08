@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportRow;
 import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import com.cashly.cashly_api.reports.quotes.application.contracts.QuoteReportQueryGateway;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportFilter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,18 +23,21 @@ class GenerateQuotesReportPdfUseCaseImplTest {
     @Mock
     private QuotesReportPdfPort quotesReportPdfPort;
 
+    @Mock private QuoteReportQueryGateway query;
     @InjectMocks
     private GenerateQuotesReportPdfUseCaseImpl useCase;
 
     @Test
     @DisplayName("should generate quotes report PDF with mode")
     void should_generate_quotes_report_pdf() {
-        List<QuoteListResponse> quotes = List.of(mock(QuoteListResponse.class));
+        List<QuoteReportRow> quotes = List.of(mock(QuoteReportRow.class));
+        var filter = new QuoteReportFilter(null, null, null, null, null, null);
+        when(query.findAll(filter)).thenReturn(quotes);
         byte[] expectedPdf = "Quotes report PDF".getBytes();
 
         when(quotesReportPdfPort.generatePdf(quotes, "SIMPLE")).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(quotes, "SIMPLE");
+        byte[] result = useCase.execute(filter, "SIMPLE");
 
         assertArrayEquals(expectedPdf, result);
         verify(quotesReportPdfPort).generatePdf(quotes, "SIMPLE");
@@ -41,12 +46,14 @@ class GenerateQuotesReportPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate quotes report PDF with null mode defaulting to simple")
     void should_generate_quotes_report_pdf_with_null_mode() {
-        List<QuoteListResponse> quotes = List.of();
+        List<QuoteReportRow> quotes = List.of();
+        var filter = new QuoteReportFilter(null, null, null, null, null, null);
+        when(query.findAll(filter)).thenReturn(quotes);
         byte[] expectedPdf = "Default PDF".getBytes();
 
         when(quotesReportPdfPort.generatePdf(quotes, "simple")).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(quotes, null);
+        byte[] result = useCase.execute(filter, null);
 
         assertArrayEquals(expectedPdf, result);
         verify(quotesReportPdfPort).generatePdf(quotes, "simple");

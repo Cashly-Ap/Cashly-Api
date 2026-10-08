@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.orders.application.usecases;
 
-import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportData;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
@@ -18,6 +18,11 @@ import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import com.cashly.cashly_api.orders.application.services.OrderDocumentQueryService;
+import com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase;
+import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
+import com.cashly.cashly_api.reports.orders.infrastructure.integration.OrderDocumentQueryAdapter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -48,8 +53,14 @@ class GenerateOrderPdfUseCaseImplTest {
     @Mock
     private OrderPdfPort orderPdfPort;
 
-    @InjectMocks
+
     private GenerateOrderPdfUseCaseImpl useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new GenerateOrderPdfUseCaseImpl(new OrderDocumentQueryAdapter(new OrderDocumentQueryService(
+                orderRepository, new GetOrdersUseCase(orderRepository, mock(OrderProductCatalogGateway.class)))), orderPdfPort);
+    }
 
     @Test
     @DisplayName("should generate order PDF for given order ID")
@@ -81,27 +92,28 @@ class GenerateOrderPdfUseCaseImplTest {
         when(allocation.getAllocated()).thenReturn(BigDecimal.valueOf(2));
         when(line.getAllocations()).thenReturn(List.of(allocation));
 
-        Warehouse warehouse = mock(Warehouse.class);
-        when(warehouse.getCode()).thenReturn("WH01");
-        when(warehouse.getName()).thenReturn("Main Warehouse");
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
 
-        WarehouseStock stock = mock(WarehouseStock.class);
-        when(stock.getQuantity()).thenReturn(10);
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, line.getProductId()))
-                .thenReturn(Optional.of(stock));
 
         when(order.getLines()).thenReturn(List.of(line));
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
 
         byte[] expectedPdf = "Order PDF".getBytes();
-        when(orderPdfPort.generatePdf(any(OrderDetailResponse.class))).thenReturn(expectedPdf);
+        when(orderPdfPort.generatePdf(any(OrderReportData.class))).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(orderId);
 
         assertArrayEquals(expectedPdf, result);
         verify(orderRepository).findById(OrderId.of(orderId));
-        verify(orderPdfPort).generatePdf(any(OrderDetailResponse.class));
+        verify(orderPdfPort).generatePdf(any(OrderReportData.class));
+        var projection = org.mockito.ArgumentCaptor.forClass(OrderReportData.class);
+        verify(orderPdfPort).generatePdf(projection.capture());
+        assertEquals("ORD-001", projection.getValue().orderNumber());
+        assertEquals("Customer A", projection.getValue().customerName());
+        assertEquals(BigDecimal.valueOf(100), projection.getValue().subtotal());
+        assertEquals(BigDecimal.valueOf(2), projection.getValue().lines().getFirst().quantity());
+        assertEquals(BigDecimal.valueOf(50), projection.getValue().lines().getFirst().unitPrice());
+        assertEquals(BigDecimal.valueOf(100), projection.getValue().lines().getFirst().lineTotal());
+        assertThrows(UnsupportedOperationException.class, () -> projection.getValue().lines().clear());
     }
 
     @Test
@@ -145,12 +157,12 @@ class GenerateOrderPdfUseCaseImplTest {
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
 
         byte[] expectedPdf = "Order no allocation PDF".getBytes();
-        when(orderPdfPort.generatePdf(any(OrderDetailResponse.class))).thenReturn(expectedPdf);
+        when(orderPdfPort.generatePdf(any(OrderReportData.class))).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(orderId);
 
         assertArrayEquals(expectedPdf, result);
         verify(orderRepository).findById(OrderId.of(orderId));
-        verify(orderPdfPort).generatePdf(any(OrderDetailResponse.class));
+        verify(orderPdfPort).generatePdf(any(OrderReportData.class));
     }
 }

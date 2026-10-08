@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.quotes.infrastructure.web;
 
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
-import com.cashly.cashly_api.quotes.application.usecases.GetQuotesUseCase;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportRow;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportFilter;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCase;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotesReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +31,7 @@ class QuotesReportControllerTest {
     @Mock
     private GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase;
 
-    @Mock
-    private GetQuotesUseCase getQuotesUseCase;
+
 
     @InjectMocks
     private QuotesReportController controller;
@@ -64,11 +63,10 @@ class QuotesReportControllerTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         byte[] pdfContent = "Quotes report PDF".getBytes();
-        List<QuoteListResponse> quotes = List.of();
+        List<QuoteReportRow> quotes = List.of();
 
-        when(getQuotesUseCase.execute(dateFrom, dateTo, customerId, "PENDING", productId, categoryId,
-                "createdAt", "desc")).thenReturn(quotes);
-        when(generateQuotesReportPdfUseCase.execute(quotes, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new QuoteReportFilter(dateFrom, dateTo, customerId, "PENDING", productId, categoryId);
+        when(generateQuotesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getQuotesReportPdf(
                 dateFrom, dateTo, customerId, "PENDING", productId, categoryId, "SIMPLE");
@@ -77,25 +75,23 @@ class QuotesReportControllerTest {
         assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
                 .contains("reporte-presupuestos-"));
         assertArrayEquals(pdfContent, result.getBody());
-        verify(getQuotesUseCase).execute(dateFrom, dateTo, customerId, "PENDING", productId, categoryId,
-                "createdAt", "desc");
-        verify(generateQuotesReportPdfUseCase).execute(quotes, "SIMPLE");
+
+        verify(generateQuotesReportPdfUseCase).execute(filter, "SIMPLE");
     }
 
     @Test
     @DisplayName("should return quotes report PDF without optional params")
     void should_get_quotes_report_pdf_without_optional_params() {
         byte[] pdfContent = "PDF no filters".getBytes();
-        List<QuoteListResponse> quotes = List.of();
+        List<QuoteReportRow> quotes = List.of();
 
-        when(getQuotesUseCase.execute(null, null, null, null, null, null,
-                "createdAt", "desc")).thenReturn(quotes);
-        when(generateQuotesReportPdfUseCase.execute(quotes, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new QuoteReportFilter(null, null, null, null, null, null);
+        when(generateQuotesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getQuotesReportPdf(
                 null, null, null, null, null, null, "SIMPLE");
 
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateQuotesReportPdfUseCase).execute(quotes, "SIMPLE");
+        verify(generateQuotesReportPdfUseCase).execute(filter, "SIMPLE");
     }
 }

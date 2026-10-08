@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.reports.orders.infrastructure.web;
 
-import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
-import com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase;
+import com.cashly.cashly_api.reports.orders.application.dto.OrderReportFilter;
+
 import com.cashly.cashly_api.reports.orders.application.usecases.GenerateOrderPdfUseCase;
 import com.cashly.cashly_api.reports.orders.application.usecases.GenerateOrdersReportPdfUseCase;
-import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,14 +23,13 @@ public class OrdersReportController {
 
     private final GenerateOrderPdfUseCase generateOrderPdfUseCase;
     private final GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase;
-    private final GetOrdersUseCase getOrdersUseCase;
+
 
     public OrdersReportController(GenerateOrderPdfUseCase generateOrderPdfUseCase,
-                                   GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase,
-                                   GetOrdersUseCase getOrdersUseCase) {
+                                   GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase) {
         this.generateOrderPdfUseCase = generateOrderPdfUseCase;
         this.generateOrdersReportPdfUseCase = generateOrdersReportPdfUseCase;
-        this.getOrdersUseCase = getOrdersUseCase;
+
     }
 
     @GetMapping("/{id}/pdf")
@@ -52,9 +51,8 @@ public class OrdersReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        List<OrderListResponse> orders = getOrdersUseCase.execute(
-                dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
-        byte[] pdf = generateOrdersReportPdfUseCase.execute(orders, mode);
+        OrderReportFilter filter = new OrderReportFilter(dateFrom, dateTo, customerId, status, productId, categoryId);
+        byte[] pdf = generateOrdersReportPdfUseCase.execute(filter, mode);
 
         String filename = "reporte-pedidos-" + LocalDate.now().toString() + ".pdf";
         return ResponseEntity.ok()

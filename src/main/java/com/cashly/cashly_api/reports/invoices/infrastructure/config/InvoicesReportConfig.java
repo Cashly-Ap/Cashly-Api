@@ -8,7 +8,7 @@ import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoi
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicesReportPdfUseCaseImpl;
 import com.cashly.cashly_api.reports.invoices.infrastructure.pdf.InvoicePdfGenerator;
 import com.cashly.cashly_api.reports.invoices.infrastructure.pdf.InvoicesReportPdfGenerator;
-import com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase;
+import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,17 +27,17 @@ public class InvoicesReportConfig {
 
     @Bean
     public GenerateInvoicePdfUseCase generateInvoicePdfUseCase(
-            GetInvoiceByIdUseCase getInvoiceByIdUseCase,
+            InvoiceReportQueryGateway query,
             InvoicePdfPort invoicePdfPort) {
         return new GenerateInvoicePdfUseCaseImpl(
-                getInvoiceByIdUseCase,
+                query,
                 invoicePdfPort
         );
     }
 
     @Bean
     public GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase(
-            InvoicesReportPdfPort invoicesReportPdfPort) {
-        return new GenerateInvoicesReportPdfUseCaseImpl(invoicesReportPdfPort);
+            InvoiceReportQueryGateway query, InvoicesReportPdfPort invoicesReportPdfPort) {
+        return new GenerateInvoicesReportPdfUseCaseImpl(query, invoicesReportPdfPort);
     }
 }

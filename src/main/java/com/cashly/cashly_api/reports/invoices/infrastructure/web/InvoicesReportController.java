@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.invoices.infrastructure.web;
 
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
-import com.cashly.cashly_api.invoices.application.usecases.GetInvoicesUseCase;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportFilter;
+
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicePdfUseCase;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicesReportPdfUseCase;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,14 +22,13 @@ public class InvoicesReportController {
 
     private final GenerateInvoicePdfUseCase generateInvoicePdfUseCase;
     private final GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase;
-    private final GetInvoicesUseCase getInvoicesUseCase;
+
 
     public InvoicesReportController(GenerateInvoicePdfUseCase generateInvoicePdfUseCase,
-                                     GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase,
-                                     GetInvoicesUseCase getInvoicesUseCase) {
+                                     GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase) {
         this.generateInvoicePdfUseCase = generateInvoicePdfUseCase;
         this.generateInvoicesReportPdfUseCase = generateInvoicesReportPdfUseCase;
-        this.getInvoicesUseCase = getInvoicesUseCase;
+
     }
 
     @GetMapping("/{id}/pdf")
@@ -51,9 +50,8 @@ public class InvoicesReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        List<InvoiceListResponse> invoices = getInvoicesUseCase.execute(
-                dateFrom, dateTo, customerId, status, null, productId, categoryId, "createdAt", "desc");
-        byte[] pdf = generateInvoicesReportPdfUseCase.execute(invoices, mode);
+        InvoiceReportFilter filter = new InvoiceReportFilter(dateFrom, dateTo, customerId, status, productId, categoryId);
+        byte[] pdf = generateInvoicesReportPdfUseCase.execute(filter, mode);
 
         String filename = "reporte-facturas-" + LocalDate.now().toString() + ".pdf";
         return ResponseEntity.ok()

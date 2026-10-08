@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.reports.finance.application.usecases;
 
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.reports.finance.application.contracts.AccountsReceivableQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.dto.AccountsReceivableReportData.AccountReceivableRow;
 import com.cashly.cashly_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.*;
 class GenerateAccountsReceivableReportPdfUseCaseImplTest {
 
     @Mock
-    private ReceivablesRepository receivablesRepository;
+    private AccountsReceivableQueryGateway receivablesRepository;
 
     @Mock
     private AccountsReceivableReportPdfPort pdfPort;
@@ -28,9 +29,9 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
     @InjectMocks
     private GenerateAccountsReceivableReportPdfUseCaseImpl useCase;
 
-    private Object[] mockRow(String customerIdHex, String name, String rif, int creditLimit, int pending, int available) {
+    private AccountReceivableRow mockRow(String customerIdHex, String name, String rif, int creditLimit, int pending, int available) {
         var id = java.util.UUID.randomUUID();
-        return new Object[]{
+        return new AccountReceivableRow(
                 id, name, rif,
                 java.math.BigDecimal.valueOf(creditLimit),
                 java.math.BigDecimal.valueOf(pending),
@@ -40,7 +41,7 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
                 java.math.BigDecimal.ZERO,
                 java.math.BigDecimal.ZERO,
                 java.math.BigDecimal.ZERO
-        };
+        );
     }
 
     @Test
@@ -50,7 +51,7 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
         byte[] expectedPdf = "AR PDF".getBytes();
 
         when(receivablesRepository.findAccountsReceivableForReport(customerId, false))
-                .thenReturn(List.<Object[]>of(mockRow(null, "Test Customer", "J-123", 10000, 5000, 5000)));
+                .thenReturn(List.<AccountReceivableRow>of(mockRow(null, "Test Customer", "J-123", 10000, 5000, 5000)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(customerId, false);
@@ -65,7 +66,7 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
         byte[] expectedPdf = "Overdue PDF".getBytes();
 
         when(receivablesRepository.findAccountsReceivableForReport(null, true))
-                .thenReturn(List.<Object[]>of(mockRow(null, "Overdue Customer", "J-456", 5000, 6000, 0)));
+                .thenReturn(List.<AccountReceivableRow>of(mockRow(null, "Overdue Customer", "J-456", 5000, 6000, 0)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(null, true);
@@ -80,7 +81,7 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
         byte[] expectedPdf = "All AR PDF".getBytes();
 
         when(receivablesRepository.findAccountsReceivableForReport(null, false))
-                .thenReturn(List.<Object[]>of(
+                .thenReturn(List.<AccountReceivableRow>of(
                         mockRow(null, "Customer A", "J-111", 10000, 3000, 7000),
                         mockRow(null, "Customer B", "J-222", 8000, 9000, 0)
                 ));

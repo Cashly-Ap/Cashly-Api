@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.purchases.infrastructure.web;
 
-import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;
-import com.cashly.cashly_api.purchases.application.usecases.ListPurchasesUseCase;
+import com.cashly.cashly_api.reports.purchases.application.dto.PurchaseReportFilter;
+
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasePdfUseCase;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasesReportPdfUseCase;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,14 +22,13 @@ public class PurchasesReportController {
 
     private final GeneratePurchasePdfUseCase generatePurchasePdfUseCase;
     private final GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase;
-    private final ListPurchasesUseCase listPurchasesUseCase;
+
 
     public PurchasesReportController(GeneratePurchasePdfUseCase generatePurchasePdfUseCase,
-                                      GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase,
-                                      ListPurchasesUseCase listPurchasesUseCase) {
+                                      GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase) {
         this.generatePurchasePdfUseCase = generatePurchasePdfUseCase;
         this.generatePurchasesReportPdfUseCase = generatePurchasesReportPdfUseCase;
-        this.listPurchasesUseCase = listPurchasesUseCase;
+
     }
 
     @GetMapping("/{id}/pdf")
@@ -51,9 +50,8 @@ public class PurchasesReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        List<PurchaseListResponse> purchases = listPurchasesUseCase.execute(
-                dateFrom, dateTo, supplierId, status, productId, categoryId, "createdAt", "desc");
-        byte[] pdf = generatePurchasesReportPdfUseCase.execute(purchases, mode);
+        PurchaseReportFilter filter = new PurchaseReportFilter(dateFrom, dateTo, supplierId, status, productId, categoryId);
+        byte[] pdf = generatePurchasesReportPdfUseCase.execute(filter, mode);
 
         String filename = "reporte-compras-" + LocalDate.now().toString() + ".pdf";
         return ResponseEntity.ok()

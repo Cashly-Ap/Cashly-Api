@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.quotes.infrastructure.web;
 
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
-import com.cashly.cashly_api.quotes.application.usecases.GetQuotesUseCase;
+import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportFilter;
+
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCase;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotesReportPdfUseCase;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,14 +22,13 @@ public class QuotesReportController {
 
     private final GenerateQuotePdfUseCase generateQuotePdfUseCase;
     private final GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase;
-    private final GetQuotesUseCase getQuotesUseCase;
+
 
     public QuotesReportController(GenerateQuotePdfUseCase generateQuotePdfUseCase,
-                                   GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase,
-                                   GetQuotesUseCase getQuotesUseCase) {
+                                   GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase) {
         this.generateQuotePdfUseCase = generateQuotePdfUseCase;
         this.generateQuotesReportPdfUseCase = generateQuotesReportPdfUseCase;
-        this.getQuotesUseCase = getQuotesUseCase;
+
     }
 
     @GetMapping("/{id}/pdf")
@@ -51,9 +50,8 @@ public class QuotesReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        List<QuoteListResponse> quotes = getQuotesUseCase.execute(
-                dateFrom, dateTo, customerId, status, productId, categoryId, "createdAt", "desc");
-        byte[] pdf = generateQuotesReportPdfUseCase.execute(quotes, mode);
+        QuoteReportFilter filter = new QuoteReportFilter(dateFrom, dateTo, customerId, status, productId, categoryId);
+        byte[] pdf = generateQuotesReportPdfUseCase.execute(filter, mode);
 
         String filename = "reporte-presupuestos-" + LocalDate.now().toString() + ".pdf";
         return ResponseEntity.ok()

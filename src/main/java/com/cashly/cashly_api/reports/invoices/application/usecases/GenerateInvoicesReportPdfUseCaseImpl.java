@@ -1,20 +1,22 @@
 package com.cashly.cashly_api.reports.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
+import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportFilter;
+import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
 
-import java.util.List;
 
 public class GenerateInvoicesReportPdfUseCaseImpl implements GenerateInvoicesReportPdfUseCase {
 
+    private final InvoiceReportQueryGateway query;
     private final InvoicesReportPdfPort invoicesReportPdfPort;
 
-    public GenerateInvoicesReportPdfUseCaseImpl(InvoicesReportPdfPort invoicesReportPdfPort) {
+    public GenerateInvoicesReportPdfUseCaseImpl(InvoiceReportQueryGateway query, InvoicesReportPdfPort invoicesReportPdfPort) {
+        this.query = query;
         this.invoicesReportPdfPort = invoicesReportPdfPort;
     }
 
     @Override
-    public byte[] execute(List<InvoiceListResponse> invoices, String mode) {
-        return invoicesReportPdfPort.generatePdf(invoices, mode != null ? mode : "simple");
+    public byte[] execute(InvoiceReportFilter filter, String mode) {
+        return invoicesReportPdfPort.generatePdf(query.findAll(filter), mode != null ? mode : "simple");
     }
 }

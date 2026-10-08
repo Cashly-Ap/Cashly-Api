@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.invoices.infrastructure.config;
 
-import com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase;
+import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicePdfPort;
 import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicePdfUseCase;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class InvoicesReportConfigTest {
 
     @Mock
-    private GetInvoiceByIdUseCase getInvoiceByIdUseCase;
+    private InvoiceReportQueryGateway getInvoiceByIdUseCase;
 
     @Mock
     private InvoicePdfPort invoicePdfPort;
@@ -34,7 +34,7 @@ class InvoicesReportConfigTest {
         var generateInvoicePdf = config.generateInvoicePdfUseCase(getInvoiceByIdUseCase, invoicePdfPort);
         assertNotNull(generateInvoicePdf);
 
-        var generateReportPdf = config.generateInvoicesReportPdfUseCase(invoicesReportPdfPort);
+        var generateReportPdf = config.generateInvoicesReportPdfUseCase(getInvoiceByIdUseCase, invoicesReportPdfPort);
         assertNotNull(generateReportPdf);
     }
 

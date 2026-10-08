@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.finance.infrastructure.config;
 
-import com.cashly.cashly_api.payments.application.usecases.GetPaymentByIdUseCase;
-import com.cashly.cashly_api.receivables.domain.repositories.ReceivablesRepository;
+import com.cashly.cashly_api.reports.finance.application.contracts.PaymentReportQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.contracts.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
 import com.cashly.cashly_api.reports.finance.application.port.CollectionsReportPdfPort;
 import com.cashly.cashly_api.reports.finance.application.port.PaymentHistoryReportPdfPort;
@@ -46,17 +46,17 @@ public class FinancesReportConfig {
 
     @Bean
     public GeneratePaymentPdfUseCase generatePaymentPdfUseCase(
-            GetPaymentByIdUseCase getPaymentByIdUseCase,
+            PaymentReportQueryGateway paymentQuery,
             PaymentPdfPort paymentPdfPort) {
         return new GeneratePaymentPdfUseCaseImpl(
-                getPaymentByIdUseCase,
+                paymentQuery,
                 paymentPdfPort
         );
     }
 
     @Bean
     public GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase(
-            ReceivablesRepository receivablesRepository,
+            AccountsReceivableQueryGateway receivablesRepository,
             AccountsReceivableReportPdfPort pdfPort) {
         return new GenerateAccountsReceivableReportPdfUseCaseImpl(receivablesRepository, pdfPort);
     }

@@ -11,6 +11,8 @@ public record AccountsReceivableReportData(
         List<AccountReceivableRow> rows,
         Summary summary
 ) {
+    public AccountsReceivableReportData { rows = List.copyOf(rows); }
+
     public record AccountReceivableRow(
             UUID customerId,
             String customerName,

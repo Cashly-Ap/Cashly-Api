@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.reports.inventory.infrastructure.web;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.reports.inventory.application.dto.response.CatalogReportResponse;
 import com.cashly.cashly_api.reports.inventory.application.query.CatalogPdfQuery;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCatalogPdfUseCase;
@@ -46,7 +48,7 @@ class CatalogReportControllerTest {
 
         List<CatalogReportResponse> items = List.of(item);
         when(getCatalogReportUseCase.execute(any())).thenReturn(
-                PageResponse.from(new PageImpl<>(items)));
+                PageResponseMapper.from(new PageImpl<>(items)));
 
         PageResponse<CatalogReportResponse> result = controller.getCatalog(
                 "search", UUID.randomUUID(), UUID.randomUUID(),
@@ -63,7 +65,7 @@ class CatalogReportControllerTest {
     void should_get_catalog_report_without_optional_params() {
         List<CatalogReportResponse> items = List.of();
         when(getCatalogReportUseCase.execute(any())).thenReturn(
-                PageResponse.from(new PageImpl<>(items)));
+                PageResponseMapper.from(new PageImpl<>(items)));
 
         PageResponse<CatalogReportResponse> result = controller.getCatalog(
                 null, null, null, null, null, null, 0, 20);

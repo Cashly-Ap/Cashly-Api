@@ -12,8 +12,8 @@ class PdfStatusColorsTest {
                 .isSameAs(PdfStatusColors.forStatus("PARTIALLY_PAID"));
         assertThat(PdfStatusColors.forStatus("CONFIRMED"))
                 .isSameAs(PdfStatusColors.forStatus("CONVERTED_TO_ORDER"));
-        assertThat(PdfStatusColors.forStatus("CUSTOMER_DRAFT"))
-                .isSameAs(PdfStatusColors.forStatus("EXPIRED"));
+        assertThat(PdfStatusColors.forStatus("DRAFT"))
+                .isSameAs(PdfStatusColors.forStatus("PARTIALLY_PAID"));
         assertThat(PdfStatusColors.forStatus("CANCELLED"))
                 .isSameAs(PdfStatusColors.forStatus("OVERDUE"));
     }
