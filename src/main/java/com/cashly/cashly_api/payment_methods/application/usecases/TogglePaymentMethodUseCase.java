@@ -3,6 +3,7 @@ package com.cashly.cashly_api.payment_methods.application.usecases;
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
 import com.cashly.cashly_api.payment_methods.application.mappers.PaymentMethodMapper;
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import jakarta.transaction.Transactional;
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class TogglePaymentMethodUseCase {
 
     private final PaymentMethodRepository repository;
+    private final PaymentMethodUsageGateway usageGateway;
 
-    public TogglePaymentMethodUseCase(PaymentMethodRepository repository) {
+    public TogglePaymentMethodUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
+        this.usageGateway = usageGateway;
     }
 
     @Transactional
@@ -27,6 +30,6 @@ public class TogglePaymentMethodUseCase {
         paymentMethod.toggleActive();
         PaymentMethod saved = repository.save(paymentMethod);
 
-        return PaymentMethodMapper.toResponse(saved, repository.hasAssociatedRecords(saved.getId()));
+        return PaymentMethodMapper.toResponse(saved, usageGateway.hasAssociatedRecords(saved.getId().value()));
     }
 }

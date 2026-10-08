@@ -1,11 +1,9 @@
 package com.cashly.cashly_api.payment_methods.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.cashregister.infrastructure.persistence.CashRegisterJpaRepository;
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.entities.PaymentMethodEntity;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.mappers.PaymentMethodJpaMapper;
-import com.cashly.cashly_api.payments.infrastructure.persistence.repositories.PaymentJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,12 +29,6 @@ class PaymentMethodRepositoryAdapterTest {
     @Mock
     private PaymentMethodJpaRepository jpaRepository;
 
-    @Mock
-    private PaymentJpaRepository paymentJpaRepository;
-
-    @Mock
-    private CashRegisterJpaRepository cashRegisterJpaRepository;
-
     @Captor
     private ArgumentCaptor<PaymentMethodEntity> entityCaptor;
 
@@ -44,7 +36,7 @@ class PaymentMethodRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new PaymentMethodRepositoryAdapter(jpaRepository, paymentJpaRepository, cashRegisterJpaRepository);
+        adapter = new PaymentMethodRepositoryAdapter(jpaRepository);
     }
 
     @Nested
@@ -251,41 +243,4 @@ class PaymentMethodRepositoryAdapterTest {
         }
     }
 
-    @Nested
-    @DisplayName("HasAssociatedRecords")
-    class HasAssociatedRecords {
-
-        @Test
-        void should_ReturnTrue_When_PaymentExists() {
-            PaymentMethodId id = PaymentMethodId.generate();
-            when(paymentJpaRepository.countByPaymentMethodId(id.value())).thenReturn(1L);
-            lenient().when(cashRegisterJpaRepository.countDetailsByPaymentMethodId(id.value())).thenReturn(0L);
-
-            boolean result = adapter.hasAssociatedRecords(id);
-
-            assertTrue(result);
-        }
-
-        @Test
-        void should_ReturnTrue_When_CashRegisterDetailExists() {
-            PaymentMethodId id = PaymentMethodId.generate();
-            when(paymentJpaRepository.countByPaymentMethodId(id.value())).thenReturn(0L);
-            when(cashRegisterJpaRepository.countDetailsByPaymentMethodId(id.value())).thenReturn(2L);
-
-            boolean result = adapter.hasAssociatedRecords(id);
-
-            assertTrue(result);
-        }
-
-        @Test
-        void should_ReturnFalse_When_NoAssociatedRecords() {
-            PaymentMethodId id = PaymentMethodId.generate();
-            when(paymentJpaRepository.countByPaymentMethodId(id.value())).thenReturn(0L);
-            when(cashRegisterJpaRepository.countDetailsByPaymentMethodId(id.value())).thenReturn(0L);
-
-            boolean result = adapter.hasAssociatedRecords(id);
-
-            assertFalse(result);
-        }
-    }
 }

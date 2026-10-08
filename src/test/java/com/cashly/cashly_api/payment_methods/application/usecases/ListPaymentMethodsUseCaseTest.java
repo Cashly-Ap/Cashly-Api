@@ -2,6 +2,7 @@ package com.cashly.cashly_api.payment_methods.application.usecases;
 
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import com.cashly.cashly_api.shared.dto.PageResponse;
@@ -27,6 +28,9 @@ class ListPaymentMethodsUseCaseTest {
     @Mock
     private PaymentMethodRepository repository;
 
+    @Mock
+    private PaymentMethodUsageGateway usageGateway;
+
     @InjectMocks
     private ListPaymentMethodsUseCase useCase;
 
@@ -44,7 +48,7 @@ class ListPaymentMethodsUseCaseTest {
                 List.of(pm1, pm2), 2, 1, 10, 0, true, true, false);
         when(repository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
                 .thenReturn(pageResult);
-        when(repository.hasAssociatedRecords(any())).thenReturn(false);
+        when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PageResponse<PaymentMethodResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
 
@@ -66,7 +70,7 @@ class ListPaymentMethodsUseCaseTest {
                 List.of(pm), 1, 1, 10, 0, true, true, false);
         when(repository.findAllWithFilters(isNull(), eq(true), eq(0), eq(10), eq("name"), eq("asc")))
                 .thenReturn(pageResult);
-        when(repository.hasAssociatedRecords(any())).thenReturn(false);
+        when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PageResponse<PaymentMethodResponse> result = useCase.execute(null, true, 0, 10, "name", "asc");
 

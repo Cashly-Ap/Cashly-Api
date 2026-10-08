@@ -2,6 +2,7 @@ package com.cashly.cashly_api.payment_methods.application.usecases;
 
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,9 @@ class TogglePaymentMethodUseCaseTest {
     @Mock
     private PaymentMethodRepository repository;
 
+    @Mock
+    private PaymentMethodUsageGateway usageGateway;
+
     @InjectMocks
     private TogglePaymentMethodUseCase useCase;
 
@@ -46,7 +50,7 @@ class TogglePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
         when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(repository.hasAssociatedRecords(any())).thenReturn(false);
+        when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
 
@@ -70,7 +74,7 @@ class TogglePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
         when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(repository.hasAssociatedRecords(any())).thenReturn(false);
+        when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
 

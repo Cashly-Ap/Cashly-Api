@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.payment_methods.application.usecases;
 
+import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import jakarta.transaction.Transactional;
@@ -11,9 +12,11 @@ import java.util.UUID;
 public class DeletePaymentMethodUseCase {
 
     private final PaymentMethodRepository repository;
+    private final PaymentMethodUsageGateway usageGateway;
 
-    public DeletePaymentMethodUseCase(PaymentMethodRepository repository) {
+    public DeletePaymentMethodUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
+        this.usageGateway = usageGateway;
     }
 
     @Transactional
@@ -24,7 +27,7 @@ public class DeletePaymentMethodUseCase {
             throw new IllegalArgumentException("Payment method not found: " + id);
         }
 
-        if (repository.hasAssociatedRecords(paymentMethodId)) {
+        if (usageGateway.hasAssociatedRecords(paymentMethodId.value())) {
             throw new IllegalStateException(
                     "No se puede eliminar el método de pago porque tiene pagos o cierres de caja asociados.");
         }

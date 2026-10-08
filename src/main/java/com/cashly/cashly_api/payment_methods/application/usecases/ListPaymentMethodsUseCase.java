@@ -3,6 +3,7 @@ package com.cashly.cashly_api.payment_methods.application.usecases;
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
 import com.cashly.cashly_api.payment_methods.application.mappers.PaymentMethodMapper;
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 
@@ -13,9 +14,11 @@ import org.springframework.stereotype.Service;
 public class ListPaymentMethodsUseCase {
 
     private final PaymentMethodRepository repository;
+    private final PaymentMethodUsageGateway usageGateway;
 
-    public ListPaymentMethodsUseCase(PaymentMethodRepository repository) {
+    public ListPaymentMethodsUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
+        this.usageGateway = usageGateway;
     }
 
     public PageResponse<PaymentMethodResponse> execute(String search, Boolean active,
@@ -25,7 +28,7 @@ public class ListPaymentMethodsUseCase {
                 search, active, page, size, orderBy, orderDir);
 
         List<PaymentMethodResponse> content = pageResult.content().stream()
-                .map(pm -> PaymentMethodMapper.toResponse(pm, repository.hasAssociatedRecords(pm.getId())))
+                .map(pm -> PaymentMethodMapper.toResponse(pm, usageGateway.hasAssociatedRecords(pm.getId().value())))
                 .toList();
 
         return new PageResponse<>(content, pageResult.totalElements(), pageResult.totalPages(),

@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.payment_methods.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.cashregister.infrastructure.persistence.CashRegisterJpaRepository;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.entities.PaymentMethodEntity;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.mappers.PaymentMethodJpaMapper;
-import com.cashly.cashly_api.payments.infrastructure.persistence.repositories.PaymentJpaRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Repository
 public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
@@ -24,16 +23,10 @@ public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
     private static final Set<String> ALLOWED_ORDER_BY = Set.of("name", "code", "createdAt", "updatedAt");
 
     private final PaymentMethodJpaRepository jpaRepository;
-    private final PaymentJpaRepository paymentJpaRepository;
-    private final CashRegisterJpaRepository cashRegisterJpaRepository;
 
     public PaymentMethodRepositoryAdapter(
-            PaymentMethodJpaRepository jpaRepository,
-            PaymentJpaRepository paymentJpaRepository,
-            CashRegisterJpaRepository cashRegisterJpaRepository) {
+            PaymentMethodJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
-        this.paymentJpaRepository = paymentJpaRepository;
-        this.cashRegisterJpaRepository = cashRegisterJpaRepository;
     }
 
     @Override
@@ -72,12 +65,6 @@ public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
         jpaRepository.deleteById(id.value());
     }
 
-    @Override
-    public boolean hasAssociatedRecords(PaymentMethodId id) {
-        UUID uuid = id.value();
-        return paymentJpaRepository.countByPaymentMethodId(uuid) > 0
-                || cashRegisterJpaRepository.countDetailsByPaymentMethodId(uuid) > 0;
-    }
 
     @Override
     public PageResponse<PaymentMethod> findAllWithFilters(String search, Boolean active,
@@ -89,6 +76,6 @@ public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
 
         Page<PaymentMethodEntity> result = jpaRepository.findAllWithFilters(search, active, pageable);
         Page<PaymentMethod> mapped = result.map(PaymentMethodJpaMapper::toDomain);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 }

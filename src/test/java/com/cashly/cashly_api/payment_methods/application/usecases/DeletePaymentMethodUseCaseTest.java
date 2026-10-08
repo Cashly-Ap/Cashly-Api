@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.payment_methods.application.usecases;
 
+import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,20 +29,23 @@ class DeletePaymentMethodUseCaseTest {
     @Mock
     private PaymentMethodRepository repository;
 
+    @Mock
+    private PaymentMethodUsageGateway usageGateway;
+
     private DeletePaymentMethodUseCase useCase;
 
     private final UUID paymentMethodId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
-        useCase = new DeletePaymentMethodUseCase(repository);
+        useCase = new DeletePaymentMethodUseCase(repository, usageGateway);
     }
 
     @Test
     void should_DeletePaymentMethod_When_Exists() {
         when(repository.findById(PaymentMethodId.of(paymentMethodId)))
                 .thenReturn(Optional.of(mock(com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod.class)));
-        when(repository.hasAssociatedRecords(PaymentMethodId.of(paymentMethodId)))
+        when(usageGateway.hasAssociatedRecords(paymentMethodId))
                 .thenReturn(false);
 
         assertDoesNotThrow(() -> useCase.execute(paymentMethodId));
@@ -52,7 +56,7 @@ class DeletePaymentMethodUseCaseTest {
     void should_Throw_When_HasAssociatedRecords() {
         when(repository.findById(PaymentMethodId.of(paymentMethodId)))
                 .thenReturn(Optional.of(mock(com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod.class)));
-        when(repository.hasAssociatedRecords(PaymentMethodId.of(paymentMethodId)))
+        when(usageGateway.hasAssociatedRecords(paymentMethodId))
                 .thenReturn(true);
 
         IllegalStateException exception = assertThrows(
