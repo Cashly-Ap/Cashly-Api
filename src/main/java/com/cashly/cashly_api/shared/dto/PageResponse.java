@@ -1,7 +1,5 @@
 package com.cashly.cashly_api.shared.dto;
 
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 
 public record PageResponse<T>(
@@ -14,16 +12,4 @@ public record PageResponse<T>(
     boolean last,
     boolean empty
 ) {
-    public static <T> PageResponse<T> from(Page<T> page) {
-        return new PageResponse<>(
-            page.getContent(),
-            page.getTotalElements(),
-            page.getTotalPages(),
-            page.getSize(),
-            page.getNumber(),
-            page.isFirst(),
-            page.isLast(),
-            page.isEmpty()
-        );
-    }
 }

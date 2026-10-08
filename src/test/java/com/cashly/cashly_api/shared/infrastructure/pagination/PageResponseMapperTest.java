@@ -1,4 +1,8 @@
-package com.cashly.cashly_api.shared.dto;
+package com.cashly.cashly_api.shared.infrastructure.pagination;
+
+import com.cashly.cashly_api.shared.dto.PageResponse;
+
+
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,14 +15,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("PageResponse DTO Unit Tests")
-class PageResponseTest {
+class PageResponseMapperTest {
 
     @Test
     void should_CreatePageResponse_When_PageHasContent() {
         List<String> content = List.of("item1", "item2", "item3");
         Page<String> page = new PageImpl<>(content, PageRequest.of(0, 10), 10);
 
-        PageResponse<String> response = PageResponse.from(page);
+        PageResponse<String> response = PageResponseMapper.from(page);
 
         assertEquals(3, response.content().size());
         assertEquals(10, response.totalElements());
@@ -34,7 +38,7 @@ class PageResponseTest {
     void should_CreateEmptyPageResponse_When_PageIsEmpty() {
         Page<String> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 20), 0);
 
-        PageResponse<String> response = PageResponse.from(emptyPage);
+        PageResponse<String> response = PageResponseMapper.from(emptyPage);
 
         assertTrue(response.content().isEmpty());
         assertEquals(0, response.totalElements());
@@ -50,7 +54,7 @@ class PageResponseTest {
         List<String> content = List.of("item1");
         Page<String> page = new PageImpl<>(content, PageRequest.of(0, 10), 25);
 
-        PageResponse<String> response = PageResponse.from(page);
+        PageResponse<String> response = PageResponseMapper.from(page);
 
         assertEquals(3, response.totalPages());
         assertEquals(25, response.totalElements());
@@ -63,7 +67,7 @@ class PageResponseTest {
         List<String> content = List.of("item1");
         Page<String> page = new PageImpl<>(content, PageRequest.of(1, 10), 35);
 
-        PageResponse<String> response = PageResponse.from(page);
+        PageResponse<String> response = PageResponseMapper.from(page);
 
         assertEquals(4, response.totalPages());
         assertEquals(1, response.number());
@@ -76,7 +80,7 @@ class PageResponseTest {
         List<String> content = List.of("item1", "item2");
         Page<String> page = new PageImpl<>(content, PageRequest.of(2, 10), 25);
 
-        PageResponse<String> response = PageResponse.from(page);
+        PageResponse<String> response = PageResponseMapper.from(page);
 
         assertEquals(3, response.totalPages());
         assertEquals(2, response.number());
