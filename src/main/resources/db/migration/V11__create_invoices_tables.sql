@@ -18,6 +18,8 @@ CREATE TABLE invoices (
     return_status      VARCHAR(20) NULL,
     created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    issue_date       DATE NOT NULL,
+    due_date         DATE NOT NULL,
 
     INDEX idx_invoices_invoice_number (invoice_number),
     INDEX idx_invoices_order_id       (order_id),

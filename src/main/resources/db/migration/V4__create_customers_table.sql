@@ -3,22 +3,19 @@ CREATE TABLE customers (
     code BIGINT NOT NULL UNIQUE,
     legal_name VARCHAR(200) NOT NULL,
     type VARCHAR(50) NOT NULL,
-    rif VARCHAR(50) NOT NULL,
+    rif VARCHAR(50) NOT NULL UNIQUE,
     alias VARCHAR(100) NOT NULL,
     credit_days INT NOT NULL DEFAULT 0,
     credit_limit DECIMAL(15,2) NOT NULL DEFAULT 0.00,
     notes TEXT NULL,
     price_type_id BINARY(16) NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
-    portal_access BOOLEAN NOT NULL DEFAULT FALSE,
-    portal_password VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     CONSTRAINT fk_customers_price_type FOREIGN KEY (price_type_id) REFERENCES price_types(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_customers_code ON customers (code);
-CREATE INDEX idx_customers_rif ON customers (rif);
 CREATE INDEX idx_customers_active ON customers (active);
 CREATE INDEX idx_customers_type ON customers (type);
 CREATE INDEX idx_customers_price_type ON customers (price_type_id);
@@ -68,9 +65,9 @@ CREATE TABLE customer_balances (
 CREATE TABLE balance_transactions (
     id                BINARY(16) PRIMARY KEY,
     customer_id       BINARY(16) NOT NULL,
-    type            ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND','CREDIT_NOTE') NOT NULL,
+    type            VARCHAR(20) NOT NULL,
     amount          DECIMAL(15,2) NOT NULL,
-    reference_type  ENUM('ADVANCED','RETURNS','PAYMENTS','INVOICES','REFUND','CREDIT_NOTE') NOT NULL,
+    reference_type  VARCHAR(20) NOT NULL,
     reference_id      BINARY(16),
     number            VARCHAR(100),
     reference_number  VARCHAR(100),

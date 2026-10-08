@@ -18,7 +18,7 @@ CREATE TABLE payments (
     reference_number VARCHAR(100) NULL,
     payment_date     DATE NOT NULL,
     notes            VARCHAR(1000) NULL,
-    status           ENUM('PENDING', 'APPLIED', 'CANCELLED', 'REJECTED', 'REFUND') NOT NULL DEFAULT 'PENDING',
+    status           VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     applied_amount   DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     created_by       BINARY(16) NULL,
     created_by_name  VARCHAR(200) NULL,

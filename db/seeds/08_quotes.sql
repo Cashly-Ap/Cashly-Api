@@ -158,3 +158,9 @@ VALUES (UNHEX('0E30000000000000000000000000001b'), UNHEX('0E10000000000000000000
 
 -- Update sequence
 UPDATE quote_number_sequence SET next_value = 15 WHERE year = 2026;
+
+INSERT INTO quote_line_category_snapshots (quote_line_id, category_id)
+SELECT quote_lines.id, products.category_id
+FROM quote_lines
+JOIN products ON products.id = quote_lines.product_id
+WHERE products.category_id IS NOT NULL;

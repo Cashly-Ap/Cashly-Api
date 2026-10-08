@@ -3,7 +3,7 @@ CREATE TABLE returns (
     return_number   VARCHAR(20) NOT NULL UNIQUE,
     invoice_id      BINARY(16) NOT NULL,
     customer_id     BINARY(16) NOT NULL,
-    return_type     ENUM('AUTOMATIC', 'MANUAL') NOT NULL,
+    return_type     VARCHAR(20) NOT NULL,
     reason          VARCHAR(500) NOT NULL,
     total           DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     created_by      BINARY(16) NOT NULL,

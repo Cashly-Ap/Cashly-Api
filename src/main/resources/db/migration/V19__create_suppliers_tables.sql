@@ -3,7 +3,7 @@ CREATE TABLE suppliers (
     code BIGINT NOT NULL UNIQUE,
     legal_name VARCHAR(200) NOT NULL,
     alias VARCHAR(100) NOT NULL,
-    type ENUM('NATURAL','JURIDICO') NOT NULL,
+    type VARCHAR(50) NOT NULL,
     rif VARCHAR(50) NOT NULL,
     notes TEXT NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,

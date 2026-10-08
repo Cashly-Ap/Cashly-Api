@@ -3,7 +3,7 @@
 -- Loads all seed files in order.
 --
 -- Run manually:
---   docker compose exec -T mysql mysql -umyuser -psecret --default-character-set=utf8mb4 mydatabase < db/seed.sql
+--   docker compose --env-file .env exec -T mysql sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql --default-character-set=utf8mb4 --user="$MYSQL_USER" "$MYSQL_DATABASE" < /seed.sql'
 --
 -- Individual seeds are in db/seeds/:
 --   01_users.sql                           - Users and module permissions
