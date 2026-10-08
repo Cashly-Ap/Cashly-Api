@@ -1,11 +1,14 @@
 package com.cashly.cashly_api.notifications.application.services;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.notifications.application.contracts.NotificationRecipientGateway;
+import com.cashly.cashly_api.notifications.infrastructure.messaging.WebSocketNotificationDeliveryAdapter;
+
 import com.cashly.cashly_api.notifications.domain.entities.Notification;
 import com.cashly.cashly_api.notifications.domain.repositories.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +33,7 @@ class NotificationServiceTest {
     private NotificationRepository notificationRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private NotificationRecipientGateway recipientGateway;
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
@@ -39,12 +42,12 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        notificationService = new NotificationService(notificationRepository, userRepository, messagingTemplate);
+        notificationService = new NotificationService(notificationRepository, recipientGateway, new WebSocketNotificationDeliveryAdapter(messagingTemplate));
     }
 
     @Test
     void shouldUseBudgetTerminologyForEveryCustomerQuoteNotification() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
         UUID customerId = UUID.randomUUID();
         UUID quoteId = UUID.randomUUID();
 
@@ -63,11 +66,10 @@ class NotificationServiceTest {
 
     @Test
     void shouldUseBudgetTerminologyForQuoteCreatedNotification() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
         UUID userId = UUID.randomUUID();
         UUID quoteId = UUID.randomUUID();
-        User user = org.mockito.Mockito.mock(User.class);
-        when(user.getId()).thenReturn(new UserId(userId));
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(recipientGateway.findAllUserIds()).thenReturn(List.of(userId));
 
         notificationService.notifyAdminsQuoteCreated(quoteId, "Cliente Demo");
 
@@ -77,6 +79,94 @@ class NotificationServiceTest {
         assertTrue(usesBudgetTerminology(notification));
         assertEquals("QUOTE", notification.getReferenceType());
         assertEquals(quoteId, notification.getReferenceId());
+    }
+
+    @AfterEach
+    void clearTransaction() {
+        TransactionSynchronizationManager.clear();
+    }
+
+    @Test
+    void shouldDeliverOnlyAfterCommit() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        TransactionSynchronizationManager.setActualTransactionActive(true);
+        TransactionSynchronizationManager.initSynchronization();
+        notificationService.notifyCustomerInvoiceConfirmed(UUID.randomUUID(), UUID.randomUUID(), "INV-001");
+        org.mockito.Mockito.verifyNoInteractions(messagingTemplate);
+        TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
+        verify(messagingTemplate).convertAndSend(any(String.class), any(Notification.class));
+    }
+
+    @Test
+    void shouldNotDeliverAfterRollback() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        TransactionSynchronizationManager.setActualTransactionActive(true);
+        TransactionSynchronizationManager.initSynchronization();
+        notificationService.notifyCustomerInvoiceConfirmed(UUID.randomUUID(), UUID.randomUUID(), "INV-001");
+        TransactionSynchronizationManager.getSynchronizations().forEach(s -> s.afterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK));
+        org.mockito.Mockito.verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test
+    void shouldDeliverImmediatelyWithoutTransaction() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        notificationService.notifyCustomerInvoiceConfirmed(UUID.randomUUID(), UUID.randomUUID(), "INV-001");
+        verify(messagingTemplate).convertAndSend(any(String.class), any(Notification.class));
+    }
+
+    @Test
+    void shouldNotifyEveryRecipientReturnedByGateway() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        UUID first = UUID.randomUUID();
+        UUID second = UUID.randomUUID();
+        when(recipientGateway.findAllUserIds()).thenReturn(List.of(first, second));
+        notificationService.notifyAdminsOrderCreated(UUID.randomUUID(), "Customer");
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationRepository, times(2)).save(captor.capture());
+        assertEquals(List.of(first, second), captor.getAllValues().stream().map(Notification::getUserId).toList());
+    }
+
+    @Test
+    void shouldDeliverUserNotificationToExistingUserTopic() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        UUID userId = UUID.randomUUID();
+        UUID paymentId = UUID.randomUUID();
+        notificationService.notifyPaymentApproved(userId, paymentId);
+        verify(messagingTemplate).convertAndSend(org.mockito.ArgumentMatchers.eq("/topic/notifications/user/" + userId), any(Notification.class));
+    }
+
+    @Test
+    void shouldDeliverCustomerNotificationToExistingCustomerTopicAfterCommit() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        UUID customerId = UUID.randomUUID();
+        TransactionSynchronizationManager.setActualTransactionActive(true);
+        TransactionSynchronizationManager.initSynchronization();
+        notificationService.notifyCustomerPaymentApproved(customerId, UUID.randomUUID());
+        org.mockito.Mockito.verifyNoInteractions(messagingTemplate);
+        TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
+        verify(messagingTemplate).convertAndSend(org.mockito.ArgumentMatchers.eq("/topic/notifications/customer/" + customerId), any(Notification.class));
+    }
+
+    @Test
+    void shouldNotDeliverWhenNotificationPersistenceFails() {
+        when(notificationRepository.save(any(Notification.class))).thenThrow(new IllegalStateException("Persistence failed"));
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class,
+                () -> notificationService.notifyCustomerPaymentApproved(UUID.randomUUID(), UUID.randomUUID()));
+        org.mockito.Mockito.verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test
+    void shouldNotFailCommittedOperationWhenWebSocketDeliveryFails() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        org.mockito.Mockito.doThrow(new org.springframework.messaging.MessagingException("WebSocket unavailable"))
+                .when(messagingTemplate).convertAndSend(any(String.class), any(Notification.class));
+        TransactionSynchronizationManager.setActualTransactionActive(true);
+        TransactionSynchronizationManager.initSynchronization();
+        notificationService.notifyCustomerInvoiceConfirmed(UUID.randomUUID(), UUID.randomUUID(), "INV-001");
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() ->
+                TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit));
+        verify(notificationRepository).save(any(Notification.class));
     }
 
     private boolean usesBudgetTerminology(Notification notification) {

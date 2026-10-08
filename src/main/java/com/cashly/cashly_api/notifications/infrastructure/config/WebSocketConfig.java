@@ -2,8 +2,6 @@ package com.cashly.cashly_api.notifications.infrastructure.config;
 
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -15,12 +13,12 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import java.util.List;
+
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -28,14 +26,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
-
     public WebSocketConfig(TokenService tokenService,
-                            UserRepository userRepository,
-                            CustomerRepository customerRepository) {
+                            UserRepository userRepository) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
-        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -64,13 +58,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             if (!tokenService.validateToken(token)) return message;
                             String subject = tokenService.extractSubjectId(token);
 
-                            if (customerRepository.findById(CustomerId.from(subject)).isPresent()) {
-                                UsernamePasswordAuthenticationToken auth =
-                                        new UsernamePasswordAuthenticationToken(
-                                                subject, null,
-                                                List.of(new SimpleGrantedAuthority("ROLE_PORTAL_CUSTOMER")));
-                                accessor.setUser(auth);
-                            } else if (userRepository.findById(UserId.from(subject)).isPresent()) {
+                            if (userRepository.findById(UserId.from(subject)).isPresent()) {
                                 UsernamePasswordAuthenticationToken auth =
                                         new UsernamePasswordAuthenticationToken(subject, null, List.of());
                                 accessor.setUser(auth);

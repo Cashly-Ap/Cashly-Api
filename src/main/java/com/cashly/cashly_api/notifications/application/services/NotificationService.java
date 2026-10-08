@@ -1,13 +1,11 @@
 package com.cashly.cashly_api.notifications.application.services;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
+import com.cashly.cashly_api.notifications.application.contracts.NotificationRecipientGateway;
+import com.cashly.cashly_api.notifications.application.contracts.NotificationDeliveryGateway;
 import com.cashly.cashly_api.notifications.domain.entities.Notification;
 import com.cashly.cashly_api.notifications.domain.repositories.NotificationRepository;
 import com.cashly.cashly_api.notifications.domain.valueobjects.NotificationId;
 import com.cashly.cashly_api.notifications.domain.valueobjects.NotificationType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +17,15 @@ import java.util.UUID;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationRecipientGateway recipientGateway;
+    private final NotificationDeliveryGateway deliveryGateway;
 
     public NotificationService(NotificationRepository notificationRepository,
-                                UserRepository userRepository,
-                                SimpMessagingTemplate messagingTemplate) {
+                                NotificationRecipientGateway recipientGateway,
+                                NotificationDeliveryGateway deliveryGateway) {
         this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
-        this.messagingTemplate = messagingTemplate;
+        this.recipientGateway = recipientGateway;
+        this.deliveryGateway = deliveryGateway;
     }
 
     @Transactional
@@ -35,7 +33,7 @@ public class NotificationService {
                                 String referenceType, UUID referenceId) {
         Notification notification = Notification.create(userId, null, type, title, message, referenceType, referenceId);
         Notification saved = notificationRepository.save(notification);
-        pushToUser(userId, saved);
+        deliveryGateway.deliver(saved);
         return saved;
     }
 
@@ -44,16 +42,8 @@ public class NotificationService {
                                            String message, String referenceType, UUID referenceId) {
         Notification notification = Notification.create(null, customerId, type, title, message, referenceType, referenceId);
         Notification saved = notificationRepository.save(notification);
-        pushToCustomer(customerId, saved);
+        deliveryGateway.deliver(saved);
         return saved;
-    }
-
-    private void pushToUser(UUID userId, Notification notification) {
-        messagingTemplate.convertAndSend("/topic/notifications/user/" + userId, notification);
-    }
-
-    private void pushToCustomer(UUID customerId, Notification notification) {
-        messagingTemplate.convertAndSend("/topic/notifications/customer/" + customerId, notification);
     }
 
     @Transactional(readOnly = true)
@@ -139,25 +129,25 @@ public class NotificationService {
 
     @Transactional
     public void notifyAdminsPaymentPending(UUID paymentId, String customerName, BigDecimal amount) {
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
-            notifyPaymentPendingApproval(user.getId().getValue(), paymentId, customerName, amount);
+        List<UUID> recipientIds = recipientGateway.findAllUserIds();
+        for (UUID recipientId : recipientIds) {
+            notifyPaymentPendingApproval(recipientId, paymentId, customerName, amount);
         }
     }
 
     @Transactional
     public void notifyAdminsQuoteCreated(UUID quoteId, String customerName) {
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
-            create(user.getId().getValue(), NotificationType.QUOTE_CREATED, "Presupuesto creado", customerName + " ha creado un nuevo presupuesto.", "QUOTE", quoteId);
+        List<UUID> recipientIds = recipientGateway.findAllUserIds();
+        for (UUID recipientId : recipientIds) {
+            create(recipientId, NotificationType.QUOTE_CREATED, "Presupuesto creado", customerName + " ha creado un nuevo presupuesto.", "QUOTE", quoteId);
         }
     }
 
     @Transactional
     public void notifyAdminsOrderCreated(UUID orderId, String customerName) {
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
-            create(user.getId().getValue(), NotificationType.ORDER_CREATED, "Pedido creado", customerName + " ha creado un nuevo pedido.", "ORDER", orderId);
+        List<UUID> recipientIds = recipientGateway.findAllUserIds();
+        for (UUID recipientId : recipientIds) {
+            create(recipientId, NotificationType.ORDER_CREATED, "Pedido creado", customerName + " ha creado un nuevo pedido.", "ORDER", orderId);
         }
     }
 
