@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.suppliers.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.suppliers.domain.entities.Supplier;
 import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.SupplierId;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Collection;
 
 @Component
 public class JpaSupplierRepository implements SupplierRepository {
@@ -48,6 +51,14 @@ public class JpaSupplierRepository implements SupplierRepository {
     }
 
     @Override
+    public List<Supplier> findAllById(Collection<SupplierId> ids) {
+        List<java.util.UUID> values = ids.stream().map(SupplierId::getValue).toList();
+        return springDataRepository.findAllById(values).stream()
+                .map(SupplierEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<Supplier> findAll() {
         return springDataRepository.findAll().stream()
             .map(SupplierEntity::toDomain)
@@ -66,7 +77,7 @@ public class JpaSupplierRepository implements SupplierRepository {
             search, type, active, state, pageable);
 
         Page<Supplier> mapped = result.map(SupplierEntity::toDomain);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 
     @Override

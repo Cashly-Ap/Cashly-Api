@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +41,21 @@ class JpaSupplierRepositoryTest {
     @BeforeEach
     void setUp() {
         adapter = new JpaSupplierRepository(springDataRepository);
+    }
+
+    @Test
+    void shouldFindMultipleSuppliersUsingOneBatchRepositoryCall() {
+        Supplier first = createTestSupplier();
+        Supplier second = createTestSupplier();
+        List<UUID> ids = List.of(first.getId().getValue(), second.getId().getValue());
+        when(springDataRepository.findAllById(ids)).thenReturn(List.of(
+                SupplierEntity.fromDomain(first), SupplierEntity.fromDomain(second)));
+
+        List<Supplier> result = adapter.findAllById(List.of(first.getId(), second.getId()));
+
+        assertEquals(2, result.size());
+        assertEquals(List.of(first.getId(), second.getId()), result.stream().map(Supplier::getId).toList());
+        verify(springDataRepository).findAllById(ids);
     }
 
     @Nested

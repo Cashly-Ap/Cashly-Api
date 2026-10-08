@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.suppliers.application.usecases;
 
-import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
+import com.cashly.cashly_api.suppliers.application.contracts.PurchaseUsageGateway;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierListResponse;
 import com.cashly.cashly_api.suppliers.application.mappers.SupplierMapper;
 import com.cashly.cashly_api.suppliers.domain.entities.Supplier;
@@ -17,14 +17,14 @@ public class ListSuppliersUseCase {
 
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
-    private final PurchaseRepository purchaseRepository;
+    private final PurchaseUsageGateway purchaseUsage;
 
     public ListSuppliersUseCase(SupplierRepository supplierRepository,
                                  SupplierMapper supplierMapper,
-                                 PurchaseRepository purchaseRepository) {
+                                 PurchaseUsageGateway purchaseUsage) {
         this.supplierRepository = supplierRepository;
         this.supplierMapper = supplierMapper;
-        this.purchaseRepository = purchaseRepository;
+        this.purchaseUsage = purchaseUsage;
     }
 
     @Transactional(readOnly = true)
@@ -34,14 +34,16 @@ public class ListSuppliersUseCase {
         PageResponse<Supplier> supplierPage = supplierRepository.findAllWithFilters(
             search, type, active, state, page, size, orderBy, orderDir);
 
-        Set<UUID> supplierIdsWithPurchases = supplierPage.content().stream()
-                .map(supplier -> UUID.fromString(supplier.getId().toString()))
-                .filter(id -> purchaseRepository.existsBySupplierId(id))
+        Set<UUID> supplierIds = supplierPage.content().stream()
+                .map(supplier -> supplier.getId().getValue())
                 .collect(Collectors.toSet());
+        Set<UUID> supplierIdsWithPurchases = supplierIds.isEmpty()
+                ? Set.of()
+                : purchaseUsage.findSupplierIdsWithPurchases(supplierIds);
 
         List<SupplierListResponse> content = supplierPage.content().stream()
             .map(s -> supplierMapper.toListResponse(
-                s, supplierIdsWithPurchases.contains(UUID.fromString(s.getId().toString()))))
+                s, supplierIdsWithPurchases.contains(s.getId().getValue())))
             .toList();
 
         return new PageResponse<>(

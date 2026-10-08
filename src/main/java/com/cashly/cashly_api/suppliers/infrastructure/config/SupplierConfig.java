@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.suppliers.infrastructure.config;
 
-import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
+import com.cashly.cashly_api.suppliers.application.contracts.PurchaseUsageGateway;
 import com.cashly.cashly_api.suppliers.application.mappers.SupplierMapper;
 import com.cashly.cashly_api.suppliers.application.usecases.*;
 import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
@@ -38,8 +38,8 @@ public class SupplierConfig {
     @Bean
     public ListSuppliersUseCase listSuppliersUseCase(SupplierRepository supplierRepository,
                                                        SupplierMapper supplierMapper,
-                                                       PurchaseRepository purchaseRepository) {
-        return new ListSuppliersUseCase(supplierRepository, supplierMapper, purchaseRepository);
+                                                       PurchaseUsageGateway purchaseUsage) {
+        return new ListSuppliersUseCase(supplierRepository, supplierMapper, purchaseUsage);
     }
 
     @Bean
@@ -50,7 +50,7 @@ public class SupplierConfig {
 
     @Bean
     public DeleteSupplierUseCase deleteSupplierUseCase(SupplierRepository supplierRepository,
-                                                        PurchaseRepository purchaseRepository) {
-        return new DeleteSupplierUseCase(supplierRepository, purchaseRepository);
+                                                        PurchaseUsageGateway purchaseUsage) {
+        return new DeleteSupplierUseCase(supplierRepository, purchaseUsage);
     }
 }
