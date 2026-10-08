@@ -1,175 +1,64 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.customers.domain.entities.Customer;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.*;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteProductResponse;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteCustomerGateway;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("GetProductsForQuoteUseCase Unit Tests")
 class GetProductsForQuoteUseCaseTest {
-
-    @Mock
-    private CustomerRepository customerRepository;
-
-    @Mock
-    private ProductRepository productRepository;
-
-    @Mock
-    private CategoryRepository categoryRepository;
-
+    @Mock QuoteCustomerGateway customers;
+    @Mock QuoteProductCatalogGateway products;
     private GetProductsForQuoteUseCase useCase;
-
-    private final UUID customerId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
-        useCase = new GetProductsForQuoteUseCase(customerRepository, productRepository, categoryRepository);
+        useCase = new GetProductsForQuoteUseCase(customers, products);
     }
 
     @Test
-    @DisplayName("should return products with customer price from price_type")
-    void shouldReturnProductsWithCustomerPrice() {
-        UUID priceTypeId = UUID.randomUUID();
+    void shouldReturnCustomerPricedProductsAndPageMetadata() {
+        UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
+        when(customers.findById(customerId)).thenReturn(Optional.of(
+                new QuoteCustomerGateway.Customer(customerId, "Acme", "RIF", UUID.randomUUID())));
+        when(products.findForCustomer(customerId, "search", categoryId, false, 2, 10)).thenReturn(
+                new PageResponse<>(List.of(new QuoteProductCatalogGateway.ProductEntry(productId, "P-1", "Product",
+                        categoryId, "Category", false, true, "photo", new BigDecimal("7.50"))),
+                        1L, 1, 10, 2, false, true, false));
 
-        Customer customer = buildCustomer(customerId, priceTypeId);
-        Product product = buildProduct(UUID.randomUUID(), "PROD-001", "Product A",
-                categoryId, BigDecimal.TEN, priceTypeId, new BigDecimal("7.50"));
+        var result = useCase.execute(customerId, "search", categoryId, false, 2, 10);
 
-        PageResponse<Product> productsPage = new PageResponse<>(
-                List.of(product), 1L, 1, 20, 0, true, true, false
-        );
-
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(productRepository.findAllWithFilters(any(), any(), any(), any(), anyInt(), anyInt(), eq("name"), eq("asc")))
-                .thenReturn(productsPage);
-        when(categoryRepository.findById(categoryId)).thenReturn(
-                Optional.of(com.cashly.cashly_api.categories.domain.entities.Category.reconstitute(
-                        categoryId, "Test Category", null, true, LocalDateTime.now(), LocalDateTime.now()))
-        );
-
-        PageResponse<QuoteProductResponse> result = useCase.execute(
-                customerId, null, null, null, 0, 20);
-
-        assertNotNull(result);
-        assertEquals(1, result.content().size());
-        QuoteProductResponse resp = result.content().get(0);
-        assertEquals("PROD-001", resp.code());
-        assertEquals("Product A", resp.name());
-        assertEquals("Test Category", resp.categoryName());
-        assertEquals(0, new BigDecimal("7.50").compareTo(resp.customerPrice()));
-
-        verify(customerRepository).findById(new CustomerId(customerId));
-        verify(productRepository).findAllWithFilters(any(), any(), any(), any(), anyInt(), anyInt(), eq("name"), eq("asc"));
+        assertThat(result.content()).singleElement().satisfies(product -> {
+            assertThat(product.id()).isEqualTo(productId.toString());
+            assertThat(product.categoryName()).isEqualTo("Category");
+            assertThat(product.customerPrice()).isEqualByComparingTo("7.50");
+        });
+        assertThat(result.totalElements()).isEqualTo(1L);
+        verify(products).findForCustomer(customerId, "search", categoryId, false, 2, 10);
     }
 
     @Test
-    @DisplayName("should fall back to base price when price_type is null")
-    void shouldFallbackToBasePriceWhenPriceTypeIsNull() {
-        UUID categoryId = UUID.randomUUID();
+    void shouldFailBeforeProductLookupWhenCustomerDoesNotExist() {
+        UUID customerId = UUID.randomUUID();
+        when(customers.findById(customerId)).thenReturn(Optional.empty());
 
-        Customer customer = buildCustomer(customerId, null);
-        Product product = buildProduct(UUID.randomUUID(), "PROD-002", "Product B",
-                categoryId, new BigDecimal("10.00"), null, null);
-
-        PageResponse<Product> productsPage = new PageResponse<>(
-                List.of(product), 1L, 1, 20, 0, true, true, false
-        );
-
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(productRepository.findAllWithFilters(any(), any(), any(), any(), anyInt(), anyInt(), eq("name"), eq("asc")))
-                .thenReturn(productsPage);
-        when(categoryRepository.findById(categoryId)).thenReturn(
-                Optional.of(com.cashly.cashly_api.categories.domain.entities.Category.reconstitute(
-                        categoryId, "Cat B", null, true, LocalDateTime.now(), LocalDateTime.now()))
-        );
-
-        PageResponse<QuoteProductResponse> result = useCase.execute(
-                customerId, null, null, null, 0, 20);
-
-        assertEquals(0, new BigDecimal("10.00").compareTo(result.content().get(0).customerPrice()));
-    }
-
-    @Test
-    @DisplayName("should return empty page when no products match")
-    void shouldReturnEmptyPageWhenNoProductsMatch() {
-        Customer customer = buildCustomer(customerId, null);
-        PageResponse<Product> emptyPage = new PageResponse<>(
-                List.of(), 0L, 0, 20, 0, true, true, true
-        );
-
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(productRepository.findAllWithFilters(any(), any(), any(), any(), anyInt(), anyInt(), eq("name"), eq("asc")))
-                .thenReturn(emptyPage);
-
-        PageResponse<QuoteProductResponse> result = useCase.execute(
-                customerId, null, null, null, 0, 20);
-
-        assertTrue(result.content().isEmpty());
-        assertEquals(0L, result.totalElements());
-    }
-
-    @Test
-    @DisplayName("should throw when customer is not found")
-    void shouldThrowWhenCustomerNotFound() {
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
-
-        assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(customerId, null, null, null, 0, 20));
-
-        verify(productRepository, never()).findAllWithFilters(any(), any(), any(), any(), anyInt(), anyInt(), any(), any());
-    }
-
-    
-
-    private Customer buildCustomer(UUID customerId, UUID priceTypeId) {
-        return Customer.reconstitute(
-                new CustomerId(customerId),
-                new CustomerCode(1001L),
-                new LegalName("Empresa Test C.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Test"),
-                new CreditDays(30),
-                new CreditLimit(BigDecimal.ZERO),
-                true, LocalDateTime.now(), LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                false, null, null, priceTypeId
-        );
-    }
-
-    private Product buildProduct(UUID productId, String code, String name, UUID categoryId,
-                                  BigDecimal basePrice, UUID priceTypeId, BigDecimal customerPrice) {
-        List<ProductPrice> productPrices = priceTypeId != null && customerPrice != null
-                ? List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, customerPrice, null))
-                : List.of();
-
-        return Product.reconstitute(
-                productId, code, name, null, categoryId, false, true, null,
-                BigDecimal.TEN,
-                List.of(), productPrices, LocalDateTime.now(), LocalDateTime.now()
-        );
+        assertThatThrownBy(() -> useCase.execute(customerId, null, null, null, 0, 20))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Customer not found");
+        verifyNoInteractions(products);
     }
 }

@@ -67,7 +67,16 @@ class ConvertQuoteToOrderUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new ConvertQuoteToOrderUseCase(
-                quoteRepository, orderRepository, warehouseStockRepository, userRepository, notificationService);
+                quoteRepository,
+                new com.cashly.cashly_api.quotes.infrastructure.integration.LocalOrderCreationGateway(
+                    new com.cashly.cashly_api.orders.application.services.QuoteOrderCreationService(orderRepository,
+                        new com.cashly.cashly_api.orders.infrastructure.integration.LocalOrderInventoryGateway(
+                            new com.cashly.cashly_api.warehouses.application.services.StockDeductionService(warehouseStockRepository)))),
+                new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteActorIdentityAdapter(
+                    new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository,
+                        mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
+                new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
+                    new com.cashly.cashly_api.notifications.application.services.QuoteConversionNotificationService(notificationService)));
     }
 
     @Test
@@ -84,7 +93,7 @@ class ConvertQuoteToOrderUseCaseTest {
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(5);
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -132,7 +141,7 @@ class ConvertQuoteToOrderUseCaseTest {
 
         assertEquals("Only DRAFT quotes can be converted to orders", exception.getMessage());
         verify(orderRepository, never()).save(any());
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(any(), any());
     }
 
     @Test
@@ -161,6 +170,32 @@ class ConvertQuoteToOrderUseCaseTest {
     }
 
     
+
+    @Test
+    void shouldDeductTheProductReferenceStoredInTheAllocation() {
+        UUID warehouseId = UUID.randomUUID();
+        UUID lineProductId = UUID.randomUUID();
+        UUID allocationProductId = UUID.randomUUID();
+        Quote quote = buildDraftQuote(quoteId, warehouseId, lineProductId);
+        QuoteLine line = quote.getLines().getFirst();
+        line.removeAllocation(line.getAllocations().getFirst().getId());
+        line.addAllocation(new QuoteAllocation(allocationProductId, warehouseId, "Warehouse", BigDecimal.valueOf(3)));
+        WarehouseStock stock = new WarehouseStock(null, warehouseId, allocationProductId, 100, 0, null, null);
+        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
+        when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(5);
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, allocationProductId))
+                .thenReturn(Optional.of(stock));
+
+        useCase.execute(quoteId, null);
+
+        assertEquals(97, stock.getQuantity());
+        verify(userRepository, never()).findById(any());
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(warehouseId, lineProductId);
+        ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository).save(captor.capture());
+        assertEquals(lineProductId, captor.getValue().getLines().getFirst().getProductId());
+    }
 
     private Quote buildDraftQuote(UUID quoteId, UUID warehouseId, UUID productId) {
         QuoteLine line = new QuoteLine(productId, "Product A", "PROD-001", BigDecimal.valueOf(3), new BigDecimal("100.0000"));

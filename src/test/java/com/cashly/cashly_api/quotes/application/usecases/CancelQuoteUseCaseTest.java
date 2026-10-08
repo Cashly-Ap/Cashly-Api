@@ -41,7 +41,9 @@ class CancelQuoteUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository, notificationService);
+        cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository,
+                new com.cashly.cashly_api.quotes.infrastructure.integration.LocalQuoteRejectionNotificationGateway(
+                        new com.cashly.cashly_api.notifications.application.services.QuoteRejectionNotificationService(notificationService)));
     }
 
     @Test
@@ -61,6 +63,9 @@ class CancelQuoteUseCaseTest {
         assertNotNull(quote.getCancelledAt());
         assertEquals("Customer decided to cancel", quote.getCancelledReason());
         verify(quoteRepository).save(quote);
+        var sequence = inOrder(quoteRepository, notificationService);
+        sequence.verify(quoteRepository).save(quote);
+        sequence.verify(notificationService).notifyCustomerQuoteRejected(quote.getCustomerId(), quoteId, request.reason());
     }
 
     @Test
@@ -77,6 +82,7 @@ class CancelQuoteUseCaseTest {
         assertThrows(com.cashly.cashly_api.quotes.domain.exceptions.QuoteStateException.class,
                 () -> cancelQuoteUseCase.execute(quoteId, request));
         verify(quoteRepository, never()).save(any());
+        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -88,6 +94,7 @@ class CancelQuoteUseCaseTest {
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
 
         assertThrows(QuoteNotFoundException.class, () -> cancelQuoteUseCase.execute(quoteId, request));
+        verifyNoInteractions(notificationService);
     }
 
     private Quote createDraftQuote(UUID quoteId) {

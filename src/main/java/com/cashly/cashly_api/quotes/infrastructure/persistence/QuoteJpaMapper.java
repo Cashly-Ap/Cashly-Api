@@ -84,6 +84,7 @@ public class QuoteJpaMapper {
         entity.setQuantity(line.getQuantity());
         entity.setUnitPrice(line.getUnitPrice());
         entity.setLineTotal(line.getLineTotal());
+        entity.setCategorySnapshot(line.getCategoryId());
 
         List<QuoteAllocationJpaEntity> allocationEntities = line.getAllocations().stream()
                 .map(a -> toAllocationJpa(a, entity, quoteEntity.getId()))
@@ -123,6 +124,7 @@ public class QuoteJpaMapper {
                 entity.getProductId(),
                 entity.getProductName(),
                 entity.getProductCode(),
+                entity.getCategoryIdSnapshot(),
                 entity.getQuantity(),
                 entity.getUnitPrice(),
                 entity.getLineTotal(),

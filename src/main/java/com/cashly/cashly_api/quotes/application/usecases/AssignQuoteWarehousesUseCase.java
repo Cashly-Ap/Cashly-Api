@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.application.dto.request.AssignQuoteWarehousesRequest;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
 import com.cashly.cashly_api.quotes.application.mappers.QuoteMapper;
@@ -9,7 +9,6 @@ import com.cashly.cashly_api.quotes.domain.entities.QuoteAllocation;
 import com.cashly.cashly_api.quotes.domain.entities.QuoteLine;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteLineId;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -18,15 +17,11 @@ import java.util.UUID;
 public class AssignQuoteWarehousesUseCase {
 
     private final QuoteRepository quoteRepository;
-    private final CustomerWarehouseAccessRepository customerWarehouseAccessRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final QuoteWarehouseGateway warehouses;
 
-    public AssignQuoteWarehousesUseCase(QuoteRepository quoteRepository,
-                                        CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
-                                        WarehouseRepository warehouseRepository) {
+    public AssignQuoteWarehousesUseCase(QuoteRepository quoteRepository, QuoteWarehouseGateway warehouses) {
         this.quoteRepository = quoteRepository;
-        this.customerWarehouseAccessRepository = customerWarehouseAccessRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.warehouses = warehouses;
     }
 
     @Transactional
@@ -39,7 +34,7 @@ public class AssignQuoteWarehousesUseCase {
         for (AssignQuoteWarehousesRequest.LineAllocationRequest lineRequest : request.lines()) {
             QuoteLineId lineId = QuoteLineId.of(lineRequest.lineId());
             QuoteLine line = quote.getLines().stream()
-                    .filter(l -> l.getId().equals(lineId))
+                    .filter(candidate -> candidate.getId().equals(lineId))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Quote line not found: " + lineRequest.lineId()));
 
@@ -47,17 +42,12 @@ public class AssignQuoteWarehousesUseCase {
             for (AssignQuoteWarehousesRequest.WarehouseAllocationRequest allocationRequest : lineRequest.allocations()) {
                 assertCustomerWarehouseAccess(customerId, allocationRequest.warehouseId());
 
-                String warehouseName = warehouseRepository.findById(allocationRequest.warehouseId())
-                        .map(w -> w.getName())
+                String warehouseName = warehouses.findById(allocationRequest.warehouseId())
+                        .map(QuoteWarehouseGateway.Warehouse::name)
                         .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + allocationRequest.warehouseId()));
 
-                QuoteAllocation allocation = new QuoteAllocation(
-                        line.getProductId(),
-                        allocationRequest.warehouseId(),
-                        warehouseName,
-                        allocationRequest.allocatedQuantity()
-                );
-
+                QuoteAllocation allocation = new QuoteAllocation(line.getProductId(), allocationRequest.warehouseId(),
+                        warehouseName, allocationRequest.allocatedQuantity());
                 quote.assignAllocation(lineId, allocation);
                 lineAllocatedTotal = lineAllocatedTotal.add(allocationRequest.allocatedQuantity());
             }
@@ -75,9 +65,7 @@ public class AssignQuoteWarehousesUseCase {
     }
 
     private void assertCustomerWarehouseAccess(UUID customerId, UUID warehouseId) {
-        boolean hasAccess = customerWarehouseAccessRepository
-                .existsByCustomerIdAndWarehouseId(customerId, warehouseId);
-        if (!hasAccess) {
+        if (!warehouses.accessibleWarehouseIds(customerId).contains(warehouseId)) {
             throw new IllegalArgumentException(
                     "Customer " + customerId + " does not have access to warehouse " + warehouseId);
         }

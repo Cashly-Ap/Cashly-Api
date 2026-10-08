@@ -26,31 +26,6 @@ class QuoteStatusTest {
 
     
 
-    @Test
-    void should_allow_customer_draft_to_draft() {
-        assertTrue(QuoteStatus.CUSTOMER_DRAFT.canTransitionTo(QuoteStatus.DRAFT));
-    }
-
-    @Test
-    void should_allow_customer_draft_to_cancelled() {
-        assertTrue(QuoteStatus.CUSTOMER_DRAFT.canTransitionTo(QuoteStatus.CANCELLED));
-    }
-
-    @Test
-    void should_not_allow_customer_draft_to_converted_to_order() {
-        assertFalse(QuoteStatus.CUSTOMER_DRAFT.canTransitionTo(QuoteStatus.CONVERTED_TO_ORDER));
-    }
-
-    @Test
-    void should_not_allow_customer_draft_to_converted_to_invoice() {
-        assertFalse(QuoteStatus.CUSTOMER_DRAFT.canTransitionTo(QuoteStatus.CONVERTED_TO_INVOICE));
-    }
-
-    @Test
-    void should_not_allow_draft_to_customer_draft() {
-        assertFalse(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.CUSTOMER_DRAFT));
-    }
-
     
 
     @Test

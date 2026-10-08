@@ -1,21 +1,16 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
+import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.application.dto.request.CreateQuoteRequest;
 import com.cashly.cashly_api.quotes.application.dto.request.UpdateQuoteRequest;
-import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;
-import com.cashly.cashly_api.quotes.domain.entities.QuoteAllocation;
 import com.cashly.cashly_api.quotes.domain.entities.QuoteLine;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteStateException;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,104 +18,78 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("UpdateQuoteUseCase Unit Tests")
 class UpdateQuoteUseCaseTest {
-
-    @Mock
-    private QuoteRepository quoteRepository;
-
-    @Mock
-    private ProductRepository productRepository;
-
-    @Mock
-    private WarehouseRepository warehouseRepository;
-
-    private UpdateQuoteUseCase updateQuoteUseCase;
+    @Mock QuoteRepository quotes;
+    @Mock QuoteProductCatalogGateway products;
+    @Mock QuoteWarehouseGateway warehouses;
+    private UpdateQuoteUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        updateQuoteUseCase = new UpdateQuoteUseCase(quoteRepository, productRepository, warehouseRepository);
+        useCase = new UpdateQuoteUseCase(quotes, products, warehouses);
     }
 
     @Test
-    @DisplayName("should update draft quote with new lines")
-    void shouldUpdateDraftQuote() {
+    void shouldReplaceDraftLinesThroughContractsAndPreserveCategorySnapshot() {
         UUID quoteId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
+        Quote quote = Quote.create(QuoteNumber.of(2026, 1), UUID.randomUUID(), "Acme", "RIF",
+                UUID.randomUUID(), "Actor", LocalDate.now(), null,
+                List.of(new QuoteLine(UUID.randomUUID(), "Old", "OLD", BigDecimal.ONE, BigDecimal.TEN)));
+        AtomicReference<Quote> saved = new AtomicReference<>();
+        when(quotes.findById(quoteId)).thenReturn(Optional.of(quote));
+        when(products.findProduct(productId)).thenReturn(Optional.of(
+                new QuoteProductCatalogGateway.ProductReference(productId, "P-1", "Product", categoryId)));
+        when(warehouses.findById(warehouseId)).thenReturn(Optional.of(
+                new QuoteWarehouseGateway.Warehouse(warehouseId, "Main", "Address")));
+        when(quotes.save(any(Quote.class))).thenAnswer(invocation -> {
+            Quote value = invocation.getArgument(0);
+            saved.set(value);
+            return value;
+        });
+        var request = new UpdateQuoteRequest(null, "New notes", List.of(
+                new CreateQuoteRequest.QuoteLineRequest(productId, BigDecimal.valueOf(2), BigDecimal.TEN, List.of(
+                        new CreateQuoteRequest.WarehouseAllocationRequest(warehouseId, BigDecimal.valueOf(2))))));
 
-        QuoteLine existingLine = new QuoteLine(UUID.randomUUID(), "Old Product", "OLD-001", BigDecimal.ONE, BigDecimal.TEN);
-        Quote quote = Quote.create(
-                QuoteNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "Creator",
-                LocalDate.now(), "Old notes",
-                List.of(existingLine)
-        );
+        var response = useCase.execute(quoteId, request);
 
-        Product product = Product.reconstitute(productId, "PROD-001", "New Product", null, null, false, true, null, BigDecimal.TEN, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
-        Warehouse warehouse = Warehouse.reconstitute(warehouseId, "WH-001", "Main Warehouse", null, null, null, null, true, LocalDateTime.now(), LocalDateTime.now());
-
-        UpdateQuoteRequest request = new UpdateQuoteRequest(
-                null, "Updated notes",
-                List.of(new CreateQuoteRequest.QuoteLineRequest(
-                        productId, BigDecimal.valueOf(2), new BigDecimal("50.0000"),
-                        List.of(new CreateQuoteRequest.WarehouseAllocationRequest(warehouseId, BigDecimal.valueOf(2)))
-                ))
-        );
-
-        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
-
-        QuoteDetailResponse response = updateQuoteUseCase.execute(quoteId, request);
-
-        assertNotNull(response);
-        assertEquals(1, response.lines().size());
-        assertEquals("New Product", response.lines().get(0).productName());
-        verify(quoteRepository).save(quote);
+        assertThat(response.lines()).singleElement().extracting("productName").isEqualTo("Product");
+        assertThat(saved.get().getLines()).singleElement().extracting("categoryId").isEqualTo(categoryId);
     }
 
     @Test
-    @DisplayName("should throw when trying to update non-draft quote")
-    void shouldThrowWhenUpdatingNonDraftQuote() {
+    void shouldRejectUpdateWhenQuoteIsNotDraft() {
         UUID quoteId = UUID.randomUUID();
-        Quote quote = Quote.create(
-                QuoteNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "Creator",
-                LocalDate.now(), null,
-                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001", BigDecimal.ONE, BigDecimal.TEN))
-        );
+        Quote quote = Quote.create(QuoteNumber.of(2026, 1), UUID.randomUUID(), "Acme", "RIF",
+                UUID.randomUUID(), "Actor", LocalDate.now(), null, List.of(new QuoteLine(
+                        UUID.randomUUID(), "Product", "P-1", BigDecimal.ONE, BigDecimal.TEN)));
         quote.cancel("reason");
+        when(quotes.findById(quoteId)).thenReturn(Optional.of(quote));
 
-        UpdateQuoteRequest request = new UpdateQuoteRequest(null, null, List.of());
-
-        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-
-        assertThrows(QuoteStateException.class, () -> updateQuoteUseCase.execute(quoteId, request));
-        verify(quoteRepository, never()).save(any());
+        assertThatThrownBy(() -> useCase.execute(quoteId, new UpdateQuoteRequest(null, null, List.of())))
+                .isInstanceOf(QuoteStateException.class);
+        verify(quotes, never()).save(any());
     }
 
     @Test
-    @DisplayName("should throw when quote not found")
-    void shouldThrowWhenQuoteNotFound() {
+    void shouldThrowWhenQuoteDoesNotExist() {
         UUID quoteId = UUID.randomUUID();
-        UpdateQuoteRequest request = new UpdateQuoteRequest(null, null, List.of());
+        when(quotes.findById(quoteId)).thenReturn(Optional.empty());
 
-        when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
-
-        assertThrows(QuoteNotFoundException.class, () -> updateQuoteUseCase.execute(quoteId, request));
+        assertThatThrownBy(() -> useCase.execute(quoteId, new UpdateQuoteRequest(null, null, List.of())))
+                .isInstanceOf(QuoteNotFoundException.class);
     }
 }

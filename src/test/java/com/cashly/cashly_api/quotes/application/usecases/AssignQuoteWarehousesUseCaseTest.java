@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.application.dto.request.AssignQuoteWarehousesRequest;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;
@@ -9,8 +9,8 @@ import com.cashly.cashly_api.quotes.domain.exceptions.QuoteStateException;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,11 +38,7 @@ class AssignQuoteWarehousesUseCaseTest {
     private QuoteRepository quoteRepository;
 
     @Mock
-    private CustomerWarehouseAccessRepository customerWarehouseAccessRepository;
-
-    @Mock
-    private WarehouseRepository warehouseRepository;
-
+    private QuoteWarehouseGateway warehouses;
     private AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase;
 
     private static final UUID CUSTOMER_ID = UUID.randomUUID();
@@ -51,21 +47,19 @@ class AssignQuoteWarehousesUseCaseTest {
     @BeforeEach
     void setUp() {
         assignQuoteWarehousesUseCase = new AssignQuoteWarehousesUseCase(
-                quoteRepository, customerWarehouseAccessRepository, warehouseRepository
+                quoteRepository, warehouses
         );
     }
 
     @Test
-    @DisplayName("should assign warehouses and transition quote to DRAFT")
+        @DisplayName("should assign warehouses while quote remains DRAFT")
     void shouldAssignWarehousesAndTransitionToDraft() {
         UUID quoteId = UUID.randomUUID();
-        Quote quote = buildCustomerDraftQuote(quoteId);
+        Quote quote = buildDraftQuote(quoteId);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(customerWarehouseAccessRepository.existsByCustomerIdAndWarehouseId(CUSTOMER_ID, WAREHOUSE_ID))
-                .thenReturn(true);
-        when(warehouseRepository.findById(WAREHOUSE_ID))
-                .thenReturn(Optional.of(buildWarehouse(WAREHOUSE_ID)));
+        when(warehouses.accessibleWarehouseIds(CUSTOMER_ID)).thenReturn(java.util.Set.of(WAREHOUSE_ID));
+        when(warehouses.findById(WAREHOUSE_ID)).thenReturn(Optional.of(new QuoteWarehouseGateway.Warehouse(WAREHOUSE_ID, "Main Warehouse", "123 Main St")));
         when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
         AssignQuoteWarehousesRequest request = new AssignQuoteWarehousesRequest(
@@ -113,11 +107,10 @@ class AssignQuoteWarehousesUseCaseTest {
     @DisplayName("should throw when warehouse is not accessible by customer")
     void shouldThrowWhenWarehouseNotAccessible() {
         UUID quoteId = UUID.randomUUID();
-        Quote quote = buildCustomerDraftQuote(quoteId);
+        Quote quote = buildDraftQuote(quoteId);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(customerWarehouseAccessRepository.existsByCustomerIdAndWarehouseId(CUSTOMER_ID, WAREHOUSE_ID))
-                .thenReturn(false);
+        when(warehouses.accessibleWarehouseIds(CUSTOMER_ID)).thenReturn(java.util.Set.of());
 
         QuoteLine line = quote.getLines().get(0);
         AssignQuoteWarehousesRequest request = new AssignQuoteWarehousesRequest(
@@ -137,7 +130,7 @@ class AssignQuoteWarehousesUseCaseTest {
     @DisplayName("should throw when line is not found in quote")
     void shouldThrowWhenLineNotFound() {
         UUID quoteId = UUID.randomUUID();
-        Quote quote = buildCustomerDraftQuote(quoteId);
+        Quote quote = buildDraftQuote(quoteId);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
@@ -158,13 +151,11 @@ class AssignQuoteWarehousesUseCaseTest {
     @DisplayName("should throw when allocated quantity does not equal line quantity")
     void shouldThrowWhenAllocatedQuantityMismatch() {
         UUID quoteId = UUID.randomUUID();
-        Quote quote = buildCustomerDraftQuote(quoteId);
+        Quote quote = buildDraftQuote(quoteId);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(customerWarehouseAccessRepository.existsByCustomerIdAndWarehouseId(CUSTOMER_ID, WAREHOUSE_ID))
-                .thenReturn(true);
-        when(warehouseRepository.findById(WAREHOUSE_ID))
-                .thenReturn(Optional.of(buildWarehouse(WAREHOUSE_ID)));
+        when(warehouses.accessibleWarehouseIds(CUSTOMER_ID)).thenReturn(java.util.Set.of(WAREHOUSE_ID));
+        when(warehouses.findById(WAREHOUSE_ID)).thenReturn(Optional.of(new QuoteWarehouseGateway.Warehouse(WAREHOUSE_ID, "Main Warehouse", "123 Main St")));
 
         QuoteLine line = quote.getLines().get(0);
         AssignQuoteWarehousesRequest request = new AssignQuoteWarehousesRequest(
@@ -181,40 +172,14 @@ class AssignQuoteWarehousesUseCaseTest {
     }
 
     @Test
-    @DisplayName("should throw when quote is not in CUSTOMER_DRAFT status")
-    void shouldThrowWhenQuoteNotCustomerDraft() {
+    @DisplayName("should throw when not all lines are covered by the request")
+    void shouldThrowWhenNotAllLinesCovered() {
         UUID quoteId = UUID.randomUUID();
         Quote quote = buildDraftQuote(quoteId);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(customerWarehouseAccessRepository.existsByCustomerIdAndWarehouseId(CUSTOMER_ID, WAREHOUSE_ID))
-                .thenReturn(true);
-        when(warehouseRepository.findById(WAREHOUSE_ID))
-                .thenReturn(Optional.of(buildWarehouse(WAREHOUSE_ID)));
-
-        QuoteLine line = quote.getLines().get(0);
-        AssignQuoteWarehousesRequest request = new AssignQuoteWarehousesRequest(
-                List.of(new AssignQuoteWarehousesRequest.LineAllocationRequest(
-                        line.getId().value(),
-                        List.of(new AssignQuoteWarehousesRequest.WarehouseAllocationRequest(
-                                WAREHOUSE_ID, line.getQuantity()))))
-        );
-
-        assertThrows(QuoteStateException.class, () ->
-                assignQuoteWarehousesUseCase.execute(quoteId, request));
-    }
-
-    @Test
-    @DisplayName("should throw when not all lines are covered by the request")
-    void shouldThrowWhenNotAllLinesCovered() {
-        UUID quoteId = UUID.randomUUID();
-        Quote quote = buildCustomerDraftQuote(quoteId);
-
-        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(customerWarehouseAccessRepository.existsByCustomerIdAndWarehouseId(CUSTOMER_ID, WAREHOUSE_ID))
-                .thenReturn(true);
-        when(warehouseRepository.findById(WAREHOUSE_ID))
-                .thenReturn(Optional.of(buildWarehouse(WAREHOUSE_ID)));
+        when(warehouses.accessibleWarehouseIds(CUSTOMER_ID)).thenReturn(java.util.Set.of(WAREHOUSE_ID));
+        when(warehouses.findById(WAREHOUSE_ID)).thenReturn(Optional.of(new QuoteWarehouseGateway.Warehouse(WAREHOUSE_ID, "Main Warehouse", "123 Main St")));
 
         QuoteLine firstLine = quote.getLines().get(0);
         AssignQuoteWarehousesRequest request = new AssignQuoteWarehousesRequest(
@@ -226,10 +191,6 @@ class AssignQuoteWarehousesUseCaseTest {
 
         assertThrows(QuoteStateException.class, () ->
                 assignQuoteWarehousesUseCase.execute(quoteId, request));
-    }
-
-    private Quote buildCustomerDraftQuote(UUID quoteId) {
-        return buildQuote(quoteId, QuoteStatus.CUSTOMER_DRAFT);
     }
 
     private Quote buildDraftQuote(UUID quoteId) {
@@ -254,10 +215,5 @@ class AssignQuoteWarehousesUseCaseTest {
                 null, null, null, null,
                 null, null,
                 List.of(line1, line2), now, now);
-    }
-
-    private Warehouse buildWarehouse(UUID warehouseId) {
-        return Warehouse.reconstitute(warehouseId, "WH-001", "Main Warehouse", "123 Main St",
-                null, null, null, true, java.time.LocalDateTime.now(), java.time.LocalDateTime.now());
     }
 }

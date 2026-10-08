@@ -1,14 +1,9 @@
 package com.cashly.cashly_api.quotes.infrastructure.config;
 
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
-import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
-import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
-import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.quotes.application.contracts.ActorIdentityGateway;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteCustomerGateway;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.application.usecases.*;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.JpaQuoteRepositoryAdapter;
@@ -16,8 +11,6 @@ import com.cashly.cashly_api.quotes.infrastructure.persistence.QuoteJpaMapper;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.QuoteJpaRepository;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.QuoteNumberSequenceJpaRepository;
 import com.cashly.cashly_api.quotes.infrastructure.web.QuoteController;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,31 +31,30 @@ public class QuoteConfig {
 
     @Bean
     public CreateQuoteUseCase createQuoteUseCase(QuoteRepository quoteRepository,
-                                                   CustomerRepository customerRepository,
-                                                   UserRepository userRepository,
-                                                   ProductRepository productRepository,
-                                                   WarehouseRepository warehouseRepository) {
-        return new CreateQuoteUseCase(quoteRepository, customerRepository, userRepository,
-                productRepository, warehouseRepository);
+                                                   QuoteCustomerGateway customers,
+                                                   ActorIdentityGateway actors,
+                                                   QuoteProductCatalogGateway products,
+                                                   QuoteWarehouseGateway warehouses) {
+        return new CreateQuoteUseCase(quoteRepository, customers, actors, products, warehouses);
     }
 
     @Bean
-    public GetQuotesUseCase getQuotesUseCase(QuoteRepository quoteRepository) {
-        return new GetQuotesUseCase(quoteRepository);
+    public GetQuotesUseCase getQuotesUseCase(QuoteRepository quoteRepository,
+                                              com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway products) {
+        return new GetQuotesUseCase(quoteRepository, products);
     }
 
     @Bean
     public GetQuoteByIdUseCase getQuoteByIdUseCase(QuoteRepository quoteRepository,
-                                                    WarehouseStockRepository warehouseStockRepository,
-                                                    WarehouseRepository warehouseRepository) {
-        return new GetQuoteByIdUseCase(quoteRepository, warehouseStockRepository, warehouseRepository);
+                                                    QuoteWarehouseGateway warehouses) {
+        return new GetQuoteByIdUseCase(quoteRepository, warehouses);
     }
 
     @Bean
     public UpdateQuoteUseCase updateQuoteUseCase(QuoteRepository quoteRepository,
-                                                   ProductRepository productRepository,
-                                                   WarehouseRepository warehouseRepository) {
-        return new UpdateQuoteUseCase(quoteRepository, productRepository, warehouseRepository);
+                                                   QuoteProductCatalogGateway products,
+                                                   QuoteWarehouseGateway warehouses) {
+        return new UpdateQuoteUseCase(quoteRepository, products, warehouses);
     }
 
     @Bean
@@ -72,56 +64,45 @@ public class QuoteConfig {
 
     @Bean
     public CancelQuoteUseCase cancelQuoteUseCase(QuoteRepository quoteRepository,
-                                                  NotificationService notificationService) {
+                                                  com.cashly.cashly_api.quotes.application.contracts.QuoteRejectionNotificationGateway notificationService) {
         return new CancelQuoteUseCase(quoteRepository, notificationService);
     }
 
     @Bean
     public GetProductsForQuoteUseCase getProductsForQuoteUseCase(
-            CustomerRepository customerRepository,
-            ProductRepository productRepository,
-            CategoryRepository categoryRepository) {
-        return new GetProductsForQuoteUseCase(customerRepository, productRepository, categoryRepository);
+            QuoteCustomerGateway customers,
+            QuoteProductCatalogGateway products) {
+        return new GetProductsForQuoteUseCase(customers, products);
     }
 
     @Bean
     public GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase(
-            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
-            WarehouseRepository warehouseRepository) {
-        return new GetWarehousesForQuoteUseCase(customerWarehouseAccessRepository, warehouseRepository);
+            QuoteWarehouseGateway warehouses) {
+        return new GetWarehousesForQuoteUseCase(warehouses);
     }
 
     @Bean
     public AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase(
             QuoteRepository quoteRepository,
-            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
-            WarehouseRepository warehouseRepository) {
-        return new AssignQuoteWarehousesUseCase(quoteRepository, customerWarehouseAccessRepository, warehouseRepository);
+            QuoteWarehouseGateway warehouses) {
+        return new AssignQuoteWarehousesUseCase(quoteRepository, warehouses);
     }
 
     @Bean
     public ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase(
             QuoteRepository quoteRepository,
-            OrderRepository orderRepository,
-            WarehouseStockRepository warehouseStockRepository,
-            UserRepository userRepository,
-            NotificationService notificationService) {
-        return new ConvertQuoteToOrderUseCase(quoteRepository, orderRepository,
-                warehouseStockRepository, userRepository, notificationService);
+            com.cashly.cashly_api.quotes.application.contracts.OrderCreationGateway orders,
+            com.cashly.cashly_api.quotes.application.contracts.ActorIdentityGateway actors,
+            com.cashly.cashly_api.quotes.application.contracts.QuoteConversionNotificationGateway notifications) {
+        return new ConvertQuoteToOrderUseCase(quoteRepository, orders, actors, notifications);
     }
 
     @Bean
     public ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase(
             QuoteRepository quoteRepository,
-            InvoiceRepository invoiceRepository,
-            WarehouseStockRepository warehouseStockRepository,
-            UserRepository userRepository,
-            InvoiceAuthorizationService authorizationService,
-            NotificationService notificationService,
-            CustomerRepository customerRepository) {
-        return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoiceRepository,
-                warehouseStockRepository, userRepository, authorizationService, notificationService,
-                customerRepository);
+            com.cashly.cashly_api.quotes.application.contracts.InvoiceCreationGateway invoices,
+            com.cashly.cashly_api.quotes.application.contracts.QuoteConversionNotificationGateway notifications) {
+        return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoices, notifications);
     }
 
     @Bean

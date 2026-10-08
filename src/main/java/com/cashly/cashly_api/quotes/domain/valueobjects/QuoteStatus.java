@@ -1,7 +1,6 @@
 package com.cashly.cashly_api.quotes.domain.valueobjects;
 
 public enum QuoteStatus {
-    CUSTOMER_DRAFT,
     DRAFT,
     CONVERTED_TO_ORDER,
     CONVERTED_TO_INVOICE,
@@ -12,7 +11,6 @@ public enum QuoteStatus {
             return false;
         }
         return switch (this) {
-            case CUSTOMER_DRAFT -> target == DRAFT || target == CANCELLED;
             case DRAFT -> target == CONVERTED_TO_ORDER || target == CONVERTED_TO_INVOICE || target == CANCELLED;
             case CONVERTED_TO_ORDER, CONVERTED_TO_INVOICE, CANCELLED -> false;
         };

@@ -65,6 +65,9 @@ class ConvertQuoteToInvoiceUseCaseTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway creditTerms;
+
     private ConvertQuoteToInvoiceUseCase useCase;
 
     private final UUID quoteId = UUID.randomUUID();
@@ -72,8 +75,19 @@ class ConvertQuoteToInvoiceUseCaseTest {
 
     @BeforeEach
     void setUp() {
+        lenient().when(creditTerms.creditDays(any())).thenReturn(0);
         useCase = new ConvertQuoteToInvoiceUseCase(
-                quoteRepository, invoiceRepository, warehouseStockRepository, userRepository, authorizationService, notificationService);
+                quoteRepository,
+                new com.cashly.cashly_api.quotes.infrastructure.integration.LocalInvoiceCreationGateway(
+                    new com.cashly.cashly_api.invoices.application.services.QuoteInvoiceCreationService(invoiceRepository,
+                        new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+                            new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository,
+                                mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
+                        creditTerms, authorizationService,
+                        new com.cashly.cashly_api.invoices.infrastructure.integration.LocalStockDeductionGateway(
+                            new com.cashly.cashly_api.warehouses.application.services.StockDeductionService(warehouseStockRepository)))),
+                new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
+                    new com.cashly.cashly_api.notifications.application.services.QuoteConversionNotificationService(notificationService)));
     }
 
     @Test
@@ -90,7 +104,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(3);
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -131,7 +145,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(7);
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -157,7 +171,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
                 useCase.execute(quoteId, request, authenticatedUserId));
 
         verify(invoiceRepository, never()).save(any());
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(any(), any());
     }
 
     @Test
@@ -178,7 +192,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
 
         assertEquals("Only DRAFT quotes can be converted to invoices", exception.getMessage());
         verify(invoiceRepository, never()).save(any());
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(any(), any());
     }
 
     @Test
@@ -194,6 +208,47 @@ class ConvertQuoteToInvoiceUseCaseTest {
     }
 
     
+
+    @Test
+    void shouldPreserveExplicitIssueDateAndCustomerCreditDays() {
+        UUID warehouseId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        Quote quote = buildDraftQuote(quoteId, warehouseId, productId);
+        LocalDate issueDate = LocalDate.of(2026, 9, 1);
+        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(buildUser(authenticatedUserId)));
+        when(creditTerms.creditDays(quote.getCustomerId())).thenReturn(15);
+        when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(7);
+        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(Optional.of(new WarehouseStock(null, warehouseId, productId, 50, 0, null, null)));
+
+        useCase.execute(quoteId, new ConvertQuoteToInvoiceRequest("CREDIT", null, null, null, null, issueDate), authenticatedUserId);
+
+        ArgumentCaptor<Invoice> captor = ArgumentCaptor.forClass(Invoice.class);
+        verify(invoiceRepository).save(captor.capture());
+        assertEquals(issueDate, captor.getValue().getIssueDate());
+        assertEquals(issueDate.plusDays(15), captor.getValue().getDueDate());
+        verify(invoiceRepository).getNextSequenceForYear(LocalDate.now().getYear());
+    }
+
+    @Test
+    void shouldLeaveStockAndQuoteUnchangedWhenAuthorizationFails() {
+        Quote quote = buildDraftQuote(quoteId, UUID.randomUUID(), UUID.randomUUID());
+        var failure = new IllegalArgumentException("Authorization rejected");
+        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
+        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(buildUser(authenticatedUserId)));
+        when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(7);
+        doThrow(failure).when(authorizationService).authorize(any(), any(), any(), any(), any(), any(), any());
+
+        assertSame(failure, assertThrows(IllegalArgumentException.class, () -> useCase.execute(quoteId,
+                new ConvertQuoteToInvoiceRequest("CREDIT", "password", null, null, null), authenticatedUserId)));
+
+        verifyNoInteractions(warehouseStockRepository, notificationService);
+        verify(invoiceRepository, never()).save(any());
+        verify(quoteRepository, never()).save(any());
+        assertEquals(QuoteStatus.DRAFT, quote.getStatus());
+    }
 
     private Quote buildDraftQuote(UUID quoteId, UUID warehouseId, UUID productId) {
         QuoteLine line = new QuoteLine(productId, "Product A", "PROD-001", BigDecimal.valueOf(2), new BigDecimal("50.0000"));

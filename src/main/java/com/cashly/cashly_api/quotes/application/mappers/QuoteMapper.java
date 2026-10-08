@@ -68,18 +68,15 @@ public class QuoteMapper {
         );
     }
 
-    private static QuoteLineDetailResponse toLineDetailResponse(QuoteLine line,
-                                                                 List<WarehouseStockInfo> stockInfo) {
+    private static QuoteLineDetailResponse toLineDetailResponse(QuoteLine line, List<WarehouseStockInfo> stockInfo) {
         List<QuoteAllocationDetailResponse> allocationResponses = line.getAllocations().stream()
                 .map(QuoteMapper::toAllocationDetailResponse)
                 .toList();
-
         List<WarehouseStockInfoResponse> warehouseStocks = stockInfo != null
                 ? stockInfo.stream()
                         .map(si -> new WarehouseStockInfoResponse(si.warehouseId(), si.warehouseName(), si.available()))
                         .toList()
                 : List.of();
-
         return new QuoteLineDetailResponse(
                 line.getId().value(),
                 line.getProductId(),
@@ -95,11 +92,8 @@ public class QuoteMapper {
 
     private static QuoteAllocationDetailResponse toAllocationDetailResponse(QuoteAllocation allocation) {
         return new QuoteAllocationDetailResponse(
-                allocation.getId().value(),
-                allocation.getWarehouseId(),
-                allocation.getWarehouseName(),
-                allocation.getAllocatedQuantity()
-        );
+                allocation.getId().value(), allocation.getWarehouseId(), allocation.getWarehouseName(),
+                allocation.getAllocatedQuantity());
     }
 
     public record WarehouseStockInfo(UUID warehouseId, String warehouseName, int available) {}

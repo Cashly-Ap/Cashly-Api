@@ -74,14 +74,6 @@ public class Quote {
                 expiryDate, notes, lines);
     }
 
-    public static Quote createFromPortal(QuoteNumber quoteNumber, UUID customerId, String customerName,
-                                         String customerRif, UUID createdBy, String createdByName,
-                                         LocalDate expiryDate, String notes, List<QuoteLine> lines) {
-        return create(quoteNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, QuoteStatus.CUSTOMER_DRAFT,
-                expiryDate, notes, lines);
-    }
-
     private static Quote create(QuoteNumber quoteNumber, UUID customerId, String customerName,
                                 String customerRif, UUID createdBy, String createdByName,
                                 QuoteStatus status, LocalDate expiryDate, String notes,
@@ -162,19 +154,17 @@ public class Quote {
     }
 
     public void assignAllocation(QuoteLineId lineId, QuoteAllocation allocation) {
-        assertCustomerDraft();
-        for (QuoteLine line : lines) {
-            if (line.getId().equals(lineId)) {
-                line.addAllocation(allocation);
-                touch();
-                return;
-            }
-        }
-        throw new IllegalArgumentException("Quote line not found: " + lineId);
+        assertDraft();
+        QuoteLine line = lines.stream()
+                .filter(item -> item.getId().equals(lineId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Quote line not found: " + lineId));
+        line.addAllocation(allocation);
+        touch();
     }
 
     public void confirmWarehouseAssignment() {
-        assertCustomerDraft();
+        assertDraft();
         for (QuoteLine line : lines) {
             BigDecimal allocatedTotal = line.getAllocations().stream()
                     .map(QuoteAllocation::getAllocatedQuantity)
@@ -185,13 +175,11 @@ public class Quote {
                                 + " (allocated=" + allocatedTotal + ", required=" + line.getQuantity() + ")");
             }
         }
-        assertCanTransition(QuoteStatus.DRAFT);
-        this.status = QuoteStatus.DRAFT;
         touch();
     }
 
     public void clearAllocations() {
-        assertCustomerDraft();
+        assertDraft();
         for (QuoteLine line : lines) {
             for (QuoteAllocation allocation : List.copyOf(line.getAllocations())) {
                 line.removeAllocation(allocation.getId());
@@ -237,14 +225,8 @@ public class Quote {
     }
 
     private void assertDraft() {
-        if (this.status != QuoteStatus.DRAFT && this.status != QuoteStatus.CUSTOMER_DRAFT) {
-            throw new QuoteStateException("Quote can only be modified in DRAFT or CUSTOMER_DRAFT status");
-        }
-    }
-
-    private void assertCustomerDraft() {
-        if (this.status != QuoteStatus.CUSTOMER_DRAFT) {
-            throw new QuoteStateException("Warehouse assignment is only allowed in CUSTOMER_DRAFT status");
+        if (this.status != QuoteStatus.DRAFT) {
+            throw new QuoteStateException("Quote can only be modified in DRAFT status");
         }
     }
 
@@ -267,11 +249,11 @@ public class Quote {
     
 
     public boolean canBeModified() {
-        return this.status == QuoteStatus.DRAFT || this.status == QuoteStatus.CUSTOMER_DRAFT;
+        return this.status == QuoteStatus.DRAFT;
     }
 
     public boolean canBeDeleted() {
-        return this.status == QuoteStatus.DRAFT || this.status == QuoteStatus.CUSTOMER_DRAFT;
+        return this.status == QuoteStatus.DRAFT;
     }
 
     public boolean isActive() {

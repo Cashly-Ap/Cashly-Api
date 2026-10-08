@@ -161,4 +161,21 @@ class QuoteLineTest {
 
         assertNotEquals(first.getId(), second.getId());
     }
+
+    @Test
+    void should_keep_category_snapshot_from_product_at_creation() {
+        UUID categoryId = UUID.randomUUID();
+
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, categoryId, QUANTITY, UNIT_PRICE);
+
+        assertEquals(categoryId, line.getCategoryId());
+    }
+
+    @Test
+    void should_allow_missing_category_snapshot_for_legacy_line() {
+        QuoteLine line = QuoteLine.reconstitute(QuoteLineId.generate(), PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, QUANTITY, UNIT_PRICE, BigDecimal.ZERO, List.of());
+
+        assertNull(line.getCategoryId());
+    }
 }

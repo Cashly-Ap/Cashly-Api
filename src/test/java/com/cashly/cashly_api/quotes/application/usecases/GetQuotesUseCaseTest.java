@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
+import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
@@ -30,11 +31,14 @@ class GetQuotesUseCaseTest {
     @Mock
     private QuoteRepository quoteRepository;
 
+    @Mock
+    private QuoteProductCatalogGateway products;
+
     private GetQuotesUseCase getQuotesUseCase;
 
     @BeforeEach
     void setUp() {
-        getQuotesUseCase = new GetQuotesUseCase(quoteRepository);
+        getQuotesUseCase = new GetQuotesUseCase(quoteRepository, products);
     }
 
     @Test
@@ -52,7 +56,7 @@ class GetQuotesUseCaseTest {
                 Instant.now(), Instant.now()
         );
 
-        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc"))
+        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, java.util.Set.of(), "createdAt", "desc"))
                 .thenReturn(List.of(quote));
 
         List<QuoteListResponse> responses = getQuotesUseCase.execute(
@@ -65,13 +69,13 @@ class GetQuotesUseCaseTest {
         assertEquals("Customer", response.customerName());
         assertEquals("DRAFT", response.status());
         assertEquals(quote.getCreatedByName(), response.createdByName());
-        verify(quoteRepository).findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc");
+        verify(quoteRepository).findAllWithFilters(null, null, null, null, null, null, java.util.Set.of(), "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no quotes exist")
     void shouldReturnEmptyListWhenNoQuotes() {
-        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, "createdAt", "desc"))
+        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, java.util.Set.of(), "createdAt", "desc"))
                 .thenReturn(List.of());
 
         List<QuoteListResponse> responses = getQuotesUseCase.execute(

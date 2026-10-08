@@ -16,12 +16,18 @@ public class QuoteLine {
     private final UUID productId;
     private final String productName;
     private final String productCode;
+    private final UUID categoryId;
     private BigDecimal quantity;
     private BigDecimal unitPrice;
     private BigDecimal lineTotal;
     private final List<QuoteAllocation> allocations;
 
     public QuoteLine(UUID productId, String productName, String productCode, BigDecimal quantity, BigDecimal unitPrice) {
+        this(productId, productName, productCode, null, quantity, unitPrice);
+    }
+
+    public QuoteLine(UUID productId, String productName, String productCode, UUID categoryId,
+                     BigDecimal quantity, BigDecimal unitPrice) {
         if (productId == null) {
             throw new InvalidQuoteLineException("Product id cannot be null");
         }
@@ -41,19 +47,21 @@ public class QuoteLine {
         this.productId = productId;
         this.productName = productName;
         this.productCode = productCode;
+        this.categoryId = categoryId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.lineTotal = quantity.multiply(unitPrice);
         this.allocations = new ArrayList<>();
     }
 
-    private QuoteLine(QuoteLineId id, UUID productId, String productName, String productCode,
+    private QuoteLine(QuoteLineId id, UUID productId, String productName, String productCode, UUID categoryId,
                       BigDecimal quantity, BigDecimal unitPrice, BigDecimal lineTotal,
                       List<QuoteAllocation> allocations) {
         this.id = id;
         this.productId = productId;
         this.productName = productName;
         this.productCode = productCode;
+        this.categoryId = categoryId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.lineTotal = lineTotal;
@@ -63,7 +71,13 @@ public class QuoteLine {
     public static QuoteLine reconstitute(QuoteLineId id, UUID productId, String productName, String productCode,
                                           BigDecimal quantity, BigDecimal unitPrice, BigDecimal lineTotal,
                                           List<QuoteAllocation> allocations) {
-        return new QuoteLine(id, productId, productName, productCode, quantity, unitPrice, lineTotal, allocations);
+        return reconstitute(id, productId, productName, productCode, null, quantity, unitPrice, lineTotal, allocations);
+    }
+
+    public static QuoteLine reconstitute(QuoteLineId id, UUID productId, String productName, String productCode,
+                                          UUID categoryId, BigDecimal quantity, BigDecimal unitPrice,
+                                          BigDecimal lineTotal, List<QuoteAllocation> allocations) {
+        return new QuoteLine(id, productId, productName, productCode, categoryId, quantity, unitPrice, lineTotal, allocations);
     }
 
     public void updateQuantity(BigDecimal newQuantity) {
@@ -94,6 +108,7 @@ public class QuoteLine {
     public UUID getProductId() { return productId; }
     public String getProductName() { return productName; }
     public String getProductCode() { return productCode; }
+    public UUID getCategoryId() { return categoryId; }
     public BigDecimal getQuantity() { return quantity; }
     public BigDecimal getUnitPrice() { return unitPrice; }
     public BigDecimal getLineTotal() { return lineTotal; }
