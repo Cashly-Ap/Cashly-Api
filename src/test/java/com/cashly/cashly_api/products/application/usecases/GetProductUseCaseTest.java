@@ -11,7 +11,11 @@ import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.BeforeEach;
+import com.cashly.cashly_api.products.infrastructure.integration.LocalProductCategoryGatewayAdapter;
+import com.cashly.cashly_api.products.infrastructure.integration.LocalProductPriceTypeGatewayAdapter;
+import com.cashly.cashly_api.categories.application.queries.RepositoryProductCategoryQuery;
+import com.cashly.cashly_api.price_types.application.queries.RepositoryProductPriceTypeQuery;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,8 +45,12 @@ class GetProductUseCaseTest {
     @Mock
     private ProductMapper productMapper;
 
-    @InjectMocks
     private GetProductUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new GetProductUseCase(productRepository, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categoryRepository)), new LocalProductPriceTypeGatewayAdapter(new RepositoryProductPriceTypeQuery(priceTypeRepository)), productMapper);
+    }
 
     @Test
     void should_ReturnProduct_When_ProductExists() {

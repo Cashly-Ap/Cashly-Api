@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.application.usecases;
 
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
+import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
 import com.cashly.cashly_api.products.application.dto.response.ProductListResponse;
 import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public class ListProductsUseCase {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final ProductCategoryGateway categoryRepository;
     private final ProductMapper productMapper;
 
     public ListProductsUseCase(ProductRepository productRepository,
-                                CategoryRepository categoryRepository,
+                                ProductCategoryGateway categoryRepository,
                                 ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
@@ -42,7 +42,7 @@ public class ListProductsUseCase {
         List<ProductListResponse> content = result.content().stream()
             .map(product -> {
                 String categoryName = categoryRepository.findById(product.getCategoryId())
-                    .map(c -> c.getName()).orElse("");
+                    .map(c -> c.name()).orElse("");
                 boolean deletable = !idsWithReferences.contains(product.getId());
                 return productMapper.toListResponse(product, categoryName, deletable);
             })

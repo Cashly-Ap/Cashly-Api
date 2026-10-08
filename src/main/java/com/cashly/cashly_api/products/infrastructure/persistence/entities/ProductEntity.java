@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.products.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 import jakarta.persistence.*;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.Set;
 import java.util.UUID;
 
@@ -94,17 +93,16 @@ public class ProductEntity {
         return entity;
     }
 
-    public void applyPrices(List<ProductPrice> prices, Map<UUID, PriceTypeEntity> priceTypeMap) {
+    public void applyPrices(List<ProductPrice> prices, Set<UUID> existingPriceTypeIds) {
         this.productPrices.clear();
         prices.forEach(p -> {
-            PriceTypeEntity priceTypeEntity = priceTypeMap.get(p.getPriceTypeId());
-            if (priceTypeEntity != null) {
-                this.productPrices.add(ProductPriceEntity.fromDomain(p, this, priceTypeEntity));
+            if (existingPriceTypeIds.contains(p.getPriceTypeId())) {
+                this.productPrices.add(ProductPriceEntity.fromDomain(p, this));
             }
         });
     }
 
-    public void updateFromDomain(Product product, Map<UUID, PriceTypeEntity> priceTypeMap) {
+    public void updateFromDomain(Product product, Set<UUID> existingPriceTypeIds) {
         this.name = product.getName();
         this.description = product.getDescription();
         this.categoryId = product.getCategoryId();
@@ -115,13 +113,7 @@ public class ProductEntity {
         this.updatedAt = product.getUpdatedAt();
         this.components.clear();
         product.getComponents().forEach(c -> this.components.add(ProductComponentEntity.fromDomain(c, this)));
-        this.productPrices.clear();
-        product.getProductPrices().forEach(p -> {
-            PriceTypeEntity priceTypeEntity = priceTypeMap.get(p.getPriceTypeId());
-            if (priceTypeEntity != null) {
-                this.productPrices.add(ProductPriceEntity.fromDomain(p, this, priceTypeEntity));
-            }
-        });
+        applyPrices(product.getProductPrices(), existingPriceTypeIds);
     }
 
     public Product toDomain() {

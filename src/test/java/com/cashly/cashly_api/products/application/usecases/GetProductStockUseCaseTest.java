@@ -10,8 +10,10 @@ import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import com.cashly.cashly_api.products.infrastructure.integration.LocalProductWarehouseStockGatewayAdapter;
+import com.cashly.cashly_api.warehouses.application.services.RepositoryProductStockQuery;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -37,8 +39,15 @@ class GetProductStockUseCaseTest {
     @Mock
     private WarehouseRepository warehouseRepository;
 
-    @InjectMocks
     private GetProductStockUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new GetProductStockUseCase(productRepository,
+                new LocalProductWarehouseStockGatewayAdapter(
+                        new RepositoryProductStockQuery(
+                                warehouseStockRepository, warehouseRepository)));
+    }
 
     @Test
     void should_ReturnStockByWarehouse_When_ProductExists() {

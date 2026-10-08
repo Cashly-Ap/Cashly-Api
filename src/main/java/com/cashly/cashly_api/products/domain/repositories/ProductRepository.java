@@ -22,5 +22,6 @@ public interface ProductRepository {
     void delete(UUID id);
     void deleteComponentReferencesByProductId(UUID productId);
     Set<UUID> findIdsWithReferences(Set<UUID> ids);
+    Set<UUID> findIdsByCategoryId(UUID categoryId);
     String generateNextCode();
 }

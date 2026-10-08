@@ -3,17 +3,17 @@ package com.cashly.cashly_api.products.application.usecases;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
 
 import java.util.UUID;
 
 public class RemoveProductPhotoUseCase {
 
     private final ProductRepository productRepository;
-    private final FileStorageService fileStorageService;
+    private final ProductFileStorageGateway fileStorageService;
 
     public RemoveProductPhotoUseCase(ProductRepository productRepository,
-                                      FileStorageService fileStorageService) {
+                                      ProductFileStorageGateway fileStorageService) {
         this.productRepository = productRepository;
         this.fileStorageService = fileStorageService;
     }
@@ -23,7 +23,7 @@ public class RemoveProductPhotoUseCase {
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         if (product.getPhoto() != null) {
-            fileStorageService.delete(product.getPhoto());
+            fileStorageService.remove(product.getPhoto());
         }
 
         product.removePhoto();

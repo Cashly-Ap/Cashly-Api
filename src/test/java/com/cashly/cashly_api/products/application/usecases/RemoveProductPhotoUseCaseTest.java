@@ -3,7 +3,7 @@ package com.cashly.cashly_api.products.application.usecases;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class RemoveProductPhotoUseCaseTest {
     private ProductRepository productRepository;
 
     @Mock
-    private FileStorageService fileStorageService;
+    private ProductFileStorageGateway fileStorageService;
 
     @InjectMocks
     private RemoveProductPhotoUseCase useCase;
@@ -45,7 +45,7 @@ class RemoveProductPhotoUseCaseTest {
 
         useCase.execute(productId);
 
-        verify(fileStorageService).delete("products/photo.jpg");
+        verify(fileStorageService).remove("products/photo.jpg");
         verify(productRepository).save(any(Product.class));
     }
 
@@ -56,7 +56,7 @@ class RemoveProductPhotoUseCaseTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         assertThrows(ProductNotFoundException.class, () -> useCase.execute(productId));
-        verify(fileStorageService, never()).delete(any());
+        verify(fileStorageService, never()).remove(any());
         verify(productRepository, never()).save(any());
     }
 
@@ -72,7 +72,23 @@ class RemoveProductPhotoUseCaseTest {
 
         useCase.execute(productId);
 
-        verify(fileStorageService, never()).delete(any());
+        verify(fileStorageService, never()).remove(any());
         verify(productRepository).save(any(Product.class));
+    }
+
+    @Test
+    void should_PropagateRemovalFailure_WithoutSavingProduct() {
+        UUID productId = UUID.randomUUID();
+        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
+                UUID.randomUUID(), false, true, "products/photo.jpg", new BigDecimal("5.00"),
+                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        var failure = new IllegalStateException("Storage unavailable");
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        doThrow(failure).when(fileStorageService).remove("products/photo.jpg");
+
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> useCase.execute(productId));
+
+        assertSame(failure, thrown);
+        verify(productRepository, never()).save(any());
     }
 }

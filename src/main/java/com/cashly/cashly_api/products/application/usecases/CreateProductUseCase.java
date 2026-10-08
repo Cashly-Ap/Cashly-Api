@@ -1,9 +1,7 @@
 package com.cashly.cashly_api.products.application.usecases;
 
-import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException;
-import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
+import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeGateway;
 import com.cashly.cashly_api.products.application.dto.request.CreateProductRequest;
 import com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest;
 import com.cashly.cashly_api.products.application.dto.response.ProductDetailResponse;
@@ -27,13 +25,13 @@ import java.util.stream.Collectors;
 public class CreateProductUseCase {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final PriceTypeRepository priceTypeRepository;
+    private final ProductCategoryGateway categoryRepository;
+    private final ProductPriceTypeGateway priceTypeRepository;
     private final ProductMapper productMapper;
 
     public CreateProductUseCase(ProductRepository productRepository,
-                                 CategoryRepository categoryRepository,
-                                 PriceTypeRepository priceTypeRepository,
+                                 ProductCategoryGateway categoryRepository,
+                                 ProductPriceTypeGateway priceTypeRepository,
                                  ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
@@ -43,8 +41,7 @@ public class CreateProductUseCase {
 
     @Transactional
     public ProductDetailResponse execute(CreateProductRequest request) {
-        var category = categoryRepository.findById(request.categoryId())
-            .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
+        var category = categoryRepository.require(request.categoryId());
 
         String code = request.code() != null && !request.code().isBlank()
             ? request.code()
@@ -68,7 +65,7 @@ public class CreateProductUseCase {
 
         Map<UUID, Product> componentProducts = loadComponentProducts(saved);
         Map<UUID, String> priceTypeNames = resolvePriceTypeNames(saved.getProductPrices());
-        return productMapper.toDetailResponse(saved, category.getName(), componentProducts, priceTypeNames);
+        return productMapper.toDetailResponse(saved, category.name(), componentProducts, priceTypeNames);
     }
 
     private List<ProductPrice> buildProductPrices(List<ProductPriceRequest> requests) {
@@ -76,8 +73,7 @@ public class CreateProductUseCase {
             return List.of();
         }
         return requests.stream().map(r -> {
-            priceTypeRepository.findById(r.priceTypeId())
-                .orElseThrow(() -> new PriceTypeNotFoundException(r.priceTypeId()));
+            priceTypeRepository.require(r.priceTypeId());
             return ProductPrice.create(r.priceTypeId(), r.price(), r.profitMargin());
         }).toList();
     }
@@ -110,7 +106,7 @@ public class CreateProductUseCase {
             .collect(Collectors.toMap(
                 ProductPrice::getPriceTypeId,
                 pp -> priceTypeRepository.findById(pp.getPriceTypeId())
-                    .map(pt -> pt.getName())
+                    .map(pt -> pt.name())
                     .orElse("")
             ));
     }

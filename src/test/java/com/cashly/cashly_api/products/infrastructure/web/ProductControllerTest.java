@@ -14,7 +14,6 @@ import com.cashly.cashly_api.products.application.usecases.RemoveProductPhotoUse
 import com.cashly.cashly_api.products.application.usecases.UpdateProductUseCase;
 import com.cashly.cashly_api.products.application.usecases.UploadProductPhotoUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,9 +62,6 @@ class ProductControllerTest {
 
     @Mock
     private GetProductStockUseCase getProductStockUseCase;
-
-    @Mock
-    private FileStorageService fileStorageService;
 
     @InjectMocks
     private ProductController productController;

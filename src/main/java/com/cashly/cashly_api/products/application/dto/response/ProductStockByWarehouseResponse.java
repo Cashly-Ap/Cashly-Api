@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.application.dto.response;
 
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
+import com.cashly.cashly_api.products.application.contracts.ProductWarehouseStockGateway.Stock;
 
 import java.time.LocalDateTime;
 
@@ -10,12 +10,12 @@ public record ProductStockByWarehouseResponse(
         int quantity,
         LocalDateTime lastMovementAt
 ) {
-    public static ProductStockByWarehouseResponse from(WarehouseStock stock, String warehouseName) {
+    public static ProductStockByWarehouseResponse from(Stock stock) {
         return new ProductStockByWarehouseResponse(
-                stock.getWarehouseId().toString(),
-                warehouseName,
-                stock.getQuantity(),
-                stock.getLastMovementAt()
+                stock.warehouseId().toString(),
+                stock.warehouseName(),
+                stock.quantity(),
+                stock.lastMovementAt()
         );
     }
 }

@@ -1,9 +1,7 @@
 package com.cashly.cashly_api.products.application.usecases;
 
-import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException;
-import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
+import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeGateway;
 import com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest;
 import com.cashly.cashly_api.products.application.dto.request.UpdateProductRequest;
 import com.cashly.cashly_api.products.application.dto.response.ProductDetailResponse;
@@ -27,13 +25,13 @@ import java.util.stream.Collectors;
 public class UpdateProductUseCase {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final PriceTypeRepository priceTypeRepository;
+    private final ProductCategoryGateway categoryRepository;
+    private final ProductPriceTypeGateway priceTypeRepository;
     private final ProductMapper productMapper;
 
     public UpdateProductUseCase(ProductRepository productRepository,
-                                 CategoryRepository categoryRepository,
-                                 PriceTypeRepository priceTypeRepository,
+                                 ProductCategoryGateway categoryRepository,
+                                 ProductPriceTypeGateway priceTypeRepository,
                                  ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
@@ -46,8 +44,7 @@ public class UpdateProductUseCase {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new ProductNotFoundException(id));
 
-        var category = categoryRepository.findById(request.categoryId())
-            .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
+        var category = categoryRepository.require(request.categoryId());
 
         product.update(request.name(), request.description(), request.categoryId(),
                 request.purchasePrice(), request.active());
@@ -85,7 +82,7 @@ public class UpdateProductUseCase {
             .collect(Collectors.toMap(Product::getId, p -> p, (a, b) -> a));
 
         Map<UUID, String> priceTypeNames = resolvePriceTypeNames(saved.getProductPrices());
-        return productMapper.toDetailResponse(saved, category.getName(), componentProducts, priceTypeNames);
+        return productMapper.toDetailResponse(saved, category.name(), componentProducts, priceTypeNames);
     }
 
     private List<ProductPrice> buildProductPrices(List<ProductPriceRequest> requests) {
@@ -93,8 +90,7 @@ public class UpdateProductUseCase {
             return List.of();
         }
         return requests.stream().map(r -> {
-            priceTypeRepository.findById(r.priceTypeId())
-                .orElseThrow(() -> new PriceTypeNotFoundException(r.priceTypeId()));
+            priceTypeRepository.require(r.priceTypeId());
             return ProductPrice.create(r.priceTypeId(), r.price(), r.profitMargin());
         }).toList();
     }
@@ -104,7 +100,7 @@ public class UpdateProductUseCase {
             .collect(Collectors.toMap(
                 ProductPrice::getPriceTypeId,
                 pp -> priceTypeRepository.findById(pp.getPriceTypeId())
-                    .map(pt -> pt.getName())
+                    .map(pt -> pt.name())
                     .orElse("")
             ));
     }

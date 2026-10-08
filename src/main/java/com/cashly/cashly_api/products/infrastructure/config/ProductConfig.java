@@ -1,15 +1,13 @@
 package com.cashly.cashly_api.products.infrastructure.config;
 
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
-import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
+import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeGateway;
 import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.application.usecases.*;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductWarehouseStockGateway;
+import com.cashly.cashly_api.products.application.contracts.CustomerProductContextGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,31 +21,31 @@ public class ProductConfig {
 
     @Bean
     public CreateProductUseCase createProductUseCase(ProductRepository productRepository,
-                                                      CategoryRepository categoryRepository,
-                                                      PriceTypeRepository priceTypeRepository,
+                                                      ProductCategoryGateway categoryRepository,
+                                                      ProductPriceTypeGateway priceTypeRepository,
                                                       ProductMapper productMapper) {
         return new CreateProductUseCase(productRepository, categoryRepository, priceTypeRepository, productMapper);
     }
 
     @Bean
     public GetProductUseCase getProductUseCase(ProductRepository productRepository,
-                                               CategoryRepository categoryRepository,
-                                               PriceTypeRepository priceTypeRepository,
+                                               ProductCategoryGateway categoryRepository,
+                                               ProductPriceTypeGateway priceTypeRepository,
                                                ProductMapper productMapper) {
         return new GetProductUseCase(productRepository, categoryRepository, priceTypeRepository, productMapper);
     }
 
     @Bean
     public ListProductsUseCase listProductsUseCase(ProductRepository productRepository,
-                                                    CategoryRepository categoryRepository,
+                                                    ProductCategoryGateway categoryRepository,
                                                     ProductMapper productMapper) {
         return new ListProductsUseCase(productRepository, categoryRepository, productMapper);
     }
 
     @Bean
     public UpdateProductUseCase updateProductUseCase(ProductRepository productRepository,
-                                                      CategoryRepository categoryRepository,
-                                                      PriceTypeRepository priceTypeRepository,
+                                                      ProductCategoryGateway categoryRepository,
+                                                      ProductPriceTypeGateway priceTypeRepository,
                                                       ProductMapper productMapper) {
         return new UpdateProductUseCase(productRepository, categoryRepository, priceTypeRepository, productMapper);
     }
@@ -59,35 +57,31 @@ public class ProductConfig {
 
     @Bean
     public UploadProductPhotoUseCase uploadProductPhotoUseCase(ProductRepository productRepository,
-                                                                CategoryRepository categoryRepository,
-                                                                PriceTypeRepository priceTypeRepository,
-                                                                FileStorageService fileStorageService,
+                                                                ProductCategoryGateway categoryRepository,
+                                                                ProductPriceTypeGateway priceTypeRepository,
+                                                                ProductFileStorageGateway fileStorageService,
                                                                 ProductMapper productMapper) {
         return new UploadProductPhotoUseCase(productRepository, categoryRepository, priceTypeRepository, fileStorageService, productMapper);
     }
 
     @Bean
     public RemoveProductPhotoUseCase removeProductPhotoUseCase(ProductRepository productRepository,
-                                                                FileStorageService fileStorageService) {
+                                                                ProductFileStorageGateway fileStorageService) {
         return new RemoveProductPhotoUseCase(productRepository, fileStorageService);
     }
 
     @Bean
     public GetProductStockUseCase getProductStockUseCase(ProductRepository productRepository,
-                                                          WarehouseStockRepository warehouseStockRepository,
-                                                          WarehouseRepository warehouseRepository) {
-        return new GetProductStockUseCase(productRepository, warehouseStockRepository, warehouseRepository);
+                                                          ProductWarehouseStockGateway stocks) {
+        return new GetProductStockUseCase(productRepository, stocks);
     }
 
     @Bean
     public GetProductsForTransactionUseCase getProductsForTransactionUseCase(
-            CustomerRepository customerRepository,
-            CustomerWarehouseAccessRepository customerWarehouseAccessRepository,
+            CustomerProductContextGateway customers,
             ProductRepository productRepository,
-            CategoryRepository categoryRepository,
-            WarehouseStockRepository warehouseStockRepository,
-            WarehouseRepository warehouseRepository) {
-        return new GetProductsForTransactionUseCase(customerRepository, customerWarehouseAccessRepository,
-                productRepository, categoryRepository, warehouseStockRepository, warehouseRepository);
+            ProductCategoryGateway categoryRepository,
+            ProductWarehouseStockGateway stocks) {
+        return new GetProductsForTransactionUseCase(customers, productRepository, categoryRepository, stocks);
     }
 }

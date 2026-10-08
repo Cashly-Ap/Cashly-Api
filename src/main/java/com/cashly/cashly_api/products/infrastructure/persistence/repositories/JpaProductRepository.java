@@ -1,25 +1,28 @@
 package com.cashly.cashly_api.products.infrastructure.persistence.repositories;
 
-import com.cashly.cashly_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
-import com.cashly.cashly_api.price_types.infrastructure.persistence.repositories.SpringDataPriceTypeRepository;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.products.domain.entities.Product;
+import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeExistenceGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductStockFilterGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductReferenceGateway;
+import com.cashly.cashly_api.products.domain.exceptions.ProductReferencedException;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 import com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductCodeSequenceEntity;
 import com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 public class JpaProductRepository implements ProductRepository {
@@ -30,14 +33,20 @@ public class JpaProductRepository implements ProductRepository {
 
     private final SpringDataProductRepository springDataRepository;
     private final SpringDataProductCodeSequenceRepository codeSequenceRepository;
-    private final SpringDataPriceTypeRepository springDataPriceTypeRepository;
+    private final ProductPriceTypeExistenceGateway priceTypes;
+    private final ProductStockFilterGateway stockFilter;
+    private final ProductReferenceGateway references;
 
     public JpaProductRepository(SpringDataProductRepository springDataRepository,
                                  SpringDataProductCodeSequenceRepository codeSequenceRepository,
-                                 SpringDataPriceTypeRepository springDataPriceTypeRepository) {
+                                ProductPriceTypeExistenceGateway priceTypes,
+                                ProductStockFilterGateway stockFilter,
+                                ProductReferenceGateway references) {
         this.springDataRepository = springDataRepository;
         this.codeSequenceRepository = codeSequenceRepository;
-        this.springDataPriceTypeRepository = springDataPriceTypeRepository;
+        this.priceTypes = priceTypes;
+        this.stockFilter = stockFilter;
+        this.references = references;
     }
 
     @Override
@@ -48,22 +57,22 @@ public class JpaProductRepository implements ProductRepository {
                     entity.getComponents().clear();
                     entity.getProductPrices().clear();
                     springDataRepository.saveAndFlush(entity);
-                    Map<UUID, PriceTypeEntity> priceTypeMap = resolvePriceTypeMap(product.getProductPrices());
-                    entity.updateFromDomain(product, priceTypeMap);
+                    Set<UUID> existingPriceTypeIds = resolveExistingPriceTypeIds(product.getProductPrices());
+                    entity.updateFromDomain(product, existingPriceTypeIds);
                     return springDataRepository.save(entity).toDomain();
                 })
                 .orElseGet(() -> {
                     ProductEntity entity = ProductEntity.fromDomain(product);
                     entity.setId(UUID.randomUUID());
-                    Map<UUID, PriceTypeEntity> priceTypeMap = resolvePriceTypeMap(product.getProductPrices());
-                    entity.applyPrices(product.getProductPrices(), priceTypeMap);
+                    Set<UUID> existingPriceTypeIds = resolveExistingPriceTypeIds(product.getProductPrices());
+                    entity.applyPrices(product.getProductPrices(), existingPriceTypeIds);
                     return springDataRepository.save(entity).toDomain();
                 });
         }
         ProductEntity entity = ProductEntity.fromDomain(product);
         entity.setId(UUID.randomUUID());
-        Map<UUID, PriceTypeEntity> priceTypeMap = resolvePriceTypeMap(product.getProductPrices());
-        entity.applyPrices(product.getProductPrices(), priceTypeMap);
+        Set<UUID> existingPriceTypeIds = resolveExistingPriceTypeIds(product.getProductPrices());
+        entity.applyPrices(product.getProductPrices(), existingPriceTypeIds);
         return springDataRepository.save(entity).toDomain();
     }
 
@@ -100,7 +109,7 @@ public class JpaProductRepository implements ProductRepository {
             search, categoryId, active, composite, pageable);
 
         Page<Product> mapped = result.map(ProductEntity::toDomain);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 
     @Override
@@ -109,16 +118,32 @@ public class JpaProductRepository implements ProductRepository {
                                                   int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
 
-        Page<ProductEntity> result = springDataRepository.findAllForOrder(
-                search, categoryId, composite, withStock, allowedWarehouseIds, pageable);
+        Page<ProductEntity> result;
+        if (withStock == null) {
+            result = springDataRepository.findAllForOrder(search, categoryId, composite, pageable);
+        } else {
+            Set<UUID> productIds = stockFilter.availableProductIds(allowedWarehouseIds);
+            if (productIds.isEmpty()) {
+                result = withStock ? Page.empty(pageable)
+                        : springDataRepository.findAllForOrder(search, categoryId, composite, pageable);
+            } else {
+                result = withStock
+                        ? springDataRepository.findAllForOrderWithStock(search, categoryId, composite, productIds, pageable)
+                        : springDataRepository.findAllForOrderWithoutStock(search, categoryId, composite, productIds, pageable);
+            }
+        }
 
         Page<Product> mapped = result.map(ProductEntity::toDomain);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 
     @Override
     public void delete(UUID id) {
-        springDataRepository.deleteById(id);
+        try {
+            springDataRepository.deleteById(id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ProductReferencedException(id, exception);
+        }
     }
 
     @Override
@@ -131,7 +156,14 @@ public class JpaProductRepository implements ProductRepository {
         if (ids == null || ids.isEmpty()) {
             return Set.of();
         }
-        return springDataRepository.findProductIdsWithReferences(ids);
+        Set<UUID> referenced = new HashSet<>(springDataRepository.findProductIdsWithComponentReferences(ids));
+        referenced.addAll(references.findReferencedProductIds(ids));
+        return Set.copyOf(referenced);
+    }
+
+    @Override
+    public Set<UUID> findIdsByCategoryId(UUID categoryId) {
+        return Set.copyOf(springDataRepository.findIdsByCategoryId(categoryId));
     }
 
     @Override
@@ -140,15 +172,14 @@ public class JpaProductRepository implements ProductRepository {
         return String.format(CODE_FORMAT, sequence.getId());
     }
 
-    private Map<UUID, PriceTypeEntity> resolvePriceTypeMap(List<ProductPrice> prices) {
+    private Set<UUID> resolveExistingPriceTypeIds(List<ProductPrice> prices) {
         if (prices == null || prices.isEmpty()) {
-            return Map.of();
+            return Set.of();
         }
         List<UUID> priceTypeIds = prices.stream()
             .map(ProductPrice::getPriceTypeId)
             .distinct()
             .toList();
-        return springDataPriceTypeRepository.findAllById(priceTypeIds).stream()
-            .collect(Collectors.toMap(PriceTypeEntity::getId, Function.identity()));
+        return priceTypes.existingIds(priceTypeIds);
     }
 }

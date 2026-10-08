@@ -9,11 +9,15 @@ import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundExce
 import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.BeforeEach;
+import com.cashly.cashly_api.products.infrastructure.integration.LocalProductCategoryGatewayAdapter;
+import com.cashly.cashly_api.products.infrastructure.integration.LocalProductPriceTypeGatewayAdapter;
+import com.cashly.cashly_api.categories.application.queries.RepositoryProductCategoryQuery;
+import com.cashly.cashly_api.price_types.application.queries.RepositoryProductPriceTypeQuery;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -43,13 +47,17 @@ class UploadProductPhotoUseCaseTest {
     private PriceTypeRepository priceTypeRepository;
 
     @Mock
-    private FileStorageService fileStorageService;
+    private ProductFileStorageGateway fileStorageService;
 
     @Mock
     private ProductMapper productMapper;
 
-    @InjectMocks
     private UploadProductPhotoUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new UploadProductPhotoUseCase(productRepository, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categoryRepository)), new LocalProductPriceTypeGatewayAdapter(new RepositoryProductPriceTypeQuery(priceTypeRepository)), fileStorageService, productMapper);
+    }
 
     @Test
     void should_UploadPhoto_When_ProductExists() {
@@ -132,7 +140,24 @@ class UploadProductPhotoUseCaseTest {
         ProductDetailResponse result = useCase.execute(productId, "new-photo.jpg", inputStream, "image/jpeg");
 
         assertNotNull(result);
-        verify(fileStorageService).delete("products/old-photo.jpg");
+        verify(fileStorageService).remove("products/old-photo.jpg");
         verify(fileStorageService).store(eq("products/new-photo.jpg"), any(InputStream.class), eq("image/jpeg"));
+    }
+
+    @Test
+    void should_PropagateStorageFailure_WithoutSavingProduct() {
+        UUID productId = UUID.randomUUID();
+        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
+                UUID.randomUUID(), false, true, null, new BigDecimal("5.00"),
+                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        var failure = new IllegalStateException("Storage unavailable");
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(fileStorageService.store(anyString(), any(InputStream.class), anyString())).thenThrow(failure);
+
+        IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                () -> useCase.execute(productId, "image.jpg", new ByteArrayInputStream(new byte[0]), "image/jpeg"));
+
+        assertSame(failure, thrown);
+        verify(productRepository, never()).save(any());
     }
 }

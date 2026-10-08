@@ -3,7 +3,7 @@ package com.cashly.cashly_api.products.application.usecases;
 import com.cashly.cashly_api.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import org.springframework.dao.DataIntegrityViolationException;
+import com.cashly.cashly_api.products.domain.exceptions.ProductReferencedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class DeleteProductUseCase {
 
         try {
             productRepository.delete(id);
-        } catch (DataIntegrityViolationException e) {
+        } catch (ProductReferencedException e) {
             throw new ProductHasAssociatedRecordsException(id);
         }
     }

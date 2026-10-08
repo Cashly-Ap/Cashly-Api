@@ -8,7 +8,6 @@ import com.cashly.cashly_api.products.application.dto.response.ProductStockByWar
 import com.cashly.cashly_api.products.application.usecases.*;
 import com.cashly.cashly_api.products.application.dto.response.ProductWithStockResponse;
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +32,6 @@ public class ProductController {
     private final UploadProductPhotoUseCase uploadProductPhotoUseCase;
     private final RemoveProductPhotoUseCase removeProductPhotoUseCase;
     private final GetProductStockUseCase getProductStockUseCase;
-    private final FileStorageService fileStorageService;
     private final GetProductsForTransactionUseCase getProductsForTransactionUseCase;
 
     public ProductController(CreateProductUseCase createProductUseCase,
@@ -44,7 +42,6 @@ public class ProductController {
                               UploadProductPhotoUseCase uploadProductPhotoUseCase,
                               RemoveProductPhotoUseCase removeProductPhotoUseCase,
                               GetProductStockUseCase getProductStockUseCase,
-                              FileStorageService fileStorageService,
                               GetProductsForTransactionUseCase getProductsForTransactionUseCase) {
         this.createProductUseCase = createProductUseCase;
         this.getProductUseCase = getProductUseCase;
@@ -54,7 +51,6 @@ public class ProductController {
         this.uploadProductPhotoUseCase = uploadProductPhotoUseCase;
         this.removeProductPhotoUseCase = removeProductPhotoUseCase;
         this.getProductStockUseCase = getProductStockUseCase;
-        this.fileStorageService = fileStorageService;
         this.getProductsForTransactionUseCase = getProductsForTransactionUseCase;
     }
 

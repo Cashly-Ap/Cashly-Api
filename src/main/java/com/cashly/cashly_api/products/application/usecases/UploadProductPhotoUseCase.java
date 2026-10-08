@@ -6,9 +6,9 @@ import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
+import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
+import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
@@ -19,15 +19,15 @@ import java.util.stream.Collectors;
 public class UploadProductPhotoUseCase {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final PriceTypeRepository priceTypeRepository;
-    private final FileStorageService fileStorageService;
+    private final ProductCategoryGateway categoryRepository;
+    private final ProductPriceTypeGateway priceTypeRepository;
+    private final ProductFileStorageGateway fileStorageService;
     private final ProductMapper productMapper;
 
     public UploadProductPhotoUseCase(ProductRepository productRepository,
-                                      CategoryRepository categoryRepository,
-                                      PriceTypeRepository priceTypeRepository,
-                                      FileStorageService fileStorageService,
+                                      ProductCategoryGateway categoryRepository,
+                                      ProductPriceTypeGateway priceTypeRepository,
+                                      ProductFileStorageGateway fileStorageService,
                                       ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
@@ -43,7 +43,7 @@ public class UploadProductPhotoUseCase {
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         if (product.getPhoto() != null) {
-            fileStorageService.delete(product.getPhoto());
+            fileStorageService.remove(product.getPhoto());
         }
 
         String storedPath = fileStorageService.store(
@@ -53,7 +53,7 @@ public class UploadProductPhotoUseCase {
         Product saved = productRepository.save(product);
 
         String categoryName = categoryRepository.findById(saved.getCategoryId())
-                .map(c -> c.getName())
+                .map(c -> c.name())
                 .orElse("");
 
         Map<UUID, Product> componentProducts = saved.getComponents().stream()
@@ -65,7 +65,7 @@ public class UploadProductPhotoUseCase {
                 .collect(Collectors.toMap(
                     ProductPrice::getPriceTypeId,
                     pp -> priceTypeRepository.findById(pp.getPriceTypeId())
-                        .map(pt -> pt.getName())
+                        .map(pt -> pt.name())
                         .orElse("")
                 ));
 

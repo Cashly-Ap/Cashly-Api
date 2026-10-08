@@ -46,6 +46,9 @@ class JpaProductRepositoryTest {
     @Mock
     private SpringDataPriceTypeRepository springDataPriceTypeRepository;
 
+    @Mock
+    private com.cashly.cashly_api.products.application.contracts.ProductStockFilterGateway stockFilter;
+
     @Captor
     private ArgumentCaptor<ProductEntity> entityCaptor;
 
@@ -53,7 +56,10 @@ class JpaProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new JpaProductRepository(springDataRepository, codeSequenceRepository, springDataPriceTypeRepository);
+                adapter = new JpaProductRepository(springDataRepository, codeSequenceRepository,
+                new com.cashly.cashly_api.products.infrastructure.integration.LocalProductPriceTypeExistenceGatewayAdapter(
+                        new com.cashly.cashly_api.price_types.infrastructure.queries.JpaProductPriceTypeExistenceQuery(
+                                springDataPriceTypeRepository)), stockFilter, mock(com.cashly.cashly_api.products.application.contracts.ProductReferenceGateway.class));
     }
 
     @Nested
@@ -499,19 +505,18 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllForOrder(
-                    any(), any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllForOrderWithStock(any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             Set<UUID> warehouseIds = Set.of(UUID.randomUUID());
+            when(stockFilter.availableProductIds(warehouseIds)).thenReturn(Set.of(UUID.randomUUID()));
             PageResponse<Product> result = adapter.findAllForOrder(
                     null, null, null, true, warehouseIds, 0, 20);
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
-            verify(springDataRepository).findAllForOrder(
-                    any(), any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllForOrderWithStock(any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -530,8 +535,7 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            when(springDataRepository.findAllForOrder(
-                    any(), any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllForOrder(any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             PageResponse<Product> result = adapter.findAllForOrder(
@@ -540,8 +544,7 @@ class JpaProductRepositoryTest {
             assertNotNull(result);
             assertTrue(result.empty());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllForOrder(
-                    any(), any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllForOrder(any(), any(), any(), any(PageRequest.class));
         }
     }
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
+import com.cashly.cashly_api.products.domain.exceptions.ProductReferencedException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -66,7 +66,7 @@ class DeleteProductUseCaseTest {
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        doThrow(new DataIntegrityViolationException("FK constraint"))
+        doThrow(new ProductReferencedException(id, new RuntimeException("FK constraint")))
                 .when(productRepository).delete(id);
 
         assertThrows(ProductHasAssociatedRecordsException.class, () -> useCase.execute(id));
