@@ -1,8 +1,5 @@
 package com.cashly.cashly_api.warehouses.application.usecases;
 
-import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.warehouses.application.dto.request.TransferStockRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.InsufficientStockException;
@@ -21,22 +18,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway.CatalogProduct;
 
 public class TransferStockUseCase {
 
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
-    private final ProductRepository productRepository;
+    private final StockCatalogGateway catalog;
 
     public TransferStockUseCase(WarehouseRepository warehouseRepository,
                                  WarehouseStockRepository warehouseStockRepository,
                                  StockMovementRepository stockMovementRepository,
-                                 ProductRepository productRepository) {
+                                 StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
-        this.productRepository = productRepository;
+        this.catalog = catalog;
     }
 
     @Transactional
@@ -49,16 +52,23 @@ public class TransferStockUseCase {
                 .orElseThrow(() -> new WarehouseNotFoundException(request.destinationWarehouseId()));
         if (!destination.isActive()) throw new WarehouseNotActiveException(request.destinationWarehouseId());
 
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ProductNotFoundException(request.productId()));
+        CatalogProduct product = catalog.getProduct(request.productId());
 
-        
-        WarehouseStock sourceStock = warehouseStockRepository
-                .findByWarehouseIdAndProductId(sourceWarehouseId, product.getId())
-                .orElseThrow(() -> new ProductNotInWarehouseException(product.getId(), sourceWarehouseId));
+        if (!warehouseStockRepository.existsByWarehouseIdAndProductId(sourceWarehouseId, product.id())) {
+            throw new ProductNotInWarehouseException(product.id(), sourceWarehouseId);
+        }
+
+        Map<UUID, WarehouseStock> lockedStocks = new HashMap<>();
+        Stream.of(sourceWarehouseId, request.destinationWarehouseId())
+                .distinct()
+                .sorted(Comparator.naturalOrder())
+                .forEach(warehouseId -> lockedStocks.put(warehouseId,
+                        warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(
+                                warehouseId, product.id())));
+        WarehouseStock sourceStock = lockedStocks.get(sourceWarehouseId);
 
         if (sourceStock.getQuantity() < request.quantity()) {
-            throw new InsufficientStockException(product.getId(), sourceWarehouseId,
+            throw new InsufficientStockException(product.id(), sourceWarehouseId,
                     sourceStock.getQuantity(), request.quantity());
         }
 
@@ -69,31 +79,28 @@ public class TransferStockUseCase {
         WarehouseStock savedSource = warehouseStockRepository.save(sourceStock);
 
         StockMovement outMovement = StockMovement.createWithReference(
-                sourceWarehouseId, product.getId(), MovementType.TRANSFER_OUT,
+                sourceWarehouseId, product.id(), MovementType.TRANSFER_OUT,
                 request.quantity(), sourcePrev, savedSource.getQuantity(),
                 null, batchId, ReferenceType.TRANSFER, null, batchId, request.notes()
         );
         StockMovement savedOut = stockMovementRepository.save(outMovement);
 
-        
-        WarehouseStock destStock = warehouseStockRepository
-                .findByWarehouseIdAndProductId(request.destinationWarehouseId(), product.getId())
-                .orElseGet(() -> WarehouseStock.create(request.destinationWarehouseId(), product.getId()));
+        WarehouseStock destStock = lockedStocks.get(request.destinationWarehouseId());
 
         int destPrev = destStock.getQuantity();
         destStock.addStock(request.quantity());
         WarehouseStock savedDest = warehouseStockRepository.save(destStock);
 
         StockMovement inMovement = StockMovement.createWithReference(
-                request.destinationWarehouseId(), product.getId(), MovementType.TRANSFER_IN,
+                request.destinationWarehouseId(), product.id(), MovementType.TRANSFER_IN,
                 request.quantity(), destPrev, savedDest.getQuantity(),
                 savedOut.getId(), batchId, ReferenceType.TRANSFER, null, batchId, request.notes()
         );
         StockMovement savedIn = stockMovementRepository.save(inMovement);
 
         return List.of(
-                StockMovementResponse.from(savedOut, product.getCode(), product.getName()),
-                StockMovementResponse.from(savedIn, product.getCode(), product.getName())
+                StockMovementResponse.from(savedOut, product.code(), product.name()),
+                StockMovementResponse.from(savedIn, product.code(), product.name())
         );
     }
 }

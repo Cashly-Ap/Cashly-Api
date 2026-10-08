@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;
 import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
@@ -27,7 +29,7 @@ public class JpaStockMovementRepository implements StockMovementRepository {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<StockMovementEntity> result = springDataRepository.findByWarehouseIdAndMovementType(
                 warehouseId, movementType, pageable);
-        return PageResponse.from(result.map(StockMovementEntity::toDomain));
+        return PageResponseMapper.from(result.map(StockMovementEntity::toDomain));
     }
 
     @Override
@@ -37,7 +39,7 @@ public class JpaStockMovementRepository implements StockMovementRepository {
         Page<StockMovementEntity> result =
                 springDataRepository.findByWarehouseIdAndProductIdAndMovementType(
                         warehouseId, productId, movementType, pageable);
-        return PageResponse.from(result.map(StockMovementEntity::toDomain));
+        return PageResponseMapper.from(result.map(StockMovementEntity::toDomain));
     }
 
     @Override
@@ -52,14 +54,14 @@ public class JpaStockMovementRepository implements StockMovementRepository {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<StockMovementEntity> result =
                 springDataRepository.findByWarehouseIdAndProductId(warehouseId, productId, pageable);
-        return PageResponse.from(result.map(StockMovementEntity::toDomain));
+        return PageResponseMapper.from(result.map(StockMovementEntity::toDomain));
     }
 
     @Override
     public PageResponse<StockMovement> findByWarehouseId(UUID warehouseId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<StockMovementEntity> result = springDataRepository.findByWarehouseId(warehouseId, pageable);
-        return PageResponse.from(result.map(StockMovementEntity::toDomain));
+        return PageResponseMapper.from(result.map(StockMovementEntity::toDomain));
     }
 
     @Override

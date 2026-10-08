@@ -2,6 +2,8 @@ package com.cashly.cashly_api.warehouses.application.usecases;
 
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery;
+import com.cashly.cashly_api.warehouses.infrastructure.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
@@ -45,7 +47,7 @@ class GetStockMovementsUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new GetStockMovementsUseCase(warehouseRepository, stockMovementRepository,
-                productRepository);
+                new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
@@ -170,6 +172,20 @@ class GetStockMovementsUseCaseTest {
         verify(stockMovementRepository, never()).findByWarehouseId(any(), anyInt(), anyInt());
     }
 
+    @Test
+    void shouldPreserveUnknownProductLabelsInHistoricalMovements() {
+        StockMovement movement = StockMovement.create(warehouseId, productId, MovementType.ENTRY,
+                10, 0, 10, null, null, "Historical");
+        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(buildActiveWarehouse(warehouseId)));
+        when(stockMovementRepository.findByWarehouseId(warehouseId, 0, 10))
+                .thenReturn(new PageResponse<>(List.of(movement), 1L, 1, 10, 0, true, true, false));
+        var response = useCase.execute(warehouseId, null, null, 0, 10);
+        assertEquals("UNKNOWN", response.content().getFirst().productCode());
+        assertEquals("Unknown", response.content().getFirst().productName());
+        assertEquals(MovementType.ENTRY, response.content().getFirst().movementType());
+        assertEquals(1L, response.totalElements());
+        assertEquals(10, response.size());
+    }
     private Warehouse buildActiveWarehouse(UUID id) {
         return Warehouse.reconstitute(
                 id, "WH-001", "Main", "Addr", "State", "Mun", "10001",

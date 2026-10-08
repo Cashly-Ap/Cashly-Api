@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.NoSuchElementException;
 
 @Component
 public class JpaWarehouseStockRepository implements WarehouseStockRepository {
@@ -43,9 +46,22 @@ public class JpaWarehouseStockRepository implements WarehouseStockRepository {
     }
 
     @Override
+    public boolean existsByWarehouseIdAndProductId(UUID warehouseId, UUID productId) {
+        return springDataRepository.existsByWarehouseIdAndProductId(warehouseId, productId);
+    }
+
+    @Override
     public Optional<WarehouseStock> findByWarehouseIdAndProductIdForUpdate(UUID warehouseId, UUID productId) {
         return springDataRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)
                 .map(WarehouseStockEntity::toDomain);
+    }
+
+    @Override
+    public WarehouseStock findOrCreateByWarehouseIdAndProductIdForUpdate(UUID warehouseId, UUID productId) {
+        springDataRepository.insertIfMissing(UUID.randomUUID().toString(), warehouseId.toString(), productId.toString());
+        return springDataRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)
+                .map(WarehouseStockEntity::toDomain)
+                .orElseThrow(() -> new NoSuchElementException("Stock row was not available after creation"));
     }
 
     @Override
@@ -58,7 +74,7 @@ public class JpaWarehouseStockRepository implements WarehouseStockRepository {
     public PageResponse<WarehouseStock> findByWarehouseIdPaged(UUID warehouseId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("productId").ascending());
         Page<WarehouseStockEntity> result = springDataRepository.findByWarehouseId(warehouseId, pageable);
-        return PageResponse.from(result.map(WarehouseStockEntity::toDomain));
+        return PageResponseMapper.from(result.map(WarehouseStockEntity::toDomain));
     }
 
     @Override

@@ -337,6 +337,28 @@ class JpaWarehouseStockRepositoryTest {
     }
 
     @Nested
+    @DisplayName("FindOrCreateByWarehouseIdAndProductIdForUpdate")
+    class FindOrCreateByWarehouseIdAndProductIdForUpdate {
+
+        @Test
+        void should_insert_missing_row_then_return_it_locked() {
+            UUID warehouseId = UUID.randomUUID();
+            UUID productId = UUID.randomUUID();
+            WarehouseStockEntity entity = WarehouseStockEntity.fromDomain(
+                    WarehouseStock.create(warehouseId, productId));
+            when(springDataRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                    .thenReturn(java.util.Optional.of(entity));
+
+            WarehouseStock result = adapter.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
+
+            assertEquals(warehouseId, result.getWarehouseId());
+            assertEquals(productId, result.getProductId());
+            verify(springDataRepository).insertIfMissing(anyString(), eq(warehouseId.toString()), eq(productId.toString()));
+            verify(springDataRepository).findByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
+        }
+    }
+
+    @Nested
     @DisplayName("ExistsByProductId")
     class ExistsByProductId {
 

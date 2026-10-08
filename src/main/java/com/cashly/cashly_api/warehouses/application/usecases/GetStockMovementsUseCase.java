@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.usecases;
 
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
@@ -15,14 +15,14 @@ public class GetStockMovementsUseCase {
 
     private final WarehouseRepository warehouseRepository;
     private final StockMovementRepository stockMovementRepository;
-    private final ProductRepository productRepository;
+    private final StockCatalogGateway catalog;
 
     public GetStockMovementsUseCase(WarehouseRepository warehouseRepository,
                                      StockMovementRepository stockMovementRepository,
-                                     ProductRepository productRepository) {
+                                     StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.stockMovementRepository = stockMovementRepository;
-        this.productRepository = productRepository;
+        this.catalog = catalog;
     }
 
     public PageResponse<StockMovementResponse> execute(UUID warehouseId, UUID productId,
@@ -36,9 +36,9 @@ public class GetStockMovementsUseCase {
 
         return new PageResponse<>(
                 result.content().stream().map(m -> {
-                    var product = productRepository.findById(m.getProductId());
-                    String code = product.map(p -> p.getCode()).orElse("UNKNOWN");
-                    String name = product.map(p -> p.getName()).orElse("Unknown");
+                    var product = catalog.findProduct(m.getProductId());
+                    String code = product.map(p -> p.code()).orElse("UNKNOWN");
+                    String name = product.map(p -> p.name()).orElse("Unknown");
                     return StockMovementResponse.from(m, code, name);
                 }).toList(),
                 result.totalElements(),

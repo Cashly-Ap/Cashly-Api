@@ -4,6 +4,8 @@ import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundExce
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.entities.ProductComponent;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery;
+import com.cashly.cashly_api.warehouses.infrastructure.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockEntryRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
@@ -55,7 +57,7 @@ class StockEntryUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new StockEntryUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
@@ -72,8 +74,8 @@ class StockEntryUseCaseTest {
 
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(stock);
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
         when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
             StockMovement m = inv.getArgument(0);
@@ -92,6 +94,8 @@ class StockEntryUseCaseTest {
         assertEquals("PROD-001", response.get(0).productCode());
         assertEquals("Test Product", response.get(0).productName());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
+        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
         verify(stockMovementRepository).save(any(StockMovement.class));
     }
 
@@ -154,10 +158,10 @@ class StockEntryUseCaseTest {
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
         when(productRepository.findById(productId)).thenReturn(Optional.of(composite));
         when(productRepository.findById(componentId)).thenReturn(Optional.of(component));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, componentId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, componentId))
                 .thenReturn(Optional.of(componentStock));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(mainStock));
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(mainStock);
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
         when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
             StockMovement m = inv.getArgument(0);
@@ -197,7 +201,7 @@ class StockEntryUseCaseTest {
 
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
         when(productRepository.findById(productId)).thenReturn(Optional.of(composite));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, componentId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, componentId))
                 .thenReturn(Optional.of(componentStock));
 
         assertThrows(InsufficientStockException.class, () -> useCase.execute(warehouseId, request));

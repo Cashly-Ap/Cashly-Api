@@ -3,6 +3,8 @@ package com.cashly.cashly_api.warehouses.application.usecases;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery;
+import com.cashly.cashly_api.warehouses.infrastructure.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.dto.request.TransferStockRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.InsufficientStockException;
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.InOrder;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -55,7 +58,7 @@ class TransferStockUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new TransferStockUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
@@ -74,10 +77,9 @@ class TransferStockUseCaseTest {
         when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
         when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(sourceId, productId))
-                .thenReturn(Optional.of(sourceStock));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(destId, productId))
-                .thenReturn(Optional.of(destStock));
+        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId, productId)).thenReturn(true);
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(any(), eq(productId)))
+                .thenAnswer(invocation -> invocation.getArgument(0).equals(sourceId) ? sourceStock : destStock);
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
         when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
             StockMovement m = inv.getArgument(0);
@@ -98,6 +100,12 @@ class TransferStockUseCaseTest {
         assertEquals(80, response.get(0).newStock());
         assertEquals(20, response.get(1).newStock());
         verify(stockMovementRepository, times(2)).save(any(StockMovement.class));
+        verify(warehouseStockRepository).existsByWarehouseIdAndProductId(sourceId, productId);
+        UUID firstLock = sourceId.compareTo(destId) < 0 ? sourceId : destId;
+        UUID secondLock = sourceId.compareTo(destId) < 0 ? destId : sourceId;
+        InOrder lockOrder = inOrder(warehouseStockRepository);
+        lockOrder.verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(firstLock, productId);
+        lockOrder.verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(secondLock, productId);
     }
 
     @Test
@@ -171,8 +179,7 @@ class TransferStockUseCaseTest {
         when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
         when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(sourceId, productId))
-                .thenReturn(Optional.empty());
+        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId, productId)).thenReturn(false);
 
         assertThrows(ProductNotInWarehouseException.class, () -> useCase.execute(sourceId, request));
     }
@@ -192,8 +199,9 @@ class TransferStockUseCaseTest {
         when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
         when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(sourceId, productId))
-                .thenReturn(Optional.of(sourceStock));
+        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId, productId)).thenReturn(true);
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(any(), eq(productId)))
+                .thenAnswer(invocation -> invocation.getArgument(0).equals(sourceId) ? sourceStock : WarehouseStock.create(destId, productId));
 
         assertThrows(InsufficientStockException.class, () -> useCase.execute(sourceId, request));
     }

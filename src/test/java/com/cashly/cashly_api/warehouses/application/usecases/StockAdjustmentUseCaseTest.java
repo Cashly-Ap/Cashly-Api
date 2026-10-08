@@ -3,6 +3,8 @@ package com.cashly.cashly_api.warehouses.application.usecases;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery;
+import com.cashly.cashly_api.warehouses.infrastructure.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockAdjustmentRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotActiveException;
@@ -52,7 +54,7 @@ class StockAdjustmentUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new StockAdjustmentUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
@@ -67,8 +69,8 @@ class StockAdjustmentUseCaseTest {
 
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(stock);
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
         when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
             StockMovement m = inv.getArgument(0);
@@ -85,6 +87,8 @@ class StockAdjustmentUseCaseTest {
         assertEquals(75, response.newStock());
         assertEquals("PROD-001", response.productCode());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
+        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
         verify(stockMovementRepository).save(any(StockMovement.class));
     }
 
@@ -131,8 +135,8 @@ class StockAdjustmentUseCaseTest {
 
         when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.empty());
+        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(WarehouseStock.create(warehouseId, productId));
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
         when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
             StockMovement m = inv.getArgument(0);
@@ -148,6 +152,8 @@ class StockAdjustmentUseCaseTest {
         assertEquals(MovementType.ADJUSTMENT, response.movementType());
         assertEquals(30, response.newStock());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
+        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
+        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
     }
 
     private Warehouse buildActiveWarehouse(UUID id) {

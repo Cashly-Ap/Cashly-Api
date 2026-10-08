@@ -1,9 +1,11 @@
 package com.cashly.cashly_api.warehouses.infrastructure.config;
 
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+
+
 import com.cashly.cashly_api.warehouses.application.usecases.*;
+import com.cashly.cashly_api.warehouses.application.api.InvoiceInventoryApi;
+import com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -12,6 +14,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WarehouseConfig {
+    @Bean
+    public InvoiceInventoryApi invoiceInventoryApi(
+            WarehouseStockRepository stocks, StockMovementRepository movements) {
+        return new InvoiceInventoryService(stocks, movements);
+    }
 
     @Bean
     public CreateWarehouseUseCase createWarehouseUseCase(WarehouseRepository warehouseRepository) {
@@ -42,57 +49,51 @@ public class WarehouseConfig {
     public StockEntryUseCase stockEntryUseCase(WarehouseRepository warehouseRepository,
                                                 WarehouseStockRepository warehouseStockRepository,
                                                 StockMovementRepository stockMovementRepository,
-                                                ProductRepository productRepository) {
+                                                StockCatalogGateway catalog) {
         return new StockEntryUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, catalog);
     }
 
     @Bean
     public StockExitUseCase stockExitUseCase(WarehouseRepository warehouseRepository,
                                               WarehouseStockRepository warehouseStockRepository,
                                               StockMovementRepository stockMovementRepository,
-                                              ProductRepository productRepository) {
+                                              StockCatalogGateway catalog) {
         return new StockExitUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, catalog);
     }
 
     @Bean
     public StockAdjustmentUseCase stockAdjustmentUseCase(WarehouseRepository warehouseRepository,
                                                           WarehouseStockRepository warehouseStockRepository,
                                                           StockMovementRepository stockMovementRepository,
-                                                          ProductRepository productRepository) {
+                                                          StockCatalogGateway catalog) {
         return new StockAdjustmentUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, catalog);
     }
 
     @Bean
     public TransferStockUseCase transferStockUseCase(WarehouseRepository warehouseRepository,
                                                       WarehouseStockRepository warehouseStockRepository,
                                                       StockMovementRepository stockMovementRepository,
-                                                      ProductRepository productRepository) {
+                                                      StockCatalogGateway catalog) {
         return new TransferStockUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, productRepository);
+                stockMovementRepository, catalog);
     }
 
     @Bean
     public GetWarehouseStockUseCase getWarehouseStockUseCase(WarehouseRepository warehouseRepository,
                                                               WarehouseStockRepository warehouseStockRepository,
-                                                              ProductRepository productRepository) {
-        return new GetWarehouseStockUseCase(warehouseRepository, warehouseStockRepository, productRepository);
+                                                              StockCatalogGateway catalog) {
+        return new GetWarehouseStockUseCase(warehouseRepository, warehouseStockRepository, catalog);
     }
 
     @Bean
     public GetStockMovementsUseCase getStockMovementsUseCase(WarehouseRepository warehouseRepository,
                                                                StockMovementRepository stockMovementRepository,
-                                                               ProductRepository productRepository) {
-        return new GetStockMovementsUseCase(warehouseRepository, stockMovementRepository, productRepository);
+                                                               StockCatalogGateway catalog) {
+        return new GetStockMovementsUseCase(warehouseRepository, stockMovementRepository, catalog);
     }
 
-    @Bean
-    public StockEnrichmentService stockEnrichmentService(WarehouseStockRepository warehouseStockRepository,
-                                                           WarehouseRepository warehouseRepository,
-                                                           CustomerWarehouseAccessRepository customerWarehouseAccessRepository) {
-        return new StockEnrichmentService(warehouseStockRepository, warehouseRepository,
-                customerWarehouseAccessRepository);
-    }
+
 }

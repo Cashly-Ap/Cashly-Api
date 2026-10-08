@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
@@ -63,7 +65,7 @@ public class JpaWarehouseRepository implements WarehouseRepository {
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         Page<WarehouseEntity> result = springDataRepository.findAllWithFilters(search, active, pageable);
-        return PageResponse.from(result.map(WarehouseEntity::toDomain));
+        return PageResponseMapper.from(result.map(WarehouseEntity::toDomain));
     }
 
     @Override

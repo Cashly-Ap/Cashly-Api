@@ -11,7 +11,10 @@ import java.util.UUID;
 public interface WarehouseStockRepository {
     WarehouseStock save(WarehouseStock stock);
     Optional<WarehouseStock> findByWarehouseIdAndProductId(UUID warehouseId, UUID productId);
+
+    boolean existsByWarehouseIdAndProductId(UUID warehouseId, UUID productId);
     Optional<WarehouseStock> findByWarehouseIdAndProductIdForUpdate(UUID warehouseId, UUID productId);
+    WarehouseStock findOrCreateByWarehouseIdAndProductIdForUpdate(UUID warehouseId, UUID productId);
     List<WarehouseStock> findByWarehouseId(UUID warehouseId);
     List<WarehouseStock> findByProductId(UUID productId);
     List<WarehouseStock> findAllByProductIdIn(Set<UUID> productIds);

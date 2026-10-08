@@ -19,9 +19,21 @@ public interface SpringDataWarehouseStockRepository extends JpaRepository<Wareho
 
     Optional<WarehouseStockEntity> findByWarehouseIdAndProductId(UUID warehouseId, UUID productId);
 
+    boolean existsByWarehouseIdAndProductId(UUID warehouseId, UUID productId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT w FROM WarehouseStockEntity w WHERE w.warehouseId = :warehouseId AND w.productId = :productId")
     Optional<WarehouseStockEntity> findByWarehouseIdAndProductIdForUpdate(@Param("warehouseId") UUID warehouseId, @Param("productId") UUID productId);
+
+    @Modifying(flushAutomatically = true)
+    @Query(value = """
+            INSERT INTO warehouse_stock (id, warehouse_id, product_id, quantity, reserved, last_movement_at, updated_at)
+            VALUES (UNHEX(REPLACE(:id, '-', '')), UNHEX(REPLACE(:warehouseId, '-', '')),
+                    UNHEX(REPLACE(:productId, '-', '')), 0, 0, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6))
+            ON DUPLICATE KEY UPDATE quantity = quantity
+            """, nativeQuery = true)
+    int insertIfMissing(@Param("id") String id, @Param("warehouseId") String warehouseId,
+                        @Param("productId") String productId);
 
     Page<WarehouseStockEntity> findByWarehouseId(UUID warehouseId, Pageable pageable);
 

@@ -2,6 +2,8 @@ package com.cashly.cashly_api.warehouses.application.usecases;
 
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery;
+import com.cashly.cashly_api.warehouses.infrastructure.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.application.dto.response.WarehouseStockResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
@@ -44,7 +46,7 @@ class GetWarehouseStockUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new GetWarehouseStockUseCase(warehouseRepository, warehouseStockRepository,
-                productRepository);
+                new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test

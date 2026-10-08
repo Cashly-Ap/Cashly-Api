@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.usecases;
 
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.application.dto.response.WarehouseStockResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
@@ -14,14 +14,14 @@ public class GetWarehouseStockUseCase {
 
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final ProductRepository productRepository;
+    private final StockCatalogGateway catalog;
 
     public GetWarehouseStockUseCase(WarehouseRepository warehouseRepository,
                                      WarehouseStockRepository warehouseStockRepository,
-                                     ProductRepository productRepository) {
+                                     StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
-        this.productRepository = productRepository;
+        this.catalog = catalog;
     }
 
     public PageResponse<WarehouseStockResponse> execute(UUID warehouseId, int page, int size) {
@@ -33,10 +33,10 @@ public class GetWarehouseStockUseCase {
 
         return new PageResponse<>(
                 result.content().stream().map(stock -> {
-                    var product = productRepository.findById(stock.getProductId());
-                    String code = product.map(p -> p.getCode()).orElse("UNKNOWN");
-                    String name = product.map(p -> p.getName()).orElse("Unknown");
-                    boolean composite = product.map(p -> p.isComposite()).orElse(false);
+                    var product = catalog.findProduct(stock.getProductId());
+                    String code = product.map(p -> p.code()).orElse("UNKNOWN");
+                    String name = product.map(p -> p.name()).orElse("Unknown");
+                    boolean composite = product.map(p -> p.composite()).orElse(false);
                     return WarehouseStockResponse.from(stock, code, name, composite);
                 }).toList(),
                 result.totalElements(),

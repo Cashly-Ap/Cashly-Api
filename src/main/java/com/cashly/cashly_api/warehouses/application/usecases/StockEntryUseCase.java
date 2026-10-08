@@ -1,9 +1,5 @@
 package com.cashly.cashly_api.warehouses.application.usecases;
 
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.entities.ProductComponent;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockEntryRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
@@ -25,22 +21,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway.CatalogProduct;
 
 public class StockEntryUseCase {
 
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
-    private final ProductRepository productRepository;
+    private final StockCatalogGateway catalog;
 
     public StockEntryUseCase(WarehouseRepository warehouseRepository,
                               WarehouseStockRepository warehouseStockRepository,
                               StockMovementRepository stockMovementRepository,
-                              ProductRepository productRepository) {
+                              StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
-        this.productRepository = productRepository;
+        this.catalog = catalog;
     }
 
     @Transactional
@@ -51,16 +49,15 @@ public class StockEntryUseCase {
             throw new WarehouseNotActiveException(warehouseId);
         }
 
-        Map<UUID, Product> productCache = new HashMap<>();
+        Map<UUID, CatalogProduct> productCache = new HashMap<>();
         List<StockMovementResponse> movements = new ArrayList<>();
 
         for (StockBatchItem item : request.items()) {
-            Product product = productCache.computeIfAbsent(item.productId(), id ->
-                    productRepository.findById(id)
-                            .orElseThrow(() -> new ProductNotFoundException(id))
+            CatalogProduct product = productCache.computeIfAbsent(item.productId(), id ->
+                    catalog.getProduct(id)
             );
 
-            if (product.isComposite()) {
+            if (product.composite()) {
                 processCompositeProduct(warehouseId, item, product, productCache, movements);
             } else {
                 processSimpleProduct(warehouseId, item, product, movements);
@@ -70,38 +67,37 @@ public class StockEntryUseCase {
         return movements;
     }
 
-    private void processSimpleProduct(UUID warehouseId, StockBatchItem item, Product product,
+    private void processSimpleProduct(UUID warehouseId, StockBatchItem item, CatalogProduct product,
                                        List<StockMovementResponse> movements) {
         WarehouseStock stock = warehouseStockRepository
-                .findByWarehouseIdAndProductId(warehouseId, product.getId())
-                .orElseGet(() -> WarehouseStock.create(warehouseId, product.getId()));
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, product.id());
 
         int prevQty = stock.getQuantity();
         stock.addStock(item.quantity());
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
         StockMovement movement = StockMovement.createWithReference(
-                warehouseId, product.getId(), MovementType.ENTRY,
+                warehouseId, product.id(), MovementType.ENTRY,
                 item.quantity(), prevQty, savedStock.getQuantity(),
                 null, null, ReferenceType.MANUAL, null, null, item.notes()
         );
         StockMovement saved = stockMovementRepository.save(movement);
-        movements.add(StockMovementResponse.from(saved, product.getCode(), product.getName()));
+        movements.add(StockMovementResponse.from(saved, product.code(), product.name()));
     }
 
-    private void processCompositeProduct(UUID warehouseId, StockBatchItem item, Product product,
-                                          Map<UUID, Product> productCache,
+    private void processCompositeProduct(UUID warehouseId, StockBatchItem item, CatalogProduct product,
+                                          Map<UUID, CatalogProduct> productCache,
                                           List<StockMovementResponse> movements) {
-        for (ProductComponent component : product.getComponents()) {
-            int required = component.getQuantity() * item.quantity();
+        for (StockCatalogGateway.Component component : product.components()) {
+            int required = component.quantity() * item.quantity();
             WarehouseStock componentStock = warehouseStockRepository
-                    .findByWarehouseIdAndProductId(warehouseId, component.getComponentProductId())
+                    .findByWarehouseIdAndProductIdForUpdate(warehouseId, component.productId())
                     .orElseThrow(() -> new InsufficientStockException(
-                            component.getComponentProductId(), warehouseId, 0, required));
+                            component.productId(), warehouseId, 0, required));
 
             if (componentStock.getQuantity() < required) {
                 throw new InsufficientStockException(
-                        component.getComponentProductId(), warehouseId,
+                        component.productId(), warehouseId,
                         componentStock.getQuantity(), required);
             }
 
@@ -109,36 +105,34 @@ public class StockEntryUseCase {
             componentStock.removeStock(required);
             WarehouseStock savedComponent = warehouseStockRepository.save(componentStock);
 
-            Product componentProduct = productCache.computeIfAbsent(component.getComponentProductId(), id ->
-                    productRepository.findById(id)
-                            .orElseThrow(() -> new ProductNotFoundException(id))
+            CatalogProduct componentProduct = productCache.computeIfAbsent(component.productId(), id ->
+                    catalog.getProduct(id)
             );
 
             StockMovement componentMovement = StockMovement.createWithReference(
-                    warehouseId, component.getComponentProductId(), MovementType.COMPONENT_EXIT,
+                    warehouseId, component.productId(), MovementType.COMPONENT_EXIT,
                     required, prevComponentQty, savedComponent.getQuantity(),
                     null, null, ReferenceType.MANUAL, null, null,
-                    "Component consumed for: " + product.getName()
+                    "Component consumed for: " + product.name()
             );
             StockMovement savedComponentMovement = stockMovementRepository.save(componentMovement);
             movements.add(StockMovementResponse.from(savedComponentMovement,
-                    componentProduct.getCode(), componentProduct.getName()));
+                    componentProduct.code(), componentProduct.name()));
         }
 
         WarehouseStock stock = warehouseStockRepository
-                .findByWarehouseIdAndProductId(warehouseId, product.getId())
-                .orElseGet(() -> WarehouseStock.create(warehouseId, product.getId()));
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, product.id());
 
         int prevQty = stock.getQuantity();
         stock.addStock(item.quantity());
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
         StockMovement movement = StockMovement.createWithReference(
-                warehouseId, product.getId(), MovementType.ENTRY,
+                warehouseId, product.id(), MovementType.ENTRY,
                 item.quantity(), prevQty, savedStock.getQuantity(),
                 null, null, ReferenceType.MANUAL, null, null, item.notes()
         );
         StockMovement saved = stockMovementRepository.save(movement);
-        movements.add(StockMovementResponse.from(saved, product.getCode(), product.getName()));
+        movements.add(StockMovementResponse.from(saved, product.code(), product.name()));
     }
 }

@@ -1,8 +1,5 @@
 package com.cashly.cashly_api.warehouses.application.usecases;
 
-import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockAdjustmentRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
@@ -17,22 +14,24 @@ import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockReposi
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway.CatalogProduct;
 
 public class StockAdjustmentUseCase {
 
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockMovementRepository stockMovementRepository;
-    private final ProductRepository productRepository;
+    private final StockCatalogGateway catalog;
 
     public StockAdjustmentUseCase(WarehouseRepository warehouseRepository,
                                    WarehouseStockRepository warehouseStockRepository,
                                    StockMovementRepository stockMovementRepository,
-                                   ProductRepository productRepository) {
+                                   StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
-        this.productRepository = productRepository;
+        this.catalog = catalog;
     }
 
     @Transactional
@@ -43,12 +42,10 @@ public class StockAdjustmentUseCase {
             throw new WarehouseNotActiveException(warehouseId);
         }
 
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ProductNotFoundException(request.productId()));
+        CatalogProduct product = catalog.getProduct(request.productId());
 
         WarehouseStock stock = warehouseStockRepository
-                .findByWarehouseIdAndProductId(warehouseId, product.getId())
-                .orElseGet(() -> WarehouseStock.create(warehouseId, product.getId()));
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, product.id());
 
         int prevQty = stock.getQuantity();
         int delta = Math.abs(request.newQuantity() - prevQty);
@@ -56,11 +53,11 @@ public class StockAdjustmentUseCase {
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
         StockMovement movement = StockMovement.create(
-                warehouseId, product.getId(), MovementType.ADJUSTMENT,
+                warehouseId, product.id(), MovementType.ADJUSTMENT,
                 delta, prevQty, savedStock.getQuantity(),
                 null, null, request.notes()
         );
         StockMovement saved = stockMovementRepository.save(movement);
-        return StockMovementResponse.from(saved, product.getCode(), product.getName());
+        return StockMovementResponse.from(saved, product.code(), product.name());
     }
 }
