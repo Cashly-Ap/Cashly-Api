@@ -1,5 +1,8 @@
 package com.cashly.cashly_api.auth.authentication.infrastructure.config;
 
+import com.cashly.cashly_api.auth.token.application.contracts.AuthenticableSubjectGateway;
+import com.cashly.cashly_api.auth.token.infrastructure.adapters.LocalAuthenticableSubjectGateway;
+import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticationDomainService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,7 +14,6 @@ import com.cashly.cashly_api.auth.token.domain.repositories.RefreshTokenReposito
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 
 @Configuration
 public class AuthenticationConfig {
@@ -37,17 +39,19 @@ public class AuthenticationConfig {
     }
 
     @Bean
-    public RefreshTokenUseCase refreshTokenUseCase(
-        RefreshTokenRepository refreshTokenRepository,
-        UserRepository userRepository,
-        TokenService tokenService,
-        CustomerRepository customerRepository
-    ) {
-        return new RefreshTokenUseCase(
-            refreshTokenRepository,
-            userRepository,
-            tokenService,
-            customerRepository
-        );
+    public AuthenticationDomainService authenticationDomainService() {
+        return new AuthenticationDomainService();
+    }
+
+    @Bean
+    public AuthenticableSubjectGateway authenticableSubjectGateway(UserRepository userRepository) {
+        return new LocalAuthenticableSubjectGateway(userRepository);
+    }
+
+    @Bean
+    public RefreshTokenUseCase refreshTokenUseCase(RefreshTokenRepository refreshTokenRepository,
+                                                  AuthenticableSubjectGateway subjectGateway,
+                                                  TokenService tokenService) {
+        return new RefreshTokenUseCase(refreshTokenRepository, subjectGateway, tokenService);
     }
 }

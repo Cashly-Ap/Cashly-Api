@@ -21,8 +21,6 @@ import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,14 +35,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
-
     public JwtAuthenticationFilter(TokenService tokenService,
-                                   UserRepository userRepository,
-                                   CustomerRepository customerRepository) {
+                                   UserRepository userRepository) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
-        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -72,10 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         AuthenticableType subjectType = tokenService.extractSubjectType(jwt);
         String subjectId = tokenService.extractSubjectId(jwt);
 
-        switch (subjectType) {
-            case USER -> authenticateUser(request, subjectId);
-            case CUSTOMER -> authenticateCustomer(request, subjectId);
-        }
+        authenticateUser(request, subjectId);
     }
 
     private void authenticateUser(HttpServletRequest request, String subjectId) {
@@ -105,14 +96,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             ));
     }
 
-    private void authenticateCustomer(HttpServletRequest request, String subjectId) {
-        CustomerId customerId = CustomerId.from(subjectId);
-
-        if (customerRepository.isActivePortalAccess(customerId)) {
-            setCustomerAuthentication(request, customerId);
-        }
-    }
-
     private void setUserAuthentication(HttpServletRequest request, String userId, UserRole role,
                                        java.util.Set<BusinessModule> modulePermissions) {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -130,20 +113,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             userId,
-            null,
-            authorities
-        );
-
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private void setCustomerAuthentication(HttpServletRequest request, CustomerId customerId) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_PORTAL_CUSTOMER"));
-
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            customerId.getValue().toString(),
             null,
             authorities
         );

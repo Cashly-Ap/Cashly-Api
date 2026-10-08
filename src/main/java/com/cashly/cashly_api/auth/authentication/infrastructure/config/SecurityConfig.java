@@ -52,31 +52,6 @@ public class SecurityConfig {
 
     @Order(1)
     @Bean
-    public SecurityFilterChain portalSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .securityMatcher("/api/portal/**")
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/portal/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/portal/auth/refresh").permitAll()
-
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-    @Order(2)
-    @Bean
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
@@ -100,10 +75,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/test/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/portal/auth/**").permitAll()
-
-                .requestMatchers("/api/portal/**").hasAuthority("ROLE_PORTAL_CUSTOMER")
-
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

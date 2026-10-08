@@ -9,9 +9,6 @@ import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
-import com.cashly.cashly_api.customers.domain.entities.Customer;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,9 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -47,9 +41,6 @@ class JwtAuthenticationFilterUnitTest {
     private UserRepository userRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
-
-    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -62,31 +53,18 @@ class JwtAuthenticationFilterUnitTest {
 
     private User testUser;
     private UserId testUserId;
-    private Customer testCustomer;
-    private CustomerId testCustomerId;
     private String validToken;
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
 
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userRepository, customerRepository);
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userRepository);
 
         testUserId = UserId.generate();
         Email email = new Email("test@example.com");
         Password password = Password.fromHash("$2a$10$hashedPassword");
         testUser = new User(testUserId, email, new UserName("Test User"), password, UserRole.ADMIN);
-
-        testCustomerId = CustomerId.generate();
-        Rif rif = new Rif("J-12345678-9");
-        testCustomer = Customer.reconstitute(
-            testCustomerId, new CustomerCode(1001L), new LegalName("Test Customer"),
-            CustomerType.BUSINESS, rif, new CustomerAlias("TestAlias"),
-            new CreditDays(30), new CreditLimit(BigDecimal.valueOf(1000)),
-            true, LocalDateTime.now(), LocalDateTime.now(),
-            List.of(), List.of(), List.of(),
-            true, "$2a$10$hashedPassword", null, null
-        );
 
         validToken = "valid-jwt-token";
     }
@@ -181,88 +159,6 @@ class JwtAuthenticationFilterUnitTest {
             assertNotNull(SecurityContextHolder.getContext().getAuthentication());
             verify(userRepository).findById(any(UserId.class));
             verify(userRepository, never()).canAuthenticate(any(UserId.class));
-        }
-    }
-
-    @Nested
-    @DisplayName("Customer Authentication Tests")
-    class CustomerAuthenticationTests {
-
-        @Test
-        @DisplayName("should_AuthenticateCustomer_When_ValidTokenProvided")
-        void should_AuthenticateCustomer_When_ValidTokenProvided() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(true);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-            assertEquals(testCustomerId.getValue().toString(), SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
-
-        @Test
-        @DisplayName("should_SetPortalCustomerRole_When_CustomerAuthenticated")
-        void should_SetPortalCustomerRole_When_CustomerAuthenticated() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(true);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-            assertTrue(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_PORTAL_CUSTOMER")));
-        }
-
-        @Test
-        @DisplayName("should_NotAuthenticate_When_CustomerNotFound")
-        void should_NotAuthenticate_When_CustomerNotFound() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(false);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
-
-        @Test
-        @DisplayName("should_NotAuthenticate_When_CustomerInactive")
-        void should_NotAuthenticate_When_CustomerInactive() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(false);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
-
-        @Test
-        @DisplayName("should_NotAuthenticate_When_CustomerPortalAccessDisabled")
-        void should_NotAuthenticate_When_CustomerPortalAccessDisabled() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.CUSTOMER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testCustomerId.getValue().toString());
-            when(customerRepository.isActivePortalAccess(testCustomerId)).thenReturn(false);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
         }
     }
 

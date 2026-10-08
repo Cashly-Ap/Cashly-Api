@@ -6,7 +6,8 @@ import com.cashly.cashly_api.auth.authentication.domain.entities.AuthenticableTy
 import com.cashly.cashly_api.auth.token.application.dto.request.RefreshTokenRequest;
 import com.cashly.cashly_api.auth.token.domain.repositories.RefreshTokenRepository;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.auth.token.application.contracts.AuthenticableSubjectGateway;
+import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.UserAuthenticableAdapter;
 import com.cashly.cashly_api.auth.token.domain.entities.RefreshToken;
 import com.cashly.cashly_api.auth.user.domain.entities.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
@@ -16,7 +17,7 @@ import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenId;
 import com.cashly.cashly_api.auth.token.application.exceptions.InvalidTokenException;
 import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,13 +41,10 @@ class RefreshTokenUseCaseUnitTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private AuthenticableSubjectGateway subjectGateway;
 
     @Mock
     private TokenService tokenService;
-
-    @Mock
-    private CustomerRepository customerRepository;
 
     private RefreshTokenUseCase refreshTokenUseCase;
 
@@ -59,9 +57,8 @@ class RefreshTokenUseCaseUnitTest {
     void setUp() {
         refreshTokenUseCase = new RefreshTokenUseCase(
             refreshTokenRepository,
-            userRepository,
-            tokenService,
-            customerRepository
+            subjectGateway,
+            tokenService
         );
 
         String tokenString = UUID.randomUUID().toString();
@@ -86,7 +83,7 @@ class RefreshTokenUseCaseUnitTest {
     void should_RefreshTokens_When_ValidRefreshTokenProvided() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
             .thenReturn(Optional.of(validRefreshToken));
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
         when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
         when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(validRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
@@ -98,7 +95,7 @@ class RefreshTokenUseCaseUnitTest {
         assertEquals("new-access-token", response.accessToken());
         assertEquals(validRefreshToken.getToken(), response.refreshToken());
         verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(userRepository, times(1)).findById(any(UserId.class));
+        verify(subjectGateway, times(1)).resolve(userId.getValue().toString(), AuthenticableType.USER);
         verify(tokenService, times(1)).generateAccessToken(any(Authenticable.class));
         verify(tokenService, times(1)).generateRefreshToken(any(Authenticable.class));
         verify(refreshTokenRepository, times(2)).save(any(RefreshToken.class));
@@ -117,7 +114,7 @@ class RefreshTokenUseCaseUnitTest {
 
         assertEquals("Invalid refresh token", exception.getMessage());
         verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(userRepository, never()).findById(any());
+        verifyNoInteractions(subjectGateway);
         verify(tokenService, never()).generateAccessToken(any(Authenticable.class));
     }
 
@@ -144,7 +141,7 @@ class RefreshTokenUseCaseUnitTest {
 
         assertEquals("Refresh token is expired or revoked", exception.getMessage());
         verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(userRepository, never()).findById(any());
+        verifyNoInteractions(subjectGateway);
     }
 
     @Test
@@ -161,7 +158,7 @@ class RefreshTokenUseCaseUnitTest {
 
         assertEquals("Refresh token is expired or revoked", exception.getMessage());
         verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(userRepository, never()).findById(any());
+        verifyNoInteractions(subjectGateway);
     }
 
     @Test
@@ -169,7 +166,7 @@ class RefreshTokenUseCaseUnitTest {
     void should_ThrowException_When_UserNotFound() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
             .thenReturn(Optional.of(validRefreshToken));
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
+        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenThrow(new UserNotFoundException("User not found"));
 
         UserNotFoundException exception = assertThrows(
             UserNotFoundException.class,
@@ -178,7 +175,7 @@ class RefreshTokenUseCaseUnitTest {
 
         assertEquals("User not found", exception.getMessage());
         verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(userRepository, times(1)).findById(any(UserId.class));
+        verify(subjectGateway, times(1)).resolve(userId.getValue().toString(), AuthenticableType.USER);
         verify(tokenService, never()).generateAccessToken(any(Authenticable.class));
     }
 
@@ -187,7 +184,7 @@ class RefreshTokenUseCaseUnitTest {
     void should_GenerateNewAccessToken_When_RefreshSuccessful() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
             .thenReturn(Optional.of(validRefreshToken));
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
         when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
         when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(validRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
@@ -212,7 +209,7 @@ class RefreshTokenUseCaseUnitTest {
 
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
             .thenReturn(Optional.of(validRefreshToken));
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
         when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
         when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(newRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
@@ -230,7 +227,7 @@ class RefreshTokenUseCaseUnitTest {
     void should_ReturnEntityResponse_When_RefreshSuccessful() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
             .thenReturn(Optional.of(validRefreshToken));
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
         when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
         when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(validRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
@@ -241,5 +238,21 @@ class RefreshTokenUseCaseUnitTest {
         assertNotNull(response.entity());
         assertEquals(AuthenticableType.USER, response.entity().type());
         assertEquals("test@example.com", response.entity().email());
+    }
+    @Test
+    void should_reject_inactive_subject_before_rotating_tokens() {
+        when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
+                .thenReturn(Optional.of(validRefreshToken));
+        Authenticable subject = mock(Authenticable.class);
+        when(subject.canAuthenticate()).thenReturn(false);
+        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(subject);
+
+        InvalidTokenException exception = assertThrows(InvalidTokenException.class,
+                () -> refreshTokenUseCase.execute(validRequest));
+
+        assertEquals("Account is not active", exception.getMessage());
+        assertTrue(validRefreshToken.isValid());
+        verify(refreshTokenRepository, never()).save(any());
+        verifyNoInteractions(tokenService);
     }
 }

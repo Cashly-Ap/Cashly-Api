@@ -1,9 +1,7 @@
 package com.cashly.cashly_api.auth.authentication.domain.services;
 
 import com.cashly.cashly_api.auth.user.domain.entities.User;
-import org.springframework.stereotype.Service;
 
-@Service
 public class AuthenticationDomainService {
 
     public boolean canUserAuthenticate(User user) {

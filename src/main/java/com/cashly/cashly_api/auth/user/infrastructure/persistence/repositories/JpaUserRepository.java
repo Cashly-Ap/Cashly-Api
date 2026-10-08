@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.auth.user.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -138,6 +140,6 @@ public class JpaUserRepository implements UserRepository {
         UUID excludeUuid = excludeId != null ? UUID.fromString(excludeId) : null;
         Page<UserEntity> result = springDataUserRepository.findAllWithFilters(search, role, active, excludeUuid, pageable);
         Page<User> mapped = result.map(UserEntity::toDomain);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 }

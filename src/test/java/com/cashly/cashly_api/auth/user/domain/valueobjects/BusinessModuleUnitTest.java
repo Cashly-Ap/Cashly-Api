@@ -40,12 +40,6 @@ class BusinessModuleUnitTest {
     }
 
     @Test
-    void should_have_CUSTOMER_PORTAL_value() {
-        BusinessModule module = BusinessModule.valueOf("CUSTOMER_PORTAL");
-        assertEquals(BusinessModule.CUSTOMER_PORTAL, module);
-    }
-
-    @Test
     void should_have_DOCUMENT_ADMIN_value() {
         BusinessModule module = BusinessModule.valueOf("DOCUMENT_ADMIN");
         assertEquals(BusinessModule.DOCUMENT_ADMIN, module);
@@ -54,7 +48,7 @@ class BusinessModuleUnitTest {
     @Test
     void should_return_eight_values() {
         BusinessModule[] values = BusinessModule.values();
-        assertEquals(8, values.length);
+        assertEquals(7, values.length);
     }
 
     @Test
@@ -65,7 +59,6 @@ class BusinessModuleUnitTest {
         assertTrue(values.contains(BusinessModule.SALES));
         assertTrue(values.contains(BusinessModule.FINANCES));
         assertTrue(values.contains(BusinessModule.PURCHASES));
-        assertTrue(values.contains(BusinessModule.CUSTOMER_PORTAL));
         assertTrue(values.contains(BusinessModule.DOCUMENT_ADMIN));
     }
 }

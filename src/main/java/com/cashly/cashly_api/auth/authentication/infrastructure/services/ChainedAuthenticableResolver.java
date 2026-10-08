@@ -7,7 +7,6 @@ import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticableRe
 import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.UserAuthenticableAdapter;
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
-import com.cashly.cashly_api.customers.domain.valueobjects.Rif;
 
 public class ChainedAuthenticableResolver implements AuthenticableResolver {
 
@@ -29,8 +28,4 @@ public class ChainedAuthenticableResolver implements AuthenticableResolver {
             .map(UserAuthenticableAdapter::new);
     }
 
-    @Override
-    public Optional<Authenticable> resolveByRif(Rif rif) {
-        return Optional.empty();
-    }
 }

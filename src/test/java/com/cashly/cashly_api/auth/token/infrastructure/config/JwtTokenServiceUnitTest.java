@@ -39,15 +39,4 @@ class JwtTokenServiceUnitTest {
         assertEquals(Set.of(BusinessModule.INVENTORY), access.orElseThrow().modulePermissions());
     }
 
-    @Test
-    void shouldRecognizeLegacyTokenWithoutUserAccessClaims() {
-        Authenticable authenticable = mock(Authenticable.class);
-        when(authenticable.getSubjectId()).thenReturn("8be7a004-f2fa-4657-ad7d-3dd4ac3a8ebf");
-        when(authenticable.getEmail()).thenReturn("portal@cashly.test");
-        when(authenticable.getType()).thenReturn(AuthenticableType.CUSTOMER);
-
-        String token = tokenService.generateAccessToken(authenticable);
-
-        assertTrue(tokenService.extractUserAccess(token).isEmpty());
-    }
 }
