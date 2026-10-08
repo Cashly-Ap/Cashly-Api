@@ -1,129 +1,69 @@
 package com.cashly.cashly_api.invoices.application.services;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
+import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.invoices.application.contracts.CustomerBalanceGateway;
+import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoicePaymentSettlementGateway;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.payments.domain.entities.Payment;
-import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
-import com.cashly.cashly_api.payments.domain.valueobjects.PaymentNumber;
-import com.cashly.cashly_api.payments.domain.valueobjects.PaymentStatus;
-import com.cashly.cashly_api.shared.services.CreditGuard;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
 public class InvoiceAuthorizationService {
-
-    private final CreditGuard creditGuard;
-    private final PasswordEncoder passwordEncoder;
-    private final ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-    private final PaymentRepository paymentRepository;
-    private final PaymentAllocationRepository allocationRepository;
-    private final CashMovementService cashMovementService;
-
-    public InvoiceAuthorizationService(CreditGuard creditGuard,
-                                        PasswordEncoder passwordEncoder,
-                                        ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
-                                        PaymentRepository paymentRepository,
-                                        PaymentAllocationRepository allocationRepository,
-                                        CashMovementService cashMovementService) {
+    private final CustomerCreditGateway creditGuard;
+    private final ActorIdentityGateway actors;
+    private final CustomerBalanceGateway balances;
+    private final InvoicePaymentSettlementGateway settlements;
+    private final CashRegisterGateway cashRegister;
+    public InvoiceAuthorizationService(CustomerCreditGateway creditGuard, ActorIdentityGateway actors,
+            CustomerBalanceGateway balances, InvoicePaymentSettlementGateway settlements, CashRegisterGateway cashRegister) {
         this.creditGuard = creditGuard;
-        this.passwordEncoder = passwordEncoder;
-        this.consumeCustomerBalanceUseCase = consumeCustomerBalanceUseCase;
-        this.paymentRepository = paymentRepository;
-        this.allocationRepository = allocationRepository;
-        this.cashMovementService = cashMovementService;
+        this.actors = actors;
+        this.balances = balances;
+        this.settlements = settlements;
+        this.cashRegister = cashRegister;
     }
-
     @Transactional
-    public void authorize(Invoice invoice, User user, String confirmationPassword,
-                           Boolean useBalance, BigDecimal balanceAmount,
-                           UUID paymentMethodId, UUID authenticatedUserId) {
+    public void authorize(Invoice invoice, ActorIdentityGateway.Actor actor, String confirmationPassword,
+            Boolean useBalance, BigDecimal balanceAmount, UUID paymentMethodId, UUID authenticatedUserId) {
         if (invoice.getPaymentType() == PaymentType.CREDIT) {
-            authorizeCredit(invoice, user, confirmationPassword);
+            authorizeCredit(invoice, actor, confirmationPassword);
         } else if (invoice.getPaymentType() == PaymentType.CASH) {
-            authorizeCash(invoice, Boolean.TRUE.equals(useBalance), balanceAmount,
-                    paymentMethodId, authenticatedUserId, user);
+            authorizeCash(invoice, Boolean.TRUE.equals(useBalance), balanceAmount, paymentMethodId, authenticatedUserId, actor);
         }
     }
-
-    private void authorizeCredit(Invoice invoice, User user, String confirmationPassword) {
+    private void authorizeCredit(Invoice invoice, ActorIdentityGateway.Actor actor, String confirmationPassword) {
         boolean exceedsLimit = !creditGuard.isCreditAvailable(invoice.getCustomerId(), invoice.calculateTotal());
         if (exceedsLimit) {
             if (confirmationPassword == null || confirmationPassword.isBlank()) {
-                throw new IllegalArgumentException(
-                        "Se requiere contrasena para confirmar facturas que exceden el limite de credito");
+                throw new IllegalArgumentException("Se requiere contrasena para confirmar facturas que exceden el limite de credito");
             }
-            if (!passwordEncoder.matches(confirmationPassword, user.getPassword().getHashedValue())) {
+            if (!actors.matchesPassword(actor.id(), confirmationPassword)) {
                 throw new IllegalArgumentException("Contrasena incorrecta");
             }
         }
     }
-
     private void authorizeCash(Invoice invoice, boolean useBalance, BigDecimal balanceAmount,
-                                UUID paymentMethodId, UUID authenticatedUserId, User user) {
-        BigDecimal balanceToUse = useBalance
-                ? (balanceAmount != null ? balanceAmount : invoice.calculateTotal())
-                : BigDecimal.ZERO;
+            UUID paymentMethodId, UUID authenticatedUserId, ActorIdentityGateway.Actor actor) {
+        BigDecimal balanceToUse = useBalance ? (balanceAmount != null ? balanceAmount : invoice.calculateTotal()) : BigDecimal.ZERO;
         BigDecimal remaining = invoice.calculateTotal().subtract(balanceToUse);
         if (remaining.compareTo(BigDecimal.ZERO) > 0 && paymentMethodId == null) {
             throw new IllegalArgumentException("Debe seleccionar un metodo de pago para el monto restante");
         }
         if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            cashMovementService.requireOpenRegister();
+            cashRegister.requireOpenRegister();
         }
         if (balanceToUse.compareTo(BigDecimal.ZERO) > 0) {
-            consumeCustomerBalanceUseCase.execute(
-                    invoice.getCustomerId(),
-                    BalanceType.INVOICES,
-                    balanceToUse,
-                    BalanceType.INVOICES,
-                    invoice.getId().value(),
-                    invoice.getInvoiceNumber().value(),
-                    null,
-                    authenticatedUserId
-            );
+            balances.consumeInvoiceBalance(new CustomerBalanceGateway.Consumption(invoice.getCustomerId(), balanceToUse,
+                    invoice.getId().value(), invoice.getInvoiceNumber().value(), authenticatedUserId));
         }
-
         if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            int year = LocalDate.now().getYear();
-            int seq = paymentRepository.getNextSequenceForYear(year);
-            Payment payment = Payment.create(
-                    PaymentNumber.of(year, seq),
-                    invoice.getCustomerId(),
-                    remaining,
-                    paymentMethodId,
-                    null,
-                    LocalDate.now(),
-                    "Pago de factura " + invoice.getInvoiceNumber().value(),
-                    authenticatedUserId,
-                    user.getUserName().getValue(),
-                    PaymentStatus.APPLIED
-            );
-            Payment savedPayment = paymentRepository.save(payment);
-            cashMovementService.record(
-                    CashMovementDirection.IN, CashMovementType.PAYMENT,
-                    savedPayment.getAmount(), savedPayment.getPaymentMethodId(), savedPayment.getNotes(),
-                    "PAYMENT", savedPayment.getId().value(), authenticatedUserId,
-                    user.getUserName().getValue());
-            PaymentAllocation allocation = PaymentAllocation.create(
-                    savedPayment.getId().value(), invoice.getId().value(), remaining
-            );
-            allocationRepository.save(allocation);
-            payment.apply(remaining);
-            paymentRepository.save(payment);
+            settlements.settleCashInvoice(new InvoicePaymentSettlementGateway.Settlement(invoice.getCustomerId(), invoice.getId().value(),
+                    invoice.getInvoiceNumber().value(), remaining, paymentMethodId, authenticatedUserId, actor.name()));
         }
     }
 }

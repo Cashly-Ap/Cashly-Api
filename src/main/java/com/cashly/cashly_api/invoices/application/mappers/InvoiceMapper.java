@@ -4,7 +4,7 @@ import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResp
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
+import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,7 +22,7 @@ public class InvoiceMapper {
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
                                                            Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
                                                            Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
         return toDetailResponse(invoice, enrichmentMap, productStocks, thisInvoiceAllocations,
                 BigDecimal.ZERO, BigDecimal.ZERO, List.of(), List.of());
@@ -30,7 +30,7 @@ public class InvoiceMapper {
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
                                                            Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+                                                           Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
                                                            Map<WarehouseProductKey, Integer> thisInvoiceAllocations,
                                                            BigDecimal creditApplied,
                                                            BigDecimal debitApplied,
@@ -92,7 +92,7 @@ public class InvoiceMapper {
 
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
                                                            Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-                                                           Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks) {
+                                                           Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks) {
         return toDetailResponse(invoice, enrichmentMap, productStocks, Map.of());
     }
 
@@ -148,7 +148,7 @@ public class InvoiceMapper {
 
     private static InvoiceDetailResponse.InvoiceLineDetailResponse toLineDetailResponse(
             InvoiceLine line, Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
-            Map<UUID, List<StockEnrichmentService.WarehouseStockInfo>> productStocks,
+            Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
             Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
 
         List<InvoiceDetailResponse.WarehouseAllocationResponse> allocationDetails =

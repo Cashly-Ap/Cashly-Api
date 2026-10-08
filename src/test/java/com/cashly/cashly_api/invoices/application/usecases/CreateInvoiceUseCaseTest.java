@@ -22,7 +22,13 @@ import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCustomerGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceNotificationGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceOrderGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceQuoteGateway;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,22 +69,54 @@ class CreateInvoiceUseCaseTest {
     private ProductRepository productRepository;
 
     @Mock
+    private com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository quoteRepository;
+
+    @Mock
     private WarehouseStockRepository warehouseStockRepository;
 
     @Mock
     private InvoiceAuthorizationService authorizationService;
 
     @Mock
-    private NotificationService notificationService;
+    private InvoiceNotificationGateway notificationService;
 
     private CreateInvoiceUseCase createInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
+        notificationService = mock(InvoiceNotificationGateway.class);
+        InvoiceCustomerGateway customers = customerId -> customerRepository
+                .findById(new CustomerId(customerId))
+                .map(customer -> new InvoiceCustomerGateway.Customer(customer.getId().getValue(),
+                        customer.getLegalName().getValue(), customer.getRif().getValue()));
+        CustomerCreditTermsGateway creditTerms = customerId -> customerRepository
+                .findById(new CustomerId(customerId)).orElseThrow().getCreditDays().getValue();
+        ActorIdentityGateway actors = new ActorIdentityGateway() {
+            @Override
+            public Actor requireActor(UUID id) {
+                return findActor(id).orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+            }
+
+            @Override
+            public Optional<Actor> findActor(UUID id) {
+                return userRepository.findById(new UserId(id))
+                        .map(user -> new Actor(user.getId().getValue(), user.getUserName().getValue()));
+            }
+
+            @Override
+            public boolean matchesPassword(UUID id, String password) {
+                return false;
+            }
+        };
+        InvoiceCatalogGateway catalog = productId -> productRepository.findById(productId)
+                .map(product -> new InvoiceCatalogGateway.Product(product.getId(), product.getName(), product.getCode()));
+        InvoiceOrderGateway orderGateway = new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceOrderGateway(orderRepository);
+        InvoiceQuoteGateway quoteGateway = quoteId -> quoteRepository.findById(quoteId)
+                .map(quote -> new InvoiceQuoteGateway.Quote(quote.getId(), quote.getCustomerId(), quote.getStatus().name()));
         createInvoiceUseCase = new CreateInvoiceUseCase(
-                invoiceRepository, orderRepository, customerRepository,
-                userRepository, productRepository, warehouseStockRepository, authorizationService,
-                notificationService);
+                invoiceRepository, orderGateway, customers, creditTerms, actors, catalog,
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), authorizationService,
+                notificationService, quoteGateway);
     }
 
     @Test
@@ -262,7 +300,7 @@ class CreateInvoiceUseCaseTest {
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
         IllegalStateException exception = assertThrows(
@@ -293,7 +331,7 @@ class CreateInvoiceUseCaseTest {
                 new Rif("J-12345678-9"), new CustomerAlias("Test"),
                 new CreditDays(30), new CreditLimit(BigDecimal.ZERO),
                 true, LocalDateTime.now(), LocalDateTime.now(),
-                List.of(), List.of(), List.of(), false, null, null, null
+                List.of(), List.of(), List.of(), null, null
         );
     }
 

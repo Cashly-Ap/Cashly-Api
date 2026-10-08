@@ -52,7 +52,8 @@ class DeleteInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         deleteInvoiceUseCase = new DeleteInvoiceUseCase(invoiceRepository,
-                orderRepository, warehouseStockRepository);
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceOrderGateway(orderRepository),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))));
     }
 
     @Test
@@ -133,7 +134,7 @@ class DeleteInvoiceUseCaseTest {
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
         deleteInvoiceUseCase.execute(id);

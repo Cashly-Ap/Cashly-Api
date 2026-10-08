@@ -1,13 +1,7 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.credit_notes.domain.entities.CreditNote;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteId;
-import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteNumber;
-import com.cashly.cashly_api.debit_notes.domain.entities.DebitNote;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteId;
-import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteNumber;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceNoteDetailsGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceReturnDetailsGateway;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
@@ -16,10 +10,7 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,22 +36,13 @@ class GetInvoiceByIdUseCaseNotesTest {
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private StockEnrichmentService stockEnrichmentService;
+    private StockAvailabilityGateway stockEnrichmentService;
 
     @Mock
-    private CreditNoteRepository creditNoteRepository;
+    private InvoiceNoteDetailsGateway noteDetails;
 
     @Mock
-    private DebitNoteRepository debitNoteRepository;
-
-    @Mock
-    private ReturnRepository returnRepository;
-
-    @Mock
-    private ProductRepository productRepository;
-
-    @Mock
-    private WarehouseRepository warehouseRepository;
+    private InvoiceReturnDetailsGateway returnDetails;
 
     @InjectMocks
     private GetInvoiceByIdUseCase getInvoiceByIdUseCase;
@@ -73,43 +55,26 @@ class GetInvoiceByIdUseCaseNotesTest {
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
         when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
-        when(returnRepository.findAllWithFilters(any(), any(), any(), any())).thenReturn(List.of());
-
         UUID creditNoteId = UUID.randomUUID();
-        CreditNote creditNote = CreditNote.reconstitute(
-                CreditNoteId.of(creditNoteId),
-                new CreditNoteNumber("NC-2026-00001"),
-                UUID.randomUUID(), id,
-                BigDecimal.valueOf(200), "Damaged goods",
-                UUID.randomUUID(), "User",
-                LocalDateTime.now(), LocalDateTime.now()
-        );
-
         UUID debitNoteId = UUID.randomUUID();
-        DebitNote debitNote = DebitNote.reconstitute(
-                DebitNoteId.of(debitNoteId),
-                new DebitNoteNumber("ND-2026-00001"),
-                UUID.randomUUID(), id,
-                BigDecimal.valueOf(50), "Extra shipping",
-                UUID.randomUUID(), "User",
-                LocalDateTime.now(), LocalDateTime.now()
-        );
-
-        when(creditNoteRepository.findByInvoiceId(id)).thenReturn(List.of(creditNote));
-        when(debitNoteRepository.findByInvoiceId(id)).thenReturn(List.of(debitNote));
+        when(noteDetails.findCreditNotes(id)).thenReturn(List.of(new InvoiceNoteDetailsGateway.Note(creditNoteId,
+                "NC-2026-00001", BigDecimal.valueOf(200), "Damaged goods", LocalDateTime.now())));
+        when(noteDetails.findDebitNotes(id)).thenReturn(List.of(new InvoiceNoteDetailsGateway.Note(debitNoteId,
+                "ND-2026-00001", BigDecimal.valueOf(50), "Extra shipping", LocalDateTime.now())));
+        when(returnDetails.findByInvoiceId(id)).thenReturn(List.of());
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
         assertNotNull(response);
         assertThat(response.creditApplied()).isEqualByComparingTo("200");
         assertThat(response.debitApplied()).isEqualByComparingTo("50");
-        assertThat(response.total()).isEqualByComparingTo("850"); 
+        assertThat(response.total()).isEqualByComparingTo("850");
         assertThat(response.notesList()).hasSize(2);
         assertThat(response.notesList())
                 .extracting(InvoiceDetailResponse.NoteInfo::noteNumber)
                 .containsExactly("NC-2026-00001", "ND-2026-00001");
-        verify(creditNoteRepository).findByInvoiceId(id);
-        verify(debitNoteRepository).findByInvoiceId(id);
+        verify(noteDetails).findCreditNotes(id);
+        verify(noteDetails).findDebitNotes(id);
     }
 
     @Test
@@ -120,16 +85,16 @@ class GetInvoiceByIdUseCaseNotesTest {
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
         when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
-        when(returnRepository.findAllWithFilters(any(), any(), any(), any())).thenReturn(List.of());
-        when(creditNoteRepository.findByInvoiceId(id)).thenReturn(List.of());
-        when(debitNoteRepository.findByInvoiceId(id)).thenReturn(List.of());
+        when(noteDetails.findCreditNotes(id)).thenReturn(List.of());
+        when(noteDetails.findDebitNotes(id)).thenReturn(List.of());
+        when(returnDetails.findByInvoiceId(id)).thenReturn(List.of());
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
         assertNotNull(response);
         assertThat(response.creditApplied()).isEqualByComparingTo("0");
         assertThat(response.debitApplied()).isEqualByComparingTo("0");
-        assertThat(response.total()).isEqualByComparingTo("1000"); 
+        assertThat(response.total()).isEqualByComparingTo("1000");
         assertThat(response.notesList()).isEmpty();
     }
 

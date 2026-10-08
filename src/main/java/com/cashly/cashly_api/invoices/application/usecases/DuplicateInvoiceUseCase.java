@@ -1,8 +1,5 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.customers.domain.entities.Customer;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.mappers.InvoiceMapper;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
@@ -12,16 +9,14 @@ import com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCustomerGateway;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,16 +24,16 @@ import java.util.UUID;
 public class DuplicateInvoiceUseCase {
 
     private final InvoiceRepository invoiceRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final ProductRepository productRepository;
-    private final CustomerRepository customerRepository;
+    private final InventoryGateway inventoryGateway;
+    private final InvoiceCatalogGateway productRepository;
+    private final InvoiceCustomerGateway customerRepository;
 
     public DuplicateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                    WarehouseStockRepository warehouseStockRepository,
-                                    ProductRepository productRepository,
-                                    CustomerRepository customerRepository) {
+                                    InventoryGateway inventoryGateway,
+                                    InvoiceCatalogGateway productRepository,
+                                    InvoiceCustomerGateway customerRepository) {
         this.invoiceRepository = invoiceRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
+        this.inventoryGateway = inventoryGateway;
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
     }
@@ -53,12 +48,12 @@ public class DuplicateInvoiceUseCase {
         String customerRif = original.getCustomerRif();
 
         if (newCustomerId != null) {
-            Customer customer = customerRepository.findById(new CustomerId(newCustomerId))
+            InvoiceCustomerGateway.Customer customer = customerRepository.findCustomer(newCustomerId)
                     .orElseThrow(() -> new IllegalArgumentException(
                             "Customer not found: " + newCustomerId));
-            customerId = customer.getId().getValue();
-            customerName = customer.getLegalName().getValue();
-            customerRif = customer.getRif().getValue();
+            customerId = customer.id();
+            customerName = customer.name();
+            customerRif = customer.rif();
         }
 
         int year = LocalDate.now().getYear();
@@ -67,7 +62,7 @@ public class DuplicateInvoiceUseCase {
 
         List<InvoiceLine> copiedLines = original.getLines().stream()
                 .map(line -> {
-                    Product product = productRepository.findById(line.getProductId())
+                    InvoiceCatalogGateway.Product product = productRepository.findProduct(line.getProductId())
                             .orElseThrow(() -> new IllegalArgumentException(
                                     "Product not found: " + line.getProductId()));
 
@@ -77,8 +72,8 @@ public class DuplicateInvoiceUseCase {
 
                     return InvoiceLine.create(
                             line.getProductId(),
-                            product.getName(),
-                            product.getCode(),
+                            product.name(),
+                            product.code(),
                             line.getQuantity(),
                             currentPrice,
                             copiedAllocations
@@ -105,19 +100,10 @@ public class DuplicateInvoiceUseCase {
     }
 
     private List<InvoiceLineAllocation> applyStockAllocations(InvoiceLine line) {
-        List<InvoiceLineAllocation> allocations = new ArrayList<>();
-        for (InvoiceLineAllocation allocation : line.getAllocations()) {
-            WarehouseStock stock = warehouseStockRepository
-                    .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Stock not found for warehouse=" + allocation.getWarehouseId()
-                                    + " product=" + line.getProductId()));
-
-            stock.reserve(allocation.getAllocated().intValue());
-            warehouseStockRepository.save(stock);
-
-            allocations.add(InvoiceLineAllocation.create(allocation.getWarehouseId(), allocation.getAllocated()));
-        }
-        return allocations;
+        inventoryGateway.reserveAllocations(line.getAllocations().stream()
+                .map(a -> new InventoryGateway.Allocation(a.getWarehouseId(), line.getProductId(),
+                        a.getAllocated().intValue())).toList());
+        return line.getAllocations().stream()
+                .map(a -> InvoiceLineAllocation.create(a.getWarehouseId(), a.getAllocated())).toList();
     }
 }

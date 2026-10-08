@@ -6,8 +6,7 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.returns.domain.entities.Return;
-import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
+import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceReturnAdjustment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -395,13 +394,13 @@ class InvoiceUnitTest {
                 new BigDecimal("50.00"), InvoiceReturnStatus.PARTIAL,
                 null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
 
-        Return return_ = mock(Return.class);
-        ReturnLine returnLine = mock(ReturnLine.class);
-        when(return_.getInvoiceId()).thenReturn(invoiceId);
-        when(return_.getTotal()).thenReturn(new BigDecimal("50.00"));
-        when(return_.getLines()).thenReturn(List.of(returnLine));
-        when(returnLine.getInvoiceLineId()).thenReturn(line.getId().value());
-        when(returnLine.getQuantity()).thenReturn(new BigDecimal("5"));
+        InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
+        InvoiceReturnAdjustment.Line returnLine = mock(InvoiceReturnAdjustment.Line.class);
+        when(return_.invoiceId()).thenReturn(invoiceId.value());
+        when(return_.total()).thenReturn(new BigDecimal("50.00"));
+        when(return_.lines()).thenReturn(List.of(returnLine));
+        when(returnLine.invoiceLineId()).thenReturn(line.getId().value());
+        when(returnLine.quantity()).thenReturn(new BigDecimal("5"));
 
         invoice.revertReturn(return_);
 
@@ -422,13 +421,13 @@ class InvoiceUnitTest {
                 new BigDecimal("50.00"), InvoiceReturnStatus.PARTIAL,
                 null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
 
-        Return return_ = mock(Return.class);
-        ReturnLine returnLine = mock(ReturnLine.class);
-        when(return_.getInvoiceId()).thenReturn(invoiceId);
-        when(return_.getTotal()).thenReturn(new BigDecimal("50.00"));
-        when(return_.getLines()).thenReturn(List.of(returnLine));
-        when(returnLine.getInvoiceLineId()).thenReturn(line.getId().value());
-        when(returnLine.getQuantity()).thenReturn(new BigDecimal("5"));
+        InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
+        InvoiceReturnAdjustment.Line returnLine = mock(InvoiceReturnAdjustment.Line.class);
+        when(return_.invoiceId()).thenReturn(invoiceId.value());
+        when(return_.total()).thenReturn(new BigDecimal("50.00"));
+        when(return_.lines()).thenReturn(List.of(returnLine));
+        when(returnLine.invoiceLineId()).thenReturn(line.getId().value());
+        when(returnLine.quantity()).thenReturn(new BigDecimal("5"));
 
         invoice.revertReturn(return_);
 
@@ -451,13 +450,13 @@ class InvoiceUnitTest {
                 new BigDecimal("80.00"), InvoiceReturnStatus.PARTIAL,
                 null, null, List.of(line1, line2), LocalDateTime.now(), LocalDateTime.now());
 
-        Return return_ = mock(Return.class);
-        ReturnLine returnLine = mock(ReturnLine.class);
-        when(return_.getInvoiceId()).thenReturn(invoiceId);
-        when(return_.getTotal()).thenReturn(new BigDecimal("20.00"));
-        when(return_.getLines()).thenReturn(List.of(returnLine));
-        when(returnLine.getInvoiceLineId()).thenReturn(line1.getId().value());
-        when(returnLine.getQuantity()).thenReturn(new BigDecimal("2"));
+        InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
+        InvoiceReturnAdjustment.Line returnLine = mock(InvoiceReturnAdjustment.Line.class);
+        when(return_.invoiceId()).thenReturn(invoiceId.value());
+        when(return_.total()).thenReturn(new BigDecimal("20.00"));
+        when(return_.lines()).thenReturn(List.of(returnLine));
+        when(returnLine.invoiceLineId()).thenReturn(line1.getId().value());
+        when(returnLine.quantity()).thenReturn(new BigDecimal("2"));
 
         invoice.revertReturn(return_);
 
@@ -474,8 +473,8 @@ class InvoiceUnitTest {
                 BigDecimal.ZERO, null,
                 null, null, validLines, LocalDateTime.now(), LocalDateTime.now());
 
-        Return return_ = mock(Return.class);
-        when(return_.getInvoiceId()).thenReturn(InvoiceId.generate());
+        InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
+        when(return_.invoiceId()).thenReturn(InvoiceId.generate().value());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> invoice.revertReturn(return_));

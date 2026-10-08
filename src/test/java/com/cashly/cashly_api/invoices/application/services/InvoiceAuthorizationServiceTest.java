@@ -21,7 +21,7 @@ import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
 import com.cashly.cashly_api.payments.domain.valueobjects.PaymentStatus;
-import com.cashly.cashly_api.shared.services.CreditGuard;
+import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 class InvoiceAuthorizationServiceTest {
 
     @Mock
-    private CreditGuard creditGuard;
+    private CustomerCreditGateway creditGuard;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -79,19 +79,29 @@ class InvoiceAuthorizationServiceTest {
     private final String hashedPassword = "$2a$10$hashedvalue";
 
     private User user;
+    private com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway.Actor actor;
+    private com.cashly.cashly_api.auth.user.domain.repositories.UserRepository actorRepository;
 
     @BeforeEach
     void setUp() {
-        service = new InvoiceAuthorizationService(
-                creditGuard, passwordEncoder, consumeCustomerBalanceUseCase,
-                paymentRepository, allocationRepository, cashMovementService
-        );
-
         user = mock(User.class);
         lenient().when(user.getUserName()).thenReturn(new UserName("Test User"));
         var password = mock(Password.class);
         lenient().when(password.getHashedValue()).thenReturn(hashedPassword);
         lenient().when(user.getPassword()).thenReturn(password);
+        actorRepository = mock(com.cashly.cashly_api.auth.user.domain.repositories.UserRepository.class);
+        lenient().when(actorRepository.findById(new UserId(authenticatedUserId))).thenReturn(java.util.Optional.of(user));
+        actor = new com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway.Actor(authenticatedUserId, "Test User");
+        var cashOperations = new com.cashly.cashly_api.cashregister.application.services.CashRegisterOperationsService(cashMovementService);
+        service = new InvoiceAuthorizationService(creditGuard,
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+                        new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(actorRepository, passwordEncoder)),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalCustomerBalanceGateway(
+                        new com.cashly.cashly_api.customers.application.services.InvoiceBalanceConsumptionService(consumeCustomerBalanceUseCase)),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoicePaymentSettlementGateway(
+                        new com.cashly.cashly_api.payments.application.services.CashInvoiceSettlementService(paymentRepository, allocationRepository,
+                                new com.cashly.cashly_api.payments.infrastructure.integration.LocalPaymentCashRegisterGateway(cashOperations))),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCashRegisterGateway(cashOperations));
     }
 
     private Invoice invoice(PaymentType paymentType) {
@@ -131,7 +141,7 @@ class InvoiceAuthorizationServiceTest {
                     .thenReturn(true);
 
             assertDoesNotThrow(() ->
-                    service.authorize(creditInvoice, user, null, false, null, null, authenticatedUserId));
+                    service.authorize(creditInvoice, actor, null, false, null, null, authenticatedUserId));
         }
 
         @Test
@@ -142,7 +152,7 @@ class InvoiceAuthorizationServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
-                    () -> service.authorize(creditInvoice, user, null, false, null, null, authenticatedUserId)
+                    () -> service.authorize(creditInvoice, actor, null, false, null, null, authenticatedUserId)
             );
 
             assertEquals(
@@ -158,7 +168,7 @@ class InvoiceAuthorizationServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
-                    () -> service.authorize(creditInvoice, user, "", false, null, null, authenticatedUserId)
+                    () -> service.authorize(creditInvoice, actor, "", false, null, null, authenticatedUserId)
             );
 
             assertEquals(
@@ -175,7 +185,7 @@ class InvoiceAuthorizationServiceTest {
                     .thenReturn(true);
 
             assertDoesNotThrow(() ->
-                    service.authorize(creditInvoice, user, confirmationPassword, false, null, null, authenticatedUserId));
+                    service.authorize(creditInvoice, actor, confirmationPassword, false, null, null, authenticatedUserId));
         }
 
         @Test
@@ -188,7 +198,7 @@ class InvoiceAuthorizationServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
-                    () -> service.authorize(creditInvoice, user, confirmationPassword, false, null, null, authenticatedUserId)
+                    () -> service.authorize(creditInvoice, actor, confirmationPassword, false, null, null, authenticatedUserId)
             );
 
             assertEquals("Contrasena incorrecta", exception.getMessage());
@@ -206,7 +216,7 @@ class InvoiceAuthorizationServiceTest {
             when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
             when(allocationRepository.save(any(PaymentAllocation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            service.authorize(cashInvoice, user, null, false, null, paymentMethodId, authenticatedUserId);
+            service.authorize(cashInvoice, actor, null, false, null, paymentMethodId, authenticatedUserId);
 
             verify(consumeCustomerBalanceUseCase, never()).execute(
                     any(), any(), any(), any(), any(), any(), any(), any());
@@ -224,7 +234,7 @@ class InvoiceAuthorizationServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
-                    () -> service.authorize(cashInvoice, user, null, false, null, null, authenticatedUserId)
+                    () -> service.authorize(cashInvoice, actor, null, false, null, null, authenticatedUserId)
             );
 
             assertEquals("Debe seleccionar un metodo de pago para el monto restante", exception.getMessage());
@@ -239,7 +249,7 @@ class InvoiceAuthorizationServiceTest {
             when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
             when(allocationRepository.save(any(PaymentAllocation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            service.authorize(cashInvoice, user, null, true, balanceAmount, paymentMethodId, authenticatedUserId);
+            service.authorize(cashInvoice, actor, null, true, balanceAmount, paymentMethodId, authenticatedUserId);
 
             verify(consumeCustomerBalanceUseCase).execute(
                     eq(customerId), eq(BalanceType.INVOICES), eq(balanceAmount),
@@ -260,10 +270,56 @@ class InvoiceAuthorizationServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
-                    () -> service.authorize(cashInvoice, user, null, true, balanceAmount, null, authenticatedUserId)
+                    () -> service.authorize(cashInvoice, actor, null, true, balanceAmount, null, authenticatedUserId)
             );
 
             assertEquals("Debe seleccionar un metodo de pago para el monto restante", exception.getMessage());
+        }
+        @Test
+        void should_fail_closed_register_before_consuming_customer_balance() {
+            Invoice cashInvoice = invoice(PaymentType.CASH);
+            org.mockito.Mockito.doThrow(new IllegalStateException("Register closed"))
+                    .when(cashMovementService).requireOpenRegister();
+            var error = assertThrows(IllegalStateException.class, () -> service.authorize(cashInvoice,
+                    actor, null, true, new BigDecimal("500.00"), paymentMethodId, authenticatedUserId));
+            assertEquals("Register closed", error.getMessage());
+            verify(consumeCustomerBalanceUseCase, never()).execute(any(), any(), any(), any(), any(), any(), any(), any());
+            org.mockito.Mockito.verifyNoInteractions(paymentRepository, allocationRepository);
+        }
+
+        @Test
+        void should_not_consume_balance_when_payment_method_is_missing() {
+            Invoice cashInvoice = invoice(PaymentType.CASH);
+            assertThrows(IllegalArgumentException.class, () -> service.authorize(cashInvoice,
+                    actor, null, true, new BigDecimal("500.00"), null, authenticatedUserId));
+            verify(consumeCustomerBalanceUseCase, never()).execute(any(), any(), any(), any(), any(), any(), any(), any());
+            org.mockito.Mockito.verifyNoInteractions(cashMovementService, paymentRepository, allocationRepository);
+        }
+
+        @Test
+        void should_consume_full_total_without_payment_when_balance_amount_is_absent() {
+            Invoice cashInvoice = invoice(PaymentType.CASH);
+            service.authorize(cashInvoice, actor, null, true, null, null, authenticatedUserId);
+            verify(consumeCustomerBalanceUseCase).execute(eq(customerId), eq(BalanceType.INVOICES),
+                    eq(new BigDecimal("1000.00")), eq(BalanceType.INVOICES), eq(invoiceId),
+                    eq(cashInvoice.getInvoiceNumber().value()), eq(null), eq(authenticatedUserId));
+            org.mockito.Mockito.verifyNoInteractions(cashMovementService, paymentRepository, allocationRepository);
+        }
+        @Test
+        void should_require_open_register_before_balance_debit_and_payment_recording() {
+            Invoice cashInvoice = invoice(PaymentType.CASH);
+            when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+            when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            when(allocationRepository.save(any(PaymentAllocation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            service.authorize(cashInvoice, actor, null, true, new BigDecimal("500.00"), paymentMethodId, authenticatedUserId);
+            var ordered = org.mockito.Mockito.inOrder(cashMovementService, consumeCustomerBalanceUseCase);
+            ordered.verify(cashMovementService).requireOpenRegister();
+            ordered.verify(consumeCustomerBalanceUseCase).execute(eq(customerId), eq(BalanceType.INVOICES), eq(new BigDecimal("500.00")),
+                    eq(BalanceType.INVOICES), eq(invoiceId), eq(cashInvoice.getInvoiceNumber().value()), eq(null), eq(authenticatedUserId));
+            ordered.verify(cashMovementService).record(eq(CashMovementDirection.IN), eq(CashMovementType.PAYMENT), eq(new BigDecimal("500.00")),
+                    eq(paymentMethodId), eq("Pago de factura " + cashInvoice.getInvoiceNumber().value()), eq("PAYMENT"),
+                    any(UUID.class), eq(authenticatedUserId), eq("Test User"));
+            ordered.verifyNoMoreInteractions();
         }
     }
 }

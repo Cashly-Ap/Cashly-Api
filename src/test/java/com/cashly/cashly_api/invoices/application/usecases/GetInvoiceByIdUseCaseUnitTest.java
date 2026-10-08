@@ -1,26 +1,22 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceNoteDetailsGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceReturnDetailsGateway;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLineAllocation;
-import java.math.BigDecimal;
 import com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -42,25 +38,25 @@ class GetInvoiceByIdUseCaseUnitTest {
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private StockEnrichmentService stockEnrichmentService;
+    private StockAvailabilityGateway stockEnrichmentService;
 
     @Mock
-    private CreditNoteRepository creditNoteRepository;
+    private InvoiceNoteDetailsGateway noteDetails;
 
     @Mock
-    private DebitNoteRepository debitNoteRepository;
+    private InvoiceReturnDetailsGateway returnDetails;
 
-    @Mock
-    private ReturnRepository returnRepository;
-
-    @Mock
-    private ProductRepository productRepository;
-
-    @Mock
-    private WarehouseRepository warehouseRepository;
-
-    @InjectMocks
     private GetInvoiceByIdUseCase getInvoiceByIdUseCase;
+
+    @BeforeEach
+    void setUp() {
+        getInvoiceByIdUseCase = new GetInvoiceByIdUseCase(
+                invoiceRepository, stockEnrichmentService, noteDetails, returnDetails);
+        lenient().when(noteDetails.findCreditNotes(any())).thenReturn(List.of());
+        lenient().when(noteDetails.findDebitNotes(any())).thenReturn(List.of());
+        lenient().when(returnDetails.findByInvoiceId(any())).thenReturn(List.of());
+        lenient().when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
+    }
 
     @Test
     void should_ReturnInvoiceDetail_When_InvoiceExists() {
@@ -71,7 +67,7 @@ class GetInvoiceByIdUseCaseUnitTest {
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of(
-                new StockEnrichmentService.EnrichedStock(
+                new StockAvailabilityGateway.EnrichedStock(
                         warehouseId, productId,
                         "WH1", "Warehouse 1", 15
                 )
@@ -126,7 +122,7 @@ class GetInvoiceByIdUseCaseUnitTest {
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of(
-                new StockEnrichmentService.EnrichedStock(
+                new StockAvailabilityGateway.EnrichedStock(
                         warehouseId, productId,
                         "WH-MAIN", "Deposito Principal", 25
                 )

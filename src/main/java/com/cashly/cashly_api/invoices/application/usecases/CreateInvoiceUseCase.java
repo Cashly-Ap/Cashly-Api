@@ -1,256 +1,165 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.customers.domain.entities.Customer;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCustomerGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceNotificationGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceOrderGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceQuoteGateway;
 import com.cashly.cashly_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.mappers.InvoiceMapper;
 import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLineAllocation;
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.orders.domain.entities.Order;
-import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
-import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
-import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
-import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
-import com.cashly.cashly_api.quotes.domain.entities.Quote;
-import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
-import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class CreateInvoiceUseCase {
+    private final InvoiceRepository invoices;
+    private final InvoiceOrderGateway orders;
+    private final InvoiceCustomerGateway customers;
+    private final CustomerCreditTermsGateway customerCreditTerms;
+    private final ActorIdentityGateway actors;
+    private final InvoiceCatalogGateway catalog;
+    private final InventoryGateway inventory;
+    private final InvoiceAuthorizationService authorization;
+    private final InvoiceNotificationGateway notifications;
+    private final InvoiceQuoteGateway quotes;
 
-    private final InvoiceRepository invoiceRepository;
-    private final OrderRepository orderRepository;
-    private final CustomerRepository customerRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final InvoiceAuthorizationService authorizationService;
-    private final NotificationService notificationService;
-    private final QuoteRepository quoteRepository;
-
-    @Autowired
-    public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                 OrderRepository orderRepository,
-                                 CustomerRepository customerRepository,
-                                 UserRepository userRepository,
-                                 ProductRepository productRepository,
-                                 WarehouseStockRepository warehouseStockRepository,
-                                 InvoiceAuthorizationService authorizationService,
-                                 NotificationService notificationService,
-                                 QuoteRepository quoteRepository) {
-        this.invoiceRepository = invoiceRepository;
-        this.orderRepository = orderRepository;
-        this.customerRepository = customerRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
-        this.authorizationService = authorizationService;
-        this.notificationService = notificationService;
-        this.quoteRepository = quoteRepository;
-    }
-
-    public CreateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                OrderRepository orderRepository,
-                                CustomerRepository customerRepository,
-                                UserRepository userRepository,
-                                ProductRepository productRepository,
-                                WarehouseStockRepository warehouseStockRepository,
-                                InvoiceAuthorizationService authorizationService,
-                                NotificationService notificationService) {
-        this(invoiceRepository, orderRepository, customerRepository, userRepository, productRepository,
-                warehouseStockRepository, authorizationService, notificationService, null);
+    public CreateInvoiceUseCase(InvoiceRepository invoices, InvoiceOrderGateway orders,
+            InvoiceCustomerGateway customers, CustomerCreditTermsGateway customerCreditTerms,
+            ActorIdentityGateway actors, InvoiceCatalogGateway catalog, InventoryGateway inventory,
+            InvoiceAuthorizationService authorization, InvoiceNotificationGateway notifications,
+            InvoiceQuoteGateway quotes) {
+        this.invoices = invoices;
+        this.orders = orders;
+        this.customers = customers;
+        this.customerCreditTerms = customerCreditTerms;
+        this.actors = actors;
+        this.catalog = catalog;
+        this.inventory = inventory;
+        this.authorization = authorization;
+        this.notifications = notifications;
+        this.quotes = quotes;
     }
 
     @Transactional
     public InvoiceDetailResponse execute(CreateInvoiceRequest request, UUID authenticatedUserId) {
-        UUID resolvedCustomerId;
+        UUID customerId;
         String customerName;
         String customerRif;
-        UUID resolvedCreatedBy;
+        UUID createdBy;
         String createdByName;
-        UUID orderId = null;
-        String orderNumber = null;
+        UUID primaryOrderId = null;
+        String primaryOrderNumber = null;
         List<UUID> orderIds = request.orderIds() == null ? List.of() : request.orderIds();
         List<UUID> quoteIds = request.quoteIds() == null ? List.of() : request.quoteIds();
         List<InvoiceLine> lines;
 
         if (request.orderId() != null) {
-            Order order = orderRepository.findById(OrderId.of(request.orderId()))
-                    .orElseThrow(() -> new OrderNotFoundException(request.orderId()));
-
-            resolvedCustomerId = order.getCustomerId();
-            customerName = order.getCustomerName();
-            customerRif = order.getCustomerRif();
-            resolvedCreatedBy = authenticatedUserId;
-            User user = userRepository.findById(new UserId(authenticatedUserId))
-                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
-            createdByName = user.getUserName().getValue();
-            orderId = order.getId().value();
-            orderNumber = order.getOrderNumber().value();
-
-            lines = order.getLines().stream()
-                    .map(ol -> InvoiceLine.create(
-                            ol.getProductId(),
-                            ol.getProductName(),
-                            ol.getProductCode(),
-                            ol.getQuantity(),
-                            ol.getUnitPrice(),
-                            ol.getAllocations().stream()
-                                    .map(a -> InvoiceLineAllocation.create(
-                                            a.getWarehouseId(),
-                                            a.getAllocated()
-                                    ))
-                                    .toList()
-                    ))
-                    .toList();
+            InvoiceOrderGateway.Order order = orders.findOrder(request.orderId());
+            ActorIdentityGateway.Actor actor = actors.requireActor(authenticatedUserId);
+            customerId = order.customerId();
+            customerName = order.customerName();
+            customerRif = order.customerRif();
+            createdBy = authenticatedUserId;
+            createdByName = actor.name();
+            primaryOrderId = order.id();
+            primaryOrderNumber = order.number();
+            lines = order.lines().stream().map(line -> InvoiceLine.create(
+                    line.productId(), line.productName(), line.productCode(), line.quantity(), line.unitPrice(),
+                    line.allocations().stream().map(allocation -> InvoiceLineAllocation.create(
+                            allocation.warehouseId(), allocation.quantity())).toList())).toList();
         } else {
-            Customer customer = customerRepository.findById(new CustomerId(request.customerId()))
+            InvoiceCustomerGateway.Customer customer = customers.findCustomer(request.customerId())
                     .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + request.customerId()));
-
-            User user = userRepository.findById(new UserId(authenticatedUserId))
-                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
-
-            resolvedCustomerId = customer.getId().getValue();
-            customerName = customer.getLegalName().getValue();
-            customerRif = customer.getRif().getValue();
-            resolvedCreatedBy = user.getId().getValue();
-            createdByName = user.getUserName().getValue();
-
-            lines = request.lines().stream()
-                    .map(lineRequest -> {
-                        Product product = productRepository.findById(lineRequest.productId())
-                                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
-
-                        List<InvoiceLineAllocation> allocations = applyStockAllocations(lineRequest, product.getId());
-
-                        return InvoiceLine.create(
-                                product.getId(),
-                                product.getName(),
-                                product.getCode(),
-                                lineRequest.quantity(),
-                                lineRequest.unitPrice(),
-                                allocations
-                        );
-                    })
-                    .toList();
+            ActorIdentityGateway.Actor actor = actors.requireActor(authenticatedUserId);
+            customerId = customer.id();
+            customerName = customer.name();
+            customerRif = customer.rif();
+            createdBy = authenticatedUserId;
+            createdByName = actor.name();
+            lines = request.lines().stream().map(line -> {
+                InvoiceCatalogGateway.Product product = catalog.findProduct(line.productId())
+                        .orElseThrow(() -> new IllegalArgumentException("Product not found: " + line.productId()));
+                List<InvoiceLineAllocation> allocations = applyStockAllocations(line, product.id());
+                return InvoiceLine.create(product.id(), product.name(), product.code(), line.quantity(),
+                        line.unitPrice(), allocations);
+            }).toList();
         }
 
-        validateSources(orderIds, quoteIds, resolvedCustomerId);
-
-        Customer customer = customerRepository.findById(new CustomerId(resolvedCustomerId))
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + resolvedCustomerId));
-
+        validateSources(orderIds, quoteIds, customerId);
+        InvoiceCustomerGateway.Customer customer = customers.findCustomer(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
         PaymentType paymentType = PaymentType.valueOf(request.paymentType());
         LocalDate issueDate = request.issueDate() != null ? request.issueDate() : LocalDate.now();
-        LocalDate dueDate = issueDate.plusDays(customer.getCreditDays().getValue());
-
+        LocalDate dueDate = issueDate.plusDays(customerCreditTerms.creditDays(customerId));
         int year = LocalDate.now().getYear();
-        int sequence = invoiceRepository.getNextSequenceForYear(year);
-        InvoiceNumber invoiceNumber = InvoiceNumber.of(year, sequence);
+        InvoiceNumber invoiceNumber = InvoiceNumber.of(year, invoices.getNextSequenceForYear(year));
 
-        Invoice invoice = Invoice.create(
-                invoiceNumber,
-                resolvedCustomerId,
-                customerName,
-                customerRif,
-                resolvedCreatedBy,
-                createdByName,
-                orderId,
-                orderNumber,
-                orderIds,
-                quoteIds,
-                paymentType,
-                request.notes(),
-                lines,
-                issueDate,
-                dueDate
-        );
+        Invoice invoice = Invoice.create(invoiceNumber, customerId, customerName, customerRif, createdBy,
+                createdByName, primaryOrderId, primaryOrderNumber, orderIds, quoteIds, paymentType,
+                request.notes(), lines, issueDate, dueDate);
 
-        if (orderId != null) {
-            User user = userRepository.findById(new UserId(authenticatedUserId))
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            authorizationService.authorize(invoice, user,
-                    request.confirmationPassword(), request.useBalance(),
-                    request.balanceAmount(), request.paymentMethodId(),
-                    authenticatedUserId);
+        if (primaryOrderId != null) {
+            ActorIdentityGateway.Actor actor = actors.requireActor(authenticatedUserId);
+            authorization.authorize(invoice, actor, request.confirmationPassword(), request.useBalance(),
+                    request.balanceAmount(), request.paymentMethodId(), authenticatedUserId);
             invoice.confirm();
         }
 
-        Invoice saved = invoiceRepository.save(invoice);
-        notificationService.notifyCustomerInvoiceCreated(
-                saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value());
-        if (orderId != null) {
-            notificationService.notifyCustomerInvoiceConfirmed(
-                    saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value());
+        Invoice saved = invoices.save(invoice);
+        notifications.notifyCustomerInvoiceCreated(saved.getCustomerId(), saved.getId().value(),
+                saved.getInvoiceNumber().value());
+        if (primaryOrderId != null) {
+            notifications.notifyCustomerInvoiceConfirmed(saved.getCustomerId(), saved.getId().value(),
+                    saved.getInvoiceNumber().value());
         }
-
         return InvoiceMapper.toDetailResponse(saved);
     }
 
     private void validateSources(List<UUID> orderIds, List<UUID> quoteIds, UUID customerId) {
-        for (UUID sourceId : orderIds) {
-            Order order = orderRepository.findById(OrderId.of(sourceId))
-                    .orElseThrow(() -> new OrderNotFoundException(sourceId));
-            if (!customerId.equals(order.getCustomerId())) {
-                throw new IllegalArgumentException("Order does not belong to the invoice customer: " + sourceId);
+        for (UUID orderId : orderIds) {
+            InvoiceOrderGateway.Order order = orders.findOrder(orderId);
+            if (!customerId.equals(order.customerId())) {
+                throw new IllegalArgumentException("Order does not belong to the invoice customer: " + orderId);
             }
-            if (order.getStatus() != OrderStatus.DRAFT && order.getStatus() != OrderStatus.CONFIRMED) {
-                throw new IllegalArgumentException("Only draft or confirmed orders can be linked to an invoice: " + sourceId);
+            if (!order.status().equals("DRAFT") && !order.status().equals("CONFIRMED")) {
+                throw new IllegalArgumentException("Only draft or confirmed orders can be linked to an invoice: " + orderId);
             }
         }
-        for (UUID sourceId : quoteIds) {
-            if (quoteRepository == null) {
-                throw new IllegalStateException("Quote repository is not configured");
+        for (UUID quoteId : quoteIds) {
+            InvoiceQuoteGateway.Quote quote = quotes.findQuote(quoteId)
+                    .orElseThrow(() -> new IllegalArgumentException("Quote not found: " + quoteId));
+            if (!customerId.equals(quote.customerId())) {
+                throw new IllegalArgumentException("Quote does not belong to the invoice customer: " + quoteId);
             }
-            Quote quote = quoteRepository.findById(sourceId)
-                    .orElseThrow(() -> new IllegalArgumentException("Quote not found: " + sourceId));
-            if (!customerId.equals(quote.getCustomerId())) {
-                throw new IllegalArgumentException("Quote does not belong to the invoice customer: " + sourceId);
-            }
-            if (quote.getStatus() != QuoteStatus.DRAFT && quote.getStatus() != QuoteStatus.CUSTOMER_DRAFT) {
-                throw new IllegalArgumentException("Only draft quotes can be linked to an invoice: " + sourceId);
+            if (!quote.status().equals("DRAFT")) {
+                throw new IllegalArgumentException("Only draft quotes can be linked to an invoice: " + quoteId);
             }
         }
     }
 
-    private List<InvoiceLineAllocation> applyStockAllocations(CreateInvoiceRequest.InvoiceLineRequest lineRequest, UUID productId) {
-        List<InvoiceLineAllocation> allocations = new ArrayList<>();
-        for (CreateInvoiceRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
-            WarehouseStock stock = warehouseStockRepository
-                    .findByWarehouseIdAndProductId(allocation.warehouseId(), productId)
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "No stock available for warehouse=" + allocation.warehouseId()
-                                    + " product=" + productId));
-
-            stock.reserve(allocation.allocated());
-            warehouseStockRepository.save(stock);
-
-            allocations.add(InvoiceLineAllocation.create(allocation.warehouseId(), BigDecimal.valueOf(allocation.allocated())));
-        }
-        return allocations;
+    private List<InvoiceLineAllocation> applyStockAllocations(
+            CreateInvoiceRequest.InvoiceLineRequest lineRequest, UUID productId) {
+        inventory.reserveAllocations(lineRequest.warehouseAllocations().stream()
+                .map(allocation -> new InventoryGateway.Allocation(allocation.warehouseId(), productId,
+                        allocation.allocated())).toList());
+        return lineRequest.warehouseAllocations().stream()
+                .map(allocation -> InvoiceLineAllocation.create(allocation.warehouseId(),
+                        BigDecimal.valueOf(allocation.allocated()))).toList();
     }
 }

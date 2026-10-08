@@ -13,7 +13,7 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
+import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,14 +47,14 @@ class UpdateInvoiceUseCaseTest {
     private WarehouseStockRepository warehouseStockRepository;
 
     @Mock
-    private StockEnrichmentService stockEnrichmentService;
+    private StockAvailabilityGateway stockEnrichmentService;
 
     private UpdateInvoiceUseCase updateInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         updateInvoiceUseCase = new UpdateInvoiceUseCase(invoiceRepository,
-                productRepository, warehouseStockRepository, stockEnrichmentService);
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), stockEnrichmentService, new com.cashly.cashly_api.invoices.infrastructure.integration.LocalCustomerCreditTermsGateway(new com.cashly.cashly_api.customers.application.queries.RepositoryCustomerCreditTermsQuery(mock(com.cashly.cashly_api.customers.domain.repositories.CustomerRepository.class))));
     }
 
     @Test
@@ -146,7 +146,7 @@ class UpdateInvoiceUseCaseTest {
         UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes", List.of(lineRequest));
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));

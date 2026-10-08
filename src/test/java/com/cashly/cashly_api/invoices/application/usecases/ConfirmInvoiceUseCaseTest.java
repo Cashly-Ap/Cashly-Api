@@ -70,8 +70,16 @@ class ConfirmInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, stockMovementRepository,
-                authorizationService, userRepository, notificationService, cashMovementService);
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
+                        new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(
+                                warehouseStockRepository, stockMovementRepository)),
+                                authorizationService,
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+                        new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository,
+                                mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceNotificationGateway(notificationService),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCashRegisterGateway(
+                        new com.cashly.cashly_api.cashregister.application.services.CashRegisterOperationsService(cashMovementService)));
     }
 
     @Test
@@ -143,7 +151,7 @@ class ConfirmInvoiceUseCaseTest {
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
         when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -164,6 +172,30 @@ class ConfirmInvoiceUseCaseTest {
         ));
     }
 
+    @Test
+    void should_reject_confirmation_and_stop_side_effects_when_allocation_stock_is_missing() {
+        UUID id = UUID.randomUUID();
+        Invoice invoice = buildInvoiceWithLine(id, InvoiceStatus.DRAFT, PaymentType.CASH,
+                UUID.randomUUID(), UUID.randomUUID());
+        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(buildUser(authenticatedUserId)));
+        assertThrows(com.cashly.cashly_api.warehouses.application.exceptions.ProductNotInWarehouseException.class,
+                () -> confirmInvoiceUseCase.execute(id, new ConfirmInvoiceRequest(null, false, null, null), authenticatedUserId));
+        verify(invoiceRepository, never()).save(any());
+        verify(warehouseStockRepository, never()).save(any());
+        verifyNoInteractions(stockMovementRepository, cashMovementService, notificationService);
+    }
+    @Test
+    void should_stop_before_authorization_and_effects_when_actor_is_missing() {
+        UUID id = UUID.randomUUID();
+        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(buildInvoice(id, InvoiceStatus.DRAFT, PaymentType.CASH)));
+        var error = assertThrows(IllegalArgumentException.class, () -> confirmInvoiceUseCase.execute(id,
+                new ConfirmInvoiceRequest(null, false, null, null), authenticatedUserId));
+        assertEquals("Usuario no encontrado", error.getMessage());
+        verify(invoiceRepository, never()).save(any());
+        verifyNoInteractions(authorizationService, warehouseStockRepository, stockMovementRepository, cashMovementService, notificationService);
+    }
     private Invoice buildInvoice(UUID id, InvoiceStatus status, PaymentType paymentType) {
         return Invoice.reconstitute(
                 InvoiceId.of(id),

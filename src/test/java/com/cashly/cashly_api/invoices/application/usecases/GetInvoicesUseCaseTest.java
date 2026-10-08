@@ -1,7 +1,6 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
-import com.cashly.cashly_api.invoices.application.mappers.InvoiceMapper;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
@@ -9,9 +8,8 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceNoteDetailsGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoicePaymentTotalsGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,19 +36,16 @@ class GetInvoicesUseCaseTest {
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private PaymentAllocationRepository paymentAllocationRepository;
+    private InvoicePaymentTotalsGateway paymentTotals;
 
     @Mock
-    private DebitNoteRepository debitNoteRepository;
-
-    @Mock
-    private CreditNoteRepository creditNoteRepository;
+    private InvoiceNoteDetailsGateway noteDetails;
 
     private GetInvoicesUseCase getInvoicesUseCase;
 
     @BeforeEach
     void setUp() {
-        getInvoicesUseCase = new GetInvoicesUseCase(invoiceRepository, paymentAllocationRepository, debitNoteRepository, creditNoteRepository);
+        getInvoicesUseCase = new GetInvoicesUseCase(invoiceRepository, paymentTotals, noteDetails);
     }
 
     @Test
@@ -63,9 +58,9 @@ class GetInvoicesUseCaseTest {
 
         when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(invoices);
-        when(paymentAllocationRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
-        when(debitNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
-        when(creditNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(paymentTotals.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(noteDetails.sumDebitNotes(any())).thenReturn(Map.of());
+        when(noteDetails.sumCreditNotes(any())).thenReturn(Map.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
                 null, null, null, null, null, null, null, null, null);
@@ -75,6 +70,25 @@ class GetInvoicesUseCaseTest {
         verify(invoiceRepository).findAllWithFilters(
                 null, null, null, List.of("DRAFT", "PENDING_PAYMENT", "PARTIALLY_PAID"),
                 (List<String>) null, (String) null, null, null, null, null);
+    }
+
+    @Test
+    void should_EnrichListWithPaymentAndNoteTotalsThroughModuleGateways() {
+        UUID invoiceId = UUID.randomUUID();
+        Invoice invoice = buildInvoice(invoiceId, UUID.randomUUID(), InvoiceStatus.PENDING_PAYMENT);
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(),
+                org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class),
+                any(), any(), any(), any())).thenReturn(List.of(invoice));
+        when(paymentTotals.sumByInvoiceIds(List.of(invoiceId))).thenReturn(Map.of(invoiceId, new BigDecimal("3.00")));
+        when(noteDetails.sumDebitNotes(List.of(invoiceId))).thenReturn(Map.of(invoiceId, new BigDecimal("2.00")));
+        when(noteDetails.sumCreditNotes(List.of(invoiceId))).thenReturn(Map.of(invoiceId, new BigDecimal("1.00")));
+
+        InvoiceListResponse response = getInvoicesUseCase.execute(null, null, null, null, null,
+                null, null, null, null).getFirst();
+
+        assertEquals(new BigDecimal("3.00"), response.paidAmount());
+        assertEquals(new BigDecimal("2.00"), response.debitApplied());
+        assertEquals(new BigDecimal("1.00"), response.creditApplied());
     }
 
     @Test
@@ -151,9 +165,9 @@ class GetInvoicesUseCaseTest {
 
         when(invoiceRepository.findAllWithFilters(any(), any(), any(), org.mockito.ArgumentMatchers.<String>anyList(), org.mockito.ArgumentMatchers.nullable(List.class), org.mockito.ArgumentMatchers.isNull(String.class), any(), any(), any(), any()))
                 .thenReturn(List.of(invoice));
-        when(paymentAllocationRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
-        when(debitNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
-        when(creditNoteRepository.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(paymentTotals.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(noteDetails.sumDebitNotes(any())).thenReturn(Map.of());
+        when(noteDetails.sumCreditNotes(any())).thenReturn(Map.of());
 
         List<InvoiceListResponse> result = getInvoicesUseCase.execute(
                 null, null, customerId, null, null, null, null, null, null);

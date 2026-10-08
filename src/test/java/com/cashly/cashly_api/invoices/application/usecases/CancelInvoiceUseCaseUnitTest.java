@@ -10,9 +10,7 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceNotificationGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,20 +37,17 @@ class CancelInvoiceUseCaseUnitTest {
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private WarehouseStockRepository warehouseStockRepository;
+    private InventoryGateway inventoryGateway;
 
     @Mock
-    private StockMovementRepository stockMovementRepository;
-
-    @Mock
-    private NotificationService notificationService;
+    private InvoiceNotificationGateway notificationService;
 
     private CancelInvoiceUseCase cancelInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         cancelInvoiceUseCase = new CancelInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, stockMovementRepository, notificationService);
+                inventoryGateway, notificationService);
     }
 
     @Test
@@ -119,6 +115,38 @@ class CancelInvoiceUseCaseUnitTest {
         verify(invoiceRepository, never()).save(any());
     }
 
+    @Test
+    void should_release_inventory_for_draft_cancellation() {
+        UUID id = UUID.randomUUID();
+        Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT);
+        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.save(invoice)).thenReturn(invoice);
+        cancelInvoiceUseCase.execute(id, new CancelInvoiceRequest("Reason"));
+        verify(inventoryGateway).cancelInvoice(argThat(command -> command.invoiceId().equals(id)
+                && command.invoiceNumber().equals("INV-2026-00001")), eq(false));
+    }
+
+    @Test
+    void should_restore_inventory_for_confirmed_cancellation() {
+        UUID id = UUID.randomUUID();
+        Invoice invoice = buildInvoice(id, InvoiceStatus.PAID);
+        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.save(invoice)).thenReturn(invoice);
+        cancelInvoiceUseCase.execute(id, new CancelInvoiceRequest("Reason"));
+        verify(inventoryGateway).cancelInvoice(argThat(command -> command.invoiceId().equals(id)), eq(true));
+    }
+
+    @Test
+    void should_stop_cancellation_side_effects_when_inventory_operation_fails() {
+        UUID id = UUID.randomUUID();
+        Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT);
+        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        doThrow(new IllegalStateException("Missing stock")).when(inventoryGateway).cancelInvoice(any(), eq(false));
+        assertThrows(IllegalStateException.class,
+                () -> cancelInvoiceUseCase.execute(id, new CancelInvoiceRequest("Reason")));
+        verify(invoiceRepository, never()).save(any());
+        verifyNoInteractions(notificationService);
+    }
     private Invoice buildInvoice(UUID id, InvoiceStatus status) {
         InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A", "PROD-001",
                 BigDecimal.ONE, BigDecimal.TEN, List.of());

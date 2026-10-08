@@ -1,0 +1,10 @@
+package com.cashly.cashly_api.invoices.application.contracts;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public interface InvoiceFinancialPositionGateway {
+    Position findByInvoiceId(UUID invoiceId);
+
+    record Position(BigDecimal paid, BigDecimal debitNotes, BigDecimal creditNotes) {}
+}

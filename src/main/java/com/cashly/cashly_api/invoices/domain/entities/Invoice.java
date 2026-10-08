@@ -6,10 +6,8 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.returns.domain.entities.Return;
-import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
-import com.cashly.cashly_api.returns.domain.entities.ReturnType;
 
+import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceReturnAdjustment;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -269,24 +267,26 @@ public class Invoice {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void applyReturn(Return return_) {
+    public void applyReturn(InvoiceReturnAdjustment return_) {
         Objects.requireNonNull(return_, "Return cannot be null");
 
         if (this.status == InvoiceStatus.FULLY_RETURNED || this.status == InvoiceStatus.CANCELLED) {
             throw new InvoiceNotReturnableException(this.id, this.status);
         }
 
-        if (!return_.getInvoiceId().value().equals(this.id.value())) {
+        if (!return_.invoiceId().equals(this.id.value())) {
             throw new IllegalArgumentException("La devolución no pertenece a esta factura");
         }
 
-        this.returnedTotal = this.returnedTotal.add(return_.getTotal());
+        validateReturnLineOwnership(return_);
 
-        for (ReturnLine returnLine : return_.getLines()) {
+        this.returnedTotal = this.returnedTotal.add(return_.total());
+
+        for (InvoiceReturnAdjustment.Line returnLine : return_.lines()) {
             this.lines.stream()
-                    .filter(l -> l.getId().value().equals(returnLine.getInvoiceLineId()))
+                    .filter(l -> l.getId().value().equals(returnLine.invoiceLineId()))
                     .findFirst()
-                    .ifPresent(line -> line.accumulateReturnedQuantity(returnLine.getQuantity()));
+                    .ifPresent(line -> line.accumulateReturnedQuantity(returnLine.quantity()));
         }
 
         boolean allFullyReturned = this.lines.stream()
@@ -294,27 +294,29 @@ public class Invoice {
 
         this.returnStatus = allFullyReturned ? InvoiceReturnStatus.FULL : InvoiceReturnStatus.PARTIAL;
 
-        if (return_.getReturnType() == ReturnType.AUTOMATIC || allFullyReturned) {
+        if (return_.closeInvoice() || allFullyReturned) {
             this.status = InvoiceStatus.FULLY_RETURNED;
         }
 
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void revertReturn(Return return_) {
+    public void revertReturn(InvoiceReturnAdjustment return_) {
         Objects.requireNonNull(return_, "Return cannot be null");
 
-        if (!return_.getInvoiceId().value().equals(this.id.value())) {
+        if (!return_.invoiceId().equals(this.id.value())) {
             throw new IllegalArgumentException("La devolución no pertenece a esta factura");
         }
 
-        this.returnedTotal = this.returnedTotal.subtract(return_.getTotal());
+        validateReturnLineOwnership(return_);
 
-        for (ReturnLine returnLine : return_.getLines()) {
+        this.returnedTotal = this.returnedTotal.subtract(return_.total());
+
+        for (InvoiceReturnAdjustment.Line returnLine : return_.lines()) {
             this.lines.stream()
-                    .filter(l -> l.getId().value().equals(returnLine.getInvoiceLineId()))
+                    .filter(l -> l.getId().value().equals(returnLine.invoiceLineId()))
                     .findFirst()
-                    .ifPresent(line -> line.decreaseReturnedQuantity(returnLine.getQuantity()));
+                    .ifPresent(line -> line.decreaseReturnedQuantity(returnLine.quantity()));
         }
 
         boolean anyReturned = this.lines.stream()
@@ -333,6 +335,15 @@ public class Invoice {
         this.updatedAt = LocalDateTime.now();
     }
 
+    private void validateReturnLineOwnership(InvoiceReturnAdjustment adjustment) {
+        for (InvoiceReturnAdjustment.Line returnLine : adjustment.lines()) {
+            boolean belongsToInvoice = this.lines.stream()
+                    .anyMatch(line -> line.getId().value().equals(returnLine.invoiceLineId()));
+            if (!belongsToInvoice) {
+                throw new IllegalArgumentException("Return line does not belong to this invoice");
+            }
+        }
+    }
     private BigDecimal calculateSubtotal() {
         return lines.stream()
                 .map(InvoiceLine::getLineTotal)

@@ -61,7 +61,7 @@ class DuplicateInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         duplicateInvoiceUseCase = new DuplicateInvoiceUseCase(invoiceRepository,
-                warehouseStockRepository, productRepository, customerRepository);
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(new com.cashly.cashly_api.customers.application.queries.RepositoryInvoiceCustomerQuery(customerRepository)));
     }
 
     @Test
@@ -136,7 +136,7 @@ class DuplicateInvoiceUseCaseTest {
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(2);
         when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -213,7 +213,7 @@ class DuplicateInvoiceUseCaseTest {
                 new CreditLimit(BigDecimal.valueOf(50000)),
                 true, LocalDateTime.now(), LocalDateTime.now(),
                 List.of(), List.of(), List.of(),
-                false, null, null, null
+                null, null
         );
 
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));

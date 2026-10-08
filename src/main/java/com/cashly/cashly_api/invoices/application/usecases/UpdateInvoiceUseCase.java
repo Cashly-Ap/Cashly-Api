@@ -10,20 +10,14 @@ import com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.customers.domain.entities.Customer;
-import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
-import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.shared.application.StockEnrichmentService;
-import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
+import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,29 +28,21 @@ import java.time.LocalDate;
 public class UpdateInvoiceUseCase {
 
     private final InvoiceRepository invoiceRepository;
-    private final ProductRepository productRepository;
-    private final WarehouseStockRepository warehouseStockRepository;
-    private final StockEnrichmentService stockEnrichmentService;
-    private final CustomerRepository customerRepository;
+    private final InvoiceCatalogGateway productRepository;
+    private final InventoryGateway inventoryGateway;
+    private final StockAvailabilityGateway stockEnrichmentService;
+    private final CustomerCreditTermsGateway customerRepository;
 
-    @Autowired
     public UpdateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                ProductRepository productRepository,
-                                WarehouseStockRepository warehouseStockRepository,
-                                StockEnrichmentService stockEnrichmentService,
-                                CustomerRepository customerRepository) {
+                                InvoiceCatalogGateway productRepository,
+                                InventoryGateway inventoryGateway,
+                                StockAvailabilityGateway stockEnrichmentService,
+                                CustomerCreditTermsGateway customerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.productRepository = productRepository;
-        this.warehouseStockRepository = warehouseStockRepository;
+        this.inventoryGateway = inventoryGateway;
         this.stockEnrichmentService = stockEnrichmentService;
         this.customerRepository = customerRepository;
-    }
-
-    public UpdateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                ProductRepository productRepository,
-                                WarehouseStockRepository warehouseStockRepository,
-                                StockEnrichmentService stockEnrichmentService) {
-        this(invoiceRepository, productRepository, warehouseStockRepository, stockEnrichmentService, null);
     }
 
     @Transactional
@@ -68,17 +54,17 @@ public class UpdateInvoiceUseCase {
 
         List<InvoiceLine> newLines = request.lines().stream()
                 .map(lineRequest -> {
-                    Product product = productRepository.findById(lineRequest.productId())
+                    InvoiceCatalogGateway.Product product = productRepository.findProduct(lineRequest.productId())
                             .orElseThrow(() -> new IllegalArgumentException(
                                     "Product not found: " + lineRequest.productId()));
 
                     List<InvoiceLineAllocation> allocations = applyStockAllocations(
-                            lineRequest, product.getId());
+                            lineRequest, product.id());
 
                     return InvoiceLine.create(
-                            product.getId(),
-                            product.getName(),
-                            product.getCode(),
+                            product.id(),
+                            product.name(),
+                            product.code(),
                             lineRequest.quantity(),
                             lineRequest.unitPrice(),
                             allocations
@@ -88,27 +74,26 @@ public class UpdateInvoiceUseCase {
 
         PaymentType paymentType = PaymentType.valueOf(request.paymentType());
         invoice.update(paymentType, request.notes(), newLines);
-        if (request.issueDate() != null && customerRepository != null) {
-            Customer customer = customerRepository.findById(new CustomerId(invoice.getCustomerId()))
-                    .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + invoice.getCustomerId()));
-            invoice.updateDates(request.issueDate(), request.issueDate().plusDays(customer.getCreditDays().getValue()));
+        if (request.issueDate() != null) {
+            int creditDays = customerRepository.creditDays(invoice.getCustomerId());
+            invoice.updateDates(request.issueDate(), request.issueDate().plusDays(creditDays));
         }
 
         Invoice saved = invoiceRepository.save(invoice);
 
-        List<StockEnrichmentService.AllocationData> allocations = saved.getLines().stream()
+        List<StockAvailabilityGateway.AllocationData> allocations = saved.getLines().stream()
                 .flatMap(line -> line.getAllocations().stream()
-                        .map(a -> new StockEnrichmentService.AllocationData(
+                        .map(a -> new StockAvailabilityGateway.AllocationData(
                                 a.getWarehouseId(),
                                 line.getProductId(),
                                 a.getAllocated().intValue()
                         )))
                 .toList();
 
-        List<StockEnrichmentService.EnrichedStock> enriched = stockEnrichmentService.enrich(allocations);
+        List<StockAvailabilityGateway.EnrichedStock> enriched = stockEnrichmentService.enrich(allocations);
 
         Map<InvoiceMapper.WarehouseProductKey, InvoiceMapper.WarehouseEnrichment> enrichmentMap = new HashMap<>();
-        for (StockEnrichmentService.EnrichedStock es : enriched) {
+        for (StockAvailabilityGateway.EnrichedStock es : enriched) {
             enrichmentMap.put(
                     new InvoiceMapper.WarehouseProductKey(es.warehouseId(), es.productId()),
                     new InvoiceMapper.WarehouseEnrichment(es.warehouseCode(), es.warehouseName(), es.availableStock())
@@ -119,33 +104,13 @@ public class UpdateInvoiceUseCase {
     }
 
     private void revertStockAllocations(Invoice invoice) {
-        for (InvoiceLine line : invoice.getLines()) {
-            for (InvoiceLineAllocation allocation : line.getAllocations()) {
-                warehouseStockRepository
-                        .findByWarehouseIdAndProductId(allocation.getWarehouseId(), line.getProductId())
-                        .ifPresent(stock -> {
-                            stock.releaseReserved(allocation.getAllocated().intValue());
-                            warehouseStockRepository.save(stock);
-                        });
-            }
-        }
+        inventoryGateway.releaseInvoiceReservations(InventoryGateway.InvoiceInventoryCommand.from(invoice));
     }
 
-    private List<InvoiceLineAllocation> applyStockAllocations(
-            UpdateInvoiceRequest.InvoiceLineRequest lineRequest, UUID productId) {
-
-        List<InvoiceLineAllocation> allocations = new ArrayList<>();
-        for (UpdateInvoiceRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
-            WarehouseStock stock = warehouseStockRepository
-                    .findByWarehouseIdAndProductId(allocation.warehouseId(), productId)
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Stock not found for warehouse=" + allocation.warehouseId() + " product=" + productId));
-
-            stock.reserve(allocation.allocated().intValue());
-            warehouseStockRepository.save(stock);
-
-            allocations.add(InvoiceLineAllocation.create(allocation.warehouseId(), allocation.allocated()));
-        }
-        return allocations;
+    private List<InvoiceLineAllocation> applyStockAllocations(UpdateInvoiceRequest.InvoiceLineRequest lineRequest, UUID productId) {
+        inventoryGateway.reserveAllocations(lineRequest.warehouseAllocations().stream()
+                .map(a -> new InventoryGateway.Allocation(a.warehouseId(), productId, a.allocated().intValue())).toList());
+        return lineRequest.warehouseAllocations().stream()
+                .map(a -> InvoiceLineAllocation.create(a.warehouseId(), a.allocated())).toList();
     }
 }
