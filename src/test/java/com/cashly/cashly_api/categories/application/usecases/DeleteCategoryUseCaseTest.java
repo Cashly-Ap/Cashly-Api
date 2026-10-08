@@ -3,6 +3,7 @@ package com.cashly.cashly_api.categories.application.usecases;
 import com.cashly.cashly_api.categories.application.exceptions.CategoryHasActiveProductsException;
 import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
 import com.cashly.cashly_api.categories.domain.entities.Category;
+import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ class DeleteCategoryUseCaseTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock private CategoryUsageGateway usageGateway;
+
     @InjectMocks
     private DeleteCategoryUseCase useCase;
 
@@ -37,14 +40,14 @@ class DeleteCategoryUseCaseTest {
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
-        when(categoryRepository.countActiveProductsByCategory(id)).thenReturn(0L);
+        when(usageGateway.countActiveProductsByCategory(id)).thenReturn(0L);
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
         useCase.execute(id);
 
         assertFalse(category.isActive());
         verify(categoryRepository).findById(id);
-        verify(categoryRepository).countActiveProductsByCategory(id);
+        verify(usageGateway).countActiveProductsByCategory(id);
         verify(categoryRepository).save(category);
     }
 
@@ -57,7 +60,7 @@ class DeleteCategoryUseCaseTest {
         assertThrows(CategoryNotFoundException.class, () -> useCase.execute(id));
 
         verify(categoryRepository).findById(id);
-        verify(categoryRepository, never()).countActiveProductsByCategory(any());
+        verify(usageGateway, never()).countActiveProductsByCategory(any());
         verify(categoryRepository, never()).save(any());
     }
 
@@ -69,12 +72,12 @@ class DeleteCategoryUseCaseTest {
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
-        when(categoryRepository.countActiveProductsByCategory(id)).thenReturn(3L);
+        when(usageGateway.countActiveProductsByCategory(id)).thenReturn(3L);
 
         assertThrows(CategoryHasActiveProductsException.class, () -> useCase.execute(id));
 
         verify(categoryRepository).findById(id);
-        verify(categoryRepository).countActiveProductsByCategory(id);
+        verify(usageGateway).countActiveProductsByCategory(id);
         verify(categoryRepository, never()).save(any());
     }
 }

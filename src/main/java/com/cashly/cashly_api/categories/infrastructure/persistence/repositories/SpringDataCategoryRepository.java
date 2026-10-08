@@ -28,16 +28,4 @@ public interface SpringDataCategoryRepository extends JpaRepository<CategoryEnti
             @Param("active") Boolean active,
             Pageable pageable);
 
-    @Query(value = """
-        SELECT COUNT(*) FROM products p
-        WHERE p.category_id = :categoryId AND p.active = true
-        """, nativeQuery = true)
-    long countActiveProductsByCategory(@Param("categoryId") UUID categoryId);
-
-    @Query("""
-        SELECT p.categoryId, COUNT(p) FROM ProductEntity p
-        WHERE p.categoryId IN :ids AND p.active = true
-        GROUP BY p.categoryId
-        """)
-    List<Object[]> countActiveProductsByCategoryIds(@Param("ids") Set<UUID> ids);
 }

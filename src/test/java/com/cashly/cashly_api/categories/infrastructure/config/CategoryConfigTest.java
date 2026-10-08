@@ -6,6 +6,7 @@ import com.cashly.cashly_api.categories.application.usecases.DeleteCategoryUseCa
 import com.cashly.cashly_api.categories.application.usecases.GetCategoryUseCase;
 import com.cashly.cashly_api.categories.application.usecases.ListCategoriesUseCase;
 import com.cashly.cashly_api.categories.application.usecases.UpdateCategoryUseCase;
+import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ class CategoryConfigTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock private CategoryUsageGateway usageGateway;
 
     @Mock
     private CategoryMapper categoryMapper;
@@ -38,7 +41,7 @@ class CategoryConfigTest {
     void should_CreateDeleteCategoryUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        DeleteCategoryUseCase useCase = config.deleteCategoryUseCase(categoryRepository);
+        DeleteCategoryUseCase useCase = config.deleteCategoryUseCase(usageGateway, categoryRepository);
 
         assertNotNull(useCase);
     }
@@ -47,7 +50,7 @@ class CategoryConfigTest {
     void should_CreateGetCategoryUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        GetCategoryUseCase useCase = config.getCategoryUseCase(categoryRepository, categoryMapper);
+        GetCategoryUseCase useCase = config.getCategoryUseCase(usageGateway, categoryRepository, categoryMapper);
 
         assertNotNull(useCase);
     }
@@ -56,7 +59,7 @@ class CategoryConfigTest {
     void should_CreateListCategoriesUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        ListCategoriesUseCase useCase = config.listCategoriesUseCase(categoryRepository, categoryMapper);
+        ListCategoriesUseCase useCase = config.listCategoriesUseCase(usageGateway, categoryRepository, categoryMapper);
 
         assertNotNull(useCase);
     }

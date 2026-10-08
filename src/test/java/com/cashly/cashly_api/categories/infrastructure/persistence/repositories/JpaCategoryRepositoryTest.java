@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.categories.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.categories.domain.entities.Category;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository.CategorySummary;
+
 import com.cashly.cashly_api.categories.infrastructure.persistence.entities.CategoryEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -207,33 +207,6 @@ class JpaCategoryRepositoryTest {
     }
 
     @Nested
-    @DisplayName("CountActiveProductsByCategory")
-    class CountActiveProductsByCategory {
-
-        @Test
-        void should_DelegateToSpringDataRepository() {
-            UUID categoryId = UUID.randomUUID();
-            when(springDataRepository.countActiveProductsByCategory(categoryId)).thenReturn(5L);
-
-            long result = repository.countActiveProductsByCategory(categoryId);
-
-            assertEquals(5L, result);
-            verify(springDataRepository).countActiveProductsByCategory(categoryId);
-        }
-
-        @Test
-        void should_ReturnZero_When_NoActiveProducts() {
-            UUID categoryId = UUID.randomUUID();
-            when(springDataRepository.countActiveProductsByCategory(categoryId)).thenReturn(0L);
-
-            long result = repository.countActiveProductsByCategory(categoryId);
-
-            assertEquals(0L, result);
-            verify(springDataRepository).countActiveProductsByCategory(categoryId);
-        }
-    }
-
-    @Nested
     @DisplayName("FindAllWithFilters")
     class FindAllWithFilters {
 
@@ -250,14 +223,14 @@ class JpaCategoryRepositoryTest {
                     anyString(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<CategorySummary> result = repository.findAllWithFilters(
+            PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "name", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
-            assertEquals("Electronics", result.content().get(0).category().getName());
-            assertEquals("Electronic items", result.content().get(0).category().getDescription());
+            assertEquals("Electronics", result.content().get(0).getName());
+            assertEquals("Electronic items", result.content().get(0).getDescription());
             verify(springDataRepository).findAllWithFilters(eq("Electr"), eq(true), any(PageRequest.class));
         }
 
@@ -268,7 +241,7 @@ class JpaCategoryRepositoryTest {
                     any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<CategorySummary> result = repository.findAllWithFilters(
+            PageResponse<Category> result = repository.findAllWithFilters(
                     null, null, 0, 10, "name", "asc");
 
             assertNotNull(result);
@@ -292,7 +265,7 @@ class JpaCategoryRepositoryTest {
                     anyString(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<CategorySummary> result = repository.findAllWithFilters(
+            PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "invalidField", "asc");
 
             assertNotNull(result);
@@ -316,7 +289,7 @@ class JpaCategoryRepositoryTest {
                     anyString(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<CategorySummary> result = repository.findAllWithFilters(
+            PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "name", "desc");
 
             assertNotNull(result);
@@ -340,7 +313,7 @@ class JpaCategoryRepositoryTest {
                     anyString(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<CategorySummary> result = repository.findAllWithFilters(
+            PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "createdAt", "asc");
 
             assertNotNull(result);
@@ -364,7 +337,7 @@ class JpaCategoryRepositoryTest {
                     anyString(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<CategorySummary> result = repository.findAllWithFilters(
+            PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "updatedAt", "asc");
 
             assertNotNull(result);

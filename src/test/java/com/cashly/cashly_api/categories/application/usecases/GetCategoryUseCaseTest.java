@@ -4,6 +4,7 @@ import com.cashly.cashly_api.categories.application.dto.response.CategoryDetailR
 import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
 import com.cashly.cashly_api.categories.application.mappers.CategoryMapper;
 import com.cashly.cashly_api.categories.domain.entities.Category;
+import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ class GetCategoryUseCaseTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock private CategoryUsageGateway usageGateway;
+
     @Mock
     private CategoryMapper categoryMapper;
 
@@ -44,7 +47,7 @@ class GetCategoryUseCaseTest {
                 category.getCreatedAt(), category.getUpdatedAt());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
-        when(categoryRepository.countActiveProductsByCategory(id)).thenReturn(5L);
+        when(usageGateway.countActiveProductsByCategory(id)).thenReturn(5L);
         when(categoryMapper.toDetailResponse(category, 5L)).thenReturn(expectedResponse);
 
         CategoryDetailResponse result = useCase.execute(id);
@@ -53,7 +56,7 @@ class GetCategoryUseCaseTest {
         assertEquals("Test Category", result.name());
         assertEquals(5L, result.productCount());
         verify(categoryRepository).findById(id);
-        verify(categoryRepository).countActiveProductsByCategory(id);
+        verify(usageGateway).countActiveProductsByCategory(id);
         verify(categoryMapper).toDetailResponse(category, 5L);
     }
 
@@ -66,6 +69,6 @@ class GetCategoryUseCaseTest {
         assertThrows(CategoryNotFoundException.class, () -> useCase.execute(id));
 
         verify(categoryRepository).findById(id);
-        verify(categoryRepository, never()).countActiveProductsByCategory(any());
+        verify(usageGateway, never()).countActiveProductsByCategory(any());
     }
 }

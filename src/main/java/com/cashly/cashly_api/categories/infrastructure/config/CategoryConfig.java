@@ -3,6 +3,7 @@ package com.cashly.cashly_api.categories.infrastructure.config;
 import com.cashly.cashly_api.categories.application.mappers.CategoryMapper;
 import com.cashly.cashly_api.categories.application.usecases.*;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
+import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,15 +22,15 @@ public class CategoryConfig {
     }
 
     @Bean
-    public GetCategoryUseCase getCategoryUseCase(CategoryRepository categoryRepository,
+    public GetCategoryUseCase getCategoryUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository,
                                                   CategoryMapper categoryMapper) {
-        return new GetCategoryUseCase(categoryRepository, categoryMapper);
+        return new GetCategoryUseCase(usageGateway, categoryRepository, categoryMapper);
     }
 
     @Bean
-    public ListCategoriesUseCase listCategoriesUseCase(CategoryRepository categoryRepository,
+    public ListCategoriesUseCase listCategoriesUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository,
                                                         CategoryMapper categoryMapper) {
-        return new ListCategoriesUseCase(categoryRepository, categoryMapper);
+        return new ListCategoriesUseCase(usageGateway, categoryRepository, categoryMapper);
     }
 
     @Bean
@@ -39,7 +40,7 @@ public class CategoryConfig {
     }
 
     @Bean
-    public DeleteCategoryUseCase deleteCategoryUseCase(CategoryRepository categoryRepository) {
-        return new DeleteCategoryUseCase(categoryRepository);
+    public DeleteCategoryUseCase deleteCategoryUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository) {
+        return new DeleteCategoryUseCase(usageGateway, categoryRepository);
     }
 }

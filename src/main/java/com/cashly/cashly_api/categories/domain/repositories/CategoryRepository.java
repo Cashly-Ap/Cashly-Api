@@ -14,10 +14,8 @@ public interface CategoryRepository {
     List<Category> findAllById(Set<UUID> ids);
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);
-    long countActiveProductsByCategory(UUID categoryId);
-    PageResponse<CategorySummary> findAllWithFilters(String search, Boolean active,
+    PageResponse<Category> findAllWithFilters(String search, Boolean active,
                                                       int page, int size,
                                                       String orderBy, String orderDir);
 
-    record CategorySummary(Category category, long productCount) {}
 }

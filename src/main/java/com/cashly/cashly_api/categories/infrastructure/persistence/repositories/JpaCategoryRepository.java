@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.categories.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.categories.domain.entities.Category;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import com.cashly.cashly_api.categories.infrastructure.persistence.entities.CategoryEntity;
@@ -10,11 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class JpaCategoryRepository implements CategoryRepository {
@@ -69,12 +69,7 @@ public class JpaCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public long countActiveProductsByCategory(UUID categoryId) {
-        return springDataRepository.countActiveProductsByCategory(categoryId);
-    }
-
-    @Override
-    public PageResponse<CategorySummary> findAllWithFilters(String search, Boolean active,
+    public PageResponse<Category> findAllWithFilters(String search, Boolean active,
                                                               int page, int size,
                                                               String orderBy, String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "name";
@@ -83,19 +78,8 @@ public class JpaCategoryRepository implements CategoryRepository {
 
         Page<CategoryEntity> result = springDataRepository.findAllWithFilters(search, active, pageable);
 
-        Set<UUID> ids = result.stream().map(CategoryEntity::getId).collect(Collectors.toSet());
-        Map<UUID, Long> productCounts = springDataRepository.countActiveProductsByCategoryIds(ids).stream()
-                .collect(Collectors.toMap(
-                        row -> (UUID) row[0],
-                        row -> ((Number) row[1]).longValue()
-                ));
+        Page<Category> mapped = result.map(CategoryEntity::toDomain);
 
-        Page<CategorySummary> mapped = result.map(entity -> {
-            Category category = entity.toDomain();
-            long count = productCounts.getOrDefault(entity.getId(), 0L);
-            return new CategorySummary(category, count);
-        });
-
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 }
