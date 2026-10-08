@@ -35,7 +35,7 @@ import com.cashly.cashly_api.quotes.domain.exceptions.InvalidQuoteAllocationExce
 import com.cashly.cashly_api.quotes.domain.exceptions.InvalidQuoteLineException;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteStateException;
-import com.cashly.cashly_api.shared.services.exceptions.CreditLimitExceededException;
+import com.cashly.cashly_api.customers.application.exceptions.CreditLimitExceededException;
 import com.cashly.cashly_api.warehouses.application.exceptions.DuplicateWarehouseCodeException;
 import com.cashly.cashly_api.warehouses.application.exceptions.InsufficientStockException;
 import com.cashly.cashly_api.warehouses.application.exceptions.ProductNotInWarehouseException;
@@ -386,7 +386,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<Map<String, Object>> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+    public ResponseEntity<Map<String, Object>> handleAuthorizationDenied(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(createErrorResponse(HttpStatus.FORBIDDEN, "Access denied",
                         "You do not have permission to access this resource"));

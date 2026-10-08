@@ -36,9 +36,6 @@ public class CorsConfig {
         configuration.addAllowedOriginPattern("http://127.0.0.1:*");
         configuration.addAllowedOriginPattern("http://[::1]:*");
         configuration.addAllowedOriginPattern("http://localhost:4000");
-        configuration.addAllowedOriginPattern("https://cashly-portal-web-production.up.railway.app");
-        
-        
         if (allowedOrigins != null && !allowedOrigins.isBlank()) {
             List<String> origins = Arrays.asList(allowedOrigins.split(","));
             for (String origin : origins) {
