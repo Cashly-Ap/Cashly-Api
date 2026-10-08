@@ -65,12 +65,6 @@ public class CustomerEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "portal_access", nullable = false)
-    private boolean portalAccess;
-
-    @Column(name = "portal_password", length = 255)
-    private String portalPassword;
-
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
@@ -103,8 +97,6 @@ public class CustomerEntity {
         entity.active = customer.isActive();
         entity.createdAt = customer.getCreatedAt();
         entity.updatedAt = customer.getUpdatedAt();
-        entity.portalAccess = customer.isPortalAccess();
-        entity.portalPassword = customer.getPortalPassword();
         entity.notes = customer.getNotes();
         entity.priceTypeId = customer.getPriceTypeId();
 
@@ -149,8 +141,6 @@ public class CustomerEntity {
         this.creditLimit = customer.getCreditLimit().getValue();
         this.active = customer.isActive();
         this.updatedAt = customer.getUpdatedAt();
-        this.portalAccess = customer.isPortalAccess();
-        this.portalPassword = customer.getPortalPassword();
         this.notes = customer.getNotes();
         this.priceTypeId = customer.getPriceTypeId();
 
@@ -232,8 +222,6 @@ public class CustomerEntity {
             domainEmails,
             domainPhones,
             domainAddresses,
-            this.portalAccess,
-            this.portalPassword,
             this.notes,
             this.priceTypeId
         );

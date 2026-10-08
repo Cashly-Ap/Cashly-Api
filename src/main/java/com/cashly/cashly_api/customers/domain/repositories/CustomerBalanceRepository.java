@@ -2,8 +2,8 @@ package com.cashly.cashly_api.customers.domain.repositories;
 
 import com.cashly.cashly_api.customers.domain.entities.BalanceTransaction;
 import com.cashly.cashly_api.customers.domain.entities.CustomerBalance;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +16,7 @@ public interface CustomerBalanceRepository {
 
     BalanceTransaction saveTransaction(BalanceTransaction transaction);
 
-    Page<BalanceTransaction> findTransactionsByCustomerId(UUID customerId, Pageable pageable);
+    PageResponse<BalanceTransaction> findTransactionsByCustomerId(UUID customerId, int page, int size);
 
     long countTransactionsByCustomerId(UUID customerId);
 }

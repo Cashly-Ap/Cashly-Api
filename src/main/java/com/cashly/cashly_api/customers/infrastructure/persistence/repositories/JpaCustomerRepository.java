@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.customers.infrastructure.persistence.repositories;
 
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+
 import com.cashly.cashly_api.customers.domain.entities.Customer;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
@@ -56,13 +58,6 @@ public class JpaCustomerRepository implements CustomerRepository {
     }
 
     @Override
-    public Optional<Customer> findActivePortalCustomerByRif(Rif rif) {
-        return springDataRepository
-            .findByRifAndActiveTrueAndPortalAccessTrue(rif.getValue())
-            .map(CustomerEntity::toDomain);
-    }
-
-    @Override
     public boolean existsByRif(Rif rif) {
         return springDataRepository.existsByRif(rif.getValue());
     }
@@ -81,7 +76,7 @@ public class JpaCustomerRepository implements CustomerRepository {
 
     @Override
     public PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active,
-                                                       Boolean portalAccess, String state, String municipality,
+                                                       String state, String municipality,
                                                        String postalCode, Boolean hasActiveWarehouse, int page, int size,
                                                        String orderBy, String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "legalName";
@@ -89,10 +84,10 @@ public class JpaCustomerRepository implements CustomerRepository {
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         Page<CustomerEntity> result = springDataRepository.findAllWithFilters(
-            search, rif, type, active, portalAccess, state, municipality, postalCode, hasActiveWarehouse, pageable);
+            search, rif, type, active, state, municipality, postalCode, hasActiveWarehouse, pageable);
 
         Page<Customer> mapped = result.map(CustomerEntity::toDomain);
-        return PageResponse.from(mapped);
+        return PageResponseMapper.from(mapped);
     }
 
     @Override
@@ -121,11 +116,6 @@ public class JpaCustomerRepository implements CustomerRepository {
     @Override
     public boolean isActive(CustomerId id) {
         return springDataRepository.isActiveById(id.getValue()).orElse(false);
-    }
-
-    @Override
-    public boolean isActivePortalAccess(CustomerId id) {
-        return springDataRepository.isActivePortalAccessById(id.getValue());
     }
 
     @Override

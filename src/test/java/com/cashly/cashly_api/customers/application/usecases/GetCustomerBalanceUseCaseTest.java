@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -87,15 +88,15 @@ class GetCustomerBalanceUseCaseTest {
 
         Page<BalanceTransaction> page = new PageImpl<>(List.of(tx));
 
-        when(customerBalanceRepository.findTransactionsByCustomerId(eq(customerId), any(PageRequest.class)))
-                .thenReturn(page);
+        when(customerBalanceRepository.findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt()))
+                .thenReturn(PageResponseMapper.from(page));
 
         PageResponse<BalanceTransactionResponse> response = useCase.getTransactions(customerId, 0, 10);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
         assertEquals(customerId, response.content().getFirst().customerId());
-        verify(customerBalanceRepository).findTransactionsByCustomerId(eq(customerId), any(PageRequest.class));
+        verify(customerBalanceRepository).findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt());
     }
 
     @Test
@@ -105,14 +106,14 @@ class GetCustomerBalanceUseCaseTest {
 
         Page<BalanceTransaction> emptyPage = Page.empty();
 
-        when(customerBalanceRepository.findTransactionsByCustomerId(eq(customerId), any(PageRequest.class)))
-                .thenReturn(emptyPage);
+        when(customerBalanceRepository.findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt()))
+                .thenReturn(PageResponseMapper.from(emptyPage));
 
         PageResponse<BalanceTransactionResponse> response = useCase.getTransactions(customerId, 0, 10);
 
         assertNotNull(response);
         assertTrue(response.content().isEmpty());
         assertTrue(response.empty());
-        verify(customerBalanceRepository).findTransactionsByCustomerId(eq(customerId), any(PageRequest.class));
+        verify(customerBalanceRepository).findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt());
     }
 }

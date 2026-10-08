@@ -8,7 +8,6 @@ import com.cashly.cashly_api.customers.application.mappers.CustomerMapper;
 import com.cashly.cashly_api.customers.domain.entities.Customer;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -17,14 +16,10 @@ public class UpdateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-    private final PasswordEncoder passwordEncoder;
 
-    public UpdateCustomerUseCase(CustomerRepository customerRepository,
-                                  CustomerMapper customerMapper,
-                                  PasswordEncoder passwordEncoder) {
+    public UpdateCustomerUseCase(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -64,15 +59,6 @@ public class UpdateCustomerUseCase {
             a.address(), a.billing(), a.active(),
             a.state(), a.municipality(), a.postalCode()
         ));
-
-        if (request.portalAccess() != null) {
-            if (Boolean.TRUE.equals(request.portalAccess()) && customer.getPortalPassword() == null) {
-                String encoded = passwordEncoder.encode(customer.getRif().getValue());
-                customer.enablePortalAccess(encoded);
-            } else {
-                customer.setPortalAccess(request.portalAccess());
-            }
-        }
 
         Customer saved = customerRepository.save(customer);
         return customerMapper.toDetailResponse(saved, !customerRepository.hasAssociatedRecords(customer.getId()));

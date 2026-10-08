@@ -1,21 +1,21 @@
 package com.cashly.cashly_api.customers.application.usecases.credit;
 
 import com.cashly.cashly_api.customers.application.dto.response.OverdueInvoiceResponse;
-import com.cashly.cashly_api.customers.application.services.CreditValidationService;
+import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
 
 public class GetOverdueInvoicesUseCase {
 
-    private final CreditValidationService creditValidationService;
+    private final CreditValidationGateway creditValidationGateway;
 
-    public GetOverdueInvoicesUseCase(CreditValidationService creditValidationService) {
-        this.creditValidationService = creditValidationService;
+    public GetOverdueInvoicesUseCase(CreditValidationGateway creditValidationGateway) {
+        this.creditValidationGateway = creditValidationGateway;
     }
 
     @Transactional
     public List<OverdueInvoiceResponse> execute() {
-        return creditValidationService.findAllOverdueInvoices();
+        return creditValidationGateway.findAllOverdueInvoices();
     }
 }

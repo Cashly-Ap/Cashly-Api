@@ -7,8 +7,9 @@ import com.cashly.cashly_api.customers.domain.entities.CustomerWarehouseAccess;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+
+import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
+import com.cashly.cashly_api.customers.application.contracts.WarehouseSnapshot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class ListCustomerWarehousesUseCaseTest {
     private CustomerRepository customerRepository;
 
     @Mock
-    private WarehouseRepository warehouseRepository;
+    private WarehouseDirectoryGateway warehouseRepository;
 
     private ListCustomerWarehousesUseCase useCase;
 
@@ -55,8 +56,8 @@ class ListCustomerWarehousesUseCaseTest {
         CustomerWarehouseAccess access1 = CustomerTestHelper.buildAccess(customerId, warehouseId1);
         CustomerWarehouseAccess access2 = CustomerTestHelper.buildAccess(customerId, warehouseId2);
 
-        Warehouse warehouse1 = CustomerTestHelper.buildWarehouse(warehouseId1);
-        Warehouse warehouse2 = CustomerTestHelper.buildWarehouse(warehouseId2);
+        WarehouseSnapshot warehouse1 = new WarehouseSnapshot(warehouseId1, "Main Warehouse");
+        WarehouseSnapshot warehouse2 = new WarehouseSnapshot(warehouseId2, "Main Warehouse");
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
         when(accessRepository.findByCustomerId(customerId)).thenReturn(List.of(access1, access2));

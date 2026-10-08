@@ -10,9 +10,7 @@ import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.domain.services.CustomerCodeGenerator;
 import com.cashly.cashly_api.customers.domain.valueobjects.*;
-import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -22,22 +20,19 @@ public class RegisterCustomerUseCase {
     private final CustomerRepository customerRepository;
     private final CustomerCodeGenerator customerCodeGenerator;
     private final CustomerMapper customerMapper;
-    private final PasswordEncoder passwordEncoder;
     private final CustomerWarehouseAccessRepository warehouseAccessRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final WarehouseDirectoryGateway warehouseDirectory;
 
     public RegisterCustomerUseCase(CustomerRepository customerRepository,
                                     CustomerCodeGenerator customerCodeGenerator,
                                     CustomerMapper customerMapper,
-                                    PasswordEncoder passwordEncoder,
                                     CustomerWarehouseAccessRepository warehouseAccessRepository,
-                                    WarehouseRepository warehouseRepository) {
+                                    WarehouseDirectoryGateway warehouseDirectory) {
         this.customerRepository = customerRepository;
         this.customerCodeGenerator = customerCodeGenerator;
         this.customerMapper = customerMapper;
-        this.passwordEncoder = passwordEncoder;
         this.warehouseAccessRepository = warehouseAccessRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.warehouseDirectory = warehouseDirectory;
     }
 
     @Transactional
@@ -73,11 +68,6 @@ public class RegisterCustomerUseCase {
             a.state(), a.municipality(), a.postalCode()
         ));
 
-        if (Boolean.TRUE.equals(request.portalAccess())) {
-            String encoded = passwordEncoder.encode(request.rif());
-            customer.enablePortalAccess(encoded);
-        }
-
         Customer saved = customerRepository.save(customer);
         grantWarehouseAccess(saved.getId().getValue(), request.warehouseIds(), grantedBy);
         return customerMapper.toCreateResponse(saved);
@@ -85,8 +75,7 @@ public class RegisterCustomerUseCase {
 
     private void grantWarehouseAccess(UUID customerId, java.util.List<UUID> warehouseIds, UUID grantedBy) {
         for (UUID warehouseId : warehouseIds) {
-            warehouseRepository.findById(warehouseId)
-                    .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
+            warehouseDirectory.requireById(warehouseId);
             warehouseAccessRepository.save(CustomerWarehouseAccess.create(customerId, warehouseId, grantedBy));
         }
     }

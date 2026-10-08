@@ -127,30 +127,6 @@ class JpaCustomerRepositoryTest {
     }
 
     @Nested
-    @DisplayName("FindActivePortalCustomerByRif")
-    class FindActivePortalCustomerByRif {
-
-        @Test
-        void should_ReturnActivePortalCustomer() {
-            Customer customer = createTestCustomer();
-            CustomerEntity entity = CustomerEntity.fromDomain(customer);
-
-            when(springDataRepository
-                    .findByRifAndActiveTrueAndPortalAccessTrue(
-                            customer.getRif().getValue()))
-                    .thenReturn(Optional.of(entity));
-
-            Optional<Customer> result = adapter.findActivePortalCustomerByRif(customer.getRif());
-
-            assertTrue(result.isPresent());
-            assertEquals(customer.getId(), result.get().getId());
-            verify(springDataRepository)
-                    .findByRifAndActiveTrueAndPortalAccessTrue(
-                            customer.getRif().getValue());
-        }
-    }
-
-    @Nested
     @DisplayName("Rif uniqueness")
     class RifUniqueness {
 
@@ -219,18 +195,18 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isEmpty()).thenReturn(false);
 
             when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, null, 0, 20, "legalName", "asc");
+                    null, null, null, null, null, null, null, null, 0, 20, "legalName", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
             assertEquals(customer.getId(), result.content().get(0).getId());
             verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -250,17 +226,17 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isEmpty()).thenReturn(true);
 
             when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, null, 0, 20, "legalName", "asc");
+                    null, null, null, null, null, null, null, null, 0, 20, "legalName", "asc");
 
             assertNotNull(result);
             assertTrue(result.empty());
             assertTrue(result.content().isEmpty());
             verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -281,16 +257,16 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isEmpty()).thenReturn(false);
 
             when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, null, 0, 20, "invalidField", "asc");
+                    null, null, null, null, null, null, null, null, 0, 20, "invalidField", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -311,17 +287,17 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isEmpty()).thenReturn(false);
 
             when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, null, 0, 20, "legalName", "desc");
+                    null, null, null, null, null, null, null, null, 0, 20, "legalName", "desc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(customer.getId(), result.content().get(0).getId());
             verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
         }
     }
 
@@ -407,8 +383,6 @@ class JpaCustomerRepositoryTest {
                 List.of(),
                 List.of(),
                 List.of(),
-                false,
-                null,
                 null,
                 null
         );

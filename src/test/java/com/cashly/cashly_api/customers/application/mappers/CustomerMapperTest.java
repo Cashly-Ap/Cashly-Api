@@ -39,7 +39,6 @@ class CustomerMapperTest {
         assertEquals(customer.getType().name(), response.type());
         assertEquals(customer.isActive(), response.active());
         assertEquals(customer.getPaymentType(), response.paymentType());
-        assertEquals(customer.isPortalAccess(), response.portalAccess());
     }
 
     @Test
@@ -61,7 +60,6 @@ class CustomerMapperTest {
         assertEquals(customer.isActive(), response.active());
         assertEquals(customer.getPaymentType(), response.paymentType());
         assertEquals(customer.getCreatedAt(), response.createdAt());
-        assertEquals(customer.isPortalAccess(), response.portalAccess());
         assertEquals(customer.getNotes(), response.notes());
         assertEquals(customer.getPriceTypeId(), response.priceTypeId());
     }
@@ -85,7 +83,6 @@ class CustomerMapperTest {
         assertEquals(customer.isActive(), response.active());
         assertEquals(customer.getPaymentType(), response.paymentType());
         assertEquals(customer.getCreatedAt(), response.createdAt());
-        assertEquals(customer.isPortalAccess(), response.portalAccess());
         assertEquals(customer.getNotes(), response.notes());
         assertEquals(customer.getPriceTypeId(), response.priceTypeId());
     }
@@ -128,7 +125,7 @@ class CustomerMapperTest {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 List.of(), List.of(), List.of(),
-                false, null, null, null);
+                null, null);
 
         CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
 
@@ -165,8 +162,6 @@ class CustomerMapperTest {
                 emails,
                 phones,
                 addresses,
-                true,
-                "hashed-password",
                 "Important notes",
                 UUID.randomUUID()
         );

@@ -29,11 +29,11 @@ final class CustomerTestHelper {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 List.of(), List.of(), List.of(),
-                false, null, null, null
+                null, null
         );
     }
 
-    static Customer buildCustomer(UUID id, boolean active, boolean portalAccess) {
+    static Customer buildCustomer(UUID id, boolean active) {
         return Customer.reconstitute(
                 new CustomerId(id),
                 new CustomerCode(1001L),
@@ -47,7 +47,7 @@ final class CustomerTestHelper {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 List.of(), List.of(), List.of(),
-                portalAccess, portalAccess ? "hashed-pw" : null, null, null
+                null, null
         );
     }
 

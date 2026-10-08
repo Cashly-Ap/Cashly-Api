@@ -24,12 +24,12 @@ public class ListCustomersUseCase {
 
     @Transactional(readOnly = true)
     public PageResponse<CustomerListResponse> execute(String search, String rif, String type, Boolean active,
-                                                       Boolean portalAccess, String state, String municipality,
+                                                       String state, String municipality,
                                                        String postalCode, Boolean hasActiveWarehouse, int page, int size,
                                                        String orderBy, String orderDir) {
         Boolean effectiveActive = active != null ? active : true;
         PageResponse<Customer> customerPage = customerRepository.findAllWithFilters(
-            search, rif, type, effectiveActive, portalAccess, state, municipality, postalCode, hasActiveWarehouse,
+            search, rif, type, effectiveActive, state, municipality, postalCode, hasActiveWarehouse,
             page, size, orderBy, orderDir);
 
         Set<UUID> idsWithRecords = customerRepository.findIdsWithAssociatedRecords(

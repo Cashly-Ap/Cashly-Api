@@ -22,7 +22,6 @@ public record CustomerDetailResponse(
     List<EmailResponse> emails,
     List<PhoneResponse> phones,
     List<AddressResponse> addresses,
-    boolean portalAccess,
     String notes,
     UUID priceTypeId,
     boolean deletable

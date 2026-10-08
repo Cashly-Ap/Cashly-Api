@@ -9,8 +9,9 @@ import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+
+import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
+import com.cashly.cashly_api.customers.application.contracts.WarehouseSnapshot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class GrantWarehouseAccessUseCaseTest {
     private CustomerRepository customerRepository;
 
     @Mock
-    private WarehouseRepository warehouseRepository;
+    private WarehouseDirectoryGateway warehouseRepository;
 
     private GrantWarehouseAccessUseCase useCase;
 
@@ -53,11 +54,11 @@ class GrantWarehouseAccessUseCaseTest {
     @DisplayName("should grant warehouse access successfully")
     void shouldGrantWarehouseAccessSuccessfully() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
-        Warehouse warehouse = CustomerTestHelper.buildWarehouse(warehouseId);
+        WarehouseSnapshot warehouse = new WarehouseSnapshot(warehouseId, "Main Warehouse");
         CustomerWarehouseAccess access = CustomerTestHelper.buildAccess(customerId, warehouseId);
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(warehouseRepository.requireById(warehouseId)).thenReturn(warehouse);
         when(accessRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId)).thenReturn(false);
         when(accessRepository.save(any(CustomerWarehouseAccess.class))).thenAnswer(inv -> {
             CustomerWarehouseAccess saved = inv.getArgument(0);
@@ -85,7 +86,7 @@ class GrantWarehouseAccessUseCaseTest {
                 () -> useCase.execute(customerId, warehouseId, grantedBy));
 
         verify(customerRepository).findById(new CustomerId(customerId));
-        verify(warehouseRepository, never()).findById(any());
+        verify(warehouseRepository, never()).requireById(any());
         verify(accessRepository, never()).save(any());
     }
 
@@ -95,12 +96,12 @@ class GrantWarehouseAccessUseCaseTest {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.requireById(warehouseId)).thenThrow(new WarehouseNotFoundException(warehouseId));
 
         assertThrows(WarehouseNotFoundException.class,
                 () -> useCase.execute(customerId, warehouseId, grantedBy));
 
-        verify(warehouseRepository).findById(warehouseId);
+        verify(warehouseRepository).requireById(warehouseId);
         verify(accessRepository, never()).save(any());
     }
 
@@ -108,10 +109,10 @@ class GrantWarehouseAccessUseCaseTest {
     @DisplayName("should throw CustomerWarehouseAccessAlreadyExistsException when access already exists")
     void shouldThrowWhenAccessAlreadyExists() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
-        Warehouse warehouse = CustomerTestHelper.buildWarehouse(warehouseId);
+        WarehouseSnapshot warehouse = new WarehouseSnapshot(warehouseId, "Main Warehouse");
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(warehouseRepository.requireById(warehouseId)).thenReturn(warehouse);
         when(accessRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId)).thenReturn(true);
 
         assertThrows(CustomerWarehouseAccessAlreadyExistsException.class,

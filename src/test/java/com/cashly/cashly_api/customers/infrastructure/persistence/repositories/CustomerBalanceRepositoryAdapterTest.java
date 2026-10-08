@@ -16,6 +16,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -197,11 +198,11 @@ class CustomerBalanceRepositoryAdapterTest {
 
             UUID customerId = UUID.randomUUID();
             Pageable pageable = PageRequest.of(0, 20);
-            Page<BalanceTransaction> result = adapter.findTransactionsByCustomerId(customerId, pageable);
+            PageResponse<BalanceTransaction> result = adapter.findTransactionsByCustomerId(customerId, pageable.getPageNumber(), pageable.getPageSize());
 
             assertNotNull(result);
-            assertEquals(1, result.getContent().size());
-            assertEquals(transaction.getId(), result.getContent().get(0).getId());
+            assertEquals(1, result.content().size());
+            assertEquals(transaction.getId(), result.content().get(0).getId());
             verify(jpaRepository).findTransactionsByCustomerId(customerId, pageable);
         }
 
@@ -214,10 +215,10 @@ class CustomerBalanceRepositoryAdapterTest {
 
             UUID customerId = UUID.randomUUID();
             Pageable pageable = PageRequest.of(0, 20);
-            Page<BalanceTransaction> result = adapter.findTransactionsByCustomerId(customerId, pageable);
+            PageResponse<BalanceTransaction> result = adapter.findTransactionsByCustomerId(customerId, pageable.getPageNumber(), pageable.getPageSize());
 
             assertNotNull(result);
-            assertTrue(result.getContent().isEmpty());
+            assertTrue(result.content().isEmpty());
             verify(jpaRepository).findTransactionsByCustomerId(customerId, pageable);
         }
     }

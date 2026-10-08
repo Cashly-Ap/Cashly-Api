@@ -6,8 +6,8 @@ import com.cashly.cashly_api.customers.application.mappers.BalanceMapper;
 import com.cashly.cashly_api.customers.domain.entities.BalanceTransaction;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -35,22 +35,22 @@ public class GetCustomerBalanceUseCase {
 
     @Transactional(readOnly = true)
     public PageResponse<BalanceTransactionResponse> getTransactions(UUID customerId, int page, int size) {
-        Page<BalanceTransaction> transactionPage =
-            customerBalanceRepository.findTransactionsByCustomerId(customerId, PageRequest.of(page, size));
+        PageResponse<BalanceTransaction> transactionPage =
+            customerBalanceRepository.findTransactionsByCustomerId(customerId, page, size);
 
-        var content = transactionPage.getContent().stream()
+        var content = transactionPage.content().stream()
             .map(BalanceMapper::toTransactionResponse)
             .toList();
 
         return new PageResponse<>(
             content,
-            transactionPage.getTotalElements(),
-            transactionPage.getTotalPages(),
-            transactionPage.getSize(),
-            transactionPage.getNumber(),
-            transactionPage.isFirst(),
-            transactionPage.isLast(),
-            transactionPage.isEmpty()
+            transactionPage.totalElements(),
+            transactionPage.totalPages(),
+            transactionPage.size(),
+            transactionPage.number(),
+            transactionPage.first(),
+            transactionPage.last(),
+            transactionPage.empty()
         );
     }
 }

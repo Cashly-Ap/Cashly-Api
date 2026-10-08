@@ -2,7 +2,7 @@ package com.cashly.cashly_api.customers.application.usecases.credit;
 
 import com.cashly.cashly_api.customers.application.dto.response.CreditStatusResponse;
 import com.cashly.cashly_api.customers.application.dto.response.OverdueInvoiceResponse;
-import com.cashly.cashly_api.customers.application.services.CreditValidationService;
+import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,13 +23,13 @@ import static org.mockito.Mockito.*;
 class GetCustomerCreditStatusUseCaseTest {
 
     @Mock
-    private CreditValidationService creditValidationService;
+    private CreditValidationGateway creditValidationGateway;
 
     private GetCustomerCreditStatusUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GetCustomerCreditStatusUseCase(creditValidationService);
+        useCase = new GetCustomerCreditStatusUseCase(creditValidationGateway);
     }
 
     @Test
@@ -41,7 +41,7 @@ class GetCustomerCreditStatusUseCaseTest {
                 new BigDecimal("200.00"), new BigDecimal("3700.00"),
                 List.of(), false, true
         );
-        when(creditValidationService.getCreditStatus(customerId)).thenReturn(expected);
+        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(expected);
 
         CreditStatusResponse result = useCase.execute(customerId);
 
@@ -50,7 +50,7 @@ class GetCustomerCreditStatusUseCaseTest {
         assertEquals(new BigDecimal("5000.00"), result.creditLimit());
         assertEquals(new BigDecimal("3700.00"), result.availableCredit());
         assertTrue(result.canCreateCreditInvoice());
-        verify(creditValidationService).getCreditStatus(customerId);
+        verify(creditValidationGateway).getCreditStatus(customerId);
     }
 
     @Test
@@ -66,13 +66,13 @@ class GetCustomerCreditStatusUseCaseTest {
                 BigDecimal.ZERO, new BigDecimal("3500.00"),
                 overdue, true, false
         );
-        when(creditValidationService.getCreditStatus(customerId)).thenReturn(expected);
+        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(expected);
 
         CreditStatusResponse result = useCase.execute(customerId);
 
         assertTrue(result.hasOverdue());
         assertFalse(result.canCreateCreditInvoice());
         assertEquals(1, result.overdueInvoices().size());
-        verify(creditValidationService).getCreditStatus(customerId);
+        verify(creditValidationGateway).getCreditStatus(customerId);
     }
 }

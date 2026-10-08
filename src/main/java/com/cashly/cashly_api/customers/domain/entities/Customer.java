@@ -25,8 +25,6 @@ public class Customer {
     private List<CustomerEmail> emails;
     private List<CustomerPhone> phones;
     private List<CustomerAddress> addresses;
-    private boolean portalAccess;
-    private String portalPassword;
     private String notes;
     private UUID priceTypeId;
 
@@ -34,7 +32,7 @@ public class Customer {
                      Rif rif, CustomerAlias alias, CreditDays creditDays, CreditLimit creditLimit,
                      boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
                      List<CustomerEmail> emails, List<CustomerPhone> phones, List<CustomerAddress> addresses,
-                     boolean portalAccess, String portalPassword, String notes, UUID priceTypeId) {
+                     String notes, UUID priceTypeId) {
         this.id = id;
         this.code = code;
         this.legalName = legalName;
@@ -49,8 +47,6 @@ public class Customer {
         this.emails = new ArrayList<>(emails != null ? emails : List.of());
         this.phones = new ArrayList<>(phones != null ? phones : List.of());
         this.addresses = new ArrayList<>(addresses != null ? addresses : List.of());
-        this.portalAccess = portalAccess;
-        this.portalPassword = portalPassword;
         this.notes = notes;
         this.priceTypeId = priceTypeId;
     }
@@ -63,7 +59,7 @@ public class Customer {
             CustomerId.generate(), code, legalName, type, rif, alias,
             creditDays, creditLimit, true, now, now,
             new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-            false, null, null, null
+            null, null
         );
     }
 
@@ -73,11 +69,9 @@ public class Customer {
                                          boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
                                          List<CustomerEmail> emails, List<CustomerPhone> phones,
                                          List<CustomerAddress> addresses,
-                                         boolean portalAccess, String portalPassword,
                                          String notes, UUID priceTypeId) {
         return new Customer(id, code, legalName, type, rif, alias, creditDays, creditLimit,
-            active, createdAt, updatedAt, emails, phones, addresses, portalAccess, portalPassword,
-            notes, priceTypeId);
+            active, createdAt, updatedAt, emails, phones, addresses, notes, priceTypeId);
     }
 
     public void updateLegalName(LegalName legalName) {
@@ -193,31 +187,8 @@ public class Customer {
     public List<CustomerEmail> getEmails() { return Collections.unmodifiableList(emails); }
     public List<CustomerPhone> getPhones() { return Collections.unmodifiableList(phones); }
     public List<CustomerAddress> getAddresses() { return Collections.unmodifiableList(addresses); }
-    public boolean isPortalAccess() { return portalAccess; }
-    public String getPortalPassword() { return portalPassword; }
     public String getNotes() { return notes; }
     public UUID getPriceTypeId() { return priceTypeId; }
-
-    public void enablePortalAccess(String encodedPassword) {
-        this.portalAccess = true;
-        this.portalPassword = encodedPassword;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void disablePortalAccess() {
-        this.portalAccess = false;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void setPortalAccess(boolean enabled) {
-        this.portalAccess = enabled;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void changePortalPassword(String encodedPassword) {
-        this.portalPassword = encodedPassword;
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Override
     public boolean equals(Object obj) {

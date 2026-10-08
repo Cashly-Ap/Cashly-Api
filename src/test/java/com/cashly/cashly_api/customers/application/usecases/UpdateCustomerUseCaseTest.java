@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,7 +26,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,16 +38,13 @@ class UpdateCustomerUseCaseTest {
     @Mock
     private CustomerMapper mapper;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
     private UpdateCustomerUseCase useCase;
 
     private final UUID customerId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
-        useCase = new UpdateCustomerUseCase(customerRepository, mapper, passwordEncoder);
+        useCase = new UpdateCustomerUseCase(customerRepository, mapper);
     }
 
     @Test
@@ -63,7 +58,7 @@ class UpdateCustomerUseCaseTest {
                 List.of(new EmailRequest("new@example.com")),
                 List.of(new PhoneRequest("+58-9876543210")),
                 List.of(new AddressRequest("456 New St", true, true, "State", "Mun", "2000")),
-                false, "Updated notes", null
+                "Updated notes", null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -73,7 +68,7 @@ class UpdateCustomerUseCaseTest {
                         customer.getId().toString(), 1001L, "Updated Corp", "BUSINESS",
                         "J-98765432-1", "Updated", 45, new BigDecimal("1000.00"), true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, "Updated notes", null, true
+                        List.of(), List.of(), List.of(), "Updated notes", null, true
                 )
         );
 
@@ -94,7 +89,7 @@ class UpdateCustomerUseCaseTest {
                 "Updated Corp", "BUSINESS", "J-98765432-1", "Updated",
                 45, new BigDecimal("1000.00"), true,
                 List.of(), List.of(), List.of(),
-                false, null, null
+                null, null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -114,7 +109,7 @@ class UpdateCustomerUseCaseTest {
                 "Updated Corp", "BUSINESS", "J-98765432-1", "Updated",
                 45, new BigDecimal("1000.00"), true,
                 List.of(), List.of(), List.of(),
-                false, null, null
+                null, null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
@@ -127,76 +122,15 @@ class UpdateCustomerUseCaseTest {
     }
 
     @Test
-    @DisplayName("should enable portal access with encoded password when portalAccess is true")
-    void shouldEnablePortalAccessWhenTrue() {
-        Customer customer = CustomerTestHelper.buildCustomer(customerId);
-
-        UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
-                30, BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(),
-                true, null, null
-        );
-
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded-pw");
-        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
-                new CustomerDetailResponse(
-                        customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
-                        "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
-                        customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), true, null, null, true
-                )
-        );
-
-        CustomerDetailResponse response = useCase.execute(customerId.toString(), request);
-
-        assertNotNull(response);
-        assertTrue(response.portalAccess());
-        verify(passwordEncoder).encode("J-12345678-9");
-    }
-
-    @Test
-    @DisplayName("should disable portal access when portalAccess is false")
-    void shouldDisablePortalAccessWhenFalse() {
-        Customer customer = CustomerTestHelper.buildCustomer(customerId, true, true);
-
-        UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
-                30, BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(),
-                false, null, null
-        );
-
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
-                new CustomerDetailResponse(
-                        customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
-                        "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
-                        customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
-                )
-        );
-
-        CustomerDetailResponse response = useCase.execute(customerId.toString(), request);
-
-        assertNotNull(response);
-        assertFalse(response.portalAccess());
-        verify(customerRepository).save(any(Customer.class));
-    }
-
-    @Test
     @DisplayName("should activate customer when active is true")
     void shouldActivateCustomerWhenActiveIsTrue() {
-        Customer customer = CustomerTestHelper.buildCustomer(customerId, false, false);
+        Customer customer = CustomerTestHelper.buildCustomer(customerId, false);
 
         UpdateCustomerRequest request = new UpdateCustomerRequest(
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
-                false, null, null
+                null, null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -206,7 +140,7 @@ class UpdateCustomerUseCaseTest {
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
+                        List.of(), List.of(), List.of(), null, null, true
                 )
         );
 
@@ -219,13 +153,13 @@ class UpdateCustomerUseCaseTest {
     @Test
     @DisplayName("should deactivate customer when active is false")
     void shouldDeactivateCustomerWhenActiveIsFalse() {
-        Customer customer = CustomerTestHelper.buildCustomer(customerId, true, false);
+        Customer customer = CustomerTestHelper.buildCustomer(customerId, true);
 
         UpdateCustomerRequest request = new UpdateCustomerRequest(
                 "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, BigDecimal.ZERO, false,
                 List.of(), List.of(), List.of(),
-                false, null, null
+                null, null
         );
 
         when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
@@ -235,7 +169,7 @@ class UpdateCustomerUseCaseTest {
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, BigDecimal.ZERO, false,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
+                        List.of(), List.of(), List.of(), null, null, true
                 )
         );
 

@@ -33,8 +33,6 @@ class CustomerUnitTest {
         assertTrue(customer.getEmails().isEmpty());
         assertTrue(customer.getPhones().isEmpty());
         assertTrue(customer.getAddresses().isEmpty());
-        assertFalse(customer.isPortalAccess());
-        assertNull(customer.getPortalPassword());
     }
 
     @Test
@@ -60,8 +58,6 @@ class CustomerUnitTest {
                 emails,
                 List.of(),
                 List.of(),
-                true,
-                "hashed-password",
                 "Some notes",
                 UUID.randomUUID()
         );
@@ -78,8 +74,6 @@ class CustomerUnitTest {
         assertEquals(now, customer.getCreatedAt());
         assertEquals(now, customer.getUpdatedAt());
         assertEquals(1, customer.getEmails().size());
-        assertTrue(customer.isPortalAccess());
-        assertEquals("hashed-password", customer.getPortalPassword());
         assertEquals("Some notes", customer.getNotes());
         assertNotNull(customer.getPriceTypeId());
     }
@@ -176,36 +170,6 @@ class CustomerUnitTest {
 
         customer.clearAddresses();
         assertTrue(customer.getAddresses().isEmpty());
-    }
-
-    @Test
-    void should_enable_portal_access() {
-        Customer customer = createTestCustomer();
-        assertFalse(customer.isPortalAccess());
-
-        customer.enablePortalAccess("hashed-password");
-        assertTrue(customer.isPortalAccess());
-        assertEquals("hashed-password", customer.getPortalPassword());
-    }
-
-    @Test
-    void should_disable_portal_access() {
-        Customer customer = createTestCustomer();
-        customer.enablePortalAccess("hashed-password");
-        assertTrue(customer.isPortalAccess());
-
-        customer.disablePortalAccess();
-        assertFalse(customer.isPortalAccess());
-    }
-
-    @Test
-    void should_change_portal_password() {
-        Customer customer = createTestCustomer();
-        customer.enablePortalAccess("old-password");
-        assertEquals("old-password", customer.getPortalPassword());
-
-        customer.changePortalPassword("new-password");
-        assertEquals("new-password", customer.getPortalPassword());
     }
 
     @Test
@@ -327,7 +291,7 @@ class CustomerUnitTest {
                 new Rif("J-11111111-1"), new CustomerAlias("Alias1"),
                 new CreditDays(30), new CreditLimit(new BigDecimal("1000")),
                 true, now, now, List.of(), List.of(), List.of(),
-                false, null, null, null
+                null, null
         );
 
         Customer customer2 = Customer.reconstitute(
@@ -335,7 +299,7 @@ class CustomerUnitTest {
                 new Rif("J-22222222-2"), new CustomerAlias("Alias2"),
                 new CreditDays(60), new CreditLimit(new BigDecimal("2000")),
                 false, now, now, List.of(), List.of(), List.of(),
-                false, null, null, null
+                null, null
         );
 
         assertEquals(customer1, customer2);

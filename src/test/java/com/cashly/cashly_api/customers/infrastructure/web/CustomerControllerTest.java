@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.customers.infrastructure.web;
 
-import com.cashly.cashly_api.customers.application.dto.request.ChangeCustomerPortalPasswordRequest;
 import com.cashly.cashly_api.customers.application.dto.request.CreateCustomerRequest;
 import com.cashly.cashly_api.customers.application.dto.request.UpdateCustomerRequest;
 import com.cashly.cashly_api.customers.application.dto.response.CustomerCreateResponse;
@@ -45,9 +44,6 @@ class CustomerControllerTest {
     @Mock
     private DeleteCustomerUseCase deleteCustomerUseCase;
 
-    @Mock
-    private ChangeCustomerPortalPasswordUseCase changeCustomerPortalPasswordUseCase;
-
     @InjectMocks
     private CustomerController customerController;
 
@@ -60,7 +56,7 @@ class CustomerControllerTest {
                 customerId, 1001L, "Test Corp", "BUSINESS", "J-12345678-9",
                 "Test", 30, java.math.BigDecimal.ZERO, true,
                 null, LocalDateTime.now(), List.of(), List.of(), List.of(),
-                false, null, null);
+                null, null);
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(grantedBy.toString());
@@ -72,7 +68,7 @@ class CustomerControllerTest {
                 30, java.math.BigDecimal.ZERO, true,
                 List.of(), List.of(), List.of(),
                 List.of(UUID.randomUUID()),
-                false, null, null);
+                null, null);
 
         ResponseEntity<CustomerCreateResponse> result = customerController.create(request, authentication);
 
@@ -87,21 +83,21 @@ class CustomerControllerTest {
     void should_get_all_customers_and_return_200() {
         CustomerListResponse customer = new CustomerListResponse(
                 UUID.randomUUID().toString(), 1001L, "Test", "Test Corp",
-                "J-12345678-9", "BUSINESS", true, null, false, false);
+                "J-12345678-9", "BUSINESS", true, null, false);
 
         PageResponse<CustomerListResponse> pageResponse = new PageResponse<>(
                 List.of(customer), 1L, 1, 10, 0, true, true, false);
 
-        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(),
+        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(),
                 anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(pageResponse);
 
         ResponseEntity<PageResponse<CustomerListResponse>> result = customerController.getAll(
-                null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+                null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
     }
 
     @Test
@@ -110,16 +106,16 @@ class CustomerControllerTest {
         PageResponse<CustomerListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(),
+        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(),
                 anyInt(), anyInt(), anyString(), anyString()))
                 .thenReturn(emptyPage);
 
         ResponseEntity<PageResponse<CustomerListResponse>> result = customerController.getAll(
-                null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+                null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
     }
 
     @Test
@@ -130,7 +126,7 @@ class CustomerControllerTest {
                 id, 1001L, "Test Corp", "BUSINESS", "J-12345678-9", "Test",
                 30, java.math.BigDecimal.ZERO, true, null,
                 LocalDateTime.now(), List.of(), List.of(), List.of(),
-                false, null, null, true);
+                null, null, true);
 
         when(getCustomerUseCase.execute(id)).thenReturn(response);
 
@@ -149,14 +145,14 @@ class CustomerControllerTest {
                 id, 1001L, "Updated Corp", "BUSINESS", "J-12345678-9", "Updated",
                 30, java.math.BigDecimal.ZERO, true, null,
                 LocalDateTime.now(), List.of(), List.of(), List.of(),
-                false, null, null, true);
+                null, null, true);
 
         when(updateCustomerUseCase.execute(eq(id), any(UpdateCustomerRequest.class))).thenReturn(response);
 
         UpdateCustomerRequest request = new UpdateCustomerRequest(
                 "Updated Corp", "BUSINESS", "J-12345678-9", "Updated",
                 30, java.math.BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(), false, null, null);
+                List.of(), List.of(), List.of(), null, null);
 
         ResponseEntity<CustomerDetailResponse> result = customerController.update(id, request);
 
@@ -178,17 +174,4 @@ class CustomerControllerTest {
         verify(deleteCustomerUseCase).execute(id);
     }
 
-    @Test
-    @DisplayName("should change portal password and return 204")
-    void should_change_portal_password_and_return_204() {
-        String id = UUID.randomUUID().toString();
-        ChangeCustomerPortalPasswordRequest request = new ChangeCustomerPortalPasswordRequest("newPassword123");
-        doNothing().when(changeCustomerPortalPasswordUseCase).execute(eq(id), any(ChangeCustomerPortalPasswordRequest.class));
-
-        ResponseEntity<Void> result = customerController.changePortalPassword(id, request);
-
-        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        assertNull(result.getBody());
-        verify(changeCustomerPortalPasswordUseCase).execute(eq(id), any(ChangeCustomerPortalPasswordRequest.class));
-    }
 }

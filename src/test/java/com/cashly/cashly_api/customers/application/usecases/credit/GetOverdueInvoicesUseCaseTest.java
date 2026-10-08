@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.application.usecases.credit;
 
 import com.cashly.cashly_api.customers.application.dto.response.OverdueInvoiceResponse;
-import com.cashly.cashly_api.customers.application.services.CreditValidationService;
+import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,13 +21,13 @@ import static org.mockito.Mockito.*;
 class GetOverdueInvoicesUseCaseTest {
 
     @Mock
-    private CreditValidationService creditValidationService;
+    private CreditValidationGateway creditValidationGateway;
 
     private GetOverdueInvoicesUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GetOverdueInvoicesUseCase(creditValidationService);
+        useCase = new GetOverdueInvoicesUseCase(creditValidationGateway);
     }
 
     @Test
@@ -38,23 +38,23 @@ class GetOverdueInvoicesUseCaseTest {
                 new OverdueInvoiceResponse("FAC-002", new BigDecimal("300.00"),
                         LocalDate.now().minusDays(5), 5)
         );
-        when(creditValidationService.findAllOverdueInvoices()).thenReturn(expectedInvoices);
+        when(creditValidationGateway.findAllOverdueInvoices()).thenReturn(expectedInvoices);
 
         List<OverdueInvoiceResponse> result = useCase.execute();
 
         assertEquals(2, result.size());
         assertEquals("FAC-001", result.get(0).invoiceNumber());
         assertEquals("FAC-002", result.get(1).invoiceNumber());
-        verify(creditValidationService).findAllOverdueInvoices();
+        verify(creditValidationGateway).findAllOverdueInvoices();
     }
 
     @Test
     void should_ReturnEmptyList_When_NoOverdueInvoices() {
-        when(creditValidationService.findAllOverdueInvoices()).thenReturn(List.of());
+        when(creditValidationGateway.findAllOverdueInvoices()).thenReturn(List.of());
 
         List<OverdueInvoiceResponse> result = useCase.execute();
 
         assertTrue(result.isEmpty());
-        verify(creditValidationService).findAllOverdueInvoices();
+        verify(creditValidationGateway).findAllOverdueInvoices();
     }
 }

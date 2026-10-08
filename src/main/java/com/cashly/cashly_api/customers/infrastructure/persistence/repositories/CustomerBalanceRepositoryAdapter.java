@@ -5,8 +5,9 @@ import com.cashly.cashly_api.customers.domain.entities.CustomerBalance;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.cashly.cashly_api.customers.infrastructure.persistence.entities.BalanceTransactionEntity;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,9 +48,9 @@ public class CustomerBalanceRepositoryAdapter implements CustomerBalanceReposito
     }
 
     @Override
-    public Page<BalanceTransaction> findTransactionsByCustomerId(UUID customerId, Pageable pageable) {
-        return jpaRepository.findTransactionsByCustomerId(customerId, pageable)
-            .map(BalanceTransactionJpaMapper::toDomain);
+    public PageResponse<BalanceTransaction> findTransactionsByCustomerId(UUID customerId, int page, int size) {
+        return PageResponseMapper.from(jpaRepository.findTransactionsByCustomerId(customerId, PageRequest.of(page, size))
+            .map(BalanceTransactionJpaMapper::toDomain));
     }
 
     @Override

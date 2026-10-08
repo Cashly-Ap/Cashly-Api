@@ -17,7 +17,6 @@ public class CustomerMapper {
             customer.getType().name(),
             customer.isActive(),
             customer.getPaymentType(),
-            customer.isPortalAccess(),
             deletable
         );
     }
@@ -38,7 +37,6 @@ public class CustomerMapper {
             toEmailResponses(customer),
             toPhoneResponses(customer),
             toAddressResponses(customer),
-            customer.isPortalAccess(),
             customer.getNotes(),
             customer.getPriceTypeId(),
             deletable
@@ -61,7 +59,6 @@ public class CustomerMapper {
             toEmailResponses(customer),
             toPhoneResponses(customer),
             toAddressResponses(customer),
-            customer.isPortalAccess(),
             customer.getNotes(),
             customer.getPriceTypeId()
         );

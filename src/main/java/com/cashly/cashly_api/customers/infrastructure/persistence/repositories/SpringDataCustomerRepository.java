@@ -15,8 +15,6 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
 
     Optional<CustomerEntity> findByRif(String rif);
 
-    Optional<CustomerEntity> findByRifAndActiveTrueAndPortalAccessTrue(String rif);
-
     boolean existsByRif(String rif);
 
     boolean existsByRifAndIdNot(String rif, UUID id);
@@ -27,16 +25,12 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
     @Query("SELECT c.active FROM CustomerEntity c WHERE c.id = :id")
     Optional<Boolean> isActiveById(@Param("id") UUID id);
 
-    @Query("SELECT COUNT(c) > 0 FROM CustomerEntity c WHERE c.id = :id AND c.active = true AND c.portalAccess = true")
-    boolean isActivePortalAccessById(@Param("id") UUID id);
-
     @Query("""
         SELECT c FROM CustomerEntity c
         WHERE (:search IS NULL OR LOWER(c.legalName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(c.rif) LIKE LOWER(CONCAT('%', :search, '%')))
         AND (:rif IS NULL OR LOWER(c.rif) LIKE LOWER(CONCAT('%', :rif, '%')))
         AND (:type IS NULL OR c.type = :type)
         AND (:active IS NULL OR c.active = :active)
-        AND (:portalAccess IS NULL OR c.portalAccess = :portalAccess)
         AND (:state IS NULL OR EXISTS (
             SELECT 1 FROM CustomerAddressEntity ca WHERE ca.customerId = c.id AND LOWER(ca.state) LIKE LOWER(CONCAT('%', :state, '%'))
         ))
@@ -57,7 +51,6 @@ public interface SpringDataCustomerRepository extends JpaRepository<CustomerEnti
         @Param("rif") String rif,
         @Param("type") String type,
         @Param("active") Boolean active,
-        @Param("portalAccess") Boolean portalAccess,
         @Param("state") String state,
         @Param("municipality") String municipality,
         @Param("postalCode") String postalCode,

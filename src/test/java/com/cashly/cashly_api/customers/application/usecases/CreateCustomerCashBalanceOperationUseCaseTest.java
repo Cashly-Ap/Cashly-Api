@@ -1,12 +1,9 @@
 package com.cashly.cashly_api.customers.application.usecases;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.customers.application.contracts.CustomerActorGateway;
+import com.cashly.cashly_api.customers.application.contracts.CustomerActorGateway.CustomerActor;
+import com.cashly.cashly_api.customers.application.contracts.CustomerCashGateway;
+import com.cashly.cashly_api.customers.application.contracts.CustomerCashGateway.CustomerCashMovement;
 import com.cashly.cashly_api.customers.application.dto.response.CustomerBalanceMutationResponse;
 import com.cashly.cashly_api.customers.application.dto.response.CustomerBalanceResponse;
 import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
@@ -17,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -33,8 +29,8 @@ class CreateCustomerCashBalanceOperationUseCaseTest {
 
     @Mock private AddToCustomerBalanceUseCase addToBalance;
     @Mock private ConsumeCustomerBalanceUseCase consumeBalance;
-    @Mock private CashMovementService cashMovementService;
-    @Mock private UserRepository userRepository;
+    @Mock private CustomerCashGateway cashGateway;
+    @Mock private CustomerActorGateway actorGateway;
 
     private CreateCustomerAdvanceUseCase advanceUseCase;
     private RefundCustomerBalanceUseCase refundUseCase;
@@ -45,14 +41,14 @@ class CreateCustomerCashBalanceOperationUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        advanceUseCase = new CreateCustomerAdvanceUseCase(addToBalance, cashMovementService, userRepository);
-        refundUseCase = new RefundCustomerBalanceUseCase(consumeBalance, cashMovementService, userRepository);
+        advanceUseCase = new CreateCustomerAdvanceUseCase(addToBalance, cashGateway, actorGateway);
+        refundUseCase = new RefundCustomerBalanceUseCase(consumeBalance, cashGateway, actorGateway);
     }
 
     @Test
     void should_RejectAdvanceBeforeChangingBalance_When_RegisterIsClosed() {
         doThrow(new IllegalStateException("Debe abrir una caja antes de registrar una operación monetaria"))
-                .when(cashMovementService).requireOpenRegister();
+                .when(cashGateway).requireOpenRegister();
 
         assertThrows(IllegalStateException.class, () -> advanceUseCase.execute(
                 customerId, new BigDecimal("100.00"), paymentMethodId, "Anticipo", userId));
@@ -71,9 +67,8 @@ class CreateCustomerCashBalanceOperationUseCaseTest {
         var result = advanceUseCase.execute(customerId, new BigDecimal("100.00"), paymentMethodId, "Anticipo", userId);
 
         assertSame(balance, result);
-        verify(cashMovementService).record(CashMovementDirection.IN, CashMovementType.ADVANCE,
-                new BigDecimal("100.00"), paymentMethodId, "Anticipo",
-                "CUSTOMER_BALANCE", transactionId, userId, "Operator");
+        verify(cashGateway).record(new CustomerCashMovement("IN", "ADVANCE", new BigDecimal("100.00"),
+                paymentMethodId, "Anticipo", "CUSTOMER_BALANCE", transactionId, userId, "Operator"));
     }
 
     @Test
@@ -87,14 +82,11 @@ class CreateCustomerCashBalanceOperationUseCaseTest {
         var result = refundUseCase.execute(customerId, new BigDecimal("75.00"), paymentMethodId, "Devolución", userId);
 
         assertSame(balance, result);
-        verify(cashMovementService).record(CashMovementDirection.OUT, CashMovementType.REFUND,
-                new BigDecimal("75.00"), paymentMethodId, "Devolución",
-                "CUSTOMER_BALANCE", transactionId, userId, "Operator");
+        verify(cashGateway).record(new CustomerCashMovement("OUT", "REFUND", new BigDecimal("75.00"),
+                paymentMethodId, "Devolución", "CUSTOMER_BALANCE", transactionId, userId, "Operator"));
     }
 
     private void mockUser() {
-        User user = org.mockito.Mockito.mock(User.class);
-        when(user.getUserName()).thenReturn(new UserName("Operator"));
-        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(user));
+        when(actorGateway.findById(userId)).thenReturn(java.util.Optional.of(new CustomerActor(userId, "Operator")));
     }
 }

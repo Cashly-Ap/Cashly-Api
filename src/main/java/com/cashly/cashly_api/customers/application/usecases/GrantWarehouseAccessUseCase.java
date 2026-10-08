@@ -7,9 +7,8 @@ import com.cashly.cashly_api.customers.domain.entities.CustomerWarehouseAccess;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
-import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
+import com.cashly.cashly_api.customers.application.contracts.WarehouseSnapshot;
+import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -18,14 +17,14 @@ public class GrantWarehouseAccessUseCase {
 
     private final CustomerWarehouseAccessRepository accessRepository;
     private final CustomerRepository customerRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final WarehouseDirectoryGateway warehouseDirectory;
 
     public GrantWarehouseAccessUseCase(CustomerWarehouseAccessRepository accessRepository,
                                         CustomerRepository customerRepository,
-                                        WarehouseRepository warehouseRepository) {
+                                        WarehouseDirectoryGateway warehouseDirectory) {
         this.accessRepository = accessRepository;
         this.customerRepository = customerRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.warehouseDirectory = warehouseDirectory;
     }
 
     @Transactional
@@ -33,8 +32,7 @@ public class GrantWarehouseAccessUseCase {
         customerRepository.findById(new CustomerId(customerId))
                 .orElseThrow(() -> new CustomerNotFoundException(customerId.toString()));
 
-        Warehouse warehouse = warehouseRepository.findById(warehouseId)
-                .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
+        WarehouseSnapshot warehouse = warehouseDirectory.requireById(warehouseId);
 
         if (accessRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId)) {
             throw new CustomerWarehouseAccessAlreadyExistsException(customerId, warehouseId);
@@ -43,6 +41,6 @@ public class GrantWarehouseAccessUseCase {
         CustomerWarehouseAccess access = CustomerWarehouseAccess.create(customerId, warehouseId, grantedBy);
         CustomerWarehouseAccess saved = accessRepository.save(access);
 
-        return CustomerWarehouseAccessResponse.from(saved, warehouse.getName());
+        return CustomerWarehouseAccessResponse.from(saved, warehouse.name());
     }
 }

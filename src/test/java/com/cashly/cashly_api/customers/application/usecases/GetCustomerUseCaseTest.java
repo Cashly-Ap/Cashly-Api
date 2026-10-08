@@ -51,7 +51,7 @@ class GetCustomerUseCaseTest {
                         customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
                         "J-12345678-9", "Test", 30, java.math.BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), false, null, null, true
+                        List.of(), List.of(), List.of(), null, null, true
                 )
         );
 

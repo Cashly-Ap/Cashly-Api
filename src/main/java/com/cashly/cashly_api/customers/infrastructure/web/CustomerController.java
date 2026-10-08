@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.customers.infrastructure.web;
 
-import com.cashly.cashly_api.customers.application.dto.request.ChangeCustomerPortalPasswordRequest;
 import com.cashly.cashly_api.customers.application.dto.request.CreateCustomerRequest;
 import com.cashly.cashly_api.customers.application.dto.request.UpdateCustomerRequest;
 import com.cashly.cashly_api.customers.application.dto.response.CustomerCreateResponse;
@@ -26,20 +25,17 @@ public class CustomerController {
     private final ListCustomersUseCase listCustomersUseCase;
     private final UpdateCustomerUseCase updateCustomerUseCase;
     private final DeleteCustomerUseCase deleteCustomerUseCase;
-    private final ChangeCustomerPortalPasswordUseCase changeCustomerPortalPasswordUseCase;
 
     public CustomerController(RegisterCustomerUseCase registerCustomerUseCase,
                                GetCustomerUseCase getCustomerUseCase,
                                ListCustomersUseCase listCustomersUseCase,
                                UpdateCustomerUseCase updateCustomerUseCase,
-                               DeleteCustomerUseCase deleteCustomerUseCase,
-                               ChangeCustomerPortalPasswordUseCase changeCustomerPortalPasswordUseCase) {
+                               DeleteCustomerUseCase deleteCustomerUseCase) {
         this.registerCustomerUseCase = registerCustomerUseCase;
         this.getCustomerUseCase = getCustomerUseCase;
         this.listCustomersUseCase = listCustomersUseCase;
         this.updateCustomerUseCase = updateCustomerUseCase;
         this.deleteCustomerUseCase = deleteCustomerUseCase;
-        this.changeCustomerPortalPasswordUseCase = changeCustomerPortalPasswordUseCase;
     }
 
     @PostMapping
@@ -58,7 +54,6 @@ public class CustomerController {
             @RequestParam(required = false) String rif,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) Boolean active,
-            @RequestParam(required = false) Boolean portalAccess,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) String municipality,
             @RequestParam(required = false) String postalCode,
@@ -67,7 +62,7 @@ public class CustomerController {
             @RequestParam(defaultValue = "legalName") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
         PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
-            search, rif, type, active, portalAccess, state, municipality, postalCode,
+            search, rif, type, active, state, municipality, postalCode,
             null, page, size, orderBy, orderDir);
         return ResponseEntity.ok(customers);
     }
@@ -80,7 +75,7 @@ public class CustomerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
-            search, null, type, true, null, null, null, null,
+            search, null, type, true, null, null, null,
             true, page, size, "legalName", "asc");
         return ResponseEntity.ok(customers);
     }
@@ -107,11 +102,4 @@ public class CustomerController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/portal-password")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<Void> changePortalPassword(@PathVariable String id,
-                                                      @Valid @RequestBody ChangeCustomerPortalPasswordRequest request) {
-        changeCustomerPortalPasswordUseCase.execute(id, request);
-        return ResponseEntity.noContent().build();
-    }
 }

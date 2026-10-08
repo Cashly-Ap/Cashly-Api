@@ -46,8 +46,6 @@ public record UpdateCustomerRequest(
     @NotEmpty(message = "At least one address is required")
     List<AddressRequest> addresses,
 
-    Boolean portalAccess,
-
     String notes,
 
     UUID priceTypeId
