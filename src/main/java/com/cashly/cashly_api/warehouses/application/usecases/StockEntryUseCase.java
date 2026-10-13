@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway.CatalogProduct;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway.CatalogProduct;
 
 public class StockEntryUseCase {
 

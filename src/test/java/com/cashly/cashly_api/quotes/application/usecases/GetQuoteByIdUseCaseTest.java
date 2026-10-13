@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;
 import com.cashly.cashly_api.quotes.domain.entities.QuoteLine;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;

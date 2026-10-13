@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.credit_notes.application.services;
 
-import com.cashly.cashly_api.credit_notes.application.api.InvoiceCreditNoteDetailsQuery;
+import com.cashly.cashly_api.credit_notes.application.ports.in.InvoiceCreditNoteDetailsQuery;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
 import org.springframework.stereotype.Service;
 

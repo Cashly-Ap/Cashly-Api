@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
-import com.cashly.cashly_api.orders.application.contracts.*;
+import com.cashly.cashly_api.orders.application.ports.out.*;
 import com.cashly.cashly_api.orders.application.usecases.*;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import org.junit.jupiter.api.Test;

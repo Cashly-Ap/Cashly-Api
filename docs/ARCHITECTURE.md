@@ -1,8 +1,28 @@
-# 🏗️ Architecture & Design - Lexand
+# Architecture & Design - Cashly
+
+## Application Package Responsibilities
+
+Cashly modules use the following application packages consistently:
+
+| Package | Responsibility |
+| --- | --- |
+| `application/ports/in` | Capabilities offered by the owning module to other modules, with neutral public input/output values |
+| `application/ports/out` | Consumer-owned interfaces defining external capabilities required by the application |
+| `application/ports/out/model` | Standalone neutral values exchanged through consumer-owned ports |
+| `application/queries` | Concrete implementations of the module's public read capabilities using its own domain abstractions |
+| `application/dto/query` | Immutable query parameters passed to application read/report use cases |
+| `application/usecases` | Operations coordinating business behavior |
+| `application/services` | Shared application coordination and implementations of exported operations |
+| `application/mappers` | Conversion between application values and domain values |
+| `application/exceptions` | Application-specific failures |
+
+The provider owns input ports in `ports/in`; the consumer owns output ports in `ports/out`; infrastructure adapters connect them. For example, Products offers `StockCatalogQuery` in its input ports, while Warehouses requires `StockCatalogGateway` through its output ports. A `Query` suffix alone does not identify a type's responsibility: interfaces, implementations, and input records live in their respective packages. HTTP controllers remain under `infrastructure/adapters/in/controllers`, and persistence repository interfaces remain in the domain.
+
+Consumer gateways keep the `Gateway` suffix and reporting integrations keep `Port`; both belong to `ports/out`. Standalone port models live under `ports/out/model`, while nested models remain next to their owning interface. Do not introduce direct application packages named `contracts`, `port`, or `query`, and do not create empty packages merely to match this table.
 
 ## System Overview
 
-**Lexand** is an enterprise invoicing system designed to comprehensively manage business operations. It allows sales representatives to connect remotely to a cloud database to:
+**Cashly** is an enterprise invoicing system designed to comprehensively manage business operations. It allows sales representatives to connect remotely to a cloud database to:
 
 - Register and manage customers
 - Browse product catalogs
@@ -83,8 +103,8 @@ src/
 └── main/
     └── java/
         └── com/
-            └── lexand/
-                └── lexand_api/
+            └── cashly/
+                └── cashly_api/
                     ├── auth/               # Authentication & Authorization ✅ IMPLEMENTED
                     │   ├── application/
                     │   │   ├── dto/        # Request & Response DTOs
@@ -1024,7 +1044,7 @@ When implementing a new module, follow this order:
 - `application.dto.request`: PascalCaseRequest (CreateCustomerRequest)
 - `application.dto.response`: PascalCaseResponse (CustomerDetailResponse)
 - `application.usecases`: VerbNounUseCase (CreateOrderUseCase)
-- `infrastructure.persistence`: JpaPascalCase (JpaCustomerRepository)
+- `infrastructure.adapters.out.persistence`: JpaPascalCase (JpaCustomerRepository)
 
 **Methods**:
 - Use cases: `execute(request)`
@@ -1087,3 +1107,17 @@ RuntimeException
 ---
 
 [← Back to Main README](../README.md)
+
+## Infrastructure Adapter Directions
+
+Input adapters live in infrastructure/adapters/in/controllers and infrastructure/adapters/in/security. Output adapters live in infrastructure/adapters/out, preserving persistence, integration, excel, pdf, report, messaging and services subfolders. Database queries move into adapters/out/persistence. Config and pagination support keep their existing packages. Domain repository interfaces remain domain-owned output ports.
+
+
+## Persistence Package Responsibilities
+
+Persistence contains only populated responsibility folders: entities (58 JPA entities), repositories (42 Spring Data interfaces), adapters (29 concrete repository implementations), queries (10 database read implementations), mappers (12 transformations), and projections (4 database result interfaces). Concrete classes implementing repository ports belong in adapters, regardless of a Repository suffix. No loose production Java types remain directly in persistence. Input HTTP adapters use controllers.
+
+
+## Cash Register Module Naming
+
+The backend cash register module uses the cash_register directory and Java package segment. Production and test paths, imports and fully qualified references follow this name. Class names and the /api/cash-register HTTP route remain unchanged.

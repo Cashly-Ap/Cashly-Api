@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.finance.application.usecases;
 
-import com.cashly.cashly_api.reports.finance.application.port.PaymentHistoryReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentHistoryReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.finance.application.usecases;
 
 import com.cashly.cashly_api.reports.finance.application.dto.CollectionsReportData;
-import com.cashly.cashly_api.reports.finance.application.port.CollectionsReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.CollectionsReportPdfPort;
 
 import java.time.LocalDate;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.debit_notes.application.services;
 
-import com.cashly.cashly_api.debit_notes.application.api.InvoiceDebitNoteDetailsQuery;
+import com.cashly.cashly_api.debit_notes.application.ports.in.InvoiceDebitNoteDetailsQuery;
 import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
 import org.springframework.stereotype.Service;
 

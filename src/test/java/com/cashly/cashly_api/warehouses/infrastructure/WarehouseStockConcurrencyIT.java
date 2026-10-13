@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.infrastructure;
 
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockEntryRequest;
 import com.cashly.cashly_api.warehouses.application.dto.request.TransferStockRequest;
@@ -12,8 +12,8 @@ import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.entities.WarehouseStockEntity;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories.SpringDataWarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.entities.WarehouseStockEntity;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.repositories.SpringDataWarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

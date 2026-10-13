@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
 import com.cashly.cashly_api.orders.domain.entities.Order;
-import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;

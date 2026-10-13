@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.infrastructure.config;
 
-import com.cashly.cashly_api.products.application.api.PurchaseProductCatalogQuery;
+import com.cashly.cashly_api.products.application.ports.in.PurchaseProductCatalogQuery;
 import com.cashly.cashly_api.products.application.queries.RepositoryPurchaseProductCatalogQuery;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import org.springframework.context.annotation.Bean;

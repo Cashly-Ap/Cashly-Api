@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.payments.application.services;
 
-import com.cashly.cashly_api.payments.application.contracts.*;
+import com.cashly.cashly_api.payments.application.ports.out.*;
+import com.cashly.cashly_api.payments.application.ports.out.model.InvoiceCreditEntry;
+import com.cashly.cashly_api.payments.application.ports.out.model.CustomerCreditContext;
 import com.cashly.cashly_api.payments.domain.entities.Payment;
 import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;

@@ -2,7 +2,7 @@ package com.cashly.cashly_api.price_types.application.usecases;
 
 import com.cashly.cashly_api.price_types.application.dto.response.PriceTypeResponse;
 import com.cashly.cashly_api.price_types.domain.entities.PriceType;
-import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
+import com.cashly.cashly_api.price_types.application.ports.out.PriceTypeUsageGateway;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;

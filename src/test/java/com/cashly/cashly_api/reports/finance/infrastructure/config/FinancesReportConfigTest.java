@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.reports.finance.infrastructure.config;
 
-import com.cashly.cashly_api.reports.finance.application.contracts.PaymentReportQueryGateway;
-import com.cashly.cashly_api.reports.finance.application.contracts.AccountsReceivableQueryGateway;
-import com.cashly.cashly_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
-import com.cashly.cashly_api.reports.finance.application.port.CollectionsReportPdfPort;
-import com.cashly.cashly_api.reports.finance.application.port.PaymentHistoryReportPdfPort;
-import com.cashly.cashly_api.reports.finance.application.port.PaymentPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentReportQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.ports.out.AccountsReceivableQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.ports.out.AccountsReceivableReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.CollectionsReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentHistoryReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentPdfPort;
 import com.cashly.cashly_api.reports.finance.application.usecases.GenerateAccountsReceivableReportPdfUseCase;
 import com.cashly.cashly_api.reports.finance.application.usecases.GenerateCollectionsReportPdfUseCase;
 import com.cashly.cashly_api.reports.finance.application.usecases.GeneratePaymentHistoryReportPdfUseCase;

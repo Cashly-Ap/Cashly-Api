@@ -11,7 +11,7 @@ import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockReposi
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import com.cashly.cashly_api.products.infrastructure.integration.LocalProductWarehouseStockGatewayAdapter;
+import com.cashly.cashly_api.products.infrastructure.adapters.out.integration.LocalProductWarehouseStockGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.services.RepositoryProductStockQuery;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -2,7 +2,7 @@ package com.cashly.cashly_api.quotes.application.usecases;
 
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
 import com.cashly.cashly_api.quotes.application.mappers.QuoteMapper;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
 
 import java.time.LocalDate;

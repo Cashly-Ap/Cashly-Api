@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.invoices.application.services;
 
-import com.cashly.cashly_api.invoices.application.api.*;
+import com.cashly.cashly_api.invoices.application.ports.in.*;
 import com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase;
 import com.cashly.cashly_api.invoices.application.usecases.GetInvoicesUseCase;
 import java.util.List;

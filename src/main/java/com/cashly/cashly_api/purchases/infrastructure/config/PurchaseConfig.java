@@ -1,16 +1,16 @@
 package com.cashly.cashly_api.purchases.infrastructure.config;
 
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway;
 
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseActorGateway;
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductCatalogGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseActorGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductCatalogGateway;
 
 import com.cashly.cashly_api.purchases.application.usecases.*;
 import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductGateway;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseSupplierGateway;
-import com.cashly.cashly_api.purchases.application.contracts.InventoryGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseSupplierGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.InventoryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

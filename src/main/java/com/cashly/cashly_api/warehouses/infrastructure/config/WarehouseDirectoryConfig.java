@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.infrastructure.config;
 
-import com.cashly.cashly_api.warehouses.application.api.WarehouseDirectoryQuery;
+import com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery;
 import com.cashly.cashly_api.warehouses.application.services.RepositoryWarehouseDirectoryQuery;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import org.springframework.context.annotation.Bean;

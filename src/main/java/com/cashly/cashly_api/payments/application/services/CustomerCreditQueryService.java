@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.payments.application.services;
 
-import com.cashly.cashly_api.payments.application.contracts.CustomerCreditContextGateway;
-import com.cashly.cashly_api.payments.application.contracts.InvoiceCreditEntry;
-import com.cashly.cashly_api.payments.application.contracts.InvoiceCreditLedgerGateway;
-import com.cashly.cashly_api.payments.application.contracts.CreditNoteLedgerGateway;
-import com.cashly.cashly_api.payments.application.contracts.DebitNoteLedgerGateway;
-import com.cashly.cashly_api.payments.application.api.CreditStatusSnapshot;
-import com.cashly.cashly_api.payments.application.api.OverdueInvoiceSnapshot;
-import com.cashly.cashly_api.payments.application.api.CustomerCreditQuery;
+import com.cashly.cashly_api.payments.application.ports.out.CustomerCreditContextGateway;
+import com.cashly.cashly_api.payments.application.ports.out.model.InvoiceCreditEntry;
+import com.cashly.cashly_api.payments.application.ports.out.InvoiceCreditLedgerGateway;
+import com.cashly.cashly_api.payments.application.ports.out.CreditNoteLedgerGateway;
+import com.cashly.cashly_api.payments.application.ports.out.DebitNoteLedgerGateway;
+import com.cashly.cashly_api.payments.application.ports.in.CreditStatusSnapshot;
+import com.cashly.cashly_api.payments.application.ports.in.OverdueInvoiceSnapshot;
+import com.cashly.cashly_api.payments.application.ports.in.CustomerCreditQuery;
 import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;

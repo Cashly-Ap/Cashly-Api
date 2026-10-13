@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.reports.movements.infrastructure.config;
 
-import com.cashly.cashly_api.reports.movements.application.port.MovementsExcelPort;
-import com.cashly.cashly_api.reports.movements.application.port.MovementsPdfPort;
-import com.cashly.cashly_api.reports.movements.application.port.MovementsReportRepositoryPort;
+import com.cashly.cashly_api.reports.movements.application.ports.out.MovementsExcelPort;
+import com.cashly.cashly_api.reports.movements.application.ports.out.MovementsPdfPort;
+import com.cashly.cashly_api.reports.movements.application.ports.out.MovementsReportRepositoryPort;
 import com.cashly.cashly_api.reports.movements.application.usecases.GenerateMovementsExcelUseCase;
 import com.cashly.cashly_api.reports.movements.application.usecases.GenerateMovementsPdfUseCase;
-import com.cashly.cashly_api.reports.movements.infrastructure.persistence.MovementsReportJpaRepository;
+import com.cashly.cashly_api.reports.movements.infrastructure.adapters.out.persistence.repositories.MovementsReportJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

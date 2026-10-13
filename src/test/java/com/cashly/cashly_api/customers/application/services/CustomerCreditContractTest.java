@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.application.services;
 
-import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CreditValidationGateway;
 import com.cashly.cashly_api.customers.application.dto.response.CreditStatusResponse;
-import com.cashly.cashly_api.invoices.infrastructure.integration.InvoiceCustomerCreditAdapter;
-import com.cashly.cashly_api.orders.infrastructure.integration.OrderCustomerCreditAdapter;
+import com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.InvoiceCustomerCreditAdapter;
+import com.cashly.cashly_api.orders.infrastructure.adapters.out.integration.OrderCustomerCreditAdapter;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;

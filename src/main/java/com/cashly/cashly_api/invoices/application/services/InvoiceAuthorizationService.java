@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.invoices.application.services;
 
-import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CashRegisterGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CustomerBalanceGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoicePaymentSettlementGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CashRegisterGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CustomerBalanceGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoicePaymentSettlementGateway;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
 import org.springframework.stereotype.Component;

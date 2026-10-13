@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.application.usecases.credit;
 
 import com.cashly.cashly_api.customers.application.dto.response.CreditStatusResponse;
-import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CreditValidationGateway;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;

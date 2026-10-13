@@ -6,7 +6,7 @@ import com.cashly.cashly_api.categories.application.usecases.DeleteCategoryUseCa
 import com.cashly.cashly_api.categories.application.usecases.GetCategoryUseCase;
 import com.cashly.cashly_api.categories.application.usecases.ListCategoriesUseCase;
 import com.cashly.cashly_api.categories.application.usecases.UpdateCategoryUseCase;
-import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
+import com.cashly.cashly_api.categories.application.ports.out.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

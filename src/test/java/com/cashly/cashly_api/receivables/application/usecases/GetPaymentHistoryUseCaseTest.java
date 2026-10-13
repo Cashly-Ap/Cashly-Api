@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.PendingPaymentResponse;
-import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
+import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

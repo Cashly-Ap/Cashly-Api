@@ -6,9 +6,9 @@ import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
-import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
-import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
-import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductFileStorageGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductPriceTypeGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;

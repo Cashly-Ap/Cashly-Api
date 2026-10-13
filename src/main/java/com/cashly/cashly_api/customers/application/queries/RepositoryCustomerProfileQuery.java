@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.customers.application.queries;
 
-import com.cashly.cashly_api.customers.application.api.CustomerProfileQuery;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerProfileQuery;
 import com.cashly.cashly_api.customers.application.exceptions.CustomerNotFoundException;
 import com.cashly.cashly_api.customers.domain.entities.Customer;
 import com.cashly.cashly_api.customers.domain.entities.CustomerBalance;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.customers.application.api.CustomerProfileSnapshot;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerProfileSnapshot;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;

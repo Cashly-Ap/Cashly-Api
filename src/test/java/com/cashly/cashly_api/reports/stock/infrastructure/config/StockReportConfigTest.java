@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.reports.stock.infrastructure.config;
 
-import com.cashly.cashly_api.reports.stock.application.port.StockExcelPort;
-import com.cashly.cashly_api.reports.stock.application.port.StockPdfPort;
-import com.cashly.cashly_api.reports.stock.application.port.StockReportRepositoryPort;
+import com.cashly.cashly_api.reports.stock.application.ports.out.StockExcelPort;
+import com.cashly.cashly_api.reports.stock.application.ports.out.StockPdfPort;
+import com.cashly.cashly_api.reports.stock.application.ports.out.StockReportRepositoryPort;
 import com.cashly.cashly_api.reports.stock.application.usecases.GenerateStockExcelUseCase;
 import com.cashly.cashly_api.reports.stock.application.usecases.GenerateStockPdfUseCase;
-import com.cashly.cashly_api.reports.stock.infrastructure.persistence.StockReportJpaRepository;
+import com.cashly.cashly_api.reports.stock.infrastructure.adapters.out.persistence.repositories.StockReportJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

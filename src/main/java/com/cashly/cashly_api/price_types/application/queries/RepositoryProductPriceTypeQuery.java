@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.price_types.application.queries;
 
-import com.cashly.cashly_api.price_types.application.api.ProductPriceTypeQuery;
+import com.cashly.cashly_api.price_types.application.ports.in.ProductPriceTypeQuery;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import java.util.Optional;
 import java.util.UUID;

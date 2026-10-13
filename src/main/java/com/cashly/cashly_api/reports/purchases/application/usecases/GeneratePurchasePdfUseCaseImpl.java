@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.purchases.application.usecases;
 
-import com.cashly.cashly_api.reports.purchases.application.contracts.PurchaseReportQueryGateway;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasePdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchaseReportQueryGateway;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasePdfPort;
 import java.util.UUID;
 
 public class GeneratePurchasePdfUseCaseImpl implements GeneratePurchasePdfUseCase {

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceNoteDetailsGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceReturnDetailsGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceNoteDetailsGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceReturnDetailsGateway;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
@@ -12,7 +12,7 @@ import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.StockAvailabilityGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

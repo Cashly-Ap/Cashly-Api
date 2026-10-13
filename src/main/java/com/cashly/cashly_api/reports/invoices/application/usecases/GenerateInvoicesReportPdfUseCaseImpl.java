@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.reports.invoices.application.usecases;
 
 import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportFilter;
-import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
-import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoiceReportQueryGateway;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoicesReportPdfPort;
 
 
 public class GenerateInvoicesReportPdfUseCaseImpl implements GenerateInvoicesReportPdfUseCase {

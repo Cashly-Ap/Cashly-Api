@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.returns.infrastructure.config;
-import com.cashly.cashly_api.returns.application.contracts.*;
+import com.cashly.cashly_api.returns.application.ports.out.*;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import com.cashly.cashly_api.returns.application.usecases.*;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;

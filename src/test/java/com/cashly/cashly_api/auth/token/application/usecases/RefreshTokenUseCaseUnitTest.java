@@ -6,8 +6,8 @@ import com.cashly.cashly_api.auth.authentication.domain.entities.AuthenticableTy
 import com.cashly.cashly_api.auth.token.application.dto.request.RefreshTokenRequest;
 import com.cashly.cashly_api.auth.token.domain.repositories.RefreshTokenRepository;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.token.application.contracts.AuthenticableSubjectGateway;
-import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.UserAuthenticableAdapter;
+import com.cashly.cashly_api.auth.token.application.ports.out.AuthenticableSubjectGateway;
+import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.out.UserAuthenticableAdapter;
 import com.cashly.cashly_api.auth.token.domain.entities.RefreshToken;
 import com.cashly.cashly_api.auth.user.domain.entities.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;

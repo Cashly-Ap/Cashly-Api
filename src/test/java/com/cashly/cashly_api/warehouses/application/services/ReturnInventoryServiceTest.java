@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.ReturnStockCommand;
+import com.cashly.cashly_api.warehouses.application.ports.in.ReturnStockCommand;
 import com.cashly.cashly_api.warehouses.domain.entities.*;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 class ReturnInventoryServiceTest {
     private final WarehouseStockRepository stocks = mock(WarehouseStockRepository.class);
     private final StockMovementRepository movements = mock(StockMovementRepository.class);
-    private final com.cashly.cashly_api.warehouses.application.api.ReturnInventoryApi inventory = new com.cashly.cashly_api.warehouses.infrastructure.config.ReturnInventoryConfig().returnInventoryApi(stocks, movements);
+    private final com.cashly.cashly_api.warehouses.application.ports.in.ReturnInventoryApi inventory = new com.cashly.cashly_api.warehouses.infrastructure.config.ReturnInventoryConfig().returnInventoryApi(stocks, movements);
     private final UUID warehouseId = UUID.randomUUID();
     private final UUID productId = UUID.randomUUID();
     private final ReturnStockCommand command = new ReturnStockCommand(UUID.randomUUID(), "RET-2026-0001", "User",

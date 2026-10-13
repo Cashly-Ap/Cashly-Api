@@ -30,4 +30,14 @@ Este documento es el punto de entrada del cambio SDD. El refactor está en curso
 | Receivables / Reports | Receivables query gateway, paginación neutral y proyección de cuentas tipada | Otros reportes, DTOs propios y persistencia explícita |
 | Shared / Infrastructure global | PageResponse neutral; mapper Spring en Infrastructure; crédito fuera de Shared | Retirar composición de stock y completar reglas intermodulares |
 
-Los contratos consumidores se llaman `*Gateway` y viven en `application/contracts`; sus adaptadores viven en Infrastructure. No se crean eventos de dominio, no se reescriben migraciones aplicadas y no se hacen commits automáticamente.
+Los contratos consumidores se llaman `*Gateway` y viven en `application/ports/out`; sus adaptadores viven en Infrastructure. No se crean eventos de dominio, no se reescriben migraciones aplicadas y no se hacen commits automáticamente.
+
+
+## Persistence Package Responsibilities
+
+Persistence contains only populated responsibility folders: entities (58 JPA entities), repositories (42 Spring Data interfaces), adapters (29 concrete repository implementations), queries (10 database read implementations), mappers (12 transformations), and projections (4 database result interfaces). Concrete classes implementing repository ports belong in adapters, regardless of a Repository suffix. No loose production Java types remain directly in persistence. Input HTTP adapters use controllers.
+
+
+## Cash Register Module Naming
+
+The backend cash register module uses the cash_register directory and Java package segment. Production and test paths, imports and fully qualified references follow this name. Class names and the /api/cash-register HTTP route remain unchanged.

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.invoices.application.services;
 
-import com.cashly.cashly_api.invoices.application.api.InvoiceReturnCommand;
+import com.cashly.cashly_api.invoices.application.ports.in.InvoiceReturnCommand;
 
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException;

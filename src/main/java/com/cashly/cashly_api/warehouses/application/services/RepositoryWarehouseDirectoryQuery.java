@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.WarehouseDirectoryQuery;
-import com.cashly.cashly_api.warehouses.application.api.WarehouseDirectoryEntry;
+import com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery;
+import com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryEntry;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import java.util.Optional;
 import java.util.UUID;

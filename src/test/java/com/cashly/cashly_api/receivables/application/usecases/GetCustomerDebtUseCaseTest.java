@@ -2,7 +2,7 @@ package com.cashly.cashly_api.receivables.application.usecases;
 
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerDebtSummaryResponse;
 import com.cashly.cashly_api.receivables.application.dto.response.CustomerInvoiceDebtResponse;
-import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
+import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

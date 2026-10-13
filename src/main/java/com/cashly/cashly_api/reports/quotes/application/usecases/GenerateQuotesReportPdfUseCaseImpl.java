@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.reports.quotes.application.usecases;
 
 import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportFilter;
-import com.cashly.cashly_api.reports.quotes.application.contracts.QuoteReportQueryGateway;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuoteReportQueryGateway;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotesReportPdfPort;
 
 
 

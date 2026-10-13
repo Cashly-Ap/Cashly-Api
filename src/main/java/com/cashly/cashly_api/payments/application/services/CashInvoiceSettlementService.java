@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payments.application.services;
-import com.cashly.cashly_api.payments.application.api.CashInvoiceSettlement;
-import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.ports.in.CashInvoiceSettlement;
+import com.cashly.cashly_api.payments.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.payments.domain.entities.Payment;
 import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;

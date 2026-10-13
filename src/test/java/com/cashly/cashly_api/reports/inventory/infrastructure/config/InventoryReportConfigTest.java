@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.reports.inventory.infrastructure.config;
 
-import com.cashly.cashly_api.reports.inventory.application.port.CatalogPdfPort;
-import com.cashly.cashly_api.reports.inventory.application.port.CatalogReportRepositoryPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogPdfPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogReportRepositoryPort;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCatalogPdfUseCase;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GetCatalogReportUseCase;
-import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CatalogReportJpaRepository;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.persistence.repositories.CatalogReportJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;

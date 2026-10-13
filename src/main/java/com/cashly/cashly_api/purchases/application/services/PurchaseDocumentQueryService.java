@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.purchases.application.services;
 
-import com.cashly.cashly_api.purchases.application.api.PurchaseDocumentQuery;
-import com.cashly.cashly_api.purchases.application.api.PurchaseDocumentSnapshot;
-import com.cashly.cashly_api.purchases.application.api.PurchaseDocumentRow;
-import com.cashly.cashly_api.purchases.application.api.PurchaseDocumentFilter;
+import com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentQuery;
+import com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentSnapshot;
+import com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentRow;
+import com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentFilter;
 import com.cashly.cashly_api.purchases.application.mappers.PurchaseMapper;
 import com.cashly.cashly_api.purchases.application.usecases.ListPurchasesUseCase;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;

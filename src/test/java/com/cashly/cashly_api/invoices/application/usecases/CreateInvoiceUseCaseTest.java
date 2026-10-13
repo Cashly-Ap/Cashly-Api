@@ -22,13 +22,13 @@ import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
-import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceCustomerGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceNotificationGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceOrderGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceQuoteGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditTermsGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceCustomerGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceNotificationGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceOrderGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceQuoteGateway;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,12 +110,12 @@ class CreateInvoiceUseCaseTest {
         };
         InvoiceCatalogGateway catalog = productId -> productRepository.findById(productId)
                 .map(product -> new InvoiceCatalogGateway.Product(product.getId(), product.getName(), product.getCode()));
-        InvoiceOrderGateway orderGateway = new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceOrderGateway(orderRepository);
+        InvoiceOrderGateway orderGateway = new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceOrderGateway(orderRepository);
         InvoiceQuoteGateway quoteGateway = quoteId -> quoteRepository.findById(quoteId)
                 .map(quote -> new InvoiceQuoteGateway.Quote(quote.getId(), quote.getCustomerId(), quote.getStatus().name()));
         createInvoiceUseCase = new CreateInvoiceUseCase(
                 invoiceRepository, orderGateway, customers, creditTerms, actors, catalog,
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), authorizationService,
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), authorizationService,
                 notificationService, quoteGateway);
     }
 

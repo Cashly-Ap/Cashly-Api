@@ -10,7 +10,7 @@ import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.domain.services.CustomerCodeGenerator;
 import com.cashly.cashly_api.customers.domain.valueobjects.*;
-import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
+import com.cashly.cashly_api.customers.application.ports.out.WarehouseDirectoryGateway;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;

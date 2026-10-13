@@ -68,14 +68,14 @@ class ConvertQuoteToOrderUseCaseTest {
     void setUp() {
         useCase = new ConvertQuoteToOrderUseCase(
                 quoteRepository,
-                new com.cashly.cashly_api.quotes.infrastructure.integration.LocalOrderCreationGateway(
+                new com.cashly.cashly_api.quotes.infrastructure.adapters.out.integration.LocalOrderCreationGateway(
                     new com.cashly.cashly_api.orders.application.services.QuoteOrderCreationService(orderRepository,
-                        new com.cashly.cashly_api.orders.infrastructure.integration.LocalOrderInventoryGateway(
+                        new com.cashly.cashly_api.orders.infrastructure.adapters.out.integration.LocalOrderInventoryGateway(
                             new com.cashly.cashly_api.warehouses.application.services.StockDeductionService(warehouseStockRepository)))),
-                new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteActorIdentityAdapter(
+                new com.cashly.cashly_api.quotes.infrastructure.adapters.out.integration.QuoteActorIdentityAdapter(
                     new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository,
                         mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
-                new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
+                new com.cashly.cashly_api.quotes.infrastructure.adapters.out.integration.QuoteConversionNotificationAdapter(
                     new com.cashly.cashly_api.notifications.application.services.QuoteConversionNotificationService(notificationService)));
     }
 

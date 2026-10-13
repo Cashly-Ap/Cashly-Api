@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.purchases.application.mappers;
 
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway.Warehouse;
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway.Stock;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway.Warehouse;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway.Stock;
 
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;

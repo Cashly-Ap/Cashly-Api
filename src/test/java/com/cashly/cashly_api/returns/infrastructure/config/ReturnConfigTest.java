@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.returns.infrastructure.config;
 
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInventoryGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceQueryGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnPaymentSettlementGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnBalanceGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnCashGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInventoryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceQueryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettlementGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnBalanceGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnCashGateway;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import com.cashly.cashly_api.returns.application.usecases.*;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;

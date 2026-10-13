@@ -8,7 +8,7 @@ class ReceivablesBoundaryTest {
     @Test
     void should_define_query_contract_in_application() {
         Class<?> query = GetCustomerInvoicesUseCase.class.getConstructors()[0].getParameterTypes()[0];
-        assertEquals("com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway", query.getName());
+        assertEquals("com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway", query.getName());
     }
 
     @Test

@@ -66,7 +66,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
     private NotificationService notificationService;
 
     @Mock
-    private com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway creditTerms;
+    private com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditTermsGateway creditTerms;
 
     private ConvertQuoteToInvoiceUseCase useCase;
 
@@ -78,15 +78,15 @@ class ConvertQuoteToInvoiceUseCaseTest {
         lenient().when(creditTerms.creditDays(any())).thenReturn(0);
         useCase = new ConvertQuoteToInvoiceUseCase(
                 quoteRepository,
-                new com.cashly.cashly_api.quotes.infrastructure.integration.LocalInvoiceCreationGateway(
+                new com.cashly.cashly_api.quotes.infrastructure.adapters.out.integration.LocalInvoiceCreationGateway(
                     new com.cashly.cashly_api.invoices.application.services.QuoteInvoiceCreationService(invoiceRepository,
-                        new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+                        new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalActorIdentityGateway(
                             new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository,
                                 mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
                         creditTerms, authorizationService,
-                        new com.cashly.cashly_api.invoices.infrastructure.integration.LocalStockDeductionGateway(
+                        new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalStockDeductionGateway(
                             new com.cashly.cashly_api.warehouses.application.services.StockDeductionService(warehouseStockRepository)))),
-                new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
+                new com.cashly.cashly_api.quotes.infrastructure.adapters.out.integration.QuoteConversionNotificationAdapter(
                     new com.cashly.cashly_api.notifications.application.services.QuoteConversionNotificationService(notificationService)));
     }
 

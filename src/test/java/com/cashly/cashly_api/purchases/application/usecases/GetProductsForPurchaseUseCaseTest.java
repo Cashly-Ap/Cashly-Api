@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductCatalogGateway;
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductCatalogGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;

@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.customers.application.services;
-import com.cashly.cashly_api.customers.application.api.ReturnBalanceMutation;
+import com.cashly.cashly_api.customers.application.ports.in.ReturnBalanceMutation;
 import com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
 import com.cashly.cashly_api.customers.domain.entities.CustomerBalance;

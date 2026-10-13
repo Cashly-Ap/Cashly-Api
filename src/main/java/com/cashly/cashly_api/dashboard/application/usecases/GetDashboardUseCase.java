@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.dashboard.application.usecases;
 
-import com.cashly.cashly_api.dashboard.application.contracts.DashboardQueryGateway;
+import com.cashly.cashly_api.dashboard.application.ports.out.DashboardQueryGateway;
 import com.cashly.cashly_api.dashboard.application.dto.response.DashboardSummaryResponse;
 import com.cashly.cashly_api.dashboard.application.dto.response.InvoiceDueResponse;
 import com.cashly.cashly_api.dashboard.application.dto.response.MonthlySalesResponse;

@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.reports.finance.application.usecases;
 
-import com.cashly.cashly_api.reports.finance.application.contracts.AccountsReceivableQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.ports.out.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.reports.finance.application.dto.AccountsReceivableReportData;
 import com.cashly.cashly_api.reports.finance.application.dto.AccountsReceivableReportData.AccountReceivableRow;
-import com.cashly.cashly_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.AccountsReceivableReportPdfPort;
 
 import java.math.BigDecimal;
 import java.util.List;

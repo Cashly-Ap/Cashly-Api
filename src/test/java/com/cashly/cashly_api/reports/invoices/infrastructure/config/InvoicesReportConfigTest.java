@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.reports.invoices.infrastructure.config;
 
-import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
-import com.cashly.cashly_api.reports.invoices.application.port.InvoicePdfPort;
-import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoiceReportQueryGateway;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoicePdfPort;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoicesReportPdfPort;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicePdfUseCase;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicesReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.application.queries;
 
-import com.cashly.cashly_api.customers.application.api.CustomerCreditTermsQuery;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerCreditTermsQuery;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
 import java.util.UUID;

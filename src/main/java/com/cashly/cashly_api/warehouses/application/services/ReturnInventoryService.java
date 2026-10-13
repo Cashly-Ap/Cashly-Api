@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.ReturnInventoryApi;
-import com.cashly.cashly_api.warehouses.application.api.ReturnStockCommand;
+import com.cashly.cashly_api.warehouses.application.ports.in.ReturnInventoryApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.ReturnStockCommand;
 import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
 import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
 import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;

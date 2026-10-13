@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.application.usecases;
 
-import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductCategoryGateway;
 import com.cashly.cashly_api.products.application.dto.response.ProductWithStockResponse;
 import com.cashly.cashly_api.products.application.dto.response.ProductWithStockResponse.WarehouseStockItem;
 import com.cashly.cashly_api.products.domain.entities.Product;
@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import com.cashly.cashly_api.products.application.contracts.ProductWarehouseStockGateway;
-import com.cashly.cashly_api.products.application.contracts.CustomerProductContextGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductWarehouseStockGateway;
+import com.cashly.cashly_api.products.application.ports.out.CustomerProductContextGateway;
 import java.util.stream.Collectors;
 
 public class GetProductsForTransactionUseCase {

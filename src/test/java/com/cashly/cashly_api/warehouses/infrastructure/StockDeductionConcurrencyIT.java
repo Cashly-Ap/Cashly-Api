@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.warehouses.infrastructure;
 
-import com.cashly.cashly_api.warehouses.application.api.StockDeductionApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.StockDeductionApi;
 import com.cashly.cashly_api.warehouses.infrastructure.config.StockDeductionConfig;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.entities.WarehouseStockEntity;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories.SpringDataWarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.entities.WarehouseStockEntity;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.repositories.SpringDataWarehouseStockRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

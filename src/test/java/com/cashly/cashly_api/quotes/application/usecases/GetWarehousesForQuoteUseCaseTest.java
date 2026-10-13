@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteWarehouseGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

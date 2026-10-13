@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.products.application.usecases;
 
-import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
-import com.cashly.cashly_api.products.application.contracts.ProductPriceTypeGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductPriceTypeGateway;
 import com.cashly.cashly_api.products.application.dto.response.ProductDetailResponse;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.application.mappers.ProductMapper;

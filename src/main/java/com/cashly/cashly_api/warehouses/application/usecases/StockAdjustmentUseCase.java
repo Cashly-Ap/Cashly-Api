@@ -14,8 +14,8 @@ import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockReposi
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway.CatalogProduct;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway.CatalogProduct;
 
 public class StockAdjustmentUseCase {
 

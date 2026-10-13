@@ -42,7 +42,7 @@ class CancelQuoteUseCaseTest {
     @BeforeEach
     void setUp() {
         cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository,
-                new com.cashly.cashly_api.quotes.infrastructure.integration.LocalQuoteRejectionNotificationGateway(
+                new com.cashly.cashly_api.quotes.infrastructure.adapters.out.integration.LocalQuoteRejectionNotificationGateway(
                         new com.cashly.cashly_api.notifications.application.services.QuoteRejectionNotificationService(notificationService)));
     }
 

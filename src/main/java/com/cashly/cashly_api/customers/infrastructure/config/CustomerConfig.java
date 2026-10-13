@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.infrastructure.config;
 
 import com.cashly.cashly_api.customers.application.mappers.CustomerMapper;
-import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
-import com.cashly.cashly_api.customers.application.contracts.CustomerActorGateway;
-import com.cashly.cashly_api.customers.application.contracts.CustomerCashGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CreditValidationGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CustomerActorGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CustomerCashGateway;
 import com.cashly.cashly_api.customers.application.usecases.*;
 import com.cashly.cashly_api.customers.application.usecases.credit.GetCustomerCreditStatusUseCase;
 import com.cashly.cashly_api.customers.application.usecases.credit.GetOverdueInvoicesUseCase;
@@ -11,8 +11,8 @@ import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceReposi
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.domain.services.CustomerCodeGenerator;
-import com.cashly.cashly_api.customers.infrastructure.services.SequentialCustomerCodeGenerator;
-import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
+import com.cashly.cashly_api.customers.infrastructure.adapters.out.services.SequentialCustomerCodeGenerator;
+import com.cashly.cashly_api.customers.application.ports.out.WarehouseDirectoryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

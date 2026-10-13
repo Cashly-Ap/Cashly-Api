@@ -52,8 +52,8 @@ class DeleteInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         deleteInvoiceUseCase = new DeleteInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceOrderGateway(orderRepository),
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))));
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceOrderGateway(orderRepository),
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))));
     }
 
     @Test

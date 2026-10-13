@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.orders.application.contracts.OrderCustomerGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderCustomerGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.application.dto.response.OrderProductResponse;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;

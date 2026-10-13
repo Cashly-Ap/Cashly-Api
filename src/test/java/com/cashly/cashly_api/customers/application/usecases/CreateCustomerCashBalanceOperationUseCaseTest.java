@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.application.usecases;
 
-import com.cashly.cashly_api.customers.application.contracts.CustomerActorGateway;
-import com.cashly.cashly_api.customers.application.contracts.CustomerActorGateway.CustomerActor;
-import com.cashly.cashly_api.customers.application.contracts.CustomerCashGateway;
-import com.cashly.cashly_api.customers.application.contracts.CustomerCashGateway.CustomerCashMovement;
+import com.cashly.cashly_api.customers.application.ports.out.CustomerActorGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CustomerActorGateway.CustomerActor;
+import com.cashly.cashly_api.customers.application.ports.out.CustomerCashGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CustomerCashGateway.CustomerCashMovement;
 import com.cashly.cashly_api.customers.application.dto.response.CustomerBalanceMutationResponse;
 import com.cashly.cashly_api.customers.application.dto.response.CustomerBalanceResponse;
 import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;

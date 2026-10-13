@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.InvoiceStockCommand;
-import com.cashly.cashly_api.warehouses.application.api.InvoiceStockCommand.Allocation;
+import com.cashly.cashly_api.warehouses.application.ports.in.InvoiceStockCommand;
+import com.cashly.cashly_api.warehouses.application.ports.in.InvoiceStockCommand.Allocation;
 import com.cashly.cashly_api.warehouses.application.exceptions.ProductNotInWarehouseException;
 import com.cashly.cashly_api.warehouses.domain.entities.*;
 import com.cashly.cashly_api.warehouses.domain.repositories.*;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.infrastructure.config;
 
-import com.cashly.cashly_api.quotes.application.api.QuoteDocumentQuery;
+import com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentQuery;
 import com.cashly.cashly_api.quotes.application.services.QuoteDocumentQueryService;
 import com.cashly.cashly_api.quotes.application.usecases.GetQuotesUseCase;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;

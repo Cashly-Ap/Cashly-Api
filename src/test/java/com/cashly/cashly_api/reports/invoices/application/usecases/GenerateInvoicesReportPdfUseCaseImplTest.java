@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.invoices.application.usecases;
 
 import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportRow;
-import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoicesReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.reports.invoices.application.dto.InvoiceReportFilter;
 
 import static org.junit.jupiter.api.Assertions.*;

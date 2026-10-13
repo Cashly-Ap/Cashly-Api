@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteProductCatalogGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.application.dto.request.CreateQuoteRequest;
 import com.cashly.cashly_api.quotes.application.dto.request.UpdateQuoteRequest;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;

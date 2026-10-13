@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.infrastructure.config;
 
-import com.cashly.cashly_api.warehouses.application.api.ReturnInventoryApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.ReturnInventoryApi;
 import com.cashly.cashly_api.warehouses.application.services.ReturnInventoryService;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;

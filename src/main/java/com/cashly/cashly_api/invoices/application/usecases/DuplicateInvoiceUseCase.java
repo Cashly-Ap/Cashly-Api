@@ -9,9 +9,9 @@ import com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
-import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceCustomerGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceCustomerGateway;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

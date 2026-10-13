@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.auth.user.infrastructure.config;
 
-import com.cashly.cashly_api.auth.user.application.api.NotificationRecipientsQuery;
+import com.cashly.cashly_api.auth.user.application.ports.in.NotificationRecipientsQuery;
 import com.cashly.cashly_api.auth.user.application.queries.RepositoryNotificationRecipientsQuery;
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;

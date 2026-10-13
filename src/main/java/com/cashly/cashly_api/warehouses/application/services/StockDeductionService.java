@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.StockDeductionApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.StockDeductionApi;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;

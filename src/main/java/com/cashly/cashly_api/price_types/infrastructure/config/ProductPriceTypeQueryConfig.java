@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.price_types.infrastructure.config;
 
-import com.cashly.cashly_api.price_types.application.api.ProductPriceTypeQuery;
+import com.cashly.cashly_api.price_types.application.ports.in.ProductPriceTypeQuery;
 import com.cashly.cashly_api.price_types.application.queries.RepositoryProductPriceTypeQuery;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import org.springframework.context.annotation.Bean;

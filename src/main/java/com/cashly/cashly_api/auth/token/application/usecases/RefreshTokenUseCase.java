@@ -7,7 +7,7 @@ import com.cashly.cashly_api.auth.token.application.dto.request.RefreshTokenRequ
 import com.cashly.cashly_api.auth.token.domain.repositories.RefreshTokenRepository;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.auth.token.domain.entities.RefreshToken;
-import com.cashly.cashly_api.auth.token.application.contracts.AuthenticableSubjectGateway;
+import com.cashly.cashly_api.auth.token.application.ports.out.AuthenticableSubjectGateway;
 import com.cashly.cashly_api.auth.token.application.exceptions.InvalidTokenException;
 
 import org.springframework.transaction.annotation.Transactional;

@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.reports.finance.application.usecases;
 
-import com.cashly.cashly_api.reports.finance.application.contracts.AccountsReceivableQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.ports.out.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.reports.finance.application.dto.AccountsReceivableReportData.AccountReceivableRow;
-import com.cashly.cashly_api.reports.finance.application.port.AccountsReceivableReportPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.AccountsReceivableReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
-import com.cashly.cashly_api.orders.application.api.QuoteOrderCreationApi;
-import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.ports.in.QuoteOrderCreationApi;
+import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
 import com.cashly.cashly_api.orders.application.services.QuoteOrderCreationService;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import org.springframework.context.annotation.Bean;

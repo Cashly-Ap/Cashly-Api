@@ -61,7 +61,7 @@ class DuplicateInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         duplicateInvoiceUseCase = new DuplicateInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(new com.cashly.cashly_api.customers.application.queries.RepositoryInvoiceCustomerQuery(customerRepository)));
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository.class))), new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceCustomerGateway(new com.cashly.cashly_api.customers.application.queries.RepositoryInvoiceCustomerQuery(customerRepository)));
     }
 
     @Test

@@ -6,11 +6,11 @@ import com.cashly.cashly_api.returns.domain.entities.ReturnId;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
 import jakarta.transaction.Transactional;
 
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceQueryGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnPaymentSettlementGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnBalanceGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInventoryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceQueryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettlementGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnBalanceGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInventoryGateway;
 import java.math.BigDecimal;
 import java.util.UUID;
 

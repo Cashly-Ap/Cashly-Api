@@ -9,13 +9,13 @@ import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundExce
 import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductFileStorageGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
-import com.cashly.cashly_api.products.infrastructure.integration.LocalProductCategoryGatewayAdapter;
-import com.cashly.cashly_api.products.infrastructure.integration.LocalProductPriceTypeGatewayAdapter;
+import com.cashly.cashly_api.products.infrastructure.adapters.out.integration.LocalProductCategoryGatewayAdapter;
+import com.cashly.cashly_api.products.infrastructure.adapters.out.integration.LocalProductPriceTypeGatewayAdapter;
 import com.cashly.cashly_api.categories.application.queries.RepositoryProductCategoryQuery;
 import com.cashly.cashly_api.price_types.application.queries.RepositoryProductPriceTypeQuery;
 import org.mockito.Mock;

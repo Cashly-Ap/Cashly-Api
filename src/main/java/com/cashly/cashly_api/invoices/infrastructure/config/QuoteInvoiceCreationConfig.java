@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.invoices.infrastructure.config;
 
-import com.cashly.cashly_api.invoices.application.api.QuoteInvoiceCreationApi;
-import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway;
-import com.cashly.cashly_api.invoices.application.contracts.StockDeductionGateway;
+import com.cashly.cashly_api.invoices.application.ports.in.QuoteInvoiceCreationApi;
+import com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditTermsGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.StockDeductionGateway;
 import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
 import com.cashly.cashly_api.invoices.application.services.QuoteInvoiceCreationService;
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;

@@ -9,7 +9,7 @@ import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import jakarta.transaction.Transactional;
 
-import com.cashly.cashly_api.purchases.application.contracts.InventoryGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.InventoryGateway;
 import java.util.UUID;
 
 public class ConfirmPurchaseUseCase {

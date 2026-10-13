@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.invoices.application.services;
-import com.cashly.cashly_api.invoices.application.api.ReturnInvoiceQuery;
+import com.cashly.cashly_api.invoices.application.ports.in.ReturnInvoiceQuery;
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;

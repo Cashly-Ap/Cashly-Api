@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.application.usecases.credit;
 
 import com.cashly.cashly_api.customers.application.dto.response.OverdueInvoiceResponse;
-import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CreditValidationGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

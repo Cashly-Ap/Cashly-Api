@@ -1,22 +1,22 @@
 package com.cashly.cashly_api.reports.inventory.infrastructure.config;
 
-import com.cashly.cashly_api.reports.inventory.application.port.CatalogPdfPort;
-import com.cashly.cashly_api.reports.inventory.application.port.CatalogReportRepositoryPort;
-import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogPdfPort;
-import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogRepositoryPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogPdfPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogReportRepositoryPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CommercialCatalogPdfPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CommercialCatalogRepositoryPort;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCatalogPdfUseCase;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCatalogPdfUseCaseImpl;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCommercialCatalogPdfUseCase;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCommercialCatalogPdfUseCaseImpl;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GetCatalogReportUseCase;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GetCatalogReportUseCaseImpl;
-import com.cashly.cashly_api.reports.inventory.infrastructure.pdf.CatalogPdfGenerator;
-import com.cashly.cashly_api.reports.inventory.infrastructure.pdf.CommercialCatalogPdfGenerator;
-import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CatalogReportJpaRepository;
-import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CatalogReportRepositoryAdapter;
-import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CommercialCatalogJpaRepository;
-import com.cashly.cashly_api.reports.inventory.infrastructure.persistence.CommercialCatalogRepositoryAdapter;
-import com.cashly.cashly_api.reports.inventory.application.contracts.MediaGateway;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.pdf.CatalogPdfGenerator;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.pdf.CommercialCatalogPdfGenerator;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.persistence.repositories.CatalogReportJpaRepository;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.persistence.adapters.CatalogReportRepositoryAdapter;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.persistence.repositories.CommercialCatalogJpaRepository;
+import com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.persistence.adapters.CommercialCatalogRepositoryAdapter;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.MediaGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

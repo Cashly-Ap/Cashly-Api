@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.notifications.application.services;
 
-import com.cashly.cashly_api.notifications.application.contracts.NotificationRecipientGateway;
-import com.cashly.cashly_api.notifications.infrastructure.messaging.WebSocketNotificationDeliveryAdapter;
+import com.cashly.cashly_api.notifications.application.ports.out.NotificationRecipientGateway;
+import com.cashly.cashly_api.notifications.infrastructure.adapters.out.messaging.WebSocketNotificationDeliveryAdapter;
 
 import com.cashly.cashly_api.notifications.domain.entities.Notification;
 import com.cashly.cashly_api.notifications.domain.repositories.NotificationRepository;

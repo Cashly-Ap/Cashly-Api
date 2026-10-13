@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.reports.inventory.application;
-import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogPdfPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CommercialCatalogPdfPort;
 import com.cashly.cashly_api.reports.inventory.application.usecases.GenerateCommercialCatalogPdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

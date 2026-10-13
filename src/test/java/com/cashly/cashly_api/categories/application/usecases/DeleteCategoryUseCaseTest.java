@@ -3,7 +3,7 @@ package com.cashly.cashly_api.categories.application.usecases;
 import com.cashly.cashly_api.categories.application.exceptions.CategoryHasActiveProductsException;
 import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
 import com.cashly.cashly_api.categories.domain.entities.Category;
-import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
+import com.cashly.cashly_api.categories.application.ports.out.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

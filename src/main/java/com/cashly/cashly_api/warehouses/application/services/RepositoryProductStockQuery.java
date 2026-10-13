@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.ProductStockQuery;
+import com.cashly.cashly_api.warehouses.application.ports.in.ProductStockQuery;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
 import java.util.List;

@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.payments.infrastructure.config;
-import com.cashly.cashly_api.payments.application.api.ReturnPaymentOperations;
+import com.cashly.cashly_api.payments.application.ports.in.ReturnPaymentOperations;
 import com.cashly.cashly_api.payments.application.services.ReturnPaymentOperationsService;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
 import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;

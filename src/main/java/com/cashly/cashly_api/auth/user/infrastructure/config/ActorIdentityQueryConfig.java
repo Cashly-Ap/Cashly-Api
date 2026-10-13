@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.auth.user.infrastructure.config;
-import com.cashly.cashly_api.auth.user.application.api.ActorIdentityQuery;
+import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
 import com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery;
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;

@@ -3,7 +3,7 @@ package com.cashly.cashly_api.categories.application.usecases;
 import com.cashly.cashly_api.categories.application.dto.response.CategoryListResponse;
 import com.cashly.cashly_api.categories.application.mappers.CategoryMapper;
 import com.cashly.cashly_api.categories.domain.entities.Category;
-import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
+import com.cashly.cashly_api.categories.application.ports.out.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import com.cashly.cashly_api.categories.application.dto.response.CategorySummary;
 import com.cashly.cashly_api.shared.dto.PageResponse;

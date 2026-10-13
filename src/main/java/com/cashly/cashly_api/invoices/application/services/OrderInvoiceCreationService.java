@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.invoices.application.services;
 
-import com.cashly.cashly_api.invoices.application.api.OrderInvoiceCreationApi;
+import com.cashly.cashly_api.invoices.application.ports.in.OrderInvoiceCreationApi;
 import com.cashly.cashly_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.cashly.cashly_api.invoices.application.usecases.CreateInvoiceUseCase;
 import java.util.UUID;

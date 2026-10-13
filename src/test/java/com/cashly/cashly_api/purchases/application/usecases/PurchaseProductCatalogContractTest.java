@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
-import com.cashly.cashly_api.categories.application.api.ProductCategoryQuery;
+import com.cashly.cashly_api.categories.application.ports.in.ProductCategoryQuery;
 import com.cashly.cashly_api.products.application.queries.RepositoryPurchaseProductCatalogQuery;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.purchases.infrastructure.adapters.LocalPurchaseProductCatalogGateway;
+import com.cashly.cashly_api.purchases.infrastructure.adapters.out.LocalPurchaseProductCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;

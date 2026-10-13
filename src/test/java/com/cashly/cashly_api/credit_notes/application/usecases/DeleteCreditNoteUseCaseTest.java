@@ -3,7 +3,7 @@ package com.cashly.cashly_api.credit_notes.application.usecases;
 import com.cashly.cashly_api.credit_notes.domain.entities.CreditNote;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteId;
-import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteInvoiceGateway;
+import com.cashly.cashly_api.credit_notes.application.ports.out.CreditNoteInvoiceGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

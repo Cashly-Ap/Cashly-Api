@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
-import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CashRegisterGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceNotificationGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CashRegisterGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceNotificationGateway;
 import com.cashly.cashly_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.mappers.InvoiceMapper;

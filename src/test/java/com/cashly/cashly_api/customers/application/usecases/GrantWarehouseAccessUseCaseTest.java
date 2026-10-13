@@ -10,8 +10,8 @@ import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAcce
 import com.cashly.cashly_api.customers.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;
 
-import com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway;
-import com.cashly.cashly_api.customers.application.contracts.WarehouseSnapshot;
+import com.cashly.cashly_api.customers.application.ports.out.WarehouseDirectoryGateway;
+import com.cashly.cashly_api.customers.application.ports.out.model.WarehouseSnapshot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

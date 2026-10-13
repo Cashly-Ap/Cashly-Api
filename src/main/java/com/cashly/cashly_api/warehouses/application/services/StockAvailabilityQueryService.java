@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.StockAvailabilityQuery;
-import com.cashly.cashly_api.warehouses.application.contracts.CustomerWarehouseAccessGateway;
+import com.cashly.cashly_api.warehouses.application.ports.in.StockAvailabilityQuery;
+import com.cashly.cashly_api.warehouses.application.ports.out.CustomerWarehouseAccessGateway;
 import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;

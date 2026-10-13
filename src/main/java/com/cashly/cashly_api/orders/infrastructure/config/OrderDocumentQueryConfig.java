@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
-import com.cashly.cashly_api.orders.application.api.OrderDocumentQuery;
+import com.cashly.cashly_api.orders.application.ports.in.OrderDocumentQuery;
 import com.cashly.cashly_api.orders.application.services.OrderDocumentQueryService;
 import com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;

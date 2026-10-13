@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.orders.application.usecases;
 
-import com.cashly.cashly_api.reports.orders.application.contracts.OrderReportQueryGateway;
-import com.cashly.cashly_api.reports.orders.application.port.OrderPdfPort;
+import com.cashly.cashly_api.reports.orders.application.ports.out.OrderReportQueryGateway;
+import com.cashly.cashly_api.reports.orders.application.ports.out.OrderPdfPort;
 import java.util.UUID;
 
 public class GenerateOrderPdfUseCaseImpl implements GenerateOrderPdfUseCase {

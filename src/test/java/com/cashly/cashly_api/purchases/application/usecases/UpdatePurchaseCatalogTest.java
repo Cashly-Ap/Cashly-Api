@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductGateway;
 import com.cashly.cashly_api.purchases.application.dto.request.UpdatePurchaseRequest;
 import com.cashly.cashly_api.purchases.domain.entities.Purchase;
 import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
 import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseNumber;
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseWarehouseGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;

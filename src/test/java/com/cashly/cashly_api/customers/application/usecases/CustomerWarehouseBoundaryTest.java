@@ -12,7 +12,7 @@ class CustomerWarehouseBoundaryTest {
         for (Class<?> useCase : new Class<?>[]{GrantWarehouseAccessUseCase.class,
                 ListCustomerWarehousesUseCase.class, RegisterCustomerUseCase.class}) {
             var dependencies = Arrays.stream(useCase.getConstructors()[0].getParameterTypes()).map(Class::getName).toList();
-            assertTrue(dependencies.contains("com.cashly.cashly_api.customers.application.contracts.WarehouseDirectoryGateway"),
+            assertTrue(dependencies.contains("com.cashly.cashly_api.customers.application.ports.out.WarehouseDirectoryGateway"),
                     useCase.getSimpleName() + dependencies);
             assertTrue(dependencies.stream().noneMatch(type -> type.startsWith("com.cashly.cashly_api.warehouses.")));
         }

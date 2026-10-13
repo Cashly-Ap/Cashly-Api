@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.infrastructure.config;
-import com.cashly.cashly_api.receivables.application.api.AccountsReceivableReportQuery;
+import com.cashly.cashly_api.receivables.application.ports.in.AccountsReceivableReportQuery;
 import com.cashly.cashly_api.receivables.application.services.AccountsReceivableReportQueryService;
-import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
+import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

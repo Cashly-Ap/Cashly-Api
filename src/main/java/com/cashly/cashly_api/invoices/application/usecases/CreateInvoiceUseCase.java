@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.invoices.application.usecases;
 
-import com.cashly.cashly_api.invoices.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.invoices.application.contracts.CustomerCreditTermsGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InventoryGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceCatalogGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceCustomerGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceNotificationGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceOrderGateway;
-import com.cashly.cashly_api.invoices.application.contracts.InvoiceQuoteGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditTermsGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceCatalogGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceCustomerGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceNotificationGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceOrderGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.InvoiceQuoteGateway;
 import com.cashly.cashly_api.invoices.application.dto.request.CreateInvoiceRequest;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.mappers.InvoiceMapper;

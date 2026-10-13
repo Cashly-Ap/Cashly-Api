@@ -4,7 +4,7 @@ import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResp
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
 import com.cashly.cashly_api.invoices.domain.entities.Invoice;
 import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
-import com.cashly.cashly_api.invoices.application.contracts.StockAvailabilityGateway;
+import com.cashly.cashly_api.invoices.application.ports.out.StockAvailabilityGateway;
 
 import java.math.BigDecimal;
 import java.util.List;

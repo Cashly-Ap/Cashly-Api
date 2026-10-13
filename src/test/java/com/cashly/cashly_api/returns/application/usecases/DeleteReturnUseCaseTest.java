@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
-import com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInventoryGatewayAdapter;
+import com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnInventoryGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.services.ReturnInventoryService;
 
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
@@ -24,7 +24,7 @@ import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
 import com.cashly.cashly_api.returns.domain.entities.ReturnLineAllocation;
 import com.cashly.cashly_api.returns.domain.entities.ReturnNumber;
 import com.cashly.cashly_api.returns.domain.entities.ReturnType;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
 import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
 import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
@@ -88,15 +88,15 @@ class DeleteReturnUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new DeleteReturnUseCase(invoiceAdjustmentGateway, returnRepository,
-                new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInvoiceQueryGateway(
+                new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnInvoiceQueryGateway(
                         new com.cashly.cashly_api.invoices.application.services.RepositoryReturnInvoiceQuery(invoiceRepository),
                         new com.cashly.cashly_api.credit_notes.application.services.RepositoryCreditNoteLedgerQuery(creditNoteRepository),
                         new com.cashly.cashly_api.debit_notes.application.services.RepositoryDebitNoteLedgerQuery(debitNoteRepository)),
                 new LocalReturnInventoryGatewayAdapter(new ReturnInventoryService(warehouseStockRepository, stockMovementRepository)),
-                new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnPaymentSettlementGateway(
+                new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnPaymentSettlementGateway(
                         new com.cashly.cashly_api.payments.application.services.ReturnPaymentOperationsService(paymentRepository, allocationRepository,
                                 new com.cashly.cashly_api.payments.domain.services.PaymentAllocationService(paymentRepository, allocationRepository))),
-                new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnBalanceGateway(
+                new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnBalanceGateway(
                         new com.cashly.cashly_api.customers.application.services.ReturnBalanceMutationService(
                                 mock(com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase.class), consumeCustomerBalanceUseCase)));
     }

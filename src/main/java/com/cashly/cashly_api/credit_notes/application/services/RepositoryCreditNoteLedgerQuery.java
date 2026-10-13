@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.credit_notes.application.services;
-import com.cashly.cashly_api.credit_notes.application.api.CreditNoteLedgerQuery;
+import com.cashly.cashly_api.credit_notes.application.ports.in.CreditNoteLedgerQuery;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
 import java.math.BigDecimal;
 import java.util.List;

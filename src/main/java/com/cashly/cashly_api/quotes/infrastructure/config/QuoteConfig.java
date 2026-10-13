@@ -1,16 +1,16 @@
 package com.cashly.cashly_api.quotes.infrastructure.config;
 
-import com.cashly.cashly_api.quotes.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteCustomerGateway;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteWarehouseGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteCustomerGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteProductCatalogGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteWarehouseGateway;
 import com.cashly.cashly_api.quotes.application.usecases.*;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
-import com.cashly.cashly_api.quotes.infrastructure.persistence.JpaQuoteRepositoryAdapter;
-import com.cashly.cashly_api.quotes.infrastructure.persistence.QuoteJpaMapper;
-import com.cashly.cashly_api.quotes.infrastructure.persistence.QuoteJpaRepository;
-import com.cashly.cashly_api.quotes.infrastructure.persistence.QuoteNumberSequenceJpaRepository;
-import com.cashly.cashly_api.quotes.infrastructure.web.QuoteController;
+import com.cashly.cashly_api.quotes.infrastructure.adapters.out.persistence.adapters.JpaQuoteRepositoryAdapter;
+import com.cashly.cashly_api.quotes.infrastructure.adapters.out.persistence.mappers.QuoteJpaMapper;
+import com.cashly.cashly_api.quotes.infrastructure.adapters.out.persistence.repositories.QuoteJpaRepository;
+import com.cashly.cashly_api.quotes.infrastructure.adapters.out.persistence.repositories.QuoteNumberSequenceJpaRepository;
+import com.cashly.cashly_api.quotes.infrastructure.adapters.in.controllers.QuoteController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +40,7 @@ public class QuoteConfig {
 
     @Bean
     public GetQuotesUseCase getQuotesUseCase(QuoteRepository quoteRepository,
-                                              com.cashly.cashly_api.quotes.application.contracts.QuoteProductCatalogGateway products) {
+                                              com.cashly.cashly_api.quotes.application.ports.out.QuoteProductCatalogGateway products) {
         return new GetQuotesUseCase(quoteRepository, products);
     }
 
@@ -64,7 +64,7 @@ public class QuoteConfig {
 
     @Bean
     public CancelQuoteUseCase cancelQuoteUseCase(QuoteRepository quoteRepository,
-                                                  com.cashly.cashly_api.quotes.application.contracts.QuoteRejectionNotificationGateway notificationService) {
+                                                  com.cashly.cashly_api.quotes.application.ports.out.QuoteRejectionNotificationGateway notificationService) {
         return new CancelQuoteUseCase(quoteRepository, notificationService);
     }
 
@@ -91,17 +91,17 @@ public class QuoteConfig {
     @Bean
     public ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase(
             QuoteRepository quoteRepository,
-            com.cashly.cashly_api.quotes.application.contracts.OrderCreationGateway orders,
-            com.cashly.cashly_api.quotes.application.contracts.ActorIdentityGateway actors,
-            com.cashly.cashly_api.quotes.application.contracts.QuoteConversionNotificationGateway notifications) {
+            com.cashly.cashly_api.quotes.application.ports.out.OrderCreationGateway orders,
+            com.cashly.cashly_api.quotes.application.ports.out.ActorIdentityGateway actors,
+            com.cashly.cashly_api.quotes.application.ports.out.QuoteConversionNotificationGateway notifications) {
         return new ConvertQuoteToOrderUseCase(quoteRepository, orders, actors, notifications);
     }
 
     @Bean
     public ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase(
             QuoteRepository quoteRepository,
-            com.cashly.cashly_api.quotes.application.contracts.InvoiceCreationGateway invoices,
-            com.cashly.cashly_api.quotes.application.contracts.QuoteConversionNotificationGateway notifications) {
+            com.cashly.cashly_api.quotes.application.ports.out.InvoiceCreationGateway invoices,
+            com.cashly.cashly_api.quotes.application.ports.out.QuoteConversionNotificationGateway notifications) {
         return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoices, notifications);
     }
 

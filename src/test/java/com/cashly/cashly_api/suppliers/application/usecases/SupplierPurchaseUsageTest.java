@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.suppliers.application.usecases;
 
-import com.cashly.cashly_api.suppliers.application.contracts.PurchaseUsageGateway;
+import com.cashly.cashly_api.suppliers.application.ports.out.PurchaseUsageGateway;
 import com.cashly.cashly_api.suppliers.application.exceptions.SupplierHasAssociatedRecordsException;
 import com.cashly.cashly_api.suppliers.application.exceptions.SupplierNotFoundException;
 import com.cashly.cashly_api.suppliers.application.mappers.SupplierMapper;

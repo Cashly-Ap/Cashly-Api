@@ -2,7 +2,7 @@ package com.cashly.cashly_api.orders.application.usecases;
 
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
-import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
 

@@ -11,13 +11,13 @@ class CustomerCreditQueryBoundaryTest {
                 .map(Class::getName).toList();
         assertTrue(dependencies.stream().noneMatch(type -> type.matches("com\\.cashly\\.cashly_api\\.(customers|invoices|credit_notes|debit_notes)\\..*")), dependencies.toString());
         for (String contract : new String[]{"CustomerCreditContextGateway", "InvoiceCreditLedgerGateway", "CreditNoteLedgerGateway", "DebitNoteLedgerGateway"}) {
-            assertTrue(dependencies.contains("com.cashly.cashly_api.payments.application.contracts." + contract));
+            assertTrue(dependencies.contains("com.cashly.cashly_api.payments.application.ports.out." + contract));
         }
     }
     @Test
     void should_expose_payments_owned_public_query_and_snapshots() {
         assertTrue(Arrays.stream(CustomerCreditQueryService.class.getInterfaces())
-                .anyMatch(type -> type.getName().equals("com.cashly.cashly_api.payments.application.api.CustomerCreditQuery")));
+                .anyMatch(type -> type.getName().equals("com.cashly.cashly_api.payments.application.ports.in.CustomerCreditQuery")));
         assertTrue(Arrays.stream(CustomerCreditQueryService.class.getDeclaredMethods())
                 .noneMatch(method -> method.getReturnType().getName().startsWith("com.cashly.cashly_api.customers.")));
     }

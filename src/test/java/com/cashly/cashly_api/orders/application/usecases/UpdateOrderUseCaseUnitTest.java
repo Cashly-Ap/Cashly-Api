@@ -2,8 +2,8 @@ package com.cashly.cashly_api.orders.application.usecases;
 
 import com.cashly.cashly_api.orders.application.dto.request.UpdateOrderRequest;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
-import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.entities.OrderLineAllocation;

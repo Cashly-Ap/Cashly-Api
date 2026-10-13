@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.suppliers.application.usecases;
 
-import com.cashly.cashly_api.suppliers.application.contracts.PurchaseUsageGateway;
+import com.cashly.cashly_api.suppliers.application.ports.out.PurchaseUsageGateway;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierListResponse;
 import com.cashly.cashly_api.suppliers.application.mappers.SupplierMapper;
 import com.cashly.cashly_api.suppliers.domain.entities.Supplier;

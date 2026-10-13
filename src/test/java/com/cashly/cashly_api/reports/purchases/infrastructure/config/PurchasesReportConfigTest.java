@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.reports.purchases.infrastructure.config;
 
-import com.cashly.cashly_api.reports.purchases.application.contracts.PurchaseReportQueryGateway;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasePdfPort;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasesReportPdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchaseReportQueryGateway;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasePdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasesReportPdfPort;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasePdfUseCase;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasesReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;

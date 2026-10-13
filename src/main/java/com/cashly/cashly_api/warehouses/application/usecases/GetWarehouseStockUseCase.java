@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.usecases;
 
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.warehouses.application.dto.response.WarehouseStockResponse;
 import com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException;

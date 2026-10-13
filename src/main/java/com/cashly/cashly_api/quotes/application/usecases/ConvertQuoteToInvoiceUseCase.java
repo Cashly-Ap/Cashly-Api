@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.contracts.InvoiceCreationGateway;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteConversionNotificationGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.InvoiceCreationGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteConversionNotificationGateway;
 import com.cashly.cashly_api.quotes.application.dto.request.ConvertQuoteToInvoiceRequest;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteConvertedToInvoiceResponse;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;

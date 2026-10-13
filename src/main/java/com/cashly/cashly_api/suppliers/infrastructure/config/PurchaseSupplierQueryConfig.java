@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.suppliers.infrastructure.config;
 
-import com.cashly.cashly_api.suppliers.application.api.PurchaseSupplierQuery;
+import com.cashly.cashly_api.suppliers.application.ports.in.PurchaseSupplierQuery;
 import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
-import com.cashly.cashly_api.suppliers.infrastructure.integration.SupplierPurchaseDirectoryAdapter;
+import com.cashly.cashly_api.suppliers.infrastructure.adapters.out.integration.SupplierPurchaseDirectoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

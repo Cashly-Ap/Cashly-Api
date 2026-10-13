@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.quotes.application.usecases;
 
 import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportRow;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotesReportPdfPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import com.cashly.cashly_api.reports.quotes.application.contracts.QuoteReportQueryGateway;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuoteReportQueryGateway;
 import com.cashly.cashly_api.reports.quotes.application.dto.QuoteReportFilter;
 
 import static org.junit.jupiter.api.Assertions.*;

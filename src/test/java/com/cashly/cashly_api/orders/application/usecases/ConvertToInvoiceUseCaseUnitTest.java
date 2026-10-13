@@ -8,13 +8,13 @@ import com.cashly.cashly_api.orders.application.dto.response.ConvertToInvoiceRes
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
-import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.invoices.application.services.OrderInvoiceCreationService;
-import com.cashly.cashly_api.orders.infrastructure.integration.LocalInvoiceCreationGateway;
+import com.cashly.cashly_api.orders.infrastructure.adapters.out.integration.LocalInvoiceCreationGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -3,9 +3,9 @@ package com.cashly.cashly_api.invoices.application.usecases;
 import com.cashly.cashly_api.auth.user.domain.entities.User;
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.*;
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.cash_register.application.services.CashMovementService;
+import com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementDirection;
+import com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.invoices.application.dto.request.ConfirmInvoiceRequest;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
@@ -70,16 +70,16 @@ class ConfirmInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         confirmInvoiceUseCase = new ConfirmInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInventoryGatewayAdapter(
                         new com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService(
                                 warehouseStockRepository, stockMovementRepository)),
                                 authorizationService,
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalActorIdentityGateway(
                         new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(userRepository,
                                 mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceNotificationGateway(notificationService),
-                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCashRegisterGateway(
-                        new com.cashly.cashly_api.cashregister.application.services.CashRegisterOperationsService(cashMovementService)));
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceNotificationGateway(notificationService),
+                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceCashRegisterGateway(
+                        new com.cashly.cashly_api.cash_register.application.services.CashRegisterOperationsService(cashMovementService)));
     }
 
     @Test

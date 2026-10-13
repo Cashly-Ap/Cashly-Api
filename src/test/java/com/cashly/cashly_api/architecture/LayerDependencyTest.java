@@ -19,13 +19,19 @@ class LayerDependencyTest {
     }
 
     @Test
-    void application_contracts_should_be_independent_of_infrastructure_and_frameworks() throws IOException {
-        assertNoImports("/application/contracts/", Pattern.compile(
+    void application_output_ports_should_be_independent_of_infrastructure_and_frameworks() throws IOException {
+        assertNoImports("/application/ports/out/", Pattern.compile(
                 "^import (?:com\\.cashly\\.cashly_api\\..*\\.infrastructure\\.|org\\.springframework\\.|jakarta\\.persistence\\.).*"));
     }
 
     @Test
-    void application_should_depend_on_other_modules_only_through_public_apis() throws IOException {
+    void application_input_ports_should_be_independent_of_infrastructure_and_frameworks() throws IOException {
+        assertNoImports("/application/ports/in/", Pattern.compile(
+                "^import (?:com\\.cashly\\.cashly_api\\..*\\.infrastructure\\.|org\\.springframework\\.|jakarta\\.persistence\\.).*"));
+    }
+
+    @Test
+    void application_should_depend_on_other_modules_only_through_input_ports() throws IOException {
         var violations = new ArrayList<String>();
         try (var sources = Files.walk(SOURCE_ROOT)) {
             for (Path source : sources.filter(path -> path.toString().replace('\\', '/').contains("/application/"))
@@ -38,7 +44,7 @@ class LayerDependencyTest {
                     }
                     String importedPackage = normalizedImport(line);
                     importedPackage = importedPackage.substring("import ".length(), importedPackage.length() - 1);
-                    if (importedPackage.matches("com\\.cashly\\.cashly_api\\..*\\.application\\.api\\..*")) {
+                    if (importedPackage.matches("com\\.cashly\\.cashly_api\\..*\\.application\\.ports\\.in\\..*")) {
                         continue;
                     }
                     if (importedPackage.matches("com\\.cashly\\.cashly_api\\..*\\.(domain|application|infrastructure)\\..*")) {
@@ -47,7 +53,7 @@ class LayerDependencyTest {
                 }
             }
         }
-        assertThat(violations).as("Cross-module dependencies must use provider application APIs").isEmpty();
+        assertThat(violations).as("Cross-module dependencies must use provider application input ports").isEmpty();
     }
 
     @Test

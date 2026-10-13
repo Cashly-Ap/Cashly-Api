@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.reports.quotes.application.usecases;
 
-import com.cashly.cashly_api.reports.quotes.application.contracts.QuoteReportQueryGateway;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuoteReportQueryGateway;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotePdfPort;
 import java.util.UUID;
 
 public class GenerateQuotePdfUseCaseImpl implements GenerateQuotePdfUseCase {

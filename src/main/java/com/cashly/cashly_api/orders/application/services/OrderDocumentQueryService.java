@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.orders.application.services;
 
-import com.cashly.cashly_api.orders.application.api.OrderDocumentQuery;
-import com.cashly.cashly_api.orders.application.api.OrderDocumentSnapshot;
-import com.cashly.cashly_api.orders.application.api.OrderDocumentRow;
-import com.cashly.cashly_api.orders.application.api.OrderDocumentFilter;
+import com.cashly.cashly_api.orders.application.ports.in.OrderDocumentQuery;
+import com.cashly.cashly_api.orders.application.ports.in.OrderDocumentSnapshot;
+import com.cashly.cashly_api.orders.application.ports.in.OrderDocumentRow;
+import com.cashly.cashly_api.orders.application.ports.in.OrderDocumentFilter;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;
 import com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;

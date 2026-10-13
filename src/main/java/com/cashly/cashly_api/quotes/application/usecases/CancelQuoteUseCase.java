@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.contracts.QuoteRejectionNotificationGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteRejectionNotificationGateway;
 import com.cashly.cashly_api.quotes.application.dto.request.CancelQuoteRequest;
 import com.cashly.cashly_api.quotes.domain.entities.Quote;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;

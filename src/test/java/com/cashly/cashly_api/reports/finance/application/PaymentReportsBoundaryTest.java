@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.reports.finance.application;
-import com.cashly.cashly_api.reports.finance.application.port.PaymentPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentPdfPort;
 import com.cashly.cashly_api.reports.finance.application.usecases.GeneratePaymentPdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

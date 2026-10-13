@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.application.services;
 
-import com.cashly.cashly_api.customers.application.contracts.CreditValidationGateway;
+import com.cashly.cashly_api.customers.application.ports.out.CreditValidationGateway;
 import com.cashly.cashly_api.customers.application.dto.response.CreditStatusResponse;
-import com.cashly.cashly_api.customers.application.api.CustomerCreditEligibilityQuery;
-import com.cashly.cashly_api.customers.application.api.CustomerCreditLimits;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerCreditEligibilityQuery;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerCreditLimits;
 import com.cashly.cashly_api.customers.application.exceptions.CreditLimitExceededException;
 import org.springframework.stereotype.Component;
 

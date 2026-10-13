@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.orders.application.contracts.OrderActorGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderCustomerGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderInventoryGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderProductCatalogGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderActorGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderCustomerGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
 import com.cashly.cashly_api.orders.application.dto.request.CreateOrderRequest;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.application.mappers.OrderMapper;

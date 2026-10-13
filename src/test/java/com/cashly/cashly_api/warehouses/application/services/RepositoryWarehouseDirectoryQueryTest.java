@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.WarehouseDirectoryEntry;
+import com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryEntry;
 import com.cashly.cashly_api.warehouses.domain.entities.Warehouse;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,7 @@ package com.cashly.cashly_api.payment_methods.application.usecases;
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
 import com.cashly.cashly_api.payment_methods.application.mappers.PaymentMethodMapper;
 import com.cashly.cashly_api.payment_methods.domain.entities.PaymentMethod;
-import com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway;
+import com.cashly.cashly_api.payment_methods.application.ports.out.PaymentMethodUsageGateway;
 import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 

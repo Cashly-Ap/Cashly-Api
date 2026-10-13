@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.application.services;
 
-import com.cashly.cashly_api.warehouses.application.api.PurchaseInventoryApi;
-import com.cashly.cashly_api.warehouses.application.api.PurchaseStockCommand;
+import com.cashly.cashly_api.warehouses.application.ports.in.PurchaseInventoryApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.PurchaseStockCommand;
 import com.cashly.cashly_api.warehouses.domain.entities.MovementType;
 import com.cashly.cashly_api.warehouses.domain.entities.ReferenceType;
 import com.cashly.cashly_api.warehouses.domain.entities.StockMovement;

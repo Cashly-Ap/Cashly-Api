@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.quotes.application.usecases;
 
-import com.cashly.cashly_api.quotes.application.contracts.ActorIdentityGateway;
-import com.cashly.cashly_api.quotes.application.contracts.OrderCreationGateway;
-import com.cashly.cashly_api.quotes.application.contracts.QuoteConversionNotificationGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.ActorIdentityGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.OrderCreationGateway;
+import com.cashly.cashly_api.quotes.application.ports.out.QuoteConversionNotificationGateway;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteConvertedToOrderResponse;
 import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;

@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.returns.infrastructure;
 
-import com.cashly.cashly_api.returns.application.contracts.ReturnBalanceGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnCashGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInventoryGateway;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnBalanceGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnCashGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInventoryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
 import com.cashly.cashly_api.returns.application.dto.request.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase;
 import com.cashly.cashly_api.returns.domain.entities.Return;

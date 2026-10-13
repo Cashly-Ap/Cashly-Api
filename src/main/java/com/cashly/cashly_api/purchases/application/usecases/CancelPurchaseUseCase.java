@@ -11,7 +11,7 @@ import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseStatus;
 import jakarta.transaction.Transactional;
 
-import com.cashly.cashly_api.purchases.application.contracts.InventoryGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.InventoryGateway;
 import java.util.UUID;
 
 public class CancelPurchaseUseCase {

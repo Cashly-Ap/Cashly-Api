@@ -7,8 +7,8 @@ import com.cashly.cashly_api.orders.domain.entities.OrderLine;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
 import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
-import com.cashly.cashly_api.orders.application.contracts.StockAvailabilityGateway;
-import com.cashly.cashly_api.orders.application.contracts.CustomerCreditGateway;
+import com.cashly.cashly_api.orders.application.ports.out.StockAvailabilityGateway;
+import com.cashly.cashly_api.orders.application.ports.out.CustomerCreditGateway;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

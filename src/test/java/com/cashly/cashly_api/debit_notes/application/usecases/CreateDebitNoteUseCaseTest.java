@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.debit_notes.application.usecases;
 
-import com.cashly.cashly_api.debit_notes.application.contracts.DebitNoteCashGateway;
-import com.cashly.cashly_api.debit_notes.application.contracts.DebitNoteInvoiceGateway;
+import com.cashly.cashly_api.debit_notes.application.ports.out.DebitNoteCashGateway;
+import com.cashly.cashly_api.debit_notes.application.ports.out.DebitNoteInvoiceGateway;
 import com.cashly.cashly_api.debit_notes.application.dto.request.CreateDebitNoteRequest;
 import com.cashly.cashly_api.debit_notes.domain.entities.DebitNote;
 import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;

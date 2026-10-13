@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.application.usecases;
 
-import com.cashly.cashly_api.products.application.contracts.ProductCategoryGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductCategoryGateway;
 import com.cashly.cashly_api.products.application.dto.response.ProductListResponse;
 import com.cashly.cashly_api.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;

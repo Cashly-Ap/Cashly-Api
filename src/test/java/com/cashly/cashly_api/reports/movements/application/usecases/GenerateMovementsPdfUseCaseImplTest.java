@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.reports.movements.application.usecases;
 
 import com.cashly.cashly_api.reports.movements.application.dto.response.MovementReportResponse;
-import com.cashly.cashly_api.reports.movements.application.port.MovementsPdfPort;
-import com.cashly.cashly_api.reports.movements.application.port.MovementsReportRepositoryPort;
-import com.cashly.cashly_api.reports.movements.application.query.MovementsPdfQuery;
+import com.cashly.cashly_api.reports.movements.application.ports.out.MovementsPdfPort;
+import com.cashly.cashly_api.reports.movements.application.ports.out.MovementsReportRepositoryPort;
+import com.cashly.cashly_api.reports.movements.application.dto.query.MovementsPdfQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

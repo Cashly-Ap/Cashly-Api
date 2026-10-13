@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.purchases.application.usecases;
 
 
-import com.cashly.cashly_api.purchases.application.contracts.PurchaseProductGateway;
+import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductGateway;
 
 
 import com.cashly.cashly_api.purchases.application.dto.request.UpdatePurchaseRequest;

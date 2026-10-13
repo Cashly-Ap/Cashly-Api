@@ -17,7 +17,7 @@ import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
-import com.cashly.cashly_api.purchases.infrastructure.integration.WarehouseInventoryAdapter;
+import com.cashly.cashly_api.purchases.infrastructure.adapters.out.integration.WarehouseInventoryAdapter;
 import com.cashly.cashly_api.warehouses.application.services.PurchaseInventoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +57,7 @@ class ConfirmPurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         confirmPurchaseUseCase = new ConfirmPurchaseUseCase(purchaseRepository,
-                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.application.queries.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.purchases.infrastructure.adapters.out.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.application.queries.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
     }
 
     @Test

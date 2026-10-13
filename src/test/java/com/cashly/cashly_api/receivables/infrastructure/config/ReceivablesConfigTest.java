@@ -5,7 +5,7 @@ import com.cashly.cashly_api.receivables.application.usecases.GetCustomerInvoice
 import com.cashly.cashly_api.receivables.application.usecases.GetPaymentHistoryUseCase;
 import com.cashly.cashly_api.receivables.application.usecases.GetReceivablesSummaryUseCase;
 import com.cashly.cashly_api.receivables.application.usecases.SearchCustomerDebtUseCase;
-import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
+import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.reports.finance.application.usecases;
 
 import com.cashly.cashly_api.reports.finance.application.dto.PaymentReportData;
-import com.cashly.cashly_api.reports.finance.application.contracts.PaymentReportQueryGateway;
-import com.cashly.cashly_api.reports.finance.application.port.PaymentPdfPort;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentReportQueryGateway;
+import com.cashly.cashly_api.reports.finance.application.ports.out.PaymentPdfPort;
 
 import java.util.UUID;
 

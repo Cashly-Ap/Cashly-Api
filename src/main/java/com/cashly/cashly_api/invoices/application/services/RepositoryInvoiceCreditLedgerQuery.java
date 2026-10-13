@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.invoices.application.services;
-import com.cashly.cashly_api.invoices.application.api.InvoiceCreditLedgerQuery;
-import com.cashly.cashly_api.invoices.application.api.InvoiceCreditLedgerEntry;
+import com.cashly.cashly_api.invoices.application.ports.in.InvoiceCreditLedgerQuery;
+import com.cashly.cashly_api.invoices.application.ports.in.InvoiceCreditLedgerEntry;
 import com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import java.util.List;

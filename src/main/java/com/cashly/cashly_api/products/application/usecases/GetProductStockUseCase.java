@@ -5,7 +5,7 @@ import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundExce
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 
 import java.util.List;
-import com.cashly.cashly_api.products.application.contracts.ProductWarehouseStockGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductWarehouseStockGateway;
 import java.util.UUID;
 
 public class GetProductStockUseCase {

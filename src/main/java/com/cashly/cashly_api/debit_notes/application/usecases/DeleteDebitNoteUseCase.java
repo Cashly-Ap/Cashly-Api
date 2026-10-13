@@ -3,7 +3,7 @@ package com.cashly.cashly_api.debit_notes.application.usecases;
 import com.cashly.cashly_api.debit_notes.domain.entities.DebitNote;
 import com.cashly.cashly_api.debit_notes.domain.repositories.DebitNoteRepository;
 import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteId;
-import com.cashly.cashly_api.debit_notes.application.contracts.DebitNoteInvoiceGateway;
+import com.cashly.cashly_api.debit_notes.application.ports.out.DebitNoteInvoiceGateway;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

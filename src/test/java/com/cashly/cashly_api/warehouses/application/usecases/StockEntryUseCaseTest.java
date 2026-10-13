@@ -5,7 +5,7 @@ import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.entities.ProductComponent;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.products.application.queries.RepositoryStockCatalogQuery;
-import com.cashly.cashly_api.warehouses.infrastructure.integration.LocalStockCatalogGatewayAdapter;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem;
 import com.cashly.cashly_api.warehouses.application.dto.request.StockEntryRequest;
 import com.cashly.cashly_api.warehouses.application.dto.response.StockMovementResponse;

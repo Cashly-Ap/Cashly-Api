@@ -3,7 +3,7 @@ package com.cashly.cashly_api.products.application.usecases;
 import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
-import com.cashly.cashly_api.products.application.contracts.ProductFileStorageGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductFileStorageGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

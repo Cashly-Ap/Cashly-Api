@@ -8,7 +8,7 @@ class RefreshTokenBoundaryTest {
     void should_resolve_subject_through_application_contract() {
         var constructor = RefreshTokenUseCase.class.getConstructors()[0];
         assertEquals(3, constructor.getParameterCount());
-        assertEquals("com.cashly.cashly_api.auth.token.application.contracts.AuthenticableSubjectGateway",
+        assertEquals("com.cashly.cashly_api.auth.token.application.ports.out.AuthenticableSubjectGateway",
                 constructor.getParameterTypes()[1].getName());
     }
 

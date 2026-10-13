@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.reports.inventory.application.usecases;
 
-import com.cashly.cashly_api.reports.inventory.application.port.CatalogPdfPort;
-import com.cashly.cashly_api.reports.inventory.application.port.CatalogReportRepositoryPort;
-import com.cashly.cashly_api.reports.inventory.application.query.CatalogPdfQuery;
-import com.cashly.cashly_api.reports.inventory.application.query.CatalogReportQuery;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogPdfPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogReportRepositoryPort;
+import com.cashly.cashly_api.reports.inventory.application.dto.query.CatalogPdfQuery;
+import com.cashly.cashly_api.reports.inventory.application.dto.query.CatalogReportQuery;
 
 public class GenerateCatalogPdfUseCaseImpl implements GenerateCatalogPdfUseCase {
 

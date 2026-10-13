@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.infrastructure.config;
 
-import com.cashly.cashly_api.customers.application.api.CustomerProfileQuery;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerProfileQuery;
 import com.cashly.cashly_api.customers.application.queries.RepositoryCustomerProfileQuery;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;

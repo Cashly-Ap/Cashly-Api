@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.infrastructure.config;
 
-import com.cashly.cashly_api.warehouses.application.api.PurchaseWarehouseQuery;
+import com.cashly.cashly_api.warehouses.application.ports.in.PurchaseWarehouseQuery;
 import com.cashly.cashly_api.warehouses.application.queries.RepositoryPurchaseWarehouseQuery;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;

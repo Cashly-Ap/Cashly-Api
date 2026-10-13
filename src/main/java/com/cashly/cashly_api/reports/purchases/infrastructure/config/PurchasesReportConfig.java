@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.reports.purchases.infrastructure.config;
-import com.cashly.cashly_api.reports.purchases.application.contracts.PurchaseReportQueryGateway;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasePdfPort;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasesReportPdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchaseReportQueryGateway;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasePdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasesReportPdfPort;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasePdfUseCase;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasePdfUseCaseImpl;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasesReportPdfUseCase;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasesReportPdfUseCaseImpl;
-import com.cashly.cashly_api.reports.purchases.infrastructure.pdf.PurchasePdfGenerator;
-import com.cashly.cashly_api.reports.purchases.infrastructure.pdf.PurchasesReportPdfGenerator;
+import com.cashly.cashly_api.reports.purchases.infrastructure.adapters.out.pdf.PurchasePdfGenerator;
+import com.cashly.cashly_api.reports.purchases.infrastructure.adapters.out.pdf.PurchasesReportPdfGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

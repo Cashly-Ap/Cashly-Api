@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.orders.application.usecases;
 
-import com.cashly.cashly_api.orders.application.contracts.InvoiceCreationGateway;
-import com.cashly.cashly_api.orders.application.contracts.OrderNotificationGateway;
+import com.cashly.cashly_api.orders.application.ports.out.InvoiceCreationGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.application.dto.request.ConvertToInvoiceRequest;
 import com.cashly.cashly_api.orders.application.dto.response.ConvertToInvoiceResponse;
 import com.cashly.cashly_api.orders.domain.entities.Order;

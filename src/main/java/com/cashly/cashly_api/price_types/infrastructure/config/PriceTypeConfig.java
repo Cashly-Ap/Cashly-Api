@@ -2,7 +2,7 @@ package com.cashly.cashly_api.price_types.infrastructure.config;
 
 import com.cashly.cashly_api.price_types.application.usecases.*;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
-import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
+import com.cashly.cashly_api.price_types.application.ports.out.PriceTypeUsageGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

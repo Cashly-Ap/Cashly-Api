@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.customers.infrastructure.config;
-import com.cashly.cashly_api.customers.application.api.CustomerCreditContextQuery;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerCreditContextQuery;
 import com.cashly.cashly_api.customers.application.services.RepositoryCustomerCreditContextQuery;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerRepository;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerBalanceRepository;

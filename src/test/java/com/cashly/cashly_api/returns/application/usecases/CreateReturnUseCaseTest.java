@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.returns.application.usecases;
 
-import com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInventoryGatewayAdapter;
+import com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnInventoryGatewayAdapter;
 import com.cashly.cashly_api.warehouses.application.services.ReturnInventoryService;
 
-import com.cashly.cashly_api.cashregister.application.services.CashMovementService;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cashregister.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.cash_register.application.services.CashMovementService;
+import com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementDirection;
+import com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;
 import com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase;
 import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
@@ -24,8 +24,8 @@ import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
 import com.cashly.cashly_api.returns.application.mappers.ReturnMapper;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import com.cashly.cashly_api.returns.domain.entities.Return;
-import com.cashly.cashly_api.returns.application.contracts.ReturnInvoiceAdjustmentGateway;
-import com.cashly.cashly_api.returns.infrastructure.integration.InvoiceReturnAdjustmentAdapter;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.InvoiceReturnAdjustmentAdapter;
 import com.cashly.cashly_api.invoices.application.services.RepositoryInvoiceReturnAdjustments;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
@@ -286,19 +286,19 @@ class CreateReturnUseCaseTest {
         var request = buildRequest(new BigDecimal("10.00"), "AUTOMATIC", invoiceId, customerId);
         var invoice = buildInvoice(new BigDecimal("50.00"), BigDecimal.ZERO, invoiceId);
         var entityManager = mock(jakarta.persistence.EntityManager.class);
-        var stored = new java.util.concurrent.atomic.AtomicReference<com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity>();
-        when(entityManager.find(eq(com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity.class), any()))
+        var stored = new java.util.concurrent.atomic.AtomicReference<com.cashly.cashly_api.returns.infrastructure.adapters.out.persistence.entities.ReturnEntity>();
+        when(entityManager.find(eq(com.cashly.cashly_api.returns.infrastructure.adapters.out.persistence.entities.ReturnEntity.class), any()))
                 .thenAnswer(invocation -> stored.get());
         doAnswer(invocation -> { stored.set(invocation.getArgument(0)); return null; }).when(entityManager)
-                .persist(any(com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity.class));
+                .persist(any(com.cashly.cashly_api.returns.infrastructure.adapters.out.persistence.entities.ReturnEntity.class));
         when(entityManager.merge(any())).thenAnswer(invocation -> {
             Object entity = invocation.getArgument(0);
-            if (entity instanceof com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnEntity returnEntity) stored.set(returnEntity);
+            if (entity instanceof com.cashly.cashly_api.returns.infrastructure.adapters.out.persistence.entities.ReturnEntity returnEntity) stored.set(returnEntity);
             return entity;
         });
-        when(entityManager.find(eq(com.cashly.cashly_api.returns.infrastructure.persistence.entities.ReturnNumberSequenceEntity.class),
+        when(entityManager.find(eq(com.cashly.cashly_api.returns.infrastructure.adapters.out.persistence.entities.ReturnNumberSequenceEntity.class),
                 any(), eq(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE))).thenReturn(null);
-        var repository = new com.cashly.cashly_api.returns.infrastructure.persistence.repositories.JpaReturnRepository(entityManager);
+        var repository = new com.cashly.cashly_api.returns.infrastructure.adapters.out.persistence.adapters.JpaReturnRepository(entityManager);
         var persistedUseCase = createUseCase(repository);
         when(invoiceRepository.findById(any(InvoiceId.class))).thenReturn(Optional.of(invoice));
         when(allocationRepository.getAllocatedAmountByInvoiceId(invoiceId)).thenReturn(new BigDecimal("15.00"));
@@ -313,18 +313,18 @@ class CreateReturnUseCaseTest {
         assertEquals(new BigDecimal("15.00"), reloaded.getCancelledAllocations().getFirst().getAmount());
     }
     private CreateReturnUseCase createUseCase(ReturnRepository repository) {
-        var query = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnInvoiceQueryGateway(
+        var query = new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnInvoiceQueryGateway(
                 new com.cashly.cashly_api.invoices.application.services.RepositoryReturnInvoiceQuery(invoiceRepository),
                 new com.cashly.cashly_api.credit_notes.application.services.RepositoryCreditNoteLedgerQuery(creditNoteRepository),
                 new com.cashly.cashly_api.debit_notes.application.services.RepositoryDebitNoteLedgerQuery(debitNoteRepository));
-        var payments = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnPaymentSettlementGateway(
+        var payments = new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnPaymentSettlementGateway(
                 new com.cashly.cashly_api.payments.application.services.ReturnPaymentOperationsService(
                         mock(com.cashly.cashly_api.payments.domain.repositories.PaymentRepository.class), allocationRepository, paymentAllocationService));
-        var balances = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnBalanceGateway(
+        var balances = new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnBalanceGateway(
                 new com.cashly.cashly_api.customers.application.services.ReturnBalanceMutationService(addToCustomerBalanceUseCase,
                         mock(com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase.class)));
-        var cash = new com.cashly.cashly_api.returns.infrastructure.integration.LocalReturnCashGateway(
-                new com.cashly.cashly_api.cashregister.application.services.ReturnCashRecordingService(cashMovementService));
+        var cash = new com.cashly.cashly_api.returns.infrastructure.adapters.out.integration.LocalReturnCashGateway(
+                new com.cashly.cashly_api.cash_register.application.services.ReturnCashRecordingService(cashMovementService));
         return new CreateReturnUseCase(invoiceAdjustmentGateway, repository, returnMapper, query, payments, balances,
                 new LocalReturnInventoryGatewayAdapter(new ReturnInventoryService(warehouseStockRepository, stockMovementRepository)), cash);
     }}

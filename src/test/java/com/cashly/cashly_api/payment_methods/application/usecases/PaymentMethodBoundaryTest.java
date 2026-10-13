@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payment_methods.application.usecases;
 
-import com.cashly.cashly_api.payment_methods.infrastructure.persistence.repositories.PaymentMethodRepositoryAdapter;
+import com.cashly.cashly_api.payment_methods.infrastructure.adapters.out.persistence.adapters.PaymentMethodRepositoryAdapter;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,7 +9,7 @@ class PaymentMethodBoundaryTest {
     void should_consult_usage_through_application_contract() {
         var constructor = DeletePaymentMethodUseCase.class.getConstructors()[0];
         assertEquals(2, constructor.getParameterCount());
-        assertEquals("com.cashly.cashly_api.payment_methods.application.contracts.PaymentMethodUsageGateway",
+        assertEquals("com.cashly.cashly_api.payment_methods.application.ports.out.PaymentMethodUsageGateway",
                 constructor.getParameterTypes()[1].getName());
     }
 

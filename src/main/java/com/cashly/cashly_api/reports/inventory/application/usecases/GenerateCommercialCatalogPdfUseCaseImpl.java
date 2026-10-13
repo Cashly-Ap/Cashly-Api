@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.reports.inventory.application.usecases;
 
 import com.cashly.cashly_api.reports.inventory.application.dto.response.CommercialCatalogResponse;
-import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogPdfPort;
-import com.cashly.cashly_api.reports.inventory.application.port.CommercialCatalogRepositoryPort;
-import com.cashly.cashly_api.reports.inventory.application.query.CommercialCatalogQuery;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CommercialCatalogPdfPort;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CommercialCatalogRepositoryPort;
+import com.cashly.cashly_api.reports.inventory.application.dto.query.CommercialCatalogQuery;
 
 import java.util.List;
 

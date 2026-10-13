@@ -4,7 +4,7 @@ import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
 import com.cashly.cashly_api.orders.domain.entities.Order;
 import com.cashly.cashly_api.orders.domain.entities.OrderLine;
-import com.cashly.cashly_api.orders.application.contracts.StockAvailabilityGateway;
+import com.cashly.cashly_api.orders.application.ports.out.StockAvailabilityGateway;
 
 import java.util.List;
 import java.util.Map;

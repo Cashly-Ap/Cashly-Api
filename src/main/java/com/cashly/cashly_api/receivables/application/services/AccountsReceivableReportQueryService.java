@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.application.services;
-import com.cashly.cashly_api.receivables.application.api.AccountsReceivableReportQuery;
-import com.cashly.cashly_api.receivables.application.api.AccountsReceivableReportSnapshot;
-import com.cashly.cashly_api.receivables.application.contracts.ReceivablesQueryGateway;
+import com.cashly.cashly_api.receivables.application.ports.in.AccountsReceivableReportQuery;
+import com.cashly.cashly_api.receivables.application.ports.in.AccountsReceivableReportSnapshot;
+import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import java.util.List;
 import java.util.UUID;
 public class AccountsReceivableReportQueryService implements AccountsReceivableReportQuery {

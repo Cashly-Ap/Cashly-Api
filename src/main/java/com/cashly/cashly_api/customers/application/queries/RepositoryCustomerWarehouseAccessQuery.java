@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.application.queries;
 
-import com.cashly.cashly_api.customers.application.api.CustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.customers.application.ports.in.CustomerWarehouseAccessQuery;
 import com.cashly.cashly_api.customers.domain.entities.CustomerWarehouseAccess;
 import com.cashly.cashly_api.customers.domain.repositories.CustomerWarehouseAccessRepository;
 import java.util.Set;

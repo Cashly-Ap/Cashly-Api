@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.credit_notes.application.usecases;
 
-import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteEffectsGateway;
-import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteFinancialPositionGateway;
-import com.cashly.cashly_api.credit_notes.application.contracts.CreditNoteInvoiceGateway;
+import com.cashly.cashly_api.credit_notes.application.ports.out.CreditNoteEffectsGateway;
+import com.cashly.cashly_api.credit_notes.application.ports.out.CreditNoteFinancialPositionGateway;
+import com.cashly.cashly_api.credit_notes.application.ports.out.CreditNoteInvoiceGateway;
 import com.cashly.cashly_api.credit_notes.application.dto.request.CreateCreditNoteRequest;
 import com.cashly.cashly_api.credit_notes.domain.entities.CreditNote;
 import com.cashly.cashly_api.credit_notes.domain.repositories.CreditNoteRepository;

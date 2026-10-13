@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.application.mappers;
 
-import com.cashly.cashly_api.returns.application.contracts.ReturnProjectionQueryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnProjectionQueryGateway;
 import com.cashly.cashly_api.returns.application.dto.request.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;

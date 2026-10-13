@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.products.application.usecases;
 
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
-import com.cashly.cashly_api.products.infrastructure.integration.LocalProductCategoryGatewayAdapter;
+import com.cashly.cashly_api.products.infrastructure.adapters.out.integration.LocalProductCategoryGatewayAdapter;
 import com.cashly.cashly_api.categories.application.queries.RepositoryProductCategoryQuery;
-import com.cashly.cashly_api.products.application.contracts.CustomerProductContextGateway;
-import com.cashly.cashly_api.products.application.contracts.ProductWarehouseStockGateway;
+import com.cashly.cashly_api.products.application.ports.out.CustomerProductContextGateway;
+import com.cashly.cashly_api.products.application.ports.out.ProductWarehouseStockGateway;
 import com.cashly.cashly_api.products.domain.entities.Product;
 import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;

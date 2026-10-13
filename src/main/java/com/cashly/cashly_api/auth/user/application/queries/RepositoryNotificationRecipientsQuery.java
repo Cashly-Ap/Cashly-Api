@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.auth.user.application.queries;
 
-import com.cashly.cashly_api.auth.user.application.api.NotificationRecipientsQuery;
+import com.cashly.cashly_api.auth.user.application.ports.in.NotificationRecipientsQuery;
 
 import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
 import java.util.List;

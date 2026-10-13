@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.purchases.application;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasePdfPort;
-import com.cashly.cashly_api.reports.purchases.application.port.PurchasesReportPdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasePdfPort;
+import com.cashly.cashly_api.reports.purchases.application.ports.out.PurchasesReportPdfPort;
 import com.cashly.cashly_api.reports.purchases.application.usecases.GeneratePurchasePdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.payments.application.usecases;
 
-import com.cashly.cashly_api.payments.application.contracts.CashRegisterGateway;
-import com.cashly.cashly_api.payments.application.contracts.PaymentInvoiceGateway;
-import com.cashly.cashly_api.payments.application.contracts.PaymentNotificationGateway;
+import com.cashly.cashly_api.payments.application.ports.out.CashRegisterGateway;
+import com.cashly.cashly_api.payments.application.ports.out.PaymentInvoiceGateway;
+import com.cashly.cashly_api.payments.application.ports.out.PaymentNotificationGateway;
 import com.cashly.cashly_api.payments.application.dto.request.ApprovePaymentRequest;
 import com.cashly.cashly_api.payments.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.payments.application.mappers.PaymentMapper;

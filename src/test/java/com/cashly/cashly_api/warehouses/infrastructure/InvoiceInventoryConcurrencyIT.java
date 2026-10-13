@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.warehouses.infrastructure;
 
-import com.cashly.cashly_api.warehouses.application.api.InvoiceInventoryApi;
-import com.cashly.cashly_api.warehouses.application.api.InvoiceStockCommand.Allocation;
+import com.cashly.cashly_api.warehouses.application.ports.in.InvoiceInventoryApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.InvoiceStockCommand.Allocation;
 import com.cashly.cashly_api.warehouses.application.exceptions.ProductNotInWarehouseException;
 import com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService;
 import com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.entities.WarehouseStockEntity;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories.JpaWarehouseStockRepository;
-import com.cashly.cashly_api.warehouses.infrastructure.persistence.repositories.SpringDataWarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.entities.WarehouseStockEntity;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.adapters.JpaWarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.repositories.SpringDataWarehouseStockRepository;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

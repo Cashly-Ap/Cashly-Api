@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.reports.stock.application.usecases;
 
 import com.cashly.cashly_api.reports.stock.application.dto.response.StockReportResponse;
-import com.cashly.cashly_api.reports.stock.application.port.StockExcelPort;
-import com.cashly.cashly_api.reports.stock.application.port.StockReportRepositoryPort;
-import com.cashly.cashly_api.reports.stock.application.query.StockPdfQuery;
+import com.cashly.cashly_api.reports.stock.application.ports.out.StockExcelPort;
+import com.cashly.cashly_api.reports.stock.application.ports.out.StockReportRepositoryPort;
+import com.cashly.cashly_api.reports.stock.application.dto.query.StockPdfQuery;
 
 import java.util.List;
 

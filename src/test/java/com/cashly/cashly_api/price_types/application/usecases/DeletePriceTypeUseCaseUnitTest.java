@@ -2,7 +2,7 @@ package com.cashly.cashly_api.price_types.application.usecases;
 
 import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeInUseException;
 import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException;
-import com.cashly.cashly_api.price_types.application.contracts.PriceTypeUsageGateway;
+import com.cashly.cashly_api.price_types.application.ports.out.PriceTypeUsageGateway;
 import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.quotes.application.services;
 
-import com.cashly.cashly_api.quotes.application.api.QuoteDocumentQuery;
-import com.cashly.cashly_api.quotes.application.api.QuoteDocumentSnapshot;
-import com.cashly.cashly_api.quotes.application.api.QuoteDocumentRow;
-import com.cashly.cashly_api.quotes.application.api.QuoteDocumentFilter;
+import com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentQuery;
+import com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentSnapshot;
+import com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentRow;
+import com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentFilter;
 import com.cashly.cashly_api.quotes.application.mappers.QuoteMapper;
 import com.cashly.cashly_api.quotes.application.usecases.GetQuotesUseCase;
 import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;

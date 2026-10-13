@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.warehouses.infrastructure.config;
 
-import com.cashly.cashly_api.warehouses.application.contracts.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway;
 
 
 import com.cashly.cashly_api.warehouses.application.usecases.*;
-import com.cashly.cashly_api.warehouses.application.api.InvoiceInventoryApi;
+import com.cashly.cashly_api.warehouses.application.ports.in.InvoiceInventoryApi;
 import com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService;
 import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;

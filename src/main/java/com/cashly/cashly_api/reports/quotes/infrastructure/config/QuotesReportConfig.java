@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.reports.quotes.infrastructure.config;
-import com.cashly.cashly_api.reports.quotes.application.contracts.QuoteReportQueryGateway;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuoteReportQueryGateway;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotePdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotesReportPdfPort;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCase;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCaseImpl;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotesReportPdfUseCase;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotesReportPdfUseCaseImpl;
-import com.cashly.cashly_api.reports.quotes.infrastructure.pdf.QuotePdfGenerator;
-import com.cashly.cashly_api.reports.quotes.infrastructure.pdf.QuotesReportPdfGenerator;
+import com.cashly.cashly_api.reports.quotes.infrastructure.adapters.out.pdf.QuotePdfGenerator;
+import com.cashly.cashly_api.reports.quotes.infrastructure.adapters.out.pdf.QuotesReportPdfGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

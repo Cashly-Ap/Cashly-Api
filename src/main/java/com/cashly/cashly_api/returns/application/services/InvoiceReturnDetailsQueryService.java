@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.application.services;
 
-import com.cashly.cashly_api.returns.application.api.InvoiceReturnDetailsQuery;
+import com.cashly.cashly_api.returns.application.ports.in.InvoiceReturnDetailsQuery;
 import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.reports.quotes.application;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotePdfPort;
-import com.cashly.cashly_api.reports.quotes.application.port.QuotesReportPdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotePdfPort;
+import com.cashly.cashly_api.reports.quotes.application.ports.out.QuotesReportPdfPort;
 import com.cashly.cashly_api.reports.quotes.application.usecases.GenerateQuotePdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.application.dto.response;
 
-import com.cashly.cashly_api.products.application.contracts.ProductWarehouseStockGateway.Stock;
+import com.cashly.cashly_api.products.application.ports.out.ProductWarehouseStockGateway.Stock;
 
 import java.time.LocalDateTime;
 

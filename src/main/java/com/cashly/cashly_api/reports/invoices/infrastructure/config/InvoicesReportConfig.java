@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.reports.invoices.infrastructure.config;
 
-import com.cashly.cashly_api.reports.invoices.application.port.InvoicePdfPort;
-import com.cashly.cashly_api.reports.invoices.application.port.InvoicesReportPdfPort;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoicePdfPort;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoicesReportPdfPort;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicePdfUseCase;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicePdfUseCaseImpl;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicesReportPdfUseCase;
 import com.cashly.cashly_api.reports.invoices.application.usecases.GenerateInvoicesReportPdfUseCaseImpl;
-import com.cashly.cashly_api.reports.invoices.infrastructure.pdf.InvoicePdfGenerator;
-import com.cashly.cashly_api.reports.invoices.infrastructure.pdf.InvoicesReportPdfGenerator;
-import com.cashly.cashly_api.reports.invoices.application.contracts.InvoiceReportQueryGateway;
+import com.cashly.cashly_api.reports.invoices.infrastructure.adapters.out.pdf.InvoicePdfGenerator;
+import com.cashly.cashly_api.reports.invoices.infrastructure.adapters.out.pdf.InvoicesReportPdfGenerator;
+import com.cashly.cashly_api.reports.invoices.application.ports.out.InvoiceReportQueryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

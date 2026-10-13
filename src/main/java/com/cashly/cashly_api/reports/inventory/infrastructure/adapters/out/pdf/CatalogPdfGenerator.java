@@ -1,0 +1,152 @@
+package com.cashly.cashly_api.reports.inventory.infrastructure.adapters.out.pdf;
+
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.events.Event;
+import com.itextpdf.kernel.events.IEventHandler;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Canvas;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import com.cashly.cashly_api.reports.inventory.application.dto.response.CatalogReportResponse;
+import com.cashly.cashly_api.reports.inventory.application.ports.out.CatalogPdfPort;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class CatalogPdfGenerator implements CatalogPdfPort {
+
+    private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
+    private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
+    private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
+
+    @Override
+    public byte[] generatePdf(List<CatalogReportResponse> items) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            pdfDoc.setDefaultPageSize(PageSize.A4.rotate());
+
+            Document document = new Document(pdfDoc);
+            document.setMargins(40, 40, 50, 40);
+
+            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+
+            Paragraph title = new Paragraph("Reporte de Productos")
+                    .setFont(bold)
+                    .setFontSize(18)
+                    .setTextAlignment(TextAlignment.LEFT)
+                    .setMarginBottom(4);
+
+            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            Paragraph subtitle = new Paragraph("Generado el " + fecha)
+                    .setFont(regular)
+                    .setFontSize(10)
+                    .setFontColor(ColorConstants.DARK_GRAY)
+                    .setTextAlignment(TextAlignment.LEFT)
+                    .setMarginBottom(16);
+
+            document.add(title);
+            document.add(subtitle);
+
+            float[] columnWidths = {3f, 2f, 2f, 2f, 1.5f, 1.5f, 1.5f};
+            Table table = new Table(UnitValue.createPercentArray(columnWidths))
+                    .useAllAvailableWidth();
+
+            String[] headers = {"Producto", "SKU", "Categoría", "Almacén", "Tipo", "Stock", "Estado"};
+            for (String h : headers) {
+                Cell headerCell = new Cell()
+                        .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                        .setBackgroundColor(HEADER_BG)
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setPadding(6);
+                table.addHeaderCell(headerCell);
+            }
+
+            for (int i = 0; i < items.size(); i++) {
+                CatalogReportResponse item = items.get(i);
+                boolean even = i % 2 == 0;
+                DeviceRgb rowColor = even ? null : GRAY_ROW;
+
+                addCell(table, item.productName(), regular, rowColor, TextAlignment.LEFT);
+                addCell(table, item.sku(), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, item.categoryName(), regular, rowColor, TextAlignment.LEFT);
+                addCell(table, item.warehouseName() != null ? item.warehouseName() : "-", regular, rowColor, TextAlignment.LEFT);
+                addCell(table, Boolean.TRUE.equals(item.composite()) ? "Compuesto" : "Simple", regular, rowColor, TextAlignment.CENTER);
+                addCell(table, item.quantity() != null ? item.quantity().toPlainString() : "0", regular, rowColor, TextAlignment.RIGHT);
+                addCell(table, Boolean.TRUE.equals(item.active()) ? "Activo" : "Inactivo", regular, rowColor, TextAlignment.CENTER);
+            }
+
+            document.add(table);
+            document.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error generating catalog PDF", e);
+        }
+        return baos.toByteArray();
+    }
+
+    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+        Cell cell = new Cell()
+                .add(new Paragraph(text != null ? text : "").setFont(font).setFontSize(8))
+                .setTextAlignment(align)
+                .setPaddingTop(4)
+                .setPaddingBottom(4)
+                .setPaddingLeft(5)
+                .setPaddingRight(5);
+        if (bg != null) {
+            cell.setBackgroundColor(bg);
+        }
+        table.addCell(cell);
+    }
+
+    private static class PageFooterHandler implements IEventHandler {
+
+        private final PdfFont font;
+
+        PageFooterHandler(PdfFont font) {
+            this.font = font;
+        }
+
+        @Override
+        public void handleEvent(Event event) {
+            PdfDocumentEvent docEvent = (PdfDocumentEvent) event;
+            PdfDocument pdfDoc = docEvent.getDocument();
+            PdfPage page = docEvent.getPage();
+            int pageNumber = pdfDoc.getPageNumber(page);
+            int totalPages = pdfDoc.getNumberOfPages();
+
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
+
+            try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
+                layoutCanvas.showTextAligned(
+                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                                .setFont(font)
+                                .setFontSize(8)
+                                .setFontColor(ColorConstants.GRAY),
+                        pageSize.getWidth() / 2,
+                        20,
+                        TextAlignment.CENTER
+                );
+            }
+        }
+    }
+}

@@ -4,7 +4,7 @@ import com.cashly.cashly_api.categories.application.dto.response.CategoryDetailR
 import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
 import com.cashly.cashly_api.categories.application.mappers.CategoryMapper;
 import com.cashly.cashly_api.categories.domain.entities.Category;
-import com.cashly.cashly_api.categories.application.contracts.CategoryUsageGateway;
+import com.cashly.cashly_api.categories.application.ports.out.CategoryUsageGateway;
 import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
 import org.springframework.transaction.annotation.Transactional;
 
