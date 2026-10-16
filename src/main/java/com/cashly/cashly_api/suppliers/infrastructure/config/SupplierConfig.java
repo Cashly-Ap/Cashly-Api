@@ -2,10 +2,14 @@ package com.cashly.cashly_api.suppliers.infrastructure.config;
 
 import com.cashly.cashly_api.suppliers.application.ports.out.PurchaseUsageGateway;
 import com.cashly.cashly_api.suppliers.application.mappers.SupplierMapper;
-import com.cashly.cashly_api.suppliers.application.usecases.*;
-import com.cashly.cashly_api.suppliers.domain.repositories.SupplierRepository;
+import com.cashly.cashly_api.suppliers.application.delete.DeleteSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.queries.GetSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.queries.ListSuppliersUseCase;
+import com.cashly.cashly_api.suppliers.application.register.RegisterSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.update.UpdateSupplierUseCase;
+import com.cashly.cashly_api.suppliers.domain.SupplierRepository;
 import com.cashly.cashly_api.suppliers.domain.services.SupplierCodeGenerator;
-import com.cashly.cashly_api.suppliers.infrastructure.adapters.out.services.SequentialSupplierCodeGenerator;
+import com.cashly.cashly_api.suppliers.infrastructure.services.SequentialSupplierCodeGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

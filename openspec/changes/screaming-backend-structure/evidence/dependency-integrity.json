@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "scope": "Production cross-module import edges canonicalized to original type FQNs; excludes same-module and shared imports, matching dependency-baseline.json",
+  "baseline_git_commit": "3d9c2dad796502e28d8f8ff3d18ca2aee93d12de",
+  "baseline_source_hashes_verified": 1248,
+  "baseline_edges": 190,
+  "implemented_canonical_edges": 190,
+  "new_edges": [],
+  "removed_edges": [],
+  "baseline_manifest_discrepancies": [],
+  "preexisting_foreign_internal_edges": 83,
+  "preserved_public_port_edges": 107,
+  "debt_entries": 83,
+  "debt_owner_provider_path_milestone_checks": "PASS",
+  "closure_milestone": "Before the next behavior change involving each listed integration; migrate consumers to provider-owned public ports in a separate specified change",
+  "runtime_tests_executed": false
+}

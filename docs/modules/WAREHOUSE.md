@@ -1,5 +1,7 @@
 # WAREHOUSE Module
 
+> Estructura actual del código: `warehouses/management` y `warehouses/stock` (incluye reservas y movimientos). Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
 ## Overview
 The WAREHOUSE module manages physical warehouses, product stock per warehouse, and maintains a complete audit trail of all inventory movements. It handles multi-warehouse support, stock operations (entry, exit, adjustments), and transfers between warehouses.
 

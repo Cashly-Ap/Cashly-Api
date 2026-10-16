@@ -1,0 +1,10 @@
+package com.cashly.cashly_api.orders.reporting.application.ports.out;
+
+import com.cashly.cashly_api.orders.reporting.application.dto.OrderReportRow;
+
+import java.util.List;
+
+
+public interface OrdersReportPdfPort {
+    byte[] generatePdf(List<OrderReportRow> orders, String mode);
+}

@@ -1,0 +1,940 @@
+{
+  "required_imports_by_old_fqn": {
+    "com.cashly.cashly_api.cash_register.application.dto.CashRegisterMapper": [
+      "com.cashly.cashly_api.cash_register.application.dto.CashMovementResponse"
+    ],
+    "com.cashly.cashly_api.cash_register.application.dto.CashRegisterResponse": [
+      "com.cashly.cashly_api.cash_register.application.dto.CashMovementResponse"
+    ],
+    "com.cashly.cashly_api.cash_register.application.services.CashRegisterOperationsService": [
+      "com.cashly.cashly_api.cash_register.application.services.CashMovementService"
+    ],
+    "com.cashly.cashly_api.cash_register.application.services.ReturnCashRecordingService": [
+      "com.cashly.cashly_api.cash_register.application.services.CashMovementService"
+    ],
+    "com.cashly.cashly_api.customers.application.dto.request.CreateCustomerRequest": [
+      "com.cashly.cashly_api.customers.application.dto.request.AddressRequest",
+      "com.cashly.cashly_api.customers.application.dto.request.EmailRequest",
+      "com.cashly.cashly_api.customers.application.dto.request.PhoneRequest"
+    ],
+    "com.cashly.cashly_api.customers.application.dto.request.UpdateCustomerRequest": [
+      "com.cashly.cashly_api.customers.application.dto.request.AddressRequest",
+      "com.cashly.cashly_api.customers.application.dto.request.EmailRequest",
+      "com.cashly.cashly_api.customers.application.dto.request.PhoneRequest"
+    ],
+    "com.cashly.cashly_api.customers.application.dto.response.CustomerCreateResponse": [
+      "com.cashly.cashly_api.customers.application.dto.response.AddressResponse",
+      "com.cashly.cashly_api.customers.application.dto.response.EmailResponse",
+      "com.cashly.cashly_api.customers.application.dto.response.PhoneResponse"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.CreateCustomerAdvanceUseCase": [
+      "com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.RefundCustomerBalanceUseCase": [
+      "com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase"
+    ],
+    "com.cashly.cashly_api.invoices.application.services.QuoteInvoiceCreationService": [
+      "com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService"
+    ],
+    "com.cashly.cashly_api.notifications.application.services.QuoteConversionNotificationService": [
+      "com.cashly.cashly_api.notifications.application.services.NotificationService"
+    ],
+    "com.cashly.cashly_api.notifications.application.services.QuoteRejectionNotificationService": [
+      "com.cashly.cashly_api.notifications.application.services.NotificationService"
+    ],
+    "com.cashly.cashly_api.products.application.dto.request.CreateProductRequest": [
+      "com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest"
+    ],
+    "com.cashly.cashly_api.products.application.dto.request.UpdateProductRequest": [
+      "com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest"
+    ],
+    "com.cashly.cashly_api.quotes.application.dto.request.UpdateQuoteRequest": [
+      "com.cashly.cashly_api.quotes.application.dto.request.CreateQuoteRequest"
+    ],
+    "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase": [
+      "com.cashly.cashly_api.returns.application.usecases.GetReturnByIdUseCase"
+    ],
+    "com.cashly.cashly_api.shared.storage.infrastructure.StorageConfig": [
+      "com.cashly.cashly_api.shared.storage.infrastructure.LocalFileStorageService",
+      "com.cashly.cashly_api.shared.storage.infrastructure.S3FileStorageService"
+    ],
+    "com.cashly.cashly_api.suppliers.application.dto.request.CreateSupplierRequest": [
+      "com.cashly.cashly_api.suppliers.application.dto.request.AddressRequest",
+      "com.cashly.cashly_api.suppliers.application.dto.request.EmailRequest",
+      "com.cashly.cashly_api.suppliers.application.dto.request.PhoneRequest"
+    ],
+    "com.cashly.cashly_api.suppliers.application.dto.request.UpdateSupplierRequest": [
+      "com.cashly.cashly_api.suppliers.application.dto.request.AddressRequest",
+      "com.cashly.cashly_api.suppliers.application.dto.request.EmailRequest",
+      "com.cashly.cashly_api.suppliers.application.dto.request.PhoneRequest"
+    ],
+    "com.cashly.cashly_api.warehouses.application.dto.request.StockEntryRequest": [
+      "com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem"
+    ],
+    "com.cashly.cashly_api.warehouses.application.dto.request.StockExitRequest": [
+      "com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem"
+    ],
+    "com.cashly.cashly_api.auth.token.application.usecases.RefreshTokenBoundaryTest": [
+      "com.cashly.cashly_api.auth.token.application.usecases.RefreshTokenUseCase"
+    ],
+    "com.cashly.cashly_api.cash_register.application.usecases.CashRegisterBoundaryTest": [
+      "com.cashly.cashly_api.cash_register.application.usecases.GetRegisterHistoryUseCase",
+      "com.cashly.cashly_api.cash_register.application.usecases.RecordCashMovementUseCase"
+    ],
+    "com.cashly.cashly_api.customers.application.services.CustomerCreditContractTest": [
+      "com.cashly.cashly_api.customers.application.services.CustomerCreditEligibilityService"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.CreateCustomerCashBalanceOperationUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase",
+      "com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase",
+      "com.cashly.cashly_api.customers.application.usecases.CreateCustomerAdvanceUseCase",
+      "com.cashly.cashly_api.customers.application.usecases.RefundCustomerBalanceUseCase"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.CustomerWarehouseBoundaryTest": [
+      "com.cashly.cashly_api.customers.application.usecases.GrantWarehouseAccessUseCase",
+      "com.cashly.cashly_api.customers.application.usecases.ListCustomerWarehousesUseCase",
+      "com.cashly.cashly_api.customers.application.usecases.RegisterCustomerUseCase"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.GetCustomerUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.GrantWarehouseAccessUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.ListCustomerWarehousesUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.ListCustomersUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.RegisterCustomerUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.RevokeWarehouseAccessUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.customers.application.usecases.UpdateCustomerUseCaseTest": [
+      "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+    ],
+    "com.cashly.cashly_api.dashboard.application.usecases.DashboardQueryGatewayTest": [
+      "com.cashly.cashly_api.dashboard.application.usecases.GetDashboardUseCase"
+    ],
+    "com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationBoundaryTest": [
+      "com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService"
+    ],
+    "com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCaseNotesTest": [
+      "com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase"
+    ],
+    "com.cashly.cashly_api.invoices.application.usecases.InvoiceEditingBoundaryTest": [
+      "com.cashly.cashly_api.invoices.application.usecases.DuplicateInvoiceUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.UpdateInvoiceUseCase"
+    ],
+    "com.cashly.cashly_api.invoices.application.usecases.InvoiceInventoryBoundaryTest": [
+      "com.cashly.cashly_api.invoices.application.usecases.CancelInvoiceUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.ConfirmInvoiceUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.CreateInvoiceUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.DeleteInvoiceUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.DuplicateInvoiceUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.UpdateInvoiceUseCase"
+    ],
+    "com.cashly.cashly_api.invoices.application.usecases.StockReadBoundaryTest": [
+      "com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase",
+      "com.cashly.cashly_api.invoices.application.usecases.UpdateInvoiceUseCase"
+    ],
+    "com.cashly.cashly_api.invoices.domain.entities.InvoiceReturnAdjustmentTest": [
+      "com.cashly.cashly_api.invoices.domain.entities.Invoice",
+      "com.cashly.cashly_api.invoices.domain.entities.InvoiceLine"
+    ],
+    "com.cashly.cashly_api.orders.application.usecases.GetOrdersCategoryQueryBoundaryTest": [
+      "com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase"
+    ],
+    "com.cashly.cashly_api.orders.application.usecases.OrderInvoiceConversionBoundaryTest": [
+      "com.cashly.cashly_api.orders.application.usecases.ConvertToInvoiceUseCase"
+    ],
+    "com.cashly.cashly_api.payment_methods.application.usecases.PaymentMethodBoundaryTest": [
+      "com.cashly.cashly_api.payment_methods.application.usecases.DeletePaymentMethodUseCase"
+    ],
+    "com.cashly.cashly_api.payments.application.services.CustomerCreditQueryBoundaryTest": [
+      "com.cashly.cashly_api.payments.application.services.CustomerCreditQueryService"
+    ],
+    "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.CreditLedgerWiringTest": [
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCreditNoteLedgerGateway",
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCustomerCreditContextGateway",
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalDebitNoteLedgerGateway",
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalInvoiceCreditLedgerGateway"
+    ],
+    "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCreditLedgerGatewaysTest": [
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCreditNoteLedgerGateway",
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCustomerCreditContextGateway",
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalDebitNoteLedgerGateway",
+      "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalInvoiceCreditLedgerGateway"
+    ],
+    "com.cashly.cashly_api.products.application.usecases.ProductCatalogBoundaryTest": [
+      "com.cashly.cashly_api.products.application.usecases.CreateProductUseCase",
+      "com.cashly.cashly_api.products.application.usecases.GetProductUseCase",
+      "com.cashly.cashly_api.products.application.usecases.GetProductsForTransactionUseCase",
+      "com.cashly.cashly_api.products.application.usecases.ListProductsUseCase",
+      "com.cashly.cashly_api.products.application.usecases.UpdateProductUseCase",
+      "com.cashly.cashly_api.products.application.usecases.UploadProductPhotoUseCase"
+    ],
+    "com.cashly.cashly_api.products.application.usecases.ProductStockBoundaryTest": [
+      "com.cashly.cashly_api.products.application.usecases.GetProductStockUseCase",
+      "com.cashly.cashly_api.products.application.usecases.GetProductsForTransactionUseCase"
+    ],
+    "com.cashly.cashly_api.products.infrastructure.adapters.out.persistence.repositories.ProductReferenceGatewayTest": [
+      "com.cashly.cashly_api.products.infrastructure.adapters.out.persistence.repositories.SpringDataProductRepository"
+    ],
+    "com.cashly.cashly_api.purchases.application.usecases.PurchaseIdentityCatalogBoundaryTest": [
+      "com.cashly.cashly_api.purchases.application.usecases.CreatePurchaseUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.GetProductsForPurchaseUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseUseCase"
+    ],
+    "com.cashly.cashly_api.purchases.application.usecases.PurchaseWarehouseReadBoundaryTest": [
+      "com.cashly.cashly_api.purchases.application.usecases.CancelPurchaseUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.ConfirmPurchaseUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.CreatePurchaseUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.GetProductsForPurchaseUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.GetPurchaseByIdUseCase",
+      "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseUseCase"
+    ],
+    "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseCatalogTest": [
+      "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseUseCase"
+    ],
+    "com.cashly.cashly_api.purchases.infrastructure.adapters.out.persistence.repositories.PurchaseRepositoryIntegrationTest": [
+      "com.cashly.cashly_api.purchases.infrastructure.adapters.out.persistence.repositories.PurchaseJpaRepository",
+      "com.cashly.cashly_api.purchases.infrastructure.adapters.out.persistence.repositories.PurchaseNumberSequenceJpaRepository"
+    ],
+    "com.cashly.cashly_api.quotes.application.usecases.QuoteCancellationBoundaryTest": [
+      "com.cashly.cashly_api.quotes.application.usecases.CancelQuoteUseCase"
+    ],
+    "com.cashly.cashly_api.quotes.application.usecases.QuoteInvoiceConversionBoundaryTest": [
+      "com.cashly.cashly_api.quotes.application.usecases.ConvertQuoteToInvoiceUseCase"
+    ],
+    "com.cashly.cashly_api.quotes.application.usecases.QuoteOrderConversionBoundaryTest": [
+      "com.cashly.cashly_api.quotes.application.usecases.ConvertQuoteToOrderUseCase"
+    ],
+    "com.cashly.cashly_api.receivables.application.usecases.ReceivablesBoundaryTest": [
+      "com.cashly.cashly_api.receivables.application.usecases.GetCustomerInvoicesUseCase"
+    ],
+    "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCaseTest": [
+      "com.cashly.cashly_api.returns.application.usecases.GetReturnByIdUseCase"
+    ],
+    "com.cashly.cashly_api.returns.application.usecases.ReturnFinancialBoundaryTest": [
+      "com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase",
+      "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase"
+    ],
+    "com.cashly.cashly_api.returns.application.usecases.ReturnFinancialFlowsTest": [
+      "com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase",
+      "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase"
+    ],
+    "com.cashly.cashly_api.returns.application.usecases.ReturnInventoryBoundaryTest": [
+      "com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase",
+      "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase"
+    ],
+    "com.cashly.cashly_api.suppliers.application.usecases.SupplierPurchaseUsageTest": [
+      "com.cashly.cashly_api.suppliers.application.usecases.DeleteSupplierUseCase",
+      "com.cashly.cashly_api.suppliers.application.usecases.ListSuppliersUseCase"
+    ],
+    "com.cashly.cashly_api.warehouses.application.usecases.ManualStockCatalogBoundaryTest": [
+      "com.cashly.cashly_api.warehouses.application.usecases.GetStockMovementsUseCase",
+      "com.cashly.cashly_api.warehouses.application.usecases.GetWarehouseStockUseCase",
+      "com.cashly.cashly_api.warehouses.application.usecases.StockAdjustmentUseCase",
+      "com.cashly.cashly_api.warehouses.application.usecases.StockEntryUseCase",
+      "com.cashly.cashly_api.warehouses.application.usecases.StockExitUseCase",
+      "com.cashly.cashly_api.warehouses.application.usecases.TransferStockUseCase"
+    ]
+  },
+  "implicit_reference_details": [
+    {
+      "source": "src/main/java/com/cashly/cashly_api/cash_register/application/dto/CashRegisterMapper.java",
+      "destination": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterMapper.java",
+      "imports": [
+        "com.cashly.cashly_api.cash_register.application.dto.CashMovementResponse"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/cash_register/application/dto/CashRegisterResponse.java",
+      "destination": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterResponse.java",
+      "imports": [
+        "com.cashly.cashly_api.cash_register.application.dto.CashMovementResponse"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/cash_register/application/services/CashRegisterOperationsService.java",
+      "destination": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/services/CashRegisterOperationsService.java",
+      "imports": [
+        "com.cashly.cashly_api.cash_register.application.services.CashMovementService"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/cash_register/application/services/ReturnCashRecordingService.java",
+      "destination": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/services/ReturnCashRecordingService.java",
+      "imports": [
+        "com.cashly.cashly_api.cash_register.application.services.CashMovementService"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/customers/application/dto/request/CreateCustomerRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/CreateCustomerRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.dto.request.AddressRequest",
+        "com.cashly.cashly_api.customers.application.dto.request.EmailRequest",
+        "com.cashly.cashly_api.customers.application.dto.request.PhoneRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/customers/application/dto/request/UpdateCustomerRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/customers/profile/application/update/UpdateCustomerRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.dto.request.AddressRequest",
+        "com.cashly.cashly_api.customers.application.dto.request.EmailRequest",
+        "com.cashly.cashly_api.customers.application.dto.request.PhoneRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/customers/application/dto/response/CustomerCreateResponse.java",
+      "destination": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/CustomerCreateResponse.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.dto.response.AddressResponse",
+        "com.cashly.cashly_api.customers.application.dto.response.EmailResponse",
+        "com.cashly.cashly_api.customers.application.dto.response.PhoneResponse"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/customers/application/usecases/CreateCustomerAdvanceUseCase.java",
+      "destination": "src/main/java/com/cashly/cashly_api/customers/balance/application/advance/CreateCustomerAdvanceUseCase.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/customers/application/usecases/RefundCustomerBalanceUseCase.java",
+      "destination": "src/main/java/com/cashly/cashly_api/customers/balance/application/refund/RefundCustomerBalanceUseCase.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/invoices/application/services/QuoteInvoiceCreationService.java",
+      "destination": "src/main/java/com/cashly/cashly_api/invoices/application/create/from_quote/QuoteInvoiceCreationService.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/notifications/application/services/QuoteConversionNotificationService.java",
+      "destination": "src/main/java/com/cashly/cashly_api/notifications/application/quotes/QuoteConversionNotificationService.java",
+      "imports": [
+        "com.cashly.cashly_api.notifications.application.services.NotificationService"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/notifications/application/services/QuoteRejectionNotificationService.java",
+      "destination": "src/main/java/com/cashly/cashly_api/notifications/application/quotes/QuoteRejectionNotificationService.java",
+      "imports": [
+        "com.cashly.cashly_api.notifications.application.services.NotificationService"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/products/application/dto/request/CreateProductRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/products/application/create/CreateProductRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/products/application/dto/request/UpdateProductRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/products/application/update/UpdateProductRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/quotes/application/dto/request/UpdateQuoteRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/quotes/application/update/UpdateQuoteRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.quotes.application.dto.request.CreateQuoteRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/returns/application/usecases/DeleteReturnUseCase.java",
+      "destination": "src/main/java/com/cashly/cashly_api/returns/application/delete/DeleteReturnUseCase.java",
+      "imports": [
+        "com.cashly.cashly_api.returns.application.usecases.GetReturnByIdUseCase"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/shared/storage/infrastructure/StorageConfig.java",
+      "destination": "src/main/java/com/cashly/cashly_api/shared/storage/infrastructure/config/StorageConfig.java",
+      "imports": [
+        "com.cashly.cashly_api.shared.storage.infrastructure.LocalFileStorageService",
+        "com.cashly.cashly_api.shared.storage.infrastructure.S3FileStorageService"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/suppliers/application/dto/request/CreateSupplierRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/suppliers/application/register/CreateSupplierRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.suppliers.application.dto.request.AddressRequest",
+        "com.cashly.cashly_api.suppliers.application.dto.request.EmailRequest",
+        "com.cashly.cashly_api.suppliers.application.dto.request.PhoneRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/suppliers/application/dto/request/UpdateSupplierRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/suppliers/application/update/UpdateSupplierRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.suppliers.application.dto.request.AddressRequest",
+        "com.cashly.cashly_api.suppliers.application.dto.request.EmailRequest",
+        "com.cashly.cashly_api.suppliers.application.dto.request.PhoneRequest"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/warehouses/application/dto/request/StockEntryRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/entry/StockEntryRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem"
+      ]
+    },
+    {
+      "source": "src/main/java/com/cashly/cashly_api/warehouses/application/dto/request/StockExitRequest.java",
+      "destination": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/exit/StockExitRequest.java",
+      "imports": [
+        "com.cashly.cashly_api.warehouses.application.dto.request.StockBatchItem"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/auth/token/application/usecases/RefreshTokenBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/auth/application/architecture/RefreshTokenBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.auth.token.application.usecases.RefreshTokenUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/cash_register/application/usecases/CashRegisterBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/cash_register/application/architecture/CashRegisterBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.cash_register.application.usecases.GetRegisterHistoryUseCase",
+        "com.cashly.cashly_api.cash_register.application.usecases.RecordCashMovementUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/services/CustomerCreditContractTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/credit/application/CustomerCreditContractTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.services.CustomerCreditEligibilityService"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CreateCustomerCashBalanceOperationUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/balance/application/CreateCustomerCashBalanceOperationUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.AddToCustomerBalanceUseCase",
+        "com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase",
+        "com.cashly.cashly_api.customers.application.usecases.CreateCustomerAdvanceUseCase",
+        "com.cashly.cashly_api.customers.application.usecases.RefundCustomerBalanceUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerWarehouseBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/CustomerWarehouseBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.GrantWarehouseAccessUseCase",
+        "com.cashly.cashly_api.customers.application.usecases.ListCustomerWarehousesUseCase",
+        "com.cashly.cashly_api.customers.application.usecases.RegisterCustomerUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/GetCustomerUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/profile/application/get/GetCustomerUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/GrantWarehouseAccessUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/grant/GrantWarehouseAccessUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/ListCustomerWarehousesUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/list/ListCustomerWarehousesUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/ListCustomersUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/profile/application/list/ListCustomersUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/RegisterCustomerUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/profile/application/register/RegisterCustomerUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/RevokeWarehouseAccessUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/revoke/RevokeWarehouseAccessUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/UpdateCustomerUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/customers/profile/application/update/UpdateCustomerUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/dashboard/application/usecases/DashboardQueryGatewayTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/dashboard/application/ports/out/DashboardQueryGatewayTest.java",
+      "imports": [
+        "com.cashly.cashly_api.dashboard.application.usecases.GetDashboardUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/invoices/application/services/InvoiceAuthorizationBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/invoices/application/architecture/InvoiceAuthorizationBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/GetInvoiceByIdUseCaseNotesTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/invoices/domain/GetInvoiceByIdUseCaseNotesTest.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/InvoiceEditingBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/invoices/application/architecture/operations/InvoiceEditingBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.application.usecases.DuplicateInvoiceUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.UpdateInvoiceUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/InvoiceInventoryBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/invoices/application/architecture/InvoiceInventoryBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.application.usecases.CancelInvoiceUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.ConfirmInvoiceUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.CreateInvoiceUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.DeleteInvoiceUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.DuplicateInvoiceUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.UpdateInvoiceUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/StockReadBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/invoices/application/architecture/StockReadBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.application.usecases.GetInvoiceByIdUseCase",
+        "com.cashly.cashly_api.invoices.application.usecases.UpdateInvoiceUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/invoices/domain/entities/InvoiceReturnAdjustmentTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/invoices/domain/valueobjects/InvoiceReturnAdjustmentTest.java",
+      "imports": [
+        "com.cashly.cashly_api.invoices.domain.entities.Invoice",
+        "com.cashly.cashly_api.invoices.domain.entities.InvoiceLine"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/orders/application/usecases/GetOrdersCategoryQueryBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/orders/application/architecture/GetOrdersCategoryQueryBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.orders.application.usecases.GetOrdersUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/orders/application/usecases/OrderInvoiceConversionBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/orders/application/architecture/OrderInvoiceConversionBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.orders.application.usecases.ConvertToInvoiceUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/payment_methods/application/usecases/PaymentMethodBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/payment_methods/application/architecture/PaymentMethodBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.payment_methods.application.usecases.DeletePaymentMethodUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/payments/application/services/CustomerCreditQueryBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/payments/application/architecture/CustomerCreditQueryBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.payments.application.services.CustomerCreditQueryService"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/CreditLedgerWiringTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/payments/collection/infrastructure/integration/CreditLedgerWiringTest.java",
+      "imports": [
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCreditNoteLedgerGateway",
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCustomerCreditContextGateway",
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalDebitNoteLedgerGateway",
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalInvoiceCreditLedgerGateway"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalCreditLedgerGatewaysTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/payments/collection/infrastructure/integration/LocalCreditLedgerGatewaysTest.java",
+      "imports": [
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCreditNoteLedgerGateway",
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalCustomerCreditContextGateway",
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalDebitNoteLedgerGateway",
+        "com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalInvoiceCreditLedgerGateway"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/products/application/usecases/ProductCatalogBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/products/application/architecture/ProductCatalogBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.products.application.usecases.CreateProductUseCase",
+        "com.cashly.cashly_api.products.application.usecases.GetProductUseCase",
+        "com.cashly.cashly_api.products.application.usecases.GetProductsForTransactionUseCase",
+        "com.cashly.cashly_api.products.application.usecases.ListProductsUseCase",
+        "com.cashly.cashly_api.products.application.usecases.UpdateProductUseCase",
+        "com.cashly.cashly_api.products.application.usecases.UploadProductPhotoUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/products/application/usecases/ProductStockBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/products/application/architecture/ProductStockBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.products.application.usecases.GetProductStockUseCase",
+        "com.cashly.cashly_api.products.application.usecases.GetProductsForTransactionUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/products/infrastructure/adapters/out/persistence/repositories/ProductReferenceGatewayTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/products/application/ports/out/ProductReferenceGatewayTest.java",
+      "imports": [
+        "com.cashly.cashly_api.products.infrastructure.adapters.out.persistence.repositories.SpringDataProductRepository"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/purchases/application/usecases/PurchaseIdentityCatalogBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/purchases/application/architecture/PurchaseIdentityCatalogBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.purchases.application.usecases.CreatePurchaseUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.GetProductsForPurchaseUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/purchases/application/usecases/PurchaseWarehouseReadBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/purchases/application/architecture/PurchaseWarehouseReadBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.purchases.application.usecases.CancelPurchaseUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.ConfirmPurchaseUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.CreatePurchaseUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.GetProductsForPurchaseUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.GetPurchaseByIdUseCase",
+        "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/purchases/application/usecases/UpdatePurchaseCatalogTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/purchases/domain/UpdatePurchaseCatalogTest.java",
+      "imports": [
+        "com.cashly.cashly_api.purchases.application.usecases.UpdatePurchaseUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/persistence/repositories/PurchaseRepositoryIntegrationTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/purchases/domain/PurchaseRepositoryIntegrationTest.java",
+      "imports": [
+        "com.cashly.cashly_api.purchases.infrastructure.adapters.out.persistence.repositories.PurchaseJpaRepository",
+        "com.cashly.cashly_api.purchases.infrastructure.adapters.out.persistence.repositories.PurchaseNumberSequenceJpaRepository"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/quotes/application/usecases/QuoteCancellationBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/quotes/application/architecture/QuoteCancellationBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.quotes.application.usecases.CancelQuoteUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/quotes/application/usecases/QuoteInvoiceConversionBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/quotes/application/architecture/QuoteInvoiceConversionBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.quotes.application.usecases.ConvertQuoteToInvoiceUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/quotes/application/usecases/QuoteOrderConversionBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/quotes/application/architecture/QuoteOrderConversionBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.quotes.application.usecases.ConvertQuoteToOrderUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/receivables/application/usecases/ReceivablesBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/receivables/application/architecture/ReceivablesBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.receivables.application.usecases.GetCustomerInvoicesUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/returns/application/usecases/DeleteReturnUseCaseTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/returns/application/delete/DeleteReturnUseCaseTest.java",
+      "imports": [
+        "com.cashly.cashly_api.returns.application.usecases.GetReturnByIdUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/returns/application/usecases/ReturnFinancialBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/returns/application/architecture/ReturnFinancialBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase",
+        "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/returns/application/usecases/ReturnFinancialFlowsTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/returns/application/usecases/ReturnFinancialFlowsTest.java",
+      "imports": [
+        "com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase",
+        "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/returns/application/usecases/ReturnInventoryBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/returns/application/architecture/ReturnInventoryBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.returns.application.usecases.CreateReturnUseCase",
+        "com.cashly.cashly_api.returns.application.usecases.DeleteReturnUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/suppliers/application/usecases/SupplierPurchaseUsageTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/suppliers/domain/SupplierPurchaseUsageTest.java",
+      "imports": [
+        "com.cashly.cashly_api.suppliers.application.usecases.DeleteSupplierUseCase",
+        "com.cashly.cashly_api.suppliers.application.usecases.ListSuppliersUseCase"
+      ]
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/warehouses/application/usecases/ManualStockCatalogBoundaryTest.java",
+      "destination": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/ManualStockCatalogBoundaryTest.java",
+      "imports": [
+        "com.cashly.cashly_api.warehouses.application.usecases.GetStockMovementsUseCase",
+        "com.cashly.cashly_api.warehouses.application.usecases.GetWarehouseStockUseCase",
+        "com.cashly.cashly_api.warehouses.application.usecases.StockAdjustmentUseCase",
+        "com.cashly.cashly_api.warehouses.application.usecases.StockEntryUseCase",
+        "com.cashly.cashly_api.warehouses.application.usecases.StockExitUseCase",
+        "com.cashly.cashly_api.warehouses.application.usecases.TransferStockUseCase"
+      ]
+    }
+  ],
+  "nonpublic_type_cross_package_references": [
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/GetCustomerUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.profile.application.get",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/GrantWarehouseAccessUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.warehouse_access.application.grant",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/ListCustomerWarehousesUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.warehouse_access.application.list",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/ListCustomersUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.profile.application.list",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/RegisterCustomerUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.profile.application.register",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/RevokeWarehouseAccessUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.warehouse_access.application.revoke",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/UpdateCustomerUseCaseTest.java",
+      "referenced": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerTestHelper.java",
+      "type": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_source_package": "com.cashly.cashly_api.customers.profile.application.update",
+      "new_target_package": "com.cashly.cashly_api.customers.testing"
+    }
+  ],
+  "explicit_import_collisions": [],
+  "hardcoded_and_scan_references": [
+    {
+      "source": "src/test/java/com/cashly/cashly_api/TestJpaConfig.java",
+      "line": 9,
+      "text": "@EntityScan(basePackages = \"com.cashly.cashly_api\")"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/TestJpaConfig.java",
+      "line": 10,
+      "text": "@EnableJpaRepositories(basePackages = \"com.cashly.cashly_api\")"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/TestJpaConfig.java",
+      "line": 11,
+      "text": "@ComponentScan(basePackages = \"com.cashly.cashly_api\")"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 13,
+      "text": "private static final Path SOURCE_ROOT = Path.of(\"src/main/java/com/cashly/cashly_api\");"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 21,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 33,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 45,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 65,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 71,
+      "text": "Class<?> repository = Class.forName(\"com.cashly.cashly_api.\" + relativeName,"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 84,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/ApplicationPackageConventionTest.java",
+      "line": 97,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/LayerDependencyTest.java",
+      "line": 13,
+      "text": "private static final Path SOURCE_ROOT = Path.of(\"src/main/java/com/cashly/cashly_api\");"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/LayerDependencyTest.java",
+      "line": 36,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/LayerDependencyTest.java",
+      "line": 62,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/architecture/LayerDependencyTest.java",
+      "line": 102,
+      "text": "try (var sources = Files.walk(SOURCE_ROOT)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerWarehouseBoundaryTest.java",
+      "line": 23,
+      "text": "Path application = Path.of(\"src/main/java/com/cashly/cashly_api/customers/application\");"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/customers/application/usecases/CustomerWarehouseBoundaryTest.java",
+      "line": 24,
+      "text": "try (var files = Files.walk(application)) {"
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/persistence/OrderHistoricalCategoryMySqlIT.java",
+      "line": 114,
+      "text": "String migration = Files.readString(Path.of("
+    },
+    {
+      "source": "src/test/java/com/cashly/cashly_api/warehouses/infrastructure/InvoiceInventoryConcurrencyIT.java",
+      "line": 155,
+      "text": "@EnableJpaRepositories(basePackageClasses = SpringDataWarehouseStockRepository.class)"
+    }
+  ],
+  "inventory": {
+    "java_entries": 1821,
+    "implicit_import_sources": 63,
+    "implicit_import_count": 117,
+    "nonpublic_refs": 7
+  },
+  "test_only_visibility_adjustments": [
+    {
+      "old_fqn": "com.cashly.cashly_api.customers.application.usecases.CustomerTestHelper",
+      "new_fqn": "com.cashly.cashly_api.customers.testing.CustomerTestHelper",
+      "class_visibility": "public final",
+      "methods": [
+        "public static Customer buildCustomer(UUID id)",
+        "public static Customer buildCustomer(UUID id, boolean active)",
+        "public static Warehouse buildWarehouse(UUID id)",
+        "public static CustomerWarehouseAccess buildAccess(UUID customerId, UUID warehouseId)"
+      ],
+      "reason": "Seven caller test sources move to distinct capability/operation packages; values/behavior unchanged."
+    }
+  ],
+  "nested_fixture_cases": [
+    {
+      "owner": "com.cashly.cashly_api.warehouses.infrastructure.InvoiceInventoryConcurrencyIT.PersistenceConfig",
+      "callers": [
+        "ManualStockConcurrencyIT",
+        "StockDeductionConcurrencyIT",
+        "WarehouseStockConcurrencyIT"
+      ],
+      "disposition": "All four IT suites share target warehouses.stock.infrastructure.concurrency; preserve nested fixture visibility and references."
+    }
+  ],
+  "same_package_members_preserved": [
+    {
+      "owner": "com.cashly.cashly_api.cash_register.infrastructure.config.CashRegisterConfig",
+      "caller": "com.cashly.cashly_api.cash_register.infrastructure.config.CashRegisterConfigTest",
+      "members": [
+        "openClosureUseCase",
+        "getActiveClosureUseCase",
+        "closeClosureUseCase",
+        "getClosureHistoryUseCase",
+        "cashRegisterExcelPort"
+      ],
+      "disposition": "Both retain common root config package, so no production visibility change required."
+    }
+  ],
+  "destination_fqn_collisions": [],
+  "secondary_top_level_types": []
+}

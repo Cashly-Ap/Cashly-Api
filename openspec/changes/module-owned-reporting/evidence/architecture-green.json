@@ -1,0 +1,16 @@
+{
+  "command": "docker compose exec -T app ./mvnw -B -Dtest=LayerDependencyTest,ApplicationPackageConventionTest,CapabilityStructureTest,ReportingOwnershipTest test",
+  "result": "BUILD SUCCESS",
+  "tests": 24,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": {
+    "LayerDependencyTest": 8,
+    "ApplicationPackageConventionTest": 7,
+    "CapabilityStructureTest": 4,
+    "ReportingOwnershipTest": 5
+  },
+  "database_contexts": false,
+  "raw_local_log": "/tmp/cashly-reporting-guards-green.log"
+}

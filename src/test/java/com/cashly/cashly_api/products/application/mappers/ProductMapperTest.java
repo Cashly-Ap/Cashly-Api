@@ -4,8 +4,8 @@ import com.cashly.cashly_api.products.application.dto.response.ProductDetailResp
 import com.cashly.cashly_api.products.application.dto.response.ProductDetailResponse.ComponentResponse;
 import com.cashly.cashly_api.products.application.dto.response.ProductListResponse;
 import com.cashly.cashly_api.products.application.dto.response.ProductPriceDetailResponse;
-import com.cashly.cashly_api.products.domain.entities.Product;
-import com.cashly.cashly_api.products.domain.entities.ProductComponent;
+import com.cashly.cashly_api.products.domain.Product;
+import com.cashly.cashly_api.products.domain.ProductComponent;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

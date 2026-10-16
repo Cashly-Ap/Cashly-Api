@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payment_methods.application.queries;
 
 import com.cashly.cashly_api.payment_methods.application.ports.in.PaymentMethodDetailsQuery;
-import com.cashly.cashly_api.payment_methods.domain.repositories.PaymentMethodRepository;
+import com.cashly.cashly_api.payment_methods.domain.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import org.springframework.stereotype.Component;
 

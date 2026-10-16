@@ -1,18 +1,18 @@
 package com.cashly.cashly_api.auth.authentication.infrastructure.config;
 
 import com.cashly.cashly_api.auth.token.application.ports.out.AuthenticableSubjectGateway;
-import com.cashly.cashly_api.auth.token.infrastructure.adapters.out.LocalAuthenticableSubjectGateway;
+import com.cashly.cashly_api.auth.token.infrastructure.integration.LocalAuthenticableSubjectGateway;
 import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticationDomainService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.cashly.cashly_api.auth.authentication.application.usecases.LoginUserUseCase;
+import com.cashly.cashly_api.auth.authentication.application.login.LoginUserUseCase;
 import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticableResolver;
-import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.out.services.ChainedAuthenticableResolver;
-import com.cashly.cashly_api.auth.token.application.usecases.RefreshTokenUseCase;
-import com.cashly.cashly_api.auth.token.domain.repositories.RefreshTokenRepository;
+import com.cashly.cashly_api.auth.authentication.infrastructure.services.ChainedAuthenticableResolver;
+import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenUseCase;
+import com.cashly.cashly_api.auth.token.domain.RefreshTokenRepository;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
 
 @Configuration

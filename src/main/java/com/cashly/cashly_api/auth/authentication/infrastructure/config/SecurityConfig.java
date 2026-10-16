@@ -15,8 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.in.security.JwtAuthenticationEntryPoint;
-import com.cashly.cashly_api.auth.authentication.infrastructure.adapters.in.security.JwtAuthenticationFilter;
+import com.cashly.cashly_api.auth.authentication.infrastructure.security.JwtAuthenticationEntryPoint;
+import com.cashly.cashly_api.auth.authentication.infrastructure.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity

@@ -1,8 +1,16 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
-import com.cashly.cashly_api.orders.application.ports.out.*;
-import com.cashly.cashly_api.orders.application.usecases.*;
-import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
+import com.cashly.cashly_api.orders.application.ports.out.CustomerCreditGateway;
+import com.cashly.cashly_api.orders.application.ports.out.InvoiceCreationGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderActorGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderCustomerGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderNotificationGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
+import com.cashly.cashly_api.orders.application.ports.out.OrderWarehouseGateway;
+import com.cashly.cashly_api.orders.application.ports.out.StockAvailabilityGateway;
+
+import com.cashly.cashly_api.orders.domain.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

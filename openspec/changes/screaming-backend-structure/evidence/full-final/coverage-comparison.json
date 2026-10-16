@@ -1,0 +1,804 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "counts": {
+    "tests": 3231,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "comparison": {
+    "layer/application": {
+      "baseline": {
+        "covered": 4528,
+        "missed": 453,
+        "line_coverage_percent": 90.9054
+      },
+      "final": {
+        "covered": 4535,
+        "missed": 446,
+        "line_coverage_percent": 91.046
+      }
+    },
+    "layer/domain": {
+      "baseline": {
+        "covered": 2947,
+        "missed": 182,
+        "line_coverage_percent": 94.1834
+      },
+      "final": {
+        "covered": 2947,
+        "missed": 182,
+        "line_coverage_percent": 94.1834
+      }
+    },
+    "layer/infrastructure": {
+      "baseline": {
+        "covered": 6264,
+        "missed": 1990,
+        "line_coverage_percent": 75.8905
+      },
+      "final": {
+        "covered": 6355,
+        "missed": 1899,
+        "line_coverage_percent": 76.993
+      }
+    },
+    "module/auth/application": {
+      "baseline": {
+        "covered": 218,
+        "missed": 33,
+        "line_coverage_percent": 86.8526
+      },
+      "final": {
+        "covered": 218,
+        "missed": 33,
+        "line_coverage_percent": 86.8526
+      }
+    },
+    "module/auth/domain": {
+      "baseline": {
+        "covered": 254,
+        "missed": 31,
+        "line_coverage_percent": 89.1228
+      },
+      "final": {
+        "covered": 254,
+        "missed": 31,
+        "line_coverage_percent": 89.1228
+      }
+    },
+    "module/auth/infrastructure": {
+      "baseline": {
+        "covered": 386,
+        "missed": 135,
+        "line_coverage_percent": 74.0883
+      },
+      "final": {
+        "covered": 422,
+        "missed": 99,
+        "line_coverage_percent": 80.9981
+      }
+    },
+    "module/cash_register/application": {
+      "baseline": {
+        "covered": 244,
+        "missed": 6,
+        "line_coverage_percent": 97.6
+      },
+      "final": {
+        "covered": 244,
+        "missed": 6,
+        "line_coverage_percent": 97.6
+      }
+    },
+    "module/cash_register/domain": {
+      "baseline": {
+        "covered": 220,
+        "missed": 4,
+        "line_coverage_percent": 98.2143
+      },
+      "final": {
+        "covered": 220,
+        "missed": 4,
+        "line_coverage_percent": 98.2143
+      }
+    },
+    "module/cash_register/infrastructure": {
+      "baseline": {
+        "covered": 1125,
+        "missed": 412,
+        "line_coverage_percent": 73.1945
+      },
+      "final": {
+        "covered": 1138,
+        "missed": 399,
+        "line_coverage_percent": 74.0403
+      }
+    },
+    "module/categories/application": {
+      "baseline": {
+        "covered": 78,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 78,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/categories/domain": {
+      "baseline": {
+        "covered": 45,
+        "missed": 1,
+        "line_coverage_percent": 97.8261
+      },
+      "final": {
+        "covered": 45,
+        "missed": 1,
+        "line_coverage_percent": 97.8261
+      }
+    },
+    "module/categories/infrastructure": {
+      "baseline": {
+        "covered": 64,
+        "missed": 5,
+        "line_coverage_percent": 92.7536
+      },
+      "final": {
+        "covered": 65,
+        "missed": 4,
+        "line_coverage_percent": 94.2029
+      }
+    },
+    "module/credit_notes/application": {
+      "baseline": {
+        "covered": 90,
+        "missed": 3,
+        "line_coverage_percent": 96.7742
+      },
+      "final": {
+        "covered": 91,
+        "missed": 2,
+        "line_coverage_percent": 97.8495
+      }
+    },
+    "module/credit_notes/domain": {
+      "baseline": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/credit_notes/infrastructure": {
+      "baseline": {
+        "covered": 105,
+        "missed": 5,
+        "line_coverage_percent": 95.4545
+      },
+      "final": {
+        "covered": 106,
+        "missed": 4,
+        "line_coverage_percent": 96.3636
+      }
+    },
+    "module/customers/application": {
+      "baseline": {
+        "covered": 410,
+        "missed": 39,
+        "line_coverage_percent": 91.314
+      },
+      "final": {
+        "covered": 410,
+        "missed": 39,
+        "line_coverage_percent": 91.314
+      }
+    },
+    "module/customers/domain": {
+      "baseline": {
+        "covered": 444,
+        "missed": 3,
+        "line_coverage_percent": 99.3289
+      },
+      "final": {
+        "covered": 444,
+        "missed": 3,
+        "line_coverage_percent": 99.3289
+      }
+    },
+    "module/customers/infrastructure": {
+      "baseline": {
+        "covered": 272,
+        "missed": 72,
+        "line_coverage_percent": 79.0698
+      },
+      "final": {
+        "covered": 274,
+        "missed": 70,
+        "line_coverage_percent": 79.6512
+      }
+    },
+    "module/dashboard/application": {
+      "baseline": {
+        "covered": 11,
+        "missed": 2,
+        "line_coverage_percent": 84.6154
+      },
+      "final": {
+        "covered": 11,
+        "missed": 2,
+        "line_coverage_percent": 84.6154
+      }
+    },
+    "module/dashboard/infrastructure": {
+      "baseline": {
+        "covered": 22,
+        "missed": 23,
+        "line_coverage_percent": 48.8889
+      },
+      "final": {
+        "covered": 23,
+        "missed": 22,
+        "line_coverage_percent": 51.1111
+      }
+    },
+    "module/debit_notes/application": {
+      "baseline": {
+        "covered": 78,
+        "missed": 4,
+        "line_coverage_percent": 95.122
+      },
+      "final": {
+        "covered": 79,
+        "missed": 3,
+        "line_coverage_percent": 96.3415
+      }
+    },
+    "module/debit_notes/domain": {
+      "baseline": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/debit_notes/infrastructure": {
+      "baseline": {
+        "covered": 90,
+        "missed": 2,
+        "line_coverage_percent": 97.8261
+      },
+      "final": {
+        "covered": 90,
+        "missed": 2,
+        "line_coverage_percent": 97.8261
+      }
+    },
+    "module/infrastructure/infrastructure": {
+      "baseline": {
+        "covered": 84,
+        "missed": 123,
+        "line_coverage_percent": 40.5797
+      },
+      "final": {
+        "covered": 90,
+        "missed": 117,
+        "line_coverage_percent": 43.4783
+      }
+    },
+    "module/invoices/application": {
+      "baseline": {
+        "covered": 553,
+        "missed": 50,
+        "line_coverage_percent": 91.7081
+      },
+      "final": {
+        "covered": 553,
+        "missed": 50,
+        "line_coverage_percent": 91.7081
+      }
+    },
+    "module/invoices/domain": {
+      "baseline": {
+        "covered": 277,
+        "missed": 40,
+        "line_coverage_percent": 87.3817
+      },
+      "final": {
+        "covered": 277,
+        "missed": 40,
+        "line_coverage_percent": 87.3817
+      }
+    },
+    "module/invoices/infrastructure": {
+      "baseline": {
+        "covered": 334,
+        "missed": 19,
+        "line_coverage_percent": 94.6176
+      },
+      "final": {
+        "covered": 339,
+        "missed": 14,
+        "line_coverage_percent": 96.034
+      }
+    },
+    "module/notifications/application": {
+      "baseline": {
+        "covered": 49,
+        "missed": 46,
+        "line_coverage_percent": 51.5789
+      },
+      "final": {
+        "covered": 50,
+        "missed": 45,
+        "line_coverage_percent": 52.6316
+      }
+    },
+    "module/notifications/domain": {
+      "baseline": {
+        "covered": 46,
+        "missed": 17,
+        "line_coverage_percent": 73.0159
+      },
+      "final": {
+        "covered": 46,
+        "missed": 17,
+        "line_coverage_percent": 73.0159
+      }
+    },
+    "module/notifications/infrastructure": {
+      "baseline": {
+        "covered": 40,
+        "missed": 84,
+        "line_coverage_percent": 32.2581
+      },
+      "final": {
+        "covered": 51,
+        "missed": 73,
+        "line_coverage_percent": 41.129
+      }
+    },
+    "module/orders/application": {
+      "baseline": {
+        "covered": 347,
+        "missed": 53,
+        "line_coverage_percent": 86.75
+      },
+      "final": {
+        "covered": 347,
+        "missed": 53,
+        "line_coverage_percent": 86.75
+      }
+    },
+    "module/orders/domain": {
+      "baseline": {
+        "covered": 171,
+        "missed": 3,
+        "line_coverage_percent": 98.2759
+      },
+      "final": {
+        "covered": 171,
+        "missed": 3,
+        "line_coverage_percent": 98.2759
+      }
+    },
+    "module/orders/infrastructure": {
+      "baseline": {
+        "covered": 227,
+        "missed": 75,
+        "line_coverage_percent": 75.1656
+      },
+      "final": {
+        "covered": 229,
+        "missed": 73,
+        "line_coverage_percent": 75.8278
+      }
+    },
+    "module/payment_methods/application": {
+      "baseline": {
+        "covered": 76,
+        "missed": 3,
+        "line_coverage_percent": 96.2025
+      },
+      "final": {
+        "covered": 76,
+        "missed": 3,
+        "line_coverage_percent": 96.2025
+      }
+    },
+    "module/payment_methods/domain": {
+      "baseline": {
+        "covered": 45,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 45,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/payment_methods/infrastructure": {
+      "baseline": {
+        "covered": 57,
+        "missed": 7,
+        "line_coverage_percent": 89.0625
+      },
+      "final": {
+        "covered": 63,
+        "missed": 1,
+        "line_coverage_percent": 98.4375
+      }
+    },
+    "module/payments/application": {
+      "baseline": {
+        "covered": 418,
+        "missed": 41,
+        "line_coverage_percent": 91.0675
+      },
+      "final": {
+        "covered": 418,
+        "missed": 41,
+        "line_coverage_percent": 91.0675
+      }
+    },
+    "module/payments/domain": {
+      "baseline": {
+        "covered": 219,
+        "missed": 13,
+        "line_coverage_percent": 94.3966
+      },
+      "final": {
+        "covered": 219,
+        "missed": 13,
+        "line_coverage_percent": 94.3966
+      }
+    },
+    "module/payments/infrastructure": {
+      "baseline": {
+        "covered": 221,
+        "missed": 29,
+        "line_coverage_percent": 88.4
+      },
+      "final": {
+        "covered": 221,
+        "missed": 29,
+        "line_coverage_percent": 88.4
+      }
+    },
+    "module/price_types/application": {
+      "baseline": {
+        "covered": 69,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 69,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/price_types/domain": {
+      "baseline": {
+        "covered": 34,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 34,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/price_types/infrastructure": {
+      "baseline": {
+        "covered": 67,
+        "missed": 2,
+        "line_coverage_percent": 97.1014
+      },
+      "final": {
+        "covered": 68,
+        "missed": 1,
+        "line_coverage_percent": 98.5507
+      }
+    },
+    "module/products/application": {
+      "baseline": {
+        "covered": 303,
+        "missed": 20,
+        "line_coverage_percent": 93.808
+      },
+      "final": {
+        "covered": 303,
+        "missed": 20,
+        "line_coverage_percent": 93.808
+      }
+    },
+    "module/products/domain": {
+      "baseline": {
+        "covered": 116,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 116,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/products/infrastructure": {
+      "baseline": {
+        "covered": 230,
+        "missed": 26,
+        "line_coverage_percent": 89.8438
+      },
+      "final": {
+        "covered": 230,
+        "missed": 26,
+        "line_coverage_percent": 89.8438
+      }
+    },
+    "module/purchases/application": {
+      "baseline": {
+        "covered": 250,
+        "missed": 30,
+        "line_coverage_percent": 89.2857
+      },
+      "final": {
+        "covered": 254,
+        "missed": 26,
+        "line_coverage_percent": 90.7143
+      }
+    },
+    "module/purchases/domain": {
+      "baseline": {
+        "covered": 153,
+        "missed": 1,
+        "line_coverage_percent": 99.3506
+      },
+      "final": {
+        "covered": 153,
+        "missed": 1,
+        "line_coverage_percent": 99.3506
+      }
+    },
+    "module/purchases/infrastructure": {
+      "baseline": {
+        "covered": 192,
+        "missed": 8,
+        "line_coverage_percent": 96.0
+      },
+      "final": {
+        "covered": 192,
+        "missed": 8,
+        "line_coverage_percent": 96.0
+      }
+    },
+    "module/quotes/application": {
+      "baseline": {
+        "covered": 314,
+        "missed": 8,
+        "line_coverage_percent": 97.5155
+      },
+      "final": {
+        "covered": 314,
+        "missed": 8,
+        "line_coverage_percent": 97.5155
+      }
+    },
+    "module/quotes/domain": {
+      "baseline": {
+        "covered": 266,
+        "missed": 7,
+        "line_coverage_percent": 97.4359
+      },
+      "final": {
+        "covered": 266,
+        "missed": 7,
+        "line_coverage_percent": 97.4359
+      }
+    },
+    "module/quotes/infrastructure": {
+      "baseline": {
+        "covered": 217,
+        "missed": 48,
+        "line_coverage_percent": 81.8868
+      },
+      "final": {
+        "covered": 221,
+        "missed": 44,
+        "line_coverage_percent": 83.3962
+      }
+    },
+    "module/receivables/application": {
+      "baseline": {
+        "covered": 40,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 40,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/receivables/infrastructure": {
+      "baseline": {
+        "covered": 254,
+        "missed": 5,
+        "line_coverage_percent": 98.0695
+      },
+      "final": {
+        "covered": 254,
+        "missed": 5,
+        "line_coverage_percent": 98.0695
+      }
+    },
+    "module/reports/application": {
+      "baseline": {
+        "covered": 173,
+        "missed": 1,
+        "line_coverage_percent": 99.4253
+      },
+      "final": {
+        "covered": 173,
+        "missed": 1,
+        "line_coverage_percent": 99.4253
+      }
+    },
+    "module/reports/infrastructure": {
+      "baseline": {
+        "covered": 1744,
+        "missed": 710,
+        "line_coverage_percent": 71.0676
+      },
+      "final": {
+        "covered": 1744,
+        "missed": 710,
+        "line_coverage_percent": 71.0676
+      }
+    },
+    "module/returns/application": {
+      "baseline": {
+        "covered": 209,
+        "missed": 10,
+        "line_coverage_percent": 95.4338
+      },
+      "final": {
+        "covered": 209,
+        "missed": 10,
+        "line_coverage_percent": 95.4338
+      }
+    },
+    "module/returns/domain": {
+      "baseline": {
+        "covered": 135,
+        "missed": 5,
+        "line_coverage_percent": 96.4286
+      },
+      "final": {
+        "covered": 135,
+        "missed": 5,
+        "line_coverage_percent": 96.4286
+      }
+    },
+    "module/returns/infrastructure": {
+      "baseline": {
+        "covered": 203,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 203,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/shared/domain": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/shared/infrastructure": {
+      "baseline": {
+        "covered": 15,
+        "missed": 129,
+        "line_coverage_percent": 10.4167
+      },
+      "final": {
+        "covered": 15,
+        "missed": 129,
+        "line_coverage_percent": 10.4167
+      }
+    },
+    "module/suppliers/application": {
+      "baseline": {
+        "covered": 59,
+        "missed": 92,
+        "line_coverage_percent": 39.0728
+      },
+      "final": {
+        "covered": 59,
+        "missed": 92,
+        "line_coverage_percent": 39.0728
+      }
+    },
+    "module/suppliers/domain": {
+      "baseline": {
+        "covered": 244,
+        "missed": 56,
+        "line_coverage_percent": 81.3333
+      },
+      "final": {
+        "covered": 244,
+        "missed": 56,
+        "line_coverage_percent": 81.3333
+      }
+    },
+    "module/suppliers/infrastructure": {
+      "baseline": {
+        "covered": 120,
+        "missed": 61,
+        "line_coverage_percent": 66.2983
+      },
+      "final": {
+        "covered": 120,
+        "missed": 61,
+        "line_coverage_percent": 66.2983
+      }
+    },
+    "module/warehouses/application": {
+      "baseline": {
+        "covered": 539,
+        "missed": 12,
+        "line_coverage_percent": 97.8221
+      },
+      "final": {
+        "covered": 539,
+        "missed": 12,
+        "line_coverage_percent": 97.8221
+      }
+    },
+    "module/warehouses/domain": {
+      "baseline": {
+        "covered": 162,
+        "missed": 1,
+        "line_coverage_percent": 99.3865
+      },
+      "final": {
+        "covered": 162,
+        "missed": 1,
+        "line_coverage_percent": 99.3865
+      }
+    },
+    "module/warehouses/infrastructure": {
+      "baseline": {
+        "covered": 195,
+        "missed": 10,
+        "line_coverage_percent": 95.122
+      },
+      "final": {
+        "covered": 197,
+        "missed": 8,
+        "line_coverage_percent": 96.0976
+      }
+    }
+  }
+}

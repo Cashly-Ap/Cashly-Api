@@ -1,26 +1,26 @@
 package com.cashly.cashly_api.invoices.application.services;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
+import com.cashly.cashly_api.auth.user.domain.User;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.cash_register.application.services.CashMovementService;
-import com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.domain.valueobjects.BalanceType;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
-import com.cashly.cashly_api.invoices.domain.entities.InvoiceLine;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementService;
+import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementDirection;
+import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.customers.balance.application.consume.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
+import com.cashly.cashly_api.invoices.domain.Invoice;
+import com.cashly.cashly_api.invoices.domain.InvoiceLine;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.payments.domain.entities.Payment;
-import com.cashly.cashly_api.payments.domain.entities.PaymentAllocation;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
-import com.cashly.cashly_api.payments.domain.valueobjects.PaymentStatus;
+import com.cashly.cashly_api.payments.collection.domain.Payment;
+import com.cashly.cashly_api.payments.collection.domain.PaymentAllocation;
+import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.domain.valueobjects.PaymentStatus;
 import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -80,7 +80,7 @@ class InvoiceAuthorizationServiceTest {
 
     private User user;
     private com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway.Actor actor;
-    private com.cashly.cashly_api.auth.user.domain.repositories.UserRepository actorRepository;
+    private com.cashly.cashly_api.auth.user.domain.UserRepository actorRepository;
 
     @BeforeEach
     void setUp() {
@@ -89,19 +89,19 @@ class InvoiceAuthorizationServiceTest {
         var password = mock(Password.class);
         lenient().when(password.getHashedValue()).thenReturn(hashedPassword);
         lenient().when(user.getPassword()).thenReturn(password);
-        actorRepository = mock(com.cashly.cashly_api.auth.user.domain.repositories.UserRepository.class);
+        actorRepository = mock(com.cashly.cashly_api.auth.user.domain.UserRepository.class);
         lenient().when(actorRepository.findById(new UserId(authenticatedUserId))).thenReturn(java.util.Optional.of(user));
         actor = new com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway.Actor(authenticatedUserId, "Test User");
-        var cashOperations = new com.cashly.cashly_api.cash_register.application.services.CashRegisterOperationsService(cashMovementService);
+        var cashOperations = new com.cashly.cashly_api.cash_register.sessions.application.services.CashRegisterOperationsService(cashMovementService);
         service = new InvoiceAuthorizationService(creditGuard,
-                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalActorIdentityGateway(
-                        new com.cashly.cashly_api.auth.user.application.services.RepositoryActorIdentityQuery(actorRepository, passwordEncoder)),
-                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalCustomerBalanceGateway(
-                        new com.cashly.cashly_api.customers.application.services.InvoiceBalanceConsumptionService(consumeCustomerBalanceUseCase)),
-                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoicePaymentSettlementGateway(
-                        new com.cashly.cashly_api.payments.application.services.CashInvoiceSettlementService(paymentRepository, allocationRepository,
-                                new com.cashly.cashly_api.payments.infrastructure.adapters.out.integration.LocalPaymentCashRegisterGateway(cashOperations))),
-                new com.cashly.cashly_api.invoices.infrastructure.adapters.out.integration.LocalInvoiceCashRegisterGateway(cashOperations));
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+                        new com.cashly.cashly_api.auth.user.application.queries.RepositoryActorIdentityQuery(actorRepository, passwordEncoder)),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalCustomerBalanceGateway(
+                        new com.cashly.cashly_api.customers.balance.application.services.InvoiceBalanceConsumptionService(consumeCustomerBalanceUseCase)),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoicePaymentSettlementGateway(
+                        new com.cashly.cashly_api.payments.collection.application.services.CashInvoiceSettlementService(paymentRepository, allocationRepository,
+                                new com.cashly.cashly_api.payments.collection.infrastructure.integration.LocalPaymentCashRegisterGateway(cashOperations))),
+                new com.cashly.cashly_api.invoices.infrastructure.integration.LocalInvoiceCashRegisterGateway(cashOperations));
     }
 
     private Invoice invoice(PaymentType paymentType) {

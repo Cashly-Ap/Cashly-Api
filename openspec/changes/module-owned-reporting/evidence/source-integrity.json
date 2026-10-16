@@ -1,0 +1,2420 @@
+{
+  "status": "PASS",
+  "snapshot": "target/reporting-baseline-source",
+  "production_original_files": 148,
+  "production_final_files": 151,
+  "production_unchanged_non_split_files": 145,
+  "test_original_files": 79,
+  "test_mapped_final_files": 81,
+  "test_original_methods": 151,
+  "test_mapped_final_methods": 153,
+  "added_test_file": "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/config/CommercialCatalogReportingConfigTest.java",
+  "approved_test_adjustments": [
+    {
+      "file": "src/test/java/com/cashly/cashly_api/reports/application/architecture/InvoiceReportsBoundaryTest.java",
+      "reason": "Own reporting contracts now share owner prefix; exclude reporting from old owner-wide prohibition, retaining foreign capability checks.",
+      "original_assertions": 2,
+      "final_assertions": 2
+    },
+    {
+      "file": "src/test/java/com/cashly/cashly_api/reports/application/architecture/AccountsReceivableReportsBoundaryTest.java",
+      "reason": "Own reporting contracts now share owner prefix; exclude reporting from old owner-wide prohibition, retaining foreign capability checks.",
+      "original_assertions": 1,
+      "final_assertions": 1
+    },
+    {
+      "file": "src/test/java/com/cashly/cashly_api/reports/application/architecture/QuoteReportsBoundaryTest.java",
+      "reason": "Own reporting contracts now share owner prefix; exclude reporting from old owner-wide prohibition, retaining foreign capability checks.",
+      "original_assertions": 2,
+      "final_assertions": 2
+    },
+    {
+      "file": "src/test/java/com/cashly/cashly_api/reports/application/architecture/PaymentReportsBoundaryTest.java",
+      "reason": "Own reporting contracts now share owner prefix; exclude reporting from old owner-wide prohibition, retaining foreign capability checks.",
+      "original_assertions": 2,
+      "final_assertions": 2
+    },
+    {
+      "file": "src/test/java/com/cashly/cashly_api/reports/application/architecture/OrderReportsBoundaryTest.java",
+      "reason": "Own reporting contracts now share owner prefix; exclude reporting from old owner-wide prohibition, retaining foreign capability checks.",
+      "original_assertions": 2,
+      "final_assertions": 2
+    },
+    {
+      "file": "src/test/java/com/cashly/cashly_api/reports/application/architecture/PurchaseReportsBoundaryTest.java",
+      "reason": "Own reporting contracts now share owner prefix; exclude reporting from old owner-wide prohibition, retaining foreign capability checks.",
+      "original_assertions": 2,
+      "final_assertions": 2
+    }
+  ],
+  "unexpected_deviations": [],
+  "production_checks": [
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/infrastructure/pdf/PdfBranding.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/shared/infrastructure/pdf/PdfBranding.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/infrastructure/pdf/PdfStatusColors.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/shared/infrastructure/pdf/PdfStatusColors.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/config/StockReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/StockReportConfig.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/web/StockReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/StockReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/excel/StockExcelGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/excel/StockExcelGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/pdf/StockPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/StockPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/repositories/StockReportJpaRepository.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/repositories/StockReportJpaRepository.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/projections/StockReportProjection.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/StockReportProjection.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/adapters/StockReportRepositoryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/StockReportRepositoryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_excel/GenerateStockExcelUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_excel/GenerateStockExcelUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_pdf/GenerateStockPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_pdf/GenerateStockPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockReportRepositoryPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockReportRepositoryPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockExcelPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockExcelPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/dto/response/StockReportResponse.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/StockReportResponse.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/dto/query/StockPdfQuery.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQuery.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/config/OrdersReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/config/OrdersReportConfig.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/web/OrdersReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/web/OrdersReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/integration/OrderDocumentQueryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/integration/OrderDocumentQueryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/pdf/OrdersReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrdersReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/pdf/OrderPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrderPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/dto/OrderReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/dto/OrderReportFilter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportFilter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/dto/OrderReportRow.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportRow.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_order_pdf/GenerateOrderPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_order_pdf/GenerateOrderPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/ports/out/OrderReportQueryGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/ports/out/OrderReportQueryGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/ports/out/OrdersReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/ports/out/OrdersReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/ports/out/OrderPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/orders/reporting/application/ports/out/OrderPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/config/PaymentReportingConfig.java",
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/config/ReceivablesReportingConfig.java"
+      ],
+      "original_methods": 8,
+      "final_methods": 8,
+      "exact_methods_and_bodies": true,
+      "class_security_and_basepaths_preserved": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/web/PaymentReportsController.java",
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/web/ReceivablesReportsController.java"
+      ],
+      "original_methods": 4,
+      "final_methods": 4,
+      "exact_methods_and_bodies": true,
+      "class_security_and_basepaths_preserved": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/ReceivablesReportQueryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/integration/ReceivablesReportQueryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/PaymentDocumentQueryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/integration/PaymentDocumentQueryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/PaymentHistoryReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentHistoryReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/AccountsReceivableReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/AccountsReceivableReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/CollectionsReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/CollectionsReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/PaymentPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/PaymentHistoryReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/AccountsReceivableReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/CollectionsReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/PaymentReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_pdf/GeneratePaymentPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentReportQueryGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentReportQueryGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/CollectionsReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/ports/out/CollectionsReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/AccountsReceivableQueryGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/ports/out/AccountsReceivableQueryGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/AccountsReceivableReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/receivables/reporting/application/ports/out/AccountsReceivableReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentHistoryReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentHistoryReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/WarehouseCatalogReportingConfig.java",
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/config/CommercialCatalogReportingConfig.java"
+      ],
+      "original_methods": 7,
+      "final_methods": 7,
+      "exact_methods_and_bodies": true,
+      "class_security_and_basepaths_preserved": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CommercialCatalogController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/web/CommercialCatalogController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CatalogReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/CatalogReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/integration/FileStorageMediaAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/integration/FileStorageMediaAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/pdf/CommercialCatalogPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/pdf/CommercialCatalogPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/pdf/CatalogPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/CatalogPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/repositories/CommercialCatalogJpaRepository.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/persistence/repositories/CommercialCatalogJpaRepository.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/repositories/CatalogReportJpaRepository.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/repositories/CatalogReportJpaRepository.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/projections/CommercialCatalogProjection.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/persistence/projections/CommercialCatalogProjection.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/projections/CatalogReportProjection.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/CatalogReportProjection.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/adapters/CatalogReportRepositoryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/CatalogReportRepositoryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/adapters/CommercialCatalogRepositoryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/persistence/adapters/CommercialCatalogRepositoryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/get_catalog_report/GetCatalogReportUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/get_catalog_report/GetCatalogReportUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_catalog_pdf/GenerateCatalogPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CommercialCatalogPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/ports/out/CommercialCatalogPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/MediaGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/ports/out/MediaGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CommercialCatalogRepositoryPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/ports/out/CommercialCatalogRepositoryPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CatalogPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/CatalogPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CatalogReportRepositoryPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/CatalogReportRepositoryPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CatalogReportResponse.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/CatalogReportResponse.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CommercialCatalogResponse.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/dto/response/CommercialCatalogResponse.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogPdfQuery.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQuery.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CommercialCatalogQuery.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/products/reporting/application/dto/query/CommercialCatalogQuery.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogReportQuery.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQuery.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/config/MovementsReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/MovementsReportConfig.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/web/MovementsReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/MovementsReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/excel/MovementsExcelGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/excel/MovementsExcelGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/pdf/MovementsPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/MovementsPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/repositories/MovementsReportJpaRepository.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/repositories/MovementsReportJpaRepository.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/projections/MovementsReportProjection.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/MovementsReportProjection.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/adapters/MovementsReportRepositoryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/MovementsReportRepositoryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_pdf/GenerateMovementsPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_excel/GenerateMovementsExcelUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_excel/GenerateMovementsExcelUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsExcelPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsExcelPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsReportRepositoryPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsReportRepositoryPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/dto/response/MovementReportResponse.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/MovementReportResponse.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/dto/query/MovementsPdfQuery.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQuery.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/config/QuotesReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/config/QuotesReportConfig.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/web/QuotesReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/web/QuotesReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/integration/QuoteDocumentQueryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/integration/QuoteDocumentQueryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/pdf/QuotePdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotePdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/pdf/QuotesReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotesReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/dto/QuoteReportRow.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportRow.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/dto/QuoteReportFilter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportFilter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/dto/QuoteReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quote_pdf/GenerateQuotePdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quote_pdf/GenerateQuotePdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/ports/out/QuotesReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/ports/out/QuotesReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/ports/out/QuotePdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/ports/out/QuotePdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/ports/out/QuoteReportQueryGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/quotes/reporting/application/ports/out/QuoteReportQueryGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/config/InvoicesReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/config/InvoicesReportConfig.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/web/InvoicesReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/web/InvoicesReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/integration/InvoiceDocumentQueryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/integration/InvoiceDocumentQueryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/pdf/InvoicesReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicesReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/pdf/InvoicePdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicePdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/dto/InvoiceReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/dto/InvoiceReportRow.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportRow.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/dto/InvoiceReportFilter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportFilter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoice_pdf/GenerateInvoicePdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/ports/out/InvoiceReportQueryGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/ports/out/InvoiceReportQueryGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/ports/out/InvoicesReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/ports/out/InvoicesReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/ports/out/InvoicePdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/invoices/reporting/application/ports/out/InvoicePdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/config/PurchasesReportConfig.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/config/PurchasesReportConfig.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/web/PurchasesReportController.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/web/PurchasesReportController.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/integration/PurchaseDocumentQueryAdapter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/integration/PurchaseDocumentQueryAdapter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/pdf/PurchasePdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasePdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/pdf/PurchasesReportPdfGenerator.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasesReportPdfGenerator.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/dto/PurchaseReportRow.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportRow.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/dto/PurchaseReportFilter.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportFilter.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/dto/PurchaseReportData.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportData.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchase_pdf/GeneratePurchasePdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImpl.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImpl.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCase.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCase.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/ports/out/PurchaseReportQueryGateway.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/ports/out/PurchaseReportQueryGateway.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/ports/out/PurchasePdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/ports/out/PurchasePdfPort.java"
+      ],
+      "body_unchanged": true
+    },
+    {
+      "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/ports/out/PurchasesReportPdfPort.java",
+      "new": [
+        "src/main/java/com/cashly/cashly_api/purchases/reporting/application/ports/out/PurchasesReportPdfPort.java"
+      ],
+      "body_unchanged": true
+    }
+  ],
+  "test_checks": [
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/infrastructure/pdf/PdfStatusColorsTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/shared/infrastructure/pdf/PdfStatusColorsTest.java"
+      ],
+      "original_test_methods": {
+        "shouldUseApplicationSemanticColorsForStatuses": 1,
+        "shouldUseInfoColorForUnknownStatuses": 1
+      },
+      "final_test_methods": {
+        "shouldUseApplicationSemanticColorsForStatuses": 1,
+        "shouldUseInfoColorForUnknownStatuses": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/config/StockReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/StockReportConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_and_adapter_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_and_adapter_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/web/StockReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/StockReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_stock_pdf": 1,
+        "should_get_stock_pdf_without_optional_params": 1,
+        "should_get_stock_excel": 1
+      },
+      "final_test_methods": {
+        "should_get_stock_pdf": 1,
+        "should_get_stock_pdf_without_optional_params": 1,
+        "should_get_stock_excel": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/projections/StockReportProjectionTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/StockReportProjectionTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/adapters/StockReportRepositoryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/StockReportRepositoryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "should_find_stock": 1,
+        "should_mark_zero_quantity_as_sin_stock": 1,
+        "should_return_empty_list_for_no_results": 1
+      },
+      "final_test_methods": {
+        "should_find_stock": 1,
+        "should_mark_zero_quantity_as_sin_stock": 1,
+        "should_return_empty_list_for_no_results": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/generate_stock_excel/GenerateStockExcelUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_stock_excel": 1,
+        "should_generate_stock_excel_with_empty_result": 1
+      },
+      "final_test_methods": {
+        "should_generate_stock_excel": 1,
+        "should_generate_stock_excel_with_empty_result": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/generate_stock_pdf/GenerateStockPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_stock_pdf": 1,
+        "should_generate_stock_pdf_with_empty_result": 1
+      },
+      "final_test_methods": {
+        "should_generate_stock_pdf": 1,
+        "should_generate_stock_pdf_with_empty_result": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockPdfPortTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockPdfPortTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/dto/response/StockReportResponseTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/StockReportResponseTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_stock_report_response": 1,
+        "should_create_stock_report_response_with_zero_stock": 1
+      },
+      "final_test_methods": {
+        "should_create_stock_report_response": 1,
+        "should_create_stock_report_response_with_zero_stock": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/dto/query/StockPdfQueryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQueryTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_null_values": 1
+      },
+      "final_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_null_values": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/config/OrdersReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/config/OrdersReportConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/web/OrdersReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/web/OrdersReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_order_pdf": 1,
+        "should_get_orders_report_pdf": 1,
+        "should_get_orders_report_pdf_without_optional_params": 1
+      },
+      "final_test_methods": {
+        "should_get_order_pdf": 1,
+        "should_get_orders_report_pdf": 1,
+        "should_get_orders_report_pdf_without_optional_params": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/integration/OrderDocumentQueryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/integration/OrderDocumentQueryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "listPreservesAllFiltersOrderingAndAmounts": 1,
+        "emptyUnfilteredListPreservesNullFilterSemantics": 1
+      },
+      "final_test_methods": {
+        "listPreservesAllFiltersOrderingAndAmounts": 1,
+        "emptyUnfilteredListPreservesNullFilterSemantics": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/pdf/OrderPdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrderPdfContentTest.java"
+      ],
+      "original_test_methods": {},
+      "final_test_methods": {},
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/orders/application/generate_order_pdf/GenerateOrderPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_order_pdf": 1,
+        "should_throw_when_order_not_found": 1,
+        "should_generate_order_pdf_without_allocations": 1
+      },
+      "final_test_methods": {
+        "should_generate_order_pdf": 1,
+        "should_throw_when_order_not_found": 1,
+        "should_generate_order_pdf_without_allocations": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/orders/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_orders_report_pdf": 1,
+        "should_generate_orders_report_pdf_with_null_mode": 1
+      },
+      "final_test_methods": {
+        "should_generate_orders_report_pdf": 1,
+        "should_generate_orders_report_pdf_with_null_mode": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/InvoiceReportsBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/application/architecture/InvoiceReportsBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "applicationContractsDoNotExposeInvoiceModuleDtosOrConcreteUseCases": 1
+      },
+      "final_test_methods": {
+        "applicationContractsDoNotExposeInvoiceModuleDtosOrConcreteUseCases": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": false,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/AccountsReceivableReportsBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/application/architecture/AccountsReceivableReportsBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "reportDoesNotDependOnReceivablesInternalContracts": 1
+      },
+      "final_test_methods": {
+        "reportDoesNotDependOnReceivablesInternalContracts": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": false,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/QuoteReportsBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/application/architecture/QuoteReportsBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates": 1
+      },
+      "final_test_methods": {
+        "applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": false,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/PaymentReportsBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/application/architecture/PaymentReportsBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "applicationUsesOwnContractsAndDtos": 1
+      },
+      "final_test_methods": {
+        "applicationUsesOwnContractsAndDtos": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": false,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/CommercialCatalogBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/products/reporting/application/architecture/CommercialCatalogBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "coreDoesNotInjectSharedStorageAndPdfContractContainsOnlyData": 1
+      },
+      "final_test_methods": {
+        "coreDoesNotInjectSharedStorageAndPdfContractContainsOnlyData": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/OrderReportsBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/orders/reporting/application/architecture/OrderReportsBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates": 1
+      },
+      "final_test_methods": {
+        "applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": false,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/PurchaseReportsBoundaryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/application/architecture/PurchaseReportsBoundaryTest.java"
+      ],
+      "original_test_methods": {
+        "applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates": 1
+      },
+      "final_test_methods": {
+        "applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": false,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/config/PaymentReportingConfigTest.java",
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/config/ReceivablesReportingConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 2,
+        "should_create_port_beans": 2
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/web/PaymentReportsControllerTest.java",
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/web/ReceivablesReportsControllerTest.java"
+      ],
+      "original_test_methods": {
+        "shouldGetPaymentPdf": 1,
+        "shouldGetAccountsReceivablePdf": 1,
+        "shouldGetAccountsReceivablePdfWithOverdueFilter": 1,
+        "shouldGetPaymentHistoryPdf": 1,
+        "shouldGetCollectionsPdf": 1,
+        "shouldGetCollectionsPdfWithoutFilters": 1
+      },
+      "final_test_methods": {
+        "shouldGetPaymentPdf": 1,
+        "shouldGetPaymentHistoryPdf": 1,
+        "shouldGetAccountsReceivablePdf": 1,
+        "shouldGetAccountsReceivablePdfWithOverdueFilter": 1,
+        "shouldGetCollectionsPdf": 1,
+        "shouldGetCollectionsPdfWithoutFilters": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/ReceivablesReportQueryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/integration/ReceivablesReportQueryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "filtersAndEveryCreditAgingAmountArePreserved": 1,
+        "unfilteredEmptyResultPreservesQueryArguments": 1,
+        "queryFailurePreservesOriginalError": 1
+      },
+      "final_test_methods": {
+        "filtersAndEveryCreditAgingAmountArePreserved": 1,
+        "unfilteredEmptyResultPreservesQueryArguments": 1,
+        "queryFailurePreservesOriginalError": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/PaymentDocumentQueryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/integration/PaymentDocumentQueryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "providerAndAdapterPreserveEveryRenderedFieldWithoutRecalculatingAmount": 1,
+        "optionalFieldsPreserveNullValuesForRendererDefaults": 1,
+        "missingPaymentPreservesOriginalErrorIdentityAndMessage": 1
+      },
+      "final_test_methods": {
+        "providerAndAdapterPreserveEveryRenderedFieldWithoutRecalculatingAmount": 1,
+        "optionalFieldsPreserveNullValuesForRendererDefaults": 1,
+        "missingPaymentPreservesOriginalErrorIdentityAndMessage": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/PaymentPdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentPdfContentTest.java"
+      ],
+      "original_test_methods": {},
+      "final_test_methods": {},
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/AccountsReceivablePdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/AccountsReceivablePdfContentTest.java"
+      ],
+      "original_test_methods": {},
+      "final_test_methods": {},
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/dto/AccountsReceivableReportDataTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportDataTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_report_data": 1,
+        "should_create_report_data_with_empty_rows": 1
+      },
+      "final_test_methods": {
+        "should_create_report_data": 1,
+        "should_create_report_data_with_empty_rows": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/dto/CollectionsReportDataTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportDataTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_collections_data": 1,
+        "should_create_collections_data_with_null_customer": 1
+      },
+      "final_test_methods": {
+        "should_create_collections_data": 1,
+        "should_create_collections_data_with_null_customer": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/dto/PaymentHistoryReportDataTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportDataTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_payment_history_data": 1,
+        "should_create_payment_history_data_with_null_filters": 1
+      },
+      "final_test_methods": {
+        "should_create_payment_history_data": 1,
+        "should_create_payment_history_data_with_null_filters": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_accounts_receivable_pdf": 1,
+        "should_generate_overdue_accounts_receivable_pdf": 1,
+        "should_generate_accounts_receivable_pdf_without_filters": 1
+      },
+      "final_test_methods": {
+        "should_generate_accounts_receivable_pdf": 1,
+        "should_generate_overdue_accounts_receivable_pdf": 1,
+        "should_generate_accounts_receivable_pdf_without_filters": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_payment_history_pdf": 1,
+        "should_generate_payment_history_pdf_without_filters": 1
+      },
+      "final_test_methods": {
+        "should_generate_payment_history_pdf": 1,
+        "should_generate_payment_history_pdf_without_filters": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_payment_pdf": 1
+      },
+      "final_test_methods": {
+        "should_generate_payment_pdf": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_collections_pdf": 1,
+        "should_generate_collections_pdf_without_filters": 1
+      },
+      "final_test_methods": {
+        "should_generate_collections_pdf": 1,
+        "should_generate_collections_pdf_without_filters": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentPdfPortTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentPdfPortTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/WarehouseCatalogReportingConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_and_adapter_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_and_adapter_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CatalogReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/CatalogReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_catalog_report": 1,
+        "should_get_catalog_report_without_optional_params": 1,
+        "should_get_catalog_pdf": 1,
+        "should_get_catalog_pdf_without_optional_params": 1
+      },
+      "final_test_methods": {
+        "should_get_catalog_report": 1,
+        "should_get_catalog_report_without_optional_params": 1,
+        "should_get_catalog_pdf": 1,
+        "should_get_catalog_pdf_without_optional_params": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CommercialCatalogControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/web/CommercialCatalogControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_commercial_catalog_pdf": 1,
+        "should_get_commercial_catalog_pdf_without_optional_params": 1
+      },
+      "final_test_methods": {
+        "should_get_commercial_catalog_pdf": 1,
+        "should_get_commercial_catalog_pdf_without_optional_params": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/integration/FileStorageMediaAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/integration/FileStorageMediaAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "actualIOExceptionPreservesFailureIdentity": 2,
+        "runtimeStorageFailurePreservesFailureIdentity": 1
+      },
+      "final_test_methods": {
+        "actualIOExceptionPreservesFailureIdentity": 2,
+        "runtimeStorageFailurePreservesFailureIdentity": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/pdf/CommercialCatalogPdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/pdf/CommercialCatalogPdfContentTest.java"
+      ],
+      "original_test_methods": {
+        "PdfDocument": 1
+      },
+      "final_test_methods": {
+        "PdfDocument": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/projections/CatalogReportProjectionTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/CatalogReportProjectionTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/adapters/CatalogReportRepositoryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/CatalogReportRepositoryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "should_find_catalog": 1,
+        "should_find_catalog_with_null_filters": 1
+      },
+      "final_test_methods": {
+        "should_find_catalog": 1,
+        "should_find_catalog_with_null_filters": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/get_catalog_report/GetCatalogReportUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_catalog_report": 1,
+        "should_get_empty_catalog_report": 1
+      },
+      "final_test_methods": {
+        "should_get_catalog_report": 1,
+        "should_get_empty_catalog_report": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_commercial_catalog_pdf": 1,
+        "should_generate_commercial_catalog_pdf_with_empty_result": 1
+      },
+      "final_test_methods": {
+        "should_generate_commercial_catalog_pdf": 1,
+        "should_generate_commercial_catalog_pdf_with_empty_result": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_catalog_pdf": 1,
+        "should_generate_catalog_pdf_with_empty_result": 1
+      },
+      "final_test_methods": {
+        "should_generate_catalog_pdf": 1,
+        "should_generate_catalog_pdf_with_empty_result": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CatalogPdfPortTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/CatalogPdfPortTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CatalogReportResponseTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/CatalogReportResponseTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_catalog_report_response": 1,
+        "should_create_catalog_report_response_with_null_values": 1
+      },
+      "final_test_methods": {
+        "should_create_catalog_report_response": 1,
+        "should_create_catalog_report_response_with_null_values": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CommercialCatalogResponseTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/products/reporting/application/dto/response/CommercialCatalogResponseTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_response_with_price": 1,
+        "should_create_response_with_nulls": 1
+      },
+      "final_test_methods": {
+        "should_create_response_with_price": 1,
+        "should_create_response_with_nulls": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogReportQueryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQueryTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_default_page_values": 1
+      },
+      "final_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_default_page_values": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogPdfQueryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQueryTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_null_values": 1
+      },
+      "final_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_null_values": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/config/MovementsReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/MovementsReportConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_and_adapter_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_and_adapter_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/web/MovementsReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/MovementsReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_movements_pdf": 1,
+        "should_get_movements_pdf_without_optional_params": 1,
+        "should_get_movements_excel": 1
+      },
+      "final_test_methods": {
+        "should_get_movements_pdf": 1,
+        "should_get_movements_pdf_without_optional_params": 1,
+        "should_get_movements_excel": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/projections/MovementsReportProjectionTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/MovementsReportProjectionTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/adapters/MovementsReportRepositoryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/MovementsReportRepositoryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "should_find_movements": 1,
+        "should_map_movement_types": 1
+      },
+      "final_test_methods": {
+        "should_find_movements": 1,
+        "should_map_movement_types": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_movements_pdf": 1,
+        "should_generate_movements_pdf_with_empty_result": 1
+      },
+      "final_test_methods": {
+        "should_generate_movements_pdf": 1,
+        "should_generate_movements_pdf_with_empty_result": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/generate_movements_excel/GenerateMovementsExcelUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_movements_excel": 1,
+        "should_generate_movements_excel_with_empty_result": 1
+      },
+      "final_test_methods": {
+        "should_generate_movements_excel": 1,
+        "should_generate_movements_excel_with_empty_result": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsPdfPortTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsPdfPortTest.java"
+      ],
+      "original_test_methods": {
+        "should_be_accessible": 1
+      },
+      "final_test_methods": {
+        "should_be_accessible": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/dto/response/MovementReportResponseTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/MovementReportResponseTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_movement_report_response": 1,
+        "should_create_movement_report_response_with_null_notes": 1
+      },
+      "final_test_methods": {
+        "should_create_movement_report_response": 1,
+        "should_create_movement_report_response_with_null_notes": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/dto/query/MovementsPdfQueryTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQueryTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_null_values": 1
+      },
+      "final_test_methods": {
+        "should_create_query_with_all_fields": 1,
+        "should_create_query_with_null_values": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/config/QuotesReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/config/QuotesReportConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/web/QuotesReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/web/QuotesReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_quote_pdf": 1,
+        "should_get_quotes_report_pdf": 1,
+        "should_get_quotes_report_pdf_without_optional_params": 1
+      },
+      "final_test_methods": {
+        "should_get_quote_pdf": 1,
+        "should_get_quotes_report_pdf": 1,
+        "should_get_quotes_report_pdf_without_optional_params": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/integration/QuoteDocumentQueryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/integration/QuoteDocumentQueryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "listPreservesAllFiltersOrderingAndAmounts": 1,
+        "emptyUnfilteredListPreservesNullFilterSemantics": 1
+      },
+      "final_test_methods": {
+        "listPreservesAllFiltersOrderingAndAmounts": 1,
+        "emptyUnfilteredListPreservesNullFilterSemantics": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/pdf/QuotePdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotePdfContentTest.java"
+      ],
+      "original_test_methods": {},
+      "final_test_methods": {},
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/quotes/application/generate_quote_pdf/GenerateQuotePdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_quote_pdf": 1,
+        "should_throw_when_quote_not_found": 1
+      },
+      "final_test_methods": {
+        "should_generate_quote_pdf": 1,
+        "should_throw_when_quote_not_found": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/quotes/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_quotes_report_pdf": 1,
+        "should_generate_quotes_report_pdf_with_null_mode": 1
+      },
+      "final_test_methods": {
+        "should_generate_quotes_report_pdf": 1,
+        "should_generate_quotes_report_pdf_with_null_mode": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/config/InvoicesReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/config/InvoicesReportConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/web/InvoicesReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/web/InvoicesReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_invoice_pdf": 1,
+        "should_get_invoices_report_pdf": 1,
+        "should_get_invoices_report_pdf_without_optional_params": 1
+      },
+      "final_test_methods": {
+        "should_get_invoice_pdf": 1,
+        "should_get_invoices_report_pdf": 1,
+        "should_get_invoices_report_pdf_without_optional_params": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/integration/InvoiceDocumentQueryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/integration/InvoiceDocumentQueryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "providerAndAdapterPreserveEveryDocumentFieldAndLineAmount": 1,
+        "listPreservesFiltersSortAndRowsWithoutRecalculatingTotals": 1,
+        "missingInvoicePreservesProviderFailure": 1,
+        "unfilteredEmptyReportPreservesNullFilterSemantics": 1
+      },
+      "final_test_methods": {
+        "providerAndAdapterPreserveEveryDocumentFieldAndLineAmount": 1,
+        "listPreservesFiltersSortAndRowsWithoutRecalculatingTotals": 1,
+        "missingInvoicePreservesProviderFailure": 1,
+        "unfilteredEmptyReportPreservesNullFilterSemantics": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/pdf/InvoicePdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicePdfContentTest.java"
+      ],
+      "original_test_methods": {},
+      "final_test_methods": {},
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/invoices/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_invoice_pdf": 1
+      },
+      "final_test_methods": {
+        "should_generate_invoice_pdf": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/invoices/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_invoices_report_pdf": 1,
+        "should_generate_invoices_report_pdf_with_null_mode": 1
+      },
+      "final_test_methods": {
+        "should_generate_invoices_report_pdf": 1,
+        "should_generate_invoices_report_pdf_with_null_mode": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/config/PurchasesReportConfigTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/config/PurchasesReportConfigTest.java"
+      ],
+      "original_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "final_test_methods": {
+        "should_create_use_case_beans": 1,
+        "should_create_port_beans": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/web/PurchasesReportControllerTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/web/PurchasesReportControllerTest.java"
+      ],
+      "original_test_methods": {
+        "should_get_purchase_pdf": 1,
+        "should_get_purchases_report_pdf": 1,
+        "should_get_purchases_report_pdf_without_optional_params": 1
+      },
+      "final_test_methods": {
+        "should_get_purchase_pdf": 1,
+        "should_get_purchases_report_pdf": 1,
+        "should_get_purchases_report_pdf_without_optional_params": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/integration/PurchaseDocumentQueryAdapterTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/integration/PurchaseDocumentQueryAdapterTest.java"
+      ],
+      "original_test_methods": {
+        "listPreservesAllFiltersOrderingAndAmounts": 1,
+        "emptyUnfilteredListPreservesNullFilterSemantics": 1,
+        "singlePurchasePreservesLinesAmountsAndMissingError": 1,
+        "singleProjectionPreservesFractionalQuantityCostAndLineSubtotal": 1
+      },
+      "final_test_methods": {
+        "listPreservesAllFiltersOrderingAndAmounts": 1,
+        "emptyUnfilteredListPreservesNullFilterSemantics": 1,
+        "singlePurchasePreservesLinesAmountsAndMissingError": 1,
+        "singleProjectionPreservesFractionalQuantityCostAndLineSubtotal": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/pdf/PurchasePdfContentTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasePdfContentTest.java"
+      ],
+      "original_test_methods": {},
+      "final_test_methods": {},
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/purchases/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "returnsPdfForTheRequestedPurchaseWithoutChangingProjection": 1,
+        "missingPurchasePreservesErrorWithoutGeneratingPdf": 1
+      },
+      "final_test_methods": {
+        "returnsPdfForTheRequestedPurchaseWithoutChangingProjection": 1,
+        "missingPurchasePreservesErrorWithoutGeneratingPdf": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    },
+    {
+      "old": "src/test/java/com/cashly/cashly_api/reports/purchases/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImplTest.java",
+      "new": [
+        "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImplTest.java"
+      ],
+      "original_test_methods": {
+        "should_generate_purchases_report_pdf": 1,
+        "should_generate_purchases_report_pdf_with_null_mode": 1
+      },
+      "final_test_methods": {
+        "should_generate_purchases_report_pdf": 1,
+        "should_generate_purchases_report_pdf_with_null_mode": 1
+      },
+      "missing_test_methods": {},
+      "assertions_exact": true,
+      "assertion_counts_preserved": true
+    }
+  ]
+}

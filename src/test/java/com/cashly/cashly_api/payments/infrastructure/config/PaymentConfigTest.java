@@ -1,11 +1,15 @@
 package com.cashly.cashly_api.payments.infrastructure.config;
 
-import com.cashly.cashly_api.payments.application.ports.out.CashRegisterGateway;
-import com.cashly.cashly_api.payments.application.ports.out.PaymentActorGateway;
-import com.cashly.cashly_api.payments.application.ports.out.PaymentCustomerGateway;
-import com.cashly.cashly_api.payments.application.usecases.*;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.domain.repositories.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.application.ports.out.CashRegisterGateway;
+import com.cashly.cashly_api.payments.collection.application.ports.out.PaymentActorGateway;
+import com.cashly.cashly_api.payments.collection.application.ports.out.PaymentCustomerGateway;
+import com.cashly.cashly_api.payments.collection.application.create.CreatePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.delete.DeletePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.queries.GetAllPaymentsUseCase;
+import com.cashly.cashly_api.payments.collection.application.queries.GetPaymentByIdUseCase;
+import com.cashly.cashly_api.payments.collection.application.update.UpdatePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -5,10 +5,17 @@ import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGa
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseActorGateway;
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductCatalogGateway;
 
-import com.cashly.cashly_api.purchases.application.usecases.*;
+import com.cashly.cashly_api.purchases.application.cancel.CancelPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.confirm.ConfirmPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.create.CreatePurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.delete.DeletePurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.products.GetProductsForPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.get.GetPurchaseByIdUseCase;
+import com.cashly.cashly_api.purchases.application.list.ListPurchasesUseCase;
+import com.cashly.cashly_api.purchases.application.update.UpdatePurchaseUseCase;
 import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseProductGateway;
-import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
+import com.cashly.cashly_api.purchases.domain.PurchaseRepository;
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseSupplierGateway;
 import com.cashly.cashly_api.purchases.application.ports.out.InventoryGateway;
 import org.springframework.context.annotation.Bean;

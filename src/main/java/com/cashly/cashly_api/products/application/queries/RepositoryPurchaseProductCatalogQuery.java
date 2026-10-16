@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.products.application.queries;
 
 import com.cashly.cashly_api.products.application.ports.in.PurchaseProductCatalogQuery;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.domain.ProductRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.auth.user.application.mappers;
 
 import com.cashly.cashly_api.auth.user.application.dto.response.UserResponse;
-import com.cashly.cashly_api.auth.user.domain.entities.User;
+import com.cashly.cashly_api.auth.user.domain.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;

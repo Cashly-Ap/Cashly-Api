@@ -1,14 +1,24 @@
 package com.cashly.cashly_api.warehouses.infrastructure.config;
 
-import com.cashly.cashly_api.warehouses.application.ports.out.StockCatalogGateway;
+import com.cashly.cashly_api.warehouses.stock.application.ports.out.StockCatalogGateway;
 
 
-import com.cashly.cashly_api.warehouses.application.usecases.*;
-import com.cashly.cashly_api.warehouses.application.ports.in.InvoiceInventoryApi;
-import com.cashly.cashly_api.warehouses.application.services.InvoiceInventoryService;
-import com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.management.application.create.CreateWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.delete.DeleteWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.movements.GetStockMovementsUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.queries.GetWarehouseStockUseCase;
+import com.cashly.cashly_api.warehouses.management.application.queries.GetWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.queries.ListWarehousesUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.adjustment.StockAdjustmentUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.entry.StockEntryUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.exit.StockExitUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.transfer.TransferStockUseCase;
+import com.cashly.cashly_api.warehouses.management.application.update.UpdateWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.ports.in.InvoiceInventoryApi;
+import com.cashly.cashly_api.warehouses.stock.application.invoices.InvoiceInventoryService;
+import com.cashly.cashly_api.warehouses.stock.domain.StockMovementRepository;
+import com.cashly.cashly_api.warehouses.management.domain.WarehouseRepository;
+import com.cashly.cashly_api.warehouses.stock.domain.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

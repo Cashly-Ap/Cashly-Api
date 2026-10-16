@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.auth.token.domain.valueobjects;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.*;
-import com.cashly.cashly_api.auth.token.domain.valueobjects.*;
+
+import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenId;
+import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenIdUnitTest;
 
 import org.junit.jupiter.api.Test;
 

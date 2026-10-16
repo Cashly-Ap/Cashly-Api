@@ -1,7 +1,11 @@
 package com.cashly.cashly_api.price_types.infrastructure.config;
 
-import com.cashly.cashly_api.price_types.application.usecases.*;
-import com.cashly.cashly_api.price_types.domain.repositories.PriceTypeRepository;
+import com.cashly.cashly_api.price_types.application.create.CreatePriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.delete.DeletePriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.queries.GetPriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.queries.ListPriceTypesUseCase;
+import com.cashly.cashly_api.price_types.application.update.UpdatePriceTypeUseCase;
+import com.cashly.cashly_api.price_types.domain.PriceTypeRepository;
 import com.cashly.cashly_api.price_types.application.ports.out.PriceTypeUsageGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.price_types.application.dto.response;
 
-import com.cashly.cashly_api.price_types.domain.entities.PriceType;
+import com.cashly.cashly_api.price_types.domain.PriceType;
 
 import java.time.LocalDateTime;
 

@@ -1,0 +1,15 @@
+{
+  "run": "mode=final\nproject=cashly-screaming-final-20261016-run2\nsource=/Users/gabrielvargas/Work/Personals/Cashly/cashly-api\nstarted_utc=2026-10-16T21:40:32Z\nimage=cashly-api-app:latest\nfinished_utc=2026-10-16T21:42:09Z\nexit_code=0\ncoverage_gate_exit_code=0\n",
+  "command": "./mvnw -B clean verify -Dtest=Test\\*\\,\\*Test\\,\\*Tests\\,\\*TestCase\\,\\*IT -DfailIfNoTests=true -Dinventory.test.url=jdbc:mysql://inventory-db:3306/screaming_inventory -Dinventory.test.username=screaming_test -Dinventory.test.password=screaming_test \n",
+  "runtime": "openjdk version \"24.0.1\" 2025-04-15\nOpenJDK Runtime Environment Corretto-24.0.1.9.1 (build 24.0.1+9-FR)\nOpenJDK 64-Bit Server VM Corretto-24.0.1.9.1 (build 24.0.1+9-FR, mixed mode, sharing)\nApache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)\nMaven home: /root/.m2/wrapper/dists/apache-maven-3.9.11/a2d47e15\nJava version: 24.0.1, vendor: Amazon.com Inc., runtime: /usr/lib/jvm/java-24-amazon-corretto.aarch64\nDefault locale: en, platform encoding: UTF-8\nOS name: \"linux\", version: \"7.0.14-linuxkit\", arch: \"aarch64\", family: \"unix\"\n",
+  "source_sha256_inventory_digest": "18fd6eddc20880dc84dc73d48a2c049d481a1b77527d55500e57f3fdce515a4e",
+  "java_source_files": 1823,
+  "raw_reports": "target/structure-verification/cashly-screaming-final-20261016-run2/",
+  "known_diagnostics": [
+    "Maven Guice sun.misc.Unsafe deprecation",
+    "Hibernate MySQLDialect redundant setting",
+    "Hibernate incubating UUID setting",
+    "Commons Logging classpath warning"
+  ],
+  "business_migrations_modified": false
+}

@@ -1,0 +1,94 @@
+{
+  "status": "PASS",
+  "scope": "Architecture-only baseline; no database or application startup exercised",
+  "execution_finished_at_utc": "2026-10-16T09:40:24Z",
+  "command": "docker compose exec -T app ./mvnw -B test -Dtest=LayerDependencyTest,ApplicationPackageConventionTest",
+  "working_directory": "cashly-api",
+  "exit_code": 0,
+  "total_tests": 11,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "sanitization": "Only suite identity, counts, timing, test names and original report SHA256 are retained. JVM/environment properties and system output are intentionally not copied.",
+  "suites": [
+    {
+      "suite": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": "0.742",
+      "reported_timestamp": null,
+      "original_xml_sha256": "f14aa90b75605a2492765dfd674a9a0134755078be1036145b27da0f6e698a4b",
+      "cases": [
+        {
+          "name": "should_use_distinct_packages_for_offered_capabilities_required_ports_and_queries",
+          "class": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+          "duration_seconds": "0.14"
+        },
+        {
+          "name": "should_group_persistence_sources_by_responsibility",
+          "class": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+          "duration_seconds": "0.11"
+        },
+        {
+          "name": "should_keep_only_interfaces_in_persistence_repositories",
+          "class": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+          "duration_seconds": "0.132"
+        },
+        {
+          "name": "should_use_cash_register_for_the_cash_register_module_package",
+          "class": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+          "duration_seconds": "0.111"
+        },
+        {
+          "name": "should_use_controllers_for_http_input_adapters",
+          "class": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+          "duration_seconds": "0.112"
+        },
+        {
+          "name": "should_declare_input_or_output_direction_for_infrastructure_adapters",
+          "class": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+          "duration_seconds": "0.13"
+        }
+      ]
+    },
+    {
+      "suite": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": "1.11",
+      "reported_timestamp": null,
+      "original_xml_sha256": "f89cd94ebf7747a9c212d6f37ea074f1cf314d3b1782b092a3465604a24d3252",
+      "cases": [
+        {
+          "name": "application_should_depend_on_other_modules_only_through_input_ports",
+          "class": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+          "duration_seconds": "0.428"
+        },
+        {
+          "name": "domain_should_be_independent_of_application_infrastructure_and_frameworks",
+          "class": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+          "duration_seconds": "0.142"
+        },
+        {
+          "name": "application_input_ports_should_be_independent_of_infrastructure_and_frameworks",
+          "class": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+          "duration_seconds": "0.138"
+        },
+        {
+          "name": "application_output_ports_should_be_independent_of_infrastructure_and_frameworks",
+          "class": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+          "duration_seconds": "0.191"
+        },
+        {
+          "name": "domain_should_not_depend_on_other_modules_internals",
+          "class": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+          "duration_seconds": "0.185"
+        }
+      ]
+    }
+  ]
+}

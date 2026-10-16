@@ -28,16 +28,17 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run tests
-        run: ./mvnw test --batch-mode --errors --fail-at-end
+        run: bash scripts/run-structure-verification.sh final
         env:
           MAVEN_OPTS: -Xmx2g -XX:+UseG1GC
+          SCREAMING_PROJECT: cashly-screaming-pr-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload Surefire test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: surefire-reports-${{ github.run_number }}
-          path: target/surefire-reports/
+          path: target/structure-verification/
           retention-days: 7
 
       - name: Test Summary
@@ -45,6 +46,10 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: JUnit Test Results
-          path: target/surefire-reports/*.xml
+          path: target/structure-verification/**/surefire-reports/*.xml
           reporter: java-junit
           fail-on-error: false
+
+      - name: Remove isolated verification project
+        if: always()
+        run: docker compose -p "cashly-screaming-pr-${{ github.run_id }}-${{ github.run_attempt }}" -f compose.screaming-test.yaml down --volumes --remove-orphans

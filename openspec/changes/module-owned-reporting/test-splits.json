@@ -1,0 +1,20 @@
+[
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportControllerTest.java",
+    "new": [
+      "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/web/PaymentReportsControllerTest.java",
+      "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/web/ReceivablesReportsControllerTest.java"
+    ],
+    "disposition": "split",
+    "preserved": "All original test methods and assertions retained across owners"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfigTest.java",
+    "new": [
+      "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/config/PaymentReportingConfigTest.java",
+      "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/config/ReceivablesReportingConfigTest.java"
+    ],
+    "disposition": "split",
+    "preserved": "All original test methods and assertions retained across owners"
+  }
+]

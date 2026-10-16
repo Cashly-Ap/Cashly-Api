@@ -1,8 +1,16 @@
 package com.cashly.cashly_api.returns.infrastructure.config;
-import com.cashly.cashly_api.returns.application.ports.out.*;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnBalanceGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnCashGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInventoryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceQueryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettlementGateway;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
-import com.cashly.cashly_api.returns.application.usecases.*;
-import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
+import com.cashly.cashly_api.returns.application.create.CreateReturnUseCase;
+import com.cashly.cashly_api.returns.application.delete.DeleteReturnUseCase;
+import com.cashly.cashly_api.returns.application.list.GetAllReturnsUseCase;
+import com.cashly.cashly_api.returns.application.get.GetReturnByIdUseCase;
+import com.cashly.cashly_api.returns.domain.ReturnRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

@@ -1,0 +1,41 @@
+{
+  "command": "docker compose exec -T app ./mvnw -B -Dtest=ApplicationPackageConventionTest,LayerDependencyTest,CapabilityStructureTest,CustomerWarehouseBoundaryTest test",
+  "result": "PASS",
+  "totals": {
+    "tests": 21,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "name": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.cashly.cashly_api.architecture.CapabilityStructureTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.cashly.cashly_api.customers.warehouse_access.application.CustomerWarehouseBoundaryTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "scope": "Architecture and source boundary guards only; no database integration or full-suite claim."
+}

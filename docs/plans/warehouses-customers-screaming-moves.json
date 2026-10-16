@@ -1,0 +1,1298 @@
+[
+  {
+    "old": "warehouses/application/dto/request/CreateWarehouseRequest.java",
+    "new": "warehouses/management/application/create/CreateWarehouseRequest.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "682d9d129b64ca070837484979681ef88c34c81b631a783a57bd5db8e5de8e37"
+  },
+  {
+    "old": "warehouses/application/dto/request/StockAdjustmentRequest.java",
+    "new": "warehouses/stock/application/adjustment/StockAdjustmentRequest.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "a0975bbc74e5485d3fdf30c88bfbc547cc5dd24aebbda51323ce6d47260a9426"
+  },
+  {
+    "old": "warehouses/application/dto/request/StockBatchItem.java",
+    "new": "warehouses/stock/application/dto/StockBatchItem.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "f8aaec49cdcbeeba135799136f1a3353a65e50da15beaab7d7d8810a33c5ad76"
+  },
+  {
+    "old": "warehouses/application/dto/request/StockEntryRequest.java",
+    "new": "warehouses/stock/application/entry/StockEntryRequest.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "b6fd1313ca81360f6ca233ec647a625c46ebe9c75995b4f2d827bcf5ce7ade96"
+  },
+  {
+    "old": "warehouses/application/dto/request/StockExitRequest.java",
+    "new": "warehouses/stock/application/exit/StockExitRequest.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "151dc7fa2cef3d0fee129368e95552ee9e154b58ad1b247b050af01decfe3c8b"
+  },
+  {
+    "old": "warehouses/application/dto/request/TransferStockRequest.java",
+    "new": "warehouses/stock/application/transfer/TransferStockRequest.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "631ef60472d07e47c0bea75a523c98450f40df25264d4a8d8b5b231f8b05c484"
+  },
+  {
+    "old": "warehouses/application/dto/request/UpdateWarehouseRequest.java",
+    "new": "warehouses/management/application/update/UpdateWarehouseRequest.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "2739d9a55000760c31df5f968eb9682c8fbd55919ca690ab4686afdce084de3d"
+  },
+  {
+    "old": "warehouses/application/dto/response/StockMovementResponse.java",
+    "new": "warehouses/stock/application/movements/StockMovementResponse.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "dfe5603dd0874958c9662be64a48f25f7422270e6f22acf727e38c0beed3104d"
+  },
+  {
+    "old": "warehouses/application/dto/response/WarehouseDetailResponse.java",
+    "new": "warehouses/management/application/dto/WarehouseDetailResponse.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "9dcee0af10786539e97124978e593ab060da0de4edec6418cb80b9df6f8c636b"
+  },
+  {
+    "old": "warehouses/application/dto/response/WarehouseListResponse.java",
+    "new": "warehouses/management/application/dto/WarehouseListResponse.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "f9ae24f56bbca77b43d52d31674f6c4af25f9a057ddf551eab30c4a696e12526"
+  },
+  {
+    "old": "warehouses/application/dto/response/WarehouseStockResponse.java",
+    "new": "warehouses/stock/application/dto/WarehouseStockResponse.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "03df9925cab0cc866c55c12862d4bec4ddebb15a400c4ccf50fbdb75d0b74f9b"
+  },
+  {
+    "old": "warehouses/application/exceptions/DuplicateWarehouseCodeException.java",
+    "new": "warehouses/management/application/create/DuplicateWarehouseCodeException.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "0077a8e8840f8454ffee671ecb35d0982aca7b7e9cf56e11912f4e75622357d2"
+  },
+  {
+    "old": "warehouses/application/exceptions/InsufficientStockException.java",
+    "new": "warehouses/stock/application/exceptions/InsufficientStockException.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "82b7f69847d1271b0eaf1768b1c1af984c28fb688d4d3f4f108731bc38cab613"
+  },
+  {
+    "old": "warehouses/application/exceptions/ProductNotInWarehouseException.java",
+    "new": "warehouses/stock/application/exceptions/ProductNotInWarehouseException.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "bcd4c30ced5f74102e9daf5662de4b63e6237b4894d136fe381921d5b6326d4a"
+  },
+  {
+    "old": "warehouses/application/exceptions/WarehouseHasActiveStockException.java",
+    "new": "warehouses/management/application/delete/WarehouseHasActiveStockException.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "61bec09b49e713e3f22ac5fec3c2059fe7ec904d71db0eaf9cba7a8b2a074745"
+  },
+  {
+    "old": "warehouses/application/exceptions/WarehouseNotActiveException.java",
+    "new": "warehouses/management/application/exceptions/WarehouseNotActiveException.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name. Stock may reference these management errors within the same bounded context during phase 1.",
+    "source_sha256": "b800070d914ffc4c427066025a506c1ff63963c1fb00f028ea8240ca6ffd6e1a"
+  },
+  {
+    "old": "warehouses/application/exceptions/WarehouseNotFoundException.java",
+    "new": "warehouses/management/application/exceptions/WarehouseNotFoundException.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name. Stock may reference these management errors within the same bounded context during phase 1.",
+    "source_sha256": "c43a05f90180268ce59a481de39b3eaf80b769ae866572a5a5be3c462b54d536"
+  },
+  {
+    "old": "warehouses/application/ports/in/AvailableStockProductsQuery.java",
+    "new": "warehouses/stock/application/ports/in/AvailableStockProductsQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "7c24c6d32360bf7a025b2d2358950060b77d6ca1e129eadf0daa4316293bde7c"
+  },
+  {
+    "old": "warehouses/application/ports/in/InvoiceInventoryApi.java",
+    "new": "warehouses/stock/application/ports/in/InvoiceInventoryApi.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "6d37bf716f96b3f0ad20cbaa70aff891b1c8f78905c48dda134aee8f6544a6da"
+  },
+  {
+    "old": "warehouses/application/ports/in/InvoiceStockCommand.java",
+    "new": "warehouses/stock/application/ports/in/InvoiceStockCommand.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "b64e7a0a87363a74ba0f79903b9c66d224380259ce4e783c91f83effec6ef173"
+  },
+  {
+    "old": "warehouses/application/ports/in/ProductReferenceQuery.java",
+    "new": "warehouses/stock/application/ports/in/ProductReferenceQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "538269c82952451677173dc7b3a80827cbce24b1eae226e6797379f7235734ef"
+  },
+  {
+    "old": "warehouses/application/ports/in/ProductStockQuery.java",
+    "new": "warehouses/stock/application/ports/in/ProductStockQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "85cfbf70ebe33f1f9296079e270e9b36c1a677dc189dfd54806c6f28de2d9673"
+  },
+  {
+    "old": "warehouses/application/ports/in/PurchaseInventoryApi.java",
+    "new": "warehouses/stock/application/ports/in/PurchaseInventoryApi.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "68f95e26026c4bcbf76e61ff4e1d84e042aee20285fe183291cbc0d126439788"
+  },
+  {
+    "old": "warehouses/application/ports/in/PurchaseStockCommand.java",
+    "new": "warehouses/stock/application/ports/in/PurchaseStockCommand.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "eff9a504768e4c5f2320addec8a496f20320b80fc0e5e68dfe3b55c7c5257896"
+  },
+  {
+    "old": "warehouses/application/ports/in/PurchaseWarehouseQuery.java",
+    "new": "warehouses/stock/application/ports/in/PurchaseWarehouseQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name. Composite read for purchasing includes stock and warehouse directory; owned by stock for this organizational plan.",
+    "source_sha256": "79bf148246acc2105e9d1c1b07a07a5438cf32137acd96252dee9854a2d5f32e"
+  },
+  {
+    "old": "warehouses/application/ports/in/ReturnInventoryApi.java",
+    "new": "warehouses/stock/application/ports/in/ReturnInventoryApi.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "180f15f2070336944820c133c026b78a150a163ade8e362ba2094925efbeb1a8"
+  },
+  {
+    "old": "warehouses/application/ports/in/ReturnStockCommand.java",
+    "new": "warehouses/stock/application/ports/in/ReturnStockCommand.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "c5617808ba2ad5f21f7ff0be81e1d32593997b9f2c7e1c63fa6c526f12272d91"
+  },
+  {
+    "old": "warehouses/application/ports/in/StockAvailabilityQuery.java",
+    "new": "warehouses/stock/application/ports/in/StockAvailabilityQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "85ab35f9e27548c96b4b96d49c7291adc560c7fcbbfd2871153e23edaad672b1"
+  },
+  {
+    "old": "warehouses/application/ports/in/StockDeductionApi.java",
+    "new": "warehouses/stock/application/ports/in/StockDeductionApi.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "41600f11a9b1848f7bea620992410b6cb2ef615b051a0da7a585e13120f27c90"
+  },
+  {
+    "old": "warehouses/application/ports/in/WarehouseDirectoryEntry.java",
+    "new": "warehouses/management/application/ports/in/WarehouseDirectoryEntry.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "b37a89787b8bb33493a343ccbe7613370d2afd5ebd2151baacdd70a7d356fc21"
+  },
+  {
+    "old": "warehouses/application/ports/in/WarehouseDirectoryQuery.java",
+    "new": "warehouses/management/application/ports/in/WarehouseDirectoryQuery.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "42bb29428b6d63727c9bf8a2e6efc7b668e5e53f13cd711034be88faf8e08038"
+  },
+  {
+    "old": "warehouses/application/ports/out/CustomerWarehouseAccessGateway.java",
+    "new": "warehouses/stock/application/ports/out/CustomerWarehouseAccessGateway.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "61f234071c68fa1ef3aea7a564c8d90c838844a03b2223ad0e253ddb75a5c6b3"
+  },
+  {
+    "old": "warehouses/application/ports/out/StockCatalogGateway.java",
+    "new": "warehouses/stock/application/ports/out/StockCatalogGateway.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "b046f0848660f8bce95e79466a7e733eafcbd558dad93cd9b2656523fedbaf61"
+  },
+  {
+    "old": "warehouses/application/queries/RepositoryPurchaseWarehouseQuery.java",
+    "new": "warehouses/stock/application/queries/RepositoryPurchaseWarehouseQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name. Composite read for purchasing includes stock and warehouse directory; owned by stock for this organizational plan.",
+    "source_sha256": "a4e19c41b3dcd261e973ee91311bb8dd2912631a7adc495a2e8782e8acb9ec6a"
+  },
+  {
+    "old": "warehouses/application/services/InvoiceInventoryService.java",
+    "new": "warehouses/stock/application/invoices/InvoiceInventoryService.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "bbca6d2597d137510caff7c6ddf1e5f8e19c8782178302b6c05786c46e5e4280"
+  },
+  {
+    "old": "warehouses/application/services/PurchaseInventoryService.java",
+    "new": "warehouses/stock/application/purchases/PurchaseInventoryService.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "601e679a64aade1c9a8ecc0e9d40592ad24b0ae25ffc3b16085b3dfe57dc8135"
+  },
+  {
+    "old": "warehouses/application/services/RepositoryProductStockQuery.java",
+    "new": "warehouses/stock/application/queries/RepositoryProductStockQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "a604fc9224aed7fcbb3f5ad0eb755125ae954954a34ca99284ec5c55d4dad54f"
+  },
+  {
+    "old": "warehouses/application/services/RepositoryWarehouseDirectoryQuery.java",
+    "new": "warehouses/management/application/queries/RepositoryWarehouseDirectoryQuery.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "bab6a63032fe2a4cb62f66b160c65bdc68110cb153075c5a2fb38ac1df870835"
+  },
+  {
+    "old": "warehouses/application/services/ReturnInventoryService.java",
+    "new": "warehouses/stock/application/returns/ReturnInventoryService.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "d705b0618bf034d1ac18d3e7fc4069f6a61c581f326b1809965bef95ea025301"
+  },
+  {
+    "old": "warehouses/application/services/StockAvailabilityQueryService.java",
+    "new": "warehouses/stock/application/queries/StockAvailabilityQueryService.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "576f85ab2f29abd9794f7aa61328297f8143254977f3b1213babe9de9c4bb5db"
+  },
+  {
+    "old": "warehouses/application/services/StockDeductionService.java",
+    "new": "warehouses/stock/application/deduction/StockDeductionService.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "9b14be2a0e74cac6194f0d57af59996638c7e2f68f6372f1c9c66c82d04bfdb9"
+  },
+  {
+    "old": "warehouses/application/usecases/CreateWarehouseUseCase.java",
+    "new": "warehouses/management/application/create/CreateWarehouseUseCase.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "e4dcab2bc0ef32028be1edec50e605477b5b89f90b2d5d5db0b37041845bdaac"
+  },
+  {
+    "old": "warehouses/application/usecases/DeleteWarehouseUseCase.java",
+    "new": "warehouses/management/application/delete/DeleteWarehouseUseCase.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "e145891091206705d337f4033f74d610af758dde4512e4775a61f302cda045bf"
+  },
+  {
+    "old": "warehouses/application/usecases/GetStockMovementsUseCase.java",
+    "new": "warehouses/stock/application/movements/GetStockMovementsUseCase.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "d07fff68899668c3ad461e950fcd3d7bbfd63509518e8bdb27600a8d041f242f"
+  },
+  {
+    "old": "warehouses/application/usecases/GetWarehouseStockUseCase.java",
+    "new": "warehouses/stock/application/queries/GetWarehouseStockUseCase.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "0ee532c03637d49491778699c65c0b6e69bb2a654adf672f390dd66e06fd7d42"
+  },
+  {
+    "old": "warehouses/application/usecases/GetWarehouseUseCase.java",
+    "new": "warehouses/management/application/queries/GetWarehouseUseCase.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "4a0f247189fd552d2f765ccffec4ebb6e648854044178d28a8c75d4966d12c8b"
+  },
+  {
+    "old": "warehouses/application/usecases/ListWarehousesUseCase.java",
+    "new": "warehouses/management/application/queries/ListWarehousesUseCase.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "953a2e6ddb6cc6d631cd0d7839efbac133a86eee4627c1899d4eb8d45c969c82"
+  },
+  {
+    "old": "warehouses/application/usecases/StockAdjustmentUseCase.java",
+    "new": "warehouses/stock/application/adjustment/StockAdjustmentUseCase.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "76d630d680ecae1c14bb64b5aede832b8a2db7e039990a0dbbf93844fa0ff89a"
+  },
+  {
+    "old": "warehouses/application/usecases/StockEntryUseCase.java",
+    "new": "warehouses/stock/application/entry/StockEntryUseCase.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "1b8bb20dc2615fff699fa140649abca942d54e475211d5a6c76624fc9f6f7cc0"
+  },
+  {
+    "old": "warehouses/application/usecases/StockExitUseCase.java",
+    "new": "warehouses/stock/application/exit/StockExitUseCase.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "615b31f362c60700f100175d232439a64f485d73c32f5bc4e4f05075f625547e"
+  },
+  {
+    "old": "warehouses/application/usecases/TransferStockUseCase.java",
+    "new": "warehouses/stock/application/transfer/TransferStockUseCase.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "4b1be158398f8aae3c32b093987b1af6dde8dd6565e01ec8a8db32ef015c30a1"
+  },
+  {
+    "old": "warehouses/application/usecases/UpdateWarehouseUseCase.java",
+    "new": "warehouses/management/application/update/UpdateWarehouseUseCase.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "fa5e8d5aa2684b49f39959a85b17a7a2313b919298040b88e244b0fd1253b0da"
+  },
+  {
+    "old": "warehouses/domain/entities/MovementType.java",
+    "new": "warehouses/stock/domain/MovementType.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "33eb8417f7125bbe153f9352803e32c0fb4730821f94bb7ec001dadfc5178507"
+  },
+  {
+    "old": "warehouses/domain/entities/ReferenceType.java",
+    "new": "warehouses/stock/domain/ReferenceType.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "0f303047a9c207188a345e865d6330eff239b1b605faaea396371fb99fbbaf53"
+  },
+  {
+    "old": "warehouses/domain/entities/StockMovement.java",
+    "new": "warehouses/stock/domain/StockMovement.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "24fcffa9ed12feadcac4ca7db1311d94814d7d8eb49b21dddd9e1fa184c8a949"
+  },
+  {
+    "old": "warehouses/domain/entities/Warehouse.java",
+    "new": "warehouses/management/domain/Warehouse.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "756c069b0861a076f7b195d1df2f09afc35f25333139da3fe792b6606a2db592"
+  },
+  {
+    "old": "warehouses/domain/entities/WarehouseStock.java",
+    "new": "warehouses/stock/domain/WarehouseStock.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "8fe667f10bdde698892cb88932d5a0b32357890ff3008dde28d22a8f12d61636"
+  },
+  {
+    "old": "warehouses/domain/repositories/StockMovementRepository.java",
+    "new": "warehouses/stock/domain/StockMovementRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "08bb0fa2bdb671f3bf894c547cbe4570bea2a6dc33d11cd5ec0ce073818a3d67"
+  },
+  {
+    "old": "warehouses/domain/repositories/WarehouseRepository.java",
+    "new": "warehouses/management/domain/WarehouseRepository.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name. Active-stock/deletability read remains an explicit internal cross-submodule query exception.",
+    "source_sha256": "024a21ca5814c0b120a4195189db1b1b1570cfc41da273e634065223308f565a"
+  },
+  {
+    "old": "warehouses/domain/repositories/WarehouseStockRepository.java",
+    "new": "warehouses/stock/domain/WarehouseStockRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "82b08114465f48528bbb2816267ac21d51f4529e6a65f7313a6265860b67f17d"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/in/controllers/StockMovementController.java",
+    "new": "warehouses/stock/infrastructure/web/StockMovementController.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "73fd2f300a04fe843511ac468db05b463393ba4dbc954714a1c7c39122b1c065"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/in/controllers/WarehouseController.java",
+    "new": "warehouses/management/infrastructure/web/WarehouseController.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "ef07c70de323ed42e6883e11da534d971a4bad47482ee65681a1c1eebb8e7ad2"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/in/controllers/WarehouseStockController.java",
+    "new": "warehouses/stock/infrastructure/web/WarehouseStockController.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "133112ba360c3cbc7c2774387981a504302ac003a8c8913d5941b5ccdbba43ce"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/integration/CustomerWarehouseAccessAdapter.java",
+    "new": "warehouses/stock/infrastructure/integration/CustomerWarehouseAccessAdapter.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "cc629df4ccfaa11bc19440fc087deb708255cd9704539a980273d6c5b1a038a5"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/integration/LocalStockCatalogGatewayAdapter.java",
+    "new": "warehouses/stock/infrastructure/integration/LocalStockCatalogGatewayAdapter.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "f9f30121229f9bba26f2d02a1901110a1dc473d3870ba14cef140c17bbe5e504"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/adapters/JpaStockMovementRepository.java",
+    "new": "warehouses/stock/infrastructure/persistence/adapters/JpaStockMovementRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "fb73eb45ae0c78b3d52c2e7a58ee165b9ce616fcff78f0d3018adc28ae8eadcc"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/adapters/JpaWarehouseRepository.java",
+    "new": "warehouses/management/infrastructure/persistence/adapters/JpaWarehouseRepository.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "7d41124cfa99efb724bf279ea1816e0634ca4c034e88889ad3ec162fdffd6eac"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/adapters/JpaWarehouseStockRepository.java",
+    "new": "warehouses/stock/infrastructure/persistence/adapters/JpaWarehouseStockRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "c05a3c47f1d2d5b9c7576b1923d96e56264d9dfa75ea3e22a3f1f4d58b639f2f"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/entities/StockMovementEntity.java",
+    "new": "warehouses/stock/infrastructure/persistence/entities/StockMovementEntity.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "96ebbf362f8efa878cdad580c3396938cb14178118b0c50c29207c8ebe41f678"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/entities/WarehouseEntity.java",
+    "new": "warehouses/management/infrastructure/persistence/entities/WarehouseEntity.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "fa735c2d9dfaf6db7b4b3d3afce33ec6b4fd872262a3cb823f4fe957e31ec450"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/entities/WarehouseStockEntity.java",
+    "new": "warehouses/stock/infrastructure/persistence/entities/WarehouseStockEntity.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "662f20311596a95d1479fe7b91ca1de3c5614649729ad7a04766e02afc626c35"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/queries/JpaAvailableStockProductsQuery.java",
+    "new": "warehouses/stock/infrastructure/persistence/queries/JpaAvailableStockProductsQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "bf6c7084b9575308b0e8083271bc3668cf97dac7330bd2020c85879edfef9693"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/queries/JpaWarehousesProductReferenceQuery.java",
+    "new": "warehouses/stock/infrastructure/persistence/queries/JpaWarehousesProductReferenceQuery.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "ddf287f680954f664bb41b3cd5ebec1e085642f52f14d607b0e8c50d6cda2b0b"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/repositories/SpringDataAvailableStockProductsRepository.java",
+    "new": "warehouses/stock/infrastructure/persistence/repositories/SpringDataAvailableStockProductsRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "154ec73709d26b19f97766b12c0f182e52cb47621f54fd284ef9a64243204f8c"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/repositories/SpringDataStockMovementRepository.java",
+    "new": "warehouses/stock/infrastructure/persistence/repositories/SpringDataStockMovementRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "be95f407a7621f5ce5d2170e40bed51ad5678ccf1d93557d99ef08e627420549"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/repositories/SpringDataWarehouseRepository.java",
+    "new": "warehouses/management/infrastructure/persistence/repositories/SpringDataWarehouseRepository.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "a697061d96e7093b39376a035c5a7bb5c17352c5e9236e986a864886c2be9ec7"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/repositories/SpringDataWarehouseStockRepository.java",
+    "new": "warehouses/stock/infrastructure/persistence/repositories/SpringDataWarehouseStockRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "ca5bdf2957217764343b4a4344c2f416b11816e9482e23cd16a7734e2e550450"
+  },
+  {
+    "old": "warehouses/infrastructure/adapters/out/persistence/repositories/SpringDataWarehousesProductReferenceRepository.java",
+    "new": "warehouses/stock/infrastructure/persistence/repositories/SpringDataWarehousesProductReferenceRepository.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "6a8a5235a676ed17e64872bab3379e8e0af30c5f332da53e82dc3283fe63669e"
+  },
+  {
+    "old": "warehouses/infrastructure/config/ProductStockQueryConfig.java",
+    "new": "warehouses/stock/infrastructure/config/ProductStockQueryConfig.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "58d8744edf1c8e99797452ba30a8da8ed6aaa8330c18034529f9556c2e7ae45b"
+  },
+  {
+    "old": "warehouses/infrastructure/config/PurchaseInventoryConfig.java",
+    "new": "warehouses/stock/infrastructure/config/PurchaseInventoryConfig.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "1235b16ec116304f2ebc0059a471bb9959e4cfdfd1106752a575089ffaaa87c4"
+  },
+  {
+    "old": "warehouses/infrastructure/config/PurchaseWarehouseQueryConfig.java",
+    "new": "warehouses/stock/infrastructure/config/PurchaseWarehouseQueryConfig.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name. Composite read for purchasing includes stock and warehouse directory; owned by stock for this organizational plan.",
+    "source_sha256": "cb45496cca19d21d8e485a8183ac2def81e4c0459c0636cbb80b2de0ac59d3e4"
+  },
+  {
+    "old": "warehouses/infrastructure/config/ReturnInventoryConfig.java",
+    "new": "warehouses/stock/infrastructure/config/ReturnInventoryConfig.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "41a25b84d68ab612a986c514ca90b0c9975508f13d6dcb6d0180ad7110054604"
+  },
+  {
+    "old": "warehouses/infrastructure/config/StockAvailabilityQueryConfig.java",
+    "new": "warehouses/stock/infrastructure/config/StockAvailabilityQueryConfig.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "9eb43b4c9c6a4365a086c7a87a58815432734a4cd6edea224d1602ec5a95e36a"
+  },
+  {
+    "old": "warehouses/infrastructure/config/StockDeductionConfig.java",
+    "new": "warehouses/stock/infrastructure/config/StockDeductionConfig.java",
+    "reason": "Relocate to stock ownership; preserve behavior and class name.",
+    "source_sha256": "af18e9776fd678c24f55c0ee8cf94ee30a9cc922ee3ba2210f0aa30907b71ec7"
+  },
+  {
+    "old": "warehouses/infrastructure/config/WarehouseConfig.java",
+    "new": "warehouses/infrastructure/config/WarehouseConfig.java",
+    "reason": "Keep mixed wiring as module composition root; currently wires management, stock and invoice inventory. Split only in a later change.",
+    "source_sha256": "1bbebffb0c5ab796481673f1a22ff8e6b34d17ee9ee4b26b6318c371c8086f31"
+  },
+  {
+    "old": "warehouses/infrastructure/config/WarehouseDirectoryConfig.java",
+    "new": "warehouses/management/infrastructure/config/WarehouseDirectoryConfig.java",
+    "reason": "Relocate to management ownership; preserve behavior and class name.",
+    "source_sha256": "35fe64f51a79404911a7149f7a2bcdfa4174d4e34d5cc3172ce22eb5cfb3e468"
+  },
+  {
+    "old": "customers/application/dto/request/AddressRequest.java",
+    "new": "customers/profile/application/dto/request/AddressRequest.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "5bc29f825bbe21147adfcac04fbe7c85cb1dec2539c014c988003ac2adb4dd94"
+  },
+  {
+    "old": "customers/application/dto/request/CreateAdvanceRequest.java",
+    "new": "customers/balance/application/advance/CreateAdvanceRequest.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "7bf78f012cf47bf2e1b672595e74064b19a205158ff1cfa4e4bbf76a7f25346a"
+  },
+  {
+    "old": "customers/application/dto/request/CreateCustomerRequest.java",
+    "new": "customers/profile/application/register/CreateCustomerRequest.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "f381818a1c4aeb76c1dcf73c466827558a2ba06b21f97027574be6a0198ded47"
+  },
+  {
+    "old": "customers/application/dto/request/CreateRefundRequest.java",
+    "new": "customers/balance/application/refund/CreateRefundRequest.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "39c06cbd4f3f6e456db01acd31448d724f97c8f55f3cf1d06b0e35b2875fadf8"
+  },
+  {
+    "old": "customers/application/dto/request/EmailRequest.java",
+    "new": "customers/profile/application/dto/request/EmailRequest.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "8ecfdcf679bbbb53cafc30c70fbc09b44335f02c41211c41f408ab1793ef02c9"
+  },
+  {
+    "old": "customers/application/dto/request/PhoneRequest.java",
+    "new": "customers/profile/application/dto/request/PhoneRequest.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "adaf5834d634559a3d6c7d0aebcf21c65d457201f5f59c71f2551244c096976c"
+  },
+  {
+    "old": "customers/application/dto/request/UpdateCustomerRequest.java",
+    "new": "customers/profile/application/update/UpdateCustomerRequest.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "0dd1cb2e26075837eb416121840d2d143cc538bc255847c546b68191ac58c404"
+  },
+  {
+    "old": "customers/application/dto/response/AddressResponse.java",
+    "new": "customers/profile/application/dto/response/AddressResponse.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "1252535106aca18fd174b100d5e7ff03031a8f964a9b5074e1393e04b2ceeea6"
+  },
+  {
+    "old": "customers/application/dto/response/BalanceTransactionResponse.java",
+    "new": "customers/balance/application/dto/response/BalanceTransactionResponse.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "001411d2fbe1a3cef28ccdf006fe94dc3b3dfa3aaedef0581cae04a7d7ee9f5d"
+  },
+  {
+    "old": "customers/application/dto/response/CreditStatusResponse.java",
+    "new": "customers/credit/application/dto/response/CreditStatusResponse.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "61efb07360ad7ff0e1ae6752a3915a7e4367d7a1caf61027b0a721e514d4df68"
+  },
+  {
+    "old": "customers/application/dto/response/CustomerBalanceMutationResponse.java",
+    "new": "customers/balance/application/dto/response/CustomerBalanceMutationResponse.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "06389fe436937cbeb69a4784f51a1ae40b868f92f8eb5fdfe2d52a449761f98c"
+  },
+  {
+    "old": "customers/application/dto/response/CustomerBalanceResponse.java",
+    "new": "customers/balance/application/dto/response/CustomerBalanceResponse.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "df220e8a8de5019e0f7559abd891e6578dc0c634ee160f09f2e4ad764defd766"
+  },
+  {
+    "old": "customers/application/dto/response/CustomerCreateResponse.java",
+    "new": "customers/profile/application/register/CustomerCreateResponse.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "2588625e36fc06bad3a164a800a603ff54bf72104225dab5b6f678be0a9d4e3b"
+  },
+  {
+    "old": "customers/application/dto/response/CustomerDetailResponse.java",
+    "new": "customers/profile/application/dto/response/CustomerDetailResponse.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "502f25e0bc2ba72bd2ce9f8553d569c4d153648028260edd3c184e36842e1eae"
+  },
+  {
+    "old": "customers/application/dto/response/CustomerListResponse.java",
+    "new": "customers/profile/application/dto/response/CustomerListResponse.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "3eaf9a61cc4e2ba7ef1213244d4835327a91d545d07a429fde55523beb1fde1a"
+  },
+  {
+    "old": "customers/application/dto/response/CustomerWarehouseAccessResponse.java",
+    "new": "customers/warehouse_access/application/dto/response/CustomerWarehouseAccessResponse.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "73c7eb53b1fd578ebb045af8d78361decf780e742ac2187ae2a83550503db99a"
+  },
+  {
+    "old": "customers/application/dto/response/EmailResponse.java",
+    "new": "customers/profile/application/dto/response/EmailResponse.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "aa589cf130335cab8b9960147004c6d8c81383302838e71321c98dc86a11f141"
+  },
+  {
+    "old": "customers/application/dto/response/OverdueInvoiceResponse.java",
+    "new": "customers/credit/application/dto/response/OverdueInvoiceResponse.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "f4945b74eb0c24f1fce51e4af21f11d2b831d8aa99423ed500cc786658bfdde1"
+  },
+  {
+    "old": "customers/application/dto/response/PhoneResponse.java",
+    "new": "customers/profile/application/dto/response/PhoneResponse.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "e4b10a11baee1c3c15a0690148f9b1ad85f83e4d1994e4eec421c2b8100663c6"
+  },
+  {
+    "old": "customers/application/exceptions/CreditLimitExceededException.java",
+    "new": "customers/credit/application/exceptions/CreditLimitExceededException.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "5b8b0e2bcdf687f122c314561ccfb8f25da0f132a0555786be245acb5a5b5a2f"
+  },
+  {
+    "old": "customers/application/exceptions/CustomerHasAssociatedRecordsException.java",
+    "new": "customers/profile/application/delete/CustomerHasAssociatedRecordsException.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "927b5b568735d237ae0b4434c87accc4359463ec5de445b63ede6f61d7c6f811"
+  },
+  {
+    "old": "customers/application/exceptions/CustomerNotFoundException.java",
+    "new": "customers/profile/application/exceptions/CustomerNotFoundException.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "493c0c9d093214ff797dd01e1374ed0b33cf806dfa3b0875fce3750239a63b21"
+  },
+  {
+    "old": "customers/application/exceptions/CustomerWarehouseAccessAlreadyExistsException.java",
+    "new": "customers/warehouse_access/application/exceptions/CustomerWarehouseAccessAlreadyExistsException.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "07d36ba055a8d53293e4b7e3bb90dbf5f469c9cc574e76821b4d64ff1cccdd0a"
+  },
+  {
+    "old": "customers/application/exceptions/CustomerWarehouseAccessNotFoundException.java",
+    "new": "customers/warehouse_access/application/exceptions/CustomerWarehouseAccessNotFoundException.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "83e60aaa18bc4dd849734685518177443024ed33115ac9fdac75842ed663f50b"
+  },
+  {
+    "old": "customers/application/exceptions/DuplicateCustomerRifException.java",
+    "new": "customers/profile/application/exceptions/DuplicateCustomerRifException.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "ba325592dd357ed679060e71e194e2facd33792b4e3c9c6f25a27e9e052f25ff"
+  },
+  {
+    "old": "customers/application/mappers/BalanceMapper.java",
+    "new": "customers/balance/application/mappers/BalanceMapper.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "4bda5c46cf08c3f49fcfe24bdeeb2926031213b472ae05c19794a5abd284c67f"
+  },
+  {
+    "old": "customers/application/mappers/CustomerMapper.java",
+    "new": "customers/profile/application/mappers/CustomerMapper.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "e9de813316d6d5c473e8d9dda508f556dddfd15114219c18656935461c0000a2"
+  },
+  {
+    "old": "customers/application/ports/in/CreditNoteBalanceApi.java",
+    "new": "customers/balance/application/ports/in/CreditNoteBalanceApi.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "27a69dd0d6c181b175fed7a35971a4b2154174a5c9c7ad5c3aad2209c9d9308f"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerCreditContextEntry.java",
+    "new": "customers/credit/application/ports/in/CustomerCreditContextEntry.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "f96f1392570bcb899d93577de4ae177b4889ff9f992f1f2421249a6c203085cf"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerCreditContextQuery.java",
+    "new": "customers/credit/application/ports/in/CustomerCreditContextQuery.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "8309b3eb0a60f1d260bc0b3ac630a73a9eb2ec326b5452a3bcd56e2ad9b597fe"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerCreditEligibilityQuery.java",
+    "new": "customers/credit/application/ports/in/CustomerCreditEligibilityQuery.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "c4b6a480f70f688df894b1037f5a89e2d2f19bcfb54b66da93013796eac7c97c"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerCreditLimits.java",
+    "new": "customers/credit/application/ports/in/CustomerCreditLimits.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "038f4b4b7d5828757a5494ed2e5c31383ed3c5445e967292aafc6c48336f3cb9"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerCreditTermsQuery.java",
+    "new": "customers/profile/application/ports/in/CustomerCreditTermsQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "93b6065a9d0c4f7fa793de30a5ab8bfbcc36a6850573a07ceffec9a0508a84f4"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerProductPricingQuery.java",
+    "new": "customers/profile/application/ports/in/CustomerProductPricingQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "df7d3e1087c6fecbc52bb2ee5501d94fd45ffb9eecc34fcaa6cd4783ad55c822"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerProfileQuery.java",
+    "new": "customers/profile/application/ports/in/CustomerProfileQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "5a841ccbf893b302bcf8417e54d57c878e555d54dc5c2f4e6f90ea58509af700"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerProfileSnapshot.java",
+    "new": "customers/profile/application/ports/in/CustomerProfileSnapshot.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "47654fe9901bd6c89e1f67526ecbfe0fa4c4912075f2a34eca5a56a4c06253fb"
+  },
+  {
+    "old": "customers/application/ports/in/CustomerWarehouseAccessQuery.java",
+    "new": "customers/warehouse_access/application/ports/in/CustomerWarehouseAccessQuery.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "73cf38eee17cb7dfb4317760d46824d175632443c49a4aec8c5b9a1271478d35"
+  },
+  {
+    "old": "customers/application/ports/in/InvoiceBalanceConsumption.java",
+    "new": "customers/balance/application/ports/in/InvoiceBalanceConsumption.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "dbc3d9e481afb006db5115467ba471931510da3efadf39e81f76525f57040eed"
+  },
+  {
+    "old": "customers/application/ports/in/InvoiceCustomerQuery.java",
+    "new": "customers/profile/application/ports/in/InvoiceCustomerQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "35a8bf3df88993ccea43e687ba499051454f46752ab85aa1d9c9c2d2d6cbaa3a"
+  },
+  {
+    "old": "customers/application/ports/in/ReturnBalanceMutation.java",
+    "new": "customers/balance/application/ports/in/ReturnBalanceMutation.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "fcb0105d3ee3d98610097dc2edf189b320a40ac53d6fe707f68bf6cc48ed67e7"
+  },
+  {
+    "old": "customers/application/ports/out/CreditValidationGateway.java",
+    "new": "customers/credit/application/ports/out/CreditValidationGateway.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "0e65685bbd8491a939c65b19f04f7e0b464caca6b22d618896029c8d7e46594e"
+  },
+  {
+    "old": "customers/application/ports/out/CustomerActorGateway.java",
+    "new": "customers/balance/application/ports/out/CustomerActorGateway.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "eb56f9f09cb52a0329c17453f7e3db3698bf58b421887015d1afbe4aeada2bfc"
+  },
+  {
+    "old": "customers/application/ports/out/CustomerCashGateway.java",
+    "new": "customers/balance/application/ports/out/CustomerCashGateway.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "b1e4a47fb84b3f886a81fe7cb20d602e161b84a704ef0dda5af37a7a79acbba3"
+  },
+  {
+    "old": "customers/application/ports/out/WarehouseDirectoryGateway.java",
+    "new": "customers/warehouse_access/application/ports/out/WarehouseDirectoryGateway.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "36565ca4ea7c0ffde9242903797633184d869de17bb76626aaddaa0f81ad2d91"
+  },
+  {
+    "old": "customers/application/ports/out/model/WarehouseSnapshot.java",
+    "new": "customers/warehouse_access/application/ports/out/model/WarehouseSnapshot.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "43a7a9b1432d01e3feb73f85036c8ccf0e35cac45cd2117168ad444c27e5a317"
+  },
+  {
+    "old": "customers/application/queries/RepositoryCustomerCreditTermsQuery.java",
+    "new": "customers/profile/application/queries/RepositoryCustomerCreditTermsQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "5efd6108ed83cc9711da315fc039af06574b20d036427dd67597cef06969aa38"
+  },
+  {
+    "old": "customers/application/queries/RepositoryCustomerProfileQuery.java",
+    "new": "customers/profile/application/queries/RepositoryCustomerProfileQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "6b122c065162cb311ee16b90a76feee5d7d98416b3250edcd82d1027a9f15533"
+  },
+  {
+    "old": "customers/application/queries/RepositoryCustomerWarehouseAccessQuery.java",
+    "new": "customers/warehouse_access/application/queries/RepositoryCustomerWarehouseAccessQuery.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "0477a34e2aebc3b67e060149534a08b54b1cb1c21756acdd3d719ae4a53fb0e6"
+  },
+  {
+    "old": "customers/application/queries/RepositoryInvoiceCustomerQuery.java",
+    "new": "customers/profile/application/queries/RepositoryInvoiceCustomerQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "974f6292a67f0346b113efb5433fd5c58848bce67334dfb987642ac18d8888f7"
+  },
+  {
+    "old": "customers/application/services/CustomerCreditEligibilityService.java",
+    "new": "customers/credit/application/services/CustomerCreditEligibilityService.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "4b2f5890f1402ab2be70a16fb6ae341bfe371385b6e3deaabd6e6a49303aaf68"
+  },
+  {
+    "old": "customers/application/services/InvoiceBalanceConsumptionService.java",
+    "new": "customers/balance/application/services/InvoiceBalanceConsumptionService.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "8331662e9be7713b6a6df19a4703822c9d9890e01d9132350bcdcaf424203428"
+  },
+  {
+    "old": "customers/application/services/RepositoryCustomerCreditContextQuery.java",
+    "new": "customers/credit/application/queries/RepositoryCustomerCreditContextQuery.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "2a94b2ff80f84f8dac62360284bc9deadf3bb4e39cc073ccd274cc48e8bb15b4"
+  },
+  {
+    "old": "customers/application/services/RepositoryCustomerProductPricingQuery.java",
+    "new": "customers/profile/application/queries/RepositoryCustomerProductPricingQuery.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "742569cb7687535dd068a7059fc41e37aa213513a6079dacb8973dab29bba317"
+  },
+  {
+    "old": "customers/application/services/ReturnBalanceMutationService.java",
+    "new": "customers/balance/application/services/ReturnBalanceMutationService.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "12d23a18a85f94304e8aa25114b7222a4aa76bdd1fc7c31ef59ca45c7aeeb1d4"
+  },
+  {
+    "old": "customers/application/usecases/AddToCustomerBalanceUseCase.java",
+    "new": "customers/balance/application/add/AddToCustomerBalanceUseCase.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "426d2e863d98f20b8aa0e08241b76c69fd0bfce5dcb25b2fa0a4ea659bb925f1"
+  },
+  {
+    "old": "customers/application/usecases/ConsumeCustomerBalanceUseCase.java",
+    "new": "customers/balance/application/consume/ConsumeCustomerBalanceUseCase.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "c5f4f221a0bd993b3999a74615cc3c3a1fef5275937ca503ce7a78be41bab3b9"
+  },
+  {
+    "old": "customers/application/usecases/CreateCustomerAdvanceUseCase.java",
+    "new": "customers/balance/application/advance/CreateCustomerAdvanceUseCase.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "53e368e777b3942bdb151c18f0f624d7431748667b0a3df0a833b7ced1fccdac"
+  },
+  {
+    "old": "customers/application/usecases/DeleteCustomerUseCase.java",
+    "new": "customers/profile/application/delete/DeleteCustomerUseCase.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "56bfe67e2b13bfc87802db67420642830b819bb0465e01b453dd5f6a9a10bed4"
+  },
+  {
+    "old": "customers/application/usecases/GetCustomerBalanceUseCase.java",
+    "new": "customers/balance/application/get/GetCustomerBalanceUseCase.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "33bef9b306a0bb559642c6d271361fd168756c3c7cae80a22613f40447da45c1"
+  },
+  {
+    "old": "customers/application/usecases/GetCustomerUseCase.java",
+    "new": "customers/profile/application/get/GetCustomerUseCase.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "4fcc04542bf82fa178d247ba8297590556e6065cdd48e0c3fc4c7612a383f10f"
+  },
+  {
+    "old": "customers/application/usecases/GrantWarehouseAccessUseCase.java",
+    "new": "customers/warehouse_access/application/grant/GrantWarehouseAccessUseCase.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "fd037b8dddab0e7985f6d3625343ee0e65cc0b998f53882696981af91af7284f"
+  },
+  {
+    "old": "customers/application/usecases/ListCustomerWarehousesUseCase.java",
+    "new": "customers/warehouse_access/application/list/ListCustomerWarehousesUseCase.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "ce43daa4f913f4ede5e72ce344fa0adbc85c814f1b73c1cd1d94e270be64bed3"
+  },
+  {
+    "old": "customers/application/usecases/ListCustomersUseCase.java",
+    "new": "customers/profile/application/list/ListCustomersUseCase.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "16189fad1ae049eb976c42eb049abae02c65e9d6dacf51ac3782189e7c277bd3"
+  },
+  {
+    "old": "customers/application/usecases/RefundCustomerBalanceUseCase.java",
+    "new": "customers/balance/application/refund/RefundCustomerBalanceUseCase.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "d4943f6f51f19dd7137919ecdd1e7db3cbea8031509586294c7f74840f7e0e44"
+  },
+  {
+    "old": "customers/application/usecases/RegisterCustomerUseCase.java",
+    "new": "customers/profile/application/register/RegisterCustomerUseCase.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "5de4bdc0f882818ad5304f795370f183d4a442ca581c9e284e3476d918508637"
+  },
+  {
+    "old": "customers/application/usecases/RevokeWarehouseAccessUseCase.java",
+    "new": "customers/warehouse_access/application/revoke/RevokeWarehouseAccessUseCase.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "24ae4b9f920ec489cbf93369085aa0f1925f486a5ef32fabea872a67cb855a6d"
+  },
+  {
+    "old": "customers/application/usecases/UpdateCustomerUseCase.java",
+    "new": "customers/profile/application/update/UpdateCustomerUseCase.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "2d1960ebee205ecc98f9c12aaa1aa7203444b146080481a84e97ce7f6c56e654"
+  },
+  {
+    "old": "customers/application/usecases/credit/GetCustomerCreditStatusUseCase.java",
+    "new": "customers/credit/application/status/GetCustomerCreditStatusUseCase.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "b21e0c3de80815cd361531e1d955782766e54db86ce9fc91eacb565ae27ad5de"
+  },
+  {
+    "old": "customers/application/usecases/credit/GetOverdueInvoicesUseCase.java",
+    "new": "customers/credit/application/overdue/GetOverdueInvoicesUseCase.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "636d8a17193955717c25ccdefcb9de22e2a6cebb4399b1f992a4811c5e1a117c"
+  },
+  {
+    "old": "customers/domain/entities/BalanceTransaction.java",
+    "new": "customers/balance/domain/BalanceTransaction.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "1b5b144a5ca1a0ee4b536a61ae5a9c5c7cec1725aab6bfd63657b5cae19be3ff"
+  },
+  {
+    "old": "customers/domain/entities/Customer.java",
+    "new": "customers/profile/domain/Customer.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "8401ff52157d983e0f8d047e95e5c0ab78966e0157d98c03d3aaa88df3c26a9f"
+  },
+  {
+    "old": "customers/domain/entities/CustomerAddress.java",
+    "new": "customers/profile/domain/CustomerAddress.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "19add3c1df97ee5a1789132e7ce7272463c27bcbc2355e4c2b6d0e807810a156"
+  },
+  {
+    "old": "customers/domain/entities/CustomerBalance.java",
+    "new": "customers/balance/domain/CustomerBalance.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "691e551af457232e0faf77ccb6254d40d180750f33a8ebf9765a2bcf7eb0d937"
+  },
+  {
+    "old": "customers/domain/entities/CustomerEmail.java",
+    "new": "customers/profile/domain/CustomerEmail.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "fec227e742673630c8920c1835de30d51809ca6b9f327f3c9f1fb6c600378ad1"
+  },
+  {
+    "old": "customers/domain/entities/CustomerPhone.java",
+    "new": "customers/profile/domain/CustomerPhone.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "e2ec8b259872b786a411c09f666c4121424bc1c3b3f3936b02c5d03259152f19"
+  },
+  {
+    "old": "customers/domain/entities/CustomerWarehouseAccess.java",
+    "new": "customers/warehouse_access/domain/CustomerWarehouseAccess.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "e16c69493a8af0a2a4ba2bf2c0ec723d05bad446f5e1e81058fec4e4d8444edd"
+  },
+  {
+    "old": "customers/domain/repositories/CustomerBalanceRepository.java",
+    "new": "customers/balance/domain/CustomerBalanceRepository.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "fff99fc3c57693263e66ce4f755cc03bcd072dd1c68eef464b62e98ca6f9f475"
+  },
+  {
+    "old": "customers/domain/repositories/CustomerRepository.java",
+    "new": "customers/profile/domain/CustomerRepository.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "a76c21daf84f91b03118ab1a2c3a489f829d5216567655803cb170ee7604e3dd"
+  },
+  {
+    "old": "customers/domain/repositories/CustomerWarehouseAccessRepository.java",
+    "new": "customers/warehouse_access/domain/CustomerWarehouseAccessRepository.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "fe7be2bb15bb0a45bb41746e868493e7d7a15cdcecfcb61490ca08daa416e9d8"
+  },
+  {
+    "old": "customers/domain/services/CustomerCodeGenerator.java",
+    "new": "customers/profile/domain/CustomerCodeGenerator.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "ce95d52c415688c204190a457bd8e920958c21ea40ad7fe68ff996be18848069"
+  },
+  {
+    "old": "customers/domain/valueobjects/AddressId.java",
+    "new": "customers/profile/domain/valueobjects/AddressId.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "7e548f1af79225f04c8f08b99ac15b2de5cfd110aa57138346b09bf6cd82b8fc"
+  },
+  {
+    "old": "customers/domain/valueobjects/BalanceType.java",
+    "new": "customers/balance/domain/valueobjects/BalanceType.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "9858cae1b9f053657bacc8fab69c0dd4866201de547db478d3b008c607ea3315"
+  },
+  {
+    "old": "customers/domain/valueobjects/CreditDays.java",
+    "new": "customers/profile/domain/valueobjects/CreditDays.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "8351030665e0b095be88bfcb492ffb91e470a2f6844343e99b3a08c077239948"
+  },
+  {
+    "old": "customers/domain/valueobjects/CreditLimit.java",
+    "new": "customers/profile/domain/valueobjects/CreditLimit.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "5c89b9e94347309adbdd45d2d65f1674252e8979bcd097e0b4257d97569a6005"
+  },
+  {
+    "old": "customers/domain/valueobjects/CustomerAlias.java",
+    "new": "customers/profile/domain/valueobjects/CustomerAlias.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "a250bd4fb1349e45038814829e70d515a7600f3c0b7f7218a2e9810c98c4dec5"
+  },
+  {
+    "old": "customers/domain/valueobjects/CustomerCode.java",
+    "new": "customers/profile/domain/valueobjects/CustomerCode.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "c72b8cd4ae12fcf37c052a35f33307164f241842b0bb8c64844278976ce6f6e5"
+  },
+  {
+    "old": "customers/domain/valueobjects/CustomerId.java",
+    "new": "customers/profile/domain/valueobjects/CustomerId.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "38f598b2385904c867eeb71dadbfbfa7b6ffef36aca2db15d78637ec1e6597d6"
+  },
+  {
+    "old": "customers/domain/valueobjects/CustomerType.java",
+    "new": "customers/profile/domain/valueobjects/CustomerType.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "bb38ce2edb97bd761cf1d067cc0496425b38d3a03e5a15ab439d1de87c198079"
+  },
+  {
+    "old": "customers/domain/valueobjects/EmailAddress.java",
+    "new": "customers/profile/domain/valueobjects/EmailAddress.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "4f93100185f09dc2d08393da19922af9f4b22049e5f79b8dccf948aeaa9eaf20"
+  },
+  {
+    "old": "customers/domain/valueobjects/EmailId.java",
+    "new": "customers/profile/domain/valueobjects/EmailId.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "447ed3c9260e931a6dde6f489c12e633b1d89c67b6bbc4300f211ffadd83b428"
+  },
+  {
+    "old": "customers/domain/valueobjects/LegalName.java",
+    "new": "customers/profile/domain/valueobjects/LegalName.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "d27a22587a44273b151a8a60694faf28223dac6c874406ec58b6412bef8f6212"
+  },
+  {
+    "old": "customers/domain/valueobjects/PaymentType.java",
+    "new": "customers/profile/domain/valueobjects/PaymentType.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "9b23a873c01aff1533e2d1b38bad3bcd6b59538892fe8b44761d0ecdb482e8f3"
+  },
+  {
+    "old": "customers/domain/valueobjects/PhoneId.java",
+    "new": "customers/profile/domain/valueobjects/PhoneId.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "bce4cc20f58a759e3486a229164e7020433fb8e3633a7f2b07c4d440e4087b72"
+  },
+  {
+    "old": "customers/domain/valueobjects/PhoneNumber.java",
+    "new": "customers/profile/domain/valueobjects/PhoneNumber.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "cd4f08af9d3c64461bf03686ea112d2024cd15836eec35380e5f6578fc4718b6"
+  },
+  {
+    "old": "customers/domain/valueobjects/Rif.java",
+    "new": "customers/profile/domain/valueobjects/Rif.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "35de64e7f7148aab9132ac2f3150192b67739d81b8d379d3dd28ced130c207c3"
+  },
+  {
+    "old": "customers/infrastructure/adapters/in/controllers/CustomerBalanceController.java",
+    "new": "customers/balance/infrastructure/web/CustomerBalanceController.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "ad0c28f0d061aee70da3eeddf8eee68912bb903ca30e29a139f27ce1e103858a"
+  },
+  {
+    "old": "customers/infrastructure/adapters/in/controllers/CustomerController.java",
+    "new": "customers/profile/infrastructure/web/CustomerController.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "ea032c98b225a4bfd646101333ba1107394ae670e8bcacec3e3645841478c6fe"
+  },
+  {
+    "old": "customers/infrastructure/adapters/in/controllers/CustomerCreditController.java",
+    "new": "customers/credit/infrastructure/web/CustomerCreditController.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "d4e5d082081ae5b4caac07fd4463057d9fc2ab0b439d744c8a712b6160f0d5bc"
+  },
+  {
+    "old": "customers/infrastructure/adapters/in/controllers/CustomerWarehouseAccessController.java",
+    "new": "customers/warehouse_access/infrastructure/web/CustomerWarehouseAccessController.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "4e4ded186cc4ffa767d2e35b00289812add60b13b44613d633617bd9a0f13c3f"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/integration/LocalCreditNoteBalanceApi.java",
+    "new": "customers/balance/infrastructure/integration/LocalCreditNoteBalanceApi.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "3703c46992e6f703f7bba47f99f7b3b66853c49ddf05b057ba6f3594473203a1"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/integration/LocalCreditValidationGateway.java",
+    "new": "customers/credit/infrastructure/integration/LocalCreditValidationGateway.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "e3aa4f3b7415481325d9d28c57f07ccec7e554895e6c6d1dcb9274f1034c2206"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/integration/LocalCustomerActorGateway.java",
+    "new": "customers/balance/infrastructure/integration/LocalCustomerActorGateway.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "7f40a46bbaa7235b5e6bd39b021ca1147f4b6d57d771e60a73f0dce664973560"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/integration/LocalCustomerCashGateway.java",
+    "new": "customers/balance/infrastructure/integration/LocalCustomerCashGateway.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "cd3d9c6f04a7fdda5de6bfd9b84c1874f368cab3dad072c0d68a954202c2a29a"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/integration/LocalWarehouseDirectoryGateway.java",
+    "new": "customers/warehouse_access/infrastructure/integration/LocalWarehouseDirectoryGateway.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "99c06590e3fa8af5d20713f3ea4d8851aa2f943b77fe3bc36b78760a1b14e00d"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/adapters/CustomerBalanceRepositoryAdapter.java",
+    "new": "customers/balance/infrastructure/persistence/adapters/CustomerBalanceRepositoryAdapter.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "5b390117e13d91896e4bab2f2d34561af17faafd213b9a96697caa294bf1a221"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/adapters/JpaCustomerRepository.java",
+    "new": "customers/profile/infrastructure/persistence/adapters/JpaCustomerRepository.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "fcd8429e57bfa7397ce2166a975422f96e05918bd052a8022263f54d0a91a475"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/adapters/JpaCustomerWarehouseAccessRepository.java",
+    "new": "customers/warehouse_access/infrastructure/persistence/adapters/JpaCustomerWarehouseAccessRepository.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "4e8945614e1f311a27099893d4874f02e0d76b9f94a2e68270888526401a9bf8"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/BalanceTransactionEntity.java",
+    "new": "customers/balance/infrastructure/persistence/entities/BalanceTransactionEntity.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "68f5738ccbe9d9a4743737b05625efdf24cea72410067ef2e0306c812c518a3c"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/BalanceTxSequenceEntity.java",
+    "new": "customers/balance/infrastructure/persistence/entities/BalanceTxSequenceEntity.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "5ef9292c3491d9f2e5ad4c66fed6f589f5976304a2ee5de59e383d4e4177e374"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/CustomerAddressEntity.java",
+    "new": "customers/profile/infrastructure/persistence/entities/CustomerAddressEntity.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "e73c0fe35d1c695e30d4908ab2369979f900b9c0fce579af4dc678fadc3315a5"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/CustomerBalanceEntity.java",
+    "new": "customers/balance/infrastructure/persistence/entities/CustomerBalanceEntity.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "727be3d7bd8f4ce1e4674ac6ecf3c928269a3b2d06226dbc9b174f66b8fce03c"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/CustomerEmailEntity.java",
+    "new": "customers/profile/infrastructure/persistence/entities/CustomerEmailEntity.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "2c12bca18a5a7fb6902a00e5645c332ca9b00b10ce4a70530408773ccb44c9cf"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/CustomerEntity.java",
+    "new": "customers/profile/infrastructure/persistence/entities/CustomerEntity.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "44cc773b8336c4fe6cb7023cad72fb05101e0796c480dcaf4c0c2e1f9cbc9ced"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/CustomerPhoneEntity.java",
+    "new": "customers/profile/infrastructure/persistence/entities/CustomerPhoneEntity.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "86fc9a5dba4d0f6ef0eef879338f7939bf1ba73cc1d4aea768ca1f99079df59f"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/entities/CustomerWarehouseAccessEntity.java",
+    "new": "customers/warehouse_access/infrastructure/persistence/entities/CustomerWarehouseAccessEntity.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "539e65f8fbf89b74004757980d62532ee1fd493969338176efdbeb36f7a85ac8"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/mappers/BalanceTransactionJpaMapper.java",
+    "new": "customers/balance/infrastructure/persistence/mappers/BalanceTransactionJpaMapper.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "810bc86f4b6a01bde0b1bb2ef47a9bf5578178b8e5802a5fdd12dcb4fccc81f9"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/mappers/CustomerBalanceJpaMapper.java",
+    "new": "customers/balance/infrastructure/persistence/mappers/CustomerBalanceJpaMapper.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "050bee6a59a203f74babf7c878cf89e89b3b2dc35c3d5125e101790fcd2946a3"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/repositories/CustomerBalanceJpaRepository.java",
+    "new": "customers/balance/infrastructure/persistence/repositories/CustomerBalanceJpaRepository.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "6478d394e9442e02c8d515dc301c9a4e3576c24aa10f7f3cc4654ea963b48d96"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/repositories/SpringDataCustomerRepository.java",
+    "new": "customers/profile/infrastructure/persistence/repositories/SpringDataCustomerRepository.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "3741b0e47feb7c75b5efe80aa72af5898ad02cdff19d41ed67aedb500479fedd"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/persistence/repositories/SpringDataCustomerWarehouseAccessRepository.java",
+    "new": "customers/warehouse_access/infrastructure/persistence/repositories/SpringDataCustomerWarehouseAccessRepository.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "5b39efb0fe6c85467d264994e8493927c88cd2e3868c0b7ced76390cfc3fa75d"
+  },
+  {
+    "old": "customers/infrastructure/adapters/out/services/SequentialCustomerCodeGenerator.java",
+    "new": "customers/profile/infrastructure/services/SequentialCustomerCodeGenerator.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "72bebb6ae79997d57a0e86d1a7402c6141895a449c778ef988d658cc545db373"
+  },
+  {
+    "old": "customers/infrastructure/config/CustomerConfig.java",
+    "new": "customers/infrastructure/config/CustomerConfig.java",
+    "reason": "Module composition root currently wires all four submodules; preserve intact for behavior-neutral migration.",
+    "source_sha256": "4241a5199961df7dc25868d5c01b36fbcabd0ba015e45de9fd0c96dc87a77cbe"
+  },
+  {
+    "old": "customers/infrastructure/config/CustomerCreditQueryConfig.java",
+    "new": "customers/credit/infrastructure/config/CustomerCreditQueryConfig.java",
+    "reason": "Credit eligibility and credit-status read composition belong to credit; no new aggregate.",
+    "source_sha256": "4fb76dde0ee88259f364f67f96254c150e6118235348986549edd795b30ea9b0"
+  },
+  {
+    "old": "customers/infrastructure/config/CustomerCreditTermsConfig.java",
+    "new": "customers/profile/infrastructure/config/CustomerCreditTermsConfig.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "bebaf5dff32f659106cc067cc0e7348984c13b0063a7e18d44bd5b0635b84378"
+  },
+  {
+    "old": "customers/infrastructure/config/CustomerProductPricingConfig.java",
+    "new": "customers/profile/infrastructure/config/CustomerProductPricingConfig.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "b1f95dbd30a083abcae211c30c017566ab98b81a816dfd991e71d996bac0a971"
+  },
+  {
+    "old": "customers/infrastructure/config/CustomerProfileQueryConfig.java",
+    "new": "customers/profile/infrastructure/config/CustomerProfileQueryConfig.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "ecd24f6ed62d347fa8e21d8caefaff2e15c0ce6f273980113d45e7689d25b523"
+  },
+  {
+    "old": "customers/infrastructure/config/CustomerWarehouseAccessQueryConfig.java",
+    "new": "customers/warehouse_access/infrastructure/config/CustomerWarehouseAccessQueryConfig.java",
+    "reason": "Customer-to-warehouse entitlement lifecycle belongs to warehouse_access.",
+    "source_sha256": "b25951d5b4a46afec1d3b80a66f03f5442cb88a153641c76ed0a54d7e6d58795"
+  },
+  {
+    "old": "customers/infrastructure/config/InvoiceBalanceConsumptionConfig.java",
+    "new": "customers/balance/infrastructure/config/InvoiceBalanceConsumptionConfig.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "00b690e993c3e03f85452d766e0aaad115be868ec9908588bb7f7157f3c1ae14"
+  },
+  {
+    "old": "customers/infrastructure/config/InvoiceCustomerQueryConfig.java",
+    "new": "customers/profile/infrastructure/config/InvoiceCustomerQueryConfig.java",
+    "reason": "Customer aggregate, contacts and configured commercial terms belong to profile.",
+    "source_sha256": "22c9a6d3aa8e18e8a155d19caf9836783edd1ebd19cd9e2896d05e7d3d8e661c"
+  },
+  {
+    "old": "customers/infrastructure/config/ReturnBalanceMutationConfig.java",
+    "new": "customers/balance/infrastructure/config/ReturnBalanceMutationConfig.java",
+    "reason": "Customer prepaid/available balance and its auditable mutations belong to balance.",
+    "source_sha256": "317a73b4d584a0de70161466238ce8fc02b373bb252bab2a3ef90d15cb419d56"
+  }
+]

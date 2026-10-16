@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.categories.application.queries;
 
 import com.cashly.cashly_api.categories.application.ports.in.ProductCategoryQuery;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
+import com.cashly.cashly_api.categories.domain.CategoryRepository;
 import java.util.Optional;
 import java.util.UUID;
 

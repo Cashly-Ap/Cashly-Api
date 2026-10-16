@@ -4,8 +4,8 @@ import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGa
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway.Warehouse;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.purchases.application.mappers.PurchaseMapper;
-import com.cashly.cashly_api.purchases.domain.entities.Purchase;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLineAllocation;
+import com.cashly.cashly_api.purchases.domain.Purchase;
+import com.cashly.cashly_api.purchases.domain.PurchaseLineAllocation;
 
 import java.util.Map;
 import java.util.UUID;

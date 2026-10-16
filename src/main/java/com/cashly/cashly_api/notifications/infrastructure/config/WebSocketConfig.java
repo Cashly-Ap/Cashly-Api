@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.notifications.infrastructure.config;
 
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;

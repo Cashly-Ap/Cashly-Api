@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.auth.user.domain.valueobjects;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.*;
-import com.cashly.cashly_api.auth.token.domain.valueobjects.*;
+import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
+import com.cashly.cashly_api.auth.user.domain.valueobjects.EmailUnitTest;
+
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

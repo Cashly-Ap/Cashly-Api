@@ -30,9 +30,22 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run tests
-        run: ./mvnw verify --batch-mode --errors --fail-at-end
+        run: bash scripts/run-structure-verification.sh final
         env:
           MAVEN_OPTS: -Xmx2g -XX:+UseG1GC
+          SCREAMING_PROJECT: cashly-screaming-ci-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Upload isolated verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-verification-${{ github.run_id }}
+          path: target/structure-verification/
+          retention-days: 7
+
+      - name: Remove isolated verification project
+        if: always()
+        run: docker compose -p "cashly-screaming-ci-${{ github.run_id }}-${{ github.run_attempt }}" -f compose.screaming-test.yaml down --volumes --remove-orphans
 
       - name: Build Docker image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

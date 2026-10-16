@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.auth.authentication.domain.services;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
+import com.cashly.cashly_api.auth.user.domain.User;
 
 public class AuthenticationDomainService {
 

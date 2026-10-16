@@ -1,0 +1,23 @@
+package com.cashly.cashly_api.invoices.application.create.from_order;
+
+import com.cashly.cashly_api.invoices.application.ports.in.OrderInvoiceCreationApi;
+import com.cashly.cashly_api.invoices.application.create.CreateInvoiceRequest;
+import com.cashly.cashly_api.invoices.application.create.CreateInvoiceUseCase;
+import java.util.UUID;
+
+public class OrderInvoiceCreationService implements OrderInvoiceCreationApi {
+    private final CreateInvoiceUseCase createInvoice;
+
+    public OrderInvoiceCreationService(CreateInvoiceUseCase createInvoice) {
+        this.createInvoice = createInvoice;
+    }
+
+    @Override
+    public CreatedInvoice create(Command command, UUID actorId) {
+        var request = new CreateInvoiceRequest(command.orderId(), null, null, command.paymentType(), null,
+                command.useBalance(), command.balanceAmount(), command.paymentMethodId(),
+                command.confirmationPassword(), null, command.issueDate());
+        var invoice = createInvoice.execute(request, actorId);
+        return new CreatedInvoice(invoice.id(), invoice.invoiceNumber());
+    }
+}

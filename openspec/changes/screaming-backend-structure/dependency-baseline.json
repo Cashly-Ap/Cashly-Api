@@ -1,0 +1,1712 @@
+[
+  {
+    "source": "src/main/java/com/cashly/cashly_api/cash_register/infrastructure/adapters/out/integration/LocalCashRegisterActorGateway.java",
+    "line": 3,
+    "owner": "cash_register",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/cash_register/infrastructure/adapters/out/integration/LocalCashRegisterPaymentMethodGateway.java",
+    "line": 4,
+    "owner": "cash_register",
+    "provider": "payment_methods",
+    "import": "com.cashly.cashly_api.payment_methods.application.ports.in.PaymentMethodDetailsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/categories/infrastructure/adapters/out/integration/ProductCategoryUsageAdapter.java",
+    "line": 4,
+    "owner": "categories",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.CategoryProductUsageApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/credit_notes/infrastructure/adapters/out/integration/LocalCreditNoteEffectsGateway.java",
+    "line": 3,
+    "owner": "credit_notes",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.ports.in.CreditNoteCashApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/credit_notes/infrastructure/adapters/out/integration/LocalCreditNoteEffectsGateway.java",
+    "line": 5,
+    "owner": "credit_notes",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CreditNoteBalanceApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/credit_notes/infrastructure/adapters/out/integration/LocalCreditNoteFinancialPositionGateway.java",
+    "line": 5,
+    "owner": "credit_notes",
+    "provider": "debit_notes",
+    "import": "com.cashly.cashly_api.debit_notes.application.ports.in.DebitNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/credit_notes/infrastructure/adapters/out/integration/LocalCreditNoteFinancialPositionGateway.java",
+    "line": 6,
+    "owner": "credit_notes",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.InvoicePaymentTotalQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/credit_notes/infrastructure/adapters/out/integration/LocalCreditNoteInvoiceGateway.java",
+    "line": 4,
+    "owner": "credit_notes",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceNoteApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalCreditValidationGateway.java",
+    "line": 5,
+    "owner": "customers",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.CustomerCreditQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalCreditValidationGateway.java",
+    "line": 6,
+    "owner": "customers",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.OverdueInvoiceSnapshot",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalCustomerActorGateway.java",
+    "line": 3,
+    "owner": "customers",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalCustomerCashGateway.java",
+    "line": 3,
+    "owner": "customers",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.services.CashMovementService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalCustomerCashGateway.java",
+    "line": 4,
+    "owner": "customers",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementDirection",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalCustomerCashGateway.java",
+    "line": 5,
+    "owner": "customers",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementType",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalWarehouseDirectoryGateway.java",
+    "line": 5,
+    "owner": "customers",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/customers/infrastructure/adapters/out/integration/LocalWarehouseDirectoryGateway.java",
+    "line": 6,
+    "owner": "customers",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/debit_notes/infrastructure/adapters/out/integration/LocalDebitNoteCashGateway.java",
+    "line": 3,
+    "owner": "debit_notes",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.ports.in.DebitNoteCashApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/debit_notes/infrastructure/adapters/out/integration/LocalDebitNoteInvoiceGateway.java",
+    "line": 4,
+    "owner": "debit_notes",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceNoteApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 4,
+    "owner": "infrastructure",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.authentication.application.exceptions.InvalidCredentialsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 5,
+    "owner": "infrastructure",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.token.application.exceptions.InvalidTokenException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 6,
+    "owner": "infrastructure",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.token.application.exceptions.TokenExpiredException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 7,
+    "owner": "infrastructure",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.exceptions.DuplicateEmailException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 8,
+    "owner": "infrastructure",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.exceptions.UserHasAssociatedRecordsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 9,
+    "owner": "infrastructure",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 10,
+    "owner": "infrastructure",
+    "provider": "categories",
+    "import": "com.cashly.cashly_api.categories.application.exceptions.CategoryHasActiveProductsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 11,
+    "owner": "infrastructure",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CustomerHasAssociatedRecordsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 12,
+    "owner": "infrastructure",
+    "provider": "categories",
+    "import": "com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 13,
+    "owner": "infrastructure",
+    "provider": "categories",
+    "import": "com.cashly.cashly_api.categories.application.exceptions.DuplicateCategoryNameException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 14,
+    "owner": "infrastructure",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CustomerNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 15,
+    "owner": "infrastructure",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.DuplicateCustomerRifException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 16,
+    "owner": "infrastructure",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CustomerWarehouseAccessAlreadyExistsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 17,
+    "owner": "infrastructure",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CustomerWarehouseAccessNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 18,
+    "owner": "infrastructure",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 19,
+    "owner": "infrastructure",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotReturnableException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 20,
+    "owner": "infrastructure",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.exceptions.ReturnQuantityExceedsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 21,
+    "owner": "infrastructure",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.domain.exceptions.OrderCannotBeDeletedException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 22,
+    "owner": "infrastructure",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 23,
+    "owner": "infrastructure",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.domain.exceptions.OrderNotPendingException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 24,
+    "owner": "infrastructure",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.CompositeProductCannotBeComponentException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 25,
+    "owner": "infrastructure",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.DuplicateProductCodeException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 26,
+    "owner": "infrastructure",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.DuplicateProductComponentException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 27,
+    "owner": "infrastructure",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.ProductHasAssociatedRecordsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 28,
+    "owner": "infrastructure",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.ProductHasStockException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 29,
+    "owner": "infrastructure",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 30,
+    "owner": "infrastructure",
+    "provider": "suppliers",
+    "import": "com.cashly.cashly_api.suppliers.application.exceptions.SupplierHasAssociatedRecordsException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 31,
+    "owner": "infrastructure",
+    "provider": "price_types",
+    "import": "com.cashly.cashly_api.price_types.application.exceptions.DuplicatePriceTypeNameException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 32,
+    "owner": "infrastructure",
+    "provider": "price_types",
+    "import": "com.cashly.cashly_api.price_types.application.exceptions.PriceTypeInUseException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 33,
+    "owner": "infrastructure",
+    "provider": "price_types",
+    "import": "com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 34,
+    "owner": "infrastructure",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.domain.exceptions.InvalidQuoteAllocationException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 35,
+    "owner": "infrastructure",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.domain.exceptions.InvalidQuoteLineException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 36,
+    "owner": "infrastructure",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 37,
+    "owner": "infrastructure",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.domain.exceptions.QuoteStateException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 38,
+    "owner": "infrastructure",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CreditLimitExceededException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 39,
+    "owner": "infrastructure",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.DuplicateWarehouseCodeException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 40,
+    "owner": "infrastructure",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.InsufficientStockException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 41,
+    "owner": "infrastructure",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.ProductNotInWarehouseException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 42,
+    "owner": "infrastructure",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotActiveException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 43,
+    "owner": "infrastructure",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.WarehouseHasActiveStockException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/infrastructure/config/GlobalExceptionHandler.java",
+    "line": 44,
+    "owner": "infrastructure",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.WarehouseNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/InvoiceCustomerCreditAdapter.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerCreditEligibilityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/InvoiceStockAvailabilityAdapter.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.StockAvailabilityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalActorIdentityGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalCustomerBalanceGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.InvoiceBalanceConsumption",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalCustomerCreditTermsGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerCreditTermsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInventoryGatewayAdapter.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.InvoiceInventoryApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInventoryGatewayAdapter.java",
+    "line": 5,
+    "owner": "invoices",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.InvoiceStockCommand",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInventoryGatewayAdapter.java",
+    "line": 6,
+    "owner": "invoices",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.exceptions.ProductNotInWarehouseException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceCashRegisterGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.ports.in.CashRegisterOperations",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceCatalogGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.StockCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceCustomerGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.InvoiceCustomerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceFinancialPositionGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "credit_notes",
+    "import": "com.cashly.cashly_api.credit_notes.application.ports.in.CreditNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceFinancialPositionGateway.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "debit_notes",
+    "import": "com.cashly.cashly_api.debit_notes.application.ports.in.DebitNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceFinancialPositionGateway.java",
+    "line": 6,
+    "owner": "invoices",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.InvoicePaymentTotalQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceNoteDetailsAdapter.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "credit_notes",
+    "import": "com.cashly.cashly_api.credit_notes.application.ports.in.InvoiceCreditNoteDetailsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceNoteDetailsAdapter.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "debit_notes",
+    "import": "com.cashly.cashly_api.debit_notes.application.ports.in.InvoiceDebitNoteDetailsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceNotificationGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "notifications",
+    "import": "com.cashly.cashly_api.notifications.application.services.NotificationService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceOrderGateway.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceOrderGateway.java",
+    "line": 5,
+    "owner": "invoices",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.domain.repositories.OrderRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceOrderGateway.java",
+    "line": 6,
+    "owner": "invoices",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.domain.valueobjects.OrderId",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoicePaymentSettlementGateway.java",
+    "line": 3,
+    "owner": "invoices",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.CashInvoiceSettlement",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoicePaymentTotalsAdapter.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.InvoicePaymentTotalsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceQuoteGateway.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceReturnDetailsAdapter.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceReturnDetailsAdapter.java",
+    "line": 5,
+    "owner": "invoices",
+    "provider": "returns",
+    "import": "com.cashly.cashly_api.returns.application.ports.in.InvoiceReturnDetailsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalInvoiceReturnDetailsAdapter.java",
+    "line": 6,
+    "owner": "invoices",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/invoices/infrastructure/adapters/out/integration/LocalStockDeductionGateway.java",
+    "line": 4,
+    "owner": "invoices",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.StockDeductionApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/notifications/infrastructure/adapters/out/integration/AuthNotificationRecipientAdapter.java",
+    "line": 3,
+    "owner": "notifications",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.NotificationRecipientsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/notifications/infrastructure/config/WebSocketConfig.java",
+    "line": 3,
+    "owner": "notifications",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.token.domain.services.TokenService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/notifications/infrastructure/config/WebSocketConfig.java",
+    "line": 4,
+    "owner": "notifications",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.domain.repositories.UserRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/notifications/infrastructure/config/WebSocketConfig.java",
+    "line": 5,
+    "owner": "notifications",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.domain.valueobjects.UserId",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalInvoiceCreationGateway.java",
+    "line": 3,
+    "owner": "orders",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.OrderInvoiceCreationApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderActorAdapter.java",
+    "line": 3,
+    "owner": "orders",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderCustomerAdapter.java",
+    "line": 3,
+    "owner": "orders",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerProfileQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 4,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.StockDeductionApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 5,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.domain.entities.MovementType",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 6,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.domain.entities.ReferenceType",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 7,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.domain.entities.StockMovement",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 8,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.domain.entities.WarehouseStock",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 9,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.domain.repositories.StockMovementRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderInventoryGateway.java",
+    "line": 10,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.domain.repositories.WarehouseStockRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderNotificationAdapter.java",
+    "line": 3,
+    "owner": "orders",
+    "provider": "notifications",
+    "import": "com.cashly.cashly_api.notifications.application.services.NotificationService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderProductCatalogAdapter.java",
+    "line": 4,
+    "owner": "orders",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderWarehouseAdapter.java",
+    "line": 3,
+    "owner": "orders",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerWarehouseAccessQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/LocalOrderWarehouseAdapter.java",
+    "line": 5,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/OrderCustomerCreditAdapter.java",
+    "line": 3,
+    "owner": "orders",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerCreditEligibilityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/orders/infrastructure/adapters/out/integration/OrderStockAvailabilityAdapter.java",
+    "line": 4,
+    "owner": "orders",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.StockAvailabilityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalCreditNoteLedgerGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "credit_notes",
+    "import": "com.cashly.cashly_api.credit_notes.application.ports.in.CreditNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalCustomerCreditContextGateway.java",
+    "line": 4,
+    "owner": "payments",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerCreditContextQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalDebitNoteLedgerGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "debit_notes",
+    "import": "com.cashly.cashly_api.debit_notes.application.ports.in.DebitNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalInvoiceCreditLedgerGateway.java",
+    "line": 4,
+    "owner": "payments",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceCreditLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalInvoiceCreditLedgerGateway.java",
+    "line": 5,
+    "owner": "payments",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceCreditLedgerEntry",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentActorGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.domain.repositories.UserRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentActorGateway.java",
+    "line": 4,
+    "owner": "payments",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.domain.valueobjects.UserId",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCashRegisterGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.services.CashMovementService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCashRegisterGateway.java",
+    "line": 4,
+    "owner": "payments",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementDirection",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCashRegisterGateway.java",
+    "line": 5,
+    "owner": "payments",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.domain.valueobjects.CashMovementType",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCashRegisterGateway.java",
+    "line": 6,
+    "owner": "payments",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.ports.in.CashRegisterOperations",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCustomerGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.InvoiceCustomerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCustomerGateway.java",
+    "line": 4,
+    "owner": "payments",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.usecases.ConsumeCustomerBalanceUseCase",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentCustomerGateway.java",
+    "line": 5,
+    "owner": "payments",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.domain.valueobjects.BalanceType",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentInvoiceGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "credit_notes",
+    "import": "com.cashly.cashly_api.credit_notes.application.ports.in.CreditNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentInvoiceGateway.java",
+    "line": 4,
+    "owner": "payments",
+    "provider": "debit_notes",
+    "import": "com.cashly.cashly_api.debit_notes.application.ports.in.DebitNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentInvoiceGateway.java",
+    "line": 5,
+    "owner": "payments",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.repositories.InvoiceRepository",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentInvoiceGateway.java",
+    "line": 6,
+    "owner": "payments",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.services.InvoiceStatusService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentInvoiceGateway.java",
+    "line": 7,
+    "owner": "payments",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/payments/infrastructure/adapters/out/integration/LocalPaymentNotificationGateway.java",
+    "line": 3,
+    "owner": "payments",
+    "provider": "notifications",
+    "import": "com.cashly.cashly_api.notifications.application.services.NotificationService",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/price_types/infrastructure/adapters/out/integration/ProductPriceTypeUsageAdapter.java",
+    "line": 4,
+    "owner": "price_types",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.PriceTypeProductUsageApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalCustomerProductContextGatewayAdapter.java",
+    "line": 4,
+    "owner": "products",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerProductPricingQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalCustomerProductContextGatewayAdapter.java",
+    "line": 5,
+    "owner": "products",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerWarehouseAccessQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalCustomerProductContextGatewayAdapter.java",
+    "line": 6,
+    "owner": "products",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CustomerNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductCategoryGatewayAdapter.java",
+    "line": 4,
+    "owner": "products",
+    "provider": "categories",
+    "import": "com.cashly.cashly_api.categories.application.ports.in.ProductCategoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductCategoryGatewayAdapter.java",
+    "line": 5,
+    "owner": "products",
+    "provider": "categories",
+    "import": "com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductPriceTypeExistenceGatewayAdapter.java",
+    "line": 4,
+    "owner": "products",
+    "provider": "price_types",
+    "import": "com.cashly.cashly_api.price_types.application.ports.in.ProductPriceTypeExistenceQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductPriceTypeGatewayAdapter.java",
+    "line": 4,
+    "owner": "products",
+    "provider": "price_types",
+    "import": "com.cashly.cashly_api.price_types.application.ports.in.ProductPriceTypeQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductPriceTypeGatewayAdapter.java",
+    "line": 5,
+    "owner": "products",
+    "provider": "price_types",
+    "import": "com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductStockFilterGatewayAdapter.java",
+    "line": 4,
+    "owner": "products",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.AvailableStockProductsQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/products/infrastructure/adapters/out/integration/LocalProductWarehouseStockGatewayAdapter.java",
+    "line": 4,
+    "owner": "products",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.ProductStockQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/LocalPurchaseProductCatalogGateway.java",
+    "line": 3,
+    "owner": "purchases",
+    "provider": "categories",
+    "import": "com.cashly.cashly_api.categories.application.ports.in.ProductCategoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/LocalPurchaseProductCatalogGateway.java",
+    "line": 4,
+    "owner": "purchases",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.PurchaseProductCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/integration/LocalPurchaseActorGatewayAdapter.java",
+    "line": 4,
+    "owner": "purchases",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/integration/LocalPurchaseProductGatewayAdapter.java",
+    "line": 4,
+    "owner": "purchases",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.StockCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/integration/LocalPurchaseSupplierGatewayAdapter.java",
+    "line": 4,
+    "owner": "purchases",
+    "provider": "suppliers",
+    "import": "com.cashly.cashly_api.suppliers.application.ports.in.PurchaseSupplierQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/integration/LocalPurchaseWarehouseGatewayAdapter.java",
+    "line": 4,
+    "owner": "purchases",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.PurchaseWarehouseQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/integration/WarehouseInventoryAdapter.java",
+    "line": 4,
+    "owner": "purchases",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.PurchaseInventoryApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/purchases/infrastructure/adapters/out/integration/WarehouseInventoryAdapter.java",
+    "line": 5,
+    "owner": "purchases",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.PurchaseStockCommand",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalInvoiceCreationGateway.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.QuoteInvoiceCreationApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalOrderCreationGateway.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.application.ports.in.QuoteOrderCreationApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalQuoteCustomerAdapter.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerProfileQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalQuoteProductCatalogAdapter.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalQuoteRejectionNotificationGateway.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "notifications",
+    "import": "com.cashly.cashly_api.notifications.application.ports.in.QuoteRejectionNotifications",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalQuoteWarehouseAdapter.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerWarehouseAccessQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalQuoteWarehouseAdapter.java",
+    "line": 5,
+    "owner": "quotes",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.ProductStockQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/LocalQuoteWarehouseAdapter.java",
+    "line": 6,
+    "owner": "quotes",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/QuoteActorIdentityAdapter.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "auth",
+    "import": "com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/adapters/out/integration/QuoteConversionNotificationAdapter.java",
+    "line": 3,
+    "owner": "quotes",
+    "provider": "notifications",
+    "import": "com.cashly.cashly_api.notifications.application.ports.in.QuoteConversionNotifications",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/receivables/infrastructure/adapters/out/integration/LocalReceivablesCustomerProfileGatewayAdapter.java",
+    "line": 3,
+    "owner": "receivables",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerProfileQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/receivables/infrastructure/adapters/out/integration/LocalReceivablesCustomerProfileGatewayAdapter.java",
+    "line": 4,
+    "owner": "receivables",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerProfileSnapshot",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/receivables/infrastructure/adapters/out/integration/LocalReceivablesCustomerProfileGatewayAdapter.java",
+    "line": 5,
+    "owner": "receivables",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.exceptions.CustomerNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/receivables/infrastructure/adapters/out/persistence/repositories/ReceivablesJpaRepository.java",
+    "line": 3,
+    "owner": "receivables",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.infrastructure.adapters.out.persistence.entities.PaymentAllocationEntity",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/adapters/out/integration/PaymentDocumentQueryAdapter.java",
+    "line": 2,
+    "owner": "reports",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.PaymentDocumentQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/adapters/out/integration/ReceivablesReportQueryAdapter.java",
+    "line": 2,
+    "owner": "reports",
+    "provider": "receivables",
+    "import": "com.cashly.cashly_api.receivables.application.ports.in.AccountsReceivableReportQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/adapters/out/persistence/repositories/CatalogReportJpaRepository.java",
+    "line": 5,
+    "owner": "reports",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.entities.WarehouseStockEntity",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/adapters/out/persistence/repositories/CommercialCatalogJpaRepository.java",
+    "line": 5,
+    "owner": "reports",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.infrastructure.adapters.out.persistence.entities.ProductEntity",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/adapters/out/integration/InvoiceDocumentQueryAdapter.java",
+    "line": 3,
+    "owner": "reports",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceDocumentQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/adapters/out/integration/InvoiceDocumentQueryAdapter.java",
+    "line": 4,
+    "owner": "reports",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceDocumentFilter",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/adapters/out/persistence/repositories/MovementsReportJpaRepository.java",
+    "line": 5,
+    "owner": "reports",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.entities.StockMovementEntity",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/adapters/out/integration/OrderDocumentQueryAdapter.java",
+    "line": 3,
+    "owner": "reports",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.application.ports.in.OrderDocumentQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/adapters/out/integration/OrderDocumentQueryAdapter.java",
+    "line": 4,
+    "owner": "reports",
+    "provider": "orders",
+    "import": "com.cashly.cashly_api.orders.application.ports.in.OrderDocumentFilter",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/adapters/out/integration/PurchaseDocumentQueryAdapter.java",
+    "line": 3,
+    "owner": "reports",
+    "provider": "purchases",
+    "import": "com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/adapters/out/integration/PurchaseDocumentQueryAdapter.java",
+    "line": 4,
+    "owner": "reports",
+    "provider": "purchases",
+    "import": "com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentFilter",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/adapters/out/integration/QuoteDocumentQueryAdapter.java",
+    "line": 3,
+    "owner": "reports",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/adapters/out/integration/QuoteDocumentQueryAdapter.java",
+    "line": 4,
+    "owner": "reports",
+    "provider": "quotes",
+    "import": "com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentFilter",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/adapters/out/persistence/repositories/StockReportJpaRepository.java",
+    "line": 5,
+    "owner": "reports",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.infrastructure.adapters.out.persistence.entities.WarehouseStockEntity",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/InvoiceReturnAdjustmentAdapter.java",
+    "line": 3,
+    "owner": "returns",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceReturnAdjustments",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/InvoiceReturnAdjustmentAdapter.java",
+    "line": 4,
+    "owner": "returns",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.InvoiceReturnCommand",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnBalanceGateway.java",
+    "line": 3,
+    "owner": "returns",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.ReturnBalanceMutation",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnCashGateway.java",
+    "line": 3,
+    "owner": "returns",
+    "provider": "cash_register",
+    "import": "com.cashly.cashly_api.cash_register.application.ports.in.ReturnCashRecording",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnInventoryGatewayAdapter.java",
+    "line": 4,
+    "owner": "returns",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.ReturnInventoryApi",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnInventoryGatewayAdapter.java",
+    "line": 5,
+    "owner": "returns",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.ReturnStockCommand",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnInvoiceQueryGateway.java",
+    "line": 3,
+    "owner": "returns",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.ReturnInvoiceQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnInvoiceQueryGateway.java",
+    "line": 4,
+    "owner": "returns",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnInvoiceQueryGateway.java",
+    "line": 5,
+    "owner": "returns",
+    "provider": "credit_notes",
+    "import": "com.cashly.cashly_api.credit_notes.application.ports.in.CreditNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnInvoiceQueryGateway.java",
+    "line": 6,
+    "owner": "returns",
+    "provider": "debit_notes",
+    "import": "com.cashly.cashly_api.debit_notes.application.ports.in.DebitNoteLedgerQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnPaymentSettlementGateway.java",
+    "line": 4,
+    "owner": "returns",
+    "provider": "payments",
+    "import": "com.cashly.cashly_api.payments.application.ports.in.ReturnPaymentOperations",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnProjectionQueryGateway.java",
+    "line": 3,
+    "owner": "returns",
+    "provider": "invoices",
+    "import": "com.cashly.cashly_api.invoices.application.ports.in.ReturnInvoiceQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/returns/infrastructure/adapters/out/integration/LocalReturnProjectionQueryGateway.java",
+    "line": 4,
+    "owner": "returns",
+    "provider": "warehouses",
+    "import": "com.cashly.cashly_api.warehouses.application.ports.in.WarehouseDirectoryQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/suppliers/infrastructure/adapters/out/integration/LocalPurchaseUsageGatewayAdapter.java",
+    "line": 3,
+    "owner": "suppliers",
+    "provider": "purchases",
+    "import": "com.cashly.cashly_api.purchases.application.ports.in.SupplierPurchaseUsageQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/warehouses/infrastructure/adapters/out/integration/CustomerWarehouseAccessAdapter.java",
+    "line": 3,
+    "owner": "warehouses",
+    "provider": "customers",
+    "import": "com.cashly.cashly_api.customers.application.ports.in.CustomerWarehouseAccessQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/warehouses/infrastructure/adapters/out/integration/LocalStockCatalogGatewayAdapter.java",
+    "line": 3,
+    "owner": "warehouses",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.ports.in.StockCatalogQuery",
+    "public_port": true,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  },
+  {
+    "source": "src/main/java/com/cashly/cashly_api/warehouses/infrastructure/adapters/out/integration/LocalStockCatalogGatewayAdapter.java",
+    "line": 4,
+    "owner": "warehouses",
+    "provider": "products",
+    "import": "com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException",
+    "public_port": false,
+    "note": "Existing source import; preserved type dependency during relocation, not a compliance verdict."
+  }
+]

@@ -1,0 +1,1137 @@
+[
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/infrastructure/pdf/PdfBranding.java",
+    "new": "src/main/java/com/cashly/cashly_api/shared/infrastructure/pdf/PdfBranding.java",
+    "sha256": "73ddf5c211503cbb1e8ef5efe2dec63553f891f0cb33f6635512bbb45b778881"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/infrastructure/pdf/PdfStatusColors.java",
+    "new": "src/main/java/com/cashly/cashly_api/shared/infrastructure/pdf/PdfStatusColors.java",
+    "sha256": "5285e79a69f52a23108b31858b14b7e52b860ccd1be2479aee1602ed3625572b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/config/StockReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/StockReportConfig.java",
+    "sha256": "406eeb5df0a419416371735d7a3cbc1521f42e35f50fcce1371a919a8987a078"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/web/StockReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/StockReportController.java",
+    "sha256": "987049d6913fb37e7455a97ce2e4f81e1c146f231ed874b0724f501043e5508b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/excel/StockExcelGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/excel/StockExcelGenerator.java",
+    "sha256": "98f73df7db0fcb3eb76df1c1e36a658a19d031a458aaedefcbe47239e1355e9f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/pdf/StockPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/StockPdfGenerator.java",
+    "sha256": "bf75d5d6cbe68adf4fec8081ac6eb14415eb9613ed080afc89f4e64fb02ebd43"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/repositories/StockReportJpaRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/repositories/StockReportJpaRepository.java",
+    "sha256": "a8aa0083dfa5b0b7e54078747c707d914938296cee8bfea7841008ab60c5d1be"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/projections/StockReportProjection.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/StockReportProjection.java",
+    "sha256": "0c7e23bddda867b51ebfa14838074779409120b85331e4aafcffcebda71c2add"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/adapters/StockReportRepositoryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/StockReportRepositoryAdapter.java",
+    "sha256": "1de6f70208a6584d78321aed3b59828a64ece1fe3ac6866b986bbd169f927154"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_excel/GenerateStockExcelUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImpl.java",
+    "sha256": "37883f4194ebcca2451335e82b8d1505aeff0ee9d4478ccf46630a6a416003d5"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_excel/GenerateStockExcelUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCase.java",
+    "sha256": "40836f41cb03c696339c20826c4fe173a70a7f33251f9321985550fc602224f2"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_pdf/GenerateStockPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImpl.java",
+    "sha256": "26a8b7efc52fa6be51f75854c933be448b048b0202e52b5c5655a3c04290f7b4"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/generate_stock_pdf/GenerateStockPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCase.java",
+    "sha256": "b61908e53c377995f556ef9ec0b2fba15125ce63a1d6ecc8614a77e39a9bed42"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockPdfPort.java",
+    "sha256": "847f2e589b2c6cd0f71b35bae45f76d5a6a4a09fd8d97e6066751f335928eb68"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockReportRepositoryPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockReportRepositoryPort.java",
+    "sha256": "cd23509f43da5ba22735e7be048cc1630c92044ed7f89a8c121a6cb04e8f1aef"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockExcelPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockExcelPort.java",
+    "sha256": "373f30eccb8bd7ed9896457e6a9b43c977841cc775eb305c8009288465524626"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/dto/response/StockReportResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/StockReportResponse.java",
+    "sha256": "49df18b00d8647e494cca8f14d7c7ae9993c6fb0e4cb7436bb8fccc5a6d6e0f7"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/stock/application/dto/query/StockPdfQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQuery.java",
+    "sha256": "79292d40392c9ea5a38b93d5d2f01bfaa4deb9328edfb396c57ad684925d237a"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/config/OrdersReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/config/OrdersReportConfig.java",
+    "sha256": "2bed8c2e2707c96594a3e4851dc6f069cff3bccc30a69047f59bd486bbf20b11"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/web/OrdersReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/web/OrdersReportController.java",
+    "sha256": "f96b2af70f819f66994028c25bc179a84e057571b38a9ff47556d8b4ad6b8d74"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/integration/OrderDocumentQueryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/integration/OrderDocumentQueryAdapter.java",
+    "sha256": "a52bcba467c06695206cda403ff4e5c5a024ac24c8fcbb8ef45c863c5bb89a59"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/pdf/OrdersReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrdersReportPdfGenerator.java",
+    "sha256": "27e8cb3571dccbae111deca553c16dfe39ebd3e87f39d1b3c6fbc0ad7b9d66d9"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/infrastructure/pdf/OrderPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrderPdfGenerator.java",
+    "sha256": "033f5daf760b2eab4802c6c53e92cd6d7fbfaea0f91dcdf4cd1c70fafa5d6d86"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/dto/OrderReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportData.java",
+    "sha256": "00c64b0c0e0c95dc74626aa883c78082af03068c74dc9cff0788e3fba8105e2f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/dto/OrderReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportFilter.java",
+    "sha256": "4e4b8ad51f8bc00becf1e3cf44c4d342cbad37c82b91b294337ce55e1cf13c2d"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/dto/OrderReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportRow.java",
+    "sha256": "afc0a45e99fb843fc95ae0fc23723f21407b26490beace4fe87b5419864a9251"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_order_pdf/GenerateOrderPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCase.java",
+    "sha256": "1e08f64ab60752e2dc8417b240cee5b5f621ce40959c4faf1e601cf30752e154"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_order_pdf/GenerateOrderPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImpl.java",
+    "sha256": "669bb7d8076e807c4a5997b070f68a3088634114def57f964e0f8579a6b85143"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImpl.java",
+    "sha256": "06fe609e3d8c5827376c0d65870d716db466281dab01c668aa787225738f2fb9"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCase.java",
+    "sha256": "3d9d3d175b055005151b74871a13b35cc2b7a9c2578b03f19ee63672c52cfdb8"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/ports/out/OrderReportQueryGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/ports/out/OrderReportQueryGateway.java",
+    "sha256": "3239533290ce8a8756bc32ce7e0d7f4b6b83fe1b8d76d0e5657dc59f415bf6ed"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/ports/out/OrdersReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/ports/out/OrdersReportPdfPort.java",
+    "sha256": "0f56901720383d6d0bab6339c09bee2910fe7a7ae4309d931a5fabd78ebe4ced"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/orders/application/ports/out/OrderPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/ports/out/OrderPdfPort.java",
+    "sha256": "37918a187abff1d40154634c858419c2585b2013efbe5f5585cf197f39552a46"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/config/ReceivablesReportingConfig.java",
+    "sha256": "e5c50389413cc26c93e2c2b86490c191e3ef834abf62e7b8ae119e2c116b671e"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/web/ReceivablesReportsController.java",
+    "sha256": "c947f3e673365163e4a86369317c110e34b5df642caeebdbfae864b0fb3cc892"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/ReceivablesReportQueryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/integration/ReceivablesReportQueryAdapter.java",
+    "sha256": "032817cee6f7e239780ea56ddbc6708c0ce090fd46abee0f9c88dd8eae7f66b3"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/PaymentDocumentQueryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/integration/PaymentDocumentQueryAdapter.java",
+    "sha256": "3deb005f321c718c917c6c830db2bfe2ce2b559b6da4832cf9dd89bc4a72fbfa"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/PaymentHistoryReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentHistoryReportPdfGenerator.java",
+    "sha256": "91ba0cd560031bfbf723ded02a86fc37adf9e1a11242186a40e6862894fedf76"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/AccountsReceivableReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/AccountsReceivableReportPdfGenerator.java",
+    "sha256": "af259d39d6c88976b7e46b7ff4b4182aadabc9b41f4a68935c18fbe91ff3fdac"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/CollectionsReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/CollectionsReportPdfGenerator.java",
+    "sha256": "1777fc5039671668e33125a0f4ee7632564aa4eafaef42989680d862d2180504"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/PaymentPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentPdfGenerator.java",
+    "sha256": "3ff8296d402ce9098e9dd0bbe222e14356f034255c2fd92889ae856955adb26a"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/PaymentHistoryReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportData.java",
+    "sha256": "37285309ed24d35561d363cd41acf07d64682b2c2d79e32ecb232e10d48fb0ec"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/AccountsReceivableReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportData.java",
+    "sha256": "39e545872d34a73989e31ea1687dcb77dcac11aa0f3c81e16daa4c035530d43a"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/CollectionsReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportData.java",
+    "sha256": "69fd24fca480595ee067c0e11a4c4492b0c7bd674a52adc811bb844383ff12e7"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/dto/PaymentReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentReportData.java",
+    "sha256": "78a7da6cb63c568764b5e31b2af1bd98a9f7698d918226c76fc553c71647861b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImpl.java",
+    "sha256": "da5c0c3bf89b8b7576c4d7c3dca22862264f23058b35e2435c1907cb45b6128e"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCase.java",
+    "sha256": "d4f22d5957e194fd098845995225fe07e896cada2ce880a5db6b53617095ec11"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImpl.java",
+    "sha256": "233dccb989c8be82395331dfa80456fa7c74c64b2180bb7a3860e3834a2e0540"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCase.java",
+    "sha256": "f2ac7b742ea3f2cfd8b65cb5d582194f8f2b7e8ee6499cc54d48cf07f8c4a4bd"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImpl.java",
+    "sha256": "547fc7bade3e16025262d7a528d2a08c89dbb2246d4a0d439227a5511fe895f0"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_payment_pdf/GeneratePaymentPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCase.java",
+    "sha256": "e677a24e3f2e7ef3262809017c36eb03adce0a97c0973fe1fab178b80a1b8f8a"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCase.java",
+    "sha256": "02a0dc383b37337c41217f69cb7f55c90a75fb0443ccf1294053562213ee1cae"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImpl.java",
+    "sha256": "85357f17cb5c133aa67e3c7a438d78f003e6152269939c2b5f756204756805eb"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentReportQueryGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentReportQueryGateway.java",
+    "sha256": "acae90aa4df04ab8b580ef7c1f89decbf336feba86fd8df20a54664c6674a6be"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/CollectionsReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/ports/out/CollectionsReportPdfPort.java",
+    "sha256": "88ddf1907bfd04f305df8293cdedba754bdd412b0a2a3f3c7b4a2d5e0854cb47"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/AccountsReceivableQueryGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/ports/out/AccountsReceivableQueryGateway.java",
+    "sha256": "bf2f77613aef2215a43afdeea6f75cbc8bd810aa0e55badf1c43ce960aa54761"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentPdfPort.java",
+    "sha256": "18e83388e255146a6db2e1d76d589a6fa2f1ed8dce1f3f88a1f5523588fc8167"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/AccountsReceivableReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/ports/out/AccountsReceivableReportPdfPort.java",
+    "sha256": "3a0de67718641ba3fa978091ccfb6156bedb70b3942f0c0c0534985632222ddb"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentHistoryReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentHistoryReportPdfPort.java",
+    "sha256": "5736e392dbbd5d98ebe31ad74dcaa6ded46d8ab762045c6ecc98a64253b7ea94"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/WarehouseCatalogReportingConfig.java",
+    "sha256": "da4922ddb1c621146bc8de65d39d37e036479d279ccf41349a93884275837441"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CommercialCatalogController.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/web/CommercialCatalogController.java",
+    "sha256": "163ebca003e6b3a3a8804667e6f8be549ae606fffe1c05c3e1fee679e3da8a30"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CatalogReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/CatalogReportController.java",
+    "sha256": "ff82bc10942c57b4ba95944884db246e0a9898bab675908947f74f4359344be4"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/integration/FileStorageMediaAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/integration/FileStorageMediaAdapter.java",
+    "sha256": "36c5266998facef57d91d5798f59d25c9ce87171cb423eba26934b2b33db5122"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/pdf/CommercialCatalogPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/pdf/CommercialCatalogPdfGenerator.java",
+    "sha256": "6ecb5eaba553e9024412f1558c565f439feef7760337abc31680d1a28cf34dcd"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/pdf/CatalogPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/CatalogPdfGenerator.java",
+    "sha256": "25bcd6d27107338cc0a6148a78bfab38760b248f3bbd545f069fca761b701e80"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/repositories/CommercialCatalogJpaRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/persistence/repositories/CommercialCatalogJpaRepository.java",
+    "sha256": "cc02e1cd3b0adf605ef389e46c2afc864a073897f96888addd4eee67367cd27d"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/repositories/CatalogReportJpaRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/repositories/CatalogReportJpaRepository.java",
+    "sha256": "0c304519e42928b406704beae6e2a6e780edd437b138048edc807d821e36caa0"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/projections/CommercialCatalogProjection.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/persistence/projections/CommercialCatalogProjection.java",
+    "sha256": "9ed9f65d72520f623a4c25dc09848265c211a9099fe4fb0be3bd269191a76d9c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/projections/CatalogReportProjection.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/CatalogReportProjection.java",
+    "sha256": "a4eebe6b5dc935f8ff3f9252858c15d5ad05db6e5b7c3b674bb72b98760e5b3e"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/adapters/CatalogReportRepositoryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/CatalogReportRepositoryAdapter.java",
+    "sha256": "1394e7f9cffa0aebc58680b2800c652edcb1b2d2fef766cad357e7810796f45e"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/adapters/CommercialCatalogRepositoryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/persistence/adapters/CommercialCatalogRepositoryAdapter.java",
+    "sha256": "57c48544233c8d62b66458ace2473cbd8192febf4729a3497afd2d751da1f5fe"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/get_catalog_report/GetCatalogReportUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImpl.java",
+    "sha256": "56376f21cec41c2f9a2af4ff50afa6353c1ef0273e244ee0936cd8237684d5f3"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/get_catalog_report/GetCatalogReportUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCase.java",
+    "sha256": "64c0ea2fccd216c251d842ac9890322ee762f5ba46e7e3031be03c8b6136212a"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCase.java",
+    "sha256": "0e2cb5ec15ee66237c5b8f859b18911fa331147052beef4ceb6e86c6ebf6e218"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImpl.java",
+    "sha256": "3999751226e6b63a6095dfaf52d656d360afc8b2b9206fc8f7c3fff76fd9ce48"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImpl.java",
+    "sha256": "2137c89b33733e51e2a3c7de907ecdb6b89f602696d9e95c0cdcfb8e6b512fe9"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/generate_catalog_pdf/GenerateCatalogPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCase.java",
+    "sha256": "98843f61683f81cd6fb696898cca4eb4cc7ad53c6f5cbd1eb52a06712433145b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CommercialCatalogPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/ports/out/CommercialCatalogPdfPort.java",
+    "sha256": "3a13428af97d337b8c33ce480e11d65f1d88ab1219ebd1148bacad8422bdba49"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/MediaGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/ports/out/MediaGateway.java",
+    "sha256": "af89b7073e002d91f141f8ed514d8cbd9bf2ce39d89748c50a701dc700b26460"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CommercialCatalogRepositoryPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/ports/out/CommercialCatalogRepositoryPort.java",
+    "sha256": "9797ef7eff9da0b9187c8b4af7789faede725ae9805cab6899a70190feab999c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CatalogPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/CatalogPdfPort.java",
+    "sha256": "2f9cb56dc3a51faca5099a31953c795ef9ac178d0b89901ba483b6174fc27825"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CatalogReportRepositoryPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/CatalogReportRepositoryPort.java",
+    "sha256": "c2ca425d0981ed5e2547e367af1b792dcb6ef6789801344a3eb7323615102471"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CatalogReportResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/CatalogReportResponse.java",
+    "sha256": "2188438488d494450632baba20400a2d53c985047204936dd7dc68dc5cc284c1"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CommercialCatalogResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/dto/response/CommercialCatalogResponse.java",
+    "sha256": "6be6fcfd9ba2094d548395e16d115cae957e86cc1c06630c612bdc2a39b6b63d"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogPdfQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQuery.java",
+    "sha256": "b2d28fdec4c733d2e05ad2458becbe9f937d395c7f7bacae676e086f7773d824"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CommercialCatalogQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/dto/query/CommercialCatalogQuery.java",
+    "sha256": "8675e16049734fadbec0b590c6741926bc3ab3e660f9cb1e7f6bb4488925da5b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogReportQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQuery.java",
+    "sha256": "dfd046db8973005b45b07f8581f3a120a7517855baafed575e2175de7b84081c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/config/MovementsReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/MovementsReportConfig.java",
+    "sha256": "3d9faef408e76e464ec44e5e5179bc91b88c70d6373b2057013689ff653ee3f8"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/web/MovementsReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/MovementsReportController.java",
+    "sha256": "ae0f9424ec15dd8026f46ca54af1f3730df0d6fb6bf27e8c02c68658ed5ac8e4"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/excel/MovementsExcelGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/excel/MovementsExcelGenerator.java",
+    "sha256": "bd019efed1257d1d44cbeb662a85d1c128147d16df5624708b0d96fc0355d7e3"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/pdf/MovementsPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/MovementsPdfGenerator.java",
+    "sha256": "c62112e65871d08305936f18af540bc9484d154f423efa221efe167b64b3a5c6"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/repositories/MovementsReportJpaRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/repositories/MovementsReportJpaRepository.java",
+    "sha256": "b81992986f0577e095d9cac8a68db4c5fdc30795a0293437c85c550acea2cb73"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/projections/MovementsReportProjection.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/MovementsReportProjection.java",
+    "sha256": "1d244a4c727ce59bcd64ea28b2fde2707b9629f20d257bb02a6b7d1f98c58ce5"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/adapters/MovementsReportRepositoryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/MovementsReportRepositoryAdapter.java",
+    "sha256": "75496ea487978e86543bae74170b64ec6d8206385f3cc81085c3bfe0dd653df9"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_pdf/GenerateMovementsPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCase.java",
+    "sha256": "45c9ea1e09ac41bf1fdbfe1b547c5a29a8547a7a4cbfd575fb47abc43686f4e3"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImpl.java",
+    "sha256": "0670eb4580882350977599e3974ba6293fb2c502ecd98cbfaffb48672f61747f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_excel/GenerateMovementsExcelUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImpl.java",
+    "sha256": "b857f3e0e834c78c8af041b6a5c034571dd9d20fff2e249fc4a654007ba978e9"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/generate_movements_excel/GenerateMovementsExcelUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCase.java",
+    "sha256": "44fe0df24865f878bfd355946cceb784c9dadc97bc720c44d35b7c0238f0724f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsExcelPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsExcelPort.java",
+    "sha256": "cede20f0dc98ecf59d46fadbf7b6badc659b0521ad142b1abeacd6a137eacbf9"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsPdfPort.java",
+    "sha256": "e41a9346db2b4848087220d437d143c38b546a688ca0a8fadfca714039c8cb52"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsReportRepositoryPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsReportRepositoryPort.java",
+    "sha256": "51c999fe03261275f5f6afea8419594a309b8d71496191349ecccc60790e4d26"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/dto/response/MovementReportResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/MovementReportResponse.java",
+    "sha256": "1307d148b34e0f6a45966433fc17ea5b1a22e872ad7b1b473d4b85e14df53ce1"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/movements/application/dto/query/MovementsPdfQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQuery.java",
+    "sha256": "a622eede0a3ca5ece41566ca64c22bf4dd0d76124e1bb371bf18056a8481e51c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/config/QuotesReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/config/QuotesReportConfig.java",
+    "sha256": "d8aad0ed81cc7474a8c160d80836ddc847233051406330312eb5cf34a8309430"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/web/QuotesReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/web/QuotesReportController.java",
+    "sha256": "e781537a6d7a4d1f24cc3c5c9cac2587d8e1f8f9e328c865fa7f51f39c3d42f5"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/integration/QuoteDocumentQueryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/integration/QuoteDocumentQueryAdapter.java",
+    "sha256": "b75e5ea0f6f9f5c35cda035964f5fac6b027b16cb754a96426e50a8cd05acdb1"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/pdf/QuotePdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotePdfGenerator.java",
+    "sha256": "3abea42d3b492bc2ecbc4a2626656824183d7ca14f8b26c15a53178c9f95279d"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/infrastructure/pdf/QuotesReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotesReportPdfGenerator.java",
+    "sha256": "2d4b2fcb0ced67b5c05d4021e99163152b770866451de3aba3138954c2e70216"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/dto/QuoteReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportRow.java",
+    "sha256": "46e9611e922b6314db73ffdc0866862dfef5b1a8cc473ae7cce5a2b14bacfc6c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/dto/QuoteReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportFilter.java",
+    "sha256": "941434ad0a3cf6d358574c9b99f180651e9389e9b4e2fa2191484ee0bbe7393c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/dto/QuoteReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportData.java",
+    "sha256": "d5305daaadcef1765a2488479089c8437cac55c83f2b1bf3daf6e4e41db498fd"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quote_pdf/GenerateQuotePdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCase.java",
+    "sha256": "3432df8459e9fb2717675e46f3af59e31efc8fdbf705a9e2f4f6764ea30d101f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quote_pdf/GenerateQuotePdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImpl.java",
+    "sha256": "7613c23eb67dd2cbc601e6754c2030dde7c4b30f6ebe3b701c8071be3da4709b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCase.java",
+    "sha256": "f689ce6d1d078f6501f949d1ffb19fbb952ff2f888333cc031c67fed4cae68c6"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImpl.java",
+    "sha256": "7f2764f7392cd05e40d9b9a3965d2e9bbb566b10ae5f8ad83fccc8ac1d497413"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/ports/out/QuotesReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/ports/out/QuotesReportPdfPort.java",
+    "sha256": "4b6b7b07e724726b4b249f5abb16b9738df8aa9917278098df0e379116920813"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/ports/out/QuotePdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/ports/out/QuotePdfPort.java",
+    "sha256": "4c25bf14c4fba702e2b10ac451758e9713a9d25ebb1e83349ed1495c9f53fe24"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/quotes/application/ports/out/QuoteReportQueryGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/ports/out/QuoteReportQueryGateway.java",
+    "sha256": "c67e7ddc2ca4194814ca55800367a98655b4a8060c35f1d9d94a276b21191c0f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/config/InvoicesReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/config/InvoicesReportConfig.java",
+    "sha256": "51d658ea3e9e45e40e18a2eaadab8d307b6735a056fbf553447e948a46821824"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/web/InvoicesReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/web/InvoicesReportController.java",
+    "sha256": "bb665042dfb88b95bbdd94e85b7544263202ed658a3a581575c3edac641caf6c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/integration/InvoiceDocumentQueryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/integration/InvoiceDocumentQueryAdapter.java",
+    "sha256": "79752ad9862112014f59510a523684064ad3ea99eee77a821958aee0ce496675"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/pdf/InvoicesReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicesReportPdfGenerator.java",
+    "sha256": "fe12113eea248c7e41b66491adb8f44ef1452fe374b52f0197dadec124f59afa"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/infrastructure/pdf/InvoicePdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicePdfGenerator.java",
+    "sha256": "0dbe177030752ac047c78a9a95a901f8ca5675bbd38df0143de69c24afe4f9f0"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/dto/InvoiceReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportData.java",
+    "sha256": "ed8f10263f5d58e1dcd1517a3245e30dd985dd1a1b85c5ad0010d8937d987a6a"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/dto/InvoiceReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportRow.java",
+    "sha256": "07b6377805c832eaf84f402328868bb9691132656d0f131275aef6ee12e77a6f"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/dto/InvoiceReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportFilter.java",
+    "sha256": "6f4da6042108753cf815097452aa33676ed10a19f6c7d036e14acc5de35799aa"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoice_pdf/GenerateInvoicePdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCase.java",
+    "sha256": "4575630a2be994c1033bfc09af99f4bfa17456f7c1a285886c3f6fa28d93659c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImpl.java",
+    "sha256": "afdc04456b8bf4bfe6edd4e6e986e12297634691cb72dba58b4b81b471710398"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImpl.java",
+    "sha256": "43db5733ae9bdc4d2d3023c6c61d1bf12ea359770b9fd0a6ef49fba24edb9a58"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCase.java",
+    "sha256": "622ef2e91c7d396578c3d44332c303f5378f555c97373b2a9aab694043a1ebe1"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/ports/out/InvoiceReportQueryGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/ports/out/InvoiceReportQueryGateway.java",
+    "sha256": "5f1c4963e789eb770e51ac0ac07e4d005dc218ea0f46148d6b4b61e159ba9365"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/ports/out/InvoicesReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/ports/out/InvoicesReportPdfPort.java",
+    "sha256": "b2193f5404e4327ab984a419f0a8e3e339230db61aba20340ae0df9d2e0f33c7"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/invoices/application/ports/out/InvoicePdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/ports/out/InvoicePdfPort.java",
+    "sha256": "f4b21d40eff8b564373a6224538603cb7c88f4e20fb7965cd0f082afb5ea1d87"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/config/PurchasesReportConfig.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/config/PurchasesReportConfig.java",
+    "sha256": "918c04e11c232d743b9c324d3be663a2d346b9d7c8b6d9426377100fb41b2239"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/web/PurchasesReportController.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/web/PurchasesReportController.java",
+    "sha256": "a82694ce9e1d931d84cfe87e1092a40abb9657ba4a43a5b563cad96b2ee1ba6e"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/integration/PurchaseDocumentQueryAdapter.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/integration/PurchaseDocumentQueryAdapter.java",
+    "sha256": "45fc453c9df5f0d85af7871a83357155b19d1e8705625cd8f2d29a29ec9b4f35"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/pdf/PurchasePdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasePdfGenerator.java",
+    "sha256": "59b54ddf6f6c3279a137dba0508fe3309425f674303ab87131e5205719f34c5b"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/infrastructure/pdf/PurchasesReportPdfGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasesReportPdfGenerator.java",
+    "sha256": "feee4a8c4fb7cde5ec481d0bdf1b290e36f994da9d1ac320a4c6303aafbcdfac"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/dto/PurchaseReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportRow.java",
+    "sha256": "96fc0de9ec36471d2c7f99b25ab195662d01aa88ef6590875757e78ed05536f2"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/dto/PurchaseReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportFilter.java",
+    "sha256": "fc30a0df50bba8a0b7d5d707126abfe438cc50ed4b9756830dfc0a55bfe9b557"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/dto/PurchaseReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportData.java",
+    "sha256": "5515367c37e3eb5fc9bde555c4cea4e7ebb92c6efe8d7109c4c012dc3724f4bb"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchase_pdf/GeneratePurchasePdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCase.java",
+    "sha256": "224678753f5f14435afa397e9d2d257d020c4886c56967520e5f074eb2e70d82"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImpl.java",
+    "sha256": "85e96b1458f1e2e6ea3c8b5294b21aeb45dc6c9e18492261f3c49d85c3915896"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImpl.java",
+    "sha256": "9fe5f10ef9a470df56393c72349d94d2cbd6d34aaf2cb48db0b3e59e50a83cd1"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCase.java",
+    "sha256": "d278710b8437bd96c91708f391edf19634a6783ec0b410496afa47b997b788ce"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/ports/out/PurchaseReportQueryGateway.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/ports/out/PurchaseReportQueryGateway.java",
+    "sha256": "840deca0fd81b8da84266c2f7467fe7b3d84bf60038ebc2ea12a36e4872ccd4c"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/ports/out/PurchasePdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/ports/out/PurchasePdfPort.java",
+    "sha256": "400176a06bd88991032d5bf44115499e667701ce104dd2a596ef6616b1f51114"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/purchases/application/ports/out/PurchasesReportPdfPort.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/ports/out/PurchasesReportPdfPort.java",
+    "sha256": "2e751a9c04ca49956c7f8ec215a0da191f0ec53d9f61b95b223c6b5a27132913"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/infrastructure/pdf/PdfStatusColorsTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/pdf/PdfStatusColorsTest.java",
+    "sha256": "8ecae8778b650e385cb222d9eac73fdff260cb02ca8f08b0ca429603a8de1881"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/config/StockReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/StockReportConfigTest.java",
+    "sha256": "25d49590670f3be84773849597db0c1ab04f111ae1444136aed8e03f637fec82"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/web/StockReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/StockReportControllerTest.java",
+    "sha256": "8e5f00cfa23028f76e6ba3186bc19b94a5a4410d43e0efe90252d66ddf42fcb8"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/projections/StockReportProjectionTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/StockReportProjectionTest.java",
+    "sha256": "05f7448b83bbfcbae3b17e57a9a42ec23bf56e1a296d357b1cc1cfbdd23bf89c"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/infrastructure/persistence/adapters/StockReportRepositoryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/StockReportRepositoryAdapterTest.java",
+    "sha256": "ee54699194ae797b4bd29bded772d5dd5c9354851c97e10a1babb4e348adad32"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/generate_stock_excel/GenerateStockExcelUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImplTest.java",
+    "sha256": "67723a6fc4b1a98acf5eab734ac79e4c67a3fe9519f8a72fa9baccd4c492daac"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/generate_stock_pdf/GenerateStockPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImplTest.java",
+    "sha256": "b80db7dc3e4d6b7749ead0f1fa3e804caecec908fd5bcb422b0d1de50dd38273"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/ports/out/StockPdfPortTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/StockPdfPortTest.java",
+    "sha256": "d4212211f24bba1895698b41fb152447c73f0b79b71cdd22e491ce372b58b9d4"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/dto/response/StockReportResponseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/StockReportResponseTest.java",
+    "sha256": "2c43c3c59f2681172be715b543a98dbee86348fefabdb02c2ddbc60de54d4d35"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/stock/application/dto/query/StockPdfQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQueryTest.java",
+    "sha256": "4789070e2693ecf4c738c66a792509be866c1a43f4539431b19df57d4570ad39"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/config/OrdersReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/config/OrdersReportConfigTest.java",
+    "sha256": "d785c1130e13fb67777ba1d82c7d5102c98d825409e1c0e69a9b0089d136a15e"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/web/OrdersReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/web/OrdersReportControllerTest.java",
+    "sha256": "1779778dd9c6066e12fdec52ae24318df8b9ad14dc7ce3fbab21235a18ca56d6"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/integration/OrderDocumentQueryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/integration/OrderDocumentQueryAdapterTest.java",
+    "sha256": "142e75f177527407d0944ee08b20719e27b3e38133574d11bcefcf1eb71b1142"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/orders/infrastructure/pdf/OrderPdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrderPdfContentTest.java",
+    "sha256": "9f11edd728e2c0cbab7d274b263b91e8a8a7e91b0034788216041ecb0ffc9048"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/orders/application/generate_order_pdf/GenerateOrderPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImplTest.java",
+    "sha256": "6caaa70de47d852e185d6605b34775112feceee388be7ed0455023562a0fdb7a"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/orders/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImplTest.java",
+    "sha256": "5c6b8262eab665b5afef94ff831015611155e0842e8bdbe9108c45a84d6f5ad7"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/InvoiceReportsBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/architecture/InvoiceReportsBoundaryTest.java",
+    "sha256": "7da412ac2b1f0009da9d49749b0fcedc6fa3aa9e0a1ea0dcc296a17b9018c5ea"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/AccountsReceivableReportsBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/architecture/AccountsReceivableReportsBoundaryTest.java",
+    "sha256": "9d0b7114bed0bff3298b5607016bf8bb8312353e0328199099f5eb73f2605e56"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/QuoteReportsBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/architecture/QuoteReportsBoundaryTest.java",
+    "sha256": "17ca97b88faf6852ecc35e3c69fca8d6efa2dc1e30b28f5a72a1eda226df1add"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/PaymentReportsBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/architecture/PaymentReportsBoundaryTest.java",
+    "sha256": "2fd1440474dcf8e741e4fb1d3de768711fd85903dbddb69832af8c4cb647bea1"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/CommercialCatalogBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/application/architecture/CommercialCatalogBoundaryTest.java",
+    "sha256": "cda20087d78edad39343e7311dc31c76eecb66d6eb3cbd47c616010793953591"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/OrderReportsBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/application/architecture/OrderReportsBoundaryTest.java",
+    "sha256": "72162dda0ffa00d6b28a454f87ba2b977481f9be8c0e3a46a82d43c84ba7fbb1"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/application/architecture/PurchaseReportsBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/architecture/PurchaseReportsBoundaryTest.java",
+    "sha256": "e4cbd92b3086559ed8b0f5e898744e607287cbca5bd6063865f2f622395b8fd8"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/config/ReceivablesReportingConfigTest.java",
+    "sha256": "cbe26aaa537b2185f3df98004c29964629cb4264035be22f421d993d00dc6c55"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/web/ReceivablesReportsControllerTest.java",
+    "sha256": "3c37ee408ee317906740cdb3bf4badfdb6fe064b540c68d8d916356ff901eee8"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/ReceivablesReportQueryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/integration/ReceivablesReportQueryAdapterTest.java",
+    "sha256": "ecac53355efc486dba704b1609c587a8a067f284ca51296e6a9c8125913460f6"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/integration/PaymentDocumentQueryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/integration/PaymentDocumentQueryAdapterTest.java",
+    "sha256": "9fba4fff9cd91209c915cc195e4a79ec4732006d413790fa2a57b9cfc49334cc"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/PaymentPdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentPdfContentTest.java",
+    "sha256": "a00a07170eaa3bc980405a11b482e40d0b82bb1318bffad2366b34baccce9048"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/infrastructure/pdf/AccountsReceivablePdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/AccountsReceivablePdfContentTest.java",
+    "sha256": "f027676eb1f28cdce59d450c238c7693cdaf5f69514df058f69324b782faed10"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/dto/AccountsReceivableReportDataTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportDataTest.java",
+    "sha256": "19feca0216a129f01f9380e73e64d854b072bfb1b4b63087e93eb72fbd29cb01"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/dto/CollectionsReportDataTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportDataTest.java",
+    "sha256": "635acfacb736eddaf0e2774b0a4e5fde41538ecc4dbe5f16880b7691bf1f470f"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/dto/PaymentHistoryReportDataTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportDataTest.java",
+    "sha256": "1c12df4d9d5f5913f1ade0dd0a95b265e26ee7e9f321c7897b530f2405cfa64d"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImplTest.java",
+    "sha256": "002590585cea26b3d74206303cca3709b1e925e457d9b35ebe1a832a34eb5de8"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImplTest.java",
+    "sha256": "58a2fbf2825e69b0b1d5212f0cebcad64b8ae38ee6b89482aafd22a8f18ecf3e"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImplTest.java",
+    "sha256": "790528e87c51d969aaccb3ba963001c8465b5fa5461102b5ddabd7d24baf9eb6"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImplTest.java",
+    "sha256": "40e776f1b999e4b95fc4eff0e8cbc1c2fce84455a2456265e04c9beac330ac44"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/finance/application/ports/out/PaymentPdfPortTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/ports/out/PaymentPdfPortTest.java",
+    "sha256": "b10c1994c1df94bd91b2c528cfddfe07eed43e8349aeb6ae3ed2015468fe923d"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/WarehouseCatalogReportingConfigTest.java",
+    "sha256": "b2e241bdc3e47bca1f3d79b7e8373b771f513cb63f26407305c9d2c3af08ae2e"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CatalogReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/CatalogReportControllerTest.java",
+    "sha256": "970c374f7dc8a68bb7a039a55c55e8d45ab3e893f185f2a81e399d3745827ef6"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/web/CommercialCatalogControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/web/CommercialCatalogControllerTest.java",
+    "sha256": "f756b3c7030d3d7eb1a00f303b78598cc854ab63f8c50ebb245ed90fb3a36688"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/integration/FileStorageMediaAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/integration/FileStorageMediaAdapterTest.java",
+    "sha256": "e70811abc1a1dc26d0041107b746c879d2441365d7b5205250465da0137e332f"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/pdf/CommercialCatalogPdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/infrastructure/pdf/CommercialCatalogPdfContentTest.java",
+    "sha256": "a71badb9b42ea5827aa84d5b79c28ba518718415299053f60fa5246032809be6"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/projections/CatalogReportProjectionTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/CatalogReportProjectionTest.java",
+    "sha256": "05cabc039d4806def226f8464546f107108242b4fb784015a5f03ecb49ec6474"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/infrastructure/persistence/adapters/CatalogReportRepositoryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/CatalogReportRepositoryAdapterTest.java",
+    "sha256": "f5b8598f3094bb1acf13e79289b5e06c2a86a3fec77415edb56c53837c2bf79f"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/get_catalog_report/GetCatalogReportUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImplTest.java",
+    "sha256": "e8e5af1b17527a7dc4377ba88fedbdf4692e5936403ca12ab5fc242bb9c10ce9"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImplTest.java",
+    "sha256": "bb2a032d53e0e3f94f73096f6222010ab068b136d80a18a0c7fe7e3defd51320"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImplTest.java",
+    "sha256": "97fef6c87c1e69e6b45511d2822f3ab75b9a6aa4f6ca747cc405e342980931cd"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/ports/out/CatalogPdfPortTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/CatalogPdfPortTest.java",
+    "sha256": "7423364e8365621990e5d6d104f68ba060d25b14d77ea5eb0bdc88b2f8555b3e"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CatalogReportResponseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/CatalogReportResponseTest.java",
+    "sha256": "0cc067194e097f15c238adc7a4fc838d9797418059e8035acf0648367e8874d7"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/response/CommercialCatalogResponseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/application/dto/response/CommercialCatalogResponseTest.java",
+    "sha256": "bc347130ff4257c5f99e70d23dfcbdcfda5f0e439b2479def9f3c4d298f5abd4"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogReportQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQueryTest.java",
+    "sha256": "0a8121c1126d2c8a6b01d0bf0fc6251a2ac4827299e32c936236cbccb5114c3c"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/inventory/application/dto/query/CatalogPdfQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQueryTest.java",
+    "sha256": "080f1f6f68b906a48e675ba7c1dfaa8f35f161b06da3013fca31802334dddfe5"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/config/MovementsReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/MovementsReportConfigTest.java",
+    "sha256": "d74a24c6e7c87bf9398c512ca1029e47105c7a1fe815bf692af8b20a54d4c949"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/web/MovementsReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/MovementsReportControllerTest.java",
+    "sha256": "4c8cea3b9e9ef353bfadd7639d39a39b99ca52b10aae2bd5bb7b64bc3ee52e20"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/projections/MovementsReportProjectionTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/projections/MovementsReportProjectionTest.java",
+    "sha256": "4d92cbfdbb269a0e7a0dafe2bee9ce386b2f2ef293f126c5ba36c4dbdd42c001"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/infrastructure/persistence/adapters/MovementsReportRepositoryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/MovementsReportRepositoryAdapterTest.java",
+    "sha256": "2a3bedab61d4dd4bb427aeb4cdef8ee94dc6946c802cb4c306316c5ad89418b0"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImplTest.java",
+    "sha256": "01118d8e0716524be602fb2ab0805eff5e04fba96a69f942d4b8e78c9a1f55bf"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/generate_movements_excel/GenerateMovementsExcelUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImplTest.java",
+    "sha256": "410c1e0ce2b10eabd112fea05d866bda59f83faa8bdfbbcc8369c1faa35fc8fe"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/ports/out/MovementsPdfPortTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/ports/out/MovementsPdfPortTest.java",
+    "sha256": "c3e5da3831e2a9b9a86cafd6effdb685206ec24d5625f6e2c326db0ee83a8c30"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/dto/response/MovementReportResponseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/response/MovementReportResponseTest.java",
+    "sha256": "4362c964084905f42917a892e203bb6573b0cc2e1b4ba0f1747b932791085b0e"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/movements/application/dto/query/MovementsPdfQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQueryTest.java",
+    "sha256": "7b7c1ab1ba8fd3abf5981082e1b30f437436b798865bb8501bae597fbfd87344"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/config/QuotesReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/config/QuotesReportConfigTest.java",
+    "sha256": "998e05ab356fbd1dda10eacf21b6fd135222e0bddc9e1b9746066c6266665534"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/web/QuotesReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/web/QuotesReportControllerTest.java",
+    "sha256": "ffbdb33fdf4de0f87145e379117e0092c4e05e74c481fbf2a25e5c8e6008a4ae"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/integration/QuoteDocumentQueryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/integration/QuoteDocumentQueryAdapterTest.java",
+    "sha256": "c62fdffce7178a19a633a0f6edd58568a2d9498e15de976a90275c3048c80e26"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/quotes/infrastructure/pdf/QuotePdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotePdfContentTest.java",
+    "sha256": "8a62743a3f773e33a213450f7f1ff0c95c5fd756126720a9a2a27e32aba9f7bb"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/quotes/application/generate_quote_pdf/GenerateQuotePdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImplTest.java",
+    "sha256": "ca08b2b064f5bd1c014928226277fd63d696e9f5b5b640c6ad8d2db926ee6715"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/quotes/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImplTest.java",
+    "sha256": "f01ce0a2f2156b5d4f5c6ef8d2e9abf02caf875249547dce4ea4f56748dd8859"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/config/InvoicesReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/config/InvoicesReportConfigTest.java",
+    "sha256": "2ba0cbec42d4082b84ba0438772e81256ef6ca32a77e8bb6b0e7ba0a93af40fa"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/web/InvoicesReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/web/InvoicesReportControllerTest.java",
+    "sha256": "ad9ee0f4c8e0b1d86f8885667db3c974e1f4ebaa9d5984bda294fa0b09d81cca"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/integration/InvoiceDocumentQueryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/integration/InvoiceDocumentQueryAdapterTest.java",
+    "sha256": "9feffa085c76ee356518f923954817023b73fd0c5c160c97e6b4ba881fcedd5b"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/invoices/infrastructure/pdf/InvoicePdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicePdfContentTest.java",
+    "sha256": "f28b638a360851d5aeda88986aac29776ee28fec8a8f4052259192f00179f0b4"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/invoices/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImplTest.java",
+    "sha256": "14c0856e1f309a06a342a32cf063009220ff6aa7a0d3379ac866dbff52dece8d"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/invoices/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImplTest.java",
+    "sha256": "41325572e9b247049631b3c76db80546412bcf5853778807317cdb4af8fec411"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/config/PurchasesReportConfigTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/config/PurchasesReportConfigTest.java",
+    "sha256": "b86208b19518c7b30bb9b6c65b2a290dbf69c2d579bdfa63cf57c41c5ed912a9"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/web/PurchasesReportControllerTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/web/PurchasesReportControllerTest.java",
+    "sha256": "635bb0159b18fec3a094e77957001eb1e05d0b0d943b8be68f70d07fdd6cf2b4"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/integration/PurchaseDocumentQueryAdapterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/integration/PurchaseDocumentQueryAdapterTest.java",
+    "sha256": "e2ead08f68c59c3dfa7cad015d5dcf77f5bcc8d5a25c29c5d0ca53f18fbd3f63"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/purchases/infrastructure/pdf/PurchasePdfContentTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasePdfContentTest.java",
+    "sha256": "7d0658cfc910818b0fecd546986cc88c15a551ab7c02a28cf5f9ed9fc151274c"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/purchases/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImplTest.java",
+    "sha256": "a40b093634f1156a4b0c7a2c89ede7fdb2705e1e18593e82813f2389cc4fbe62"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/reports/purchases/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImplTest.java",
+    "sha256": "0ab9e3fbfd2da1bce67977ed1dd16a1bffec78ee43f9de0c0950f0885cddde43"
+  }
+]

@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.quotes.infrastructure.config;
 
 import com.cashly.cashly_api.quotes.application.ports.in.QuoteDocumentQuery;
-import com.cashly.cashly_api.quotes.application.services.QuoteDocumentQueryService;
-import com.cashly.cashly_api.quotes.application.usecases.GetQuotesUseCase;
-import com.cashly.cashly_api.quotes.domain.repositories.QuoteRepository;
+import com.cashly.cashly_api.quotes.application.queries.QuoteDocumentQueryService;
+import com.cashly.cashly_api.quotes.application.list.GetQuotesUseCase;
+import com.cashly.cashly_api.quotes.domain.QuoteRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

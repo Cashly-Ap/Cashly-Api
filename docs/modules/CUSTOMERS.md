@@ -1,5 +1,7 @@
 # CUSTOMERS Module
 
+> Estructura actual del código: `customers/profile`, `customers/balance`, `customers/credit` y `customers/warehouse_access`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
 ## Overview
 The CUSTOMERS module manages customer information for the invoicing system. It handles customer registration, profile updates, contact information (emails, phones, addresses), and credit management.
 

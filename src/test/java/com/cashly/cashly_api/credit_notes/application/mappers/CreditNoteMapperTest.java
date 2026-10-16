@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.credit_notes.application.mappers;
 
 import com.cashly.cashly_api.credit_notes.application.dto.response.CreditNoteResponse;
-import com.cashly.cashly_api.credit_notes.domain.entities.CreditNote;
+import com.cashly.cashly_api.credit_notes.domain.CreditNote;
 import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteId;
 import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteNumber;
 import org.junit.jupiter.api.DisplayName;

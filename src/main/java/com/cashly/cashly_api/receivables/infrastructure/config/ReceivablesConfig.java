@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.receivables.infrastructure.config;
 
-import com.cashly.cashly_api.receivables.application.usecases.GetCustomerDebtUseCase;
-import com.cashly.cashly_api.receivables.application.usecases.GetCustomerInvoicesUseCase;
-import com.cashly.cashly_api.receivables.application.usecases.GetPaymentHistoryUseCase;
-import com.cashly.cashly_api.receivables.application.usecases.GetReceivablesSummaryUseCase;
-import com.cashly.cashly_api.receivables.application.usecases.SearchCustomerDebtUseCase;
+import com.cashly.cashly_api.receivables.application.customer_debt.GetCustomerDebtUseCase;
+import com.cashly.cashly_api.receivables.application.customer_invoices.GetCustomerInvoicesUseCase;
+import com.cashly.cashly_api.receivables.application.payment_history.GetPaymentHistoryUseCase;
+import com.cashly.cashly_api.receivables.application.summary.GetReceivablesSummaryUseCase;
+import com.cashly.cashly_api.receivables.application.customer_debt.SearchCustomerDebtUseCase;
 import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

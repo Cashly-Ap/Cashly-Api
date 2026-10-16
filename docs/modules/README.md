@@ -1,7 +1,9 @@
+Current reporting ownership is defined in [backend architecture](../ARCHITECTURE.md): each owner has a `reporting` submodule; legacy examples below do not override it.
+
 # Module Documentation
 
 ## Purpose
-This directory contains **module-specific documentation** that serves as the **single source of truth** for each module in the Lexand API system.
+This directory contains **module-specific documentation** that serves as the **single source of truth** for each module in the Cashly API system.
 
 Each module documentation file is a comprehensive reference used by:
 - **Developers** - To understand how to use and extend the module
@@ -15,9 +17,13 @@ Each module documentation file is a comprehensive reference used by:
 ## File Naming Convention
 - File name: `[MODULE_NAME].md` (uppercase)
 - Examples: `AUTH.md`, `CUSTOMERS.md`, `ORDERS.md`, `INVOICES.md`
-- Module name matches the package: `com.lexand.lexand_api.[module_name]`
+- Module name matches the package: `com.cashly.cashly_api.[module_name]`
 
 ---
+
+## Current package ownership
+
+Use [ARCHITECTURE.md](../ARCHITECTURE.md) for current module/capability ownership and short infrastructure paths. Older module guides include planning examples and legacy Lexand package names; verify those examples against the current source before using them as a file location or implementation template. The complete migration tree is in [trees/after.md](../../openspec/changes/screaming-backend-structure/trees/after.md).
 
 ## Required Sections
 

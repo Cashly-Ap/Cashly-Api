@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.purchases.application.services;
 
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway;
-import com.cashly.cashly_api.purchases.domain.entities.Purchase;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLineAllocation;
+import com.cashly.cashly_api.purchases.domain.Purchase;
+import com.cashly.cashly_api.purchases.domain.PurchaseLine;
+import com.cashly.cashly_api.purchases.domain.PurchaseLineAllocation;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseNumber;
 import org.junit.jupiter.api.Test;
 

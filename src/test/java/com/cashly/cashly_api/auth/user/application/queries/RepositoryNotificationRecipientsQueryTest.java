@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.auth.user.application.queries;
 
-import com.cashly.cashly_api.auth.user.domain.entities.User;
-import com.cashly.cashly_api.auth.user.domain.repositories.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.User;
+import com.cashly.cashly_api.auth.user.domain.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import org.junit.jupiter.api.Test;
 import java.util.List;

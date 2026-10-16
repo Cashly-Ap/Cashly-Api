@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.purchases.application.queries;
 
-import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
+import com.cashly.cashly_api.purchases.domain.PurchaseRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

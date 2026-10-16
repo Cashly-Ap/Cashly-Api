@@ -1,8 +1,17 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
 import com.cashly.cashly_api.orders.application.ports.out.InvoiceCreationGateway;
-import com.cashly.cashly_api.orders.application.usecases.*;
-import com.cashly.cashly_api.orders.domain.repositories.OrderRepository;
+import com.cashly.cashly_api.orders.application.assign_warehouses.AssignOrderWarehousesUseCase;
+import com.cashly.cashly_api.orders.application.cancel.CancelOrderUseCase;
+import com.cashly.cashly_api.orders.application.confirm.ConfirmOrderUseCase;
+import com.cashly.cashly_api.orders.application.convert_to_invoice.ConvertToInvoiceUseCase;
+import com.cashly.cashly_api.orders.application.create.CreateOrderUseCase;
+import com.cashly.cashly_api.orders.application.delete.DeleteOrderUseCase;
+import com.cashly.cashly_api.orders.application.get.GetOrderByIdUseCase;
+import com.cashly.cashly_api.orders.application.list.GetOrdersUseCase;
+import com.cashly.cashly_api.orders.application.products.GetProductsForOrderUseCase;
+import com.cashly.cashly_api.orders.application.update.UpdateOrderUseCase;
+import com.cashly.cashly_api.orders.domain.OrderRepository;
 import com.cashly.cashly_api.orders.application.ports.out.StockAvailabilityGateway;
 import com.cashly.cashly_api.orders.application.ports.out.CustomerCreditGateway;
 import org.springframework.context.annotation.Bean;

@@ -5,7 +5,7 @@ import com.cashly.cashly_api.auth.token.application.exceptions.InvalidTokenExcep
 import com.cashly.cashly_api.auth.token.application.exceptions.TokenExpiredException;
 import com.cashly.cashly_api.auth.user.application.exceptions.DuplicateEmailException;
 import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
-import com.cashly.cashly_api.customers.application.exceptions.DuplicateCustomerRifException;
+import com.cashly.cashly_api.customers.profile.application.exceptions.DuplicateCustomerRifException;
 import com.cashly.cashly_api.infrastructure.config.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

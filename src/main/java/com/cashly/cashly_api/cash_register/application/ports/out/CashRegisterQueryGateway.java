@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.cash_register.application.ports.out;
 
-import com.cashly.cashly_api.cash_register.application.dto.CashRegisterExportRow;
-import com.cashly.cashly_api.cash_register.application.dto.CashRegisterReportFilter;
-import com.cashly.cashly_api.cash_register.application.dto.CustomerSummary;
-import com.cashly.cashly_api.cash_register.application.dto.DailyTotals;
-import com.cashly.cashly_api.cash_register.domain.entities.CashRegister;
-import com.cashly.cashly_api.cash_register.domain.entities.CashRegisterDetail;
-import com.cashly.cashly_api.cash_register.domain.valueobjects.RegisterId;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterExportRow;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterReportFilter;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.CustomerSummary;
+import com.cashly.cashly_api.cash_register.sessions.application.dto.DailyTotals;
+import com.cashly.cashly_api.cash_register.sessions.domain.CashRegister;
+import com.cashly.cashly_api.cash_register.sessions.domain.CashRegisterDetail;
+import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.RegisterId;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import java.time.LocalDate;
 import java.util.List;

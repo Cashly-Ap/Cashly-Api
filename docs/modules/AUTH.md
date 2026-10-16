@@ -1,5 +1,7 @@
 # AUTH Module
 
+> Estructura actual del código: `auth/authentication`, `auth/token` y `auth/user`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
 ## Overview
 The AUTH module handles user authentication and authorization using JWT (JSON Web Tokens). It manages user registration, login, token refresh, and logout operations.
 

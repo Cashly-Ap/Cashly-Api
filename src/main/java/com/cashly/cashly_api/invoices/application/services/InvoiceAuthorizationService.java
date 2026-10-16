@@ -5,7 +5,7 @@ import com.cashly.cashly_api.invoices.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.invoices.application.ports.out.CustomerBalanceGateway;
 import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditGateway;
 import com.cashly.cashly_api.invoices.application.ports.out.InvoicePaymentSettlementGateway;
-import com.cashly.cashly_api.invoices.domain.entities.Invoice;
+import com.cashly.cashly_api.invoices.domain.Invoice;
 import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

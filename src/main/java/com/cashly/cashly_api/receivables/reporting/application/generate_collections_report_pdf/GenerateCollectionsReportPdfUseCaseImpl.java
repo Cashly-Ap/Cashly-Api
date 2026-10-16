@@ -1,0 +1,40 @@
+package com.cashly.cashly_api.receivables.reporting.application.generate_collections_report_pdf;
+
+import com.cashly.cashly_api.receivables.reporting.application.dto.CollectionsReportData;
+import com.cashly.cashly_api.receivables.reporting.application.ports.out.CollectionsReportPdfPort;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+public class GenerateCollectionsReportPdfUseCaseImpl implements GenerateCollectionsReportPdfUseCase {
+
+    private final CollectionsReportPdfPort pdfPort;
+
+    public GenerateCollectionsReportPdfUseCaseImpl(CollectionsReportPdfPort pdfPort) {
+        this.pdfPort = pdfPort;
+    }
+
+    @Override
+    public byte[] execute(UUID customerId, LocalDate agingFrom) {
+        CollectionsReportData data = buildReportData(customerId, agingFrom);
+        return pdfPort.generateReport(data);
+    }
+
+    private CollectionsReportData buildReportData(UUID customerId, LocalDate agingFrom) {
+        return new CollectionsReportData(
+                LocalDate.now(),
+                customerId,
+                agingFrom,
+                java.util.List.of(),
+                new CollectionsReportData.Summary(
+                        0,
+                        java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO
+                )
+        );
+    }
+}

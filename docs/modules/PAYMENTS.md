@@ -1,5 +1,7 @@
 # Payments
 
+> Estructura actual del código: `payments/collection` y `payments/credit`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
 Payments record customer money, support invoice allocation, and expose approval workflows for pending payments.
 
 ## API

@@ -1,7 +1,12 @@
 package com.cashly.cashly_api.suppliers.application.mappers;
 
-import com.cashly.cashly_api.suppliers.application.dto.response.*;
-import com.cashly.cashly_api.suppliers.domain.entities.Supplier;
+import com.cashly.cashly_api.suppliers.application.dto.response.AddressResponse;
+import com.cashly.cashly_api.suppliers.application.dto.response.EmailResponse;
+import com.cashly.cashly_api.suppliers.application.dto.response.PhoneResponse;
+import com.cashly.cashly_api.suppliers.application.dto.response.SupplierCreateResponse;
+import com.cashly.cashly_api.suppliers.application.dto.response.SupplierDetailResponse;
+import com.cashly.cashly_api.suppliers.application.dto.response.SupplierListResponse;
+import com.cashly.cashly_api.suppliers.domain.Supplier;
 
 public class SupplierMapper {
 

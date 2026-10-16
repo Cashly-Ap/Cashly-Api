@@ -1,0 +1,13 @@
+{
+  "tool": "@fission-ai/openspec",
+  "version": "1.14.2",
+  "command": "npm exec --yes --cache /tmp/cashly-openspec-cli-cache --package @fission-ai/openspec@1.14.2 -- openspec validate screaming-backend-structure --type change --strict --no-interactive --json",
+  "observed_result": {
+    "exit_code": 0,
+    "valid": true,
+    "issues": [],
+    "items_passed": 1,
+    "items_failed": 0
+  },
+  "scope": "OpenSpec document validation only; not runtime correctness"
+}

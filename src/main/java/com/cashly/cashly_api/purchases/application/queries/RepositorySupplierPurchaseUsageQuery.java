@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.purchases.application.queries;
 
 import com.cashly.cashly_api.purchases.application.ports.in.SupplierPurchaseUsageQuery;
-import com.cashly.cashly_api.purchases.domain.repositories.PurchaseRepository;
+import com.cashly.cashly_api.purchases.domain.PurchaseRepository;
 import java.util.UUID;
 import java.util.Collection;
 import java.util.Set;

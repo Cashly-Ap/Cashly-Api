@@ -2,7 +2,7 @@ package com.cashly.cashly_api.products.application.queries;
 
 import com.cashly.cashly_api.products.application.ports.in.StockCatalogEntry;
 import com.cashly.cashly_api.products.application.ports.in.StockCatalogQuery;
-import com.cashly.cashly_api.products.domain.repositories.ProductRepository;
+import com.cashly.cashly_api.products.domain.ProductRepository;
 import java.util.Optional;
 import java.util.UUID;
 

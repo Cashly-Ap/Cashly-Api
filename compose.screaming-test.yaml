@@ -1,0 +1,56 @@
+# Isolated verification only. Never combine with the development Compose file.
+services:
+  analyzer:
+    image: python:3.13-alpine
+    working_dir: /analysis
+    entrypoint: [sleep, infinity]
+  suite-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: screaming_suite
+      MYSQL_USER: screaming_test
+      MYSQL_PASSWORD: screaming_test
+      MYSQL_ROOT_PASSWORD: screaming_root
+    tmpfs: [/var/lib/mysql]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysqladmin ping --silent -h localhost -u root']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+  inventory-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: screaming_inventory
+      MYSQL_USER: screaming_test
+      MYSQL_PASSWORD: screaming_test
+      MYSQL_ROOT_PASSWORD: screaming_root
+    tmpfs: [/var/lib/mysql]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysqladmin ping --silent -h localhost -u root']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+  runner:
+    image: ${SCREAMING_TEST_IMAGE:-maven:3.9.9-amazoncorretto-24}
+    working_dir: /workspace
+    entrypoint: [sleep, infinity]
+    volumes:
+      - maven_cache:/root/.m2
+    environment:
+      MAVEN_OPTS: ${SCREAMING_MAVEN_OPTS:--Xmx1g -XX:+UseG1GC}
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DOCKER_COMPOSE_ENABLED: 'false'
+      SPRING_DATASOURCE_URL: jdbc:mysql://suite-db:3306/screaming_suite
+      SPRING_DATASOURCE_USERNAME: screaming_test
+      SPRING_DATASOURCE_PASSWORD: screaming_test
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      RETURNS_MYSQL_URL: jdbc:mysql://suite-db:3306/screaming_suite
+      RETURNS_MYSQL_USERNAME: screaming_test
+      RETURNS_MYSQL_PASSWORD: screaming_test
+    depends_on:
+      suite-db: {condition: service_healthy}
+      inventory-db: {condition: service_healthy}
+volumes:
+  maven_cache:

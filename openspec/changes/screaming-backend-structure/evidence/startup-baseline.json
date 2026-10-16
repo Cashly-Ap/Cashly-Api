@@ -1,0 +1,11 @@
+{
+  "baseline_production_source_files": 1248,
+  "source_sha256_mismatches": [],
+  "tests": 63,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "xml_sha256": "dba2713c57e6e3d839b5e5d28a7fb2cbc307be80a7b5999b17bde966d3521c2f",
+  "source": "git archive HEAD plus identical startup IT",
+  "datasource": "isolated suite-db/screaming_suite"
+}

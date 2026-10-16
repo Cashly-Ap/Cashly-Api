@@ -1,9 +1,21 @@
 package com.cashly.cashly_api.returns.application.usecases;
-import com.cashly.cashly_api.returns.application.ports.out.*;
-import com.cashly.cashly_api.returns.application.dto.request.CreateReturnRequest;
+
+import com.cashly.cashly_api.returns.application.create.CreateReturnUseCase;
+import com.cashly.cashly_api.returns.application.delete.DeleteReturnUseCase;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnBalanceGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnCashGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInventoryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceQueryGateway;
+import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettlementGateway;
+import com.cashly.cashly_api.returns.application.create.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
-import com.cashly.cashly_api.returns.domain.entities.*;
-import com.cashly.cashly_api.returns.domain.repositories.ReturnRepository;
+import com.cashly.cashly_api.returns.domain.Return;
+import com.cashly.cashly_api.returns.domain.ReturnId;
+import com.cashly.cashly_api.returns.domain.ReturnLine;
+import com.cashly.cashly_api.returns.domain.ReturnNumber;
+import com.cashly.cashly_api.returns.domain.ReturnType;
+import com.cashly.cashly_api.returns.domain.ReturnRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;

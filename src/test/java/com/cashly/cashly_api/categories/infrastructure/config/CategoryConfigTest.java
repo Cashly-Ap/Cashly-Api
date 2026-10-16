@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.categories.infrastructure.config;
 
 import com.cashly.cashly_api.categories.application.mappers.CategoryMapper;
-import com.cashly.cashly_api.categories.application.usecases.CreateCategoryUseCase;
-import com.cashly.cashly_api.categories.application.usecases.DeleteCategoryUseCase;
-import com.cashly.cashly_api.categories.application.usecases.GetCategoryUseCase;
-import com.cashly.cashly_api.categories.application.usecases.ListCategoriesUseCase;
-import com.cashly.cashly_api.categories.application.usecases.UpdateCategoryUseCase;
+import com.cashly.cashly_api.categories.application.create.CreateCategoryUseCase;
+import com.cashly.cashly_api.categories.application.delete.DeleteCategoryUseCase;
+import com.cashly.cashly_api.categories.application.queries.GetCategoryUseCase;
+import com.cashly.cashly_api.categories.application.queries.ListCategoriesUseCase;
+import com.cashly.cashly_api.categories.application.update.UpdateCategoryUseCase;
 import com.cashly.cashly_api.categories.application.ports.out.CategoryUsageGateway;
-import com.cashly.cashly_api.categories.domain.repositories.CategoryRepository;
+import com.cashly.cashly_api.categories.domain.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.returns.application.mappers;
 
 import com.cashly.cashly_api.returns.application.ports.out.ReturnProjectionQueryGateway.InvoiceLabels;
-import com.cashly.cashly_api.returns.application.dto.request.CreateReturnRequest;
+import com.cashly.cashly_api.returns.application.create.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
-import com.cashly.cashly_api.returns.domain.entities.Return;
-import com.cashly.cashly_api.returns.domain.entities.ReturnLine;
-import com.cashly.cashly_api.returns.domain.entities.ReturnLineAllocation;
+import com.cashly.cashly_api.returns.domain.Return;
+import com.cashly.cashly_api.returns.domain.ReturnLine;
+import com.cashly.cashly_api.returns.domain.ReturnLineAllocation;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

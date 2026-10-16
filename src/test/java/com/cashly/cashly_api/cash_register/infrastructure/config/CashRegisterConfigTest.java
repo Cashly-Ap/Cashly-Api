@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.cash_register.infrastructure.config;
 
-import com.cashly.cashly_api.cash_register.application.ports.out.CashRegisterExcelPort;
+import com.cashly.cashly_api.cash_register.reporting.application.ports.out.CashRegisterExcelPort;
 import com.cashly.cashly_api.cash_register.application.ports.out.CashRegisterQueryGateway;
-import com.cashly.cashly_api.cash_register.domain.repositories.CashRegisterRepository;
+import com.cashly.cashly_api.cash_register.sessions.domain.CashRegisterRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

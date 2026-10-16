@@ -15,11 +15,11 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.cashly.cashly_api.auth.authentication.domain.entities.Authenticable;
-import com.cashly.cashly_api.auth.authentication.domain.entities.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.token.domain.entities.RefreshToken;
-import com.cashly.cashly_api.auth.user.domain.entities.User;
+import com.cashly.cashly_api.auth.token.domain.RefreshToken;
+import com.cashly.cashly_api.auth.user.domain.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;

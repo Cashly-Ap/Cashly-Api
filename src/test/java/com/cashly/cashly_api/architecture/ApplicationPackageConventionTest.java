@@ -3,127 +3,114 @@ package com.cashly.cashly_api.architecture;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ApplicationPackageConventionTest {
-    private static final Path SOURCE_ROOT = Path.of("src/main/java/com/cashly/cashly_api");
-    private static final List<String> AMBIGUOUS_PACKAGES = List.of("api", "contracts", "port", "query");
+    private static final List<String> AMBIGUOUS_PACKAGES = List.of("api", "contracts", "port", "query", "usecases");
     private static final List<String> PORT_DIRECTIONS = List.of("in", "out");
     private static final List<String> PERSISTENCE_ROLES = List.of(
             "entities", "repositories", "adapters", "queries", "mappers", "projections");
 
     @Test
     void should_use_cash_register_for_the_cash_register_module_package() throws IOException {
-        try (var sources = Files.walk(SOURCE_ROOT)) {
-            var violations = sources.filter(path -> path.toString().endsWith(".java"))
-                    .filter(path -> SOURCE_ROOT.relativize(path).getName(0).toString().equals("cashregister"))
-                    .map(SOURCE_ROOT::relativize)
-                    .toList();
-
-            assertThat(violations).as("The cash register module package is cash_register").isEmpty();
-        }
+        assertThat(productionPaths().stream().filter(path -> path.getName(0).toString().equals("cashregister")))
+                .as("The cash register module package is cash_register").isEmpty();
     }
 
     @Test
-    void should_use_controllers_for_http_input_adapters() throws IOException {
-        try (var sources = Files.walk(SOURCE_ROOT)) {
-            var violations = sources.filter(path -> path.toString().endsWith(".java"))
-                    .filter(path -> path.toString().replace('\\', '/').contains("/adapters/in/web/"))
-                    .map(SOURCE_ROOT::relativize)
-                    .toList();
-
-            assertThat(violations).as("HTTP input adapters belong in controllers").isEmpty();
-        }
+    void should_use_short_infrastructure_paths() throws IOException {
+        assertThat(productionPaths().stream().filter(this::hasDirectionalInfrastructureWrapper))
+                .as("HTTP, security and output adapters belong directly under infrastructure responsibilities")
+                .isEmpty();
     }
 
     @Test
     void should_group_persistence_sources_by_responsibility() throws IOException {
-        try (var sources = Files.walk(SOURCE_ROOT)) {
-            var violations = sources.filter(path -> path.toString().endsWith(".java"))
-                    .filter(this::hasUnclassifiedPersistencePackage)
-                    .map(SOURCE_ROOT::relativize)
-                    .toList();
-
-            assertThat(violations).as("Persistence sources require an explicit responsibility package").isEmpty();
-        }
-    }
-
-    private boolean hasUnclassifiedPersistencePackage(Path source) {
-        List<String> segments = List.of(SOURCE_ROOT.relativize(source).toString().replace('\\', '/').split("/"));
-        int persistenceIndex = segments.indexOf("persistence");
-        return persistenceIndex >= 0 && (persistenceIndex + 1 >= segments.size()
-                || !PERSISTENCE_ROLES.contains(segments.get(persistenceIndex + 1)));
+        var paths = productionPaths().stream().filter(path -> segments(path).contains("persistence")).toList();
+        assertThat(paths).as("Persistence guard must inspect actual persistence sources").isNotEmpty();
+        assertThat(paths.stream().filter(this::hasUnclassifiedPersistencePackage))
+                .as("Persistence sources require an explicit responsibility package").isEmpty();
     }
 
     @Test
     void should_keep_only_interfaces_in_persistence_repositories() throws IOException, ClassNotFoundException {
-        var violations = new java.util.ArrayList<Path>();
-        try (var sources = Files.walk(SOURCE_ROOT)) {
-            for (Path source : sources.filter(path -> path.toString().endsWith(".java"))
-                    .filter(path -> path.toString().replace('\\', '/')
-                            .contains("/persistence/repositories/")).toList()) {
-                String relativeName = SOURCE_ROOT.relativize(source).toString()
-                        .replace('\\', '.').replace('/', '.').replaceFirst("\\.java$", "");
-                Class<?> repository = Class.forName("com.cashly.cashly_api." + relativeName,
-                        false, getClass().getClassLoader());
-                if (!repository.isInterface()) {
-                    violations.add(SOURCE_ROOT.relativize(source));
-                }
+        var paths = productionPaths().stream()
+                .filter(path -> path.toString().replace('\\', '/').contains("/persistence/repositories/")).toList();
+        assertThat(paths).as("Repository guard must inspect actual Spring Data interfaces").isNotEmpty();
+        var violations = new ArrayList<Path>();
+        for (Path path : paths) {
+            String relativeName = path.toString().replace('\\', '.').replace('/', '.').replaceFirst("\\.java$", "");
+            Class<?> type = Class.forName("com.cashly.cashly_api." + relativeName, false, getClass().getClassLoader());
+            if (!type.isInterface()) {
+                violations.add(path);
             }
         }
-
         assertThat(violations).as("Concrete repository implementations belong in persistence/adapters").isEmpty();
     }
 
     @Test
-    void should_use_distinct_packages_for_offered_capabilities_required_ports_and_queries() throws IOException {
-        try (var sources = Files.walk(SOURCE_ROOT)) {
-            var violations = sources.filter(path -> path.toString().endsWith(".java"))
-                    .filter(this::hasAmbiguousApplicationPackage)
-                    .map(SOURCE_ROOT::relativize)
-                    .toList();
-
-            assertThat(violations).as("Application ports require in/out direction; query inputs belong in dto/query")
-                    .isEmpty();
-        }
+    void should_use_operation_packages_and_directional_application_ports() throws IOException {
+        var paths = productionPaths().stream().filter(path -> segments(path).contains("application")).toList();
+        assertThat(paths).as("Application guard must inspect nested capability packages").isNotEmpty();
+        assertThat(paths.stream().filter(this::hasAmbiguousApplicationPackage))
+                .as("Application operations need capability names; public and required ports need in/out direction")
+                .isEmpty();
     }
 
     @Test
-    void should_declare_input_or_output_direction_for_infrastructure_adapters() throws IOException {
-        try (var sources = Files.walk(SOURCE_ROOT)) {
-            var violations = sources.filter(path -> path.toString().endsWith(".java"))
-                    .filter(this::hasUndirectedAdapterPackage)
-                    .map(SOURCE_ROOT::relativize)
-                    .toList();
-
-            assertThat(violations).as("Infrastructure adapters require an explicit in/out direction").isEmpty();
-        }
+    void should_reject_legacy_and_ambiguous_path_fixtures() {
+        assertThat(hasDirectionalInfrastructureWrapper(Path.of("warehouses/stock/infrastructure/adapters/out/persistence/adapters/StockAdapter.java"))).isTrue();
+        assertThat(hasDirectionalInfrastructureWrapper(Path.of("auth/authentication/infrastructure/adapters/in/security/Filter.java"))).isTrue();
+        assertThat(hasAmbiguousApplicationPackage(Path.of("customers/credit/application/ports/Gateway.java"))).isTrue();
+        assertThat(hasAmbiguousApplicationPackage(Path.of("payments/collection/application/usecases/Pay.java"))).isTrue();
+        assertThat(hasUnclassifiedPersistencePackage(Path.of("warehouses/stock/infrastructure/persistence/StockEntity.java"))).isTrue();
     }
 
-    private boolean hasAmbiguousApplicationPackage(Path source) {
-        List<String> segments = List.of(SOURCE_ROOT.relativize(source).toString().replace('\\', '/').split("/"));
-        int applicationIndex = segments.indexOf("application");
-        if (applicationIndex < 0 || applicationIndex + 1 >= segments.size()) {
+    @Test
+    void should_accept_nested_capabilities_and_existing_output_roles() {
+        assertThat(hasDirectionalInfrastructureWrapper(Path.of("warehouses/stock/infrastructure/web/StockController.java"))).isFalse();
+        assertThat(hasDirectionalInfrastructureWrapper(Path.of("shared/storage/infrastructure/adapters/LocalFileStorageService.java"))).isFalse();
+        assertThat(hasAmbiguousApplicationPackage(Path.of("customers/credit/application/ports/in/CustomerCreditQuery.java"))).isFalse();
+        assertThat(hasAmbiguousApplicationPackage(Path.of("warehouses/stock/application/ports/out/StockCatalogGateway.java"))).isFalse();
+        assertThat(hasUnclassifiedPersistencePackage(Path.of("payments/collection/infrastructure/persistence/entities/PaymentEntity.java"))).isFalse();
+    }
+
+    private List<Path> productionPaths() throws IOException {
+        return CapabilityStructureTest.javaSources(CapabilityStructureTest.SOURCE_ROOT).stream()
+                .map(CapabilityStructureTest.SOURCE_ROOT::relativize).toList();
+    }
+
+    private List<String> segments(Path path) {
+        return List.of(path.toString().replace('\\', '/').split("/"));
+    }
+
+    private boolean hasUnclassifiedPersistencePackage(Path path) {
+        List<String> parts = segments(path);
+        int index = parts.indexOf("persistence");
+        return index >= 0 && (index + 1 >= parts.size() || !PERSISTENCE_ROLES.contains(parts.get(index + 1)));
+    }
+
+    private boolean hasAmbiguousApplicationPackage(Path path) {
+        List<String> parts = segments(path);
+        int index = parts.indexOf("application");
+        if (index < 0 || index + 1 >= parts.size()) {
             return false;
         }
-        String applicationPackage = segments.get(applicationIndex + 1);
-        if (AMBIGUOUS_PACKAGES.contains(applicationPackage)) {
+        if (AMBIGUOUS_PACKAGES.contains(parts.get(index + 1))) {
             return true;
         }
-        return applicationPackage.equals("ports") && (applicationIndex + 2 >= segments.size()
-                || !PORT_DIRECTIONS.contains(segments.get(applicationIndex + 2)));
+        int ports = parts.indexOf("ports");
+        return ports > index && (ports + 1 >= parts.size() || !PORT_DIRECTIONS.contains(parts.get(ports + 1)));
     }
 
-    private boolean hasUndirectedAdapterPackage(Path source) {
-        List<String> segments = List.of(SOURCE_ROOT.relativize(source).toString().replace('\\', '/').split("/"));
-        int infrastructureIndex = segments.indexOf("infrastructure");
-        return infrastructureIndex >= 0 && infrastructureIndex + 1 < segments.size()
-                && segments.get(infrastructureIndex + 1).equals("adapters")
-                && (infrastructureIndex + 2 >= segments.size()
-                || !PORT_DIRECTIONS.contains(segments.get(infrastructureIndex + 2)));
+    private boolean hasDirectionalInfrastructureWrapper(Path path) {
+        List<String> parts = segments(path);
+        int index = parts.indexOf("infrastructure");
+        return index >= 0 && index + 2 < parts.size() && parts.get(index + 1).equals("adapters")
+                && PORT_DIRECTIONS.contains(parts.get(index + 2));
     }
 }

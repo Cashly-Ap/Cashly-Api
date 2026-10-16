@@ -5,8 +5,8 @@ import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGa
 
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;
-import com.cashly.cashly_api.purchases.domain.entities.Purchase;
-import com.cashly.cashly_api.purchases.domain.entities.PurchaseLine;
+import com.cashly.cashly_api.purchases.domain.Purchase;
+import com.cashly.cashly_api.purchases.domain.PurchaseLine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
