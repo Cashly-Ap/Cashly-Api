@@ -7,7 +7,7 @@ import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.CatalogReportResponse;
 import com.cashly.cashly_api.warehouses.reporting.application.ports.out.CatalogReportRepositoryPort;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.CatalogReportQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.CatalogReportQuery;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

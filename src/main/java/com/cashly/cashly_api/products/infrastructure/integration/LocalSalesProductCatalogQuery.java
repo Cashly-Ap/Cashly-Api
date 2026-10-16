@@ -2,8 +2,8 @@ package com.cashly.cashly_api.products.infrastructure.integration;
 
 import com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogEntry;
 import com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery;
-import com.cashly.cashly_api.products.application.transactions.GetProductsForTransactionUseCase;
-import com.cashly.cashly_api.products.domain.ProductRepository;
+import com.cashly.cashly_api.products.application.transactions.use_case.GetProductsForTransactionUseCase;
+import com.cashly.cashly_api.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ public class LocalSalesProductCatalogQuery implements SalesProductCatalogQuery {
     public PageResponse<SalesProductCatalogEntry> findForTransaction(UUID customerId, String search,
                                                                       UUID categoryId, Boolean composite,
                                                                       Boolean withStock, int page, int size) {
-        PageResponse<com.cashly.cashly_api.products.application.transactions.ProductWithStockResponse> result =
+        PageResponse<com.cashly.cashly_api.products.application.transactions.response.ProductWithStockResponse> result =
                 transactionProducts.execute(customerId, search, categoryId, composite, withStock, page, size);
         var content = result.content().stream().map(product -> new SalesProductCatalogEntry(
                 UUID.fromString(product.id()), product.code(), product.name(), UUID.fromString(product.categoryId()),

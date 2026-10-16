@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.quotes.reporting.infrastructure.integration;
-import com.cashly.cashly_api.quotes.application.queries.QuoteDocumentQueryService;
-import com.cashly.cashly_api.quotes.application.list.GetQuotesUseCase;
+import com.cashly.cashly_api.quotes.application.queries.services.QuoteDocumentQueryService;
+import com.cashly.cashly_api.quotes.application.list.use_case.GetQuotesUseCase;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
-import com.cashly.cashly_api.quotes.domain.QuoteRepository;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportFilter;
+import com.cashly.cashly_api.quotes.domain.repository.QuoteRepository;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportFilter;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.*;

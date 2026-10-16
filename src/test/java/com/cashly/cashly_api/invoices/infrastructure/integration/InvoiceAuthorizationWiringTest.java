@@ -1,21 +1,26 @@
 package com.cashly.cashly_api.invoices.infrastructure.integration;
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
 import com.cashly.cashly_api.auth.user.infrastructure.config.ActorIdentityQueryConfig;
-import com.cashly.cashly_api.customers.balance.application.consume.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
 import com.cashly.cashly_api.customers.balance.infrastructure.config.InvoiceBalanceConsumptionConfig;
-import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementService;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.cash_register.sessions.infrastructure.config.CashRegisterOperationsConfig;
-import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
 import com.cashly.cashly_api.payments.collection.infrastructure.config.CashInvoiceSettlementConfig;
 import com.cashly.cashly_api.payments.collection.infrastructure.integration.LocalPaymentCashRegisterGateway;
 import com.cashly.cashly_api.invoices.application.ports.out.ActorIdentityGateway;
 import com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditGateway;
 import com.cashly.cashly_api.invoices.application.ports.out.InventoryGateway;
-import com.cashly.cashly_api.invoices.application.services.InvoiceAuthorizationService;
-import com.cashly.cashly_api.invoices.application.confirm.ConfirmInvoiceUseCase;
-import com.cashly.cashly_api.invoices.domain.InvoiceRepository;
+import com.cashly.cashly_api.invoices.application.issue.services.InvoicePaymentService;
+import com.cashly.cashly_api.invoices.application.issue.validation.InvoiceIssueValidator;
+import com.cashly.cashly_api.invoices.application.issue.request.IssueInvoiceCommand;
+import com.cashly.cashly_api.invoices.application.issue.model.InvoiceOrigin;
+import com.cashly.cashly_api.invoices.application.issue.services.IssueInvoiceService;
+import com.cashly.cashly_api.invoices.application.issue.services.IssueInvoiceService;
+import com.cashly.cashly_api.invoices.application.confirm.use_case.ConfirmInvoiceUseCase;
+import com.cashly.cashly_api.invoices.domain.repository.InvoiceRepository;
 import com.cashly.cashly_api.notifications.application.services.NotificationService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.junit.jupiter.api.Test;
@@ -34,6 +39,7 @@ class InvoiceAuthorizationWiringTest {
             context.registerBean(CashMovementService.class, () -> mock(CashMovementService.class));
             context.registerBean(InvoiceRepository.class, () -> mock(InvoiceRepository.class));
             context.registerBean(CustomerCreditGateway.class, () -> mock(CustomerCreditGateway.class));
+            context.registerBean(com.cashly.cashly_api.invoices.application.ports.out.StockDeductionGateway.class, () -> mock(com.cashly.cashly_api.invoices.application.ports.out.StockDeductionGateway.class));
             context.registerBean(InventoryGateway.class, () -> mock(InventoryGateway.class));
             context.registerBean(NotificationService.class, () -> mock(NotificationService.class));
             context.register(ActorIdentityQueryConfig.class, InvoiceBalanceConsumptionConfig.class,
@@ -41,9 +47,9 @@ class InvoiceAuthorizationWiringTest {
                     LocalActorIdentityGateway.class, LocalCustomerBalanceGateway.class,
                     LocalInvoicePaymentSettlementGateway.class, LocalInvoiceCashRegisterGateway.class,
                     LocalInvoiceNotificationGateway.class, LocalPaymentCashRegisterGateway.class,
-                    InvoiceAuthorizationService.class, ConfirmInvoiceUseCase.class);
+                    InvoiceIssueValidator.class, InvoicePaymentService.class, IssueInvoiceService.class, ConfirmInvoiceUseCase.class);
             context.refresh();
-            assertThat(context.getBean(InvoiceAuthorizationService.class)).isNotNull();
+            assertThat(context.getBean(IssueInvoiceService.class)).isNotNull();
             assertThat(context.getBean(ConfirmInvoiceUseCase.class)).isNotNull();
             assertThatThrownBy(() -> context.getBean(ActorIdentityGateway.class).requireActor(UUID.randomUUID()))
                     .isInstanceOf(IllegalArgumentException.class).hasMessage("Usuario no encontrado");

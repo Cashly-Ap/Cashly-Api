@@ -1,0 +1,47 @@
+[
+  {
+    "path": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/DuplicateInvoiceUseCaseUnitTest.java.bak",
+    "sha256": "b6659b62b576ba29f335432a9e9190639975250f27e7c47b4b9e490fc798717a",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/UpdateInvoiceUseCaseUnitTest.java.bak",
+    "sha256": "0dfb76be8557fa17db4a2b16070e315a58cee74d926bcf47f6b3a60b93b96cde",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/CreateInvoiceUseCaseUnitTest.java.bak",
+    "sha256": "ddb25b209703e0fb702a68ae3ef5383f1b5b69a05491c994991f6eb4de92396d",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/ConfirmInvoiceUseCaseUnitTest.java.bak",
+    "sha256": "ebc4af12777cb68e6f9315bb9229ba54c47c52483a3ab25adf09c9a7a93cc1bf",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/GetInvoicesUseCaseUnitTest.java.bak",
+    "sha256": "7c9ffc58b5febdbf3305628f9d83fa07d345d00ef6b95f5954c6a48b08cf5b87",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/DeleteInvoiceUseCaseUnitTest.java.bak",
+    "sha256": "b58c4bc9c65715ae725474e317249f50ccc2ca7ce0b64f1db4f3c8c4ecffd806",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/auth/user/infrastructure/persistence/UserEntityUnitTest.java.bak",
+    "sha256": "7cadca5eea56abd2b8fb2307246f9a05eb898650e67f1ec1c908718577955f79",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/price_types/application/usecases/ListPriceTypesUseCaseUnitTest.java.bak",
+    "sha256": "a1113e4eacd3e5563ae2945eed06bd913c6c98c5f2d75c048c512cf0af39c826",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  },
+  {
+    "path": "src/test/java/com/cashly/cashly_api/orders/application/usecases/GetOrdersUseCaseUnitTest.java.bak",
+    "sha256": "f056f0dd263b815aa81f76986adfa659e5e009faa88985802cc9f88ce78c1605",
+    "reason": "Non-executable tracked backup under obsolete source package; actual Java tests retained and relocated"
+  }
+]

@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportRow;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportRow;
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfStatusColors;
 

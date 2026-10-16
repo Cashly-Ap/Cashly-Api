@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.cash_register.sessions.infrastructure.config;
 import com.cashly.cashly_api.cash_register.sessions.application.ports.in.CashRegisterOperations;
 import com.cashly.cashly_api.cash_register.sessions.application.services.CashRegisterOperationsService;
-import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementService;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.services.CashMovementService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

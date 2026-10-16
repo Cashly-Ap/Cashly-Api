@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.products.infrastructure.integration;
 
-import com.cashly.cashly_api.categories.domain.Category;
-import com.cashly.cashly_api.categories.domain.CategoryRepository;
+import com.cashly.cashly_api.categories.domain.entity.Category;
+import com.cashly.cashly_api.categories.domain.repository.CategoryRepository;
 import com.cashly.cashly_api.categories.infrastructure.config.ProductCategoryQueryConfig;
 import com.cashly.cashly_api.categories.application.exceptions.CategoryNotFoundException;
-import com.cashly.cashly_api.price_types.domain.PriceType;
-import com.cashly.cashly_api.price_types.domain.PriceTypeRepository;
+import com.cashly.cashly_api.price_types.domain.entity.PriceType;
+import com.cashly.cashly_api.price_types.domain.repository.PriceTypeRepository;
 import com.cashly.cashly_api.price_types.infrastructure.config.ProductPriceTypeQueryConfig;
 import com.cashly.cashly_api.price_types.application.exceptions.PriceTypeNotFoundException;
 import org.junit.jupiter.api.Test;

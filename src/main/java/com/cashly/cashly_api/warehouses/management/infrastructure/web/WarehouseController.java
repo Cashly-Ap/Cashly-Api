@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.warehouses.management.infrastructure.web;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.warehouses.management.application.create.CreateWarehouseRequest;
-import com.cashly.cashly_api.warehouses.management.application.update.UpdateWarehouseRequest;
-import com.cashly.cashly_api.warehouses.management.application.dto.WarehouseDetailResponse;
-import com.cashly.cashly_api.warehouses.management.application.dto.WarehouseListResponse;
-import com.cashly.cashly_api.warehouses.management.application.create.CreateWarehouseUseCase;
-import com.cashly.cashly_api.warehouses.management.application.delete.DeleteWarehouseUseCase;
-import com.cashly.cashly_api.warehouses.management.application.queries.GetWarehouseUseCase;
-import com.cashly.cashly_api.warehouses.management.application.queries.ListWarehousesUseCase;
-import com.cashly.cashly_api.warehouses.management.application.update.UpdateWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.create.request.CreateWarehouseRequest;
+import com.cashly.cashly_api.warehouses.management.application.update.request.UpdateWarehouseRequest;
+import com.cashly.cashly_api.warehouses.management.application.dto.response.WarehouseDetailResponse;
+import com.cashly.cashly_api.warehouses.management.application.dto.response.WarehouseListResponse;
+import com.cashly.cashly_api.warehouses.management.application.create.use_case.CreateWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.delete.use_case.DeleteWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.queries.use_case.GetWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.queries.use_case.ListWarehousesUseCase;
+import com.cashly.cashly_api.warehouses.management.application.update.use_case.UpdateWarehouseUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

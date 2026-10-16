@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payments.collection.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocation;
+import com.cashly.cashly_api.payments.collection.domain.entity.PaymentAllocation;
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.entities.PaymentAllocationEntity;
 
 public final class PaymentAllocationJpaMapper {

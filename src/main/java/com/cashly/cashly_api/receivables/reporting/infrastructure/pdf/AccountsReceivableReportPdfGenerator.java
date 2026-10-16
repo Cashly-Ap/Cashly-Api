@@ -21,7 +21,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.receivables.reporting.application.dto.AccountsReceivableReportData;
+import com.cashly.cashly_api.receivables.reporting.application.dto.model.AccountsReceivableReportData;
 import com.cashly.cashly_api.receivables.reporting.application.ports.out.AccountsReceivableReportPdfPort;
 
 import java.io.ByteArrayOutputStream;

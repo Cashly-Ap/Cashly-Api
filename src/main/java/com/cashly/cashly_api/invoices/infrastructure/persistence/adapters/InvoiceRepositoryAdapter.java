@@ -3,8 +3,8 @@ package com.cashly.cashly_api.invoices.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
 import com.cashly.cashly_api.invoices.infrastructure.persistence.repositories.InvoiceNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.invoices.domain.Invoice;
-import com.cashly.cashly_api.invoices.domain.InvoiceRepository;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.invoices.domain.repository.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.infrastructure.persistence.entities.InvoiceEntity;
 import com.cashly.cashly_api.invoices.infrastructure.persistence.entities.InvoiceNumberSequenceEntity;
@@ -34,7 +34,8 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     @Override
     public Invoice save(Invoice invoice) {
         var entity = InvoiceJpaMapper.toEntity(invoice);
-        var saved = jpaRepository.save(entity);
+        // Other modules insert foreign-key allocations during the surrounding transaction.
+        var saved = jpaRepository.saveAndFlush(entity);
         return InvoiceJpaMapper.toDomain(saved);
     }
 

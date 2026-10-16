@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.invoices.application.architecture;
 
-import com.cashly.cashly_api.invoices.application.update.UpdateInvoiceUseCase;
-import com.cashly.cashly_api.invoices.application.duplicate.DuplicateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.update.use_case.UpdateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.duplicate.use_case.DuplicateInvoiceUseCase;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertTrue;

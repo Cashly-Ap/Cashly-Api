@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.suppliers.infrastructure.integration;
 
 import com.cashly.cashly_api.suppliers.application.ports.in.PurchaseSupplierQuery;
-import com.cashly.cashly_api.suppliers.domain.Supplier;
-import com.cashly.cashly_api.suppliers.domain.SupplierRepository;
+import com.cashly.cashly_api.suppliers.domain.entity.Supplier;
+import com.cashly.cashly_api.suppliers.domain.repository.SupplierRepository;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.LegalName;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.Rif;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.SupplierAlias;

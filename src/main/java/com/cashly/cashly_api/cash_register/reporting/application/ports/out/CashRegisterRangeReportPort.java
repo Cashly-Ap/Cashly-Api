@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.cash_register.reporting.application.ports.out;
 
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterExportRow;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterReportFilter;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportFormat;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportType;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterExportRow;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterReportFilter;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportFormat;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportType;
 
 import java.util.List;
 

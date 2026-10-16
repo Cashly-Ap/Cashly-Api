@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.purchases.reporting.infrastructure.pdf;
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportData;
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportRow;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportData;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportRow;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;

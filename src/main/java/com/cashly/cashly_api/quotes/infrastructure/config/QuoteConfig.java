@@ -4,18 +4,17 @@ import com.cashly.cashly_api.quotes.application.ports.out.ActorIdentityGateway;
 import com.cashly.cashly_api.quotes.application.ports.out.QuoteCustomerGateway;
 import com.cashly.cashly_api.quotes.application.ports.out.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.quotes.application.ports.out.QuoteWarehouseGateway;
-import com.cashly.cashly_api.quotes.application.assign_warehouses.AssignQuoteWarehousesUseCase;
-import com.cashly.cashly_api.quotes.application.cancel.CancelQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.ConvertQuoteToInvoiceUseCase;
-import com.cashly.cashly_api.quotes.application.convert_to_order.ConvertQuoteToOrderUseCase;
-import com.cashly.cashly_api.quotes.application.create.CreateQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.delete.DeleteQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.products.GetProductsForQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.get.GetQuoteByIdUseCase;
-import com.cashly.cashly_api.quotes.application.list.GetQuotesUseCase;
-import com.cashly.cashly_api.quotes.application.warehouses.GetWarehousesForQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.update.UpdateQuoteUseCase;
-import com.cashly.cashly_api.quotes.domain.QuoteRepository;
+import com.cashly.cashly_api.quotes.application.cancel.use_case.CancelQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.convert_to_invoice.use_case.ConvertQuoteToInvoiceUseCase;
+import com.cashly.cashly_api.quotes.application.convert_to_order.use_case.ConvertQuoteToOrderUseCase;
+import com.cashly.cashly_api.quotes.application.create.use_case.CreateQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.delete.use_case.DeleteQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.products.use_case.GetProductsForQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.get.use_case.GetQuoteByIdUseCase;
+import com.cashly.cashly_api.quotes.application.list.use_case.GetQuotesUseCase;
+import com.cashly.cashly_api.quotes.application.warehouses.use_case.GetWarehousesForQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.update.use_case.UpdateQuoteUseCase;
+import com.cashly.cashly_api.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.adapters.JpaQuoteRepositoryAdapter;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.mappers.QuoteJpaMapper;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.repositories.QuoteJpaRepository;
@@ -92,13 +91,6 @@ public class QuoteConfig {
     }
 
     @Bean
-    public AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase(
-            QuoteRepository quoteRepository,
-            QuoteWarehouseGateway warehouses) {
-        return new AssignQuoteWarehousesUseCase(quoteRepository, warehouses);
-    }
-
-    @Bean
     public ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase(
             QuoteRepository quoteRepository,
             com.cashly.cashly_api.quotes.application.ports.out.OrderCreationGateway orders,
@@ -123,14 +115,12 @@ public class QuoteConfig {
                                             DeleteQuoteUseCase deleteQuoteUseCase,
                                             CancelQuoteUseCase cancelQuoteUseCase,
                                             GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
-                                            AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase,
                                             ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
                                             ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
         return new QuoteController(createQuoteUseCase, getQuotesUseCase, getQuoteByIdUseCase,
                 updateQuoteUseCase, deleteQuoteUseCase,
                 cancelQuoteUseCase,
                 getWarehousesForQuoteUseCase,
-                assignQuoteWarehousesUseCase,
                 convertQuoteToOrderUseCase, convertQuoteToInvoiceUseCase);
     }
 }

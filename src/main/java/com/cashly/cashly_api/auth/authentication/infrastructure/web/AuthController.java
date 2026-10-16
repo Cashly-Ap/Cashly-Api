@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.auth.authentication.infrastructure.web;
 
-import com.cashly.cashly_api.auth.user.application.password.UpdateUserPasswordRequest;
-import com.cashly.cashly_api.auth.user.application.password.UpdateUserPasswordUseCase;
+import com.cashly.cashly_api.auth.user.application.password.request.UpdateUserPasswordRequest;
+import com.cashly.cashly_api.auth.user.application.password.use_case.UpdateUserPasswordUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cashly.cashly_api.auth.authentication.application.dto.response.AuthenticationResponse;
-import com.cashly.cashly_api.auth.authentication.application.login.LoginRequest;
-import com.cashly.cashly_api.auth.token.application.logout.LogoutRequest;
-import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenRequest;
-import com.cashly.cashly_api.auth.user.application.register.RegisterUserRequest;
+import com.cashly.cashly_api.auth.authentication.application.login.request.LoginRequest;
+import com.cashly.cashly_api.auth.token.application.logout.request.LogoutRequest;
+import com.cashly.cashly_api.auth.token.application.refresh.request.RefreshTokenRequest;
+import com.cashly.cashly_api.auth.user.application.register.request.RegisterUserRequest;
 import com.cashly.cashly_api.auth.user.application.dto.response.UserResponse;
-import com.cashly.cashly_api.auth.authentication.application.login.LoginUserUseCase;
-import com.cashly.cashly_api.auth.token.application.logout.LogoutUserUseCase;
-import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenUseCase;
-import com.cashly.cashly_api.auth.user.application.register.RegisterUserUseCase;
+import com.cashly.cashly_api.auth.authentication.application.login.use_case.LoginUserUseCase;
+import com.cashly.cashly_api.auth.token.application.logout.use_case.LogoutUserUseCase;
+import com.cashly.cashly_api.auth.token.application.refresh.use_case.RefreshTokenUseCase;
+import com.cashly.cashly_api.auth.user.application.register.use_case.RegisterUserUseCase;
 
 import jakarta.validation.Valid;
 

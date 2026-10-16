@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.cash_register.sessions.infrastructure.web;
 
-import com.cashly.cashly_api.cash_register.sessions.application.dto.CashRegisterResponse;
-import com.cashly.cashly_api.cash_register.sessions.application.close.CloseRegisterRequest;
-import com.cashly.cashly_api.cash_register.sessions.application.open.OpenRegisterRequest;
-import com.cashly.cashly_api.cash_register.sessions.application.close.CloseRegisterUseCase;
-import com.cashly.cashly_api.cash_register.sessions.application.queries.GetActiveRegisterUseCase;
-import com.cashly.cashly_api.cash_register.sessions.application.queries.GetRegisterHistoryUseCase;
-import com.cashly.cashly_api.cash_register.sessions.application.open.OpenRegisterUseCase;
-import com.cashly.cashly_api.cash_register.sessions.application.movements.RecordCashMovementUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.dto.response.CashRegisterResponse;
+import com.cashly.cashly_api.cash_register.sessions.application.close.request.CloseRegisterRequest;
+import com.cashly.cashly_api.cash_register.sessions.application.open.request.OpenRegisterRequest;
+import com.cashly.cashly_api.cash_register.sessions.application.close.use_case.CloseRegisterUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.queries.use_case.GetActiveRegisterUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.queries.use_case.GetRegisterHistoryUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.open.use_case.OpenRegisterUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

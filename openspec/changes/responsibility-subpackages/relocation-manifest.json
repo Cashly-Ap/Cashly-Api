@@ -1,0 +1,2650 @@
+[
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/authentication/application/login/LoginRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/authentication/application/login/request/LoginRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/authentication/application/login/LoginUserUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/authentication/application/login/use_case/LoginUserUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/authentication/domain/Authenticable.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/authentication/domain/entity/Authenticable.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/authentication/domain/AuthenticableType.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/authentication/domain/valueobjects/AuthenticableType.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/token/application/logout/LogoutRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/token/application/logout/request/LogoutRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/token/application/logout/LogoutUserUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/token/application/logout/use_case/LogoutUserUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/token/application/refresh/RefreshTokenRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/token/application/refresh/request/RefreshTokenRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/token/application/refresh/RefreshTokenUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/token/application/refresh/use_case/RefreshTokenUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/token/domain/RefreshToken.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/token/domain/entity/RefreshToken.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/token/domain/RefreshTokenRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/token/domain/repository/RefreshTokenRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/delete/DeleteUserUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/delete/use_case/DeleteUserUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/email/UpdateUserEmailRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/email/request/UpdateUserEmailRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/email/UpdateUserEmailUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/email/use_case/UpdateUserEmailUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/password/UpdateUserPasswordRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/password/request/UpdateUserPasswordRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/password/UpdateUserPasswordUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/password/use_case/UpdateUserPasswordUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/permissions/UpdateUserModulePermissionsRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/permissions/request/UpdateUserModulePermissionsRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/permissions/UpdateUserModulePermissionsUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/permissions/use_case/UpdateUserModulePermissionsUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/GetAllUsersUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/use_case/GetAllUsersUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/GetUserByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/use_case/GetUserByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/RepositoryActorIdentityQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/services/RepositoryActorIdentityQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/RepositoryNotificationRecipientsQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/queries/services/RepositoryNotificationRecipientsQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/register/RegisterUserRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/register/request/RegisterUserRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/register/RegisterUserUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/register/use_case/RegisterUserUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/update/UpdateUserRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/update/request/UpdateUserRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/application/update/UpdateUserUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/application/update/use_case/UpdateUserUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/domain/User.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/domain/entity/User.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/auth/user/domain/UserRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/auth/user/domain/repository/UserRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/CashRegisterExportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/model/CashRegisterExportRow.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/CashRegisterReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/model/CashRegisterReportFilter.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/CustomerSummary.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/model/CustomerSummary.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/ReportFormat.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/model/ReportFormat.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/ReportType.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/dto/model/ReportType.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/excel/GenerateCashRegisterExcelUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/excel/use_case/GenerateCashRegisterExcelUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/excel/GenerateCashRegisterExcelUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/excel/services/GenerateCashRegisterExcelUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/range/GenerateCashRegisterRangeReportUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/range/use_case/GenerateCashRegisterRangeReportUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/session/GenerateCashRegisterReportUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/reporting/application/session/use_case/GenerateCashRegisterReportUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/close/CloseRegisterRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/close/request/CloseRegisterRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/close/CloseRegisterUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/close/use_case/CloseRegisterUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterDetailResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/CashRegisterDetailResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterMapper.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/mappers/CashRegisterMapper.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterMetrics.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/CashRegisterMetrics.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/CashRegisterResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/DailyTotals.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/DailyTotals.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/ExpenseSummaryItem.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/ExpenseSummaryItem.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/RevenueSummaryItem.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/RevenueSummaryItem.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/CashMovementRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/request/CashMovementRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/CashMovementResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/response/CashMovementResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/CashMovementService.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/services/CashMovementService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/RecordCashMovementUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/movements/use_case/RecordCashMovementUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/open/OpenRegisterRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/open/request/OpenRegisterRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/open/OpenRegisterUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/open/use_case/OpenRegisterUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/queries/GetActiveRegisterUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/queries/use_case/GetActiveRegisterUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/queries/GetRegisterHistoryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/application/queries/use_case/GetRegisterHistoryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/CashMovement.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/entity/CashMovement.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/CashRegister.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/entity/CashRegister.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/CashRegisterDetail.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/entity/CashRegisterDetail.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/CashRegisterRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/cash_register/sessions/domain/repository/CashRegisterRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/create/CreateCategoryRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/create/request/CreateCategoryRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/create/CreateCategoryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/create/use_case/CreateCategoryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/delete/DeleteCategoryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/delete/use_case/DeleteCategoryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/queries/GetCategoryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/queries/use_case/GetCategoryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/queries/ListCategoriesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/queries/use_case/ListCategoriesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/queries/RepositoryProductCategoryQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/queries/services/RepositoryProductCategoryQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/update/UpdateCategoryRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/update/request/UpdateCategoryRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/application/update/UpdateCategoryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/application/update/use_case/UpdateCategoryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/domain/Category.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/domain/entity/Category.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/categories/domain/CategoryRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/categories/domain/repository/CategoryRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/create/CreateCreditNoteRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/create/request/CreateCreditNoteRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/create/CreateCreditNoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/create/use_case/CreateCreditNoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/delete/DeleteCreditNoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/delete/use_case/DeleteCreditNoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/get/GetCreditNoteByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/get/use_case/GetCreditNoteByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/list/GetCreditNotesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/list/use_case/GetCreditNotesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/queries/InvoiceCreditNoteDetailsQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/queries/services/InvoiceCreditNoteDetailsQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/application/queries/RepositoryCreditNoteLedgerQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/application/queries/services/RepositoryCreditNoteLedgerQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/domain/CreditNote.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/domain/entity/CreditNote.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/credit_notes/domain/CreditNoteRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/credit_notes/domain/repository/CreditNoteRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/add/AddToCustomerBalanceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/add/use_case/AddToCustomerBalanceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/advance/CreateAdvanceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/advance/request/CreateAdvanceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/advance/CreateCustomerAdvanceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/advance/use_case/CreateCustomerAdvanceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/consume/ConsumeCustomerBalanceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/consume/use_case/ConsumeCustomerBalanceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/get/GetCustomerBalanceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/get/use_case/GetCustomerBalanceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/refund/CreateRefundRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/refund/request/CreateRefundRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/application/refund/RefundCustomerBalanceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/application/refund/use_case/RefundCustomerBalanceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/domain/BalanceTransaction.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/domain/entity/BalanceTransaction.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/domain/CustomerBalance.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/domain/entity/CustomerBalance.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/balance/domain/CustomerBalanceRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/balance/domain/repository/CustomerBalanceRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/credit/application/overdue/GetOverdueInvoicesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/credit/application/overdue/use_case/GetOverdueInvoicesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/credit/application/queries/RepositoryCustomerCreditContextQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/credit/application/queries/services/RepositoryCustomerCreditContextQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/credit/application/status/GetCustomerCreditStatusUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/credit/application/status/use_case/GetCustomerCreditStatusUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/delete/CustomerHasAssociatedRecordsException.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/delete/services/CustomerHasAssociatedRecordsException.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/delete/DeleteCustomerUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/delete/use_case/DeleteCustomerUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/get/GetCustomerUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/get/use_case/GetCustomerUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/list/ListCustomersUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/list/use_case/ListCustomersUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/RepositoryCustomerCreditTermsQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/services/RepositoryCustomerCreditTermsQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/RepositoryCustomerProductPricingQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/services/RepositoryCustomerProductPricingQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/RepositoryCustomerProfileQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/services/RepositoryCustomerProfileQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/RepositoryInvoiceCustomerQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/queries/services/RepositoryInvoiceCustomerQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/CreateCustomerRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/request/CreateCustomerRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/CustomerCreateResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/response/CustomerCreateResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/RegisterCustomerUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/register/use_case/RegisterCustomerUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/update/UpdateCustomerRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/update/request/UpdateCustomerRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/application/update/UpdateCustomerUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/application/update/use_case/UpdateCustomerUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/domain/Customer.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/domain/entity/Customer.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/domain/CustomerAddress.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerAddress.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/domain/CustomerCodeGenerator.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/domain/services/CustomerCodeGenerator.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/domain/CustomerEmail.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerEmail.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/domain/CustomerPhone.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerPhone.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/profile/domain/CustomerRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/profile/domain/repository/CustomerRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/grant/GrantWarehouseAccessUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/grant/use_case/GrantWarehouseAccessUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/list/ListCustomerWarehousesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/list/use_case/ListCustomerWarehousesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/queries/RepositoryCustomerWarehouseAccessQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/queries/services/RepositoryCustomerWarehouseAccessQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/revoke/RevokeWarehouseAccessUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/application/revoke/use_case/RevokeWarehouseAccessUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/domain/CustomerWarehouseAccess.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/domain/entity/CustomerWarehouseAccess.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/domain/CustomerWarehouseAccessRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/customers/warehouse_access/domain/repository/CustomerWarehouseAccessRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/dashboard/application/summary/GetDashboardUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/dashboard/application/summary/use_case/GetDashboardUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/create/CreateDebitNoteRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/create/request/CreateDebitNoteRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/create/CreateDebitNoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/create/use_case/CreateDebitNoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/delete/DeleteDebitNoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/delete/use_case/DeleteDebitNoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/get/GetDebitNoteByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/get/use_case/GetDebitNoteByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/list/GetDebitNotesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/list/use_case/GetDebitNotesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/queries/InvoiceDebitNoteDetailsQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/queries/services/InvoiceDebitNoteDetailsQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/application/queries/RepositoryDebitNoteLedgerQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/application/queries/services/RepositoryDebitNoteLedgerQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/domain/DebitNote.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/domain/entity/DebitNote.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/debit_notes/domain/DebitNoteRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/debit_notes/domain/repository/DebitNoteRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/cancel/CancelInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/cancel/request/CancelInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/cancel/CancelInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/cancel/use_case/CancelInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/confirm/ConfirmInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/confirm/request/ConfirmInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/confirm/ConfirmInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/confirm/use_case/ConfirmInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/create/CreateInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/create/request/CreateInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/create/CreateInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/create/use_case/CreateInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/create/from_order/OrderInvoiceCreationService.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/create/from_order/services/OrderInvoiceCreationService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/create/from_quote/QuoteInvoiceCreationService.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/create/from_quote/services/QuoteInvoiceCreationService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/delete/DeleteInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/delete/use_case/DeleteInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/duplicate/DuplicateInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/duplicate/request/DuplicateInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/duplicate/DuplicateInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/duplicate/use_case/DuplicateInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/get/GetInvoiceByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/get/use_case/GetInvoiceByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/issue/InvoiceIssueValidator.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/issue/validation/InvoiceIssueValidator.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/issue/InvoiceOrigin.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/issue/model/InvoiceOrigin.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/issue/InvoicePaymentService.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/issue/services/InvoicePaymentService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/issue/IssueInvoiceCommand.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/issue/request/IssueInvoiceCommand.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/issue/IssueInvoiceService.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/issue/services/IssueInvoiceService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/list/GetInvoicesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/list/use_case/GetInvoicesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/queries/InvoiceDocumentQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/queries/services/InvoiceDocumentQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/queries/RepositoryInvoiceCreditLedgerQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/queries/services/RepositoryInvoiceCreditLedgerQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/queries/RepositoryInvoiceReturnAdjustments.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/queries/services/RepositoryInvoiceReturnAdjustments.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/queries/RepositoryReturnInvoiceQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/queries/services/RepositoryReturnInvoiceQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/update/UpdateInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/update/request/UpdateInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/application/update/UpdateInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/application/update/use_case/UpdateInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/domain/Invoice.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/domain/entity/Invoice.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/domain/InvoiceLine.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/domain/entity/InvoiceLine.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/domain/InvoiceLineAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/domain/entity/InvoiceLineAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/domain/InvoiceRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/domain/repository/InvoiceRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/domain/InvoiceStatusService.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/domain/services/InvoiceStatusService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/model/InvoiceReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/model/InvoiceReportFilter.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/dto/model/InvoiceReportRow.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/use_case/GenerateInvoicePdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/services/GenerateInvoicePdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/use_case/GenerateInvoicesReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/services/GenerateInvoicesReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/notifications/application/quotes/QuoteConversionNotificationService.java",
+    "new": "src/main/java/com/cashly/cashly_api/notifications/application/quotes/services/QuoteConversionNotificationService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/notifications/application/quotes/QuoteRejectionNotificationService.java",
+    "new": "src/main/java/com/cashly/cashly_api/notifications/application/quotes/services/QuoteRejectionNotificationService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/notifications/domain/Notification.java",
+    "new": "src/main/java/com/cashly/cashly_api/notifications/domain/entity/Notification.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/notifications/domain/NotificationRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/notifications/domain/repository/NotificationRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/cancel/CancelOrderRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/cancel/request/CancelOrderRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/cancel/CancelOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/cancel/use_case/CancelOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/confirm/ConfirmOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/confirm/use_case/ConfirmOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/convert_to_invoice/request/ConvertToInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/convert_to_invoice/response/ConvertToInvoiceResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/convert_to_invoice/use_case/ConvertToInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/create/CreateOrderRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/create/request/CreateOrderRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/create/CreateOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/create/use_case/CreateOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/create/from_quote/QuoteOrderCreationService.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/create/from_quote/services/QuoteOrderCreationService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/delete/DeleteOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/delete/use_case/DeleteOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/get/GetOrderByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/get/use_case/GetOrderByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/list/GetOrdersUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/list/use_case/GetOrdersUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/products/GetProductsForOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/products/use_case/GetProductsForOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/queries/OrderDocumentQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/queries/services/OrderDocumentQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/update/UpdateOrderRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/update/request/UpdateOrderRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/application/update/UpdateOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/application/update/use_case/UpdateOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/domain/Order.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/domain/entity/Order.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/domain/OrderLine.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/domain/entity/OrderLine.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/domain/OrderLineAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/domain/entity/OrderLineAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/domain/OrderRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/domain/repository/OrderRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/model/OrderReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/model/OrderReportFilter.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/dto/model/OrderReportRow.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/use_case/GenerateOrderPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/services/GenerateOrderPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/use_case/GenerateOrdersReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/services/GenerateOrdersReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/create/CreatePaymentMethodRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/create/request/CreatePaymentMethodRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/create/CreatePaymentMethodUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/create/use_case/CreatePaymentMethodUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/delete/DeletePaymentMethodUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/delete/use_case/DeletePaymentMethodUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/queries/GetPaymentMethodByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/queries/use_case/GetPaymentMethodByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/queries/ListPaymentMethodsUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/queries/use_case/ListPaymentMethodsUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/queries/RepositoryPaymentMethodDetailsQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/queries/services/RepositoryPaymentMethodDetailsQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/toggle/TogglePaymentMethodUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/toggle/use_case/TogglePaymentMethodUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/update/UpdatePaymentMethodRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/update/request/UpdatePaymentMethodRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/application/update/UpdatePaymentMethodUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/application/update/use_case/UpdatePaymentMethodUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/domain/PaymentMethod.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/domain/entity/PaymentMethod.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payment_methods/domain/PaymentMethodRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/payment_methods/domain/repository/PaymentMethodRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/approve/ApprovePaymentRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/approve/request/ApprovePaymentRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/approve/ApprovePaymentUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/approve/use_case/ApprovePaymentUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/create/CreatePaymentRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/create/request/CreatePaymentRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/create/CreatePaymentUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/create/use_case/CreatePaymentUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/delete/DeletePaymentUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/delete/use_case/DeletePaymentUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_customer_debt/PayAllCustomerDebtUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_customer_debt/use_case/PayAllCustomerDebtUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_customer_debt/PayCustomerDebtRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_customer_debt/request/PayCustomerDebtRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_invoice/PayInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_invoice/request/PayInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_invoice/PayInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_invoice/use_case/PayInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_partial_debt/PayPartialDebtRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_partial_debt/request/PayPartialDebtRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_partial_debt/PayPartialDebtUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/pay_partial_debt/use_case/PayPartialDebtUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/queries/GetAllPaymentsUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/queries/use_case/GetAllPaymentsUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/queries/GetPaymentByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/queries/use_case/GetPaymentByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/reject/RejectPaymentRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/reject/request/RejectPaymentRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/reject/RejectPaymentUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/reject/use_case/RejectPaymentUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/update/UpdatePaymentRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/update/request/UpdatePaymentRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/application/update/UpdatePaymentUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/application/update/use_case/UpdatePaymentUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/domain/Payment.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/domain/entity/Payment.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/domain/PaymentAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/domain/entity/PaymentAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/domain/PaymentAllocationRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/domain/repository/PaymentAllocationRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/domain/PaymentAllocationService.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/domain/services/PaymentAllocationService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/collection/domain/PaymentRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/collection/domain/repository/PaymentRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/credit/domain/CustomerCreditPolicy.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/credit/domain/services/CustomerCreditPolicy.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/model/PaymentHistoryReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/dto/model/PaymentReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/use_case/GeneratePaymentHistoryReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/services/GeneratePaymentHistoryReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/use_case/GeneratePaymentPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/services/GeneratePaymentPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/create/CreatePriceTypeRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/create/request/CreatePriceTypeRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/create/CreatePriceTypeUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/create/use_case/CreatePriceTypeUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/delete/DeletePriceTypeUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/delete/use_case/DeletePriceTypeUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/queries/GetPriceTypeUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/queries/use_case/GetPriceTypeUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/queries/ListPriceTypesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/queries/use_case/ListPriceTypesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/queries/RepositoryProductPriceTypeQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/queries/services/RepositoryProductPriceTypeQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/update/UpdatePriceTypeRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/update/request/UpdatePriceTypeRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/application/update/UpdatePriceTypeUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/application/update/use_case/UpdatePriceTypeUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/domain/PriceType.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/domain/entity/PriceType.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/price_types/domain/PriceTypeRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/price_types/domain/repository/PriceTypeRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/create/CreateProductRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/create/request/CreateProductRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/create/CreateProductUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/create/use_case/CreateProductUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/delete/DeleteProductUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/delete/use_case/DeleteProductUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/photos/RemoveProductPhotoUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/photos/use_case/RemoveProductPhotoUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/photos/UploadProductPhotoUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/photos/use_case/UploadProductPhotoUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/queries/GetProductUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/queries/use_case/GetProductUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/queries/ListProductsUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/queries/use_case/ListProductsUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/queries/RepositoryPurchaseProductCatalogQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/queries/services/RepositoryPurchaseProductCatalogQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/queries/RepositoryStockCatalogQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/queries/services/RepositoryStockCatalogQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/stock/GetProductStockUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/stock/use_case/GetProductStockUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/stock/ProductStockByWarehouseResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/stock/response/ProductStockByWarehouseResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/transactions/GetProductsForTransactionUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/transactions/use_case/GetProductsForTransactionUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/transactions/ProductWithStockResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/transactions/response/ProductWithStockResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/update/UpdateProductRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/update/request/UpdateProductRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/application/update/UpdateProductUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/application/update/use_case/UpdateProductUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/domain/Product.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/domain/entity/Product.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/domain/ProductComponent.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/domain/entity/ProductComponent.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/domain/ProductRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/domain/repository/ProductRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/reporting/application/dto/query/CommercialCatalogQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/dto/query/model/CommercialCatalogQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/use_case/GenerateCommercialCatalogPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/services/GenerateCommercialCatalogPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/cancel/CancelPurchaseRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/cancel/request/CancelPurchaseRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/cancel/CancelPurchaseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/cancel/use_case/CancelPurchaseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/confirm/ConfirmPurchaseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/confirm/use_case/ConfirmPurchaseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/create/CreatePurchaseRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/create/request/CreatePurchaseRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/create/CreatePurchaseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/create/use_case/CreatePurchaseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/delete/DeletePurchaseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/delete/use_case/DeletePurchaseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/get/GetPurchaseByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/get/use_case/GetPurchaseByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/list/ListPurchasesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/list/use_case/ListPurchasesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/products/GetProductsForPurchaseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/products/use_case/GetProductsForPurchaseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/queries/PurchaseDocumentQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/queries/services/PurchaseDocumentQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/queries/RepositorySupplierPurchaseUsageQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/queries/services/RepositorySupplierPurchaseUsageQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/update/UpdatePurchaseRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/update/request/UpdatePurchaseRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/application/update/UpdatePurchaseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/application/update/use_case/UpdatePurchaseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/domain/Purchase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/domain/entity/Purchase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/domain/PurchaseLine.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/domain/entity/PurchaseLine.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/domain/PurchaseLineAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/domain/entity/PurchaseLineAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/domain/PurchaseRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/domain/repository/PurchaseRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/model/PurchaseReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/model/PurchaseReportFilter.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/dto/model/PurchaseReportRow.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/use_case/GeneratePurchasePdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/services/GeneratePurchasePdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/use_case/GeneratePurchasesReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/services/GeneratePurchasesReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/cancel/CancelQuoteRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/cancel/request/CancelQuoteRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/cancel/CancelQuoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/cancel/use_case/CancelQuoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/ConvertQuoteToInvoiceRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/request/ConvertQuoteToInvoiceRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/ConvertQuoteToInvoiceUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/use_case/ConvertQuoteToInvoiceUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/QuoteConvertedToInvoiceResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/response/QuoteConvertedToInvoiceResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_order/ConvertQuoteToOrderUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_order/use_case/ConvertQuoteToOrderUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_order/QuoteConvertedToOrderResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/convert_to_order/response/QuoteConvertedToOrderResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/create/CreateQuoteRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/create/request/CreateQuoteRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/create/CreateQuoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/create/use_case/CreateQuoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/delete/DeleteQuoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/delete/use_case/DeleteQuoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/get/GetQuoteByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/get/use_case/GetQuoteByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/list/GetQuotesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/list/use_case/GetQuotesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/products/GetProductsForQuoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/products/use_case/GetProductsForQuoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/queries/QuoteDocumentQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/queries/services/QuoteDocumentQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/update/UpdateQuoteRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/update/request/UpdateQuoteRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/update/UpdateQuoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/update/use_case/UpdateQuoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/application/warehouses/GetWarehousesForQuoteUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/application/warehouses/use_case/GetWarehousesForQuoteUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/domain/Quote.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/domain/entity/Quote.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/domain/QuoteAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/domain/entity/QuoteAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/domain/QuoteLine.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/domain/entity/QuoteLine.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/domain/QuoteRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/domain/repository/QuoteRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/model/QuoteReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportFilter.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/model/QuoteReportFilter.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportRow.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/dto/model/QuoteReportRow.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/use_case/GenerateQuotePdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/services/GenerateQuotePdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/use_case/GenerateQuotesReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/services/GenerateQuotesReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/application/customer_debt/GetCustomerDebtUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/application/customer_debt/use_case/GetCustomerDebtUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/application/customer_debt/SearchCustomerDebtUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/application/customer_debt/use_case/SearchCustomerDebtUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/application/customer_invoices/GetCustomerInvoicesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/application/customer_invoices/use_case/GetCustomerInvoicesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/application/payment_history/GetPaymentHistoryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/application/payment_history/use_case/GetPaymentHistoryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/application/summary/GetReceivablesSummaryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/application/summary/use_case/GetReceivablesSummaryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/model/AccountsReceivableReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportData.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/dto/model/CollectionsReportData.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/use_case/GenerateAccountsReceivableReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/services/GenerateAccountsReceivableReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/use_case/GenerateCollectionsReportPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/services/GenerateCollectionsReportPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/application/create/CreateReturnRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/application/create/request/CreateReturnRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/application/create/CreateReturnUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/application/create/use_case/CreateReturnUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/application/delete/DeleteReturnUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/application/delete/use_case/DeleteReturnUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/application/get/GetReturnByIdUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/application/get/use_case/GetReturnByIdUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/application/list/GetAllReturnsUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/application/list/use_case/GetAllReturnsUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/application/queries/InvoiceReturnDetailsQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/application/queries/services/InvoiceReturnDetailsQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/CancelledAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/entity/CancelledAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/Return.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/entity/Return.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnId.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/valueobjects/ReturnId.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnLine.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/entity/ReturnLine.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnLineAllocation.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/entity/ReturnLineAllocation.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnNumber.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/valueobjects/ReturnNumber.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/repository/ReturnRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnStatus.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/valueobjects/ReturnStatus.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/returns/domain/ReturnType.java",
+    "new": "src/main/java/com/cashly/cashly_api/returns/domain/valueobjects/ReturnType.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/shared/storage/domain/FileNotFoundException.java",
+    "new": "src/main/java/com/cashly/cashly_api/shared/storage/domain/exceptions/FileNotFoundException.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/shared/storage/domain/FileStorageService.java",
+    "new": "src/main/java/com/cashly/cashly_api/shared/storage/domain/services/FileStorageService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/shared/storage/domain/StorageException.java",
+    "new": "src/main/java/com/cashly/cashly_api/shared/storage/domain/exceptions/StorageException.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/delete/DeleteSupplierUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/delete/use_case/DeleteSupplierUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/queries/GetSupplierUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/queries/use_case/GetSupplierUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/queries/ListSuppliersUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/queries/use_case/ListSuppliersUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/register/CreateSupplierRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/register/request/CreateSupplierRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/register/RegisterSupplierUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/register/use_case/RegisterSupplierUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/update/UpdateSupplierRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/update/request/UpdateSupplierRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/application/update/UpdateSupplierUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/application/update/use_case/UpdateSupplierUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/domain/Supplier.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/domain/entity/Supplier.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/domain/SupplierAddress.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/domain/entity/SupplierAddress.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/domain/SupplierEmail.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/domain/entity/SupplierEmail.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/domain/SupplierPhone.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/domain/entity/SupplierPhone.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/suppliers/domain/SupplierRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/suppliers/domain/repository/SupplierRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/create/CreateWarehouseRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/create/request/CreateWarehouseRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/create/CreateWarehouseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/create/use_case/CreateWarehouseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/create/DuplicateWarehouseCodeException.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/create/services/DuplicateWarehouseCodeException.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/delete/DeleteWarehouseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/delete/use_case/DeleteWarehouseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/delete/WarehouseHasActiveStockException.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/delete/services/WarehouseHasActiveStockException.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/dto/WarehouseDetailResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/dto/response/WarehouseDetailResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/dto/WarehouseListResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/dto/response/WarehouseListResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/queries/GetWarehouseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/queries/use_case/GetWarehouseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/queries/ListWarehousesUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/queries/use_case/ListWarehousesUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/queries/RepositoryWarehouseDirectoryQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/queries/services/RepositoryWarehouseDirectoryQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/update/UpdateWarehouseRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/update/request/UpdateWarehouseRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/application/update/UpdateWarehouseUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/application/update/use_case/UpdateWarehouseUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/domain/Warehouse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/domain/entity/Warehouse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/management/domain/WarehouseRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/management/domain/repository/WarehouseRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/CatalogPdfQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/CatalogReportQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/MovementsPdfQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/StockPdfQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/use_case/GenerateCatalogPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/services/GenerateCatalogPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/use_case/GenerateMovementsExcelUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/services/GenerateMovementsExcelUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/use_case/GenerateMovementsPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/services/GenerateMovementsPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/use_case/GenerateStockExcelUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/services/GenerateStockExcelUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/use_case/GenerateStockPdfUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/services/GenerateStockPdfUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/use_case/GetCatalogReportUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImpl.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/services/GetCatalogReportUseCaseImpl.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/adjustment/StockAdjustmentRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/adjustment/request/StockAdjustmentRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/adjustment/StockAdjustmentUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/adjustment/use_case/StockAdjustmentUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/deduction/StockDeductionService.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/deduction/services/StockDeductionService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/dto/StockBatchItem.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/dto/response/StockBatchItem.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/dto/WarehouseStockResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/dto/response/WarehouseStockResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/entry/StockEntryRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/entry/request/StockEntryRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/entry/StockEntryUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/entry/use_case/StockEntryUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/exit/StockExitRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/exit/request/StockExitRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/exit/StockExitUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/exit/use_case/StockExitUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/invoices/InvoiceInventoryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/invoices/services/InvoiceInventoryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/movements/GetStockMovementsUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/movements/use_case/GetStockMovementsUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/movements/StockMovementResponse.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/movements/response/StockMovementResponse.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/purchases/PurchaseInventoryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/purchases/services/PurchaseInventoryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/GetWarehouseStockUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/use_case/GetWarehouseStockUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/RepositoryProductStockQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/services/RepositoryProductStockQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/RepositoryPurchaseWarehouseQuery.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/services/RepositoryPurchaseWarehouseQuery.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/StockAvailabilityQueryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/queries/services/StockAvailabilityQueryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/returns/ReturnInventoryService.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/returns/services/ReturnInventoryService.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/transfer/TransferStockRequest.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/transfer/request/TransferStockRequest.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/transfer/TransferStockUseCase.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/application/transfer/use_case/TransferStockUseCase.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/MovementType.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/valueobjects/MovementType.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/ReferenceType.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/valueobjects/ReferenceType.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/StockMovement.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/entity/StockMovement.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/StockMovementRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/repository/StockMovementRepository.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/WarehouseStock.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/entity/WarehouseStock.java"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/WarehouseStockRepository.java",
+    "new": "src/main/java/com/cashly/cashly_api/warehouses/stock/domain/repository/WarehouseStockRepository.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/authentication/application/login/LoginRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/authentication/application/login/request/LoginRequestUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/authentication/application/login/LoginUserUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/authentication/application/login/use_case/LoginUserUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/application/logout/LogoutRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/application/logout/request/LogoutRequestUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/application/logout/LogoutUserUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/application/logout/use_case/LogoutUserUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/application/refresh/RefreshTokenRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/application/refresh/request/RefreshTokenRequestUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/application/refresh/RefreshTokenUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/application/refresh/use_case/RefreshTokenUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/domain/RefreshTokenUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/domain/entity/RefreshTokenUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/email/UpdateUserEmailUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/email/use_case/UpdateUserEmailUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/password/UpdateUserPasswordUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/password/use_case/UpdateUserPasswordUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/permissions/UpdateUserModulePermissionsUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/permissions/use_case/UpdateUserModulePermissionsUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/GetAllUsersUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/use_case/GetAllUsersUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/GetUserByIdUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/use_case/GetUserByIdUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/RepositoryActorIdentityQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/services/RepositoryActorIdentityQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/RepositoryNotificationRecipientsQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/queries/services/RepositoryNotificationRecipientsQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/register/RegisterUserRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/register/request/RegisterUserRequestUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/application/register/RegisterUserUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/application/register/use_case/RegisterUserUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/domain/UserUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/domain/entity/UserUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/dto/CashRegisterReportFilterTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/dto/model/CashRegisterReportFilterTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/excel/GenerateCashRegisterExcelUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/excel/services/GenerateCashRegisterExcelUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/range/GenerateCashRegisterRangeReportUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/range/use_case/GenerateCashRegisterRangeReportUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/session/GenerateCashRegisterReportUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/reporting/application/session/use_case/GenerateCashRegisterReportUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/close/CloseRegisterUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/close/use_case/CloseRegisterUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterMapperTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/mappers/CashRegisterMapperTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/dto/CashRegisterMetricsTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/CashRegisterMetricsTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/dto/DailyTotalsTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/dto/response/DailyTotalsTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/movements/CashMovementServiceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/movements/services/CashMovementServiceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/movements/RecordCashMovementUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/movements/use_case/RecordCashMovementUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/open/OpenRegisterUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/open/use_case/OpenRegisterUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/queries/GetActiveRegisterUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/queries/use_case/GetActiveRegisterUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/queries/GetRegisterHistoryUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/application/queries/use_case/GetRegisterHistoryUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/domain/CashMovementUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/domain/entity/CashMovementUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/domain/CashRegisterDetailTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/domain/entity/CashRegisterDetailTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/cash_register/sessions/domain/CashRegisterUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/cash_register/sessions/domain/entity/CashRegisterUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/application/create/CreateCategoryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/application/create/use_case/CreateCategoryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/application/delete/DeleteCategoryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/application/delete/use_case/DeleteCategoryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/application/queries/GetCategoryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/application/queries/use_case/GetCategoryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/application/queries/ListCategoriesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/application/queries/use_case/ListCategoriesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/application/update/UpdateCategoryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/application/update/use_case/UpdateCategoryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/domain/CatalogUsageBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/domain/entity/CatalogUsageBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/categories/domain/CategoryUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/categories/domain/entity/CategoryUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/credit_notes/application/create/CreateCreditNoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/credit_notes/application/create/use_case/CreateCreditNoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/credit_notes/application/delete/DeleteCreditNoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/credit_notes/application/delete/use_case/DeleteCreditNoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/credit_notes/application/get/GetCreditNoteByIdUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/credit_notes/application/get/use_case/GetCreditNoteByIdUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/credit_notes/application/list/GetCreditNotesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/credit_notes/application/list/use_case/GetCreditNotesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/credit_notes/application/queries/RepositoryCreditNoteLedgerQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/credit_notes/application/queries/services/RepositoryCreditNoteLedgerQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/credit_notes/domain/CreditNoteUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/credit_notes/domain/entity/CreditNoteUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/application/add/AddToCustomerBalanceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/application/add/use_case/AddToCustomerBalanceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/application/consume/ConsumeCustomerBalanceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/application/consume/use_case/ConsumeCustomerBalanceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/application/get/GetCustomerBalanceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/application/get/use_case/GetCustomerBalanceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/domain/BalanceTransactionTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/domain/entity/BalanceTransactionTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/domain/CustomerBalanceBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/domain/entity/CustomerBalanceBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/domain/CustomerBalanceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/domain/entity/CustomerBalanceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/credit/application/overdue/GetOverdueInvoicesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/credit/application/overdue/use_case/GetOverdueInvoicesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/credit/application/queries/RepositoryCustomerCreditContextQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/credit/application/queries/services/RepositoryCustomerCreditContextQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/credit/application/status/GetCustomerCreditStatusUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/credit/application/status/use_case/GetCustomerCreditStatusUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/application/delete/DeleteCustomerUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/application/delete/use_case/DeleteCustomerUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/application/get/GetCustomerUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/application/get/use_case/GetCustomerUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/application/list/ListCustomersUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/application/list/use_case/ListCustomersUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/application/register/RegisterCustomerUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/application/register/use_case/RegisterCustomerUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/application/update/UpdateCustomerUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/application/update/use_case/UpdateCustomerUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/domain/CustomerAddressUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerAddressUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/domain/CustomerEmailUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerEmailUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/domain/CustomerPhoneUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerPhoneUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/profile/domain/CustomerUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/profile/domain/entity/CustomerUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/grant/GrantWarehouseAccessUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/grant/use_case/GrantWarehouseAccessUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/list/ListCustomerWarehousesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/list/use_case/ListCustomerWarehousesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/revoke/RevokeWarehouseAccessUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/revoke/use_case/RevokeWarehouseAccessUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/domain/CustomerWarehouseAccessUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/domain/entity/CustomerWarehouseAccessUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/dashboard/application/summary/DashboardArchitectureTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/dashboard/application/summary/architecture/DashboardArchitectureTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/debit_notes/application/create/CreateDebitNoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/debit_notes/application/create/use_case/CreateDebitNoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/debit_notes/application/delete/DeleteDebitNoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/debit_notes/application/delete/use_case/DeleteDebitNoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/debit_notes/application/get/GetDebitNoteByIdUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/debit_notes/application/get/use_case/GetDebitNoteByIdUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/debit_notes/application/list/GetDebitNotesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/debit_notes/application/list/use_case/GetDebitNotesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/debit_notes/application/queries/RepositoryDebitNoteLedgerQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/debit_notes/application/queries/services/RepositoryDebitNoteLedgerQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/debit_notes/domain/DebitNoteUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/debit_notes/domain/entity/DebitNoteUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/architecture/operations/InvoiceEditingBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/architecture/operations/services/InvoiceEditingBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/cancel/CancelInvoiceUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/cancel/use_case/CancelInvoiceUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/confirm/ConfirmInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/confirm/use_case/ConfirmInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/create/CreateInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/create/use_case/CreateInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/delete/DeleteInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/delete/use_case/DeleteInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/duplicate/DuplicateInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/duplicate/use_case/DuplicateInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/get/GetInvoiceByIdUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/get/use_case/GetInvoiceByIdUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/issue/InvoiceIssuanceArchitectureTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/issue/architecture/InvoiceIssuanceArchitectureTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/issue/InvoiceIssuanceFinancialFlowTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/issue/services/InvoiceIssuanceFinancialFlowTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/issue/InvoiceIssuanceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/issue/services/InvoiceIssuanceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/list/GetInvoicesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/list/use_case/GetInvoicesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/queries/RepositoryInvoiceCreditLedgerQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/queries/services/RepositoryInvoiceCreditLedgerQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/queries/RepositoryInvoiceReturnAdjustmentsTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/queries/services/RepositoryInvoiceReturnAdjustmentsTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/update/UpdateInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/update/use_case/UpdateInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/domain/GetInvoiceByIdUseCaseNotesTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/domain/entity/GetInvoiceByIdUseCaseNotesTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/domain/InvoiceLineAllocationUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/domain/entity/InvoiceLineAllocationUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/domain/InvoiceLineUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/domain/entity/InvoiceLineUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/domain/InvoiceReturnBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/domain/entity/InvoiceReturnBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/domain/InvoiceUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/domain/entity/InvoiceUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/services/GenerateInvoicePdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/services/GenerateInvoicesReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/cancel/CancelOrderUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/cancel/use_case/CancelOrderUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/confirm/ConfirmOrderUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/confirm/use_case/ConfirmOrderUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/convert_to_invoice/use_case/ConvertToInvoiceUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/create/CreateOrderUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/create/use_case/CreateOrderUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/delete/DeleteOrderUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/delete/use_case/DeleteOrderUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/get/GetOrderByIdUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/get/use_case/GetOrderByIdUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/list/GetOrdersUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/list/use_case/GetOrdersUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/products/GetProductsForOrderUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/products/use_case/GetProductsForOrderUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/update/UpdateOrderUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/update/use_case/UpdateOrderUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/domain/OrderLineUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/domain/entity/OrderLineUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/domain/OrderUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/domain/entity/OrderUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/services/GenerateOrderPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/services/GenerateOrdersReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/application/create/CreatePaymentMethodUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/application/create/use_case/CreatePaymentMethodUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/application/delete/DeletePaymentMethodUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/application/delete/use_case/DeletePaymentMethodUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/application/queries/GetPaymentMethodByIdUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/application/queries/use_case/GetPaymentMethodByIdUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/application/queries/ListPaymentMethodsUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/application/queries/use_case/ListPaymentMethodsUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/application/toggle/TogglePaymentMethodUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/application/toggle/use_case/TogglePaymentMethodUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/application/update/UpdatePaymentMethodUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/application/update/use_case/UpdatePaymentMethodUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payment_methods/domain/PaymentMethodUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payment_methods/domain/entity/PaymentMethodUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/approve/ApprovePaymentUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/approve/use_case/ApprovePaymentUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/create/CreatePaymentRequestTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/create/request/CreatePaymentRequestTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/create/CreatePaymentUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/create/use_case/CreatePaymentUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/delete/DeletePaymentUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/delete/use_case/DeletePaymentUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/pay_customer_debt/PayAllCustomerDebtUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/pay_customer_debt/use_case/PayAllCustomerDebtUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/pay_invoice/PayInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/pay_invoice/use_case/PayInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/pay_partial_debt/PayPartialDebtUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/pay_partial_debt/use_case/PayPartialDebtUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/queries/GetAllPaymentsUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/queries/use_case/GetAllPaymentsUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/queries/GetPaymentByIdUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/queries/use_case/GetPaymentByIdUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/reject/RejectPaymentUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/reject/use_case/RejectPaymentUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/application/update/UpdatePaymentUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/application/update/use_case/UpdatePaymentUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/domain/PaymentAllocationServiceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/domain/services/PaymentAllocationServiceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/domain/PaymentAllocationTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/domain/entity/PaymentAllocationTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/collection/domain/PaymentUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/collection/domain/entity/PaymentUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/credit/domain/CustomerCreditPolicyTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/credit/domain/services/CustomerCreditPolicyTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportDataTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/dto/model/PaymentHistoryReportDataTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/services/GeneratePaymentHistoryReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/services/GeneratePaymentPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/application/create/CreatePriceTypeUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/application/create/use_case/CreatePriceTypeUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/application/delete/DeletePriceTypeUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/application/delete/use_case/DeletePriceTypeUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/application/queries/GetPriceTypeUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/application/queries/use_case/GetPriceTypeUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/application/queries/ListPriceTypesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/application/queries/use_case/ListPriceTypesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/application/update/UpdatePriceTypeUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/application/update/use_case/UpdatePriceTypeUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/domain/PriceTypeUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/domain/entity/PriceTypeUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/create/CreateProductUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/create/use_case/CreateProductUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/delete/DeleteProductUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/delete/use_case/DeleteProductUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/photos/RemoveProductPhotoUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/photos/use_case/RemoveProductPhotoUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/photos/UploadProductPhotoUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/photos/use_case/UploadProductPhotoUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/queries/GetProductUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/queries/use_case/GetProductUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/queries/ListProductsUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/queries/use_case/ListProductsUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/stock/GetProductStockUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/stock/use_case/GetProductStockUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/transactions/GetProductsForTransactionUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/transactions/use_case/GetProductsForTransactionUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/application/update/UpdateProductUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/application/update/use_case/UpdateProductUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/domain/ProductComponentUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/domain/entity/ProductComponentUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/domain/ProductUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/domain/entity/ProductUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/services/GenerateCommercialCatalogPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/application/cancel/CancelPurchaseUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/application/cancel/use_case/CancelPurchaseUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/application/confirm/ConfirmPurchaseUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/application/confirm/use_case/ConfirmPurchaseUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/application/create/CreatePurchaseUseCaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/application/create/use_case/CreatePurchaseUseCaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/application/products/GetProductsForPurchaseUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/application/products/use_case/GetProductsForPurchaseUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/application/queries/RepositorySupplierPurchaseUsageQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/application/queries/services/RepositorySupplierPurchaseUsageQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/domain/PurchaseLineAllocationUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/domain/entity/PurchaseLineAllocationUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/domain/PurchaseLineUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/domain/entity/PurchaseLineUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/domain/PurchaseRepositoryIntegrationTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/domain/entity/PurchaseRepositoryIntegrationTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/domain/PurchaseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/domain/entity/PurchaseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/domain/UpdatePurchaseCatalogTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/domain/entity/UpdatePurchaseCatalogTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/services/GeneratePurchasePdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/services/GeneratePurchasesReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/cancel/CancelQuoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/cancel/use_case/CancelQuoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/ConvertQuoteToInvoiceUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/convert_to_invoice/use_case/ConvertQuoteToInvoiceUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/convert_to_order/ConvertQuoteToOrderUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/convert_to_order/use_case/ConvertQuoteToOrderUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/create/CreateQuoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/create/use_case/CreateQuoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/delete/DeleteQuoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/delete/use_case/DeleteQuoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/get/GetQuoteByIdUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/get/use_case/GetQuoteByIdUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/list/GetQuotesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/list/use_case/GetQuotesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/products/GetProductsForQuoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/products/use_case/GetProductsForQuoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/update/UpdateQuoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/update/use_case/UpdateQuoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/application/warehouses/GetWarehousesForQuoteUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/application/warehouses/use_case/GetWarehousesForQuoteUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/domain/QuoteAllocationTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/domain/entity/QuoteAllocationTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/domain/QuoteCategorySnapshotMappingTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/domain/entity/QuoteCategorySnapshotMappingTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/domain/QuoteLineTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/domain/entity/QuoteLineTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/domain/QuoteTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/domain/entity/QuoteTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/services/GenerateQuotePdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/services/GenerateQuotesReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/application/customer_debt/GetCustomerDebtUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/application/customer_debt/use_case/GetCustomerDebtUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/application/customer_debt/SearchCustomerDebtUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/application/customer_debt/use_case/SearchCustomerDebtUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/application/customer_invoices/GetCustomerInvoicesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/application/customer_invoices/use_case/GetCustomerInvoicesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/application/payment_history/GetPaymentHistoryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/application/payment_history/use_case/GetPaymentHistoryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/application/summary/GetReceivablesSummaryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/application/summary/use_case/GetReceivablesSummaryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportDataTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/model/AccountsReceivableReportDataTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportDataTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/dto/model/CollectionsReportDataTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/services/GenerateAccountsReceivableReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/services/GenerateCollectionsReportPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/application/create/CreateReturnUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/application/create/use_case/CreateReturnUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/application/delete/DeleteReturnUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/application/delete/use_case/DeleteReturnUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/application/get/GetReturnByIdUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/application/get/use_case/GetReturnByIdUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/application/list/GetAllReturnsUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/application/list/use_case/GetAllReturnsUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/application/usecases/ReturnFinancialFlowsTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/application/usecases/services/ReturnFinancialFlowsTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/CancelledAllocationUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/entity/CancelledAllocationUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/ReturnIdUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/valueobjects/ReturnIdUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/ReturnInvoiceReferenceBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/architecture/ReturnInvoiceReferenceBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/ReturnLineAllocationUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/entity/ReturnLineAllocationUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/ReturnLineUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/entity/ReturnLineUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/ReturnNumberUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/valueobjects/ReturnNumberUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/returns/domain/ReturnUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/returns/domain/entity/ReturnUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/shared/storage/domain/StorageExceptionTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/storage/domain/exceptions/StorageExceptionTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/shared/storage/domain/StorageServiceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/storage/domain/entity/StorageServiceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/suppliers/domain/SupplierPurchaseUsageTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/suppliers/domain/entity/SupplierPurchaseUsageTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/suppliers/domain/SupplierUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/suppliers/domain/entity/SupplierUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/create/CreateWarehouseUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/create/use_case/CreateWarehouseUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/create/DuplicateWarehouseCodeExceptionTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/create/services/DuplicateWarehouseCodeExceptionTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/delete/DeleteWarehouseUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/delete/use_case/DeleteWarehouseUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/queries/GetWarehouseUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/queries/use_case/GetWarehouseUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/queries/ListWarehousesUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/queries/use_case/ListWarehousesUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/queries/RepositoryWarehouseDirectoryQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/queries/services/RepositoryWarehouseDirectoryQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/application/update/UpdateWarehouseUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/application/update/use_case/UpdateWarehouseUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/management/domain/WarehouseUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/management/domain/entity/WarehouseUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/CatalogPdfQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/CatalogReportQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/MovementsPdfQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQueryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/dto/query/model/StockPdfQueryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/services/GenerateCatalogPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/services/GenerateMovementsExcelUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/services/GenerateMovementsPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/services/GenerateStockExcelUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/services/GenerateStockPdfUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImplTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/services/GetCatalogReportUseCaseImplTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/adjustment/StockAdjustmentUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/adjustment/use_case/StockAdjustmentUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/entry/StockEntryUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/entry/use_case/StockEntryUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/exit/StockExitUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/exit/use_case/StockExitUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/invoices/InvoiceInventoryServiceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/invoices/services/InvoiceInventoryServiceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/movements/GetStockMovementsUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/movements/use_case/GetStockMovementsUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/queries/GetWarehouseStockUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/queries/use_case/GetWarehouseStockUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/queries/StockAvailabilityQueryServiceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/queries/services/StockAvailabilityQueryServiceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/returns/ReturnInventoryServiceTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/returns/services/ReturnInventoryServiceTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/transfer/TransferStockUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/transfer/use_case/TransferStockUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/MovementTypeUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/valueobjects/MovementTypeUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/ReferenceTypeTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/valueobjects/ReferenceTypeTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/StockMovementUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/entity/StockMovementUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/WarehouseStockTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/domain/entity/WarehouseStockTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/ManualStockCatalogBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/warehouses/stock/application/architecture/ManualStockCatalogBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/CustomerWarehouseBoundaryTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/warehouse_access/application/architecture/CustomerWarehouseBoundaryTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/balance/application/CreateCustomerCashBalanceOperationUseCaseTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/balance/application/use_case/CreateCustomerCashBalanceOperationUseCaseTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/customers/credit/application/CustomerCreditContractTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/customers/credit/application/architecture/CustomerCreditContractTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/CashlyApplicationTests.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/bootstrap/CashlyApplicationTests.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/TestCashlyApplication.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/bootstrap/TestCashlyApplication.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/TestJpaConfig.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/config/TestJpaConfig.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/TestcontainersConfiguration.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/config/TestcontainersConfiguration.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/bootstrap/BackendStartupMySqlIT.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/integration_tests/BackendStartupMySqlIT.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/config/DatabaseCleaner.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/config/DatabaseCleaner.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/config/H2DialectWithoutEngineSupport.java",
+    "new": "src/test/java/com/cashly/cashly_api/shared/infrastructure/config/H2DialectWithoutEngineSupport.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/infrastructure/persistence/OrderCategorySnapshotMappingTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/orders/infrastructure/persistence/mappers/OrderCategorySnapshotMappingTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/application/refresh/validation/RefreshTokenRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/application/refresh/request/validation/RefreshTokenRequestUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/token/application/logout/validation/LogoutRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/token/application/logout/request/validation/LogoutRequestUnitTest.java"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/authentication/application/login/validation/LoginRequestUnitTest.java",
+    "new": "src/test/java/com/cashly/cashly_api/auth/authentication/application/login/request/validation/LoginRequestUnitTest.java"
+  }
+]

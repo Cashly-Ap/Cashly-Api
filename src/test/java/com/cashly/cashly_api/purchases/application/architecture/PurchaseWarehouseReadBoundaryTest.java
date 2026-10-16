@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.purchases.application.architecture;
 
-import com.cashly.cashly_api.purchases.application.cancel.CancelPurchaseUseCase;
-import com.cashly.cashly_api.purchases.application.confirm.ConfirmPurchaseUseCase;
-import com.cashly.cashly_api.purchases.application.create.CreatePurchaseUseCase;
-import com.cashly.cashly_api.purchases.application.get.GetPurchaseByIdUseCase;
-import com.cashly.cashly_api.purchases.application.products.GetProductsForPurchaseUseCase;
-import com.cashly.cashly_api.purchases.application.update.UpdatePurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.cancel.use_case.CancelPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.confirm.use_case.ConfirmPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.create.use_case.CreatePurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.get.use_case.GetPurchaseByIdUseCase;
+import com.cashly.cashly_api.purchases.application.products.use_case.GetProductsForPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.update.use_case.UpdatePurchaseUseCase;
 
 import com.cashly.cashly_api.purchases.application.mappers.PurchaseMapper;
 import com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler;

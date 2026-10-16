@@ -3,9 +3,9 @@ package com.cashly.cashly_api.warehouses.reporting.infrastructure.web;
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.CatalogReportResponse;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.CatalogPdfQuery;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_catalog_pdf.GenerateCatalogPdfUseCase;
-import com.cashly.cashly_api.warehouses.reporting.application.get_catalog_report.GetCatalogReportUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.CatalogPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_catalog_pdf.use_case.GenerateCatalogPdfUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.get_catalog_report.use_case.GetCatalogReportUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

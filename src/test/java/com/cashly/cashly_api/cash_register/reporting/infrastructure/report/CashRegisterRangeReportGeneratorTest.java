@@ -3,10 +3,10 @@ package com.cashly.cashly_api.cash_register.reporting.infrastructure.report;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterExportRow;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterReportFilter;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportFormat;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportType;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterExportRow;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterReportFilter;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportFormat;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportType;
 import com.cashly.cashly_api.cash_register.reporting.application.ports.out.CashRegisterExcelPort;
 import org.junit.jupiter.api.Test;
 

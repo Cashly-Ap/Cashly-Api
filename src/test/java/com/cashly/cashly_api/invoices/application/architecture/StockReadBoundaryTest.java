@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.invoices.application.architecture;
 
-import com.cashly.cashly_api.invoices.application.get.GetInvoiceByIdUseCase;
-import com.cashly.cashly_api.invoices.application.update.UpdateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.get.use_case.GetInvoiceByIdUseCase;
+import com.cashly.cashly_api.invoices.application.update.use_case.UpdateInvoiceUseCase;
 
-import com.cashly.cashly_api.orders.application.get.GetOrderByIdUseCase;
+import com.cashly.cashly_api.orders.application.get.use_case.GetOrderByIdUseCase;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.stream.Stream;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payment_methods.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.payment_methods.domain.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.domain.entity.PaymentMethod;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.entities.PaymentMethodEntity;
 

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.receivables.application.architecture;
 
-import com.cashly.cashly_api.receivables.application.customer_invoices.GetCustomerInvoicesUseCase;
+import com.cashly.cashly_api.receivables.application.customer_invoices.use_case.GetCustomerInvoicesUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.UUID;

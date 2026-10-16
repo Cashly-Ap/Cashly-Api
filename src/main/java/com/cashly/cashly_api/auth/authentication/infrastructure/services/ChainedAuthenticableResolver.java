@@ -2,10 +2,10 @@ package com.cashly.cashly_api.auth.authentication.infrastructure.services;
 
 import java.util.Optional;
 
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
 import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticableResolver;
 import com.cashly.cashly_api.auth.authentication.infrastructure.integration.UserAuthenticableAdapter;
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 
 public class ChainedAuthenticableResolver implements AuthenticableResolver {

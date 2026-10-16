@@ -2,10 +2,10 @@ package com.cashly.cashly_api.invoices.reporting.infrastructure.config;
 
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoicePdfPort;
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.GenerateInvoicePdfUseCase;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.GenerateInvoicePdfUseCaseImpl;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoices_report_pdf.GenerateInvoicesReportPdfUseCase;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoices_report_pdf.GenerateInvoicesReportPdfUseCaseImpl;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.use_case.GenerateInvoicePdfUseCase;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.services.GenerateInvoicePdfUseCaseImpl;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoices_report_pdf.use_case.GenerateInvoicesReportPdfUseCase;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoices_report_pdf.services.GenerateInvoicesReportPdfUseCaseImpl;
 import com.cashly.cashly_api.invoices.reporting.infrastructure.pdf.InvoicePdfGenerator;
 import com.cashly.cashly_api.invoices.reporting.infrastructure.pdf.InvoicesReportPdfGenerator;
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoiceReportQueryGateway;

@@ -3,8 +3,8 @@ package com.cashly.cashly_api.debit_notes.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.debit_notes.infrastructure.persistence.repositories.DebitNoteJpaRepository;
 import com.cashly.cashly_api.debit_notes.infrastructure.persistence.repositories.DebitNoteNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.debit_notes.domain.DebitNote;
-import com.cashly.cashly_api.debit_notes.domain.DebitNoteRepository;
+import com.cashly.cashly_api.debit_notes.domain.entity.DebitNote;
+import com.cashly.cashly_api.debit_notes.domain.repository.DebitNoteRepository;
 import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteId;
 import com.cashly.cashly_api.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;
 import com.cashly.cashly_api.debit_notes.infrastructure.persistence.entities.DebitNoteNumberSequenceEntity;

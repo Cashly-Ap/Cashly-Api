@@ -7,11 +7,11 @@ import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettleme
 import com.cashly.cashly_api.returns.application.ports.out.ReturnBalanceGateway;
 import com.cashly.cashly_api.returns.application.ports.out.ReturnCashGateway;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
-import com.cashly.cashly_api.returns.application.create.CreateReturnUseCase;
-import com.cashly.cashly_api.returns.application.delete.DeleteReturnUseCase;
-import com.cashly.cashly_api.returns.application.list.GetAllReturnsUseCase;
-import com.cashly.cashly_api.returns.application.get.GetReturnByIdUseCase;
-import com.cashly.cashly_api.returns.domain.ReturnRepository;
+import com.cashly.cashly_api.returns.application.create.use_case.CreateReturnUseCase;
+import com.cashly.cashly_api.returns.application.delete.use_case.DeleteReturnUseCase;
+import com.cashly.cashly_api.returns.application.list.use_case.GetAllReturnsUseCase;
+import com.cashly.cashly_api.returns.application.get.use_case.GetReturnByIdUseCase;
+import com.cashly.cashly_api.returns.domain.repository.ReturnRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

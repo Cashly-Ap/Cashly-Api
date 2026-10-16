@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.profile.infrastructure.config;
 import com.cashly.cashly_api.customers.profile.application.ports.in.InvoiceCustomerQuery;
-import com.cashly.cashly_api.customers.profile.application.queries.RepositoryInvoiceCustomerQuery;
-import com.cashly.cashly_api.customers.profile.domain.CustomerRepository;
+import com.cashly.cashly_api.customers.profile.application.queries.services.RepositoryInvoiceCustomerQuery;
+import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.invoices.infrastructure.integration;
 
 import com.cashly.cashly_api.invoices.application.ports.out.InvoiceQuoteGateway;
-import com.cashly.cashly_api.quotes.domain.QuoteRepository;
+import com.cashly.cashly_api.quotes.domain.repository.QuoteRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

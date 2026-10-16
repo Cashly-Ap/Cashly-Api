@@ -2,7 +2,7 @@ package com.cashly.cashly_api.invoices.reporting.application.architecture;
 
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoicePdfPort;
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.GenerateInvoicePdfUseCaseImpl;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.services.GenerateInvoicePdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;

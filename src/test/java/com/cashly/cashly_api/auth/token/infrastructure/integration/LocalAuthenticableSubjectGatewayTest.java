@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.auth.token.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
-import com.cashly.cashly_api.auth.user.domain.User;
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payment_methods.application.mappers;
 
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
-import com.cashly.cashly_api.payment_methods.domain.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.domain.entity.PaymentMethod;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

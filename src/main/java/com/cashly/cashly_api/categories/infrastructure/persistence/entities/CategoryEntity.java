@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.categories.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.categories.domain.Category;
+import com.cashly.cashly_api.categories.domain.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

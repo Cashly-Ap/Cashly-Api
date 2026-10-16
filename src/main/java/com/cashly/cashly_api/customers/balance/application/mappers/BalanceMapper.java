@@ -2,8 +2,8 @@ package com.cashly.cashly_api.customers.balance.application.mappers;
 
 import com.cashly.cashly_api.customers.balance.application.dto.response.BalanceTransactionResponse;
 import com.cashly.cashly_api.customers.balance.application.dto.response.CustomerBalanceResponse;
-import com.cashly.cashly_api.customers.balance.domain.BalanceTransaction;
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalance;
+import com.cashly.cashly_api.customers.balance.domain.entity.BalanceTransaction;
+import com.cashly.cashly_api.customers.balance.domain.entity.CustomerBalance;
 
 public final class BalanceMapper {
 

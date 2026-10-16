@@ -2,8 +2,8 @@ package com.cashly.cashly_api.customers.warehouse_access.infrastructure.persiste
 
 import com.cashly.cashly_api.customers.warehouse_access.infrastructure.persistence.repositories.SpringDataCustomerWarehouseAccessRepository;
 
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccess;
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
+import com.cashly.cashly_api.customers.warehouse_access.domain.repository.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.warehouse_access.infrastructure.persistence.entities.CustomerWarehouseAccessEntity;
 import org.springframework.stereotype.Repository;
 

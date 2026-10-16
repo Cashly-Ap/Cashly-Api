@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.collection.application.services;
 import com.cashly.cashly_api.payments.collection.application.ports.in.PaymentDocumentQuery;
 import com.cashly.cashly_api.payments.collection.application.ports.in.PaymentDocumentSnapshot;
-import com.cashly.cashly_api.payments.collection.application.queries.GetPaymentByIdUseCase;
+import com.cashly.cashly_api.payments.collection.application.queries.use_case.GetPaymentByIdUseCase;
 import java.util.UUID;
 public class PaymentDocumentQueryService implements PaymentDocumentQuery {
     private final GetPaymentByIdUseCase query;

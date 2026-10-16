@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.warehouse_access.infrastructure.web;
 
 import com.cashly.cashly_api.customers.warehouse_access.application.dto.response.CustomerWarehouseAccessResponse;
-import com.cashly.cashly_api.customers.warehouse_access.application.grant.GrantWarehouseAccessUseCase;
-import com.cashly.cashly_api.customers.warehouse_access.application.list.ListCustomerWarehousesUseCase;
-import com.cashly.cashly_api.customers.warehouse_access.application.revoke.RevokeWarehouseAccessUseCase;
+import com.cashly.cashly_api.customers.warehouse_access.application.grant.use_case.GrantWarehouseAccessUseCase;
+import com.cashly.cashly_api.customers.warehouse_access.application.list.use_case.ListCustomerWarehousesUseCase;
+import com.cashly.cashly_api.customers.warehouse_access.application.revoke.use_case.RevokeWarehouseAccessUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

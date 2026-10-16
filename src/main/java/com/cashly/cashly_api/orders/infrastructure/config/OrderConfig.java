@@ -1,17 +1,16 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
 import com.cashly.cashly_api.orders.application.ports.out.InvoiceCreationGateway;
-import com.cashly.cashly_api.orders.application.assign_warehouses.AssignOrderWarehousesUseCase;
-import com.cashly.cashly_api.orders.application.cancel.CancelOrderUseCase;
-import com.cashly.cashly_api.orders.application.confirm.ConfirmOrderUseCase;
-import com.cashly.cashly_api.orders.application.convert_to_invoice.ConvertToInvoiceUseCase;
-import com.cashly.cashly_api.orders.application.create.CreateOrderUseCase;
-import com.cashly.cashly_api.orders.application.delete.DeleteOrderUseCase;
-import com.cashly.cashly_api.orders.application.get.GetOrderByIdUseCase;
-import com.cashly.cashly_api.orders.application.list.GetOrdersUseCase;
-import com.cashly.cashly_api.orders.application.products.GetProductsForOrderUseCase;
-import com.cashly.cashly_api.orders.application.update.UpdateOrderUseCase;
-import com.cashly.cashly_api.orders.domain.OrderRepository;
+import com.cashly.cashly_api.orders.application.cancel.use_case.CancelOrderUseCase;
+import com.cashly.cashly_api.orders.application.confirm.use_case.ConfirmOrderUseCase;
+import com.cashly.cashly_api.orders.application.convert_to_invoice.use_case.ConvertToInvoiceUseCase;
+import com.cashly.cashly_api.orders.application.create.use_case.CreateOrderUseCase;
+import com.cashly.cashly_api.orders.application.delete.use_case.DeleteOrderUseCase;
+import com.cashly.cashly_api.orders.application.get.use_case.GetOrderByIdUseCase;
+import com.cashly.cashly_api.orders.application.list.use_case.GetOrdersUseCase;
+import com.cashly.cashly_api.orders.application.products.use_case.GetProductsForOrderUseCase;
+import com.cashly.cashly_api.orders.application.update.use_case.UpdateOrderUseCase;
+import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.orders.application.ports.out.StockAvailabilityGateway;
 import com.cashly.cashly_api.orders.application.ports.out.CustomerCreditGateway;
 import org.springframework.context.annotation.Bean;
@@ -74,14 +73,6 @@ public class OrderConfig {
     public DeleteOrderUseCase deleteOrderUseCase(OrderRepository orderRepository,
             com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway inventory) {
         return new DeleteOrderUseCase(orderRepository, inventory);
-    }
-
-    @Bean
-    public AssignOrderWarehousesUseCase assignOrderWarehousesUseCase(
-            OrderRepository orderRepository,
-            com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway inventory,
-            com.cashly.cashly_api.orders.application.ports.out.OrderWarehouseGateway warehouses) {
-        return new AssignOrderWarehousesUseCase(orderRepository, inventory, warehouses);
     }
 
     @Bean

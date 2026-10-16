@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.profile.infrastructure.services;
 
-import com.cashly.cashly_api.customers.profile.domain.CustomerRepository;
-import com.cashly.cashly_api.customers.profile.domain.CustomerCodeGenerator;
+import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.customers.profile.domain.services.CustomerCodeGenerator;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerCode;
 
 public class SequentialCustomerCodeGenerator implements CustomerCodeGenerator {

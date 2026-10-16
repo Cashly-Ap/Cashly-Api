@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.shared.storage.infrastructure.web;
 
-import com.cashly.cashly_api.shared.storage.domain.FileNotFoundException;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.exceptions.FileNotFoundException;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

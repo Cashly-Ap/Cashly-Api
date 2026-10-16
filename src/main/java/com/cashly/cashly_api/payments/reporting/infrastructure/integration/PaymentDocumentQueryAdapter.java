@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.reporting.infrastructure.integration;
 import com.cashly.cashly_api.payments.collection.application.ports.in.PaymentDocumentQuery;
 import com.cashly.cashly_api.payments.reporting.application.ports.out.PaymentReportQueryGateway;
-import com.cashly.cashly_api.payments.reporting.application.dto.PaymentReportData;
+import com.cashly.cashly_api.payments.reporting.application.dto.model.PaymentReportData;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
 @Component

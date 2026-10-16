@@ -2,8 +2,8 @@ package com.cashly.cashly_api.auth.authentication.application.mappers;
 
 import com.cashly.cashly_api.auth.authentication.application.dto.response.AuthenticatedEntityResponse;
 import com.cashly.cashly_api.auth.authentication.application.dto.response.AuthenticationResponse;
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
-import com.cashly.cashly_api.auth.token.domain.RefreshToken;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
+import com.cashly.cashly_api.auth.token.domain.entity.RefreshToken;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportData;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportData;
 import com.cashly.cashly_api.quotes.reporting.application.ports.out.QuotePdfPort;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 

@@ -1,0 +1,48 @@
+package com.cashly.cashly_api.products.application.create.request;
+
+import com.cashly.cashly_api.products.application.dto.request.ProductPriceRequest;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+public record CreateProductRequest(
+    @Size(max = 50, message = "Code cannot exceed 50 characters")
+    String code,
+
+    @NotBlank(message = "Name is required")
+    @Size(max = 200, message = "Name cannot exceed 200 characters")
+    String name,
+
+    @Size(max = 500, message = "Description cannot exceed 500 characters")
+    String description,
+
+    @NotNull(message = "Category ID is required")
+    UUID categoryId,
+
+    @NotNull(message = "Composite flag is required")
+    Boolean composite,
+
+    @DecimalMin(value = "0.0", message = "Purchase price must be non-negative")
+    BigDecimal purchasePrice,
+
+    @Valid
+    List<ComponentRequest> components,
+
+    @Valid
+    List<ProductPriceRequest> productPrices
+) {
+    public record ComponentRequest(
+        @NotNull(message = "Component product ID is required")
+        UUID componentProductId,
+
+        @NotNull(message = "Component quantity is required")
+        Integer quantity
+    ) {}
+}

@@ -3,8 +3,8 @@ package com.cashly.cashly_api.auth.token.infrastructure.persistence.entities;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
-import com.cashly.cashly_api.auth.token.domain.RefreshToken;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
+import com.cashly.cashly_api.auth.token.domain.entity.RefreshToken;
 import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenId;
 
 import jakarta.persistence.Column;

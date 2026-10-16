@@ -3,7 +3,7 @@ package com.cashly.cashly_api.shared.storage.infrastructure.config;
 import com.cashly.cashly_api.shared.storage.infrastructure.adapters.LocalFileStorageService;
 import com.cashly.cashly_api.shared.storage.infrastructure.adapters.S3FileStorageService;
 
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

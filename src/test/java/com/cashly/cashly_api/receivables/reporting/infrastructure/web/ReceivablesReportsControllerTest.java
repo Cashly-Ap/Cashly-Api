@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.receivables.reporting.application.generate_accounts_receivable_report_pdf.GenerateAccountsReceivableReportPdfUseCase;
-import com.cashly.cashly_api.receivables.reporting.application.generate_collections_report_pdf.GenerateCollectionsReportPdfUseCase;
+import com.cashly.cashly_api.receivables.reporting.application.generate_accounts_receivable_report_pdf.use_case.GenerateAccountsReceivableReportPdfUseCase;
+import com.cashly.cashly_api.receivables.reporting.application.generate_collections_report_pdf.use_case.GenerateCollectionsReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

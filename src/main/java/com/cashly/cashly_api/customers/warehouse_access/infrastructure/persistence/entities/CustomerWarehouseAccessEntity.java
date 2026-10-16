@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.warehouse_access.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccess;
+import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

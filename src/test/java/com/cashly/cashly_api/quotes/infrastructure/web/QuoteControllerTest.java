@@ -1,16 +1,16 @@
 package com.cashly.cashly_api.quotes.infrastructure.web;
 
-import com.cashly.cashly_api.quotes.application.cancel.CancelQuoteRequest;
-import com.cashly.cashly_api.quotes.application.create.CreateQuoteRequest;
-import com.cashly.cashly_api.quotes.application.update.UpdateQuoteRequest;
+import com.cashly.cashly_api.quotes.application.cancel.request.CancelQuoteRequest;
+import com.cashly.cashly_api.quotes.application.create.request.CreateQuoteRequest;
+import com.cashly.cashly_api.quotes.application.update.request.UpdateQuoteRequest;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
-import com.cashly.cashly_api.quotes.application.cancel.CancelQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.create.CreateQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.delete.DeleteQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.get.GetQuoteByIdUseCase;
-import com.cashly.cashly_api.quotes.application.list.GetQuotesUseCase;
-import com.cashly.cashly_api.quotes.application.update.UpdateQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.cancel.use_case.CancelQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.create.use_case.CreateQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.delete.use_case.DeleteQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.get.use_case.GetQuoteByIdUseCase;
+import com.cashly.cashly_api.quotes.application.list.use_case.GetQuotesUseCase;
+import com.cashly.cashly_api.quotes.application.update.use_case.UpdateQuoteUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

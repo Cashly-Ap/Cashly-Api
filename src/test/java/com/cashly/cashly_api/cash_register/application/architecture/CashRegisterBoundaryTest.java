@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.cash_register.application.architecture;
 
-import com.cashly.cashly_api.cash_register.sessions.application.movements.RecordCashMovementUseCase;
-import com.cashly.cashly_api.cash_register.sessions.application.queries.GetRegisterHistoryUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
+import com.cashly.cashly_api.cash_register.sessions.application.queries.use_case.GetRegisterHistoryUseCase;
 
-import com.cashly.cashly_api.cash_register.sessions.domain.CashRegisterRepository;
-import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementService;
+import com.cashly.cashly_api.cash_register.sessions.domain.repository.CashRegisterRepository;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.services.CashMovementService;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;

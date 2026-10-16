@@ -2,7 +2,7 @@ package com.cashly.cashly_api.auth.authentication.domain.services;
 
 import java.util.Optional;
 
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
 
 public interface AuthenticableResolver {
 

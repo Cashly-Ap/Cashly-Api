@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.collection.infrastructure.integration;
 
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocation;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.entity.PaymentAllocation;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

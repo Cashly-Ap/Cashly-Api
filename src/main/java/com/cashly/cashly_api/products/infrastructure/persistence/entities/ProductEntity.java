@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.products.domain.Product;
+import com.cashly.cashly_api.products.domain.entity.Product;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 import jakarta.persistence.*;
 import lombok.*;

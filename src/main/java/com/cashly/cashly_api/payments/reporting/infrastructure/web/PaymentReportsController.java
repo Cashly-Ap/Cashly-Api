@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.payments.reporting.application.generate_payment_history_report_pdf.GeneratePaymentHistoryReportPdfUseCase;
-import com.cashly.cashly_api.payments.reporting.application.generate_payment_pdf.GeneratePaymentPdfUseCase;
+import com.cashly.cashly_api.payments.reporting.application.generate_payment_history_report_pdf.use_case.GeneratePaymentHistoryReportPdfUseCase;
+import com.cashly.cashly_api.payments.reporting.application.generate_payment_pdf.use_case.GeneratePaymentPdfUseCase;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

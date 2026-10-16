@@ -2,10 +2,10 @@ package com.cashly.cashly_api.invoices.reporting.infrastructure.integration;
 
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
-import com.cashly.cashly_api.invoices.application.queries.InvoiceDocumentQueryService;
-import com.cashly.cashly_api.invoices.application.get.GetInvoiceByIdUseCase;
-import com.cashly.cashly_api.invoices.application.list.GetInvoicesUseCase;
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportFilter;
+import com.cashly.cashly_api.invoices.application.queries.services.InvoiceDocumentQueryService;
+import com.cashly.cashly_api.invoices.application.get.use_case.GetInvoiceByIdUseCase;
+import com.cashly.cashly_api.invoices.application.list.use_case.GetInvoicesUseCase;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportFilter;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;

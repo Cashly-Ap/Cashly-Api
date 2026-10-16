@@ -5,7 +5,7 @@ import com.cashly.cashly_api.products.application.dto.response.ProductDetailResp
 import com.cashly.cashly_api.products.application.dto.response.ProductListResponse;
 import com.cashly.cashly_api.products.application.dto.response.ProductListResponse.ProductPriceListItem;
 import com.cashly.cashly_api.products.application.dto.response.ProductPriceDetailResponse;
-import com.cashly.cashly_api.products.domain.Product;
+import com.cashly.cashly_api.products.domain.entity.Product;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 
 import java.util.List;

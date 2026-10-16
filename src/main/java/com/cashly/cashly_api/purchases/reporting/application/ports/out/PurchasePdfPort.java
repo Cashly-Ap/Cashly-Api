@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.purchases.reporting.application.ports.out;
 
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportData;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportData;
 
 
 public interface PurchasePdfPort {

@@ -2,7 +2,7 @@ package com.cashly.cashly_api.payments.collection.infrastructure.persistence.ada
 
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.repositories.PaymentAllocationJpaRepository;
 
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocation;
+import com.cashly.cashly_api.payments.collection.domain.entity.PaymentAllocation;
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.entities.PaymentAllocationEntity;
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.mappers.PaymentAllocationJpaMapper;
 import org.junit.jupiter.api.BeforeEach;

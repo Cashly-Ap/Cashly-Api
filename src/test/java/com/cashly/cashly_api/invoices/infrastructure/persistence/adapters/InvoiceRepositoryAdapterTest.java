@@ -3,9 +3,9 @@ package com.cashly.cashly_api.invoices.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.invoices.infrastructure.persistence.repositories.InvoiceJpaRepository;
 import com.cashly.cashly_api.invoices.infrastructure.persistence.repositories.InvoiceNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.invoices.domain.Invoice;
-import com.cashly.cashly_api.invoices.domain.InvoiceLine;
-import com.cashly.cashly_api.invoices.domain.InvoiceLineAllocation;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.invoices.domain.entity.InvoiceLine;
+import com.cashly.cashly_api.invoices.domain.entity.InvoiceLineAllocation;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceLineId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;
@@ -92,7 +92,7 @@ class InvoiceRepositoryAdapterTest {
             Invoice invoice = createTestInvoice();
 
             InvoiceEntity expectedEntity = InvoiceJpaMapper.toEntity(invoice);
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            when(jpaRepository.saveAndFlush(entityCaptor.capture())).thenReturn(expectedEntity);
 
             Invoice saved = adapter.save(invoice);
 
@@ -118,7 +118,7 @@ class InvoiceRepositoryAdapterTest {
             assertEquals(invoice.getCreatedAt(), captured.getCreatedAt());
             assertEquals(invoice.getUpdatedAt(), captured.getUpdatedAt());
 
-            verify(jpaRepository).save(any(InvoiceEntity.class));
+            verify(jpaRepository).saveAndFlush(any(InvoiceEntity.class));
         }
     }
 

@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.categories.infrastructure.config;
 
 import com.cashly.cashly_api.categories.application.mappers.CategoryMapper;
-import com.cashly.cashly_api.categories.application.create.CreateCategoryUseCase;
-import com.cashly.cashly_api.categories.application.delete.DeleteCategoryUseCase;
-import com.cashly.cashly_api.categories.application.queries.GetCategoryUseCase;
-import com.cashly.cashly_api.categories.application.queries.ListCategoriesUseCase;
-import com.cashly.cashly_api.categories.application.update.UpdateCategoryUseCase;
-import com.cashly.cashly_api.categories.domain.CategoryRepository;
+import com.cashly.cashly_api.categories.application.create.use_case.CreateCategoryUseCase;
+import com.cashly.cashly_api.categories.application.delete.use_case.DeleteCategoryUseCase;
+import com.cashly.cashly_api.categories.application.queries.use_case.GetCategoryUseCase;
+import com.cashly.cashly_api.categories.application.queries.use_case.ListCategoriesUseCase;
+import com.cashly.cashly_api.categories.application.update.use_case.UpdateCategoryUseCase;
+import com.cashly.cashly_api.categories.domain.repository.CategoryRepository;
 import com.cashly.cashly_api.categories.application.ports.out.CategoryUsageGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

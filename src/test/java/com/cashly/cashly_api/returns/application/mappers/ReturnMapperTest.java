@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.returns.application.mappers;
 
 import com.cashly.cashly_api.returns.application.ports.out.ReturnProjectionQueryGateway;
-import com.cashly.cashly_api.returns.application.create.CreateReturnRequest;
+import com.cashly.cashly_api.returns.application.create.request.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
-import com.cashly.cashly_api.returns.domain.Return;
-import com.cashly.cashly_api.returns.domain.ReturnLine;
-import com.cashly.cashly_api.returns.domain.ReturnLineAllocation;
-import com.cashly.cashly_api.returns.domain.ReturnNumber;
-import com.cashly.cashly_api.returns.domain.ReturnType;
+import com.cashly.cashly_api.returns.domain.entity.Return;
+import com.cashly.cashly_api.returns.domain.entity.ReturnLine;
+import com.cashly.cashly_api.returns.domain.entity.ReturnLineAllocation;
+import com.cashly.cashly_api.returns.domain.valueobjects.ReturnNumber;
+import com.cashly.cashly_api.returns.domain.valueobjects.ReturnType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -66,7 +66,7 @@ class ReturnMapperTest {
     }
 
     private Return returned(UUID invoiceId, List<ReturnLine> lines) {
-        return Return.reconstitute(com.cashly.cashly_api.returns.domain.ReturnId.generate(),
+        return Return.reconstitute(com.cashly.cashly_api.returns.domain.valueobjects.ReturnId.generate(),
                 ReturnNumber.of(2026, 1), invoiceId, UUID.randomUUID(), ReturnType.AUTOMATIC, "Reason",
                 BigDecimal.TEN, lines, List.of(), UUID.randomUUID(), "Operator",
                 LocalDateTime.now(), LocalDateTime.now());

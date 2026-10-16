@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.payment_methods.infrastructure.web;
 
-import com.cashly.cashly_api.payment_methods.application.create.CreatePaymentMethodRequest;
-import com.cashly.cashly_api.payment_methods.application.update.UpdatePaymentMethodRequest;
+import com.cashly.cashly_api.payment_methods.application.create.request.CreatePaymentMethodRequest;
+import com.cashly.cashly_api.payment_methods.application.update.request.UpdatePaymentMethodRequest;
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
-import com.cashly.cashly_api.payment_methods.application.create.CreatePaymentMethodUseCase;
-import com.cashly.cashly_api.payment_methods.application.delete.DeletePaymentMethodUseCase;
-import com.cashly.cashly_api.payment_methods.application.queries.GetPaymentMethodByIdUseCase;
-import com.cashly.cashly_api.payment_methods.application.queries.ListPaymentMethodsUseCase;
-import com.cashly.cashly_api.payment_methods.application.toggle.TogglePaymentMethodUseCase;
-import com.cashly.cashly_api.payment_methods.application.update.UpdatePaymentMethodUseCase;
+import com.cashly.cashly_api.payment_methods.application.create.use_case.CreatePaymentMethodUseCase;
+import com.cashly.cashly_api.payment_methods.application.delete.use_case.DeletePaymentMethodUseCase;
+import com.cashly.cashly_api.payment_methods.application.queries.use_case.GetPaymentMethodByIdUseCase;
+import com.cashly.cashly_api.payment_methods.application.queries.use_case.ListPaymentMethodsUseCase;
+import com.cashly.cashly_api.payment_methods.application.toggle.use_case.TogglePaymentMethodUseCase;
+import com.cashly.cashly_api.payment_methods.application.update.use_case.UpdatePaymentMethodUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

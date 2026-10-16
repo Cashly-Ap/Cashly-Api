@@ -5,8 +5,8 @@ import com.cashly.cashly_api.products.infrastructure.persistence.repositories.Sp
 
 import com.cashly.cashly_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
 import com.cashly.cashly_api.price_types.infrastructure.persistence.repositories.SpringDataPriceTypeRepository;
-import com.cashly.cashly_api.products.domain.Product;
-import com.cashly.cashly_api.products.domain.ProductComponent;
+import com.cashly.cashly_api.products.domain.entity.Product;
+import com.cashly.cashly_api.products.domain.entity.ProductComponent;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 import com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductCodeSequenceEntity;
 import com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductEntity;

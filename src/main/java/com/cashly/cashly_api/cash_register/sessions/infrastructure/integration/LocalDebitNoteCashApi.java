@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.cash_register.sessions.infrastructure.integration;
 
 import com.cashly.cashly_api.cash_register.sessions.application.ports.in.DebitNoteCashApi;
-import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementService;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementType;
 import org.springframework.stereotype.Component;

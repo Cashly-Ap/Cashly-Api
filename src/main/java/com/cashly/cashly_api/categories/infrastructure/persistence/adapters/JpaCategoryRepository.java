@@ -4,8 +4,8 @@ import com.cashly.cashly_api.categories.infrastructure.persistence.repositories.
 
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
-import com.cashly.cashly_api.categories.domain.Category;
-import com.cashly.cashly_api.categories.domain.CategoryRepository;
+import com.cashly.cashly_api.categories.domain.entity.Category;
+import com.cashly.cashly_api.categories.domain.repository.CategoryRepository;
 import com.cashly.cashly_api.categories.infrastructure.persistence.entities.CategoryEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;

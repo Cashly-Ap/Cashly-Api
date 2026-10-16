@@ -4,8 +4,8 @@ import com.cashly.cashly_api.price_types.infrastructure.persistence.repositories
 
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
-import com.cashly.cashly_api.price_types.domain.PriceType;
-import com.cashly.cashly_api.price_types.domain.PriceTypeRepository;
+import com.cashly.cashly_api.price_types.domain.entity.PriceType;
+import com.cashly.cashly_api.price_types.domain.repository.PriceTypeRepository;
 import com.cashly.cashly_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;

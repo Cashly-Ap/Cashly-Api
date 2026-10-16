@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.warehouses.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.MovementsPdfQuery;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_movements_excel.GenerateMovementsExcelUseCase;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_movements_pdf.GenerateMovementsPdfUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.MovementsPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_movements_excel.use_case.GenerateMovementsExcelUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_movements_pdf.use_case.GenerateMovementsPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

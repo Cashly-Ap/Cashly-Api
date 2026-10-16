@@ -3,8 +3,8 @@ package com.cashly.cashly_api.credit_notes.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.credit_notes.infrastructure.persistence.repositories.CreditNoteJpaRepository;
 import com.cashly.cashly_api.credit_notes.infrastructure.persistence.repositories.CreditNoteNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.credit_notes.domain.CreditNote;
-import com.cashly.cashly_api.credit_notes.domain.CreditNoteRepository;
+import com.cashly.cashly_api.credit_notes.domain.entity.CreditNote;
+import com.cashly.cashly_api.credit_notes.domain.repository.CreditNoteRepository;
 import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteId;
 import com.cashly.cashly_api.credit_notes.infrastructure.persistence.entities.CreditNoteEntity;
 import com.cashly.cashly_api.credit_notes.infrastructure.persistence.entities.CreditNoteNumberSequenceEntity;

@@ -2,8 +2,8 @@ package com.cashly.cashly_api.payments.collection.infrastructure.persistence.ada
 
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.repositories.PaymentJpaRepository;
 
-import com.cashly.cashly_api.payments.collection.domain.Payment;
-import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.domain.entity.Payment;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository;
 import com.cashly.cashly_api.payments.collection.domain.valueobjects.PaymentId;
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.entities.PaymentEntity;
 import com.cashly.cashly_api.payments.collection.infrastructure.persistence.mappers.PaymentJpaMapper;

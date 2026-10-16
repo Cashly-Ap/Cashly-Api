@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportRow;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportRow;
 import com.cashly.cashly_api.purchases.reporting.application.ports.out.PurchasesReportPdfPort;
 
 import java.io.ByteArrayOutputStream;

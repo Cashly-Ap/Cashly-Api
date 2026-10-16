@@ -2,7 +2,7 @@ package com.cashly.cashly_api.customers.warehouse_access.infrastructure.persiste
 
 import com.cashly.cashly_api.customers.warehouse_access.infrastructure.persistence.repositories.SpringDataCustomerWarehouseAccessRepository;
 
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccess;
+import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
 import com.cashly.cashly_api.customers.warehouse_access.infrastructure.persistence.entities.CustomerWarehouseAccessEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

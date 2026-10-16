@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.returns.application.ports.out;
-import com.cashly.cashly_api.returns.domain.CancelledAllocation;
+import com.cashly.cashly_api.returns.domain.entity.CancelledAllocation;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;

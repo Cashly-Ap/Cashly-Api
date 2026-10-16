@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.customers.warehouse_access.infrastructure.config;
 
 import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
-import com.cashly.cashly_api.customers.warehouse_access.application.queries.RepositoryCustomerWarehouseAccessQuery;
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.customers.warehouse_access.application.queries.services.RepositoryCustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.customers.warehouse_access.domain.repository.CustomerWarehouseAccessRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

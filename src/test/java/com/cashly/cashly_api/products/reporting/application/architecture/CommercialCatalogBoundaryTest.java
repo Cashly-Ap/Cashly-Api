@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.reporting.application.architecture;
 import com.cashly.cashly_api.products.reporting.application.ports.out.CommercialCatalogPdfPort;
-import com.cashly.cashly_api.products.reporting.application.generate_commercial_catalog_pdf.GenerateCommercialCatalogPdfUseCaseImpl;
+import com.cashly.cashly_api.products.reporting.application.generate_commercial_catalog_pdf.services.GenerateCommercialCatalogPdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;

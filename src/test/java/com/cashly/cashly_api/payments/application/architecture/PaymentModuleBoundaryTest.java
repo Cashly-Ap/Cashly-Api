@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.payments.application.architecture;
 
-import com.cashly.cashly_api.payments.collection.application.approve.ApprovePaymentUseCase;
-import com.cashly.cashly_api.payments.collection.application.create.CreatePaymentUseCase;
-import com.cashly.cashly_api.payments.collection.application.pay_customer_debt.PayAllCustomerDebtUseCase;
-import com.cashly.cashly_api.payments.collection.application.pay_invoice.PayInvoiceUseCase;
-import com.cashly.cashly_api.payments.collection.application.pay_partial_debt.PayPartialDebtUseCase;
-import com.cashly.cashly_api.payments.collection.application.reject.RejectPaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.approve.use_case.ApprovePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.create.use_case.CreatePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.pay_customer_debt.use_case.PayAllCustomerDebtUseCase;
+import com.cashly.cashly_api.payments.collection.application.pay_invoice.use_case.PayInvoiceUseCase;
+import com.cashly.cashly_api.payments.collection.application.pay_partial_debt.use_case.PayPartialDebtUseCase;
+import com.cashly.cashly_api.payments.collection.application.reject.use_case.RejectPaymentUseCase;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

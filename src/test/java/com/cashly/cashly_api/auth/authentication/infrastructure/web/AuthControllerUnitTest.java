@@ -1,18 +1,18 @@
 package com.cashly.cashly_api.auth.authentication.infrastructure.web;
 
-import com.cashly.cashly_api.auth.user.application.register.RegisterUserRequest;
-import com.cashly.cashly_api.auth.user.application.register.RegisterUserUseCase;
-import com.cashly.cashly_api.auth.authentication.application.login.LoginRequest;
-import com.cashly.cashly_api.auth.authentication.application.login.LoginUserUseCase;
-import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenRequest;
-import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenUseCase;
-import com.cashly.cashly_api.auth.token.application.logout.LogoutRequest;
-import com.cashly.cashly_api.auth.token.application.logout.LogoutUserUseCase;
+import com.cashly.cashly_api.auth.user.application.register.request.RegisterUserRequest;
+import com.cashly.cashly_api.auth.user.application.register.use_case.RegisterUserUseCase;
+import com.cashly.cashly_api.auth.authentication.application.login.request.LoginRequest;
+import com.cashly.cashly_api.auth.authentication.application.login.use_case.LoginUserUseCase;
+import com.cashly.cashly_api.auth.token.application.refresh.request.RefreshTokenRequest;
+import com.cashly.cashly_api.auth.token.application.refresh.use_case.RefreshTokenUseCase;
+import com.cashly.cashly_api.auth.token.application.logout.request.LogoutRequest;
+import com.cashly.cashly_api.auth.token.application.logout.use_case.LogoutUserUseCase;
 import com.cashly.cashly_api.auth.user.application.dto.response.UserResponse;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
 import com.cashly.cashly_api.auth.authentication.application.dto.response.AuthenticatedEntityResponse;
 import com.cashly.cashly_api.auth.authentication.application.dto.response.AuthenticationResponse;
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

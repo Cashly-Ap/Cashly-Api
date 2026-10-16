@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.payments.collection.application.services;
 import com.cashly.cashly_api.payments.collection.application.ports.in.ReturnPaymentOperations;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocation;
-import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationService;
+import com.cashly.cashly_api.payments.collection.domain.entity.PaymentAllocation;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.services.PaymentAllocationService;
 import com.cashly.cashly_api.payments.collection.domain.valueobjects.PaymentId;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;

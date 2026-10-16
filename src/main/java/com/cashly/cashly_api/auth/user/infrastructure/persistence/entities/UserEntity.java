@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.auth.user.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.auth.user.domain.User;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;

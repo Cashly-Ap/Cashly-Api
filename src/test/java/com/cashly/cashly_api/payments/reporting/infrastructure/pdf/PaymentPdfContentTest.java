@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.payments.reporting.infrastructure.pdf;
-import com.cashly.cashly_api.payments.reporting.application.dto.PaymentReportData;
+import com.cashly.cashly_api.payments.reporting.application.dto.model.PaymentReportData;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;

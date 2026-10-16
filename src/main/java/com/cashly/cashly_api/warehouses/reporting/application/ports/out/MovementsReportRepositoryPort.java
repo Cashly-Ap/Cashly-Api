@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.reporting.application.ports.out;
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.MovementReportResponse;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.MovementsPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.MovementsPdfQuery;
 
 import java.util.List;
 

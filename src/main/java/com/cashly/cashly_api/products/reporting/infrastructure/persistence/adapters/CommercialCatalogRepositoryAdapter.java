@@ -5,7 +5,7 @@ import com.cashly.cashly_api.products.reporting.infrastructure.persistence.proje
 
 import com.cashly.cashly_api.products.reporting.application.dto.response.CommercialCatalogResponse;
 import com.cashly.cashly_api.products.reporting.application.ports.out.CommercialCatalogRepositoryPort;
-import com.cashly.cashly_api.products.reporting.application.dto.query.CommercialCatalogQuery;
+import com.cashly.cashly_api.products.reporting.application.dto.query.model.CommercialCatalogQuery;
 
 import java.util.List;
 import java.util.UUID;

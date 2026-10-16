@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.invoices.infrastructure.services;
 
 import com.cashly.cashly_api.invoices.application.ports.out.InvoiceFinancialPositionGateway;
-import com.cashly.cashly_api.invoices.domain.Invoice;
-import com.cashly.cashly_api.invoices.domain.InvoiceRepository;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.invoices.domain.repository.InvoiceRepository;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import org.junit.jupiter.api.Test;
 

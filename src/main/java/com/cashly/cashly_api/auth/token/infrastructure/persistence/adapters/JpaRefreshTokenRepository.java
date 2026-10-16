@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cashly.cashly_api.auth.token.domain.RefreshTokenRepository;
-import com.cashly.cashly_api.auth.token.domain.RefreshToken;
+import com.cashly.cashly_api.auth.token.domain.repository.RefreshTokenRepository;
+import com.cashly.cashly_api.auth.token.domain.entity.RefreshToken;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.token.infrastructure.persistence.entities.RefreshTokenEntity;
 

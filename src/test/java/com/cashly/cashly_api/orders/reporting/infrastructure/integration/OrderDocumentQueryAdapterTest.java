@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.orders.reporting.infrastructure.integration;
-import com.cashly.cashly_api.orders.application.queries.OrderDocumentQueryService;
-import com.cashly.cashly_api.orders.application.list.GetOrdersUseCase;
+import com.cashly.cashly_api.orders.application.queries.services.OrderDocumentQueryService;
+import com.cashly.cashly_api.orders.application.list.use_case.GetOrdersUseCase;
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
-import com.cashly.cashly_api.orders.domain.OrderRepository;
-import com.cashly.cashly_api.orders.reporting.application.dto.OrderReportFilter;
+import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
+import com.cashly.cashly_api.orders.reporting.application.dto.model.OrderReportFilter;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.*;

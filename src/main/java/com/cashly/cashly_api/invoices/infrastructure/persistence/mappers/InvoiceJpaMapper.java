@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.invoices.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.invoices.domain.Invoice;
-import com.cashly.cashly_api.invoices.domain.InvoiceLine;
-import com.cashly.cashly_api.invoices.domain.InvoiceLineAllocation;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.invoices.domain.entity.InvoiceLine;
+import com.cashly.cashly_api.invoices.domain.entity.InvoiceLineAllocation;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceLineId;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;

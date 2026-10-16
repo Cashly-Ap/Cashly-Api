@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payments.collection.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.payments.collection.application.ports.out.PaymentActorGateway;
 import org.springframework.stereotype.Component;

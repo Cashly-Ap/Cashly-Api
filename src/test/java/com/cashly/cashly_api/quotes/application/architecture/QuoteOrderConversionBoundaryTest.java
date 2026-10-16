@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.architecture;
 
-import com.cashly.cashly_api.quotes.application.convert_to_order.ConvertQuoteToOrderUseCase;
+import com.cashly.cashly_api.quotes.application.convert_to_order.use_case.ConvertQuoteToOrderUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

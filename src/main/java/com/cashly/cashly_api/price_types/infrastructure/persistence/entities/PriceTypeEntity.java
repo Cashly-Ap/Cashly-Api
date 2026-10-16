@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.price_types.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.price_types.domain.PriceType;
+import com.cashly.cashly_api.price_types.domain.entity.PriceType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

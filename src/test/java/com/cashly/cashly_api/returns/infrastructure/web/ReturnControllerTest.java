@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.returns.infrastructure.web;
 
-import com.cashly.cashly_api.returns.application.create.CreateReturnRequest;
+import com.cashly.cashly_api.returns.application.create.request.CreateReturnRequest;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
-import com.cashly.cashly_api.returns.application.create.CreateReturnUseCase;
-import com.cashly.cashly_api.returns.application.delete.DeleteReturnUseCase;
-import com.cashly.cashly_api.returns.application.list.GetAllReturnsUseCase;
-import com.cashly.cashly_api.returns.application.get.GetReturnByIdUseCase;
+import com.cashly.cashly_api.returns.application.create.use_case.CreateReturnUseCase;
+import com.cashly.cashly_api.returns.application.delete.use_case.DeleteReturnUseCase;
+import com.cashly.cashly_api.returns.application.list.use_case.GetAllReturnsUseCase;
+import com.cashly.cashly_api.returns.application.get.use_case.GetReturnByIdUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

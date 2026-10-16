@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.auth.token.infrastructure.persistence.adapters;
 
 
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.auth.token.infrastructure.persistence.entities.RefreshTokenEntity;
 import com.cashly.cashly_api.auth.token.infrastructure.persistence.adapters.JpaRefreshTokenRepository;
 import com.cashly.cashly_api.auth.token.infrastructure.persistence.repositories.SpringDataRefreshTokenRepository;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.cashly.cashly_api.auth.token.domain.RefreshToken;
+import com.cashly.cashly_api.auth.token.domain.entity.RefreshToken;
 import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 

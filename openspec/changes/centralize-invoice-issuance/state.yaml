@@ -1,0 +1,16 @@
+schema: spec-driven
+change: centralize-invoice-issuance
+status: implemented-and-verified
+apply: complete
+verify: complete
+backend_tests: 3253
+ordinary_executable_classes: 567
+mysql_it_classes: 10
+failures: 0
+errors: 0
+skipped: 0
+python_tooling_tests: 20
+coverage: passed-without-baseline-adjustment
+development_runtime: restarted-and-health-up
+microservices: explanation-only-no-extraction
+delivery: local-changes-no-commit-or-push-requested

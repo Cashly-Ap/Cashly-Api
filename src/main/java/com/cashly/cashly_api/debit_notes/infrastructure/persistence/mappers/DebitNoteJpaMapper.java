@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.debit_notes.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.debit_notes.domain.DebitNote;
+import com.cashly.cashly_api.debit_notes.domain.entity.DebitNote;
 import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteId;
 import com.cashly.cashly_api.debit_notes.domain.valueobjects.DebitNoteNumber;
 import com.cashly.cashly_api.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;

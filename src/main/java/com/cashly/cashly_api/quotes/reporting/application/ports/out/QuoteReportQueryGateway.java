@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.quotes.reporting.application.ports.out;
 
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportData;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportRow;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportFilter;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportData;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportRow;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportFilter;
 import java.util.List;
 import java.util.UUID;
 

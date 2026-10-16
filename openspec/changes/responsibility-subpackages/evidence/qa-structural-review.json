@@ -1,0 +1,41 @@
+{
+  "scope": "Backend responsibility folders in all production modules and tests",
+  "guard": "src/test/java/com/cashly/cashly_api/shared/application/architecture/ResponsibilityStructureTest.java",
+  "checks": [
+    "No loose production Java classes at module, layer, application operation or persistence container roots",
+    "Explicit domain responsibilities and application leaf responsibilities",
+    "Equivalent structural rules for test sources",
+    "Tests named after production classes remain in the production responsibility package or a narrower child test role",
+    "Negative and positive path fixtures, including create/from_quote/request and repository/entity roles"
+  ],
+  "accepted_leaves": "Existing infrastructure responsibilities, application ports/in|out, global architecture suites and shared DTO responsibility remain valid leaves; CashlyApplication is the sole production bootstrap root exception.",
+  "negative_mutation": {
+    "description": "In an isolated container copy, physically moved orders/domain/entity/Order.java back to orders/domain/Order.java after compilation, then invoked surefire:test without recompilation.",
+    "tests": 5,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "detected_path": "orders/domain/Order.java",
+    "log_sha256": "40c8e430a11032f1b645a89377f810cdcb6059743c82e7d9ae6d4cf495a55006"
+  },
+  "restored_positive": {
+    "description": "Restored entity/Order.java in the same isolated copy and reran the five guard tests.",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log_sha256": "c13f5feed2b59dfc3a22ccc2abf6a23015d1d410f80bd86a2e9807826f74a623"
+  },
+  "limitations": [
+    "The mutation run scanned a migrated production snapshot and only the new guard test source, not the complete historical pre-migration source tree.",
+    "The matching-test guard was subsequently refined to permit narrower child test roles such as request/validation. The final full isolated suite must validate the final source revision.",
+    "These structural tests use filesystem reads only; no development database operations were performed."
+  ],
+  "review_findings_resolved_by_migration": [
+    "Inline fully qualified class references require relocation alongside imports.",
+    "InvoiceIssuanceArchitectureTest reads a literal validator source path and requires the new validation role path.",
+    "Existing wildcard imports must not expand to inaccessible test classes during package relocation.",
+    "Global loose infrastructure test helpers, request UnitTest variants and domain counterpart tests require explicit mirrored roles.",
+    "Duplicate request validation suites can retain class names under the narrower request/validation test role."
+  ]
+}

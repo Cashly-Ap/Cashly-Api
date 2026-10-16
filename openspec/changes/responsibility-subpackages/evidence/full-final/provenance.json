@@ -1,0 +1,23 @@
+{
+  "project": "cashly-screaming-responsibility-20261017-final1",
+  "command": "./mvnw -B clean verify -Dtest=Test\\*\\,\\*Test\\,\\*Tests\\,\\*TestCase\\,\\*IT -DfailIfNoTests=true -Dinventory.test.url=jdbc:mysql://inventory-db:3306/screaming_inventory -Dinventory.test.username=screaming_test -Dinventory.test.password=screaming_test",
+  "run": [
+    "mode=final",
+    "project=cashly-screaming-responsibility-20261017-final1",
+    "source=/Users/gabrielvargas/Work/Personals/Cashly/cashly-api",
+    "started_utc=2026-10-16T23:11:37Z",
+    "image=cashly-api-app:latest",
+    "finished_utc=2026-10-16T23:13:23Z",
+    "exit_code=0",
+    "coverage_gate_exit_code=0"
+  ],
+  "current_source_matches_tested_snapshot": true,
+  "checked_source_files": 1869,
+  "individually_compared_moved_instrumented_classes": 401,
+  "artifacts": {
+    "runtime.txt": "2bfd8903e4481f427e837bc2b5e341f4155c3484b7908aa0f3a4993c1450dcfd",
+    "maven.log": "eb4a94d6255fe1814b10766c93a40455e1d35c4529cf0fb4135b26cf1b84f884",
+    "source-sha256.txt": "24cbfa60648d4cd46dc0df6786f06d618e23681f345adc757b676fea5aaecc04",
+    "jacoco/jacoco.xml": "a985aca7758912b98d9dbde41ad1facde1ff84eb7e12483f291bbd0280c75081"
+  }
+}

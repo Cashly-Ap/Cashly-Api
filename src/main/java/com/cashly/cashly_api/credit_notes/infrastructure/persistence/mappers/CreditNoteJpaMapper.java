@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.credit_notes.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.credit_notes.domain.CreditNote;
+import com.cashly.cashly_api.credit_notes.domain.entity.CreditNote;
 import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteId;
 import com.cashly.cashly_api.credit_notes.domain.valueobjects.CreditNoteNumber;
 import com.cashly.cashly_api.credit_notes.infrastructure.persistence.entities.CreditNoteEntity;

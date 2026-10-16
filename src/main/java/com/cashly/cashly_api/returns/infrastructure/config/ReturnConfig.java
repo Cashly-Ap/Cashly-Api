@@ -6,11 +6,11 @@ import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustme
 import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceQueryGateway;
 import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettlementGateway;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
-import com.cashly.cashly_api.returns.application.create.CreateReturnUseCase;
-import com.cashly.cashly_api.returns.application.delete.DeleteReturnUseCase;
-import com.cashly.cashly_api.returns.application.list.GetAllReturnsUseCase;
-import com.cashly.cashly_api.returns.application.get.GetReturnByIdUseCase;
-import com.cashly.cashly_api.returns.domain.ReturnRepository;
+import com.cashly.cashly_api.returns.application.create.use_case.CreateReturnUseCase;
+import com.cashly.cashly_api.returns.application.delete.use_case.DeleteReturnUseCase;
+import com.cashly.cashly_api.returns.application.list.use_case.GetAllReturnsUseCase;
+import com.cashly.cashly_api.returns.application.get.use_case.GetReturnByIdUseCase;
+import com.cashly.cashly_api.returns.domain.repository.ReturnRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

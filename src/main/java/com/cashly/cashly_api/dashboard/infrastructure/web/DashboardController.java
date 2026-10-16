@@ -4,7 +4,7 @@ import com.cashly.cashly_api.dashboard.application.dto.response.DashboardSummary
 import com.cashly.cashly_api.dashboard.application.dto.response.InvoiceDueResponse;
 import com.cashly.cashly_api.dashboard.application.dto.response.MonthlySalesResponse;
 import com.cashly.cashly_api.dashboard.application.dto.response.TopItemResponse;
-import com.cashly.cashly_api.dashboard.application.summary.GetDashboardUseCase;
+import com.cashly.cashly_api.dashboard.application.summary.use_case.GetDashboardUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

@@ -1,22 +1,20 @@
 package com.cashly.cashly_api.orders.infrastructure.web;
 
-import com.cashly.cashly_api.orders.application.assign_warehouses.AssignOrderWarehousesRequest;
-import com.cashly.cashly_api.orders.application.cancel.CancelOrderRequest;
-import com.cashly.cashly_api.orders.application.convert_to_invoice.ConvertToInvoiceRequest;
-import com.cashly.cashly_api.orders.application.create.CreateOrderRequest;
-import com.cashly.cashly_api.orders.application.update.UpdateOrderRequest;
-import com.cashly.cashly_api.orders.application.convert_to_invoice.ConvertToInvoiceResponse;
+import com.cashly.cashly_api.orders.application.cancel.request.CancelOrderRequest;
+import com.cashly.cashly_api.orders.application.convert_to_invoice.request.ConvertToInvoiceRequest;
+import com.cashly.cashly_api.orders.application.create.request.CreateOrderRequest;
+import com.cashly.cashly_api.orders.application.update.request.UpdateOrderRequest;
+import com.cashly.cashly_api.orders.application.convert_to_invoice.response.ConvertToInvoiceResponse;
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
-import com.cashly.cashly_api.orders.application.assign_warehouses.AssignOrderWarehousesUseCase;
-import com.cashly.cashly_api.orders.application.cancel.CancelOrderUseCase;
-import com.cashly.cashly_api.orders.application.confirm.ConfirmOrderUseCase;
-import com.cashly.cashly_api.orders.application.convert_to_invoice.ConvertToInvoiceUseCase;
-import com.cashly.cashly_api.orders.application.create.CreateOrderUseCase;
-import com.cashly.cashly_api.orders.application.delete.DeleteOrderUseCase;
-import com.cashly.cashly_api.orders.application.get.GetOrderByIdUseCase;
-import com.cashly.cashly_api.orders.application.list.GetOrdersUseCase;
-import com.cashly.cashly_api.orders.application.update.UpdateOrderUseCase;
+import com.cashly.cashly_api.orders.application.cancel.use_case.CancelOrderUseCase;
+import com.cashly.cashly_api.orders.application.confirm.use_case.ConfirmOrderUseCase;
+import com.cashly.cashly_api.orders.application.convert_to_invoice.use_case.ConvertToInvoiceUseCase;
+import com.cashly.cashly_api.orders.application.create.use_case.CreateOrderUseCase;
+import com.cashly.cashly_api.orders.application.delete.use_case.DeleteOrderUseCase;
+import com.cashly.cashly_api.orders.application.get.use_case.GetOrderByIdUseCase;
+import com.cashly.cashly_api.orders.application.list.use_case.GetOrdersUseCase;
+import com.cashly.cashly_api.orders.application.update.use_case.UpdateOrderUseCase;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -41,7 +39,6 @@ public class OrderController {
     private final CancelOrderUseCase cancelOrderUseCase;
     private final ConvertToInvoiceUseCase convertToInvoiceUseCase;
     private final DeleteOrderUseCase deleteOrderUseCase;
-    private final AssignOrderWarehousesUseCase assignOrderWarehousesUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase,
                             GetOrderByIdUseCase getOrderByIdUseCase,
@@ -50,8 +47,7 @@ public class OrderController {
                             ConfirmOrderUseCase confirmOrderUseCase,
                             CancelOrderUseCase cancelOrderUseCase,
                             ConvertToInvoiceUseCase convertToInvoiceUseCase,
-                            DeleteOrderUseCase deleteOrderUseCase,
-                            AssignOrderWarehousesUseCase assignOrderWarehousesUseCase) {
+                            DeleteOrderUseCase deleteOrderUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.getOrderByIdUseCase = getOrderByIdUseCase;
         this.getOrdersUseCase = getOrdersUseCase;
@@ -60,7 +56,6 @@ public class OrderController {
         this.cancelOrderUseCase = cancelOrderUseCase;
         this.convertToInvoiceUseCase = convertToInvoiceUseCase;
         this.deleteOrderUseCase = deleteOrderUseCase;
-        this.assignOrderWarehousesUseCase = assignOrderWarehousesUseCase;
     }
 
     @PostMapping
@@ -107,15 +102,6 @@ public class OrderController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
     public ResponseEntity<OrderDetailResponse> confirm(@PathVariable UUID id) {
         OrderDetailResponse order = confirmOrderUseCase.execute(id);
-        return ResponseEntity.ok(order);
-    }
-
-    @PutMapping("/{id}/allocations")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<OrderDetailResponse> assignWarehouses(
-            @PathVariable UUID id,
-            @Valid @RequestBody AssignOrderWarehousesRequest request) {
-        OrderDetailResponse order = assignOrderWarehousesUseCase.execute(id, request);
         return ResponseEntity.ok(order);
     }
 

@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.products.application.architecture;
 
-import com.cashly.cashly_api.products.application.create.CreateProductUseCase;
-import com.cashly.cashly_api.products.application.photos.UploadProductPhotoUseCase;
-import com.cashly.cashly_api.products.application.queries.GetProductUseCase;
-import com.cashly.cashly_api.products.application.queries.ListProductsUseCase;
-import com.cashly.cashly_api.products.application.transactions.GetProductsForTransactionUseCase;
-import com.cashly.cashly_api.products.application.update.UpdateProductUseCase;
+import com.cashly.cashly_api.products.application.create.use_case.CreateProductUseCase;
+import com.cashly.cashly_api.products.application.photos.use_case.UploadProductPhotoUseCase;
+import com.cashly.cashly_api.products.application.queries.use_case.GetProductUseCase;
+import com.cashly.cashly_api.products.application.queries.use_case.ListProductsUseCase;
+import com.cashly.cashly_api.products.application.transactions.use_case.GetProductsForTransactionUseCase;
+import com.cashly.cashly_api.products.application.update.use_case.UpdateProductUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;

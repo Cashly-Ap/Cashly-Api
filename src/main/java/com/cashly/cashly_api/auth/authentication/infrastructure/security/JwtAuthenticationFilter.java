@@ -14,10 +14,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.user.domain.User;
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;

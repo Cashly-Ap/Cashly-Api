@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.warehouse_access.application.dto.response;
 
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccess;
+import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
 
 import java.util.UUID;
 

@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.purchases.application.architecture;
 
-import com.cashly.cashly_api.purchases.application.create.CreatePurchaseUseCase;
-import com.cashly.cashly_api.purchases.application.products.GetProductsForPurchaseUseCase;
-import com.cashly.cashly_api.purchases.application.update.UpdatePurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.create.use_case.CreatePurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.products.use_case.GetProductsForPurchaseUseCase;
+import com.cashly.cashly_api.purchases.application.update.use_case.UpdatePurchaseUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;

@@ -3,8 +3,8 @@ package com.cashly.cashly_api.orders.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.orders.infrastructure.persistence.repositories.OrderJpaRepository;
 import com.cashly.cashly_api.orders.infrastructure.persistence.repositories.OrderNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.orders.domain.Order;
-import com.cashly.cashly_api.orders.domain.OrderRepository;
+import com.cashly.cashly_api.orders.domain.entity.Order;
+import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.orders.infrastructure.persistence.entities.OrderEntity;
@@ -33,8 +33,20 @@ public class OrderRepositoryAdapter implements OrderRepository {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public Order save(Order order) {
         OrderEntity entity = OrderJpaMapper.toEntity(order);
+        // @MapsId snapshots need their existing key during merge; null identifies a genuinely new snapshot.
+        jpaRepository.findWithLinesById(order.getId().value()).ifPresent(existing -> {
+            var snapshotIds = existing.getLines().stream()
+                    .filter(line -> line.getCategorySnapshot() != null)
+                    .collect(java.util.stream.Collectors.toMap(line -> line.getId(), line -> line.getCategorySnapshot().getId()));
+            entity.getLines().forEach(line -> {
+                if (line.getCategorySnapshot() != null) {
+                    line.getCategorySnapshot().setId(snapshotIds.get(line.getId()));
+                }
+            });
+        });
         OrderEntity saved = jpaRepository.save(entity);
         return OrderJpaMapper.toDomain(saved);
     }

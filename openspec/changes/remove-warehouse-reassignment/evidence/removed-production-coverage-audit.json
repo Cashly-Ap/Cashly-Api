@@ -1,0 +1,468 @@
+{
+  "policy": "Subtract only deleted classes and unique executable source lines; retain every modified class and every retained line. No thresholds changed.",
+  "input_baseline_sha256": "2d1a03c7a2744439da7d8c1eb46b7840843cbb9d234524eab433a70008aa9ad1",
+  "input_jacoco_sha256": "07cf78d58de80b5f762516fdfcaa576885872a2466c2519cca272ba5536801b3",
+  "raw_quote_order_classes_confirmed_equal": [
+    "com/cashly/cashly_api/quotes/application/cancel/CancelQuoteUseCase",
+    "com/cashly/cashly_api/quotes/application/cancel/CancelQuoteRequest",
+    "com/cashly/cashly_api/quotes/application/convert_to_invoice/ConvertQuoteToInvoiceUseCase",
+    "com/cashly/cashly_api/quotes/application/convert_to_invoice/QuoteConvertedToInvoiceResponse",
+    "com/cashly/cashly_api/quotes/application/convert_to_invoice/ConvertQuoteToInvoiceRequest",
+    "com/cashly/cashly_api/orders/application/create/CreateOrderRequest",
+    "com/cashly/cashly_api/orders/application/create/CreateOrderRequest$WarehouseAllocationRequest",
+    "com/cashly/cashly_api/orders/application/create/CreateOrderRequest$OrderLineRequest",
+    "com/cashly/cashly_api/orders/application/create/CreateOrderUseCase",
+    "com/cashly/cashly_api/orders/application/queries/OrderDocumentQueryService",
+    "com/cashly/cashly_api/orders/infrastructure/persistence/mappers/OrderJpaMapper",
+    "com/cashly/cashly_api/orders/infrastructure/persistence/queries/JpaOrdersProductReferenceQuery",
+    "com/cashly/cashly_api/orders/application/delete/DeleteOrderUseCase",
+    "com/cashly/cashly_api/orders/application/list/GetOrdersUseCase",
+    "com/cashly/cashly_api/quotes/infrastructure/config/QuoteDocumentQueryConfig",
+    "com/cashly/cashly_api/quotes/infrastructure/config/QuoteConfig",
+    "com/cashly/cashly_api/orders/infrastructure/persistence/repositories/OrderJpaRepository",
+    "com/cashly/cashly_api/quotes/application/dto/response/QuoteWarehouseResponse",
+    "com/cashly/cashly_api/quotes/application/dto/response/WarehouseStockInfoResponse",
+    "com/cashly/cashly_api/quotes/application/dto/response/QuoteAllocationDetailResponse",
+    "com/cashly/cashly_api/quotes/application/dto/response/QuoteProductResponse",
+    "com/cashly/cashly_api/quotes/application/dto/response/QuoteDetailResponse",
+    "com/cashly/cashly_api/quotes/application/dto/response/QuoteListResponse",
+    "com/cashly/cashly_api/quotes/application/dto/response/QuoteLineDetailResponse",
+    "com/cashly/cashly_api/quotes/application/list/GetQuotesUseCase",
+    "com/cashly/cashly_api/quotes/infrastructure/web/QuoteController",
+    "com/cashly/cashly_api/notifications/application/quotes/QuoteConversionNotificationService",
+    "com/cashly/cashly_api/notifications/application/quotes/QuoteRejectionNotificationService",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderWarehouseAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderProductCatalogAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderActorAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderNotificationAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderInventoryGateway",
+    "com/cashly/cashly_api/orders/infrastructure/integration/OrderStockAvailabilityAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/OrderCustomerCreditAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderCustomerAdapter",
+    "com/cashly/cashly_api/orders/infrastructure/integration/LocalInvoiceCreationGateway",
+    "com/cashly/cashly_api/orders/application/create/from_quote/QuoteOrderCreationService",
+    "com/cashly/cashly_api/orders/application/mappers/OrderMapper",
+    "com/cashly/cashly_api/orders/application/mappers/OrderMapper$WarehouseProductKey",
+    "com/cashly/cashly_api/orders/application/mappers/OrderMapper$WarehouseEnrichment",
+    "com/cashly/cashly_api/orders/domain/OrderLineAllocation",
+    "com/cashly/cashly_api/orders/domain/OrderLine",
+    "com/cashly/cashly_api/orders/domain/OrderRepository",
+    "com/cashly/cashly_api/orders/domain/Order",
+    "com/cashly/cashly_api/quotes/application/ports/in/QuoteDocumentSnapshot",
+    "com/cashly/cashly_api/quotes/application/ports/in/QuoteDocumentSnapshot$Line",
+    "com/cashly/cashly_api/quotes/application/ports/in/QuoteDocumentRow",
+    "com/cashly/cashly_api/quotes/application/ports/in/QuoteDocumentFilter",
+    "com/cashly/cashly_api/orders/application/update/UpdateOrderRequest$OrderLineRequest",
+    "com/cashly/cashly_api/orders/application/update/UpdateOrderRequest$WarehouseAllocationRequest",
+    "com/cashly/cashly_api/orders/application/update/UpdateOrderRequest",
+    "com/cashly/cashly_api/orders/application/update/UpdateOrderUseCase",
+    "com/cashly/cashly_api/orders/infrastructure/config/QuoteOrderCreationConfig",
+    "com/cashly/cashly_api/orders/infrastructure/config/OrderDocumentQueryConfig",
+    "com/cashly/cashly_api/orders/infrastructure/config/OrderConfig",
+    "com/cashly/cashly_api/quotes/application/convert_to_order/QuoteConvertedToOrderResponse",
+    "com/cashly/cashly_api/quotes/application/convert_to_order/ConvertQuoteToOrderUseCase",
+    "com/cashly/cashly_api/orders/domain/exceptions/OrderNotPendingException",
+    "com/cashly/cashly_api/orders/domain/exceptions/OrderNotFoundException",
+    "com/cashly/cashly_api/orders/domain/exceptions/OrderCannotBeDeletedException",
+    "com/cashly/cashly_api/quotes/domain/valueobjects/QuoteAllocationId",
+    "com/cashly/cashly_api/quotes/domain/valueobjects/QuoteNumber",
+    "com/cashly/cashly_api/quotes/domain/valueobjects/QuoteLineId",
+    "com/cashly/cashly_api/quotes/domain/valueobjects/QuoteStatus",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderDetailResponse$OrderLineDetailResponse$AllocationDetail",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderProductResponse",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderDetailResponse$WarehouseStockDetail",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderDetailResponse$OrderLineDetailResponse",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderListResponse",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderProductResponse$WarehouseStockItem",
+    "com/cashly/cashly_api/orders/application/dto/response/OrderDetailResponse",
+    "com/cashly/cashly_api/orders/application/products/GetProductsForOrderUseCase",
+    "com/cashly/cashly_api/quotes/infrastructure/persistence/entities/QuoteLineCategorySnapshotJpaEntity",
+    "com/cashly/cashly_api/quotes/infrastructure/persistence/entities/QuoteLineJpaEntity",
+    "com/cashly/cashly_api/orders/infrastructure/persistence/adapters/OrderRepositoryAdapter",
+    "com/cashly/cashly_api/quotes/application/create/CreateQuoteRequest",
+    "com/cashly/cashly_api/quotes/application/create/CreateQuoteRequest$QuoteLineRequest",
+    "com/cashly/cashly_api/quotes/application/create/CreateQuoteRequest$WarehouseAllocationRequest",
+    "com/cashly/cashly_api/quotes/application/create/CreateQuoteUseCase",
+    "com/cashly/cashly_api/quotes/application/ports/out/InvoiceCreationGateway$CreatedInvoice",
+    "com/cashly/cashly_api/quotes/application/ports/out/QuoteProductCatalogGateway$ProductEntry",
+    "com/cashly/cashly_api/quotes/application/ports/out/OrderCreationGateway$CreatedOrder",
+    "com/cashly/cashly_api/quotes/application/ports/out/InvoiceCreationGateway$Line",
+    "com/cashly/cashly_api/quotes/application/ports/out/OrderCreationGateway$Line",
+    "com/cashly/cashly_api/quotes/application/ports/out/ActorIdentityGateway$Actor",
+    "com/cashly/cashly_api/quotes/application/ports/out/OrderCreationGateway$Allocation",
+    "com/cashly/cashly_api/quotes/application/ports/out/QuoteWarehouseGateway$Warehouse",
+    "com/cashly/cashly_api/quotes/application/ports/out/QuoteWarehouseGateway$Stock",
+    "com/cashly/cashly_api/quotes/application/ports/out/QuoteCustomerGateway$Customer",
+    "com/cashly/cashly_api/quotes/application/ports/out/OrderCreationGateway$Command",
+    "com/cashly/cashly_api/quotes/application/ports/out/InvoiceCreationGateway$Command",
+    "com/cashly/cashly_api/quotes/application/ports/out/QuoteProductCatalogGateway$ProductReference",
+    "com/cashly/cashly_api/quotes/application/ports/out/InvoiceCreationGateway$Allocation",
+    "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest$WarehouseAllocationRequest",
+    "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest",
+    "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest$LineAllocationRequest",
+    "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesUseCase",
+    "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest",
+    "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest$LineAllocationRequest",
+    "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest$WarehouseAllocationRequest",
+    "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesUseCase",
+    "com/cashly/cashly_api/orders/application/ports/in/OrderDocumentFilter",
+    "com/cashly/cashly_api/orders/application/ports/in/QuoteOrderCreationApi$Line",
+    "com/cashly/cashly_api/orders/application/ports/in/OrderDocumentRow",
+    "com/cashly/cashly_api/orders/application/ports/in/OrderDocumentSnapshot$Line",
+    "com/cashly/cashly_api/orders/application/ports/in/QuoteOrderCreationApi$Command",
+    "com/cashly/cashly_api/orders/application/ports/in/QuoteOrderCreationApi$Allocation",
+    "com/cashly/cashly_api/orders/application/ports/in/QuoteOrderCreationApi$CreatedOrder",
+    "com/cashly/cashly_api/orders/application/ports/in/OrderDocumentSnapshot",
+    "com/cashly/cashly_api/orders/application/confirm/ConfirmOrderUseCase",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/LocalOrderCreationGateway",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/LocalQuoteProductCatalogAdapter",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/QuoteConversionNotificationAdapter",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/LocalQuoteRejectionNotificationGateway",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/LocalInvoiceCreationGateway",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/LocalQuoteCustomerAdapter",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/QuoteActorIdentityAdapter",
+    "com/cashly/cashly_api/quotes/infrastructure/integration/LocalQuoteWarehouseAdapter",
+    "com/cashly/cashly_api/quotes/infrastructure/persistence/mappers/QuoteJpaMapper",
+    "com/cashly/cashly_api/orders/application/cancel/CancelOrderUseCase",
+    "com/cashly/cashly_api/orders/application/cancel/CancelOrderRequest",
+    "com/cashly/cashly_api/quotes/application/products/GetProductsForQuoteUseCase",
+    "com/cashly/cashly_api/quotes/application/queries/QuoteDocumentQueryService",
+    "com/cashly/cashly_api/quotes/domain/QuoteRepository",
+    "com/cashly/cashly_api/quotes/domain/QuoteLine",
+    "com/cashly/cashly_api/quotes/domain/Quote",
+    "com/cashly/cashly_api/quotes/domain/QuoteAllocation",
+    "com/cashly/cashly_api/quotes/application/mappers/QuoteMapper",
+    "com/cashly/cashly_api/quotes/application/mappers/QuoteMapper$WarehouseStockInfo",
+    "com/cashly/cashly_api/quotes/infrastructure/persistence/repositories/QuoteJpaRepository",
+    "com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceUseCase",
+    "com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceRequest",
+    "com/cashly/cashly_api/orders/application/convert_to_invoice/ConvertToInvoiceResponse",
+    "com/cashly/cashly_api/orders/infrastructure/web/OrderController",
+    "com/cashly/cashly_api/orders/application/get/GetOrderByIdUseCase",
+    "com/cashly/cashly_api/quotes/application/delete/DeleteQuoteUseCase",
+    "com/cashly/cashly_api/quotes/infrastructure/persistence/adapters/JpaQuoteRepositoryAdapter",
+    "com/cashly/cashly_api/quotes/application/get/GetQuoteByIdUseCase",
+    "com/cashly/cashly_api/orders/infrastructure/persistence/entities/OrderLineCategorySnapshotEntity",
+    "com/cashly/cashly_api/orders/infrastructure/persistence/entities/OrderLineEntity",
+    "com/cashly/cashly_api/quotes/application/warehouses/GetWarehousesForQuoteUseCase",
+    "com/cashly/cashly_api/orders/domain/valueobjects/OrderNumber",
+    "com/cashly/cashly_api/orders/domain/valueobjects/OrderStatus",
+    "com/cashly/cashly_api/orders/domain/valueobjects/OrderLineId",
+    "com/cashly/cashly_api/orders/domain/valueobjects/OrderId",
+    "com/cashly/cashly_api/quotes/domain/exceptions/QuoteStateException",
+    "com/cashly/cashly_api/quotes/domain/exceptions/QuoteNotFoundException",
+    "com/cashly/cashly_api/quotes/domain/exceptions/InvalidQuoteAllocationException",
+    "com/cashly/cashly_api/quotes/domain/exceptions/InvalidQuoteLineException",
+    "com/cashly/cashly_api/quotes/application/update/UpdateQuoteRequest",
+    "com/cashly/cashly_api/quotes/application/update/UpdateQuoteUseCase",
+    "com/cashly/cashly_api/orders/application/ports/out/StockAvailabilityGateway$AllocationData",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderProductCatalogGateway$Stock",
+    "com/cashly/cashly_api/orders/application/ports/out/InvoiceCreationGateway$Command",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderProductCatalogGateway$ProductReference",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderActorGateway$Actor",
+    "com/cashly/cashly_api/orders/application/ports/out/StockAvailabilityGateway$WarehouseStockInfo",
+    "com/cashly/cashly_api/orders/application/ports/out/StockAvailabilityGateway$EnrichedStock",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderInventoryGateway$Allocation",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderProductCatalogGateway$ProductEntry",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderInventoryGateway$Reference",
+    "com/cashly/cashly_api/orders/application/ports/out/InvoiceCreationGateway$CreatedInvoice",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderCustomerGateway$Customer",
+    "com/cashly/cashly_api/orders/application/ports/out/CustomerCreditGateway$CreditLimits",
+    "com/cashly/cashly_api/orders/application/ports/out/OrderWarehouseGateway$Warehouse"
+  ],
+  "removals": [
+    {
+      "path": "src/main/java/com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest.java",
+      "original_sha256": "d5c769f2ffc67423dd0d4bb08a67b0809a720dddcccb52891d4787769c06ecc1",
+      "kind": "deleted_type",
+      "removed_classes": {
+        "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest$WarehouseAllocationRequest": {
+          "covered": 1,
+          "missed": 0
+        },
+        "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest": {
+          "covered": 1,
+          "missed": 0
+        },
+        "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest$LineAllocationRequest": {
+          "covered": 1,
+          "missed": 0
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 3,
+        "missed": 0
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesUseCase.java",
+      "original_sha256": "0b6611d32a93bce5571f1f1cb17fc4930031631e80e5f80dc818b6ce58192aeb",
+      "kind": "deleted_type",
+      "removed_classes": {
+        "com/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesUseCase": {
+          "covered": 34,
+          "missed": 0
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 34,
+        "missed": 0
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest.java",
+      "original_sha256": "b0f83be3a5266a7cc22ea32791cc98a005d91dcc1aca0ed362b3f5fc72a0a9c0",
+      "kind": "deleted_type",
+      "removed_classes": {
+        "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest": {
+          "covered": 0,
+          "missed": 1
+        },
+        "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest$LineAllocationRequest": {
+          "covered": 0,
+          "missed": 1
+        },
+        "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest$WarehouseAllocationRequest": {
+          "covered": 0,
+          "missed": 1
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 0,
+        "missed": 3
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesUseCase.java",
+      "original_sha256": "128bec4ce3e574bc430ee2a123dc06db4eb3248594e4b764f0b01469d79bb20c",
+      "kind": "deleted_type",
+      "removed_classes": {
+        "com/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesUseCase": {
+          "covered": 5,
+          "missed": 30
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 5,
+        "missed": 30
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/application/ports/out/OrderWarehouseGateway.java",
+      "original_sha256": "390767a2f7a011af82330c9c86797c7ca21b9cd4da801e43513f909d26365799",
+      "kind": "deleted_type",
+      "removed_classes": {
+        "com/cashly/cashly_api/orders/application/ports/out/OrderWarehouseGateway$Warehouse": {
+          "covered": 0,
+          "missed": 1
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 0,
+        "missed": 1
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderWarehouseAdapter.java",
+      "original_sha256": "35563bb9df4d57d1dfb6132eb74277558630b983d26de7853aa9f945881c8b22",
+      "kind": "deleted_type",
+      "removed_classes": {
+        "com/cashly/cashly_api/orders/infrastructure/integration/LocalOrderWarehouseAdapter": {
+          "covered": 4,
+          "missed": 2
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 4,
+        "missed": 2
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/quotes/domain/Quote.java",
+      "original_sha256": "ae3d90ee47a704091958952fda212acdba44f9e2e8c548118e17ce1dc59f279d",
+      "kind": "deleted_lines_in_retained_class",
+      "deleted_executable_source_lines": [
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        177,
+        178,
+        179,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189
+      ],
+      "retained_line_overlap": [],
+      "retained_class": "com/cashly/cashly_api/quotes/domain/Quote",
+      "class_before": {
+        "covered": 140,
+        "missed": 2
+      },
+      "class_after": {
+        "covered": 112,
+        "missed": 2
+      },
+      "removed_method_LINE_counters": {
+        "assignAllocation(Lcom/cashly/cashly_api/quotes/domain/valueobjects/QuoteLineId;Lcom/cashly/cashly_api/quotes/domain/QuoteAllocation;)V": {
+          "covered": 8,
+          "missed": 0
+        },
+        "confirmWarehouseAssignment()V": {
+          "covered": 12,
+          "missed": 0
+        },
+        "clearAllocations()V": {
+          "covered": 8,
+          "missed": 0
+        },
+        "lambda$assignAllocation$1(Lcom/cashly/cashly_api/quotes/domain/valueobjects/QuoteLineId;)Ljava/lang/IllegalArgumentException;": {
+          "covered": 1,
+          "missed": 0
+        },
+        "lambda$assignAllocation$0(Lcom/cashly/cashly_api/quotes/domain/valueobjects/QuoteLineId;Lcom/cashly/cashly_api/quotes/domain/QuoteLine;)Z": {
+          "covered": 1,
+          "missed": 0
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 28,
+        "missed": 0
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/config/QuoteConfig.java",
+      "original_sha256": "25223c8ee75f5656937c8435e2c6711022afc7f65d67b74b6928c326f62c7c17",
+      "kind": "deleted_lines_in_retained_class",
+      "deleted_executable_source_lines": [
+        98
+      ],
+      "retained_line_overlap": [],
+      "retained_class": "com/cashly/cashly_api/quotes/infrastructure/config/QuoteConfig",
+      "class_before": {
+        "covered": 15,
+        "missed": 0
+      },
+      "class_after": {
+        "covered": 14,
+        "missed": 0
+      },
+      "removed_method_LINE_counters": {
+        "assignQuoteWarehousesUseCase(Lcom/cashly/cashly_api/quotes/domain/QuoteRepository;Lcom/cashly/cashly_api/quotes/application/ports/out/QuoteWarehouseGateway;)Lcom/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesUseCase;": {
+          "covered": 1,
+          "missed": 0
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 1,
+        "missed": 0
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/quotes/infrastructure/web/QuoteController.java",
+      "original_sha256": "4fd49c6579714137bd6f608a7d84b0b05eefe0fa837d373cd558740fc406ebf2",
+      "kind": "deleted_lines_in_retained_class",
+      "deleted_executable_source_lines": [
+        67,
+        142,
+        143
+      ],
+      "retained_line_overlap": [],
+      "retained_class": "com/cashly/cashly_api/quotes/infrastructure/web/QuoteController",
+      "class_before": {
+        "covered": 25,
+        "missed": 10
+      },
+      "class_after": {
+        "covered": 24,
+        "missed": 8
+      },
+      "removed_method_LINE_counters": {
+        "assignWarehouses(Ljava/util/UUID;Lcom/cashly/cashly_api/quotes/application/assign_warehouses/AssignQuoteWarehousesRequest;)Lorg/springframework/http/ResponseEntity;": {
+          "covered": 0,
+          "missed": 2
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 1,
+        "missed": 2
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/infrastructure/config/OrderConfig.java",
+      "original_sha256": "eee4625a4b0b0b1e458c2b24eb9f3671159402641ca72285db56bb44ee85cd81",
+      "kind": "deleted_lines_in_retained_class",
+      "deleted_executable_source_lines": [
+        84
+      ],
+      "retained_line_overlap": [],
+      "retained_class": "com/cashly/cashly_api/orders/infrastructure/config/OrderConfig",
+      "class_before": {
+        "covered": 11,
+        "missed": 0
+      },
+      "class_after": {
+        "covered": 10,
+        "missed": 0
+      },
+      "removed_method_LINE_counters": {
+        "assignOrderWarehousesUseCase(Lcom/cashly/cashly_api/orders/domain/OrderRepository;Lcom/cashly/cashly_api/orders/application/ports/out/OrderInventoryGateway;Lcom/cashly/cashly_api/orders/application/ports/out/OrderWarehouseGateway;)Lcom/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesUseCase;": {
+          "covered": 1,
+          "missed": 0
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 1,
+        "missed": 0
+      }
+    },
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/infrastructure/web/OrderController.java",
+      "original_sha256": "47f827e33da91783181d95a4bb5d2dddeb3f077eaa9fbaee5e957bda92b6f09c",
+      "kind": "deleted_lines_in_retained_class",
+      "deleted_executable_source_lines": [
+        63,
+        118,
+        119
+      ],
+      "retained_line_overlap": [],
+      "retained_class": "com/cashly/cashly_api/orders/infrastructure/web/OrderController",
+      "class_before": {
+        "covered": 29,
+        "missed": 2
+      },
+      "class_after": {
+        "covered": 28,
+        "missed": 0
+      },
+      "removed_method_LINE_counters": {
+        "assignWarehouses(Ljava/util/UUID;Lcom/cashly/cashly_api/orders/application/assign_warehouses/AssignOrderWarehousesRequest;)Lorg/springframework/http/ResponseEntity;": {
+          "covered": 0,
+          "missed": 2
+        }
+      },
+      "unique_source_LINE_counters_removed": {
+        "covered": 1,
+        "missed": 2
+      }
+    }
+  ]
+}

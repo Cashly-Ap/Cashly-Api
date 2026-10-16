@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.invoices.infrastructure.config;
 import com.cashly.cashly_api.invoices.application.ports.in.ReturnInvoiceQuery;
-import com.cashly.cashly_api.invoices.application.queries.RepositoryReturnInvoiceQuery;
-import com.cashly.cashly_api.invoices.domain.InvoiceRepository;
+import com.cashly.cashly_api.invoices.application.queries.services.RepositoryReturnInvoiceQuery;
+import com.cashly.cashly_api.invoices.domain.repository.InvoiceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

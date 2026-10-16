@@ -5,7 +5,7 @@ import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.pro
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.MovementReportResponse;
 import com.cashly.cashly_api.warehouses.reporting.application.ports.out.MovementsReportRepositoryPort;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.MovementsPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.MovementsPdfQuery;
 
 import java.util.List;
 import java.util.Map;

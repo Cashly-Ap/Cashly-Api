@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.orders.reporting.application.ports.out;
 
-import com.cashly.cashly_api.orders.reporting.application.dto.OrderReportRow;
+import com.cashly.cashly_api.orders.reporting.application.dto.model.OrderReportRow;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.debit_notes.infrastructure.web;
 
-import com.cashly.cashly_api.debit_notes.application.create.CreateDebitNoteRequest;
+import com.cashly.cashly_api.debit_notes.application.create.request.CreateDebitNoteRequest;
 import com.cashly.cashly_api.debit_notes.application.dto.response.DebitNoteResponse;
-import com.cashly.cashly_api.debit_notes.application.create.CreateDebitNoteUseCase;
-import com.cashly.cashly_api.debit_notes.application.delete.DeleteDebitNoteUseCase;
-import com.cashly.cashly_api.debit_notes.application.get.GetDebitNoteByIdUseCase;
-import com.cashly.cashly_api.debit_notes.application.list.GetDebitNotesUseCase;
+import com.cashly.cashly_api.debit_notes.application.create.use_case.CreateDebitNoteUseCase;
+import com.cashly.cashly_api.debit_notes.application.delete.use_case.DeleteDebitNoteUseCase;
+import com.cashly.cashly_api.debit_notes.application.get.use_case.GetDebitNoteByIdUseCase;
+import com.cashly.cashly_api.debit_notes.application.list.use_case.GetDebitNotesUseCase;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

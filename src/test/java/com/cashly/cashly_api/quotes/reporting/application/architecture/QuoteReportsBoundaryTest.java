@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.quotes.reporting.application.architecture;
 import com.cashly.cashly_api.quotes.reporting.application.ports.out.QuotePdfPort;
 import com.cashly.cashly_api.quotes.reporting.application.ports.out.QuotesReportPdfPort;
-import com.cashly.cashly_api.quotes.reporting.application.generate_quote_pdf.GenerateQuotePdfUseCaseImpl;
+import com.cashly.cashly_api.quotes.reporting.application.generate_quote_pdf.services.GenerateQuotePdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;

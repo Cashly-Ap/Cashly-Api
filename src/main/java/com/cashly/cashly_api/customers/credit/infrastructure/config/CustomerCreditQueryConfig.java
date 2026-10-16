@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.customers.credit.infrastructure.config;
 import com.cashly.cashly_api.customers.credit.application.ports.in.CustomerCreditContextQuery;
-import com.cashly.cashly_api.customers.credit.application.queries.RepositoryCustomerCreditContextQuery;
-import com.cashly.cashly_api.customers.profile.domain.CustomerRepository;
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalanceRepository;
+import com.cashly.cashly_api.customers.credit.application.queries.services.RepositoryCustomerCreditContextQuery;
+import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.customers.balance.domain.repository.CustomerBalanceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

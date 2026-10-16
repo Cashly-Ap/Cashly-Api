@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.profile.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.customers.profile.domain.Customer;
-import com.cashly.cashly_api.customers.profile.domain.CustomerAddress;
-import com.cashly.cashly_api.customers.profile.domain.CustomerEmail;
-import com.cashly.cashly_api.customers.profile.domain.CustomerPhone;
+import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
+import com.cashly.cashly_api.customers.profile.domain.entity.CustomerAddress;
+import com.cashly.cashly_api.customers.profile.domain.entity.CustomerEmail;
+import com.cashly.cashly_api.customers.profile.domain.entity.CustomerPhone;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.AddressId;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditDays;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditLimit;

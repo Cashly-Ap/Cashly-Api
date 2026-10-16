@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.auth.token.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
-import com.cashly.cashly_api.auth.token.domain.RefreshToken;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
+import com.cashly.cashly_api.auth.token.domain.entity.RefreshToken;
 import com.cashly.cashly_api.auth.token.domain.valueobjects.RefreshTokenId;
 import com.cashly.cashly_api.auth.token.infrastructure.persistence.entities.RefreshTokenEntity;
 import org.junit.jupiter.api.BeforeEach;

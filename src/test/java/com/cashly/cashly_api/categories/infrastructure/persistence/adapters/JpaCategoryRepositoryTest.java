@@ -2,7 +2,7 @@ package com.cashly.cashly_api.categories.infrastructure.persistence.adapters;
 
 import com.cashly.cashly_api.categories.infrastructure.persistence.repositories.SpringDataCategoryRepository;
 
-import com.cashly.cashly_api.categories.domain.Category;
+import com.cashly.cashly_api.categories.domain.entity.Category;
 
 import com.cashly.cashly_api.categories.infrastructure.persistence.entities.CategoryEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;

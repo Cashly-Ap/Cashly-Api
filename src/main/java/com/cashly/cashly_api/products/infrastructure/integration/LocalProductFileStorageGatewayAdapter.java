@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.products.infrastructure.integration;
 
 import com.cashly.cashly_api.products.application.ports.out.ProductFileStorageGateway;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;

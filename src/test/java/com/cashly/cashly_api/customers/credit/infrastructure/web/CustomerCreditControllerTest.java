@@ -2,8 +2,8 @@ package com.cashly.cashly_api.customers.credit.infrastructure.web;
 
 import com.cashly.cashly_api.customers.credit.application.dto.response.CreditStatusResponse;
 import com.cashly.cashly_api.customers.credit.application.dto.response.OverdueInvoiceResponse;
-import com.cashly.cashly_api.customers.credit.application.status.GetCustomerCreditStatusUseCase;
-import com.cashly.cashly_api.customers.credit.application.overdue.GetOverdueInvoicesUseCase;
+import com.cashly.cashly_api.customers.credit.application.status.use_case.GetCustomerCreditStatusUseCase;
+import com.cashly.cashly_api.customers.credit.application.overdue.use_case.GetOverdueInvoicesUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

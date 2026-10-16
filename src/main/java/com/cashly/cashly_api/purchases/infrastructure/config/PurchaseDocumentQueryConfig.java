@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.purchases.infrastructure.config;
 
 import com.cashly.cashly_api.purchases.application.ports.in.PurchaseDocumentQuery;
-import com.cashly.cashly_api.purchases.application.queries.PurchaseDocumentQueryService;
-import com.cashly.cashly_api.purchases.application.list.ListPurchasesUseCase;
-import com.cashly.cashly_api.purchases.domain.PurchaseRepository;
+import com.cashly.cashly_api.purchases.application.queries.services.PurchaseDocumentQueryService;
+import com.cashly.cashly_api.purchases.application.list.use_case.ListPurchasesUseCase;
+import com.cashly.cashly_api.purchases.domain.repository.PurchaseRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

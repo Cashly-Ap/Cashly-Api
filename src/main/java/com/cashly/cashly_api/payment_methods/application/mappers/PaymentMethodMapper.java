@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payment_methods.application.mappers;
 
 import com.cashly.cashly_api.payment_methods.application.dto.response.PaymentMethodResponse;
-import com.cashly.cashly_api.payment_methods.domain.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.domain.entity.PaymentMethod;
 
 import java.util.List;
 

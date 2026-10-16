@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.cash_register.reporting.infrastructure.excel;
 
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterExportRow;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterExportRow;
 import com.cashly.cashly_api.cash_register.application.ports.out.CashRegisterQueryGateway;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;

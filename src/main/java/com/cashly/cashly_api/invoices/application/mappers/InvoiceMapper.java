@@ -2,8 +2,8 @@ package com.cashly.cashly_api.invoices.application.mappers;
 
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.invoices.application.dto.response.InvoiceListResponse;
-import com.cashly.cashly_api.invoices.domain.Invoice;
-import com.cashly.cashly_api.invoices.domain.InvoiceLine;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.invoices.domain.entity.InvoiceLine;
 import com.cashly.cashly_api.invoices.application.ports.out.StockAvailabilityGateway;
 
 import java.math.BigDecimal;

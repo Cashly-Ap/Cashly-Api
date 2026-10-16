@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.invoices.infrastructure.config;
 
 import com.cashly.cashly_api.invoices.application.ports.in.OrderInvoiceCreationApi;
-import com.cashly.cashly_api.invoices.application.create.from_order.OrderInvoiceCreationService;
-import com.cashly.cashly_api.invoices.application.create.CreateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.create.from_order.services.OrderInvoiceCreationService;
+import com.cashly.cashly_api.invoices.application.create.use_case.CreateInvoiceUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

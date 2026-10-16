@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.payments.reporting.application.dto.PaymentReportData;
+import com.cashly.cashly_api.payments.reporting.application.dto.model.PaymentReportData;
 import com.cashly.cashly_api.payments.reporting.application.ports.out.PaymentPdfPort;
 
 import java.io.ByteArrayOutputStream;

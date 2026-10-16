@@ -654,3 +654,6 @@ If you're unsure about:
 - **Business rules**: Consult with Domain Agent
 - **API design**: Consult with Infrastructure Agent
 - **Documentation standards**: Consult with Master Documentation Agent
+
+
+[Complete source and test responsibility structure](../architecture/RESPONSIBILITY-PACKAGES.md) lists the current packages for every backend module.

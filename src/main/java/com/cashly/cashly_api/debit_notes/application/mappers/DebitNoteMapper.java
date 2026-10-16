@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.debit_notes.application.mappers;
 
 import com.cashly.cashly_api.debit_notes.application.dto.response.DebitNoteResponse;
-import com.cashly.cashly_api.debit_notes.domain.DebitNote;
+import com.cashly.cashly_api.debit_notes.domain.entity.DebitNote;
 
 public class DebitNoteMapper {
 

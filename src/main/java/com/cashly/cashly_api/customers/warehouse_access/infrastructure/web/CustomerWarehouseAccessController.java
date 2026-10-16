@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.warehouse_access.infrastructure.web;
 
 import com.cashly.cashly_api.customers.warehouse_access.application.dto.response.CustomerWarehouseAccessResponse;
-import com.cashly.cashly_api.customers.warehouse_access.application.grant.GrantWarehouseAccessUseCase;
-import com.cashly.cashly_api.customers.warehouse_access.application.list.ListCustomerWarehousesUseCase;
-import com.cashly.cashly_api.customers.warehouse_access.application.revoke.RevokeWarehouseAccessUseCase;
+import com.cashly.cashly_api.customers.warehouse_access.application.grant.use_case.GrantWarehouseAccessUseCase;
+import com.cashly.cashly_api.customers.warehouse_access.application.list.use_case.ListCustomerWarehousesUseCase;
+import com.cashly.cashly_api.customers.warehouse_access.application.revoke.use_case.RevokeWarehouseAccessUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

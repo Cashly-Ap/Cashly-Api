@@ -2,9 +2,9 @@ package com.cashly.cashly_api.orders.application.mappers;
 
 import com.cashly.cashly_api.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.orders.application.dto.response.OrderListResponse;
-import com.cashly.cashly_api.orders.domain.Order;
-import com.cashly.cashly_api.orders.domain.OrderLine;
-import com.cashly.cashly_api.orders.domain.OrderLineAllocation;
+import com.cashly.cashly_api.orders.domain.entity.Order;
+import com.cashly.cashly_api.orders.domain.entity.OrderLine;
+import com.cashly.cashly_api.orders.domain.entity.OrderLineAllocation;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;

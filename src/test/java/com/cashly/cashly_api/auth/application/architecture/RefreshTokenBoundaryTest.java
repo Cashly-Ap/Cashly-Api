@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.auth.application.architecture;
 
-import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenUseCase;
+import com.cashly.cashly_api.auth.token.application.refresh.use_case.RefreshTokenUseCase;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

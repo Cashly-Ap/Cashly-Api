@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.application.ports.out;
 
-import com.cashly.cashly_api.returns.domain.Return;
+import com.cashly.cashly_api.returns.domain.entity.Return;
 import java.util.List;
 import java.util.UUID;
 

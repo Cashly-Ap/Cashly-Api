@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.suppliers.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.suppliers.domain.Supplier;
-import com.cashly.cashly_api.suppliers.domain.SupplierAddress;
-import com.cashly.cashly_api.suppliers.domain.SupplierEmail;
-import com.cashly.cashly_api.suppliers.domain.SupplierPhone;
+import com.cashly.cashly_api.suppliers.domain.entity.Supplier;
+import com.cashly.cashly_api.suppliers.domain.entity.SupplierAddress;
+import com.cashly.cashly_api.suppliers.domain.entity.SupplierEmail;
+import com.cashly.cashly_api.suppliers.domain.entity.SupplierPhone;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.AddressId;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.EmailAddress;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.EmailId;

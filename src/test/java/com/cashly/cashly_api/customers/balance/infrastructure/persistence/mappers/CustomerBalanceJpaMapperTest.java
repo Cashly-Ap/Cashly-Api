@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.balance.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalance;
+import com.cashly.cashly_api.customers.balance.domain.entity.CustomerBalance;
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.entities.CustomerBalanceEntity;
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.mappers.CustomerBalanceJpaMapper;
 import org.junit.jupiter.api.DisplayName;

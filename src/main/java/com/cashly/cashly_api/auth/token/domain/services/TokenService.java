@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.auth.token.domain.services;
 
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
-import com.cashly.cashly_api.auth.token.domain.RefreshToken;
-import com.cashly.cashly_api.auth.user.domain.User;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
+import com.cashly.cashly_api.auth.token.domain.entity.RefreshToken;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 

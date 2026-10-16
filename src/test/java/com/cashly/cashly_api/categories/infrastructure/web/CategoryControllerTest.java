@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.categories.infrastructure.web;
 
-import com.cashly.cashly_api.categories.application.create.CreateCategoryRequest;
-import com.cashly.cashly_api.categories.application.update.UpdateCategoryRequest;
+import com.cashly.cashly_api.categories.application.create.request.CreateCategoryRequest;
+import com.cashly.cashly_api.categories.application.update.request.UpdateCategoryRequest;
 import com.cashly.cashly_api.categories.application.dto.response.CategoryDetailResponse;
 import com.cashly.cashly_api.categories.application.dto.response.CategoryListResponse;
-import com.cashly.cashly_api.categories.application.create.CreateCategoryUseCase;
-import com.cashly.cashly_api.categories.application.delete.DeleteCategoryUseCase;
-import com.cashly.cashly_api.categories.application.queries.GetCategoryUseCase;
-import com.cashly.cashly_api.categories.application.queries.ListCategoriesUseCase;
-import com.cashly.cashly_api.categories.application.update.UpdateCategoryUseCase;
+import com.cashly.cashly_api.categories.application.create.use_case.CreateCategoryUseCase;
+import com.cashly.cashly_api.categories.application.delete.use_case.DeleteCategoryUseCase;
+import com.cashly.cashly_api.categories.application.queries.use_case.GetCategoryUseCase;
+import com.cashly.cashly_api.categories.application.queries.use_case.ListCategoriesUseCase;
+import com.cashly.cashly_api.categories.application.update.use_case.UpdateCategoryUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

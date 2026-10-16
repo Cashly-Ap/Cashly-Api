@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.cash_register.reporting.application.ports.out;
 
-import com.cashly.cashly_api.cash_register.sessions.application.dto.CashRegisterResponse;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportType;
+import com.cashly.cashly_api.cash_register.sessions.application.dto.response.CashRegisterResponse;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportType;
 
 public interface CashRegisterReportPort {
 

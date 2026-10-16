@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.customers.balance.infrastructure.web;
 
-import com.cashly.cashly_api.customers.balance.application.advance.CreateAdvanceRequest;
-import com.cashly.cashly_api.customers.balance.application.refund.CreateRefundRequest;
+import com.cashly.cashly_api.customers.balance.application.advance.request.CreateAdvanceRequest;
+import com.cashly.cashly_api.customers.balance.application.refund.request.CreateRefundRequest;
 import com.cashly.cashly_api.customers.balance.application.dto.response.BalanceTransactionResponse;
 import com.cashly.cashly_api.customers.balance.application.dto.response.CustomerBalanceResponse;
-import com.cashly.cashly_api.customers.balance.application.advance.CreateCustomerAdvanceUseCase;
-import com.cashly.cashly_api.customers.balance.application.refund.RefundCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.application.get.GetCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.application.advance.use_case.CreateCustomerAdvanceUseCase;
+import com.cashly.cashly_api.customers.balance.application.refund.use_case.RefundCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.application.get.use_case.GetCustomerBalanceUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

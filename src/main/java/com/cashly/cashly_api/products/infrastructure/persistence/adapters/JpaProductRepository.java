@@ -5,12 +5,12 @@ import com.cashly.cashly_api.products.infrastructure.persistence.repositories.Sp
 
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
-import com.cashly.cashly_api.products.domain.Product;
+import com.cashly.cashly_api.products.domain.entity.Product;
 import com.cashly.cashly_api.products.application.ports.out.ProductPriceTypeExistenceGateway;
 import com.cashly.cashly_api.products.application.ports.out.ProductStockFilterGateway;
 import com.cashly.cashly_api.products.application.ports.out.ProductReferenceGateway;
 import com.cashly.cashly_api.products.domain.exceptions.ProductReferencedException;
-import com.cashly.cashly_api.products.domain.ProductRepository;
+import com.cashly.cashly_api.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.products.domain.valueobjects.ProductPrice;
 import com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductCodeSequenceEntity;
 import com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductEntity;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.entities.StockMovementEntity;
-import com.cashly.cashly_api.warehouses.stock.domain.MovementType;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

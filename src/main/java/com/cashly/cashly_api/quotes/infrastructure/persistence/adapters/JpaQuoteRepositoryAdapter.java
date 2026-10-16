@@ -6,8 +6,8 @@ import com.cashly.cashly_api.quotes.infrastructure.persistence.repositories.Quot
 import com.cashly.cashly_api.quotes.infrastructure.persistence.entities.QuoteNumberSequenceJpaEntity;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.repositories.QuoteNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.quotes.domain.Quote;
-import com.cashly.cashly_api.quotes.domain.QuoteRepository;
+import com.cashly.cashly_api.quotes.domain.entity.Quote;
+import com.cashly.cashly_api.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +33,20 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
     }
 
     @Override
+    @Transactional
     public Quote save(Quote quote) {
         QuoteJpaEntity entity = mapper.toJpa(quote);
+        // @MapsId snapshots need their existing key during merge; null identifies a genuinely new snapshot.
+        jpaRepository.findByIdWithLines(quote.getId()).ifPresent(existing -> {
+            var snapshotIds = existing.getLines().stream()
+                    .filter(line -> line.getCategorySnapshot() != null)
+                    .collect(java.util.stream.Collectors.toMap(line -> line.getId(), line -> line.getCategorySnapshot().getId()));
+            entity.getLines().forEach(line -> {
+                if (line.getCategorySnapshot() != null) {
+                    line.getCategorySnapshot().setId(snapshotIds.get(line.getId()));
+                }
+            });
+        });
         QuoteJpaEntity saved = jpaRepository.save(entity);
         return mapper.toDomain(saved);
     }

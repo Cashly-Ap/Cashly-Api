@@ -1,0 +1,2230 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "counts": {
+    "tests": 3239,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "comparison": {
+    "family/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfig": {
+      "baseline": {
+        "covered": 9,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 10,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "family/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportController": {
+      "baseline": {
+        "covered": 29,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 31,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "family/com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfig": {
+      "baseline": {
+        "covered": 8,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 9,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "layer/application": {
+      "baseline": {
+        "covered": 4493,
+        "missed": 412,
+        "line_coverage_percent": 91.6004
+      },
+      "final": {
+        "covered": 4507,
+        "missed": 402,
+        "line_coverage_percent": 91.811
+      }
+    },
+    "layer/domain": {
+      "baseline": {
+        "covered": 2919,
+        "missed": 182,
+        "line_coverage_percent": 94.1309
+      },
+      "final": {
+        "covered": 2925,
+        "missed": 176,
+        "line_coverage_percent": 94.3244
+      }
+    },
+    "layer/infrastructure": {
+      "baseline": {
+        "covered": 6347,
+        "missed": 1893,
+        "line_coverage_percent": 77.0267
+      },
+      "final": {
+        "covered": 6421,
+        "missed": 1845,
+        "line_coverage_percent": 77.6797
+      }
+    },
+    "module/auth/application": {
+      "baseline": {
+        "covered": 218,
+        "missed": 33,
+        "line_coverage_percent": 86.8526
+      },
+      "final": {
+        "covered": 218,
+        "missed": 33,
+        "line_coverage_percent": 86.8526
+      }
+    },
+    "module/auth/domain": {
+      "baseline": {
+        "covered": 254,
+        "missed": 31,
+        "line_coverage_percent": 89.1228
+      },
+      "final": {
+        "covered": 254,
+        "missed": 31,
+        "line_coverage_percent": 89.1228
+      }
+    },
+    "module/auth/infrastructure": {
+      "baseline": {
+        "covered": 422,
+        "missed": 99,
+        "line_coverage_percent": 80.9981
+      },
+      "final": {
+        "covered": 422,
+        "missed": 99,
+        "line_coverage_percent": 80.9981
+      }
+    },
+    "module/cash_register/application": {
+      "baseline": {
+        "covered": 244,
+        "missed": 6,
+        "line_coverage_percent": 97.6
+      },
+      "final": {
+        "covered": 246,
+        "missed": 4,
+        "line_coverage_percent": 98.4
+      }
+    },
+    "module/cash_register/domain": {
+      "baseline": {
+        "covered": 220,
+        "missed": 4,
+        "line_coverage_percent": 98.2143
+      },
+      "final": {
+        "covered": 220,
+        "missed": 4,
+        "line_coverage_percent": 98.2143
+      }
+    },
+    "module/cash_register/infrastructure": {
+      "baseline": {
+        "covered": 1138,
+        "missed": 399,
+        "line_coverage_percent": 74.0403
+      },
+      "final": {
+        "covered": 1140,
+        "missed": 397,
+        "line_coverage_percent": 74.1705
+      }
+    },
+    "module/categories/application": {
+      "baseline": {
+        "covered": 78,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 78,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/categories/domain": {
+      "baseline": {
+        "covered": 45,
+        "missed": 1,
+        "line_coverage_percent": 97.8261
+      },
+      "final": {
+        "covered": 45,
+        "missed": 1,
+        "line_coverage_percent": 97.8261
+      }
+    },
+    "module/categories/infrastructure": {
+      "baseline": {
+        "covered": 65,
+        "missed": 4,
+        "line_coverage_percent": 94.2029
+      },
+      "final": {
+        "covered": 65,
+        "missed": 4,
+        "line_coverage_percent": 94.2029
+      }
+    },
+    "module/credit_notes/application": {
+      "baseline": {
+        "covered": 91,
+        "missed": 2,
+        "line_coverage_percent": 97.8495
+      },
+      "final": {
+        "covered": 91,
+        "missed": 2,
+        "line_coverage_percent": 97.8495
+      }
+    },
+    "module/credit_notes/domain": {
+      "baseline": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/credit_notes/infrastructure": {
+      "baseline": {
+        "covered": 106,
+        "missed": 4,
+        "line_coverage_percent": 96.3636
+      },
+      "final": {
+        "covered": 106,
+        "missed": 4,
+        "line_coverage_percent": 96.3636
+      }
+    },
+    "module/customers/application": {
+      "baseline": {
+        "covered": 410,
+        "missed": 39,
+        "line_coverage_percent": 91.314
+      },
+      "final": {
+        "covered": 410,
+        "missed": 39,
+        "line_coverage_percent": 91.314
+      }
+    },
+    "module/customers/domain": {
+      "baseline": {
+        "covered": 444,
+        "missed": 3,
+        "line_coverage_percent": 99.3289
+      },
+      "final": {
+        "covered": 444,
+        "missed": 3,
+        "line_coverage_percent": 99.3289
+      }
+    },
+    "module/customers/infrastructure": {
+      "baseline": {
+        "covered": 274,
+        "missed": 70,
+        "line_coverage_percent": 79.6512
+      },
+      "final": {
+        "covered": 274,
+        "missed": 70,
+        "line_coverage_percent": 79.6512
+      }
+    },
+    "module/dashboard/application": {
+      "baseline": {
+        "covered": 11,
+        "missed": 2,
+        "line_coverage_percent": 84.6154
+      },
+      "final": {
+        "covered": 11,
+        "missed": 2,
+        "line_coverage_percent": 84.6154
+      }
+    },
+    "module/dashboard/infrastructure": {
+      "baseline": {
+        "covered": 23,
+        "missed": 22,
+        "line_coverage_percent": 51.1111
+      },
+      "final": {
+        "covered": 23,
+        "missed": 22,
+        "line_coverage_percent": 51.1111
+      }
+    },
+    "module/debit_notes/application": {
+      "baseline": {
+        "covered": 79,
+        "missed": 3,
+        "line_coverage_percent": 96.3415
+      },
+      "final": {
+        "covered": 79,
+        "missed": 3,
+        "line_coverage_percent": 96.3415
+      }
+    },
+    "module/debit_notes/domain": {
+      "baseline": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 55,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/debit_notes/infrastructure": {
+      "baseline": {
+        "covered": 90,
+        "missed": 2,
+        "line_coverage_percent": 97.8261
+      },
+      "final": {
+        "covered": 90,
+        "missed": 2,
+        "line_coverage_percent": 97.8261
+      }
+    },
+    "module/infrastructure/infrastructure": {
+      "baseline": {
+        "covered": 91,
+        "missed": 117,
+        "line_coverage_percent": 43.75
+      },
+      "final": {
+        "covered": 91,
+        "missed": 117,
+        "line_coverage_percent": 43.75
+      }
+    },
+    "module/invoices/application": {
+      "baseline": {
+        "covered": 572,
+        "missed": 50,
+        "line_coverage_percent": 91.9614
+      },
+      "final": {
+        "covered": 577,
+        "missed": 49,
+        "line_coverage_percent": 92.1725
+      }
+    },
+    "module/invoices/domain": {
+      "baseline": {
+        "covered": 277,
+        "missed": 40,
+        "line_coverage_percent": 87.3817
+      },
+      "final": {
+        "covered": 277,
+        "missed": 40,
+        "line_coverage_percent": 87.3817
+      }
+    },
+    "module/invoices/infrastructure": {
+      "baseline": {
+        "covered": 643,
+        "missed": 30,
+        "line_coverage_percent": 95.5423
+      },
+      "final": {
+        "covered": 645,
+        "missed": 28,
+        "line_coverage_percent": 95.8395
+      }
+    },
+    "module/notifications/application": {
+      "baseline": {
+        "covered": 50,
+        "missed": 45,
+        "line_coverage_percent": 52.6316
+      },
+      "final": {
+        "covered": 54,
+        "missed": 41,
+        "line_coverage_percent": 56.8421
+      }
+    },
+    "module/notifications/domain": {
+      "baseline": {
+        "covered": 46,
+        "missed": 17,
+        "line_coverage_percent": 73.0159
+      },
+      "final": {
+        "covered": 52,
+        "missed": 11,
+        "line_coverage_percent": 82.5397
+      }
+    },
+    "module/notifications/infrastructure": {
+      "baseline": {
+        "covered": 53,
+        "missed": 73,
+        "line_coverage_percent": 42.0635
+      },
+      "final": {
+        "covered": 81,
+        "missed": 45,
+        "line_coverage_percent": 64.2857
+      }
+    },
+    "module/orders/application": {
+      "baseline": {
+        "covered": 356,
+        "missed": 19,
+        "line_coverage_percent": 94.9333
+      },
+      "final": {
+        "covered": 356,
+        "missed": 19,
+        "line_coverage_percent": 94.9333
+      }
+    },
+    "module/orders/domain": {
+      "baseline": {
+        "covered": 171,
+        "missed": 3,
+        "line_coverage_percent": 98.2759
+      },
+      "final": {
+        "covered": 171,
+        "missed": 3,
+        "line_coverage_percent": 98.2759
+      }
+    },
+    "module/orders/infrastructure": {
+      "baseline": {
+        "covered": 519,
+        "missed": 90,
+        "line_coverage_percent": 85.2217
+      },
+      "final": {
+        "covered": 532,
+        "missed": 88,
+        "line_coverage_percent": 85.8065
+      }
+    },
+    "module/payment_methods/application": {
+      "baseline": {
+        "covered": 76,
+        "missed": 3,
+        "line_coverage_percent": 96.2025
+      },
+      "final": {
+        "covered": 79,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/payment_methods/domain": {
+      "baseline": {
+        "covered": 45,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 45,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/payment_methods/infrastructure": {
+      "baseline": {
+        "covered": 63,
+        "missed": 1,
+        "line_coverage_percent": 98.4375
+      },
+      "final": {
+        "covered": 63,
+        "missed": 1,
+        "line_coverage_percent": 98.4375
+      }
+    },
+    "module/payments/application": {
+      "baseline": {
+        "covered": 435,
+        "missed": 41,
+        "line_coverage_percent": 91.3866
+      },
+      "final": {
+        "covered": 435,
+        "missed": 41,
+        "line_coverage_percent": 91.3866
+      }
+    },
+    "module/payments/domain": {
+      "baseline": {
+        "covered": 219,
+        "missed": 13,
+        "line_coverage_percent": 94.3966
+      },
+      "final": {
+        "covered": 219,
+        "missed": 13,
+        "line_coverage_percent": 94.3966
+      }
+    },
+    "module/payments/infrastructure": {
+      "baseline": {
+        "covered": 311,
+        "missed": 136,
+        "line_coverage_percent": 69.5749
+      },
+      "final": {
+        "covered": 311,
+        "missed": 136,
+        "line_coverage_percent": 69.5749
+      }
+    },
+    "module/price_types/application": {
+      "baseline": {
+        "covered": 69,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 69,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/price_types/domain": {
+      "baseline": {
+        "covered": 34,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 34,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/price_types/infrastructure": {
+      "baseline": {
+        "covered": 68,
+        "missed": 1,
+        "line_coverage_percent": 98.5507
+      },
+      "final": {
+        "covered": 68,
+        "missed": 1,
+        "line_coverage_percent": 98.5507
+      }
+    },
+    "module/products/application": {
+      "baseline": {
+        "covered": 311,
+        "missed": 20,
+        "line_coverage_percent": 93.9577
+      },
+      "final": {
+        "covered": 311,
+        "missed": 20,
+        "line_coverage_percent": 93.9577
+      }
+    },
+    "module/products/domain": {
+      "baseline": {
+        "covered": 116,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 116,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/products/infrastructure": {
+      "baseline": {
+        "covered": 407,
+        "missed": 45,
+        "line_coverage_percent": 90.0442
+      },
+      "final": {
+        "covered": 407,
+        "missed": 45,
+        "line_coverage_percent": 90.0442
+      }
+    },
+    "module/purchases/application": {
+      "baseline": {
+        "covered": 268,
+        "missed": 26,
+        "line_coverage_percent": 91.1565
+      },
+      "final": {
+        "covered": 268,
+        "missed": 26,
+        "line_coverage_percent": 91.1565
+      }
+    },
+    "module/purchases/domain": {
+      "baseline": {
+        "covered": 153,
+        "missed": 1,
+        "line_coverage_percent": 99.3506
+      },
+      "final": {
+        "covered": 153,
+        "missed": 1,
+        "line_coverage_percent": 99.3506
+      }
+    },
+    "module/purchases/infrastructure": {
+      "baseline": {
+        "covered": 472,
+        "missed": 18,
+        "line_coverage_percent": 96.3265
+      },
+      "final": {
+        "covered": 472,
+        "missed": 18,
+        "line_coverage_percent": 96.3265
+      }
+    },
+    "module/quotes/application": {
+      "baseline": {
+        "covered": 290,
+        "missed": 9,
+        "line_coverage_percent": 96.99
+      },
+      "final": {
+        "covered": 290,
+        "missed": 9,
+        "line_coverage_percent": 96.99
+      }
+    },
+    "module/quotes/domain": {
+      "baseline": {
+        "covered": 238,
+        "missed": 7,
+        "line_coverage_percent": 97.1429
+      },
+      "final": {
+        "covered": 238,
+        "missed": 7,
+        "line_coverage_percent": 97.1429
+      }
+    },
+    "module/quotes/infrastructure": {
+      "baseline": {
+        "covered": 510,
+        "missed": 54,
+        "line_coverage_percent": 90.4255
+      },
+      "final": {
+        "covered": 535,
+        "missed": 40,
+        "line_coverage_percent": 93.0435
+      }
+    },
+    "module/receivables/application": {
+      "baseline": {
+        "covered": 80,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 80,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/receivables/infrastructure": {
+      "baseline": {
+        "covered": 365,
+        "missed": 106,
+        "line_coverage_percent": 77.4947
+      },
+      "final": {
+        "covered": 365,
+        "missed": 106,
+        "line_coverage_percent": 77.4947
+      }
+    },
+    "module/returns/application": {
+      "baseline": {
+        "covered": 209,
+        "missed": 10,
+        "line_coverage_percent": 95.4338
+      },
+      "final": {
+        "covered": 209,
+        "missed": 10,
+        "line_coverage_percent": 95.4338
+      }
+    },
+    "module/returns/domain": {
+      "baseline": {
+        "covered": 135,
+        "missed": 5,
+        "line_coverage_percent": 96.4286
+      },
+      "final": {
+        "covered": 135,
+        "missed": 5,
+        "line_coverage_percent": 96.4286
+      }
+    },
+    "module/returns/infrastructure": {
+      "baseline": {
+        "covered": 203,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 203,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/shared/domain": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "module/shared/infrastructure": {
+      "baseline": {
+        "covered": 31,
+        "missed": 133,
+        "line_coverage_percent": 18.9024
+      },
+      "final": {
+        "covered": 31,
+        "missed": 133,
+        "line_coverage_percent": 18.9024
+      }
+    },
+    "module/suppliers/application": {
+      "baseline": {
+        "covered": 59,
+        "missed": 92,
+        "line_coverage_percent": 39.0728
+      },
+      "final": {
+        "covered": 59,
+        "missed": 92,
+        "line_coverage_percent": 39.0728
+      }
+    },
+    "module/suppliers/domain": {
+      "baseline": {
+        "covered": 244,
+        "missed": 56,
+        "line_coverage_percent": 81.3333
+      },
+      "final": {
+        "covered": 244,
+        "missed": 56,
+        "line_coverage_percent": 81.3333
+      }
+    },
+    "module/suppliers/infrastructure": {
+      "baseline": {
+        "covered": 120,
+        "missed": 61,
+        "line_coverage_percent": 66.2983
+      },
+      "final": {
+        "covered": 120,
+        "missed": 61,
+        "line_coverage_percent": 66.2983
+      }
+    },
+    "module/warehouses/application": {
+      "baseline": {
+        "covered": 587,
+        "missed": 12,
+        "line_coverage_percent": 97.9967
+      },
+      "final": {
+        "covered": 587,
+        "missed": 12,
+        "line_coverage_percent": 97.9967
+      }
+    },
+    "module/warehouses/domain": {
+      "baseline": {
+        "covered": 162,
+        "missed": 1,
+        "line_coverage_percent": 99.3865
+      },
+      "final": {
+        "covered": 162,
+        "missed": 1,
+        "line_coverage_percent": 99.3865
+      }
+    },
+    "module/warehouses/infrastructure": {
+      "baseline": {
+        "covered": 330,
+        "missed": 428,
+        "line_coverage_percent": 43.5356
+      },
+      "final": {
+        "covered": 330,
+        "missed": 428,
+        "line_coverage_percent": 43.5356
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportData": {
+      "baseline": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportData$Line": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportFilter": {
+      "baseline": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/application/dto/InvoiceReportRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/application/generate_invoice_pdf/GenerateInvoicePdfUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/application/generate_invoices_report_pdf/GenerateInvoicesReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/config/InvoicesReportConfig": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/integration/InvoiceDocumentQueryAdapter": {
+      "baseline": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicePdfGenerator": {
+      "baseline": {
+        "covered": 127,
+        "missed": 5,
+        "line_coverage_percent": 96.2121
+      },
+      "final": {
+        "covered": 127,
+        "missed": 5,
+        "line_coverage_percent": 96.2121
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicePdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicesReportPdfGenerator": {
+      "baseline": {
+        "covered": 115,
+        "missed": 11,
+        "line_coverage_percent": 91.2698
+      },
+      "final": {
+        "covered": 115,
+        "missed": 11,
+        "line_coverage_percent": 91.2698
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/pdf/InvoicesReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/invoices/reporting/infrastructure/web/InvoicesReportController": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportData$Line": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportFilter": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/application/dto/OrderReportRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/application/generate_order_pdf/GenerateOrderPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/application/generate_orders_report_pdf/GenerateOrdersReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/config/OrdersReportConfig": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/integration/OrderDocumentQueryAdapter": {
+      "baseline": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrderPdfGenerator": {
+      "baseline": {
+        "covered": 122,
+        "missed": 3,
+        "line_coverage_percent": 97.6
+      },
+      "final": {
+        "covered": 122,
+        "missed": 3,
+        "line_coverage_percent": 97.6
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrderPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrdersReportPdfGenerator": {
+      "baseline": {
+        "covered": 112,
+        "missed": 18,
+        "line_coverage_percent": 86.1538
+      },
+      "final": {
+        "covered": 112,
+        "missed": 18,
+        "line_coverage_percent": 86.1538
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/pdf/OrdersReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/orders/reporting/infrastructure/web/OrdersReportController": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportData$PaymentHistoryRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/application/dto/PaymentHistoryReportData$Summary": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/application/dto/PaymentReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/application/generate_payment_history_report_pdf/GeneratePaymentHistoryReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/application/generate_payment_pdf/GeneratePaymentPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/infrastructure/integration/PaymentDocumentQueryAdapter": {
+      "baseline": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentHistoryReportPdfGenerator": {
+      "baseline": {
+        "covered": 7,
+        "missed": 88,
+        "line_coverage_percent": 7.3684
+      },
+      "final": {
+        "covered": 7,
+        "missed": 88,
+        "line_coverage_percent": 7.3684
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentHistoryReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      },
+      "final": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentPdfGenerator": {
+      "baseline": {
+        "covered": 63,
+        "missed": 2,
+        "line_coverage_percent": 96.9231
+      },
+      "final": {
+        "covered": 63,
+        "missed": 2,
+        "line_coverage_percent": 96.9231
+      }
+    },
+    "relocated/com/cashly/cashly_api/payments/reporting/infrastructure/pdf/PaymentPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/application/dto/query/CommercialCatalogQuery": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/application/dto/response/CommercialCatalogResponse": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/application/generate_commercial_catalog_pdf/GenerateCommercialCatalogPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/infrastructure/integration/FileStorageMediaAdapter": {
+      "baseline": {
+        "covered": 2,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 2,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/infrastructure/pdf/CommercialCatalogPdfGenerator": {
+      "baseline": {
+        "covered": 146,
+        "missed": 2,
+        "line_coverage_percent": 98.6486
+      },
+      "final": {
+        "covered": 146,
+        "missed": 2,
+        "line_coverage_percent": 98.6486
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/infrastructure/pdf/CommercialCatalogPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/infrastructure/persistence/adapters/CommercialCatalogRepositoryAdapter": {
+      "baseline": {
+        "covered": 3,
+        "missed": 17,
+        "line_coverage_percent": 15.0
+      },
+      "final": {
+        "covered": 3,
+        "missed": 17,
+        "line_coverage_percent": 15.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/products/reporting/infrastructure/web/CommercialCatalogController": {
+      "baseline": {
+        "covered": 9,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 9,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportData$Line": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportFilter": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/application/dto/PurchaseReportRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/application/generate_purchase_pdf/GeneratePurchasePdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/application/generate_purchases_report_pdf/GeneratePurchasesReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/config/PurchasesReportConfig": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/integration/PurchaseDocumentQueryAdapter": {
+      "baseline": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasePdfGenerator": {
+      "baseline": {
+        "covered": 119,
+        "missed": 4,
+        "line_coverage_percent": 96.748
+      },
+      "final": {
+        "covered": 119,
+        "missed": 4,
+        "line_coverage_percent": 96.748
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasePdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasesReportPdfGenerator": {
+      "baseline": {
+        "covered": 99,
+        "missed": 6,
+        "line_coverage_percent": 94.2857
+      },
+      "final": {
+        "covered": 99,
+        "missed": 6,
+        "line_coverage_percent": 94.2857
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/pdf/PurchasesReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/purchases/reporting/infrastructure/web/PurchasesReportController": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportData$Line": {
+      "baseline": {
+        "covered": 0,
+        "missed": 1,
+        "line_coverage_percent": 0.0
+      },
+      "final": {
+        "covered": 0,
+        "missed": 1,
+        "line_coverage_percent": 0.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportFilter": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/application/dto/QuoteReportRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/application/generate_quote_pdf/GenerateQuotePdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/application/generate_quotes_report_pdf/GenerateQuotesReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/config/QuotesReportConfig": {
+      "baseline": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 5,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/integration/QuoteDocumentQueryAdapter": {
+      "baseline": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 7,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotePdfGenerator": {
+      "baseline": {
+        "covered": 119,
+        "missed": 4,
+        "line_coverage_percent": 96.748
+      },
+      "final": {
+        "covered": 119,
+        "missed": 4,
+        "line_coverage_percent": 96.748
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotePdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotesReportPdfGenerator": {
+      "baseline": {
+        "covered": 110,
+        "missed": 8,
+        "line_coverage_percent": 93.2203
+      },
+      "final": {
+        "covered": 110,
+        "missed": 8,
+        "line_coverage_percent": 93.2203
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/pdf/QuotesReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/quotes/reporting/infrastructure/web/QuotesReportController": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportData$AccountReceivableRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/dto/AccountsReceivableReportData$Summary": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportData": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportData$CollectionRow": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/dto/CollectionsReportData$Summary": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/generate_accounts_receivable_report_pdf/GenerateAccountsReceivableReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 26,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 26,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/application/generate_collections_report_pdf/GenerateCollectionsReportPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 8,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 8,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/infrastructure/integration/ReceivablesReportQueryAdapter": {
+      "baseline": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 3,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/AccountsReceivableReportPdfGenerator": {
+      "baseline": {
+        "covered": 85,
+        "missed": 3,
+        "line_coverage_percent": 96.5909
+      },
+      "final": {
+        "covered": 85,
+        "missed": 3,
+        "line_coverage_percent": 96.5909
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/AccountsReceivableReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 17,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/CollectionsReportPdfGenerator": {
+      "baseline": {
+        "covered": 6,
+        "missed": 81,
+        "line_coverage_percent": 6.8966
+      },
+      "final": {
+        "covered": 6,
+        "missed": 81,
+        "line_coverage_percent": 6.8966
+      }
+    },
+    "relocated/com/cashly/cashly_api/receivables/reporting/infrastructure/pdf/CollectionsReportPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      },
+      "final": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/shared/infrastructure/pdf/PdfBranding": {
+      "baseline": {
+        "covered": 6,
+        "missed": 3,
+        "line_coverage_percent": 66.6667
+      },
+      "final": {
+        "covered": 6,
+        "missed": 3,
+        "line_coverage_percent": 66.6667
+      }
+    },
+    "relocated/com/cashly/cashly_api/shared/infrastructure/pdf/PdfStatusColors": {
+      "baseline": {
+        "covered": 10,
+        "missed": 1,
+        "line_coverage_percent": 90.9091
+      },
+      "final": {
+        "covered": 10,
+        "missed": 1,
+        "line_coverage_percent": 90.9091
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogPdfQuery": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/query/CatalogReportQuery": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/query/MovementsPdfQuery": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/query/StockPdfQuery": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/response/CatalogReportResponse": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/response/MovementReportResponse": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/dto/response/StockReportResponse": {
+      "baseline": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 1,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/generate_catalog_pdf/GenerateCatalogPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 13,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 13,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_excel/GenerateMovementsExcelUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/generate_movements_pdf/GenerateMovementsPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_excel/GenerateStockExcelUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/generate_stock_pdf/GenerateStockPdfUseCaseImpl": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/application/get_catalog_report/GetCatalogReportUseCaseImpl": {
+      "baseline": {
+        "covered": 4,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 4,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/MovementsReportConfig": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/StockReportConfig": {
+      "baseline": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 6,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/excel/MovementsExcelGenerator": {
+      "baseline": {
+        "covered": 2,
+        "missed": 91,
+        "line_coverage_percent": 2.1505
+      },
+      "final": {
+        "covered": 2,
+        "missed": 91,
+        "line_coverage_percent": 2.1505
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/excel/StockExcelGenerator": {
+      "baseline": {
+        "covered": 2,
+        "missed": 84,
+        "line_coverage_percent": 2.3256
+      },
+      "final": {
+        "covered": 2,
+        "missed": 84,
+        "line_coverage_percent": 2.3256
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/CatalogPdfGenerator": {
+      "baseline": {
+        "covered": 4,
+        "missed": 62,
+        "line_coverage_percent": 6.0606
+      },
+      "final": {
+        "covered": 4,
+        "missed": 62,
+        "line_coverage_percent": 6.0606
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/CatalogPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      },
+      "final": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/MovementsPdfGenerator": {
+      "baseline": {
+        "covered": 4,
+        "missed": 65,
+        "line_coverage_percent": 5.7971
+      },
+      "final": {
+        "covered": 4,
+        "missed": 65,
+        "line_coverage_percent": 5.7971
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/MovementsPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      },
+      "final": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/StockPdfGenerator": {
+      "baseline": {
+        "covered": 4,
+        "missed": 67,
+        "line_coverage_percent": 5.6338
+      },
+      "final": {
+        "covered": 4,
+        "missed": 67,
+        "line_coverage_percent": 5.6338
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/pdf/StockPdfGenerator$PageFooterHandler": {
+      "baseline": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      },
+      "final": {
+        "covered": 0,
+        "missed": 17,
+        "line_coverage_percent": 0.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/CatalogReportRepositoryAdapter": {
+      "baseline": {
+        "covered": 23,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 23,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/MovementsReportRepositoryAdapter": {
+      "baseline": {
+        "covered": 22,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 22,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/persistence/adapters/StockReportRepositoryAdapter": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/CatalogReportController": {
+      "baseline": {
+        "covered": 12,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 12,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/MovementsReportController": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    },
+    "relocated/com/cashly/cashly_api/warehouses/reporting/infrastructure/web/StockReportController": {
+      "baseline": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      },
+      "final": {
+        "covered": 16,
+        "missed": 0,
+        "line_coverage_percent": 100.0
+      }
+    }
+  },
+  "ownership_audit": {
+    "baseline": {
+      "input": {
+        "covered": 13764,
+        "missed": 2489
+      },
+      "assigned": {
+        "covered": 13764,
+        "missed": 2489
+      },
+      "split_families": [
+        "com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfig",
+        "com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportController",
+        "com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfig"
+      ],
+      "policy": "All classes remain in layer gates. Split counters are compared strictly as explicit families and excluded symmetrically from module groups; all other moved classes also have individual nonregression gates."
+    },
+    "final": {
+      "input": {
+        "covered": 13858,
+        "missed": 2425
+      },
+      "assigned": {
+        "covered": 13858,
+        "missed": 2425
+      },
+      "split_families": [
+        "com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfig",
+        "com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportController",
+        "com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfig"
+      ],
+      "policy": "All classes remain in layer gates. Split counters are compared strictly as explicit families and excluded symmetrically from module groups; all other moved classes also have individual nonregression gates."
+    }
+  }
+}

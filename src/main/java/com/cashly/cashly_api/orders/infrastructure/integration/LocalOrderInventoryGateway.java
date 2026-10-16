@@ -2,12 +2,12 @@ package com.cashly.cashly_api.orders.infrastructure.integration;
 
 import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
 import com.cashly.cashly_api.warehouses.stock.application.ports.in.StockDeductionApi;
-import com.cashly.cashly_api.warehouses.stock.domain.MovementType;
-import com.cashly.cashly_api.warehouses.stock.domain.ReferenceType;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovement;
-import com.cashly.cashly_api.warehouses.stock.domain.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.WarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.ReferenceType;
+import com.cashly.cashly_api.warehouses.stock.domain.entity.StockMovement;
+import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository;
+import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

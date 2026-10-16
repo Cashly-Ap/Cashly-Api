@@ -12,11 +12,11 @@ import com.cashly.cashly_api.customers.credit.infrastructure.config.CustomerCred
 import com.cashly.cashly_api.invoices.infrastructure.config.InvoiceCreditQueryConfig;
 import com.cashly.cashly_api.credit_notes.infrastructure.config.CreditNoteLedgerQueryConfig;
 import com.cashly.cashly_api.debit_notes.infrastructure.config.DebitNoteLedgerQueryConfig;
-import com.cashly.cashly_api.customers.profile.domain.CustomerRepository;
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalanceRepository;
-import com.cashly.cashly_api.invoices.domain.InvoiceRepository;
-import com.cashly.cashly_api.credit_notes.domain.CreditNoteRepository;
-import com.cashly.cashly_api.debit_notes.domain.DebitNoteRepository;
+import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.customers.balance.domain.repository.CustomerBalanceRepository;
+import com.cashly.cashly_api.invoices.domain.repository.InvoiceRepository;
+import com.cashly.cashly_api.credit_notes.domain.repository.CreditNoteRepository;
+import com.cashly.cashly_api.debit_notes.domain.repository.DebitNoteRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
@@ -26,8 +26,8 @@ class CreditLedgerWiringTest {
     @Test
     void should_wire_consumer_gateways_to_public_provider_queries() {
         try (var context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(com.cashly.cashly_api.payments.collection.domain.PaymentRepository.class, () -> mock(com.cashly.cashly_api.payments.collection.domain.PaymentRepository.class));
-            context.registerBean(com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository.class, () -> mock(com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository.class));
+            context.registerBean(com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository.class, () -> mock(com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository.class));
+            context.registerBean(com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository.class, () -> mock(com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository.class));
             context.registerBean(CustomerRepository.class, () -> mock(CustomerRepository.class));
             context.registerBean(CustomerBalanceRepository.class, () -> mock(CustomerBalanceRepository.class));
             context.registerBean(InvoiceRepository.class, () -> mock(InvoiceRepository.class));

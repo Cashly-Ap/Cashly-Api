@@ -73,55 +73,155 @@ The ORDERS module manages sales orders (pedidos) in the invoicing system. Orders
 
 ```
 orders/
-├── order/                              # Order submodule
-│   ├── application/
-│   │   ├── dto/
-│   │   │   ├── request/
-│   │   │   │   ├── CreateOrderRequest.java
-│   │   │   │   └── UpdateOrderRequest.java
-│   │   │   └── response/
-│   │   │       ├── OrderListResponse.java
-│   │   │       ├── OrderDetailResponse.java
-│   │   │       └── OrderCreateResponse.java
-│   │   ├── exceptions/
-│   │   │   ├── OrderNotFoundException.java
-│   │   │   ├── InvalidOrderStatusException.java
-│   │   │   └── OrderAlreadyInvoicedException.java
-│   │   ├── mappers/
-│   │   │   └── OrderMapper.java
-│   │   └── usecases/
-│   │       ├── CreateOrderUseCase.java
-│   │       ├── GetOrderUseCase.java
-│   │       ├── ListOrdersUseCase.java
-│   │       ├── UpdateOrderUseCase.java
-│   │       ├── CancelOrderUseCase.java
+├── application/
+│   ├── cancel/
+│   │   ├── request/
+│   │   │   └── CancelOrderRequest.java
+│   │   └── use_case/
+│   │       └── CancelOrderUseCase.java
+│   ├── confirm/
+│   │   └── use_case/
+│   │       └── ConfirmOrderUseCase.java
+│   ├── convert_to_invoice/
+│   │   ├── request/
+│   │   │   └── ConvertToInvoiceRequest.java
+│   │   ├── response/
+│   │   │   └── ConvertToInvoiceResponse.java
+│   │   └── use_case/
 │   │       └── ConvertToInvoiceUseCase.java
-│   ├── domain/
+│   ├── create/
+│   │   ├── from_quote/
+│   │   │   └── services/
+│   │   │       └── QuoteOrderCreationService.java
+│   │   ├── request/
+│   │   │   └── CreateOrderRequest.java
+│   │   └── use_case/
+│   │       └── CreateOrderUseCase.java
+│   ├── delete/
+│   │   └── use_case/
+│   │       └── DeleteOrderUseCase.java
+│   ├── dto/
+│   │   └── response/
+│   │       ├── OrderDetailResponse.java
+│   │       ├── OrderListResponse.java
+│   │       └── OrderProductResponse.java
+│   ├── get/
+│   │   └── use_case/
+│   │       └── GetOrderByIdUseCase.java
+│   ├── list/
+│   │   └── use_case/
+│   │       └── GetOrdersUseCase.java
+│   ├── mappers/
+│   │   └── OrderMapper.java
+│   ├── ports/
+│   │   ├── in/
+│   │   │   ├── OrderDocumentFilter.java
+│   │   │   ├── OrderDocumentQuery.java
+│   │   │   ├── OrderDocumentRow.java
+│   │   │   ├── OrderDocumentSnapshot.java
+│   │   │   ├── ProductReferenceQuery.java
+│   │   │   └── QuoteOrderCreationApi.java
+│   │   └── out/
+│   │       ├── CustomerCreditGateway.java
+│   │       ├── InvoiceCreationGateway.java
+│   │       ├── OrderActorGateway.java
+│   │       ├── OrderCustomerGateway.java
+│   │       ├── OrderInventoryGateway.java
+│   │       ├── OrderNotificationGateway.java
+│   │       ├── OrderProductCatalogGateway.java
+│   │       └── StockAvailabilityGateway.java
+│   ├── products/
+│   │   └── use_case/
+│   │       └── GetProductsForOrderUseCase.java
+│   ├── queries/
+│   │   └── services/
+│   │       └── OrderDocumentQueryService.java
+│   └── update/
+│       ├── request/
+│       │   └── UpdateOrderRequest.java
+│       └── use_case/
+│           └── UpdateOrderUseCase.java
+├── domain/
+│   ├── entity/
+│   │   ├── Order.java
+│   │   ├── OrderLine.java
+│   │   └── OrderLineAllocation.java
+│   ├── exceptions/
+│   │   ├── OrderCannotBeDeletedException.java
+│   │   ├── OrderNotFoundException.java
+│   │   └── OrderNotPendingException.java
+│   ├── repository/
+│   │   └── OrderRepository.java
+│   └── valueobjects/
+│       ├── OrderId.java
+│       ├── OrderLineId.java
+│       ├── OrderNumber.java
+│       └── OrderStatus.java
+├── infrastructure/
+│   ├── config/
+│   │   ├── OrderConfig.java
+│   │   ├── OrderDocumentQueryConfig.java
+│   │   └── QuoteOrderCreationConfig.java
+│   ├── integration/
+│   │   ├── LocalInvoiceCreationGateway.java
+│   │   ├── LocalOrderActorAdapter.java
+│   │   ├── LocalOrderCustomerAdapter.java
+│   │   ├── LocalOrderInventoryGateway.java
+│   │   ├── LocalOrderNotificationAdapter.java
+│   │   ├── LocalOrderProductCatalogAdapter.java
+│   │   ├── OrderCustomerCreditAdapter.java
+│   │   └── OrderStockAvailabilityAdapter.java
+│   ├── persistence/
+│   │   ├── adapters/
+│   │   │   └── OrderRepositoryAdapter.java
 │   │   ├── entities/
-│   │   │   ├── Order.java
-│   │   │   └── OrderLine.java
-│   │   ├── repositories/
-│   │   │   └── OrderRepository.java
-│   │   ├── services/
-│   │   │   └── OrderNumberGenerator.java
-│   │   └── valueobjects/
-│   │       ├── OrderId.java
-│   │       ├── OrderNumber.java
-│   │       └── OrderStatus.java
-│   └── infrastructure/
-│       ├── config/
-│       │   └── OrderBeanConfig.java
-│       ├── persistence/
-│       │   ├── entities/
-│       │   │   ├── OrderJpaEntity.java
-│       │   │   └── OrderLineJpaEntity.java
-│       │   ├── mappers/
-│       │   │   └── OrderJpaMapper.java
-│       │   └── repositories/
-│       │       ├── JpaOrderRepository.java
-│       │       └── OrderRepositoryAdapter.java
-│       └── web/
-│           └── OrderController.java
+│   │   │   ├── OrderEntity.java
+│   │   │   ├── OrderLineAllocationEntity.java
+│   │   │   ├── OrderLineCategorySnapshotEntity.java
+│   │   │   ├── OrderLineEntity.java
+│   │   │   └── OrderNumberSequenceEntity.java
+│   │   ├── mappers/
+│   │   │   └── OrderJpaMapper.java
+│   │   ├── queries/
+│   │   │   └── JpaOrdersProductReferenceQuery.java
+│   │   └── repositories/
+│   │       ├── OrderJpaRepository.java
+│   │       ├── OrderNumberSequenceJpaRepository.java
+│   │       └── SpringDataOrdersProductReferenceRepository.java
+│   └── web/
+│       └── OrderController.java
+└── reporting/
+    ├── application/
+    │   ├── dto/
+    │   │   └── model/
+    │   │       ├── OrderReportData.java
+    │   │       ├── OrderReportFilter.java
+    │   │       └── OrderReportRow.java
+    │   ├── generate_order_pdf/
+    │   │   ├── services/
+    │   │   │   └── GenerateOrderPdfUseCaseImpl.java
+    │   │   └── use_case/
+    │   │       └── GenerateOrderPdfUseCase.java
+    │   ├── generate_orders_report_pdf/
+    │   │   ├── services/
+    │   │   │   └── GenerateOrdersReportPdfUseCaseImpl.java
+    │   │   └── use_case/
+    │   │       └── GenerateOrdersReportPdfUseCase.java
+    │   └── ports/
+    │       └── out/
+    │           ├── OrderPdfPort.java
+    │           ├── OrderReportQueryGateway.java
+    │           └── OrdersReportPdfPort.java
+    └── infrastructure/
+        ├── config/
+        │   └── OrdersReportConfig.java
+        ├── integration/
+        │   └── OrderDocumentQueryAdapter.java
+        ├── pdf/
+        │   ├── OrderPdfGenerator.java
+        │   └── OrdersReportPdfGenerator.java
+        └── web/
+            └── OrdersReportController.java
 ```
 
 ---

@@ -8,10 +8,10 @@ import com.cashly.cashly_api.payments.credit.application.ports.out.DebitNoteLedg
 import com.cashly.cashly_api.payments.credit.application.ports.in.CreditStatusSnapshot;
 import com.cashly.cashly_api.payments.credit.application.ports.in.OverdueInvoiceSnapshot;
 import com.cashly.cashly_api.payments.credit.application.ports.in.CustomerCreditQuery;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocation;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
-import com.cashly.cashly_api.payments.credit.domain.CustomerCreditPolicy;
+import com.cashly.cashly_api.payments.collection.domain.entity.PaymentAllocation;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository;
+import com.cashly.cashly_api.payments.credit.domain.services.CustomerCreditPolicy;
 import com.cashly.cashly_api.payments.collection.domain.valueobjects.PaymentId;
 import com.cashly.cashly_api.payments.collection.domain.valueobjects.PaymentStatus;
 import java.math.BigDecimal;

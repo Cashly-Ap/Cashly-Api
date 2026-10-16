@@ -2,10 +2,10 @@ package com.cashly.cashly_api.warehouses.reporting.infrastructure.config;
 
 import com.cashly.cashly_api.warehouses.reporting.application.ports.out.CatalogPdfPort;
 import com.cashly.cashly_api.warehouses.reporting.application.ports.out.CatalogReportRepositoryPort;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_catalog_pdf.GenerateCatalogPdfUseCase;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_catalog_pdf.GenerateCatalogPdfUseCaseImpl;
-import com.cashly.cashly_api.warehouses.reporting.application.get_catalog_report.GetCatalogReportUseCase;
-import com.cashly.cashly_api.warehouses.reporting.application.get_catalog_report.GetCatalogReportUseCaseImpl;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_catalog_pdf.use_case.GenerateCatalogPdfUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_catalog_pdf.services.GenerateCatalogPdfUseCaseImpl;
+import com.cashly.cashly_api.warehouses.reporting.application.get_catalog_report.use_case.GetCatalogReportUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.get_catalog_report.services.GetCatalogReportUseCaseImpl;
 import com.cashly.cashly_api.warehouses.reporting.infrastructure.pdf.CatalogPdfGenerator;
 import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.repositories.CatalogReportJpaRepository;
 import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.adapters.CatalogReportRepositoryAdapter;

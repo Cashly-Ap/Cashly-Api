@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.purchases.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportRow;
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportFilter;
-import com.cashly.cashly_api.purchases.reporting.application.generate_purchase_pdf.GeneratePurchasePdfUseCase;
-import com.cashly.cashly_api.purchases.reporting.application.generate_purchases_report_pdf.GeneratePurchasesReportPdfUseCase;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportRow;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportFilter;
+import com.cashly.cashly_api.purchases.reporting.application.generate_purchase_pdf.use_case.GeneratePurchasePdfUseCase;
+import com.cashly.cashly_api.purchases.reporting.application.generate_purchases_report_pdf.use_case.GeneratePurchasesReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

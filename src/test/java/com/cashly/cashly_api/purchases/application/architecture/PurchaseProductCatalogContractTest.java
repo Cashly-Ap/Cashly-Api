@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.purchases.application.architecture;
 
 import com.cashly.cashly_api.categories.application.ports.in.ProductCategoryQuery;
-import com.cashly.cashly_api.products.application.queries.RepositoryPurchaseProductCatalogQuery;
-import com.cashly.cashly_api.products.domain.Product;
-import com.cashly.cashly_api.products.domain.ProductRepository;
+import com.cashly.cashly_api.products.application.queries.services.RepositoryPurchaseProductCatalogQuery;
+import com.cashly.cashly_api.products.domain.entity.Product;
+import com.cashly.cashly_api.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseProductCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.Test;

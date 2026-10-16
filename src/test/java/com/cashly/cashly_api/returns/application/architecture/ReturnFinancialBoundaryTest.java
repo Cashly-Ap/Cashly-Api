@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.returns.application.architecture;
 
-import com.cashly.cashly_api.returns.application.create.CreateReturnUseCase;
-import com.cashly.cashly_api.returns.application.delete.DeleteReturnUseCase;
+import com.cashly.cashly_api.returns.application.create.use_case.CreateReturnUseCase;
+import com.cashly.cashly_api.returns.application.delete.use_case.DeleteReturnUseCase;
 import com.cashly.cashly_api.returns.application.services.ReturnResponseAssembler;
 import java.util.Arrays;
 import org.junit.jupiter.params.ParameterizedTest;

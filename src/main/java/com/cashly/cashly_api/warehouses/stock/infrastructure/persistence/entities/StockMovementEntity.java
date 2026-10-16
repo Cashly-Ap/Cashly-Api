@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.warehouses.stock.domain.MovementType;
-import com.cashly.cashly_api.warehouses.stock.domain.ReferenceType;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovement;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.ReferenceType;
+import com.cashly.cashly_api.warehouses.stock.domain.entity.StockMovement;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

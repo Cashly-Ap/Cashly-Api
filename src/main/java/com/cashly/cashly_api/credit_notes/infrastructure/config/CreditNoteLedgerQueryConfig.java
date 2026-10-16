@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.credit_notes.infrastructure.config;
 import com.cashly.cashly_api.credit_notes.application.ports.in.CreditNoteLedgerQuery;
-import com.cashly.cashly_api.credit_notes.application.queries.RepositoryCreditNoteLedgerQuery;
-import com.cashly.cashly_api.credit_notes.domain.CreditNoteRepository;
+import com.cashly.cashly_api.credit_notes.application.queries.services.RepositoryCreditNoteLedgerQuery;
+import com.cashly.cashly_api.credit_notes.domain.repository.CreditNoteRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.collection.infrastructure.integration;
 
 import com.cashly.cashly_api.payments.collection.application.ports.in.InvoicePaymentTotalsQuery;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;

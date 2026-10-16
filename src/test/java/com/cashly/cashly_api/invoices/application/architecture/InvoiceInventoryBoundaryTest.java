@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.invoices.application.architecture;
 
-import com.cashly.cashly_api.invoices.application.cancel.CancelInvoiceUseCase;
-import com.cashly.cashly_api.invoices.application.confirm.ConfirmInvoiceUseCase;
-import com.cashly.cashly_api.invoices.application.create.CreateInvoiceUseCase;
-import com.cashly.cashly_api.invoices.application.delete.DeleteInvoiceUseCase;
-import com.cashly.cashly_api.invoices.application.duplicate.DuplicateInvoiceUseCase;
-import com.cashly.cashly_api.invoices.application.update.UpdateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.cancel.use_case.CancelInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.confirm.use_case.ConfirmInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.create.use_case.CreateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.delete.use_case.DeleteInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.duplicate.use_case.DuplicateInvoiceUseCase;
+import com.cashly.cashly_api.invoices.application.update.use_case.UpdateInvoiceUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;

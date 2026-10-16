@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.receivables.infrastructure.config;
 
-import com.cashly.cashly_api.receivables.application.customer_debt.GetCustomerDebtUseCase;
-import com.cashly.cashly_api.receivables.application.customer_invoices.GetCustomerInvoicesUseCase;
-import com.cashly.cashly_api.receivables.application.payment_history.GetPaymentHistoryUseCase;
-import com.cashly.cashly_api.receivables.application.summary.GetReceivablesSummaryUseCase;
-import com.cashly.cashly_api.receivables.application.customer_debt.SearchCustomerDebtUseCase;
+import com.cashly.cashly_api.receivables.application.customer_debt.use_case.GetCustomerDebtUseCase;
+import com.cashly.cashly_api.receivables.application.customer_invoices.use_case.GetCustomerInvoicesUseCase;
+import com.cashly.cashly_api.receivables.application.payment_history.use_case.GetPaymentHistoryUseCase;
+import com.cashly.cashly_api.receivables.application.summary.use_case.GetReceivablesSummaryUseCase;
+import com.cashly.cashly_api.receivables.application.customer_debt.use_case.SearchCustomerDebtUseCase;
 import com.cashly.cashly_api.receivables.application.ports.out.ReceivablesQueryGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

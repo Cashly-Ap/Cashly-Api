@@ -5,9 +5,9 @@ import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteLineDetailResponse;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
 import com.cashly.cashly_api.quotes.application.dto.response.WarehouseStockInfoResponse;
-import com.cashly.cashly_api.quotes.domain.Quote;
-import com.cashly.cashly_api.quotes.domain.QuoteAllocation;
-import com.cashly.cashly_api.quotes.domain.QuoteLine;
+import com.cashly.cashly_api.quotes.domain.entity.Quote;
+import com.cashly.cashly_api.quotes.domain.entity.QuoteAllocation;
+import com.cashly.cashly_api.quotes.domain.entity.QuoteLine;
 
 import java.util.List;
 import java.util.Map;

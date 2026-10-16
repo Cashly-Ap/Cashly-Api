@@ -2,8 +2,8 @@ package com.cashly.cashly_api.customers.credit.infrastructure.web;
 
 import com.cashly.cashly_api.customers.credit.application.dto.response.CreditStatusResponse;
 import com.cashly.cashly_api.customers.credit.application.dto.response.OverdueInvoiceResponse;
-import com.cashly.cashly_api.customers.credit.application.status.GetCustomerCreditStatusUseCase;
-import com.cashly.cashly_api.customers.credit.application.overdue.GetOverdueInvoicesUseCase;
+import com.cashly.cashly_api.customers.credit.application.status.use_case.GetCustomerCreditStatusUseCase;
+import com.cashly.cashly_api.customers.credit.application.overdue.use_case.GetOverdueInvoicesUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

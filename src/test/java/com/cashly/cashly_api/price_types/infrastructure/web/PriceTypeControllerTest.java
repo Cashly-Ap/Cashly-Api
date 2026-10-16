@@ -1,13 +1,13 @@
 package com.cashly.cashly_api.price_types.infrastructure.web;
 
-import com.cashly.cashly_api.price_types.application.create.CreatePriceTypeRequest;
-import com.cashly.cashly_api.price_types.application.update.UpdatePriceTypeRequest;
+import com.cashly.cashly_api.price_types.application.create.request.CreatePriceTypeRequest;
+import com.cashly.cashly_api.price_types.application.update.request.UpdatePriceTypeRequest;
 import com.cashly.cashly_api.price_types.application.dto.response.PriceTypeResponse;
-import com.cashly.cashly_api.price_types.application.create.CreatePriceTypeUseCase;
-import com.cashly.cashly_api.price_types.application.delete.DeletePriceTypeUseCase;
-import com.cashly.cashly_api.price_types.application.queries.GetPriceTypeUseCase;
-import com.cashly.cashly_api.price_types.application.queries.ListPriceTypesUseCase;
-import com.cashly.cashly_api.price_types.application.update.UpdatePriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.create.use_case.CreatePriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.delete.use_case.DeletePriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.queries.use_case.GetPriceTypeUseCase;
+import com.cashly.cashly_api.price_types.application.queries.use_case.ListPriceTypesUseCase;
+import com.cashly.cashly_api.price_types.application.update.use_case.UpdatePriceTypeUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

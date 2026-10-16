@@ -22,7 +22,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportData;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportData;
 import com.cashly.cashly_api.invoices.reporting.application.ports.out.InvoicePdfPort;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 

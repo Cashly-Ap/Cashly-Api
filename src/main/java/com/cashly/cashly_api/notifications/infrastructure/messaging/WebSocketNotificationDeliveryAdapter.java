@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.notifications.infrastructure.messaging;
 
 import com.cashly.cashly_api.notifications.application.ports.out.NotificationDeliveryGateway;
-import com.cashly.cashly_api.notifications.domain.Notification;
+import com.cashly.cashly_api.notifications.domain.entity.Notification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;

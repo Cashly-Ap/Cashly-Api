@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.orders.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.orders.reporting.application.dto.OrderReportRow;
-import com.cashly.cashly_api.orders.reporting.application.dto.OrderReportFilter;
-import com.cashly.cashly_api.orders.reporting.application.generate_order_pdf.GenerateOrderPdfUseCase;
-import com.cashly.cashly_api.orders.reporting.application.generate_orders_report_pdf.GenerateOrdersReportPdfUseCase;
+import com.cashly.cashly_api.orders.reporting.application.dto.model.OrderReportRow;
+import com.cashly.cashly_api.orders.reporting.application.dto.model.OrderReportFilter;
+import com.cashly.cashly_api.orders.reporting.application.generate_order_pdf.use_case.GenerateOrderPdfUseCase;
+import com.cashly.cashly_api.orders.reporting.application.generate_orders_report_pdf.use_case.GenerateOrdersReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

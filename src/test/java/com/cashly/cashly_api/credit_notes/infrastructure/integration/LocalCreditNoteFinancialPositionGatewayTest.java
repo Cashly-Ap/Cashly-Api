@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.credit_notes.infrastructure.integration;
 
-import com.cashly.cashly_api.credit_notes.domain.CreditNote;
-import com.cashly.cashly_api.credit_notes.domain.CreditNoteRepository;
+import com.cashly.cashly_api.credit_notes.domain.entity.CreditNote;
+import com.cashly.cashly_api.credit_notes.domain.repository.CreditNoteRepository;
 import com.cashly.cashly_api.debit_notes.application.ports.in.DebitNoteLedgerQuery;
 import com.cashly.cashly_api.payments.collection.application.ports.in.InvoicePaymentTotalQuery;
 import org.junit.jupiter.api.Test;

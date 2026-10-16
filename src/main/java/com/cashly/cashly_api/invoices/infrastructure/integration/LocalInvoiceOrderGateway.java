@@ -2,7 +2,7 @@ package com.cashly.cashly_api.invoices.infrastructure.integration;
 
 import com.cashly.cashly_api.invoices.application.ports.out.InvoiceOrderGateway;
 import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
-import com.cashly.cashly_api.orders.domain.OrderRepository;
+import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import org.springframework.stereotype.Component;
 

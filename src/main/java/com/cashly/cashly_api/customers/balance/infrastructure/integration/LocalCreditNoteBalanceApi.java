@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.balance.infrastructure.integration;
 
 import com.cashly.cashly_api.customers.balance.application.ports.in.CreditNoteBalanceApi;
-import com.cashly.cashly_api.customers.balance.application.add.AddToCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase;
 import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
 import org.springframework.stereotype.Component;
 

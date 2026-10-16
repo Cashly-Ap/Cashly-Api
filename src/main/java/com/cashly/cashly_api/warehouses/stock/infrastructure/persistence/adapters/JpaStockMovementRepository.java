@@ -5,9 +5,9 @@ import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.reposit
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovement;
-import com.cashly.cashly_api.warehouses.stock.domain.MovementType;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovementRepository;
+import com.cashly.cashly_api.warehouses.stock.domain.entity.StockMovement;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
+import com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository;
 import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.entities.StockMovementEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

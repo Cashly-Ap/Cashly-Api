@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.receivables.reporting.infrastructure.integration;
 import com.cashly.cashly_api.receivables.application.ports.in.AccountsReceivableReportQuery;
 import com.cashly.cashly_api.receivables.reporting.application.ports.out.AccountsReceivableQueryGateway;
-import com.cashly.cashly_api.receivables.reporting.application.dto.AccountsReceivableReportData.AccountReceivableRow;
+import com.cashly.cashly_api.receivables.reporting.application.dto.model.AccountsReceivableReportData.AccountReceivableRow;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;

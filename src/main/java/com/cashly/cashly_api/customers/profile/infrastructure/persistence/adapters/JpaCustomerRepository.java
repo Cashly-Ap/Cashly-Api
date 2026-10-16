@@ -4,8 +4,8 @@ import com.cashly.cashly_api.customers.profile.infrastructure.persistence.reposi
 
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
-import com.cashly.cashly_api.customers.profile.domain.Customer;
-import com.cashly.cashly_api.customers.profile.domain.CustomerRepository;
+import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
+import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.Rif;
 import com.cashly.cashly_api.customers.profile.infrastructure.persistence.entities.CustomerEntity;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.customers.balance.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.customers.balance.domain.BalanceTransaction;
+import com.cashly.cashly_api.customers.balance.domain.entity.BalanceTransaction;
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.entities.BalanceTransactionEntity;
 
 public final class BalanceTransactionJpaMapper {

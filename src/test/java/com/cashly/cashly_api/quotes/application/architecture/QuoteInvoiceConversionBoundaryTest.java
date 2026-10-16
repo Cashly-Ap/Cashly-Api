@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.architecture;
 
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.ConvertQuoteToInvoiceUseCase;
+import com.cashly.cashly_api.quotes.application.convert_to_invoice.use_case.ConvertQuoteToInvoiceUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

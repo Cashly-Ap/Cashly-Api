@@ -3,22 +3,22 @@ package com.cashly.cashly_api.warehouses.infrastructure.config;
 import com.cashly.cashly_api.warehouses.stock.application.ports.out.StockCatalogGateway;
 
 
-import com.cashly.cashly_api.warehouses.management.application.create.CreateWarehouseUseCase;
-import com.cashly.cashly_api.warehouses.management.application.delete.DeleteWarehouseUseCase;
-import com.cashly.cashly_api.warehouses.stock.application.movements.GetStockMovementsUseCase;
-import com.cashly.cashly_api.warehouses.stock.application.queries.GetWarehouseStockUseCase;
-import com.cashly.cashly_api.warehouses.management.application.queries.GetWarehouseUseCase;
-import com.cashly.cashly_api.warehouses.management.application.queries.ListWarehousesUseCase;
-import com.cashly.cashly_api.warehouses.stock.application.adjustment.StockAdjustmentUseCase;
-import com.cashly.cashly_api.warehouses.stock.application.entry.StockEntryUseCase;
-import com.cashly.cashly_api.warehouses.stock.application.exit.StockExitUseCase;
-import com.cashly.cashly_api.warehouses.stock.application.transfer.TransferStockUseCase;
-import com.cashly.cashly_api.warehouses.management.application.update.UpdateWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.create.use_case.CreateWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.delete.use_case.DeleteWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.movements.use_case.GetStockMovementsUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.queries.use_case.GetWarehouseStockUseCase;
+import com.cashly.cashly_api.warehouses.management.application.queries.use_case.GetWarehouseUseCase;
+import com.cashly.cashly_api.warehouses.management.application.queries.use_case.ListWarehousesUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.adjustment.use_case.StockAdjustmentUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.entry.use_case.StockEntryUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.exit.use_case.StockExitUseCase;
+import com.cashly.cashly_api.warehouses.stock.application.transfer.use_case.TransferStockUseCase;
+import com.cashly.cashly_api.warehouses.management.application.update.use_case.UpdateWarehouseUseCase;
 import com.cashly.cashly_api.warehouses.stock.application.ports.in.InvoiceInventoryApi;
-import com.cashly.cashly_api.warehouses.stock.application.invoices.InvoiceInventoryService;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.management.domain.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.WarehouseStockRepository;
+import com.cashly.cashly_api.warehouses.stock.application.invoices.services.InvoiceInventoryService;
+import com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository;
+import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
+import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

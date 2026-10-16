@@ -1,0 +1,31 @@
+{
+  "scope": "Sales conversion persistence regression",
+  "database": "isolated MySQL 8.0 via compose.screaming-test.yaml",
+  "development_database_modified": false,
+  "red": {
+    "tests": 4,
+    "failures": 1,
+    "errors": 3,
+    "skipped": 0,
+    "expected_cause": "DuplicateKeyException: a different category snapshot object with the same identifier was already associated with the Hibernate session",
+    "reproduced_paths": ["quote to order", "quote to invoice", "order to invoice"]
+  },
+  "final_focused_green": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": ["SalesConversionPersistenceMySqlIT", "JpaQuoteRepositoryAdapterTest", "OrderRepositoryAdapterTest", "OrderCategorySnapshotMappingTest", "QuoteCategorySnapshotMappingTest"]
+  },
+  "regression_integration_cases": [
+    "Convert an already managed quote with historical category snapshot to order; reject repeated conversion",
+    "Convert an already managed quote with historical category snapshot to invoice",
+    "Invoice an already managed confirmed order with historical category snapshot",
+    "Roll back destination creation and restore an existing committed quote to DRAFT after failure before commit; preserve original snapshot",
+    "Persist new quote and order with category snapshots without treating the new snapshots as detached entities"
+  ],
+  "rollback_test_scope": "Real persistence and explicit unit of work via TransactionTemplate REQUIRES_NEW; outbound target write is a transaction-backed fixture, not a real HTTP invoice or order business gateway",
+  "fix": "Restore only existing persisted snapshot IDs during repository merge. New snapshots retain null IDs so Hibernate inserts them correctly. Preserve business state, stock, credit and transaction rules.",
+  "raw_evidence": "target/conversion-regression-evidence (ignored)",
+  "discovery_delta": {"new_integration_suites": 1, "new_integration_cases": 5}
+}

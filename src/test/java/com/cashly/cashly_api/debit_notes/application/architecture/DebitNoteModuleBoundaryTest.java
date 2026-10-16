@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.debit_notes.application.architecture;
 
-import com.cashly.cashly_api.debit_notes.application.create.CreateDebitNoteUseCase;
-import com.cashly.cashly_api.debit_notes.application.delete.DeleteDebitNoteUseCase;
-import com.cashly.cashly_api.debit_notes.application.get.GetDebitNoteByIdUseCase;
-import com.cashly.cashly_api.debit_notes.application.list.GetDebitNotesUseCase;
+import com.cashly.cashly_api.debit_notes.application.create.use_case.CreateDebitNoteUseCase;
+import com.cashly.cashly_api.debit_notes.application.delete.use_case.DeleteDebitNoteUseCase;
+import com.cashly.cashly_api.debit_notes.application.get.use_case.GetDebitNoteByIdUseCase;
+import com.cashly.cashly_api.debit_notes.application.list.use_case.GetDebitNotesUseCase;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

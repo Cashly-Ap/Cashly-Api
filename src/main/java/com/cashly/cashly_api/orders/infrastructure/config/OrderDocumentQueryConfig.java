@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.orders.infrastructure.config;
 
 import com.cashly.cashly_api.orders.application.ports.in.OrderDocumentQuery;
-import com.cashly.cashly_api.orders.application.queries.OrderDocumentQueryService;
-import com.cashly.cashly_api.orders.application.list.GetOrdersUseCase;
-import com.cashly.cashly_api.orders.domain.OrderRepository;
+import com.cashly.cashly_api.orders.application.queries.services.OrderDocumentQueryService;
+import com.cashly.cashly_api.orders.application.list.use_case.GetOrdersUseCase;
+import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

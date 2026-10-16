@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.cash_register.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportType;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportFormat;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterReportFilter;
-import com.cashly.cashly_api.cash_register.reporting.application.excel.GenerateCashRegisterExcelUseCase;
-import com.cashly.cashly_api.cash_register.reporting.application.range.GenerateCashRegisterRangeReportUseCase;
-import com.cashly.cashly_api.cash_register.reporting.application.session.GenerateCashRegisterReportUseCase;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportType;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportFormat;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterReportFilter;
+import com.cashly.cashly_api.cash_register.reporting.application.excel.use_case.GenerateCashRegisterExcelUseCase;
+import com.cashly.cashly_api.cash_register.reporting.application.range.use_case.GenerateCashRegisterRangeReportUseCase;
+import com.cashly.cashly_api.cash_register.reporting.application.session.use_case.GenerateCashRegisterReportUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

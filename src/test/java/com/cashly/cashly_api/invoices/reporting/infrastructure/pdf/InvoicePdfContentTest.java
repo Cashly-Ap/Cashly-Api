@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.invoices.reporting.infrastructure.pdf;
 
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportData;
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportRow;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportData;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportRow;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;

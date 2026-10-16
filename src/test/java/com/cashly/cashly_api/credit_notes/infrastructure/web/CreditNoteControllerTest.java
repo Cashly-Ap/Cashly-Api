@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.credit_notes.infrastructure.web;
 
-import com.cashly.cashly_api.credit_notes.application.create.CreateCreditNoteRequest;
+import com.cashly.cashly_api.credit_notes.application.create.request.CreateCreditNoteRequest;
 import com.cashly.cashly_api.credit_notes.application.dto.response.CreditNoteResponse;
-import com.cashly.cashly_api.credit_notes.application.create.CreateCreditNoteUseCase;
-import com.cashly.cashly_api.credit_notes.application.delete.DeleteCreditNoteUseCase;
-import com.cashly.cashly_api.credit_notes.application.get.GetCreditNoteByIdUseCase;
-import com.cashly.cashly_api.credit_notes.application.list.GetCreditNotesUseCase;
+import com.cashly.cashly_api.credit_notes.application.create.use_case.CreateCreditNoteUseCase;
+import com.cashly.cashly_api.credit_notes.application.delete.use_case.DeleteCreditNoteUseCase;
+import com.cashly.cashly_api.credit_notes.application.get.use_case.GetCreditNoteByIdUseCase;
+import com.cashly.cashly_api.credit_notes.application.list.use_case.GetCreditNotesUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

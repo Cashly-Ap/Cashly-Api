@@ -53,8 +53,8 @@ class LayerDependencyTest {
     void should_detect_forbidden_imports_and_fully_qualified_references_in_nested_capabilities() {
         Path stock = Path.of("warehouses/stock/application/transfer/Transfer.java");
         assertThat(applicationOwnershipViolations(stock,
-                "import com.cashly.cashly_api.customers.profile.domain.Customer;"))
-                .containsExactly("com.cashly.cashly_api.customers.profile.domain.Customer");
+                "import com.cashly.cashly_api.customers.profile.domain.entity.Customer;"))
+                .containsExactly("com.cashly.cashly_api.customers.profile.domain.entity.Customer");
         assertThat(applicationOwnershipViolations(stock,
                 "private com.cashly.cashly_api.customers.profile.infrastructure.persistence.CustomerEntity customer;"))
                 .containsExactly("com.cashly.cashly_api.customers.profile.infrastructure.persistence.CustomerEntity");
@@ -65,8 +65,8 @@ class LayerDependencyTest {
                 .containsExactly("com.cashly.cashly_api.warehouses.stock.application.Helpers.value");
         assertThat(portViolations(stock, "import jakarta.persistence.Entity;")).isNotEmpty();
         assertThat(domainOwnershipViolations(Path.of("warehouses/stock/domain/Stock.java"),
-                "import com.cashly.cashly_api.products.domain.Product;"))
-                .containsExactly("com.cashly.cashly_api.products.domain.Product");
+                "import com.cashly.cashly_api.products.domain.entity.Product;"))
+                .containsExactly("com.cashly.cashly_api.products.domain.entity.Product");
     }
 
     @Test
@@ -74,9 +74,9 @@ class LayerDependencyTest {
         Path stock = Path.of("warehouses/stock/application/queries/Availability.java");
         String source = """
                 import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.AccessQuery;
-                import com.cashly.cashly_api.warehouses.management.domain.WarehouseRepository;
+                import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
                 import com.cashly.cashly_api.shared.dto.PageResponse;
-                // import com.cashly.cashly_api.customers.profile.domain.Customer;
+                // import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
                 String example = "com.cashly.cashly_api.customers.profile.infrastructure.CustomerEntity";
                 """;
         assertThat(applicationOwnershipViolations(stock, source)).isEmpty();

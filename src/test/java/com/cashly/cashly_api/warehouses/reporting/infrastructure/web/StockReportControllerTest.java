@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.warehouses.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.StockPdfQuery;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_stock_excel.GenerateStockExcelUseCase;
-import com.cashly.cashly_api.warehouses.reporting.application.generate_stock_pdf.GenerateStockPdfUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.StockPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_stock_excel.use_case.GenerateStockExcelUseCase;
+import com.cashly.cashly_api.warehouses.reporting.application.generate_stock_pdf.use_case.GenerateStockPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

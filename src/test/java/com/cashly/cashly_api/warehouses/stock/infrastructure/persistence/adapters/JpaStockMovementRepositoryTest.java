@@ -3,9 +3,9 @@ package com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.adapte
 import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.repositories.SpringDataStockMovementRepository;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.warehouses.stock.domain.MovementType;
-import com.cashly.cashly_api.warehouses.stock.domain.ReferenceType;
-import com.cashly.cashly_api.warehouses.stock.domain.StockMovement;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.ReferenceType;
+import com.cashly.cashly_api.warehouses.stock.domain.entity.StockMovement;
 import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.entities.StockMovementEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

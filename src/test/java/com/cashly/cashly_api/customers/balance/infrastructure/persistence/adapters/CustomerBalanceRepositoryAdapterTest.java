@@ -4,8 +4,8 @@ import com.cashly.cashly_api.customers.balance.infrastructure.persistence.mapper
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.mappers.CustomerBalanceJpaMapper;
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.repositories.CustomerBalanceJpaRepository;
 
-import com.cashly.cashly_api.customers.balance.domain.BalanceTransaction;
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalance;
+import com.cashly.cashly_api.customers.balance.domain.entity.BalanceTransaction;
+import com.cashly.cashly_api.customers.balance.domain.entity.CustomerBalance;
 import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.entities.BalanceTransactionEntity;
 import com.cashly.cashly_api.customers.balance.infrastructure.persistence.entities.CustomerBalanceEntity;

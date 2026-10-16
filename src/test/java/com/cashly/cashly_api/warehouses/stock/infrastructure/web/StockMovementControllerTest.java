@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.warehouses.stock.infrastructure.web;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.warehouses.stock.application.movements.StockMovementResponse;
-import com.cashly.cashly_api.warehouses.stock.application.movements.GetStockMovementsUseCase;
-import com.cashly.cashly_api.warehouses.stock.domain.MovementType;
+import com.cashly.cashly_api.warehouses.stock.application.movements.response.StockMovementResponse;
+import com.cashly.cashly_api.warehouses.stock.application.movements.use_case.GetStockMovementsUseCase;
+import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

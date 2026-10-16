@@ -3,7 +3,7 @@ package com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.adapte
 import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.repositories.SpringDataWarehouseStockRepository;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.warehouses.stock.domain.WarehouseStock;
+import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
 import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.entities.WarehouseStockEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

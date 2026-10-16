@@ -1,0 +1,12 @@
+{
+  "tests": 2502,
+  "test_files": 258,
+  "failures": 0,
+  "skipped": 0,
+  "command": "bun run test:run --maxWorkers=1 --minWorkers=1",
+  "duration_seconds": 268.78,
+  "node": "v22.23.3",
+  "production_build": "passed",
+  "log_sha256": "ed82acffad80ff0b35bd628b2dcd1d2f9a1f9676b53940c8d03e88294f8fcb19",
+  "raw_log": "/tmp/cashly-test-evidence/remove-reassignment-full.log (frontend container)"
+}

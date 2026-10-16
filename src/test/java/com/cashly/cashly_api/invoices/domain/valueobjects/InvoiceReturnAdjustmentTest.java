@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.invoices.domain.valueobjects;
 
-import com.cashly.cashly_api.invoices.domain.Invoice;
-import com.cashly.cashly_api.invoices.domain.InvoiceLine;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.invoices.domain.entity.InvoiceLine;
 
 import com.cashly.cashly_api.invoices.domain.exceptions.InvoiceNotReturnableException;
 import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceNumber;

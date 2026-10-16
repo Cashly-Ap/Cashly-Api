@@ -2,8 +2,8 @@ package com.cashly.cashly_api.notifications.infrastructure.persistence.adapters;
 
 import com.cashly.cashly_api.notifications.infrastructure.persistence.repositories.NotificationJpaRepository;
 
-import com.cashly.cashly_api.notifications.domain.Notification;
-import com.cashly.cashly_api.notifications.domain.NotificationRepository;
+import com.cashly.cashly_api.notifications.domain.entity.Notification;
+import com.cashly.cashly_api.notifications.domain.repository.NotificationRepository;
 import com.cashly.cashly_api.notifications.domain.valueobjects.NotificationId;
 import com.cashly.cashly_api.notifications.infrastructure.persistence.mappers.NotificationJpaMapper;
 import org.springframework.stereotype.Repository;

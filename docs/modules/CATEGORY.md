@@ -477,51 +477,63 @@ import com.lexand.lexand_api.category.application.exceptions.CategoryNotFoundExc
 ## Project Structure
 
 ```
-src/main/java/com/lexand/lexand_api/category/
+categories/
 ├── application/
-│   ├── dto/
+│   ├── create/
 │   │   ├── request/
-│   │   │   ├── CreateCategoryRequest.java
-│   │   │   └── UpdateCategoryRequest.java
+│   │   │   └── CreateCategoryRequest.java
+│   │   └── use_case/
+│   │       └── CreateCategoryUseCase.java
+│   ├── delete/
+│   │   └── use_case/
+│   │       └── DeleteCategoryUseCase.java
+│   ├── dto/
 │   │   └── response/
-│   │       └── CategoryResponse.java
+│   │       ├── CategoryDetailResponse.java
+│   │       ├── CategoryListResponse.java
+│   │       └── CategorySummary.java
 │   ├── exceptions/
+│   │   ├── CategoryHasActiveProductsException.java
 │   │   ├── CategoryNotFoundException.java
-│   │   ├── DuplicateCategoryNameException.java
-│   │   └── CategoryHasProductsException.java
+│   │   └── DuplicateCategoryNameException.java
 │   ├── mappers/
 │   │   └── CategoryMapper.java
-│   └── usecases/
-│       ├── CreateCategoryUseCase.java
-│       ├── GetCategoryByIdUseCase.java
-│       ├── GetAllCategoriesUseCase.java
-│       ├── UpdateCategoryUseCase.java
-│       └── DeleteCategoryUseCase.java
+│   ├── ports/
+│   │   ├── in/
+│   │   │   └── ProductCategoryQuery.java
+│   │   └── out/
+│   │       └── CategoryUsageGateway.java
+│   ├── queries/
+│   │   ├── services/
+│   │   │   └── RepositoryProductCategoryQuery.java
+│   │   └── use_case/
+│   │       ├── GetCategoryUseCase.java
+│   │       └── ListCategoriesUseCase.java
+│   └── update/
+│       ├── request/
+│       │   └── UpdateCategoryRequest.java
+│       └── use_case/
+│           └── UpdateCategoryUseCase.java
 ├── domain/
-│   ├── entities/
+│   ├── entity/
 │   │   └── Category.java
-│   ├── repositories/
-│   │   └── CategoryRepository.java
-│   ├── services/
-│   │   └── CategoryCodeGenerator.java
-│   └── valueobjects/
-│       ├── CategoryId.java
-│       ├── CategoryCode.java
-│       └── CategoryName.java
+│   └── repository/
+│       └── CategoryRepository.java
 └── infrastructure/
+    ├── config/
+    │   ├── CategoryConfig.java
+    │   └── ProductCategoryQueryConfig.java
+    ├── integration/
+    │   └── ProductCategoryUsageAdapter.java
     ├── persistence/
+    │   ├── adapters/
+    │   │   └── JpaCategoryRepository.java
     │   ├── entities/
     │   │   └── CategoryEntity.java
-    │   ├── mappers/
-    │   │   └── CategoryEntityMapper.java
     │   └── repositories/
-    │       ├── JpaCategoryRepositoryAdapter.java
     │       └── SpringDataCategoryRepository.java
-    ├── services/
-    │   └── SequentialCategoryCodeGenerator.java
     └── web/
-        ├── CategoryController.java
-        └── CategoryExceptionHandler.java
+        └── CategoryController.java
 ```
 
 ---

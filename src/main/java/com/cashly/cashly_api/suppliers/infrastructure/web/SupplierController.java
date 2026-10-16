@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.suppliers.infrastructure.web;
 
-import com.cashly.cashly_api.suppliers.application.register.CreateSupplierRequest;
-import com.cashly.cashly_api.suppliers.application.update.UpdateSupplierRequest;
+import com.cashly.cashly_api.suppliers.application.register.request.CreateSupplierRequest;
+import com.cashly.cashly_api.suppliers.application.update.request.UpdateSupplierRequest;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierCreateResponse;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierDetailResponse;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierListResponse;
-import com.cashly.cashly_api.suppliers.application.delete.DeleteSupplierUseCase;
-import com.cashly.cashly_api.suppliers.application.queries.GetSupplierUseCase;
-import com.cashly.cashly_api.suppliers.application.queries.ListSuppliersUseCase;
-import com.cashly.cashly_api.suppliers.application.register.RegisterSupplierUseCase;
-import com.cashly.cashly_api.suppliers.application.update.UpdateSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.delete.use_case.DeleteSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.queries.use_case.GetSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.queries.use_case.ListSuppliersUseCase;
+import com.cashly.cashly_api.suppliers.application.register.use_case.RegisterSupplierUseCase;
+import com.cashly.cashly_api.suppliers.application.update.use_case.UpdateSupplierUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

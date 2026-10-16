@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.receivables.reporting.application.architecture;
-import com.cashly.cashly_api.receivables.reporting.application.generate_accounts_receivable_report_pdf.GenerateAccountsReceivableReportPdfUseCaseImpl;
+import com.cashly.cashly_api.receivables.reporting.application.generate_accounts_receivable_report_pdf.services.GenerateAccountsReceivableReportPdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;

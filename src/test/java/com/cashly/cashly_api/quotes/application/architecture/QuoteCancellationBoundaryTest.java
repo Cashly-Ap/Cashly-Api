@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.application.architecture;
 
-import com.cashly.cashly_api.quotes.application.cancel.CancelQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.cancel.use_case.CancelQuoteUseCase;
 
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;

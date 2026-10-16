@@ -6,13 +6,13 @@ import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticationD
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.cashly.cashly_api.auth.authentication.application.login.LoginUserUseCase;
+import com.cashly.cashly_api.auth.authentication.application.login.use_case.LoginUserUseCase;
 import com.cashly.cashly_api.auth.authentication.domain.services.AuthenticableResolver;
 import com.cashly.cashly_api.auth.authentication.infrastructure.services.ChainedAuthenticableResolver;
-import com.cashly.cashly_api.auth.token.application.refresh.RefreshTokenUseCase;
-import com.cashly.cashly_api.auth.token.domain.RefreshTokenRepository;
+import com.cashly.cashly_api.auth.token.application.refresh.use_case.RefreshTokenUseCase;
+import com.cashly.cashly_api.auth.token.domain.repository.RefreshTokenRepository;
 import com.cashly.cashly_api.auth.token.domain.services.TokenService;
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
 
 @Configuration

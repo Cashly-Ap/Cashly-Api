@@ -3,8 +3,8 @@ package com.cashly.cashly_api.notifications.application.services;
 import com.cashly.cashly_api.notifications.application.ports.out.NotificationRecipientGateway;
 import com.cashly.cashly_api.notifications.infrastructure.messaging.WebSocketNotificationDeliveryAdapter;
 
-import com.cashly.cashly_api.notifications.domain.Notification;
-import com.cashly.cashly_api.notifications.domain.NotificationRepository;
+import com.cashly.cashly_api.notifications.domain.entity.Notification;
+import com.cashly.cashly_api.notifications.domain.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.transaction.support.TransactionSynchronizationManager;

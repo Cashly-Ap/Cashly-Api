@@ -9,8 +9,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
 

@@ -2,7 +2,7 @@ package com.cashly.cashly_api.customers.profile.infrastructure.persistence.adapt
 
 import com.cashly.cashly_api.customers.profile.infrastructure.persistence.repositories.SpringDataCustomerRepository;
 
-import com.cashly.cashly_api.customers.profile.domain.Customer;
+import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditDays;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditLimit;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerAlias;

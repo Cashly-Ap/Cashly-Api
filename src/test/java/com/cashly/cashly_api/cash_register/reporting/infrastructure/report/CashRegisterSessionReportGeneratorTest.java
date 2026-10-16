@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.cash_register.reporting.infrastructure.report;
 
-import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementResponse;
-import com.cashly.cashly_api.cash_register.sessions.application.dto.CashRegisterResponse;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.ReportType;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.response.CashMovementResponse;
+import com.cashly.cashly_api.cash_register.sessions.application.dto.response.CashRegisterResponse;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.ReportType;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.RegisterStatus;

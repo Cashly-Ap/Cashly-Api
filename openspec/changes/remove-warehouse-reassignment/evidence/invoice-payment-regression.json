@@ -1,0 +1,32 @@
+{
+  "scope": "Cash invoice conversion foreign-key regression",
+  "database": "isolated MySQL suite-db/screaming_suite; development data unchanged",
+  "red": {
+    "tests": 5,
+    "failures": 0,
+    "errors": 3,
+    "skipped": 0,
+    "constraint": "fk_payment_allocations_invoice",
+    "sql_error": 1452,
+    "failing_flows": ["quote to CASH invoice with payment", "quote to CASH invoice with partial balance and payment", "confirmed order to CASH invoice with payment"],
+    "passing_controls": ["quote paid entirely from balance", "rollback after real stock deduction"]
+  },
+  "green": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": ["CashInvoiceConversionMySqlIT", "CreateInvoiceUseCaseTest", "ConvertQuoteToInvoiceUseCaseTest", "InvoiceRepositoryAdapterTest"]
+  },
+  "integration_cases": [
+    "Quote to CASH invoice: payment covers 100 percent",
+    "Quote to CASH invoice: balance covers 30 percent and payment covers 70 percent",
+    "Quote to CASH invoice: balance covers 100 percent",
+    "Confirmed order to CASH invoice: real payment and payment allocation",
+    "Injected failure after real stock deduction rolls back invoice, payment, cash-register movement and balance transaction; committed source quote remains DRAFT and balance/stock are unchanged"
+  ],
+  "fix": "Persist and flush a CASH draft invoice before authorization creates foreign-key payment allocations; confirm and save in the same surrounding transaction. CREDIT authorization order and valid business guards are preserved.",
+  "transaction_scope": "Real Spring application services, real payment/balance/stock adapters and MySQL constraints. No gateway stubs; stock spy calls the real operation before injecting rollback failure.",
+  "discovery_delta": {"new_integration_suites": 1, "new_integration_cases": 5},
+  "raw_evidence": "target/invoice-payment-regression-evidence (ignored)"
+}

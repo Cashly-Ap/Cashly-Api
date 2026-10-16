@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.payments.collection.infrastructure.config;
 import com.cashly.cashly_api.payments.collection.application.ports.in.ReturnPaymentOperations;
 import com.cashly.cashly_api.payments.collection.application.services.ReturnPaymentOperationsService;
-import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationService;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.domain.services.PaymentAllocationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration

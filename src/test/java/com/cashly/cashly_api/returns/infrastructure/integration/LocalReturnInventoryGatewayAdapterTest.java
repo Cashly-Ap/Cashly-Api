@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.returns.infrastructure.integration;
 
 import com.cashly.cashly_api.returns.application.ports.out.ReturnInventoryGateway;
-import com.cashly.cashly_api.returns.domain.Return;
-import com.cashly.cashly_api.returns.domain.ReturnId;
-import com.cashly.cashly_api.returns.domain.ReturnLine;
-import com.cashly.cashly_api.returns.domain.ReturnLineAllocation;
-import com.cashly.cashly_api.returns.domain.ReturnNumber;
+import com.cashly.cashly_api.returns.domain.entity.Return;
+import com.cashly.cashly_api.returns.domain.valueobjects.ReturnId;
+import com.cashly.cashly_api.returns.domain.entity.ReturnLine;
+import com.cashly.cashly_api.returns.domain.entity.ReturnLineAllocation;
+import com.cashly.cashly_api.returns.domain.valueobjects.ReturnNumber;
 import com.cashly.cashly_api.warehouses.stock.application.ports.in.ReturnInventoryApi;
 import com.cashly.cashly_api.warehouses.stock.application.ports.in.ReturnStockCommand;
 import org.junit.jupiter.api.Test;

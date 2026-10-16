@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.returns.infrastructure.integration;
 import com.cashly.cashly_api.returns.application.ports.out.ReturnPaymentSettlementGateway;
-import com.cashly.cashly_api.returns.domain.CancelledAllocation;
+import com.cashly.cashly_api.returns.domain.entity.CancelledAllocation;
 import com.cashly.cashly_api.payments.collection.application.ports.in.ReturnPaymentOperations;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;

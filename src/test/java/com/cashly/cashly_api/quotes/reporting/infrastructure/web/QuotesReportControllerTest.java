@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.quotes.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportRow;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportFilter;
-import com.cashly.cashly_api.quotes.reporting.application.generate_quote_pdf.GenerateQuotePdfUseCase;
-import com.cashly.cashly_api.quotes.reporting.application.generate_quotes_report_pdf.GenerateQuotesReportPdfUseCase;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportRow;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportFilter;
+import com.cashly.cashly_api.quotes.reporting.application.generate_quote_pdf.use_case.GenerateQuotePdfUseCase;
+import com.cashly.cashly_api.quotes.reporting.application.generate_quotes_report_pdf.use_case.GenerateQuotesReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

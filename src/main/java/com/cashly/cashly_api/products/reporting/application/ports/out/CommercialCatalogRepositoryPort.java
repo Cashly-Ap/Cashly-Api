@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.products.reporting.application.ports.out;
 
 import com.cashly.cashly_api.products.reporting.application.dto.response.CommercialCatalogResponse;
-import com.cashly.cashly_api.products.reporting.application.dto.query.CommercialCatalogQuery;
+import com.cashly.cashly_api.products.reporting.application.dto.query.model.CommercialCatalogQuery;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.payments.reporting.application.generate_payment_history_report_pdf.GeneratePaymentHistoryReportPdfUseCase;
-import com.cashly.cashly_api.payments.reporting.application.generate_payment_pdf.GeneratePaymentPdfUseCase;
+import com.cashly.cashly_api.payments.reporting.application.generate_payment_history_report_pdf.use_case.GeneratePaymentHistoryReportPdfUseCase;
+import com.cashly.cashly_api.payments.reporting.application.generate_payment_pdf.use_case.GeneratePaymentPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.products.application.architecture;
 
-import com.cashly.cashly_api.products.application.stock.GetProductStockUseCase;
-import com.cashly.cashly_api.products.application.transactions.GetProductsForTransactionUseCase;
+import com.cashly.cashly_api.products.application.stock.use_case.GetProductStockUseCase;
+import com.cashly.cashly_api.products.application.transactions.use_case.GetProductsForTransactionUseCase;
 
-import com.cashly.cashly_api.products.application.stock.ProductStockByWarehouseResponse;
+import com.cashly.cashly_api.products.application.stock.response.ProductStockByWarehouseResponse;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;

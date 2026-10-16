@@ -3,7 +3,7 @@ package com.cashly.cashly_api.suppliers.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.suppliers.infrastructure.persistence.repositories.SpringDataSupplierRepository;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
-import com.cashly.cashly_api.suppliers.domain.Supplier;
+import com.cashly.cashly_api.suppliers.domain.entity.Supplier;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.LegalName;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.Rif;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.SupplierAlias;

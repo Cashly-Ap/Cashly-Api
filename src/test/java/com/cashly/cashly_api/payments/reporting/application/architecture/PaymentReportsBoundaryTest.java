@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payments.reporting.application.architecture;
 import com.cashly.cashly_api.payments.reporting.application.ports.out.PaymentPdfPort;
-import com.cashly.cashly_api.payments.reporting.application.generate_payment_pdf.GeneratePaymentPdfUseCaseImpl;
+import com.cashly.cashly_api.payments.reporting.application.generate_payment_pdf.services.GeneratePaymentPdfUseCaseImpl;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;

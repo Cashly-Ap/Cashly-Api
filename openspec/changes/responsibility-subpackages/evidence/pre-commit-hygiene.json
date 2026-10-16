@@ -1,0 +1,8 @@
+{
+  "file": "src/test/java/com/cashly/cashly_api/shared/infrastructure/bootstrap/CashlyApplicationTests.java",
+  "change": "Remove trailing whitespace from three blank lines in existing empty test bootstrap class",
+  "before_sha256": "2d588e8e3bc546f93e1c61a1bab2dbf994f85fad43f8b8078b5d7307937184cd",
+  "after_sha256": "bab117f15197e59de5bbcc93957f2f3349bedb677bccc55da5cd75c95efbed90",
+  "non_whitespace_tokens_unchanged": true,
+  "verification": "No executable behavior changed after complete-suite source snapshot"
+}

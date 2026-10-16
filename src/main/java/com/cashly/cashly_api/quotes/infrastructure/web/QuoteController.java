@@ -1,25 +1,23 @@
 package com.cashly.cashly_api.quotes.infrastructure.web;
 
-import com.cashly.cashly_api.quotes.application.assign_warehouses.AssignQuoteWarehousesRequest;
-import com.cashly.cashly_api.quotes.application.cancel.CancelQuoteRequest;
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.ConvertQuoteToInvoiceRequest;
-import com.cashly.cashly_api.quotes.application.create.CreateQuoteRequest;
-import com.cashly.cashly_api.quotes.application.update.UpdateQuoteRequest;
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.QuoteConvertedToInvoiceResponse;
-import com.cashly.cashly_api.quotes.application.convert_to_order.QuoteConvertedToOrderResponse;
+import com.cashly.cashly_api.quotes.application.cancel.request.CancelQuoteRequest;
+import com.cashly.cashly_api.quotes.application.convert_to_invoice.request.ConvertQuoteToInvoiceRequest;
+import com.cashly.cashly_api.quotes.application.create.request.CreateQuoteRequest;
+import com.cashly.cashly_api.quotes.application.update.request.UpdateQuoteRequest;
+import com.cashly.cashly_api.quotes.application.convert_to_invoice.response.QuoteConvertedToInvoiceResponse;
+import com.cashly.cashly_api.quotes.application.convert_to_order.response.QuoteConvertedToOrderResponse;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteDetailResponse;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteListResponse;
 import com.cashly.cashly_api.quotes.application.dto.response.QuoteWarehouseResponse;
-import com.cashly.cashly_api.quotes.application.assign_warehouses.AssignQuoteWarehousesUseCase;
-import com.cashly.cashly_api.quotes.application.cancel.CancelQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.ConvertQuoteToInvoiceUseCase;
-import com.cashly.cashly_api.quotes.application.convert_to_order.ConvertQuoteToOrderUseCase;
-import com.cashly.cashly_api.quotes.application.create.CreateQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.delete.DeleteQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.get.GetQuoteByIdUseCase;
-import com.cashly.cashly_api.quotes.application.list.GetQuotesUseCase;
-import com.cashly.cashly_api.quotes.application.warehouses.GetWarehousesForQuoteUseCase;
-import com.cashly.cashly_api.quotes.application.update.UpdateQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.cancel.use_case.CancelQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.convert_to_invoice.use_case.ConvertQuoteToInvoiceUseCase;
+import com.cashly.cashly_api.quotes.application.convert_to_order.use_case.ConvertQuoteToOrderUseCase;
+import com.cashly.cashly_api.quotes.application.create.use_case.CreateQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.delete.use_case.DeleteQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.get.use_case.GetQuoteByIdUseCase;
+import com.cashly.cashly_api.quotes.application.list.use_case.GetQuotesUseCase;
+import com.cashly.cashly_api.quotes.application.warehouses.use_case.GetWarehousesForQuoteUseCase;
+import com.cashly.cashly_api.quotes.application.update.use_case.UpdateQuoteUseCase;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -43,7 +41,6 @@ public class QuoteController {
     private final DeleteQuoteUseCase deleteQuoteUseCase;
     private final CancelQuoteUseCase cancelQuoteUseCase;
     private final GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase;
-    private final AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase;
     private final ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase;
     private final ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase;
 
@@ -54,7 +51,6 @@ public class QuoteController {
                             DeleteQuoteUseCase deleteQuoteUseCase,
                             CancelQuoteUseCase cancelQuoteUseCase,
                             GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
-                            AssignQuoteWarehousesUseCase assignQuoteWarehousesUseCase,
                             ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
                             ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
         this.createQuoteUseCase = createQuoteUseCase;
@@ -64,7 +60,6 @@ public class QuoteController {
         this.deleteQuoteUseCase = deleteQuoteUseCase;
         this.cancelQuoteUseCase = cancelQuoteUseCase;
         this.getWarehousesForQuoteUseCase = getWarehousesForQuoteUseCase;
-        this.assignQuoteWarehousesUseCase = assignQuoteWarehousesUseCase;
         this.convertQuoteToOrderUseCase = convertQuoteToOrderUseCase;
         this.convertQuoteToInvoiceUseCase = convertQuoteToInvoiceUseCase;
     }
@@ -132,15 +127,6 @@ public class QuoteController {
             @RequestParam UUID customerId) {
         List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase.execute(customerId);
         return ResponseEntity.ok(result);
-    }
-
-    @PutMapping("/{id}/allocations")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
-    public ResponseEntity<QuoteDetailResponse> assignWarehouses(
-            @PathVariable UUID id,
-            @Valid @RequestBody AssignQuoteWarehousesRequest request) {
-        QuoteDetailResponse response = assignQuoteWarehousesUseCase.execute(id, request);
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/convert-to-order")

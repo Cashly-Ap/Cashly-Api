@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.reporting.infrastructure.pdf;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportData;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportRow;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportData;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportRow;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;

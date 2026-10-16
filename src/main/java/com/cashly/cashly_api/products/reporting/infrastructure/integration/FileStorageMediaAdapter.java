@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.products.reporting.infrastructure.integration;
 import com.cashly.cashly_api.products.reporting.application.ports.out.MediaGateway;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 @Component

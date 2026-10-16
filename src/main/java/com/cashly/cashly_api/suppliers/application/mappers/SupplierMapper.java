@@ -6,7 +6,7 @@ import com.cashly.cashly_api.suppliers.application.dto.response.PhoneResponse;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierCreateResponse;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierDetailResponse;
 import com.cashly.cashly_api.suppliers.application.dto.response.SupplierListResponse;
-import com.cashly.cashly_api.suppliers.domain.Supplier;
+import com.cashly.cashly_api.suppliers.domain.entity.Supplier;
 
 public class SupplierMapper {
 

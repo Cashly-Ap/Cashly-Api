@@ -111,73 +111,203 @@ Order (PENDING) --> [convert-to-invoice] --> Invoice (PENDING)
 ```
 invoices/
 ├── application/
-│   ├── dto/
+│   ├── cancel/
 │   │   ├── request/
-│   │   │   ├── CreateInvoiceRequest.java
-│   │   │   ├── CreateInvoiceLineRequest.java
-│   │   │   └── RegisterPaymentRequest.java
+│   │   │   └── CancelInvoiceRequest.java
+│   │   └── use_case/
+│   │       └── CancelInvoiceUseCase.java
+│   ├── confirm/
+│   │   ├── request/
+│   │   │   └── ConfirmInvoiceRequest.java
+│   │   └── use_case/
+│   │       └── ConfirmInvoiceUseCase.java
+│   ├── create/
+│   │   ├── from_order/
+│   │   │   └── services/
+│   │   │       └── OrderInvoiceCreationService.java
+│   │   ├── from_quote/
+│   │   │   └── services/
+│   │   │       └── QuoteInvoiceCreationService.java
+│   │   ├── request/
+│   │   │   └── CreateInvoiceRequest.java
+│   │   └── use_case/
+│   │       └── CreateInvoiceUseCase.java
+│   ├── delete/
+│   │   └── use_case/
+│   │       └── DeleteInvoiceUseCase.java
+│   ├── dto/
 │   │   └── response/
-│   │       ├── InvoiceListResponse.java
 │   │       ├── InvoiceDetailResponse.java
-│   │       ├── InvoiceCreateResponse.java
-│   │       ├── InvoiceLineResponse.java
-│   │       ├── InvoicePaymentResponse.java
-│   │       ├── ProcessOverdueResponse.java
-│   │       ├── OverdueInvoiceMarkedResponse.java
-│   │       └── DueSoonInvoiceResponse.java
-│   ├── exceptions/
-│   │   ├── InvoiceNotFoundException.java
-│   │   ├── InvalidInvoiceStatusException.java
-│   │   ├── InvoiceAlreadyPaidException.java
-│   │   ├── InvalidPaymentAmountException.java
-│   │   └── InsufficientStockException.java
+│   │       └── InvoiceListResponse.java
+│   ├── duplicate/
+│   │   ├── request/
+│   │   │   └── DuplicateInvoiceRequest.java
+│   │   └── use_case/
+│   │       └── DuplicateInvoiceUseCase.java
+│   ├── get/
+│   │   └── use_case/
+│   │       └── GetInvoiceByIdUseCase.java
+│   ├── issue/
+│   │   ├── model/
+│   │   │   └── InvoiceOrigin.java
+│   │   ├── request/
+│   │   │   └── IssueInvoiceCommand.java
+│   │   ├── services/
+│   │   │   ├── InvoicePaymentService.java
+│   │   │   └── IssueInvoiceService.java
+│   │   └── validation/
+│   │       └── InvoiceIssueValidator.java
+│   ├── list/
+│   │   └── use_case/
+│   │       └── GetInvoicesUseCase.java
 │   ├── mappers/
 │   │   └── InvoiceMapper.java
 │   ├── ports/
-│   │   └── InvoiceQueryPort.java
-│   └── usecases/
-│       ├── CreateInvoiceUseCase.java
-│       ├── CreateInvoiceFromOrderUseCase.java
-│       ├── GetInvoiceUseCase.java
-│       ├── ListInvoicesUseCase.java
-│       ├── RegisterPaymentUseCase.java
-│       ├── CancelInvoiceUseCase.java
-│       ├── GetOverdueInvoicesUseCase.java
-│       ├── MarkOverdueInvoicesUseCase.java
-│       └── GetDueSoonInvoicesUseCase.java
+│   │   ├── in/
+│   │   │   ├── InvoiceCreditLedgerEntry.java
+│   │   │   ├── InvoiceCreditLedgerQuery.java
+│   │   │   ├── InvoiceDocumentFilter.java
+│   │   │   ├── InvoiceDocumentQuery.java
+│   │   │   ├── InvoiceDocumentRow.java
+│   │   │   ├── InvoiceDocumentSnapshot.java
+│   │   │   ├── InvoiceNoteApi.java
+│   │   │   ├── InvoiceReturnAdjustments.java
+│   │   │   ├── InvoiceReturnCommand.java
+│   │   │   ├── OrderInvoiceCreationApi.java
+│   │   │   ├── ProductReferenceQuery.java
+│   │   │   ├── QuoteInvoiceCreationApi.java
+│   │   │   └── ReturnInvoiceQuery.java
+│   │   └── out/
+│   │       ├── ActorIdentityGateway.java
+│   │       ├── CashRegisterGateway.java
+│   │       ├── CustomerBalanceGateway.java
+│   │       ├── CustomerCreditGateway.java
+│   │       ├── CustomerCreditTermsGateway.java
+│   │       ├── InventoryGateway.java
+│   │       ├── InvoiceCatalogGateway.java
+│   │       ├── InvoiceCustomerGateway.java
+│   │       ├── InvoiceFinancialPositionGateway.java
+│   │       ├── InvoiceNoteDetailsGateway.java
+│   │       ├── InvoiceNotificationGateway.java
+│   │       ├── InvoiceOrderGateway.java
+│   │       ├── InvoicePaymentSettlementGateway.java
+│   │       ├── InvoicePaymentTotalsGateway.java
+│   │       ├── InvoiceQuoteGateway.java
+│   │       ├── InvoiceReturnDetailsGateway.java
+│   │       ├── StockAvailabilityGateway.java
+│   │       └── StockDeductionGateway.java
+│   ├── queries/
+│   │   └── services/
+│   │       ├── InvoiceDocumentQueryService.java
+│   │       ├── RepositoryInvoiceCreditLedgerQuery.java
+│   │       ├── RepositoryInvoiceReturnAdjustments.java
+│   │       └── RepositoryReturnInvoiceQuery.java
+│   └── update/
+│       ├── request/
+│       │   └── UpdateInvoiceRequest.java
+│       └── use_case/
+│           └── UpdateInvoiceUseCase.java
 ├── domain/
-│   ├── entities/
+│   ├── entity/
 │   │   ├── Invoice.java
 │   │   ├── InvoiceLine.java
-│   │   └── InvoicePayment.java
-│   ├── repositories/
+│   │   └── InvoiceLineAllocation.java
+│   ├── exceptions/
+│   │   ├── InvoiceNotFoundException.java
+│   │   ├── InvoiceNotReturnableException.java
+│   │   └── ReturnQuantityExceedsException.java
+│   ├── repository/
 │   │   └── InvoiceRepository.java
 │   ├── services/
-│   │   ├── InvoiceNumberGenerator.java
-│   │   └── DifferentialPriceCalculator.java
+│   │   └── InvoiceStatusService.java
 │   └── valueobjects/
 │       ├── InvoiceId.java
-│       ├── InvoiceNumber.java
 │       ├── InvoiceLineId.java
-│       ├── InvoicePaymentId.java
-│       └── InvoiceStatus.java
-└── infrastructure/
-    ├── config/
-    │   └── InvoiceBeanConfig.java
-    ├── persistence/
-    │   ├── adapters/
-    │   │   └── JpaInvoiceQueryAdapter.java
-    │   ├── entities/
-    │   │   ├── InvoiceJpaEntity.java
-    │   │   ├── InvoiceLineJpaEntity.java
-    │   │   └── InvoicePaymentJpaEntity.java
-    │   ├── mappers/
-    │   │   └── InvoiceJpaMapper.java
-    │   └── repositories/
-    │       ├── JpaInvoiceRepositoryAdapter.java
-    │       └── SpringDataInvoiceRepository.java
-    └── web/
-        └── InvoiceController.java
+│       ├── InvoiceNumber.java
+│       ├── InvoiceReturnAdjustment.java
+│       ├── InvoiceReturnStatus.java
+│       ├── InvoiceStatus.java
+│       └── PaymentType.java
+├── infrastructure/
+│   ├── config/
+│   │   ├── InvoiceCreditQueryConfig.java
+│   │   ├── InvoiceDocumentQueryConfig.java
+│   │   ├── InvoiceReturnAdjustmentConfig.java
+│   │   ├── OrderInvoiceCreationConfig.java
+│   │   ├── QuoteInvoiceCreationConfig.java
+│   │   └── ReturnInvoiceQueryConfig.java
+│   ├── integration/
+│   │   ├── InvoiceCustomerCreditAdapter.java
+│   │   ├── InvoiceStockAvailabilityAdapter.java
+│   │   ├── LocalActorIdentityGateway.java
+│   │   ├── LocalCustomerBalanceGateway.java
+│   │   ├── LocalCustomerCreditTermsGateway.java
+│   │   ├── LocalInventoryGatewayAdapter.java
+│   │   ├── LocalInvoiceCashRegisterGateway.java
+│   │   ├── LocalInvoiceCatalogGateway.java
+│   │   ├── LocalInvoiceCustomerGateway.java
+│   │   ├── LocalInvoiceFinancialPositionGateway.java
+│   │   ├── LocalInvoiceNoteApi.java
+│   │   ├── LocalInvoiceNoteDetailsAdapter.java
+│   │   ├── LocalInvoiceNotificationGateway.java
+│   │   ├── LocalInvoiceOrderGateway.java
+│   │   ├── LocalInvoicePaymentSettlementGateway.java
+│   │   ├── LocalInvoicePaymentTotalsAdapter.java
+│   │   ├── LocalInvoiceQuoteGateway.java
+│   │   ├── LocalInvoiceReturnDetailsAdapter.java
+│   │   └── LocalStockDeductionGateway.java
+│   ├── persistence/
+│   │   ├── adapters/
+│   │   │   └── InvoiceRepositoryAdapter.java
+│   │   ├── entities/
+│   │   │   ├── InvoiceEntity.java
+│   │   │   ├── InvoiceLineAllocationEntity.java
+│   │   │   ├── InvoiceLineEntity.java
+│   │   │   └── InvoiceNumberSequenceEntity.java
+│   │   ├── mappers/
+│   │   │   └── InvoiceJpaMapper.java
+│   │   ├── queries/
+│   │   │   └── JpaInvoicesProductReferenceQuery.java
+│   │   └── repositories/
+│   │       ├── InvoiceJpaRepository.java
+│   │       ├── InvoiceNumberSequenceJpaRepository.java
+│   │       └── SpringDataInvoicesProductReferenceRepository.java
+│   ├── services/
+│   │   └── InvoiceStatusServiceImpl.java
+│   └── web/
+│       └── InvoiceController.java
+└── reporting/
+    ├── application/
+    │   ├── dto/
+    │   │   └── model/
+    │   │       ├── InvoiceReportData.java
+    │   │       ├── InvoiceReportFilter.java
+    │   │       └── InvoiceReportRow.java
+    │   ├── generate_invoice_pdf/
+    │   │   ├── services/
+    │   │   │   └── GenerateInvoicePdfUseCaseImpl.java
+    │   │   └── use_case/
+    │   │       └── GenerateInvoicePdfUseCase.java
+    │   ├── generate_invoices_report_pdf/
+    │   │   ├── services/
+    │   │   │   └── GenerateInvoicesReportPdfUseCaseImpl.java
+    │   │   └── use_case/
+    │   │       └── GenerateInvoicesReportPdfUseCase.java
+    │   └── ports/
+    │       └── out/
+    │           ├── InvoicePdfPort.java
+    │           ├── InvoiceReportQueryGateway.java
+    │           └── InvoicesReportPdfPort.java
+    └── infrastructure/
+        ├── config/
+        │   └── InvoicesReportConfig.java
+        ├── integration/
+        │   └── InvoiceDocumentQueryAdapter.java
+        ├── pdf/
+        │   ├── InvoicePdfGenerator.java
+        │   └── InvoicesReportPdfGenerator.java
+        └── web/
+            └── InvoicesReportController.java
 ```
 
 ---
@@ -1432,3 +1562,15 @@ CREATE TABLE invoice_payments (
 **Last Updated**: 2026-03-12
 
 **Module Status**: In Development
+
+## Centralized issuance
+
+`application/issue/IssueInvoiceService` is the internal coordinator shared by quote conversion, confirmed-order creation and manual draft confirmation. Existing public quote/order creation ports keep their neutral contracts; the coordinator's `Invoice` argument is internal to this module.
+
+`InvoiceIssueValidator` performs read-only credit/payment checks and creates a cash payment plan. `InvoicePaymentService` applies balance consumption and settlement. `IssueInvoiceCommand` carries the payment options and `InvoiceOrigin` selects the existing inventory policy.
+
+For CASH issuance, the coordinator persists and flushes the draft before settlement can insert an allocation referencing its identifier. It then applies payment effects, confirms the aggregate, applies the source inventory policy and persists the result in the same transaction. A flush does not commit: failures still roll back invoice, payment, balance, stock and the caller's source status.
+
+Quote conversion deducts the specified warehouse allocations. Confirmed orders already deducted stock at confirmation, so invoice issuance performs no second deduction. Manual drafts confirm existing reservations. Standalone invoice creation still saves a DRAFT without issuing or settling it.
+
+The manual draft path retains its existing invoice cash-register entry and confirmation notification. The confirmed-order path retains created/confirmed notifications; quote notifications remain with the quote conversion use case. This refactor does not redefine accounting entry semantics.

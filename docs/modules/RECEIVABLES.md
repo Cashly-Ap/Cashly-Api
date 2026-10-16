@@ -123,62 +123,81 @@ The RECEIVABLES module provides a **customer-centric view** of outstanding debts
 ```
 receivables/
 ├── application/
+│   ├── customer_debt/
+│   │   └── use_case/
+│   │       ├── GetCustomerDebtUseCase.java
+│   │       └── SearchCustomerDebtUseCase.java
+│   ├── customer_invoices/
+│   │   └── use_case/
+│   │       └── GetCustomerInvoicesUseCase.java
 │   ├── dto/
-│   │   ├── request/
-│   │   │   ├── PayInvoiceRequest.java
-│   │   │   ├── PayMultipleInvoicesRequest.java
-│   │   │   ├── PayCustomerDebtRequest.java
-│   │   │   ├── PayPartialDebtRequest.java
-│   │   │   └── ValidatePaymentRequest.java
 │   │   └── response/
-│   │       ├── CustomerDebtSummaryResponse.java
 │   │       ├── CustomerDebtListResponse.java
+│   │       ├── CustomerDebtSummaryResponse.java
 │   │       ├── CustomerInvoiceDebtResponse.java
-│   │       ├── GlobalDebtSummaryResponse.java
-│   │       ├── PaymentResultResponse.java
-│   │       └── PendingPaymentResponse.java
-│   ├── exceptions/
-│   │   ├── CustomerHasNoDebtException.java
-│   │   ├── PaymentExceedsDebtException.java
-│   │   ├── PaymentNotFoundException.java
-│   │   └── PaymentAlreadyProcessedException.java
-│   ├── mappers/
-│   │   └── ReceivablesMapper.java
-│   └── usecases/
-│       ├── GetGlobalDebtSummaryUseCase.java
-│       ├── SearchCustomersWithDebtUseCase.java
-│       ├── GetCustomerDebtUseCase.java
-│       ├── ListCustomerInvoicesWithDebtUseCase.java
-│       ├── PaySingleInvoiceUseCase.java
-│       ├── PayMultipleInvoicesUseCase.java
-│       ├── PayAllCustomerDebtUseCase.java
-│       ├── PayPartialCustomerDebtUseCase.java
-│       ├── ListPendingPaymentsUseCase.java
-│       ├── ListMerchantPaymentsUseCase.java
-│       ├── ApprovePaymentUseCase.java
-│       └── RejectPaymentUseCase.java
-├── domain/
-│   ├── entities/
-│   │   └── PendingPayment.java
-│   ├── repositories/
-│   │   └── PendingPaymentRepository.java
-│   └── valueobjects/
-│       ├── PendingPaymentId.java
-│       └── PaymentValidationStatus.java
-└── infrastructure/
-    ├── config/
-    │   └── ReceivablesBeanConfig.java
-    ├── persistence/
-    │   ├── entities/
-    │   │   └── PendingPaymentJpaEntity.java
-    │   ├── mappers/
-    │   │   └── PendingPaymentJpaMapper.java
-    │   └── repositories/
-    │       ├── JpaPendingPaymentRepository.java
-    │       └── SpringDataPendingPaymentRepository.java
-    └── web/
-        ├── ReceivablesController.java
-        └── ReceivablesExceptionHandler.java
+│   │       ├── PendingPaymentResponse.java
+│   │       └── ReceivablesSummaryResponse.java
+│   ├── payment_history/
+│   │   └── use_case/
+│   │       └── GetPaymentHistoryUseCase.java
+│   ├── ports/
+│   │   ├── in/
+│   │   │   ├── AccountsReceivableReportQuery.java
+│   │   │   └── AccountsReceivableReportSnapshot.java
+│   │   └── out/
+│   │       ├── model/
+│   │       │   └── AccountsReceivableRow.java
+│   │       ├── ReceivablesCustomerProfileGateway.java
+│   │       └── ReceivablesQueryGateway.java
+│   ├── services/
+│   │   └── AccountsReceivableReportQueryService.java
+│   └── summary/
+│       └── use_case/
+│           └── GetReceivablesSummaryUseCase.java
+├── infrastructure/
+│   ├── config/
+│   │   ├── AccountsReceivableReportQueryConfig.java
+│   │   └── ReceivablesConfig.java
+│   ├── integration/
+│   │   └── LocalReceivablesCustomerProfileGatewayAdapter.java
+│   ├── persistence/
+│   │   ├── adapters/
+│   │   │   └── ReceivablesRepositoryAdapter.java
+│   │   └── repositories/
+│   │       └── ReceivablesJpaRepository.java
+│   └── web/
+│       └── ReceivablesController.java
+└── reporting/
+    ├── application/
+    │   ├── dto/
+    │   │   └── model/
+    │   │       ├── AccountsReceivableReportData.java
+    │   │       └── CollectionsReportData.java
+    │   ├── generate_accounts_receivable_report_pdf/
+    │   │   ├── services/
+    │   │   │   └── GenerateAccountsReceivableReportPdfUseCaseImpl.java
+    │   │   └── use_case/
+    │   │       └── GenerateAccountsReceivableReportPdfUseCase.java
+    │   ├── generate_collections_report_pdf/
+    │   │   ├── services/
+    │   │   │   └── GenerateCollectionsReportPdfUseCaseImpl.java
+    │   │   └── use_case/
+    │   │       └── GenerateCollectionsReportPdfUseCase.java
+    │   └── ports/
+    │       └── out/
+    │           ├── AccountsReceivableQueryGateway.java
+    │           ├── AccountsReceivableReportPdfPort.java
+    │           └── CollectionsReportPdfPort.java
+    └── infrastructure/
+        ├── config/
+        │   └── ReceivablesReportingConfig.java
+        ├── integration/
+        │   └── ReceivablesReportQueryAdapter.java
+        ├── pdf/
+        │   ├── AccountsReceivableReportPdfGenerator.java
+        │   └── CollectionsReportPdfGenerator.java
+        └── web/
+            └── ReceivablesReportsController.java
 ```
 
 ---

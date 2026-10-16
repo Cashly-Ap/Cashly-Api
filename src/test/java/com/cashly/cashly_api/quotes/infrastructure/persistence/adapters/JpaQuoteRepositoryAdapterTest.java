@@ -6,8 +6,8 @@ import com.cashly.cashly_api.quotes.infrastructure.persistence.repositories.Quot
 import com.cashly.cashly_api.quotes.infrastructure.persistence.entities.QuoteNumberSequenceJpaEntity;
 import com.cashly.cashly_api.quotes.infrastructure.persistence.repositories.QuoteNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.quotes.domain.Quote;
-import com.cashly.cashly_api.quotes.domain.QuoteLine;
+import com.cashly.cashly_api.quotes.domain.entity.Quote;
+import com.cashly.cashly_api.quotes.domain.entity.QuoteLine;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteLineId;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus;

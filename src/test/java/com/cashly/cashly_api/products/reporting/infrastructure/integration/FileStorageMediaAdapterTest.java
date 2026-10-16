@@ -1,5 +1,5 @@
 package com.cashly.cashly_api.products.reporting.infrastructure.integration;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;

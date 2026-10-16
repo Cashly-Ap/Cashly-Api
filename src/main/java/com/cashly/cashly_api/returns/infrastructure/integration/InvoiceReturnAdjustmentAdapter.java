@@ -3,8 +3,8 @@ package com.cashly.cashly_api.returns.infrastructure.integration;
 import com.cashly.cashly_api.invoices.application.ports.in.InvoiceReturnAdjustments;
 import com.cashly.cashly_api.invoices.application.ports.in.InvoiceReturnCommand;
 import com.cashly.cashly_api.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
-import com.cashly.cashly_api.returns.domain.Return;
-import com.cashly.cashly_api.returns.domain.ReturnType;
+import com.cashly.cashly_api.returns.domain.entity.Return;
+import com.cashly.cashly_api.returns.domain.valueobjects.ReturnType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

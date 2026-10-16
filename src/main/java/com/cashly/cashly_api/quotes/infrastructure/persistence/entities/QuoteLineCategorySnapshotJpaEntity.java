@@ -36,5 +36,10 @@ public class QuoteLineCategorySnapshotJpaEntity {
         this.categoryId = categoryId;
     }
 
+    public UUID getId() { return id; }
+
+    /** Restore the persisted shared key before merging an existing snapshot. New snapshots keep a null id. */
+    public void setId(UUID id) { this.id = id; }
+
     public UUID getCategoryId() { return categoryId; }
 }

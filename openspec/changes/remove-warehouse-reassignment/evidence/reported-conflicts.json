@@ -1,0 +1,24 @@
+{
+  "source": "User-provided HTTP error and matching read-only backend logs",
+  "conflicts": [
+    {
+      "error": "DuplicateKeyException",
+      "entity": "QuoteLineCategorySnapshotJpaEntity",
+      "cause": "A reconstructed snapshot without its persisted shared key is treated as new while another instance with that key is already managed",
+      "analogous_order_entity": "OrderLineCategorySnapshotEntity"
+    },
+    {
+      "reported_timestamp": "2026-10-16T22:18:38.175072459",
+      "http_status": 409,
+      "http_error": "Data integrity violation",
+      "http_message": "The operation conflicts with existing data",
+      "mysql_error": 1452,
+      "sql_state": "23000",
+      "constraint": "fk_payment_allocations_invoice",
+      "child_table": "payment_allocations",
+      "parent_table": "invoices",
+      "cause": "Cash settlement inserts an allocation before the referenced invoice has been persisted"
+    }
+  ],
+  "development_data_modified_for_diagnosis": false
+}

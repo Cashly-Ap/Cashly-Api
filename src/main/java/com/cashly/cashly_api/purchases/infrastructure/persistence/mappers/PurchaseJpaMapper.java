@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.purchases.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.purchases.domain.Purchase;
-import com.cashly.cashly_api.purchases.domain.PurchaseLine;
-import com.cashly.cashly_api.purchases.domain.PurchaseLineAllocation;
+import com.cashly.cashly_api.purchases.domain.entity.Purchase;
+import com.cashly.cashly_api.purchases.domain.entity.PurchaseLine;
+import com.cashly.cashly_api.purchases.domain.entity.PurchaseLineAllocation;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseLineAllocationId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseLineId;

@@ -4,7 +4,7 @@ import com.cashly.cashly_api.cash_register.sessions.infrastructure.persistence.r
 import com.cashly.cashly_api.cash_register.sessions.infrastructure.persistence.repositories.CashRegisterJpaRepository;
 import com.cashly.cashly_api.cash_register.infrastructure.persistence.adapters.CashRegisterRepositoryAdapter;
 
-import com.cashly.cashly_api.cash_register.sessions.domain.CashMovement;
+import com.cashly.cashly_api.cash_register.sessions.domain.entity.CashMovement;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.RegisterId;

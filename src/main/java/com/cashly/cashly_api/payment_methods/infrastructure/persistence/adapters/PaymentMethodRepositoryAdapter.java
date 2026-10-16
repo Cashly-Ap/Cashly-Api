@@ -4,8 +4,8 @@ import com.cashly.cashly_api.payment_methods.infrastructure.persistence.reposito
 
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
-import com.cashly.cashly_api.payment_methods.domain.PaymentMethod;
-import com.cashly.cashly_api.payment_methods.domain.PaymentMethodRepository;
+import com.cashly.cashly_api.payment_methods.domain.entity.PaymentMethod;
+import com.cashly.cashly_api.payment_methods.domain.repository.PaymentMethodRepository;
 import com.cashly.cashly_api.payment_methods.domain.valueobjects.PaymentMethodId;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.entities.PaymentMethodEntity;
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.mappers.PaymentMethodJpaMapper;

@@ -3,8 +3,8 @@ package com.cashly.cashly_api.purchases.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.purchases.infrastructure.persistence.repositories.PurchaseJpaRepository;
 import com.cashly.cashly_api.purchases.infrastructure.persistence.repositories.PurchaseNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.purchases.domain.Purchase;
-import com.cashly.cashly_api.purchases.domain.PurchaseRepository;
+import com.cashly.cashly_api.purchases.domain.entity.Purchase;
+import com.cashly.cashly_api.purchases.domain.repository.PurchaseRepository;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.purchases.infrastructure.persistence.entities.PurchaseEntity;
 import com.cashly.cashly_api.purchases.infrastructure.persistence.entities.PurchaseNumberSequenceEntity;

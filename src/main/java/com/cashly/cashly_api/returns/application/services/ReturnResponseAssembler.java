@@ -4,8 +4,8 @@ import com.cashly.cashly_api.returns.application.ports.out.ReturnProjectionQuery
 import com.cashly.cashly_api.returns.application.dto.response.ReturnListResponse;
 import com.cashly.cashly_api.returns.application.dto.response.ReturnResponse;
 import com.cashly.cashly_api.returns.application.mappers.ReturnMapper;
-import com.cashly.cashly_api.returns.domain.Return;
-import com.cashly.cashly_api.returns.domain.ReturnLineAllocation;
+import com.cashly.cashly_api.returns.domain.entity.Return;
+import com.cashly.cashly_api.returns.domain.entity.ReturnLineAllocation;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

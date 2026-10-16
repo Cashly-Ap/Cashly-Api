@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.products.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.products.reporting.application.dto.query.CommercialCatalogQuery;
-import com.cashly.cashly_api.products.reporting.application.generate_commercial_catalog_pdf.GenerateCommercialCatalogPdfUseCase;
+import com.cashly.cashly_api.products.reporting.application.dto.query.model.CommercialCatalogQuery;
+import com.cashly.cashly_api.products.reporting.application.generate_commercial_catalog_pdf.use_case.GenerateCommercialCatalogPdfUseCase;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

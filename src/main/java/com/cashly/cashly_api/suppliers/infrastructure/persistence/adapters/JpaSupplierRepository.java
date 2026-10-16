@@ -4,8 +4,8 @@ import com.cashly.cashly_api.suppliers.infrastructure.persistence.repositories.S
 
 import com.cashly.cashly_api.shared.infrastructure.pagination.PageResponseMapper;
 
-import com.cashly.cashly_api.suppliers.domain.Supplier;
-import com.cashly.cashly_api.suppliers.domain.SupplierRepository;
+import com.cashly.cashly_api.suppliers.domain.entity.Supplier;
+import com.cashly.cashly_api.suppliers.domain.repository.SupplierRepository;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.SupplierId;
 import com.cashly.cashly_api.suppliers.infrastructure.persistence.entities.SupplierEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;

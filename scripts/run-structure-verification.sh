@@ -17,6 +17,9 @@ if [[ ! "$verification_project" =~ ^cashly-screaming-[a-z0-9-]+$ ]]; then
   exit 2
 fi
 verification_output="${SCREAMING_OUTPUT_DIR:-$backend_root/target/structure-verification/$verification_project}"
+coverage_baseline="${SCREAMING_COVERAGE_BASELINE:-$backend_root/openspec/changes/remove-warehouse-reassignment/evidence/coverage-baseline.json}"
+coverage_ownership="${SCREAMING_COVERAGE_OWNERSHIP:-$backend_root/openspec/changes/module-owned-reporting/relocation-manifest.json}"
+coverage_splits="${SCREAMING_COVERAGE_SPLITS:-$backend_root/openspec/changes/module-owned-reporting/split-manifest.json}"
 if [[ -e "$verification_output" ]]; then
   echo "Evidence directory already exists; use a fresh project/output: $verification_output" >&2
   exit 2
@@ -70,9 +73,9 @@ if [[ "$verification_mode" == final ]]; then
   for analysis_script in summarize-structure-verification.py compare-structure-coverage.py coverage_ownership.py; do
     "${compose[@]}" cp "$backend_root/scripts/$analysis_script" "analyzer:/analysis/$analysis_script"
   done
-  "${compose[@]}" cp "$backend_root/openspec/changes/module-owned-reporting/evidence/coverage-baseline.json" analyzer:/analysis/baseline.json
-  "${compose[@]}" cp "$backend_root/openspec/changes/module-owned-reporting/relocation-manifest.json" analyzer:/analysis/ownership.json
-  "${compose[@]}" cp "$backend_root/openspec/changes/module-owned-reporting/split-manifest.json" analyzer:/analysis/splits.json
+  "${compose[@]}" cp "$coverage_baseline" analyzer:/analysis/baseline.json
+  "${compose[@]}" cp "$coverage_ownership" analyzer:/analysis/ownership.json
+  "${compose[@]}" cp "$coverage_splits" analyzer:/analysis/splits.json
   "${compose[@]}" exec -T analyzer python summarize-structure-verification.py /analysis/evidence /analysis /analysis/summary
   set +e
   "${compose[@]}" exec -T analyzer python compare-structure-coverage.py /analysis/baseline.json /analysis/summary/summary.json /analysis/summary/coverage-comparison.json --ownership /analysis/ownership.json --splits /analysis/splits.json

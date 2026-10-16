@@ -2,7 +2,7 @@ package com.cashly.cashly_api.cash_register.infrastructure.persistence.adapters;
 
 import com.cashly.cashly_api.cash_register.sessions.infrastructure.persistence.repositories.CashRegisterJpaRepository;
 
-import com.cashly.cashly_api.cash_register.sessions.application.dto.DailyTotals;
+import com.cashly.cashly_api.cash_register.sessions.application.dto.response.DailyTotals;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.junit.jupiter.api.BeforeEach;

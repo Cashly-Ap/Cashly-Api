@@ -5,7 +5,7 @@ import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.pro
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.StockReportResponse;
 import com.cashly.cashly_api.warehouses.reporting.application.ports.out.StockReportRepositoryPort;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.StockPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.StockPdfQuery;
 
 import java.util.List;
 

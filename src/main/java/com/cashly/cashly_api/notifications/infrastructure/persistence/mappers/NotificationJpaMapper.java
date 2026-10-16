@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.notifications.infrastructure.persistence.mappers;
 
-import com.cashly.cashly_api.notifications.domain.Notification;
+import com.cashly.cashly_api.notifications.domain.entity.Notification;
 import com.cashly.cashly_api.notifications.domain.valueobjects.NotificationId;
 import com.cashly.cashly_api.notifications.domain.valueobjects.NotificationType;
 import com.cashly.cashly_api.notifications.infrastructure.persistence.entities.NotificationEntity;

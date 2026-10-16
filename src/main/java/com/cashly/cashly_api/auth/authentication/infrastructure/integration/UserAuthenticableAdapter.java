@@ -3,9 +3,9 @@ package com.cashly.cashly_api.auth.authentication.infrastructure.integration;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
-import com.cashly.cashly_api.auth.user.domain.User;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
 

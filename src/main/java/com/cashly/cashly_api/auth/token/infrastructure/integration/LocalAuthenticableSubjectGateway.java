@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.auth.token.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.authentication.domain.Authenticable;
-import com.cashly.cashly_api.auth.authentication.domain.AuthenticableType;
+import com.cashly.cashly_api.auth.authentication.domain.entity.Authenticable;
+import com.cashly.cashly_api.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.auth.authentication.infrastructure.integration.UserAuthenticableAdapter;
 import com.cashly.cashly_api.auth.token.application.ports.out.AuthenticableSubjectGateway;
 import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 
 public class LocalAuthenticableSubjectGateway implements AuthenticableSubjectGateway {

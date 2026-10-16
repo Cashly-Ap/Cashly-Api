@@ -4,7 +4,7 @@ import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.rep
 import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.projections.StockReportProjection;
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.StockReportResponse;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.StockPdfQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.StockPdfQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

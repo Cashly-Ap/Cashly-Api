@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.invoices.application.ports.out;
 
-import com.cashly.cashly_api.invoices.domain.Invoice;
+import com.cashly.cashly_api.invoices.domain.entity.Invoice;
 import java.util.List;
 import java.util.UUID;
 

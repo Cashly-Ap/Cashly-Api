@@ -1,17 +1,17 @@
 package com.cashly.cashly_api.payments.infrastructure.config;
 
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationRepository;
-import com.cashly.cashly_api.payments.collection.application.approve.ApprovePaymentUseCase;
-import com.cashly.cashly_api.payments.collection.application.create.CreatePaymentUseCase;
-import com.cashly.cashly_api.payments.collection.application.delete.DeletePaymentUseCase;
-import com.cashly.cashly_api.payments.collection.application.queries.GetAllPaymentsUseCase;
-import com.cashly.cashly_api.payments.collection.application.queries.GetPaymentByIdUseCase;
-import com.cashly.cashly_api.payments.collection.application.pay_customer_debt.PayAllCustomerDebtUseCase;
-import com.cashly.cashly_api.payments.collection.application.pay_invoice.PayInvoiceUseCase;
-import com.cashly.cashly_api.payments.collection.application.pay_partial_debt.PayPartialDebtUseCase;
-import com.cashly.cashly_api.payments.collection.application.reject.RejectPaymentUseCase;
-import com.cashly.cashly_api.payments.collection.application.update.UpdatePaymentUseCase;
-import com.cashly.cashly_api.payments.collection.domain.PaymentRepository;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentAllocationRepository;
+import com.cashly.cashly_api.payments.collection.application.approve.use_case.ApprovePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.create.use_case.CreatePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.delete.use_case.DeletePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.queries.use_case.GetAllPaymentsUseCase;
+import com.cashly.cashly_api.payments.collection.application.queries.use_case.GetPaymentByIdUseCase;
+import com.cashly.cashly_api.payments.collection.application.pay_customer_debt.use_case.PayAllCustomerDebtUseCase;
+import com.cashly.cashly_api.payments.collection.application.pay_invoice.use_case.PayInvoiceUseCase;
+import com.cashly.cashly_api.payments.collection.application.pay_partial_debt.use_case.PayPartialDebtUseCase;
+import com.cashly.cashly_api.payments.collection.application.reject.use_case.RejectPaymentUseCase;
+import com.cashly.cashly_api.payments.collection.application.update.use_case.UpdatePaymentUseCase;
+import com.cashly.cashly_api.payments.collection.domain.repository.PaymentRepository;
 import com.cashly.cashly_api.payments.credit.application.ports.out.CustomerCreditContextGateway;
 import com.cashly.cashly_api.payments.credit.application.ports.out.InvoiceCreditLedgerGateway;
 import com.cashly.cashly_api.payments.credit.application.ports.out.CreditNoteLedgerGateway;
@@ -23,7 +23,7 @@ import com.cashly.cashly_api.payments.collection.application.ports.out.PaymentIn
 import com.cashly.cashly_api.payments.collection.application.ports.out.PaymentNotificationGateway;
 import com.cashly.cashly_api.payments.credit.application.ports.in.CustomerCreditQuery;
 import com.cashly.cashly_api.payments.credit.application.services.CustomerCreditQueryService;
-import com.cashly.cashly_api.payments.collection.domain.PaymentAllocationService;
+import com.cashly.cashly_api.payments.collection.domain.services.PaymentAllocationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.dashboard.application.ports.out;
 
-import com.cashly.cashly_api.dashboard.application.summary.GetDashboardUseCase;
+import com.cashly.cashly_api.dashboard.application.summary.use_case.GetDashboardUseCase;
 
 import com.cashly.cashly_api.dashboard.application.ports.out.DashboardQueryGateway;
 import com.cashly.cashly_api.dashboard.application.dto.response.DashboardSummaryResponse;

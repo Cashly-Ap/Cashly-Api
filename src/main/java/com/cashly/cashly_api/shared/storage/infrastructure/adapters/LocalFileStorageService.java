@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.shared.storage.infrastructure.adapters;
 
-import com.cashly.cashly_api.shared.storage.domain.FileNotFoundException;
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
-import com.cashly.cashly_api.shared.storage.domain.StorageException;
+import com.cashly.cashly_api.shared.storage.domain.exceptions.FileNotFoundException;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.exceptions.StorageException;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.cash_register.sessions.application.services;
 
-import com.cashly.cashly_api.cash_register.sessions.application.movements.CashMovementService;
+import com.cashly.cashly_api.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.cash_register.sessions.application.ports.in.CashRegisterOperations;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementType;

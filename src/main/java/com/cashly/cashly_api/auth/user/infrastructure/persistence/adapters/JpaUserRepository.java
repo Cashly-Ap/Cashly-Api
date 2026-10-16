@@ -15,8 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.cashly.cashly_api.auth.user.domain.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.User;
+import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;

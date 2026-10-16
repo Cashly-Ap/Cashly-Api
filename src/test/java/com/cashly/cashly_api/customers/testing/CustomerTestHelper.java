@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.testing;
 
-import com.cashly.cashly_api.customers.profile.domain.Customer;
-import com.cashly.cashly_api.customers.warehouse_access.domain.CustomerWarehouseAccess;
+import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
+import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditDays;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditLimit;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerAlias;
@@ -10,7 +10,7 @@ import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerType;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.LegalName;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.Rif;
-import com.cashly.cashly_api.warehouses.management.domain.Warehouse;
+import com.cashly.cashly_api.warehouses.management.domain.entity.Warehouse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

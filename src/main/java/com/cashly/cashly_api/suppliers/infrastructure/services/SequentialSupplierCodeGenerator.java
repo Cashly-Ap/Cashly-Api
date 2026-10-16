@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.suppliers.infrastructure.services;
 
-import com.cashly.cashly_api.suppliers.domain.SupplierRepository;
+import com.cashly.cashly_api.suppliers.domain.repository.SupplierRepository;
 import com.cashly.cashly_api.suppliers.domain.services.SupplierCodeGenerator;
 import com.cashly.cashly_api.suppliers.domain.valueobjects.SupplierCode;
 

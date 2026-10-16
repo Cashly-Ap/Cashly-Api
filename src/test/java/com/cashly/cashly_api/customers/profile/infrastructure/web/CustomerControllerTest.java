@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.customers.profile.infrastructure.web;
 
-import com.cashly.cashly_api.customers.profile.application.register.CreateCustomerRequest;
-import com.cashly.cashly_api.customers.profile.application.update.UpdateCustomerRequest;
-import com.cashly.cashly_api.customers.profile.application.register.CustomerCreateResponse;
+import com.cashly.cashly_api.customers.profile.application.register.request.CreateCustomerRequest;
+import com.cashly.cashly_api.customers.profile.application.update.request.UpdateCustomerRequest;
+import com.cashly.cashly_api.customers.profile.application.register.response.CustomerCreateResponse;
 import com.cashly.cashly_api.customers.profile.application.dto.response.CustomerDetailResponse;
 import com.cashly.cashly_api.customers.profile.application.dto.response.CustomerListResponse;
-import com.cashly.cashly_api.customers.profile.application.delete.DeleteCustomerUseCase;
-import com.cashly.cashly_api.customers.profile.application.get.GetCustomerUseCase;
-import com.cashly.cashly_api.customers.profile.application.list.ListCustomersUseCase;
-import com.cashly.cashly_api.customers.profile.application.register.RegisterCustomerUseCase;
-import com.cashly.cashly_api.customers.profile.application.update.UpdateCustomerUseCase;
+import com.cashly.cashly_api.customers.profile.application.delete.use_case.DeleteCustomerUseCase;
+import com.cashly.cashly_api.customers.profile.application.get.use_case.GetCustomerUseCase;
+import com.cashly.cashly_api.customers.profile.application.list.use_case.ListCustomersUseCase;
+import com.cashly.cashly_api.customers.profile.application.register.use_case.RegisterCustomerUseCase;
+import com.cashly.cashly_api.customers.profile.application.update.use_case.UpdateCustomerUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

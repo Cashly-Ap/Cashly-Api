@@ -3,7 +3,7 @@ package com.cashly.cashly_api.auth.user.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.auth.user.infrastructure.persistence.entities.UserEntity;
 import com.cashly.cashly_api.auth.user.infrastructure.persistence.adapters.JpaUserRepository;
 import com.cashly.cashly_api.auth.user.infrastructure.persistence.repositories.SpringDataUserRepository;
-import com.cashly.cashly_api.auth.user.domain.User;
+import com.cashly.cashly_api.auth.user.domain.entity.User;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;

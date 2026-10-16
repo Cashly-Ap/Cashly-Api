@@ -2,7 +2,7 @@ package com.cashly.cashly_api.price_types.infrastructure.persistence.adapters;
 
 import com.cashly.cashly_api.price_types.infrastructure.persistence.repositories.SpringDataPriceTypeRepository;
 
-import com.cashly.cashly_api.price_types.domain.PriceType;
+import com.cashly.cashly_api.price_types.domain.entity.PriceType;
 import com.cashly.cashly_api.price_types.infrastructure.persistence.entities.PriceTypeEntity;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;

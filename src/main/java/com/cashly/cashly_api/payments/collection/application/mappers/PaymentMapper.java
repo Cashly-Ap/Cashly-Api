@@ -2,7 +2,7 @@ package com.cashly.cashly_api.payments.collection.application.mappers;
 
 import com.cashly.cashly_api.payments.collection.application.dto.response.PaymentListResponse;
 import com.cashly.cashly_api.payments.collection.application.dto.response.PaymentResponse;
-import com.cashly.cashly_api.payments.collection.domain.Payment;
+import com.cashly.cashly_api.payments.collection.domain.entity.Payment;
 
 public class PaymentMapper {
 

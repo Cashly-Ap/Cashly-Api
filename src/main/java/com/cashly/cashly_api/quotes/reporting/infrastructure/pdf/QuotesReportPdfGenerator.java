@@ -19,7 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.cashly.cashly_api.quotes.reporting.application.dto.QuoteReportRow;
+import com.cashly.cashly_api.quotes.reporting.application.dto.model.QuoteReportRow;
 import com.cashly.cashly_api.quotes.reporting.application.ports.out.QuotesReportPdfPort;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfStatusColors;
 

@@ -2,7 +2,7 @@ package com.cashly.cashly_api.categories.application.mappers;
 
 import com.cashly.cashly_api.categories.application.dto.response.CategoryDetailResponse;
 import com.cashly.cashly_api.categories.application.dto.response.CategoryListResponse;
-import com.cashly.cashly_api.categories.domain.Category;
+import com.cashly.cashly_api.categories.domain.entity.Category;
 import com.cashly.cashly_api.categories.application.dto.response.CategorySummary;
 
 public class CategoryMapper {

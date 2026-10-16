@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.cash_register.reporting.infrastructure.excel;
 
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CashRegisterExportRow;
-import com.cashly.cashly_api.cash_register.reporting.application.dto.CustomerSummary;
-import com.cashly.cashly_api.cash_register.sessions.application.dto.DailyTotals;
-import com.cashly.cashly_api.cash_register.sessions.domain.CashRegisterDetail;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CashRegisterExportRow;
+import com.cashly.cashly_api.cash_register.reporting.application.dto.model.CustomerSummary;
+import com.cashly.cashly_api.cash_register.sessions.application.dto.response.DailyTotals;
+import com.cashly.cashly_api.cash_register.sessions.domain.entity.CashRegisterDetail;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;

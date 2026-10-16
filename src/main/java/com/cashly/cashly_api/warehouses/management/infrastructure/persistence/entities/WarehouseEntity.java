@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.warehouses.management.infrastructure.persistence.entities;
 
-import com.cashly.cashly_api.warehouses.management.domain.Warehouse;
+import com.cashly.cashly_api.warehouses.management.domain.entity.Warehouse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

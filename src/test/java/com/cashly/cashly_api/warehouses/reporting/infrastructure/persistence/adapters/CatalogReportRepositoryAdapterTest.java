@@ -4,7 +4,7 @@ import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.rep
 import com.cashly.cashly_api.warehouses.reporting.infrastructure.persistence.projections.CatalogReportProjection;
 
 import com.cashly.cashly_api.warehouses.reporting.application.dto.response.CatalogReportResponse;
-import com.cashly.cashly_api.warehouses.reporting.application.dto.query.CatalogReportQuery;
+import com.cashly.cashly_api.warehouses.reporting.application.dto.query.model.CatalogReportQuery;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

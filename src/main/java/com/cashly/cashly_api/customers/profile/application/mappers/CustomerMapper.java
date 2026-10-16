@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.customers.profile.application.mappers;
 
 import com.cashly.cashly_api.customers.profile.application.dto.response.AddressResponse;
-import com.cashly.cashly_api.customers.profile.application.register.CustomerCreateResponse;
+import com.cashly.cashly_api.customers.profile.application.register.response.CustomerCreateResponse;
 import com.cashly.cashly_api.customers.profile.application.dto.response.CustomerDetailResponse;
 import com.cashly.cashly_api.customers.profile.application.dto.response.CustomerListResponse;
 import com.cashly.cashly_api.customers.profile.application.dto.response.EmailResponse;
 import com.cashly.cashly_api.customers.profile.application.dto.response.PhoneResponse;
-import com.cashly.cashly_api.customers.profile.domain.Customer;
+import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
 
 import java.util.List;
 

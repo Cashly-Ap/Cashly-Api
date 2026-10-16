@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.products.infrastructure.integration;
 
-import com.cashly.cashly_api.shared.storage.domain.FileStorageService;
-import com.cashly.cashly_api.shared.storage.domain.StorageException;
+import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
+import com.cashly.cashly_api.shared.storage.domain.exceptions.StorageException;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

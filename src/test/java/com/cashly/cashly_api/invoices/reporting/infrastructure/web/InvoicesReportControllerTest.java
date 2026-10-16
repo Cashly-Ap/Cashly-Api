@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.invoices.reporting.infrastructure.web;
 
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportRow;
-import com.cashly.cashly_api.invoices.reporting.application.dto.InvoiceReportFilter;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.GenerateInvoicePdfUseCase;
-import com.cashly.cashly_api.invoices.reporting.application.generate_invoices_report_pdf.GenerateInvoicesReportPdfUseCase;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportRow;
+import com.cashly.cashly_api.invoices.reporting.application.dto.model.InvoiceReportFilter;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoice_pdf.use_case.GenerateInvoicePdfUseCase;
+import com.cashly.cashly_api.invoices.reporting.application.generate_invoices_report_pdf.use_case.GenerateInvoicesReportPdfUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

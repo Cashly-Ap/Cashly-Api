@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.purchases.reporting.infrastructure.integration;
-import com.cashly.cashly_api.purchases.application.queries.PurchaseDocumentQueryService;
-import com.cashly.cashly_api.purchases.application.list.ListPurchasesUseCase;
+import com.cashly.cashly_api.purchases.application.queries.services.PurchaseDocumentQueryService;
+import com.cashly.cashly_api.purchases.application.list.use_case.ListPurchasesUseCase;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseListResponse;
-import com.cashly.cashly_api.purchases.domain.PurchaseRepository;
-import com.cashly.cashly_api.purchases.reporting.application.dto.PurchaseReportFilter;
+import com.cashly.cashly_api.purchases.domain.repository.PurchaseRepository;
+import com.cashly.cashly_api.purchases.reporting.application.dto.model.PurchaseReportFilter;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.*;
@@ -50,7 +50,7 @@ class PurchaseDocumentQueryAdapterTest {
         var repository = mock(PurchaseRepository.class);
         var id = UUID.randomUUID();
         var key = com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId.of(id);
-        var purchase = mock(com.cashly.cashly_api.purchases.domain.Purchase.class);
+        var purchase = mock(com.cashly.cashly_api.purchases.domain.entity.Purchase.class);
         when(purchase.getId()).thenReturn(key);
         when(purchase.getPurchaseNumber()).thenReturn(new com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseNumber("PUR-123"));
         when(purchase.getStatus()).thenReturn(com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseStatus.DRAFT);
@@ -72,7 +72,7 @@ class PurchaseDocumentQueryAdapterTest {
         var repository = mock(PurchaseRepository.class);
         var id = UUID.randomUUID();
         var key = com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId.of(id);
-        var purchase = mock(com.cashly.cashly_api.purchases.domain.Purchase.class);
+        var purchase = mock(com.cashly.cashly_api.purchases.domain.entity.Purchase.class);
         when(purchase.getId()).thenReturn(key);
         when(purchase.getPurchaseNumber()).thenReturn(new com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseNumber("PUR-LINE"));
         when(purchase.getStatus()).thenReturn(com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseStatus.CANCELLED);
@@ -83,7 +83,7 @@ class PurchaseDocumentQueryAdapterTest {
         var date = LocalDateTime.of(2026, 1, 2, 10, 30);
         when(purchase.getCreatedAt()).thenReturn(date);
         when(purchase.getSubtotal()).thenReturn(new BigDecimal("3.125"));
-        var line = mock(com.cashly.cashly_api.purchases.domain.PurchaseLine.class);
+        var line = mock(com.cashly.cashly_api.purchases.domain.entity.PurchaseLine.class);
         when(line.getId()).thenReturn(com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseLineId.generate());
         when(line.getProductId()).thenReturn(UUID.randomUUID());
         when(line.getProductCode()).thenReturn("SKU-123");

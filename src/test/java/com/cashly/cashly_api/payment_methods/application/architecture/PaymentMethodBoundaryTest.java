@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.payment_methods.application.architecture;
 
-import com.cashly.cashly_api.payment_methods.application.delete.DeletePaymentMethodUseCase;
+import com.cashly.cashly_api.payment_methods.application.delete.use_case.DeletePaymentMethodUseCase;
 
 import com.cashly.cashly_api.payment_methods.infrastructure.persistence.adapters.PaymentMethodRepositoryAdapter;
 import org.junit.jupiter.api.Test;

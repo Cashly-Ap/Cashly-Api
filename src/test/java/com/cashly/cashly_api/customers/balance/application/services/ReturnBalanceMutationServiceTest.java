@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.customers.balance.application.services;
 import com.cashly.cashly_api.customers.balance.application.ports.in.ReturnBalanceMutation;
-import com.cashly.cashly_api.customers.balance.application.add.AddToCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.application.consume.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalance;
-import com.cashly.cashly_api.customers.balance.domain.BalanceTransaction;
-import com.cashly.cashly_api.customers.balance.domain.CustomerBalanceRepository;
+import com.cashly.cashly_api.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.customers.balance.domain.entity.CustomerBalance;
+import com.cashly.cashly_api.customers.balance.domain.entity.BalanceTransaction;
+import com.cashly.cashly_api.customers.balance.domain.repository.CustomerBalanceRepository;
 import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
 import java.math.BigDecimal;
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.payments.reporting.infrastructure.integration;
 import com.cashly.cashly_api.payments.collection.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.payments.collection.application.services.PaymentDocumentQueryService;
-import com.cashly.cashly_api.payments.collection.application.queries.GetPaymentByIdUseCase;
+import com.cashly.cashly_api.payments.collection.application.queries.use_case.GetPaymentByIdUseCase;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

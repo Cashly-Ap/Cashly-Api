@@ -3,9 +3,9 @@ package com.cashly.cashly_api.orders.infrastructure.persistence.adapters;
 import com.cashly.cashly_api.orders.infrastructure.persistence.repositories.OrderJpaRepository;
 import com.cashly.cashly_api.orders.infrastructure.persistence.repositories.OrderNumberSequenceJpaRepository;
 
-import com.cashly.cashly_api.orders.domain.Order;
-import com.cashly.cashly_api.orders.domain.OrderLine;
-import com.cashly.cashly_api.orders.domain.OrderLineAllocation;
+import com.cashly.cashly_api.orders.domain.entity.Order;
+import com.cashly.cashly_api.orders.domain.entity.OrderLine;
+import com.cashly.cashly_api.orders.domain.entity.OrderLineAllocation;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderLineId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;

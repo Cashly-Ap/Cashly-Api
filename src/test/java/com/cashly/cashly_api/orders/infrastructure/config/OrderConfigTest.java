@@ -7,10 +7,9 @@ import com.cashly.cashly_api.orders.application.ports.out.OrderCustomerGateway;
 import com.cashly.cashly_api.orders.application.ports.out.OrderInventoryGateway;
 import com.cashly.cashly_api.orders.application.ports.out.OrderNotificationGateway;
 import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
-import com.cashly.cashly_api.orders.application.ports.out.OrderWarehouseGateway;
 import com.cashly.cashly_api.orders.application.ports.out.StockAvailabilityGateway;
 
-import com.cashly.cashly_api.orders.domain.OrderRepository;
+import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,7 +24,6 @@ class OrderConfigTest {
     @Mock private OrderActorGateway actors;
     @Mock private OrderInventoryGateway inventory;
     @Mock private OrderProductCatalogGateway products;
-    @Mock private OrderWarehouseGateway warehouses;
     @Mock private OrderNotificationGateway notifications;
     @Mock private StockAvailabilityGateway stockAvailability;
     @Mock private CustomerCreditGateway credit;
@@ -43,7 +41,6 @@ class OrderConfigTest {
         assertNotNull(config.cancelOrderUseCase(orders, inventory, notifications));
         assertNotNull(config.convertToInvoiceUseCase(orders, invoices, notifications));
         assertNotNull(config.deleteOrderUseCase(orders, inventory));
-        assertNotNull(config.assignOrderWarehousesUseCase(orders, inventory, warehouses));
         assertNotNull(config.getProductsForOrderUseCase(customers, products));
     }
 }
