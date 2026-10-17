@@ -1,0 +1,5 @@
+{
+  "checkedProductionFiles": 1231,
+  "unexpectedChanges": [],
+  "policy": "Production bytes differ only by package/FQCN/source-path relocation substitutions."
+}

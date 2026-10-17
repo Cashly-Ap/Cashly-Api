@@ -657,3 +657,6 @@ If you're unsure about:
 
 
 [Complete source and test responsibility structure](../architecture/RESPONSIBILITY-PACKAGES.md) lists the current packages for every backend module.
+
+
+[ERP business-area source and test structure](../architecture/ERP-BUSINESS-AREAS.md) records the current complete backend structure.
