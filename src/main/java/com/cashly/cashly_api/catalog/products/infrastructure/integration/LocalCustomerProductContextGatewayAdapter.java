@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.catalog.products.infrastructure.integration;
 
 import com.cashly.cashly_api.catalog.products.application.ports.out.CustomerProductContextGateway;
-import com.cashly.cashly_api.customers.profile.application.ports.in.CustomerProductPricingQuery;
-import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
-import com.cashly.cashly_api.customers.profile.application.exceptions.CustomerNotFoundException;
+import com.cashly.cashly_api.partners.customers.profile.application.ports.in.CustomerProductPricingQuery;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
 import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.model.CustomerCreditContext;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.CustomerCreditContextGateway;
-import com.cashly.cashly_api.customers.credit.application.ports.in.CustomerCreditContextQuery;
+import com.cashly.cashly_api.partners.customers.credit.application.ports.in.CustomerCreditContextQuery;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;

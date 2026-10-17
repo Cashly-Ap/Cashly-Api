@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteWarehouseGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ProductStockQuery;
 import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryQuery;

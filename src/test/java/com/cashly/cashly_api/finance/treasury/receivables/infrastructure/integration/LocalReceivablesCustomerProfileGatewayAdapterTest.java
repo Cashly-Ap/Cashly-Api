@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.finance.treasury.receivables.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.profile.application.ports.in.CustomerProfileQuery;
-import com.cashly.cashly_api.customers.profile.application.ports.in.CustomerProfileSnapshot;
-import com.cashly.cashly_api.customers.profile.application.exceptions.CustomerNotFoundException;
+import com.cashly.cashly_api.partners.customers.profile.application.ports.in.CustomerProfileQuery;
+import com.cashly.cashly_api.partners.customers.profile.application.ports.in.CustomerProfileSnapshot;
+import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

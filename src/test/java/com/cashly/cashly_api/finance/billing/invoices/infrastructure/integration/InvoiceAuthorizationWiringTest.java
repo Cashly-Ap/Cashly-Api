@@ -2,8 +2,8 @@ package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integratio
 import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
 import com.cashly.cashly_api.auth.user.infrastructure.config.ActorIdentityQueryConfig;
-import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.infrastructure.config.InvoiceBalanceConsumptionConfig;
+import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.infrastructure.config.InvoiceBalanceConsumptionConfig;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.config.CashRegisterOperationsConfig;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.repository.PaymentRepository;

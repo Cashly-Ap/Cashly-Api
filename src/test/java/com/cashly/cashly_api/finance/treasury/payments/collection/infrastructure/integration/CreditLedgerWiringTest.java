@@ -8,12 +8,12 @@ import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.CustomerCreditContextGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.DebitNoteLedgerGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.InvoiceCreditLedgerGateway;
-import com.cashly.cashly_api.customers.credit.infrastructure.config.CustomerCreditQueryConfig;
+import com.cashly.cashly_api.partners.customers.credit.infrastructure.config.CustomerCreditQueryConfig;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.config.InvoiceCreditQueryConfig;
 import com.cashly.cashly_api.finance.billing.credit_notes.infrastructure.config.CreditNoteLedgerQueryConfig;
 import com.cashly.cashly_api.finance.billing.debit_notes.infrastructure.config.DebitNoteLedgerQueryConfig;
-import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
-import com.cashly.cashly_api.customers.balance.domain.repository.CustomerBalanceRepository;
+import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.partners.customers.balance.domain.repository.CustomerBalanceRepository;
 import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
 import com.cashly.cashly_api.finance.billing.credit_notes.domain.repository.CreditNoteRepository;
 import com.cashly.cashly_api.finance.billing.debit_notes.domain.repository.DebitNoteRepository;
@@ -38,8 +38,8 @@ class CreditLedgerWiringTest {
                     LocalCustomerCreditContextGateway.class, LocalInvoiceCreditLedgerGateway.class,
                     LocalCreditNoteLedgerGateway.class, LocalDebitNoteLedgerGateway.class,
                     com.cashly.cashly_api.finance.treasury.payments.credit.application.services.CustomerCreditQueryService.class,
-                    com.cashly.cashly_api.customers.credit.infrastructure.integration.LocalCreditValidationGateway.class,
-                    com.cashly.cashly_api.customers.credit.application.services.CustomerCreditEligibilityService.class);
+                    com.cashly.cashly_api.partners.customers.credit.infrastructure.integration.LocalCreditValidationGateway.class,
+                    com.cashly.cashly_api.partners.customers.credit.application.services.CustomerCreditEligibilityService.class);
             context.refresh();
             UUID id = UUID.randomUUID();
             assertThat(context.getBean(CustomerCreditContextGateway.class).findById(id)).isEmpty();
@@ -47,7 +47,7 @@ class CreditLedgerWiringTest {
             assertThat(context.getBean(InvoiceCreditLedgerGateway.class).findAll()).isEmpty();
             assertThat(context.getBean(CreditNoteLedgerGateway.class).amountsByInvoiceId(id)).isEmpty();
             assertThat(context.getBean(DebitNoteLedgerGateway.class).amountsByInvoiceId(id)).isEmpty();
-            assertThatThrownBy(() -> context.getBean(com.cashly.cashly_api.customers.credit.application.ports.out.CreditValidationGateway.class).getCreditStatus(id))
+            assertThatThrownBy(() -> context.getBean(com.cashly.cashly_api.partners.customers.credit.application.ports.out.CreditValidationGateway.class).getCreditStatus(id))
                     .isInstanceOf(IllegalArgumentException.class).hasMessage("Customer not found: " + id);
         }
     }

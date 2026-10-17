@@ -1,6 +1,0 @@
-package com.cashly.cashly_api.suppliers.application.dto.response;
-
-public record EmailResponse(
-    String id,
-    String email
-) {}

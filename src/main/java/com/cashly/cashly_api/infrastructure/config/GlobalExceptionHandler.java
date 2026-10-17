@@ -8,13 +8,13 @@ import com.cashly.cashly_api.auth.user.application.exceptions.DuplicateEmailExce
 import com.cashly.cashly_api.auth.user.application.exceptions.UserHasAssociatedRecordsException;
 import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryHasActiveProductsException;
-import com.cashly.cashly_api.customers.profile.application.delete.services.CustomerHasAssociatedRecordsException;
+import com.cashly.cashly_api.partners.customers.profile.application.delete.services.CustomerHasAssociatedRecordsException;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryNotFoundException;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.DuplicateCategoryNameException;
-import com.cashly.cashly_api.customers.profile.application.exceptions.CustomerNotFoundException;
-import com.cashly.cashly_api.customers.profile.application.exceptions.DuplicateCustomerRifException;
-import com.cashly.cashly_api.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
-import com.cashly.cashly_api.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessNotFoundException;
+import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
+import com.cashly.cashly_api.partners.customers.profile.application.exceptions.DuplicateCustomerRifException;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessNotFoundException;
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotReturnableException;
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.ReturnQuantityExceedsException;
@@ -27,7 +27,7 @@ import com.cashly.cashly_api.catalog.products.application.exceptions.DuplicatePr
 import com.cashly.cashly_api.catalog.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.cashly.cashly_api.catalog.products.application.exceptions.ProductHasStockException;
 import com.cashly.cashly_api.catalog.products.application.exceptions.ProductNotFoundException;
-import com.cashly.cashly_api.suppliers.application.exceptions.SupplierHasAssociatedRecordsException;
+import com.cashly.cashly_api.partners.suppliers.application.exceptions.SupplierHasAssociatedRecordsException;
 import com.cashly.cashly_api.catalog.price_types.application.exceptions.DuplicatePriceTypeNameException;
 import com.cashly.cashly_api.catalog.price_types.application.exceptions.PriceTypeInUseException;
 import com.cashly.cashly_api.catalog.price_types.application.exceptions.PriceTypeNotFoundException;
@@ -35,7 +35,7 @@ import com.cashly.cashly_api.sales.quotes.domain.exceptions.InvalidQuoteAllocati
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.InvalidQuoteLineException;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteStateException;
-import com.cashly.cashly_api.customers.credit.application.exceptions.CreditLimitExceededException;
+import com.cashly.cashly_api.partners.customers.credit.application.exceptions.CreditLimitExceededException;
 import com.cashly.cashly_api.inventory.warehouses.management.application.create.services.DuplicateWarehouseCodeException;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.InsufficientStockException;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.ProductNotInWarehouseException;

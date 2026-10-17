@@ -53,11 +53,11 @@ class LayerDependencyTest {
     void should_detect_forbidden_imports_and_fully_qualified_references_in_nested_capabilities() {
         Path stock = Path.of("warehouses/stock/application/transfer/Transfer.java");
         assertThat(applicationOwnershipViolations(stock,
-                "import com.cashly.cashly_api.customers.profile.domain.entity.Customer;"))
-                .containsExactly("com.cashly.cashly_api.customers.profile.domain.entity.Customer");
+                "import com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer;"))
+                .containsExactly("com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer");
         assertThat(applicationOwnershipViolations(stock,
-                "private com.cashly.cashly_api.customers.profile.infrastructure.persistence.CustomerEntity customer;"))
-                .containsExactly("com.cashly.cashly_api.customers.profile.infrastructure.persistence.CustomerEntity");
+                "private com.cashly.cashly_api.partners.customers.profile.infrastructure.persistence.CustomerEntity customer;"))
+                .containsExactly("com.cashly.cashly_api.partners.customers.profile.infrastructure.persistence.CustomerEntity");
         assertThat(domainLayerViolations(Path.of("warehouses/stock/domain/Stock.java"),
                 "import org.springframework.stereotype.Service;")).isNotEmpty();
         assertThat(domainLayerViolations(Path.of("warehouses/stock/domain/Stock.java"),
@@ -86,17 +86,17 @@ class LayerDependencyTest {
     void should_allow_provider_input_ports_sibling_capabilities_and_shared_pagination() {
         Path stock = Path.of("warehouses/stock/application/queries/Availability.java");
         String source = """
-                import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.AccessQuery;
+                import com.cashly.cashly_api.partners.customers.warehouse_access.application.ports.in.AccessQuery;
                 import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
                 import com.cashly.cashly_api.shared.dto.PageResponse;
-                // import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
-                String example = "com.cashly.cashly_api.customers.profile.infrastructure.CustomerEntity";
+                // import com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer;
+                String example = "com.cashly.cashly_api.partners.customers.profile.infrastructure.CustomerEntity";
                 """;
         assertThat(applicationOwnershipViolations(stock, source)).isEmpty();
         assertThat(domainOwnershipViolations(Path.of("warehouses/stock/domain/Stock.java"),
                 "import com.cashly.cashly_api.shared.dto.PageResponse;")).isEmpty();
         assertThat(portViolations(stock,
-                "import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.AccessQuery;")).isEmpty();
+                "import com.cashly.cashly_api.partners.customers.warehouse_access.application.ports.in.AccessQuery;")).isEmpty();
     }
 
     private void assertLayerSources(String layer, DependencyRule rule) throws IOException {

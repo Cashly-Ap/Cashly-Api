@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.profile.application.ports.in.CustomerProfileQuery;
+import com.cashly.cashly_api.partners.customers.profile.application.ports.in.CustomerProfileQuery;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteCustomerGateway;
 import org.springframework.stereotype.Component;
 

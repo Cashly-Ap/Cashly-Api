@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.finance.billing.credit_notes.infrastructure.integration;
 
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.CreditNoteCashApi;
-import com.cashly.cashly_api.customers.balance.application.ports.in.CreditNoteBalanceApi;
+import com.cashly.cashly_api.partners.customers.balance.application.ports.in.CreditNoteBalanceApi;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

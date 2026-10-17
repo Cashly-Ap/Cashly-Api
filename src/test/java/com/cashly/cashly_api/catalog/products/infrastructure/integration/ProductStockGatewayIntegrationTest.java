@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.catalog.products.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
-import com.cashly.cashly_api.customers.profile.application.exceptions.CustomerNotFoundException;
-import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
-import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.customers.profile.infrastructure.config.CustomerProductPricingConfig;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
+import com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer;
+import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.partners.customers.profile.infrastructure.config.CustomerProductPricingConfig;
 import com.cashly.cashly_api.inventory.warehouses.management.domain.entity.Warehouse;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
 import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;

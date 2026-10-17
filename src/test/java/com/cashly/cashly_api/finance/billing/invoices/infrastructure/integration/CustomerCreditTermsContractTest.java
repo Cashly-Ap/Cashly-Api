@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery;
-import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
-import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditDays;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery;
+import com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer;
+import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CreditDays;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerId;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.UUID;

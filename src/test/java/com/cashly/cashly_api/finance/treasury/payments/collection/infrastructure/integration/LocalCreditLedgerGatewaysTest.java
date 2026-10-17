@@ -4,8 +4,8 @@ import com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.int
 import com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration.LocalCustomerCreditContextGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration.LocalDebitNoteLedgerGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration.LocalInvoiceCreditLedgerGateway;
-import com.cashly.cashly_api.customers.credit.application.ports.in.CustomerCreditContextQuery;
-import com.cashly.cashly_api.customers.credit.application.ports.in.CustomerCreditContextEntry;
+import com.cashly.cashly_api.partners.customers.credit.application.ports.in.CustomerCreditContextQuery;
+import com.cashly.cashly_api.partners.customers.credit.application.ports.in.CustomerCreditContextEntry;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.InvoiceCreditLedgerQuery;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.InvoiceCreditLedgerEntry;
 import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.in.CreditNoteLedgerQuery;

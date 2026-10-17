@@ -14,8 +14,8 @@ import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
-import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
+import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceId;
@@ -103,7 +103,7 @@ class InvoiceIssuanceFinancialFlowTest {
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalActorIdentityGateway(
                         new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(actorRepository, passwordEncoder)),
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerBalanceGateway(
-                        new com.cashly.cashly_api.customers.balance.application.services.InvoiceBalanceConsumptionService(consumeCustomerBalanceUseCase)),
+                        new com.cashly.cashly_api.partners.customers.balance.application.services.InvoiceBalanceConsumptionService(consumeCustomerBalanceUseCase)),
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoicePaymentSettlementGateway(
                         new com.cashly.cashly_api.finance.treasury.payments.collection.application.services.CashInvoiceSettlementService(paymentRepository, allocationRepository,
                                 new com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.integration.LocalPaymentCashRegisterGateway(cashOperations))),

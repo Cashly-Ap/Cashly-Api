@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.credit.application.ports.in.CustomerCreditEligibilityQuery;
+import com.cashly.cashly_api.partners.customers.credit.application.ports.in.CustomerCreditEligibilityQuery;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CustomerCreditGateway;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;

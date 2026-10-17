@@ -6,8 +6,8 @@ import com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.
 import com.cashly.cashly_api.inventory.warehouses.stock.application.returns.services.ReturnInventoryService;
 
 import com.cashly.cashly_api.finance.billing.credit_notes.domain.repository.CreditNoteRepository;
-import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
+import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType;
 import com.cashly.cashly_api.finance.billing.debit_notes.domain.repository.DebitNoteRepository;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
@@ -99,8 +99,8 @@ class DeleteReturnUseCaseTest {
                         new com.cashly.cashly_api.finance.treasury.payments.collection.application.services.ReturnPaymentOperationsService(paymentRepository, allocationRepository,
                                 new com.cashly.cashly_api.finance.treasury.payments.collection.domain.services.PaymentAllocationService(paymentRepository, allocationRepository))),
                 new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnBalanceGateway(
-                        new com.cashly.cashly_api.customers.balance.application.services.ReturnBalanceMutationService(
-                                mock(com.cashly.cashly_api.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase.class), consumeCustomerBalanceUseCase)));
+                        new com.cashly.cashly_api.partners.customers.balance.application.services.ReturnBalanceMutationService(
+                                mock(com.cashly.cashly_api.partners.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase.class), consumeCustomerBalanceUseCase)));
     }
 
     // ------------------------------------------------------------------------

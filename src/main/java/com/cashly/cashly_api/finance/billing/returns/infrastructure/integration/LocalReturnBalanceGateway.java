@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.returns.infrastructure.integration;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnBalanceGateway;
-import com.cashly.cashly_api.customers.balance.application.ports.in.ReturnBalanceMutation;
+import com.cashly.cashly_api.partners.customers.balance.application.ports.in.ReturnBalanceMutation;
 import org.springframework.stereotype.Component;
 @Component
 public class LocalReturnBalanceGateway implements ReturnBalanceGateway {

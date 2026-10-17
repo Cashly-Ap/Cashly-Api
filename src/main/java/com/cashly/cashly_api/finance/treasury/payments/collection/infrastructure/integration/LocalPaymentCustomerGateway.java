@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.profile.application.ports.in.InvoiceCustomerQuery;
-import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
+import com.cashly.cashly_api.partners.customers.profile.application.ports.in.InvoiceCustomerQuery;
+import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentCustomerGateway;
 import org.springframework.stereotype.Component;
 

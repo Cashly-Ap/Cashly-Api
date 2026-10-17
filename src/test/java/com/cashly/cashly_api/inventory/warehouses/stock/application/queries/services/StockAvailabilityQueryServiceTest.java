@@ -1,14 +1,14 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services;
 
-import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
-import com.cashly.cashly_api.customers.warehouse_access.domain.repository.CustomerWarehouseAccessRepository;
+import com.cashly.cashly_api.partners.customers.warehouse_access.domain.entity.CustomerWarehouseAccess;
+import com.cashly.cashly_api.partners.customers.warehouse_access.domain.repository.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.inventory.warehouses.management.domain.entity.Warehouse;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
 import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.StockAvailabilityQuery;
 import com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.integration.CustomerWarehouseAccessAdapter;
-import com.cashly.cashly_api.customers.warehouse_access.application.queries.services.RepositoryCustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.queries.services.RepositoryCustomerWarehouseAccessQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

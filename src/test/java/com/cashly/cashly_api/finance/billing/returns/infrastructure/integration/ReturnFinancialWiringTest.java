@@ -19,9 +19,9 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.domain.reposit
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.repository.PaymentAllocationRepository;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.services.PaymentAllocationService;
 import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.config.ReturnPaymentOperationsConfig;
-import com.cashly.cashly_api.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.infrastructure.config.ReturnBalanceMutationConfig;
+import com.cashly.cashly_api.partners.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.infrastructure.config.ReturnBalanceMutationConfig;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.config.ReturnCashRecordingConfig;
 import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;

@@ -2,7 +2,7 @@ package com.cashly.cashly_api.finance.billing.credit_notes.infrastructure.integr
 
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.CreditNoteCashApi;
 import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.out.CreditNoteEffectsGateway;
-import com.cashly.cashly_api.customers.balance.application.ports.in.CreditNoteBalanceApi;
+import com.cashly.cashly_api.partners.customers.balance.application.ports.in.CreditNoteBalanceApi;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

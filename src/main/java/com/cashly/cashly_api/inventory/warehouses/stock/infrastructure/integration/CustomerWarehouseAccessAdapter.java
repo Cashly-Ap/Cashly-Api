@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.integration;
 
-import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
+import com.cashly.cashly_api.partners.customers.warehouse_access.application.ports.in.CustomerWarehouseAccessQuery;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.CustomerWarehouseAccessGateway;
 import org.springframework.stereotype.Component;
 import java.util.Set;

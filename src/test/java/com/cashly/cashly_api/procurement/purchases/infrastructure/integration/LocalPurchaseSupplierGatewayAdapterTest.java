@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.procurement.purchases.infrastructure.integration;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseSupplierGateway;
-import com.cashly.cashly_api.suppliers.application.ports.in.PurchaseSupplierQuery;
+import com.cashly.cashly_api.partners.suppliers.application.ports.in.PurchaseSupplierQuery;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

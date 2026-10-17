@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CustomerBalanceGateway;
-import com.cashly.cashly_api.customers.balance.application.ports.in.InvoiceBalanceConsumption;
+import com.cashly.cashly_api.partners.customers.balance.application.ports.in.InvoiceBalanceConsumption;
 import org.springframework.stereotype.Component;
 @Component
 public class LocalCustomerBalanceGateway implements CustomerBalanceGateway {

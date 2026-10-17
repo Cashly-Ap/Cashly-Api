@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.duplicate.use_case;
 
-import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
-import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditDays;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CreditLimit;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerAlias;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerCode;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerType;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.LegalName;
-import com.cashly.cashly_api.customers.profile.domain.valueobjects.Rif;
+import com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer;
+import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CreditDays;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CreditLimit;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerAlias;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerCode;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerId;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerType;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.LegalName;
+import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.Rif;
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
@@ -68,7 +68,7 @@ class DuplicateInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         duplicateInvoiceUseCase = new DuplicateInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(new com.cashly.cashly_api.customers.profile.application.queries.services.RepositoryInvoiceCustomerQuery(customerRepository)));
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryInvoiceCustomerQuery(customerRepository)));
     }
 
     @Test

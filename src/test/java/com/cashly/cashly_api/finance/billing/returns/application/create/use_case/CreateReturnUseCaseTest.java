@@ -7,8 +7,8 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.finance.billing.credit_notes.domain.repository.CreditNoteRepository;
-import com.cashly.cashly_api.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase;
-import com.cashly.cashly_api.customers.balance.domain.valueobjects.BalanceType;
+import com.cashly.cashly_api.partners.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase;
+import com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType;
 import com.cashly.cashly_api.finance.billing.debit_notes.domain.repository.DebitNoteRepository;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
@@ -321,8 +321,8 @@ class CreateReturnUseCaseTest {
                 new com.cashly.cashly_api.finance.treasury.payments.collection.application.services.ReturnPaymentOperationsService(
                         mock(com.cashly.cashly_api.finance.treasury.payments.collection.domain.repository.PaymentRepository.class), allocationRepository, paymentAllocationService));
         var balances = new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnBalanceGateway(
-                new com.cashly.cashly_api.customers.balance.application.services.ReturnBalanceMutationService(addToCustomerBalanceUseCase,
-                        mock(com.cashly.cashly_api.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase.class)));
+                new com.cashly.cashly_api.partners.customers.balance.application.services.ReturnBalanceMutationService(addToCustomerBalanceUseCase,
+                        mock(com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase.class)));
         var cash = new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnCashGateway(
                 new com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.services.ReturnCashRecordingService(cashMovementService));
         return new CreateReturnUseCase(invoiceAdjustmentGateway, repository, returnMapper, query, payments, balances,
