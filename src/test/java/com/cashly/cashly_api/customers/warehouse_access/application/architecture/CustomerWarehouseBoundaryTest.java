@@ -38,7 +38,9 @@ class CustomerWarehouseBoundaryTest {
                             throw new java.io.UncheckedIOException(exception);
                         }
                     })
-                    .filter(line -> line.matches("import com\\.cashly\\.cashly_api\\.(auth|cash_register|warehouses)\\..*;"))
+                    .filter(line -> line.startsWith("import com.cashly.cashly_api.auth.")
+                            || line.startsWith("import com.cashly.cashly_api.cash_register.")
+                            || line.startsWith("import com.cashly.cashly_api.warehouses."))
                     .toList();
             assertTrue(foreignImports.isEmpty(), foreignImports.toString());
         }

@@ -10,7 +10,7 @@ class QuoteReportsBoundaryTest {
     void applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates() {
         for (var type : new Class<?>[]{QuotePdfPort.class, QuotesReportPdfPort.class, GenerateQuotePdfUseCaseImpl.class}) {
             Arrays.stream(type.getDeclaredFields()).forEach(field -> assertFalse(field.getType().getName().matches(".*cashly_api\\.(quotes\\.(?!reporting\\.)|warehouses\\.).*"), field.toString()));
-            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.quotes.(?!reporting\\.).*"), parameter.toString())));
+            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.sales.quotes.(?!reporting\\.).*"), parameter.toString())));
         }
     }
 }

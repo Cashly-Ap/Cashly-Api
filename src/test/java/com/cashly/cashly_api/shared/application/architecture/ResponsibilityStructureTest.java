@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.shared.application.architecture;
 
 import org.junit.jupiter.api.Test;
+import com.cashly.cashly_api.architecture.BusinessModulePaths;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,7 +41,7 @@ class ResponsibilityStructureTest {
         var violations = new ArrayList<Path>();
         for (Path test : sources(TEST)) {
             String type = test.getFileName().toString().replaceFirst("(?:UnitTest|Tests|Test|IT)\\.java$", ".java");
-            var matches = production.stream().filter(path -> path.getName(0).equals(test.getName(0)))
+            var matches = production.stream().filter(path -> BusinessModulePaths.owner(path).equals(BusinessModulePaths.owner(test)))
                     .filter(path -> path.getFileName().toString().equals(type)).toList();
             if (!matches.isEmpty() && matches.stream().noneMatch(path -> test.getParent().startsWith(path.getParent()))) {
                 violations.add(test);

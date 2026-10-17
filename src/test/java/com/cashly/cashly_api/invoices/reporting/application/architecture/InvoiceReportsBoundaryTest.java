@@ -12,9 +12,9 @@ class InvoiceReportsBoundaryTest {
     void applicationContractsDoNotExposeInvoiceModuleDtosOrConcreteUseCases() {
         for (Class<?> type : new Class<?>[]{InvoicePdfPort.class, InvoicesReportPdfPort.class, GenerateInvoicePdfUseCaseImpl.class}) {
             Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter ->
-                    assertFalse(parameter.getTypeName().matches(".*cashly_api.invoices.(?!reporting\\.).*"), parameter.getTypeName())));
+                    assertFalse(parameter.getTypeName().matches(".*cashly_api.finance.billing.invoices.(?!reporting\\.).*"), parameter.getTypeName())));
             Arrays.stream(type.getDeclaredFields()).forEach(field ->
-                    assertFalse(field.getGenericType().getTypeName().matches(".*cashly_api.invoices.(?!reporting\\.).*"), field.toString()));
+                    assertFalse(field.getGenericType().getTypeName().matches(".*cashly_api.finance.billing.invoices.(?!reporting\\.).*"), field.toString()));
         }
     }
 }

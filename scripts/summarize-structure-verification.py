@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
-from coverage_ownership import class_counters
+from coverage_ownership import class_counters, module_owner
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("evidence", type=Path)
@@ -50,7 +50,7 @@ if coverage_report.exists():
         parts = package.attrib["name"].split("/")
         if len(parts) < 4:
             continue
-        module = parts[3]
+        module = module_owner(package.attrib["name"])
         layer = next((part for part in parts[4:] if part in ("domain", "application", "infrastructure")), None)
         if layer is None and module == "infrastructure":
             layer = "infrastructure"

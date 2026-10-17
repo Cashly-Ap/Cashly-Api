@@ -16,6 +16,17 @@ def class_name(path):
     return path.removeprefix('src/main/java/').removesuffix('.java')
 
 
+def module_owner(name):
+    parts = name.split('/')[3:]
+    if not parts:
+        return 'unknown'
+    if parts[0] == 'finance' and len(parts) > 2 and parts[1] in ('billing', 'treasury'):
+        return parts[2]
+    if parts[0] in ('sales', 'procurement', 'catalog', 'inventory', 'partners', 'analytics', 'platform') and len(parts) > 1:
+        return parts[1]
+    return parts[0]
+
+
 def regroup(classes, moves, splits, baseline):
     relocation = {class_name(r['old']): class_name(r['new']) for r in moves if r['old'].startswith('src/main/java/')}
     families = {}
@@ -36,7 +47,7 @@ def regroup(classes, moves, splits, baseline):
         if '/reports/' in target and not family:
             raise ValueError('Unmapped global report: ' + name)
         parts = target.split('/')
-        owner = parts[3] if len(parts) > 3 else 'unknown'
+        owner = module_owner(target)
         layer = next((p for p in parts[4:] if p in ('application', 'domain', 'infrastructure')), None)
         layer = layer or ('infrastructure' if owner == 'infrastructure' else 'unclassified')
         # Split classes have no unique owner. Keep all their debt in one explicit

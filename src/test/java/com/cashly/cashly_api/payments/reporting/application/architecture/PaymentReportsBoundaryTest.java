@@ -8,8 +8,8 @@ class PaymentReportsBoundaryTest {
     @Test
     void applicationUsesOwnContractsAndDtos() {
         for (var type : new Class<?>[]{PaymentPdfPort.class, GeneratePaymentPdfUseCaseImpl.class}) {
-            Arrays.stream(type.getDeclaredFields()).forEach(field -> assertFalse(field.getType().getName().matches(".*cashly_api.payments.(?!reporting\\.).*"), field.toString()));
-            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.payments.(?!reporting\\.).*"), parameter.toString())));
+            Arrays.stream(type.getDeclaredFields()).forEach(field -> assertFalse(field.getType().getName().matches(".*cashly_api.finance.treasury.payments.(?!reporting\\.).*"), field.toString()));
+            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.finance.treasury.payments.(?!reporting\\.).*"), parameter.toString())));
         }
     }
 }

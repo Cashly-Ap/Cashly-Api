@@ -17,7 +17,7 @@ class ApplicationPackageConventionTest {
 
     @Test
     void should_use_cash_register_for_the_cash_register_module_package() throws IOException {
-        assertThat(productionPaths().stream().filter(path -> path.getName(0).toString().equals("cashregister")))
+        assertThat(productionPaths().stream().filter(path -> segments(path).contains("cashregister")))
                 .as("The cash register module package is cash_register").isEmpty();
     }
 

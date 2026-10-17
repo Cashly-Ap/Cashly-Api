@@ -53,10 +53,10 @@ class ReportingOwnershipTest {
         var missing = new ArrayList<String>();
         for (String owner : DOCUMENT_OWNERS) {
             for (String layer : List.of("application", "infrastructure")) {
-                Path directory = ROOTS.get(0).resolve(owner).resolve("reporting").resolve(layer);
+                Path directory = ROOTS.get(0).resolve(BusinessModulePaths.modulePath(owner)).resolve("reporting").resolve(layer);
                 if (!hasJavaSources(directory)) missing.add(directory.toString());
             }
-            Path tests = ROOTS.get(1).resolve(owner).resolve("reporting");
+            Path tests = ROOTS.get(1).resolve(BusinessModulePaths.modulePath(owner)).resolve("reporting");
             if (!hasJavaSources(tests)) missing.add(tests.toString());
         }
         assertThat(missing).as("All eight owners must contain actual application, infrastructure and tests").isEmpty();
@@ -83,6 +83,7 @@ class ReportingOwnershipTest {
     }
 
     private boolean hasReportingOwner(Path path) {
+        path = BusinessModulePaths.withoutArea(path);
         String normalized = path.toString().replace('\\', '/');
         String name = path.getFileName().toString().replaceFirst("(?:Test)?\\.java$", "");
         if (path.getName(0).toString().equals("reports")) return false;

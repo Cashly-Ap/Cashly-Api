@@ -11,7 +11,10 @@ class CustomerCreditQueryBoundaryTest {
     void should_depend_on_payments_owned_credit_gateways() {
         var dependencies = Arrays.stream(CustomerCreditQueryService.class.getConstructors()[0].getParameterTypes())
                 .map(Class::getName).toList();
-        assertTrue(dependencies.stream().noneMatch(type -> type.matches("com\\.cashly\\.cashly_api\\.(customers|invoices|credit_notes|debit_notes)\\..*")), dependencies.toString());
+        assertTrue(dependencies.stream().noneMatch(type -> type.startsWith("com.cashly.cashly_api.customers.")
+                || type.startsWith("com.cashly.cashly_api.invoices.")
+                || type.startsWith("com.cashly.cashly_api.credit_notes.")
+                || type.startsWith("com.cashly.cashly_api.debit_notes.")), dependencies.toString());
         for (String contract : new String[]{"CustomerCreditContextGateway", "InvoiceCreditLedgerGateway", "CreditNoteLedgerGateway", "DebitNoteLedgerGateway"}) {
             assertTrue(dependencies.contains("com.cashly.cashly_api.payments.credit.application.ports.out." + contract));
         }

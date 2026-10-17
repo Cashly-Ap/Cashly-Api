@@ -40,8 +40,8 @@ class CapabilityStructureTest {
                 .isEmpty();
         for (var owner : CAPABILITIES.entrySet()) {
             var present = paths.stream().filter(path -> path.getNameCount() > 2)
-                    .filter(path -> path.getName(0).toString().equals(owner.getKey()))
-                    .map(path -> path.getName(1).toString()).filter(owner.getValue()::contains).collect(Collectors.toSet());
+                    .filter(path -> BusinessModulePaths.owner(path).equals(owner.getKey()))
+                    .map(path -> BusinessModulePaths.withoutArea(path).getName(1).toString()).filter(owner.getValue()::contains).collect(Collectors.toSet());
             assertThat(present).as("Capability scan for %s must not be empty or incomplete", owner.getKey())
                     .containsExactlyInAnyOrderElementsOf(owner.getValue());
         }
@@ -91,6 +91,7 @@ class CapabilityStructureTest {
     }
 
     private boolean hasApprovedCapabilityOwner(Path path) {
+        path = BusinessModulePaths.withoutArea(path);
         String normalized = path.toString().replace('\\', '/');
         Set<String> capabilities = CAPABILITIES.get(path.getName(0).toString());
         return capabilities == null || COMPOSITION_SOURCES.contains(normalized)

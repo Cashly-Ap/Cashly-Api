@@ -70,6 +70,19 @@ class LayerDependencyTest {
     }
 
     @Test
+    void erp_area_grouping_does_not_allow_access_to_sibling_module_internals() {
+        assertThat(applicationOwnershipViolations(Path.of("orders/application/create/use_case/Create.java"),
+                "import com.cashly.cashly_api.quotes.domain.entity.Quote;"))
+                .containsExactly("com.cashly.cashly_api.quotes.domain.entity.Quote");
+        assertThat(domainOwnershipViolations(Path.of("invoices/domain/entity/Invoice.java"),
+                "import com.cashly.cashly_api.credit_notes.domain.entity.CreditNote;"))
+                .containsExactly("com.cashly.cashly_api.credit_notes.domain.entity.CreditNote");
+        assertThat(applicationOwnershipViolations(Path.of("orders/application/create/use_case/Create.java"),
+                "import com.cashly.cashly_api.quotes.application.ports.in.QuoteQuery;"))
+                .isEmpty();
+    }
+
+    @Test
     void should_allow_provider_input_ports_sibling_capabilities_and_shared_pagination() {
         Path stock = Path.of("warehouses/stock/application/queries/Availability.java");
         String source = """
@@ -117,7 +130,7 @@ class LayerDependencyTest {
     }
 
     private List<String> applicationOwnershipViolations(Path path, String source) {
-        String owner = path.getName(0).toString();
+        String owner = BusinessModulePaths.owner(path);
         return references(source).stream().filter(type -> !moduleOf(type).equals(owner))
                 .filter(type -> !type.contains(".application.ports.in."))
                 .filter(type -> type.contains(".domain.") || type.contains(".application.") || type.contains(".infrastructure."))
@@ -125,7 +138,7 @@ class LayerDependencyTest {
     }
 
     private List<String> domainOwnershipViolations(Path path, String source) {
-        String owner = path.getName(0).toString();
+        String owner = BusinessModulePaths.owner(path);
         return references(source).stream().filter(type -> !moduleOf(type).equals(owner))
                 .filter(type -> !type.equals("com.cashly.cashly_api.shared.dto.PageResponse")
                         && !type.startsWith("com.cashly.cashly_api.shared.dto.PageResponse."))
@@ -137,7 +150,7 @@ class LayerDependencyTest {
     }
 
     private String moduleOf(String reference) {
-        return reference.substring("com.cashly.cashly_api.".length()).split("\\.", 2)[0];
+        return BusinessModulePaths.ownerOfReference(reference);
     }
 
     private String codeOnly(String source) {

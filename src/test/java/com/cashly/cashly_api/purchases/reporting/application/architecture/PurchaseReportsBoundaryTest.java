@@ -10,7 +10,7 @@ class PurchaseReportsBoundaryTest {
     void applicationDoesNotDependOnForeignDtosRepositoriesOrAggregates() {
         for (var type : new Class<?>[]{PurchasePdfPort.class, PurchasesReportPdfPort.class, GeneratePurchasePdfUseCaseImpl.class}) {
             Arrays.stream(type.getDeclaredFields()).forEach(field -> assertFalse(field.getType().getName().matches(".*cashly_api\\.(purchases\\.(?!reporting\\.)|warehouses\\.).*"), field.toString()));
-            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.purchases.(?!reporting\\.).*"), parameter.toString())));
+            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.procurement.purchases.(?!reporting\\.).*"), parameter.toString())));
         }
     }
 }
