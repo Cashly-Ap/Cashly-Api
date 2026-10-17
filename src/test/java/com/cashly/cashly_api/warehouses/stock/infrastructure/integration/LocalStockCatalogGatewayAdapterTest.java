@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.warehouses.stock.infrastructure.integration;
 
-import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
-import com.cashly.cashly_api.products.domain.entity.Product;
-import com.cashly.cashly_api.products.domain.entity.ProductComponent;
-import com.cashly.cashly_api.products.domain.repository.ProductRepository;
-import com.cashly.cashly_api.products.infrastructure.config.StockCatalogConfig;
+import com.cashly.cashly_api.catalog.products.application.exceptions.ProductNotFoundException;
+import com.cashly.cashly_api.catalog.products.domain.entity.Product;
+import com.cashly.cashly_api.catalog.products.domain.entity.ProductComponent;
+import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
+import com.cashly.cashly_api.catalog.products.infrastructure.config.StockCatalogConfig;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;

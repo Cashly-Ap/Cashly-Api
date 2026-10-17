@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.warehouses.stock.infrastructure.integration;
 
-import com.cashly.cashly_api.products.application.ports.in.StockCatalogQuery;
-import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
+import com.cashly.cashly_api.catalog.products.application.ports.in.StockCatalogQuery;
+import com.cashly.cashly_api.catalog.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.warehouses.stock.application.ports.out.StockCatalogGateway;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class LocalStockCatalogGatewayAdapter implements StockCatalogGateway {
         return catalog.findProduct(productId).map(product -> toCatalogProduct(product));
     }
 
-    private CatalogProduct toCatalogProduct(com.cashly.cashly_api.products.application.ports.in.StockCatalogEntry product) {
+    private CatalogProduct toCatalogProduct(com.cashly.cashly_api.catalog.products.application.ports.in.StockCatalogEntry product) {
         return new CatalogProduct(product.id(), product.code(), product.name(), product.composite(),
                 product.components().stream().map(component -> new Component(component.productId(), component.quantity())).toList());
     }

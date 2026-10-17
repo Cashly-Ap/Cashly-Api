@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceCatalogGateway;
-import com.cashly.cashly_api.products.application.ports.in.StockCatalogQuery;
+import com.cashly.cashly_api.catalog.products.application.ports.in.StockCatalogQuery;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;

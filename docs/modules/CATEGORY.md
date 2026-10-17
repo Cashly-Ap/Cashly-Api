@@ -477,63 +477,64 @@ import com.lexand.lexand_api.category.application.exceptions.CategoryNotFoundExc
 ## Project Structure
 
 ```
-categories/
-├── application/
-│   ├── create/
-│   │   ├── request/
-│   │   │   └── CreateCategoryRequest.java
-│   │   └── use_case/
-│   │       └── CreateCategoryUseCase.java
-│   ├── delete/
-│   │   └── use_case/
-│   │       └── DeleteCategoryUseCase.java
-│   ├── dto/
-│   │   └── response/
-│   │       ├── CategoryDetailResponse.java
-│   │       ├── CategoryListResponse.java
-│   │       └── CategorySummary.java
-│   ├── exceptions/
-│   │   ├── CategoryHasActiveProductsException.java
-│   │   ├── CategoryNotFoundException.java
-│   │   └── DuplicateCategoryNameException.java
-│   ├── mappers/
-│   │   └── CategoryMapper.java
-│   ├── ports/
-│   │   ├── in/
-│   │   │   └── ProductCategoryQuery.java
-│   │   └── out/
-│   │       └── CategoryUsageGateway.java
-│   ├── queries/
-│   │   ├── services/
-│   │   │   └── RepositoryProductCategoryQuery.java
-│   │   └── use_case/
-│   │       ├── GetCategoryUseCase.java
-│   │       └── ListCategoriesUseCase.java
-│   └── update/
-│       ├── request/
-│       │   └── UpdateCategoryRequest.java
-│       └── use_case/
-│           └── UpdateCategoryUseCase.java
-├── domain/
-│   ├── entity/
-│   │   └── Category.java
-│   └── repository/
-│       └── CategoryRepository.java
-└── infrastructure/
-    ├── config/
-    │   ├── CategoryConfig.java
-    │   └── ProductCategoryQueryConfig.java
-    ├── integration/
-    │   └── ProductCategoryUsageAdapter.java
-    ├── persistence/
-    │   ├── adapters/
-    │   │   └── JpaCategoryRepository.java
-    │   ├── entities/
-    │   │   └── CategoryEntity.java
-    │   └── repositories/
-    │       └── SpringDataCategoryRepository.java
-    └── web/
-        └── CategoryController.java
+└── catalog
+    └── categories
+        ├── application
+        │   ├── create
+        │   │   ├── request
+        │   │   │   └── CreateCategoryRequest.java
+        │   │   └── use_case
+        │   │       └── CreateCategoryUseCase.java
+        │   ├── delete
+        │   │   └── use_case
+        │   │       └── DeleteCategoryUseCase.java
+        │   ├── dto
+        │   │   └── response
+        │   │       ├── CategoryDetailResponse.java
+        │   │       ├── CategoryListResponse.java
+        │   │       └── CategorySummary.java
+        │   ├── exceptions
+        │   │   ├── CategoryHasActiveProductsException.java
+        │   │   ├── CategoryNotFoundException.java
+        │   │   └── DuplicateCategoryNameException.java
+        │   ├── mappers
+        │   │   └── CategoryMapper.java
+        │   ├── ports
+        │   │   ├── in
+        │   │   │   └── ProductCategoryQuery.java
+        │   │   └── out
+        │   │       └── CategoryUsageGateway.java
+        │   ├── queries
+        │   │   ├── services
+        │   │   │   └── RepositoryProductCategoryQuery.java
+        │   │   └── use_case
+        │   │       ├── GetCategoryUseCase.java
+        │   │       └── ListCategoriesUseCase.java
+        │   └── update
+        │       ├── request
+        │       │   └── UpdateCategoryRequest.java
+        │       └── use_case
+        │           └── UpdateCategoryUseCase.java
+        ├── domain
+        │   ├── entity
+        │   │   └── Category.java
+        │   └── repository
+        │       └── CategoryRepository.java
+        └── infrastructure
+            ├── config
+            │   ├── CategoryConfig.java
+            │   └── ProductCategoryQueryConfig.java
+            ├── integration
+            │   └── ProductCategoryUsageAdapter.java
+            ├── persistence
+            │   ├── adapters
+            │   │   └── JpaCategoryRepository.java
+            │   ├── entities
+            │   │   └── CategoryEntity.java
+            │   └── repositories
+            │       └── SpringDataCategoryRepository.java
+            └── web
+                └── CategoryController.java
 ```
 
 ---

@@ -65,8 +65,8 @@ class LayerDependencyTest {
                 .containsExactly("com.cashly.cashly_api.warehouses.stock.application.Helpers.value");
         assertThat(portViolations(stock, "import jakarta.persistence.Entity;")).isNotEmpty();
         assertThat(domainOwnershipViolations(Path.of("warehouses/stock/domain/Stock.java"),
-                "import com.cashly.cashly_api.products.domain.entity.Product;"))
-                .containsExactly("com.cashly.cashly_api.products.domain.entity.Product");
+                "import com.cashly.cashly_api.catalog.products.domain.entity.Product;"))
+                .containsExactly("com.cashly.cashly_api.catalog.products.domain.entity.Product");
     }
 
     @Test

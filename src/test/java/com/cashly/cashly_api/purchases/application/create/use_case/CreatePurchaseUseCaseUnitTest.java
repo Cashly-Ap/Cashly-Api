@@ -6,8 +6,8 @@ import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.products.domain.entity.Product;
-import com.cashly.cashly_api.products.domain.repository.ProductRepository;
+import com.cashly.cashly_api.catalog.products.domain.entity.Product;
+import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.purchases.application.create.request.CreatePurchaseRequest;
 import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseSupplierGateway;
@@ -58,7 +58,7 @@ class CreatePurchaseUseCaseUnitTest {
                 purchaseRepository,
                 supplierGateway,
                 new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseProductGatewayAdapter(
-                        new com.cashly.cashly_api.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)),
+                        new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)),
                 new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseActorGatewayAdapter(
                         new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository, null)),
                 new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(

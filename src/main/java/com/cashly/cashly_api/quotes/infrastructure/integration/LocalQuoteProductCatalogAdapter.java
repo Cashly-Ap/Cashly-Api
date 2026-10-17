@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery;
+import com.cashly.cashly_api.catalog.products.application.ports.in.SalesProductCatalogQuery;
 import com.cashly.cashly_api.quotes.application.ports.out.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.stereotype.Component;

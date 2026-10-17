@@ -41,7 +41,7 @@ public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUI
             ))
             AND (:categoryId IS NULL OR EXISTS (
                 SELECT 1 FROM PurchaseLineEntity pl2 WHERE pl2.purchase = p AND pl2.productId IN (
-                    SELECT pr.id FROM com.cashly.cashly_api.products.infrastructure.persistence.entities.ProductEntity pr WHERE pr.categoryId = :categoryId
+                    SELECT pr.id FROM com.cashly.cashly_api.catalog.products.infrastructure.persistence.entities.ProductEntity pr WHERE pr.categoryId = :categoryId
                 )
             ))
             """)

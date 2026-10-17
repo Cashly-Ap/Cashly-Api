@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 
-import com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery;
+import com.cashly.cashly_api.catalog.products.application.ports.in.SalesProductCatalogQuery;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.in.InvoiceReturnDetailsQuery;
 import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryEntry;
 import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryQuery;

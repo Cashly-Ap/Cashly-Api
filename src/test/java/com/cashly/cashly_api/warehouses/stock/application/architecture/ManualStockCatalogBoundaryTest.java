@@ -18,11 +18,11 @@ class ManualStockCatalogBoundaryTest {
                 StockAdjustmentUseCase.class, TransferStockUseCase.class, GetWarehouseStockUseCase.class, GetStockMovementsUseCase.class)) {
             for (var constructor : type.getConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.products"), parameter.getName());
+                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.catalog.products"), parameter.getName());
                 }
             }
             for (var field : type.getDeclaredFields()) {
-                assertFalse(field.getType().getPackageName().startsWith("com.cashly.cashly_api.products"), field.toString());
+                assertFalse(field.getType().getPackageName().startsWith("com.cashly.cashly_api.catalog.products"), field.toString());
             }
         }
     }

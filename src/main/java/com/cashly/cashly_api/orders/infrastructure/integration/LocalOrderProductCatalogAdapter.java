@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.orders.infrastructure.integration;
 
 import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGateway;
-import com.cashly.cashly_api.products.application.ports.in.SalesProductCatalogQuery;
+import com.cashly.cashly_api.catalog.products.application.ports.in.SalesProductCatalogQuery;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.stereotype.Component;
 

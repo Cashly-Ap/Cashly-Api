@@ -1,0 +1,37 @@
+package com.cashly.cashly_api.catalog.categories.application.update.use_case;
+
+import com.cashly.cashly_api.catalog.categories.application.update.request.UpdateCategoryRequest;
+import com.cashly.cashly_api.catalog.categories.application.dto.response.CategoryDetailResponse;
+import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryNotFoundException;
+import com.cashly.cashly_api.catalog.categories.application.exceptions.DuplicateCategoryNameException;
+import com.cashly.cashly_api.catalog.categories.application.mappers.CategoryMapper;
+import com.cashly.cashly_api.catalog.categories.domain.entity.Category;
+import com.cashly.cashly_api.catalog.categories.domain.repository.CategoryRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+public class UpdateCategoryUseCase {
+
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+
+    public UpdateCategoryUseCase(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
+    }
+
+    @Transactional
+    public CategoryDetailResponse execute(UUID id, UpdateCategoryRequest request) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        if (categoryRepository.existsByNameAndIdNot(request.name().trim(), id)) {
+            throw new DuplicateCategoryNameException(request.name());
+        }
+
+        category.update(request.name().trim(), request.description(), request.active());
+        Category saved = categoryRepository.save(category);
+        return categoryMapper.toDetailResponse(saved, 0L);
+    }
+}

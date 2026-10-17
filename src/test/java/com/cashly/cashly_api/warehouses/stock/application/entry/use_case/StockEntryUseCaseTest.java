@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.warehouses.stock.application.entry.use_case;
 
-import com.cashly.cashly_api.products.application.exceptions.ProductNotFoundException;
-import com.cashly.cashly_api.products.domain.entity.Product;
-import com.cashly.cashly_api.products.domain.entity.ProductComponent;
-import com.cashly.cashly_api.products.domain.repository.ProductRepository;
-import com.cashly.cashly_api.products.application.queries.services.RepositoryStockCatalogQuery;
+import com.cashly.cashly_api.catalog.products.application.exceptions.ProductNotFoundException;
+import com.cashly.cashly_api.catalog.products.domain.entity.Product;
+import com.cashly.cashly_api.catalog.products.domain.entity.ProductComponent;
+import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
+import com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery;
 import com.cashly.cashly_api.warehouses.stock.infrastructure.integration.LocalStockCatalogGatewayAdapter;
 import com.cashly.cashly_api.warehouses.stock.application.dto.response.StockBatchItem;
 import com.cashly.cashly_api.warehouses.stock.application.entry.request.StockEntryRequest;

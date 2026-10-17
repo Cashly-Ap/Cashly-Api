@@ -1,0 +1,30 @@
+package com.cashly.cashly_api.catalog.products.application.dto.response;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record ProductDetailResponse(
+    String id,
+    String code,
+    String name,
+    String description,
+    String categoryId,
+    String categoryName,
+    boolean composite,
+    boolean active,
+    String photo,
+    BigDecimal purchasePrice,
+    List<ComponentResponse> components,
+    List<ProductPriceDetailResponse> productPrices,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt
+) {
+    public record ComponentResponse(
+        String id,
+        String componentProductId,
+        String componentProductCode,
+        String componentProductName,
+        int quantity
+    ) {}
+}
