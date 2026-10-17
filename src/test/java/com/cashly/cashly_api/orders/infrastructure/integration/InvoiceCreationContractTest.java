@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.orders.infrastructure.integration;
 
-import com.cashly.cashly_api.invoices.application.create.request.CreateInvoiceRequest;
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.invoices.application.create.from_order.services.OrderInvoiceCreationService;
-import com.cashly.cashly_api.invoices.application.create.use_case.CreateInvoiceUseCase;
+import com.cashly.cashly_api.finance.billing.invoices.application.create.request.CreateInvoiceRequest;
+import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
+import com.cashly.cashly_api.finance.billing.invoices.application.create.from_order.services.OrderInvoiceCreationService;
+import com.cashly.cashly_api.finance.billing.invoices.application.create.use_case.CreateInvoiceUseCase;
 import com.cashly.cashly_api.orders.application.ports.out.InvoiceCreationGateway;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

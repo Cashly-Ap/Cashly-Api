@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.orders.application.convert_to_invoice.use_case;
 
-import com.cashly.cashly_api.invoices.application.create.request.CreateInvoiceRequest;
-import com.cashly.cashly_api.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.invoices.application.create.use_case.CreateInvoiceUseCase;
+import com.cashly.cashly_api.finance.billing.invoices.application.create.request.CreateInvoiceRequest;
+import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
+import com.cashly.cashly_api.finance.billing.invoices.application.create.use_case.CreateInvoiceUseCase;
 import com.cashly.cashly_api.orders.application.convert_to_invoice.request.ConvertToInvoiceRequest;
 import com.cashly.cashly_api.orders.application.convert_to_invoice.response.ConvertToInvoiceResponse;
 import com.cashly.cashly_api.orders.domain.entity.Order;
@@ -13,7 +13,7 @@ import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
 import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
-import com.cashly.cashly_api.invoices.application.create.from_order.services.OrderInvoiceCreationService;
+import com.cashly.cashly_api.finance.billing.invoices.application.create.from_order.services.OrderInvoiceCreationService;
 import com.cashly.cashly_api.orders.infrastructure.integration.LocalInvoiceCreationGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

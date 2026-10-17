@@ -6,18 +6,18 @@ import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.invoices.application.issue.services.InvoicePaymentService;
-import com.cashly.cashly_api.invoices.application.issue.validation.InvoiceIssueValidator;
-import com.cashly.cashly_api.invoices.application.issue.request.IssueInvoiceCommand;
-import com.cashly.cashly_api.invoices.application.issue.model.InvoiceOrigin;
-import com.cashly.cashly_api.invoices.application.issue.services.IssueInvoiceService;
-import com.cashly.cashly_api.invoices.application.issue.services.IssueInvoiceService;
-import com.cashly.cashly_api.invoices.domain.entity.Invoice;
-import com.cashly.cashly_api.invoices.domain.entity.InvoiceLine;
-import com.cashly.cashly_api.invoices.domain.entity.InvoiceLineAllocation;
-import com.cashly.cashly_api.invoices.domain.repository.InvoiceRepository;
-import com.cashly.cashly_api.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.invoices.domain.valueobjects.PaymentType;
+import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.InvoicePaymentService;
+import com.cashly.cashly_api.finance.billing.invoices.application.issue.validation.InvoiceIssueValidator;
+import com.cashly.cashly_api.finance.billing.invoices.application.issue.request.IssueInvoiceCommand;
+import com.cashly.cashly_api.finance.billing.invoices.application.issue.model.InvoiceOrigin;
+import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
+import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
+import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
+import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLineAllocation;
+import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
+import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.PaymentType;
 import com.cashly.cashly_api.quotes.application.convert_to_invoice.request.ConvertQuoteToInvoiceRequest;
 import com.cashly.cashly_api.quotes.application.convert_to_invoice.response.QuoteConvertedToInvoiceResponse;
 import com.cashly.cashly_api.quotes.domain.entity.Quote;
@@ -71,7 +71,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
     private NotificationService notificationService;
 
     @Mock
-    private com.cashly.cashly_api.invoices.application.ports.out.CustomerCreditTermsGateway creditTerms;
+    private com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CustomerCreditTermsGateway creditTerms;
 
     private ConvertQuoteToInvoiceUseCase useCase;
 
@@ -83,18 +83,18 @@ class ConvertQuoteToInvoiceUseCaseTest {
         lenient().when(authorizationService.validate(any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(new InvoiceIssueValidator.CashPaymentPlan(java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO));
         lenient().when(creditTerms.creditDays(any())).thenReturn(0);
-        var actors = new com.cashly.cashly_api.invoices.infrastructure.integration.LocalActorIdentityGateway(
+        var actors = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalActorIdentityGateway(
                 new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
                         mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class)));
-        var stock = new com.cashly.cashly_api.invoices.infrastructure.integration.LocalStockDeductionGateway(
+        var stock = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalStockDeductionGateway(
                 new com.cashly.cashly_api.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository));
         var issuance = new IssueInvoiceService(invoiceRepository, actors, authorizationService,
-                mock(InvoicePaymentService.class), mock(com.cashly.cashly_api.invoices.application.ports.out.InventoryGateway.class),
-                stock, mock(com.cashly.cashly_api.invoices.application.ports.out.InvoiceNotificationGateway.class),
-                mock(com.cashly.cashly_api.invoices.application.ports.out.CashRegisterGateway.class));
+                mock(InvoicePaymentService.class), mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
+                stock, mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway.class),
+                mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway.class));
         useCase = new ConvertQuoteToInvoiceUseCase(quoteRepository,
                 new com.cashly.cashly_api.quotes.infrastructure.integration.LocalInvoiceCreationGateway(
-                        new com.cashly.cashly_api.invoices.application.create.from_quote.services.QuoteInvoiceCreationService(
+                        new com.cashly.cashly_api.finance.billing.invoices.application.create.from_quote.services.QuoteInvoiceCreationService(
                                 invoiceRepository, actors, creditTerms, issuance)),
                 new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
                         new com.cashly.cashly_api.notifications.application.quotes.services.QuoteConversionNotificationService(notificationService)));

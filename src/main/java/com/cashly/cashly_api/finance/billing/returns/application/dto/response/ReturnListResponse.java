@@ -1,0 +1,20 @@
+package com.cashly.cashly_api.finance.billing.returns.application.dto.response;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record ReturnListResponse(
+        UUID id,
+        String returnNumber,
+        UUID invoiceId,
+        String invoiceNumber,
+        UUID customerId,
+        String customerName,
+        String returnType,
+        String reason,
+        BigDecimal total,
+        int lineCount,
+        LocalDateTime createdAt
+) {}

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.invoices.application.ports.in.QuoteInvoiceCreationApi;
+import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.QuoteInvoiceCreationApi;
 import com.cashly.cashly_api.quotes.application.ports.out.InvoiceCreationGateway;
 import org.springframework.stereotype.Component;
 import java.util.UUID;

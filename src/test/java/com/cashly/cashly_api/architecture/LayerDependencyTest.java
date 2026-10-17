@@ -74,9 +74,9 @@ class LayerDependencyTest {
         assertThat(applicationOwnershipViolations(Path.of("orders/application/create/use_case/Create.java"),
                 "import com.cashly.cashly_api.quotes.domain.entity.Quote;"))
                 .containsExactly("com.cashly.cashly_api.quotes.domain.entity.Quote");
-        assertThat(domainOwnershipViolations(Path.of("invoices/domain/entity/Invoice.java"),
-                "import com.cashly.cashly_api.credit_notes.domain.entity.CreditNote;"))
-                .containsExactly("com.cashly.cashly_api.credit_notes.domain.entity.CreditNote");
+        assertThat(domainOwnershipViolations(Path.of("finance/billing/invoices/domain/entity/Invoice.java"),
+                "import com.cashly.cashly_api.finance.billing.credit_notes.domain.entity.CreditNote;"))
+                .containsExactly("com.cashly.cashly_api.finance.billing.credit_notes.domain.entity.CreditNote");
         assertThat(applicationOwnershipViolations(Path.of("orders/application/create/use_case/Create.java"),
                 "import com.cashly.cashly_api.quotes.application.ports.in.QuoteQuery;"))
                 .isEmpty();

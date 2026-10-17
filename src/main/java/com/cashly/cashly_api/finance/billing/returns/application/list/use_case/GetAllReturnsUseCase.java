@@ -1,0 +1,28 @@
+package com.cashly.cashly_api.finance.billing.returns.application.list.use_case;
+
+import com.cashly.cashly_api.finance.billing.returns.application.dto.response.ReturnListResponse;
+import com.cashly.cashly_api.finance.billing.returns.application.services.ReturnResponseAssembler;
+import com.cashly.cashly_api.finance.billing.returns.domain.repository.ReturnRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+public class GetAllReturnsUseCase {
+
+    private final ReturnRepository returnRepository;
+    private final ReturnResponseAssembler responses;
+
+    public GetAllReturnsUseCase(ReturnRepository returnRepository, ReturnResponseAssembler responses) {
+        this.returnRepository = returnRepository;
+        this.responses = responses;
+    }
+
+    public List<ReturnListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
+                                             UUID customerId, UUID invoiceId) {
+        return returnRepository.findAllWithFilters(dateFrom, dateTo, customerId, invoiceId)
+                .stream()
+                .map(responses::toListResponse)
+                .toList();
+    }
+}

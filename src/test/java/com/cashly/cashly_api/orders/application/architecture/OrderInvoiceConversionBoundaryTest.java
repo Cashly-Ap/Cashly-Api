@@ -12,6 +12,6 @@ class OrderInvoiceConversionBoundaryTest {
         assertThat(Arrays.stream(ConvertToInvoiceUseCase.class.getDeclaredConstructors())
                 .flatMap(constructor -> Arrays.stream(constructor.getParameterTypes()))
                 .map(Class::getPackageName))
-                .noneMatch(name -> name.startsWith("com.cashly.cashly_api.invoices"));
+                .noneMatch(name -> name.startsWith("com.cashly.cashly_api.finance.billing.invoices"));
     }
 }

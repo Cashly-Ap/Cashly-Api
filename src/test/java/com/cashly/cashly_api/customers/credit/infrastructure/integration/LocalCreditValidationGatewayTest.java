@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.customers.credit.infrastructure.integration;
-import com.cashly.cashly_api.payments.credit.application.ports.in.CustomerCreditQuery;
-import com.cashly.cashly_api.payments.credit.application.ports.in.CreditStatusSnapshot;
-import com.cashly.cashly_api.payments.credit.application.ports.in.OverdueInvoiceSnapshot;
+import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.in.CustomerCreditQuery;
+import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.in.CreditStatusSnapshot;
+import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.in.OverdueInvoiceSnapshot;
 import com.cashly.cashly_api.customers.credit.application.dto.response.OverdueInvoiceResponse;
 import com.cashly.cashly_api.customers.credit.application.services.CustomerCreditEligibilityService;
 import org.junit.jupiter.api.Test;

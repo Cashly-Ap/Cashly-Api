@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.customers.balance.infrastructure.integration;
 
-import com.cashly.cashly_api.cash_register.sessions.application.movements.services.CashMovementService;
-import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementDirection;
-import com.cashly.cashly_api.cash_register.sessions.domain.valueobjects.CashMovementType;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.customers.balance.application.ports.out.CustomerCashGateway;
 import org.springframework.stereotype.Component;
 
