@@ -20,7 +20,7 @@ public final class BusinessModulePaths {
             Map.entry("payments", "finance/treasury/payments"),
             Map.entry("price_types", "catalog/price_types"),
             Map.entry("products", "catalog/products"),
-            Map.entry("purchases", "purchases"),
+            Map.entry("purchases", "procurement/purchases"),
             Map.entry("quotes", "sales/quotes"),
             Map.entry("receivables", "finance/treasury/receivables"),
             Map.entry("returns", "finance/billing/returns"),

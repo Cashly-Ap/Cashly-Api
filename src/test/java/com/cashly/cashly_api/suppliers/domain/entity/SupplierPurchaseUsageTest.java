@@ -28,7 +28,7 @@ class SupplierPurchaseUsageTest {
         for (Class<?> type : List.of(DeleteSupplierUseCase.class, ListSuppliersUseCase.class)) {
             for (var constructor : type.getConstructors()) {
                 for (Class<?> dependency : constructor.getParameterTypes()) {
-                    assertFalse(dependency.getPackageName().startsWith("com.cashly.cashly_api.purchases"), dependency.getName());
+                    assertFalse(dependency.getPackageName().startsWith("com.cashly.cashly_api.procurement.purchases"), dependency.getName());
                 }
             }
         }

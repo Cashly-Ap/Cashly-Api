@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.suppliers.infrastructure.integration;
 
-import com.cashly.cashly_api.purchases.domain.repository.PurchaseRepository;
-import com.cashly.cashly_api.purchases.infrastructure.config.SupplierPurchaseUsageConfig;
+import com.cashly.cashly_api.procurement.purchases.domain.repository.PurchaseRepository;
+import com.cashly.cashly_api.procurement.purchases.infrastructure.config.SupplierPurchaseUsageConfig;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
 import java.util.Set;
