@@ -11,7 +11,7 @@ public final class BusinessModulePaths {
             Map.entry("categories", "catalog/categories"),
             Map.entry("credit_notes", "finance/billing/credit_notes"),
             Map.entry("customers", "partners/customers"),
-            Map.entry("dashboard", "dashboard"),
+            Map.entry("dashboard", "analytics/dashboard"),
             Map.entry("debit_notes", "finance/billing/debit_notes"),
             Map.entry("invoices", "finance/billing/invoices"),
             Map.entry("notifications", "platform/notifications"),
