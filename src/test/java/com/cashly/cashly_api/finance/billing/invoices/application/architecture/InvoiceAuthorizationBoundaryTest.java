@@ -27,6 +27,6 @@ class InvoiceAuthorizationBoundaryTest {
     void should_authorize_without_foreign_entities_in_method_signature() {
         assertTrue(Arrays.stream(InvoiceIssueValidator.class.getDeclaredMethods())
                 .flatMap(method -> Arrays.stream(method.getParameterTypes()))
-                .noneMatch(type -> type.getName().startsWith("com.cashly.cashly_api.auth.")));
+                .noneMatch(type -> type.getName().startsWith("com.cashly.cashly_api.platform.auth.")));
     }
 }

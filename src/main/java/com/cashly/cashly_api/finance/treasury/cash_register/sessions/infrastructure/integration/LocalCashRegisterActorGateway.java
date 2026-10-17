@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
+import com.cashly.cashly_api.platform.auth.user.application.ports.in.ActorIdentityQuery;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.out.CashRegisterActorGateway;
 import org.springframework.stereotype.Component;
 

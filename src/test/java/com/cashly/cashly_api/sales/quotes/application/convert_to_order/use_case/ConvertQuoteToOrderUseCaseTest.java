@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.sales.quotes.application.convert_to_order.use_case;
 
-import com.cashly.cashly_api.auth.user.domain.entity.User;
-import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
+import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
+import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.sales.orders.domain.entity.Order;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLine;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLineAllocation;
@@ -16,7 +16,7 @@ import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteAllocation;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteLine;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteStatus;
@@ -73,10 +73,10 @@ class ConvertQuoteToOrderUseCaseTest {
                         new com.cashly.cashly_api.sales.orders.infrastructure.integration.LocalOrderInventoryGateway(
                             new com.cashly.cashly_api.inventory.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository)))),
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.QuoteActorIdentityAdapter(
-                    new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
-                        mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),
+                    new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
+                        mock(com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder.class))),
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
-                    new com.cashly.cashly_api.notifications.application.quotes.services.QuoteConversionNotificationService(notificationService)));
+                    new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteConversionNotificationService(notificationService)));
     }
 
     @Test

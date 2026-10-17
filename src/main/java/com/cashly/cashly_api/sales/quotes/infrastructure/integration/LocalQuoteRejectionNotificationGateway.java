@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.notifications.application.ports.in.QuoteRejectionNotifications;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.QuoteRejectionNotifications;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteRejectionNotificationGateway;
 import org.springframework.stereotype.Component;
 import java.util.UUID;

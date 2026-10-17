@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.infrastructure.config;
 
-import com.cashly.cashly_api.auth.authentication.application.exceptions.InvalidCredentialsException;
-import com.cashly.cashly_api.auth.token.application.exceptions.InvalidTokenException;
-import com.cashly.cashly_api.auth.token.application.exceptions.TokenExpiredException;
-import com.cashly.cashly_api.auth.user.application.exceptions.DuplicateEmailException;
-import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
+import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
+import com.cashly.cashly_api.platform.auth.token.application.exceptions.InvalidTokenException;
+import com.cashly.cashly_api.platform.auth.token.application.exceptions.TokenExpiredException;
+import com.cashly.cashly_api.platform.auth.user.application.exceptions.DuplicateEmailException;
+import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException;
 import com.cashly.cashly_api.partners.customers.profile.application.exceptions.DuplicateCustomerRifException;
 import com.cashly.cashly_api.infrastructure.config.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;

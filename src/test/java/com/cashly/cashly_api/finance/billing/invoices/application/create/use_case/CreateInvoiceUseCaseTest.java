@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.create.use_case;
 
-import com.cashly.cashly_api.auth.user.domain.entity.User;
-import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
+import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
+import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.partners.customers.profile.domain.entity.Customer;
 import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
 import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CreditDays;

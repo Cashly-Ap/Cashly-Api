@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.ActorIdentityGateway;
-import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
+import com.cashly.cashly_api.platform.auth.user.application.ports.in.ActorIdentityQuery;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
 import java.util.Optional;

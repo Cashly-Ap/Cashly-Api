@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
-import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
-import com.cashly.cashly_api.auth.user.infrastructure.config.ActorIdentityQueryConfig;
+import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
+import com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder;
+import com.cashly.cashly_api.platform.auth.user.infrastructure.config.ActorIdentityQueryConfig;
 import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
 import com.cashly.cashly_api.partners.customers.balance.infrastructure.config.InvoiceBalanceConsumptionConfig;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
@@ -21,7 +21,7 @@ import com.cashly.cashly_api.finance.billing.invoices.application.issue.services
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
 import com.cashly.cashly_api.finance.billing.invoices.application.confirm.use_case.ConfirmInvoiceUseCase;
 import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;

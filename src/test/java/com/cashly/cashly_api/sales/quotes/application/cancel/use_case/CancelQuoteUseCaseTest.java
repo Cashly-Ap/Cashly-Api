@@ -3,7 +3,7 @@ package com.cashly.cashly_api.sales.quotes.application.cancel.use_case;
 import com.cashly.cashly_api.sales.quotes.application.cancel.request.CancelQuoteRequest;
 import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class CancelQuoteUseCaseTest {
     void setUp() {
         cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository,
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.LocalQuoteRejectionNotificationGateway(
-                        new com.cashly.cashly_api.notifications.application.quotes.services.QuoteRejectionNotificationService(notificationService)));
+                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteRejectionNotificationService(notificationService)));
     }
 
     @Test

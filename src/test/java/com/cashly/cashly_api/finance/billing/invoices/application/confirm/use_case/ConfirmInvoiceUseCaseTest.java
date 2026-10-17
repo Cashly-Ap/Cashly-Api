@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.confirm.use_case;
 
-import com.cashly.cashly_api.auth.user.domain.entity.User;
-import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserRole;
+import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
+import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
@@ -18,7 +18,7 @@ import com.cashly.cashly_api.finance.billing.invoices.application.issue.request.
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.model.InvoiceOrigin;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLineAllocation;
@@ -85,8 +85,8 @@ class ConfirmInvoiceUseCaseTest {
         lenient().when(authorizationService.validate(any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(new InvoiceIssueValidator.CashPaymentPlan(java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO));
         var actors = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalActorIdentityGateway(
-                new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
-                        mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class)));
+                new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
+                        mock(com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder.class)));
         var inventory = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
                 new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
                         warehouseStockRepository, stockMovementRepository));

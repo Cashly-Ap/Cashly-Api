@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.procurement.purchases.application.create.use_case;
 
-import com.cashly.cashly_api.auth.user.domain.entity.User;
-import com.cashly.cashly_api.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Email;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
+import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
+import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.catalog.products.domain.entity.Product;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.procurement.purchases.application.create.request.CreatePurchaseRequest;
@@ -60,7 +60,7 @@ class CreatePurchaseUseCaseUnitTest {
                 new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseProductGatewayAdapter(
                         new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)),
                 new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseActorGatewayAdapter(
-                        new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository, null)),
+                        new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository, null)),
                 new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
                         new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository.class)))));
     }

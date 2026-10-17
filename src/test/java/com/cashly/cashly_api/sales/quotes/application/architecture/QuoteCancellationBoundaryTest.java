@@ -11,6 +11,6 @@ class QuoteCancellationBoundaryTest {
     void should_depend_on_an_owned_notification_contract() {
         assertFalse(Arrays.stream(CancelQuoteUseCase.class.getDeclaredConstructors())
                 .flatMap(constructor -> Arrays.stream(constructor.getParameterTypes()))
-                .anyMatch(type -> type.getPackageName().startsWith("com.cashly.cashly_api.notifications")));
+                .anyMatch(type -> type.getPackageName().startsWith("com.cashly.cashly_api.platform.notifications")));
     }
 }

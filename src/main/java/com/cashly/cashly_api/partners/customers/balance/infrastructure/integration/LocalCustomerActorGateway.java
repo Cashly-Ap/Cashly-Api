@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.partners.customers.balance.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
+import com.cashly.cashly_api.platform.auth.user.application.ports.in.ActorIdentityQuery;
 import com.cashly.cashly_api.partners.customers.balance.application.ports.out.CustomerActorGateway;
 import org.springframework.stereotype.Component;
 

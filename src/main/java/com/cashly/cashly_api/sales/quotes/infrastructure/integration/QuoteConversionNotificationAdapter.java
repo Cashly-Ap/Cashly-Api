@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.notifications.application.ports.in.QuoteConversionNotifications;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.QuoteConversionNotifications;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway;
 import org.springframework.stereotype.Component;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.orders.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
+import com.cashly.cashly_api.platform.auth.user.application.ports.in.ActorIdentityQuery;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderActorGateway;
 import org.springframework.stereotype.Component;
 

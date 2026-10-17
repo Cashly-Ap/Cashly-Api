@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway;
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
 @Component

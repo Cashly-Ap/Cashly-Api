@@ -1,12 +1,12 @@
 package com.cashly.cashly_api.infrastructure.config;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.cashly.cashly_api.auth.authentication.application.exceptions.InvalidCredentialsException;
-import com.cashly.cashly_api.auth.token.application.exceptions.InvalidTokenException;
-import com.cashly.cashly_api.auth.token.application.exceptions.TokenExpiredException;
-import com.cashly.cashly_api.auth.user.application.exceptions.DuplicateEmailException;
-import com.cashly.cashly_api.auth.user.application.exceptions.UserHasAssociatedRecordsException;
-import com.cashly.cashly_api.auth.user.application.exceptions.UserNotFoundException;
+import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
+import com.cashly.cashly_api.platform.auth.token.application.exceptions.InvalidTokenException;
+import com.cashly.cashly_api.platform.auth.token.application.exceptions.TokenExpiredException;
+import com.cashly.cashly_api.platform.auth.user.application.exceptions.DuplicateEmailException;
+import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserHasAssociatedRecordsException;
+import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryHasActiveProductsException;
 import com.cashly.cashly_api.partners.customers.profile.application.delete.services.CustomerHasAssociatedRecordsException;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryNotFoundException;

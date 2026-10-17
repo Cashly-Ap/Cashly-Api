@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.orders.infrastructure.integration;
 
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
 import org.springframework.stereotype.Component;
 

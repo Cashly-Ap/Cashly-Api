@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.infrastructure.integration;
 
-import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
+import com.cashly.cashly_api.platform.auth.user.application.ports.in.ActorIdentityQuery;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.ActorIdentityGateway;
 import org.springframework.stereotype.Component;
 import java.util.UUID;

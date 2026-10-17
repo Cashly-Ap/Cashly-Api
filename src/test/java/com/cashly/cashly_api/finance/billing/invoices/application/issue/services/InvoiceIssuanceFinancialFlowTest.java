@@ -6,11 +6,11 @@ import com.cashly.cashly_api.finance.billing.invoices.application.issue.model.In
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.InvoiceIssuanceFinancialFlowTest;
 
-import com.cashly.cashly_api.auth.user.domain.entity.User;
-import com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.Password;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.auth.user.domain.valueobjects.UserName;
+import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
+import com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
@@ -86,7 +86,7 @@ class InvoiceIssuanceFinancialFlowTest {
 
     private User user;
     private com.cashly.cashly_api.finance.billing.invoices.application.ports.out.ActorIdentityGateway.Actor actor;
-    private com.cashly.cashly_api.auth.user.domain.repository.UserRepository actorRepository;
+    private com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository actorRepository;
 
     @BeforeEach
     void setUp() {
@@ -95,13 +95,13 @@ class InvoiceIssuanceFinancialFlowTest {
         var password = mock(Password.class);
         lenient().when(password.getHashedValue()).thenReturn(hashedPassword);
         lenient().when(user.getPassword()).thenReturn(password);
-        actorRepository = mock(com.cashly.cashly_api.auth.user.domain.repository.UserRepository.class);
+        actorRepository = mock(com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository.class);
         lenient().when(actorRepository.findById(new UserId(authenticatedUserId))).thenReturn(java.util.Optional.of(user));
         actor = new com.cashly.cashly_api.finance.billing.invoices.application.ports.out.ActorIdentityGateway.Actor(authenticatedUserId, "Test User");
         var cashOperations = new com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.services.CashRegisterOperationsService(cashMovementService);
         service = new AuthorizationFlow(creditGuard,
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalActorIdentityGateway(
-                        new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(actorRepository, passwordEncoder)),
+                        new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(actorRepository, passwordEncoder)),
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerBalanceGateway(
                         new com.cashly.cashly_api.partners.customers.balance.application.services.InvoiceBalanceConsumptionService(consumeCustomerBalanceUseCase)),
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoicePaymentSettlementGateway(

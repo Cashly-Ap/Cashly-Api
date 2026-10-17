@@ -6,7 +6,7 @@ import java.util.Map;
 /** Resolves the business owner rather than treating an ERP area as one module. */
 public final class BusinessModulePaths {
     private static final Map<String, String> MODULES = Map.ofEntries(
-            Map.entry("auth", "auth"),
+            Map.entry("auth", "platform/auth"),
             Map.entry("cash_register", "finance/treasury/cash_register"),
             Map.entry("categories", "catalog/categories"),
             Map.entry("credit_notes", "finance/billing/credit_notes"),
@@ -14,7 +14,7 @@ public final class BusinessModulePaths {
             Map.entry("dashboard", "dashboard"),
             Map.entry("debit_notes", "finance/billing/debit_notes"),
             Map.entry("invoices", "finance/billing/invoices"),
-            Map.entry("notifications", "notifications"),
+            Map.entry("notifications", "platform/notifications"),
             Map.entry("orders", "sales/orders"),
             Map.entry("payment_methods", "finance/treasury/payment_methods"),
             Map.entry("payments", "finance/treasury/payments"),

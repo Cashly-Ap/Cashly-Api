@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.integration;
 
-import com.cashly.cashly_api.notifications.application.services.NotificationService;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentNotificationGateway;
 import org.springframework.stereotype.Component;
 

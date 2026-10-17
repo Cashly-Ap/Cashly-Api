@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.procurement.purchases.infrastructure.integration;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseActorGateway;
-import com.cashly.cashly_api.auth.user.application.ports.in.ActorIdentityQuery;
+import com.cashly.cashly_api.platform.auth.user.application.ports.in.ActorIdentityQuery;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
