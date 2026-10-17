@@ -17,12 +17,12 @@ class InvoiceInventoryBoundaryTest {
                 DuplicateInvoiceUseCase.class, DeleteInvoiceUseCase.class,
                 ConfirmInvoiceUseCase.class, CancelInvoiceUseCase.class)) {
             for (var field : useCase.getDeclaredFields()) {
-                assertFalse(field.getType().getPackageName().startsWith("com.cashly.cashly_api.warehouses"),
+                assertFalse(field.getType().getPackageName().startsWith("com.cashly.cashly_api.inventory.warehouses"),
                         useCase.getSimpleName() + " depends on foreign inventory type " + field.getType().getName());
             }
             for (var constructor : useCase.getDeclaredConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.warehouses"),
+                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.inventory.warehouses"),
                             useCase.getSimpleName() + " exposes foreign inventory type " + parameter.getName());
                 }
             }

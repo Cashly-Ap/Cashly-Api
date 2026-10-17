@@ -10,7 +10,7 @@ import com.cashly.cashly_api.customers.warehouse_access.domain.entity.CustomerWa
 import com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository;
 import com.cashly.cashly_api.customers.warehouse_access.domain.repository.CustomerWarehouseAccessRepository;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
-import com.cashly.cashly_api.warehouses.management.application.exceptions.WarehouseNotFoundException;
+import com.cashly.cashly_api.inventory.warehouses.management.application.exceptions.WarehouseNotFoundException;
 
 import com.cashly.cashly_api.customers.warehouse_access.application.ports.out.WarehouseDirectoryGateway;
 import com.cashly.cashly_api.customers.warehouse_access.application.ports.out.model.WarehouseSnapshot;

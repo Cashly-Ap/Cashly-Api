@@ -10,15 +10,15 @@ import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseLineId;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseNumber;
 import com.cashly.cashly_api.purchases.domain.valueobjects.PurchaseStatus;
-import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
-import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.ReferenceType;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.StockMovement;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.MovementType;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.ReferenceType;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.StockMovement;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository;
+import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import com.cashly.cashly_api.purchases.infrastructure.integration.WarehouseInventoryAdapter;
-import com.cashly.cashly_api.warehouses.stock.application.purchases.services.PurchaseInventoryService;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.purchases.services.PurchaseInventoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ class ConfirmPurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         confirmPurchaseUseCase = new ConfirmPurchaseUseCase(purchaseRepository,
-                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
     }
 
     @Test

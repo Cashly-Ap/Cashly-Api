@@ -13,7 +13,7 @@ import com.cashly.cashly_api.purchases.application.dto.response.PurchaseDetailRe
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseSupplierGateway;
 import com.cashly.cashly_api.purchases.domain.entity.Purchase;
 import com.cashly.cashly_api.purchases.domain.repository.PurchaseRepository;
-import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
+import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class CreatePurchaseUseCaseUnitTest {
                 new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseActorGatewayAdapter(
                         new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository, null)),
                 new com.cashly.cashly_api.purchases.application.services.PurchaseDetailResponseAssembler(
-                        new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository.class)))));
+                        new com.cashly.cashly_api.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository.class)))));
     }
 
     @Test

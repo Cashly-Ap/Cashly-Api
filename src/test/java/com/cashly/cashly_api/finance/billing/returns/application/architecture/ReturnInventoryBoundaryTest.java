@@ -13,7 +13,7 @@ class ReturnInventoryBoundaryTest {
         for (Class<?> useCase : List.of(CreateReturnUseCase.class, DeleteReturnUseCase.class)) {
             for (var constructor : useCase.getConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.warehouses"), parameter.getName());
+                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.inventory.warehouses"), parameter.getName());
                 }
             }
         }

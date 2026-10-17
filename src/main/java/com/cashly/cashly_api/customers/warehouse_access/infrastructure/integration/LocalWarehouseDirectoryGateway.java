@@ -2,8 +2,8 @@ package com.cashly.cashly_api.customers.warehouse_access.infrastructure.integrat
 
 import com.cashly.cashly_api.customers.warehouse_access.application.ports.out.WarehouseDirectoryGateway;
 import com.cashly.cashly_api.customers.warehouse_access.application.ports.out.model.WarehouseSnapshot;
-import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
-import com.cashly.cashly_api.warehouses.management.application.exceptions.WarehouseNotFoundException;
+import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
+import com.cashly.cashly_api.inventory.warehouses.management.application.exceptions.WarehouseNotFoundException;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;

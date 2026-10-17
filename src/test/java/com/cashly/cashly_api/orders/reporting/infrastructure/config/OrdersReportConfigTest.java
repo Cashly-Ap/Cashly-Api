@@ -5,8 +5,8 @@ import com.cashly.cashly_api.orders.reporting.application.ports.out.OrderPdfPort
 import com.cashly.cashly_api.orders.reporting.application.ports.out.OrdersReportPdfPort;
 import com.cashly.cashly_api.orders.reporting.application.generate_order_pdf.use_case.GenerateOrderPdfUseCase;
 import com.cashly.cashly_api.orders.reporting.application.generate_orders_report_pdf.use_case.GenerateOrdersReportPdfUseCase;
-import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

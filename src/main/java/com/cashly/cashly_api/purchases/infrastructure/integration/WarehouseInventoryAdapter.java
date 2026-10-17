@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.purchases.infrastructure.integration;
 
 import com.cashly.cashly_api.purchases.application.ports.out.InventoryGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.PurchaseInventoryApi;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.PurchaseStockCommand;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.PurchaseInventoryApi;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.PurchaseStockCommand;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

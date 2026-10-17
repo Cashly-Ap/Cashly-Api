@@ -20,8 +20,8 @@ import com.cashly.cashly_api.notifications.application.services.NotificationServ
 import com.cashly.cashly_api.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,7 +71,7 @@ class ConvertQuoteToOrderUseCaseTest {
                 new com.cashly.cashly_api.quotes.infrastructure.integration.LocalOrderCreationGateway(
                     new com.cashly.cashly_api.orders.application.create.from_quote.services.QuoteOrderCreationService(orderRepository,
                         new com.cashly.cashly_api.orders.infrastructure.integration.LocalOrderInventoryGateway(
-                            new com.cashly.cashly_api.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository)))),
+                            new com.cashly.cashly_api.inventory.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository)))),
                 new com.cashly.cashly_api.quotes.infrastructure.integration.QuoteActorIdentityAdapter(
                     new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
                         mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class))),

@@ -25,7 +25,7 @@ class ProductStockBoundaryTest {
         }
     }
     private void assertOwnType(Class<?> type) {
-        assertFalse(type.getPackageName().startsWith("com.cashly.cashly_api.warehouses"), type.getName());
+        assertFalse(type.getPackageName().startsWith("com.cashly.cashly_api.inventory.warehouses"), type.getName());
         assertFalse(type.getPackageName().startsWith("com.cashly.cashly_api.customers"), type.getName());
     }
 }

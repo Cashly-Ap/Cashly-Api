@@ -41,8 +41,8 @@ import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.Invo
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceOrderGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceQuoteGateway;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -129,7 +129,7 @@ class CreateInvoiceUseCaseTest {
                 .map(quote -> new InvoiceQuoteGateway.Quote(quote.getId(), quote.getCustomerId(), quote.getStatus().name()));
         createInvoiceUseCase = new CreateInvoiceUseCase(
                 invoiceRepository, orderGateway, customers, creditTerms, actors, catalog,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository.class))), new IssueInvoiceService(invoiceRepository, actors, authorizationService,
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), new IssueInvoiceService(invoiceRepository, actors, authorizationService,
                     mock(InvoicePaymentService.class), mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
                     mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class), notificationService,
                     mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway.class)),

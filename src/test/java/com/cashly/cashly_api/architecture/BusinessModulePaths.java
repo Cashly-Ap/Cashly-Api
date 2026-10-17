@@ -25,7 +25,7 @@ public final class BusinessModulePaths {
             Map.entry("receivables", "finance/treasury/receivables"),
             Map.entry("returns", "finance/billing/returns"),
             Map.entry("suppliers", "suppliers"),
-            Map.entry("warehouses", "warehouses"));
+            Map.entry("warehouses", "inventory/warehouses"));
 
     private BusinessModulePaths() {}
 

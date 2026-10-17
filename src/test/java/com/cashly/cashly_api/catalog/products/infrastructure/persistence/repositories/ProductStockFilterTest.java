@@ -4,8 +4,8 @@ import com.cashly.cashly_api.catalog.products.infrastructure.persistence.adapter
 
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductStockFilterGateway;
 import com.cashly.cashly_api.catalog.products.infrastructure.integration.LocalProductStockFilterGatewayAdapter;
-import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.queries.JpaAvailableStockProductsQuery;
-import com.cashly.cashly_api.warehouses.stock.infrastructure.persistence.repositories.SpringDataAvailableStockProductsRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.persistence.queries.JpaAvailableStockProductsQuery;
+import com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.persistence.repositories.SpringDataAvailableStockProductsRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

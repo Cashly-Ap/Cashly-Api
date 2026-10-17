@@ -28,8 +28,8 @@ import com.cashly.cashly_api.notifications.application.services.NotificationServ
 import com.cashly.cashly_api.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.quotes.domain.valueobjects.QuoteStatus;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,7 +87,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
                 new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
                         mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class)));
         var stock = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalStockDeductionGateway(
-                new com.cashly.cashly_api.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository));
+                new com.cashly.cashly_api.inventory.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository));
         var issuance = new IssueInvoiceService(invoiceRepository, actors, authorizationService,
                 mock(InvoicePaymentService.class), mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
                 stock, mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway.class),

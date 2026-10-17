@@ -14,8 +14,8 @@ import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.Paymen
 import com.cashly.cashly_api.catalog.products.domain.entity.Product;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockAvailabilityGateway;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ class UpdateInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         updateInvoiceUseCase = new UpdateInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository.class))), stockEnrichmentService, new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerCreditTermsGateway(new com.cashly.cashly_api.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery(mock(com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository.class))));
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), stockEnrichmentService, new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerCreditTermsGateway(new com.cashly.cashly_api.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery(mock(com.cashly.cashly_api.customers.profile.domain.repository.CustomerRepository.class))));
     }
 
     @Test

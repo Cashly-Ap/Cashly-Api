@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.catalog.products.infrastructure.integration;
 
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductWarehouseStockGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.ProductStockQuery;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ProductStockQuery;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;

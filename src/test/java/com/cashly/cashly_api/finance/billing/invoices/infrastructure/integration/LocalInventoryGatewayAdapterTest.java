@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.InvoiceInventoryApi;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.InvoiceStockCommand;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.InvoiceInventoryApi;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.InvoiceStockCommand;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import java.util.List;
@@ -53,7 +53,7 @@ class LocalInventoryGatewayAdapterTest {
         verifyNoMoreInteractions(api);
     }
     @Test void should_preserve_invalid_request_response_when_reservation_stock_is_missing() {
-        var missing = new com.cashly.cashly_api.warehouses.stock.application.exceptions.ProductNotInWarehouseException(productId, warehouseId);
+        var missing = new com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.ProductNotInWarehouseException(productId, warehouseId);
         doThrow(missing).when(api).reserveAllocations(any());
         IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
                 () -> adapter.reserveAllocations(command.allocations()));

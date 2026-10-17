@@ -25,8 +25,8 @@ import com.cashly.cashly_api.orders.application.ports.out.OrderProductCatalogGat
 import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.catalog.products.domain.entity.Product;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

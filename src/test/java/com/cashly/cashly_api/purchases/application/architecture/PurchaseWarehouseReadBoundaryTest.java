@@ -21,12 +21,12 @@ class PurchaseWarehouseReadBoundaryTest {
                 PurchaseMapper.class, PurchaseDetailResponseAssembler.class)) {
             for (var constructor : type.getConstructors()) {
                 for (var parameter : constructor.getGenericParameterTypes()) {
-                    assertFalse(parameter.getTypeName().contains("com.cashly.cashly_api.warehouses"), constructor.toString());
+                    assertFalse(parameter.getTypeName().contains("com.cashly.cashly_api.inventory.warehouses"), constructor.toString());
                 }
             }
             for (var method : type.getDeclaredMethods()) {
                 for (var parameter : method.getGenericParameterTypes()) {
-                    assertFalse(parameter.getTypeName().contains("com.cashly.cashly_api.warehouses"), method.toString());
+                    assertFalse(parameter.getTypeName().contains("com.cashly.cashly_api.inventory.warehouses"), method.toString());
                 }
             }
         }

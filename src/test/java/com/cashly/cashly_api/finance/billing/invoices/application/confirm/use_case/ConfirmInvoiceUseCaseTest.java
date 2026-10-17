@@ -29,11 +29,11 @@ import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.Invoic
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.warehouses.stock.domain.valueobjects.MovementType;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.StockMovement;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.MovementType;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.StockMovement;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,7 +88,7 @@ class ConfirmInvoiceUseCaseTest {
                 new com.cashly.cashly_api.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
                         mock(com.cashly.cashly_api.auth.user.domain.services.PasswordEncoder.class)));
         var inventory = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
-                new com.cashly.cashly_api.warehouses.stock.application.invoices.services.InvoiceInventoryService(
+                new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
                         warehouseStockRepository, stockMovementRepository));
         var notifications = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceNotificationGateway(notificationService);
         var cash = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCashRegisterGateway(
@@ -196,7 +196,7 @@ class ConfirmInvoiceUseCaseTest {
         when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
         when(userRepository.findById(new UserId(authenticatedUserId)))
                 .thenReturn(Optional.of(buildUser(authenticatedUserId)));
-        assertThrows(com.cashly.cashly_api.warehouses.stock.application.exceptions.ProductNotInWarehouseException.class,
+        assertThrows(com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.ProductNotInWarehouseException.class,
                 () -> confirmInvoiceUseCase.execute(id, new ConfirmInvoiceRequest(null, false, null, null), authenticatedUserId));
         verify(invoiceRepository, never()).save(any());
         verify(warehouseStockRepository, never()).save(any());

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.purchases.infrastructure.integration;
 
 import com.cashly.cashly_api.purchases.application.ports.out.PurchaseWarehouseGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.PurchaseWarehouseQuery;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.PurchaseWarehouseQuery;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;

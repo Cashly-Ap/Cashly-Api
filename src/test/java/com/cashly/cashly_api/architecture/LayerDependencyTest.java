@@ -61,8 +61,8 @@ class LayerDependencyTest {
         assertThat(domainLayerViolations(Path.of("warehouses/stock/domain/Stock.java"),
                 "import org.springframework.stereotype.Service;")).isNotEmpty();
         assertThat(domainLayerViolations(Path.of("warehouses/stock/domain/Stock.java"),
-                "import static com.cashly.cashly_api.warehouses.stock.application.Helpers.value;"))
-                .containsExactly("com.cashly.cashly_api.warehouses.stock.application.Helpers.value");
+                "import static com.cashly.cashly_api.inventory.warehouses.stock.application.Helpers.value;"))
+                .containsExactly("com.cashly.cashly_api.inventory.warehouses.stock.application.Helpers.value");
         assertThat(portViolations(stock, "import jakarta.persistence.Entity;")).isNotEmpty();
         assertThat(domainOwnershipViolations(Path.of("warehouses/stock/domain/Stock.java"),
                 "import com.cashly.cashly_api.catalog.products.domain.entity.Product;"))
@@ -87,7 +87,7 @@ class LayerDependencyTest {
         Path stock = Path.of("warehouses/stock/application/queries/Availability.java");
         String source = """
                 import com.cashly.cashly_api.customers.warehouse_access.application.ports.in.AccessQuery;
-                import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
+                import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
                 import com.cashly.cashly_api.shared.dto.PageResponse;
                 // import com.cashly.cashly_api.customers.profile.domain.entity.Customer;
                 String example = "com.cashly.cashly_api.customers.profile.infrastructure.CustomerEntity";

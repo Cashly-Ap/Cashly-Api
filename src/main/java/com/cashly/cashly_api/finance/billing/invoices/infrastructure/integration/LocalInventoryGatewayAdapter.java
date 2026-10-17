@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.InvoiceInventoryApi;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.InvoiceStockCommand;
-import com.cashly.cashly_api.warehouses.stock.application.exceptions.ProductNotInWarehouseException;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.InvoiceInventoryApi;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.InvoiceStockCommand;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.ProductNotInWarehouseException;
 import org.springframework.stereotype.Component;
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.finance.billing.returns.application.create.use_case;
 
 import com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnInventoryGatewayAdapter;
-import com.cashly.cashly_api.warehouses.stock.application.returns.services.ReturnInventoryService;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.returns.services.ReturnInventoryService;
 
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
@@ -28,9 +28,9 @@ import com.cashly.cashly_api.finance.billing.returns.application.ports.out.Retur
 import com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.InvoiceReturnAdjustmentAdapter;
 import com.cashly.cashly_api.finance.billing.invoices.application.queries.services.RepositoryInvoiceReturnAdjustments;
 import com.cashly.cashly_api.finance.billing.returns.domain.repository.ReturnRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.entity.WarehouseStock;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.StockMovementRepository;
-import com.cashly.cashly_api.warehouses.stock.domain.repository.WarehouseStockRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository;
+import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

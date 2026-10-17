@@ -6,8 +6,8 @@ import com.cashly.cashly_api.finance.billing.returns.domain.valueobjects.ReturnI
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.ReturnLine;
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.ReturnLineAllocation;
 import com.cashly.cashly_api.finance.billing.returns.domain.valueobjects.ReturnNumber;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.ReturnInventoryApi;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.ReturnStockCommand;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ReturnInventoryApi;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ReturnStockCommand;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;

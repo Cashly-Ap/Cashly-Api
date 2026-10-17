@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.finance.billing.returns.infrastructure.integration;
 
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnInventoryGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.ReturnInventoryApi;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.ReturnStockCommand;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ReturnInventoryApi;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ReturnStockCommand;
 import org.springframework.stereotype.Component;
 
 @Component

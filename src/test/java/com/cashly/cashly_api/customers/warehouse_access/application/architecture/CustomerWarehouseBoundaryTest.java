@@ -18,7 +18,7 @@ class CustomerWarehouseBoundaryTest {
             var dependencies = Arrays.stream(useCase.getConstructors()[0].getParameterTypes()).map(Class::getName).toList();
             assertTrue(dependencies.contains("com.cashly.cashly_api.customers.warehouse_access.application.ports.out.WarehouseDirectoryGateway"),
                     useCase.getSimpleName() + dependencies);
-            assertTrue(dependencies.stream().noneMatch(type -> type.startsWith("com.cashly.cashly_api.warehouses.")));
+            assertTrue(dependencies.stream().noneMatch(type -> type.startsWith("com.cashly.cashly_api.inventory.warehouses.")));
         }
     }
 
@@ -40,7 +40,7 @@ class CustomerWarehouseBoundaryTest {
                     })
                     .filter(line -> line.startsWith("import com.cashly.cashly_api.auth.")
                             || line.startsWith("import com.cashly.cashly_api.finance.treasury.cash_register.")
-                            || line.startsWith("import com.cashly.cashly_api.warehouses."))
+                            || line.startsWith("import com.cashly.cashly_api.inventory.warehouses."))
                     .toList();
             assertTrue(foreignImports.isEmpty(), foreignImports.toString());
         }

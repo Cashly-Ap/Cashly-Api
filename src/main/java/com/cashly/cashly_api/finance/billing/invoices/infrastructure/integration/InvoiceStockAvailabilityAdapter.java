@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration;
 
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockAvailabilityGateway;
-import com.cashly.cashly_api.warehouses.stock.application.ports.in.StockAvailabilityQuery;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.StockAvailabilityQuery;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;

@@ -10,7 +10,7 @@ import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerId;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.CustomerType;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.LegalName;
 import com.cashly.cashly_api.customers.profile.domain.valueobjects.Rif;
-import com.cashly.cashly_api.warehouses.management.domain.entity.Warehouse;
+import com.cashly.cashly_api.inventory.warehouses.management.domain.entity.Warehouse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

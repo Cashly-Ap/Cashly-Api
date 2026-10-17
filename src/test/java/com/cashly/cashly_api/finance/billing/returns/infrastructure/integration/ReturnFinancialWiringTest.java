@@ -24,8 +24,8 @@ import com.cashly.cashly_api.customers.balance.application.consume.use_case.Cons
 import com.cashly.cashly_api.customers.balance.infrastructure.config.ReturnBalanceMutationConfig;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.services.CashMovementService;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.config.ReturnCashRecordingConfig;
-import com.cashly.cashly_api.warehouses.management.domain.repository.WarehouseRepository;
-import com.cashly.cashly_api.warehouses.management.infrastructure.config.WarehouseDirectoryConfig;
+import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
+import com.cashly.cashly_api.inventory.warehouses.management.infrastructure.config.WarehouseDirectoryConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;

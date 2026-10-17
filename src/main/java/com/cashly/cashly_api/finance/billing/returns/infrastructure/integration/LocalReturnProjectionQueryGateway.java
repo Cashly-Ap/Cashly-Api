@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.finance.billing.returns.infrastructure.integration;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnProjectionQueryGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.ReturnInvoiceQuery;
-import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
+import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;

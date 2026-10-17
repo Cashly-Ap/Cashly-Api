@@ -2,8 +2,8 @@ package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integratio
 
 import com.cashly.cashly_api.catalog.products.application.ports.in.SalesProductCatalogQuery;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.in.InvoiceReturnDetailsQuery;
-import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryEntry;
-import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
+import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryEntry;
+import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

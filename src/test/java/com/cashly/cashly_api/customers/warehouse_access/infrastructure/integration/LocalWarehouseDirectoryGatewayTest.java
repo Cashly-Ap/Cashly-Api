@@ -1,9 +1,9 @@
 package com.cashly.cashly_api.customers.warehouse_access.infrastructure.integration;
 
 import com.cashly.cashly_api.customers.warehouse_access.application.ports.out.model.WarehouseSnapshot;
-import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
-import com.cashly.cashly_api.warehouses.management.application.ports.in.WarehouseDirectoryEntry;
-import com.cashly.cashly_api.warehouses.management.application.exceptions.WarehouseNotFoundException;
+import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryQuery;
+import com.cashly.cashly_api.inventory.warehouses.management.application.ports.in.WarehouseDirectoryEntry;
+import com.cashly.cashly_api.inventory.warehouses.management.application.exceptions.WarehouseNotFoundException;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.UUID;
