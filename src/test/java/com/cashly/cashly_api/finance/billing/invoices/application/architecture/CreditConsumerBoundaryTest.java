@@ -6,7 +6,7 @@ import com.cashly.cashly_api.finance.billing.invoices.application.issue.request.
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.model.InvoiceOrigin;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
-import com.cashly.cashly_api.orders.application.get.use_case.GetOrderByIdUseCase;
+import com.cashly.cashly_api.sales.orders.application.get.use_case.GetOrderByIdUseCase;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.stream.Stream;

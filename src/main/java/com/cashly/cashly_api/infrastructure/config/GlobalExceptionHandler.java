@@ -18,9 +18,9 @@ import com.cashly.cashly_api.customers.warehouse_access.application.exceptions.C
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotFoundException;
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotReturnableException;
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.ReturnQuantityExceedsException;
-import com.cashly.cashly_api.orders.domain.exceptions.OrderCannotBeDeletedException;
-import com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException;
-import com.cashly.cashly_api.orders.domain.exceptions.OrderNotPendingException;
+import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderCannotBeDeletedException;
+import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotFoundException;
+import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotPendingException;
 import com.cashly.cashly_api.catalog.products.application.exceptions.CompositeProductCannotBeComponentException;
 import com.cashly.cashly_api.catalog.products.application.exceptions.DuplicateProductCodeException;
 import com.cashly.cashly_api.catalog.products.application.exceptions.DuplicateProductComponentException;
@@ -31,10 +31,10 @@ import com.cashly.cashly_api.suppliers.application.exceptions.SupplierHasAssocia
 import com.cashly.cashly_api.catalog.price_types.application.exceptions.DuplicatePriceTypeNameException;
 import com.cashly.cashly_api.catalog.price_types.application.exceptions.PriceTypeInUseException;
 import com.cashly.cashly_api.catalog.price_types.application.exceptions.PriceTypeNotFoundException;
-import com.cashly.cashly_api.quotes.domain.exceptions.InvalidQuoteAllocationException;
-import com.cashly.cashly_api.quotes.domain.exceptions.InvalidQuoteLineException;
-import com.cashly.cashly_api.quotes.domain.exceptions.QuoteNotFoundException;
-import com.cashly.cashly_api.quotes.domain.exceptions.QuoteStateException;
+import com.cashly.cashly_api.sales.quotes.domain.exceptions.InvalidQuoteAllocationException;
+import com.cashly.cashly_api.sales.quotes.domain.exceptions.InvalidQuoteLineException;
+import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
+import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteStateException;
 import com.cashly.cashly_api.customers.credit.application.exceptions.CreditLimitExceededException;
 import com.cashly.cashly_api.inventory.warehouses.management.application.create.services.DuplicateWarehouseCodeException;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.InsufficientStockException;

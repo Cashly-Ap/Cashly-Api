@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration_tests;
 
 import com.cashly.cashly_api.CashlyApplication;
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.use_case.ConvertQuoteToInvoiceUseCase;
-import com.cashly.cashly_api.quotes.application.convert_to_invoice.request.ConvertQuoteToInvoiceRequest;
-import com.cashly.cashly_api.orders.application.convert_to_invoice.use_case.ConvertToInvoiceUseCase;
-import com.cashly.cashly_api.orders.application.convert_to_invoice.request.ConvertToInvoiceRequest;
+import com.cashly.cashly_api.sales.quotes.application.convert_to_invoice.use_case.ConvertQuoteToInvoiceUseCase;
+import com.cashly.cashly_api.sales.quotes.application.convert_to_invoice.request.ConvertQuoteToInvoiceRequest;
+import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.use_case.ConvertToInvoiceUseCase;
+import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.request.ConvertToInvoiceRequest;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

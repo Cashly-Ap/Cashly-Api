@@ -20,12 +20,12 @@ import com.cashly.cashly_api.finance.billing.invoices.application.create.request
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
-import com.cashly.cashly_api.orders.domain.entity.Order;
-import com.cashly.cashly_api.orders.domain.entity.OrderLine;
-import com.cashly.cashly_api.orders.domain.repository.OrderRepository;
-import com.cashly.cashly_api.orders.domain.valueobjects.OrderId;
-import com.cashly.cashly_api.orders.domain.valueobjects.OrderNumber;
-import com.cashly.cashly_api.orders.domain.valueobjects.OrderStatus;
+import com.cashly.cashly_api.sales.orders.domain.entity.Order;
+import com.cashly.cashly_api.sales.orders.domain.entity.OrderLine;
+import com.cashly.cashly_api.sales.orders.domain.repository.OrderRepository;
+import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderId;
+import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderNumber;
+import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.catalog.products.domain.entity.Product;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.InvoicePaymentService;
@@ -81,7 +81,7 @@ class CreateInvoiceUseCaseTest {
     private ProductRepository productRepository;
 
     @Mock
-    private com.cashly.cashly_api.quotes.domain.repository.QuoteRepository quoteRepository;
+    private com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository quoteRepository;
 
     @Mock
     private WarehouseStockRepository warehouseStockRepository;
@@ -208,7 +208,7 @@ class CreateInvoiceUseCaseTest {
         when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.empty());
 
         assertThrows(
-                com.cashly.cashly_api.orders.domain.exceptions.OrderNotFoundException.class,
+                com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotFoundException.class,
                 () -> createInvoiceUseCase.execute(request, UUID.randomUUID())
         );
 

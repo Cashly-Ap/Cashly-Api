@@ -71,14 +71,14 @@ class LayerDependencyTest {
 
     @Test
     void erp_area_grouping_does_not_allow_access_to_sibling_module_internals() {
-        assertThat(applicationOwnershipViolations(Path.of("orders/application/create/use_case/Create.java"),
-                "import com.cashly.cashly_api.quotes.domain.entity.Quote;"))
-                .containsExactly("com.cashly.cashly_api.quotes.domain.entity.Quote");
+        assertThat(applicationOwnershipViolations(Path.of("sales/orders/application/create/use_case/Create.java"),
+                "import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;"))
+                .containsExactly("com.cashly.cashly_api.sales.quotes.domain.entity.Quote");
         assertThat(domainOwnershipViolations(Path.of("finance/billing/invoices/domain/entity/Invoice.java"),
                 "import com.cashly.cashly_api.finance.billing.credit_notes.domain.entity.CreditNote;"))
                 .containsExactly("com.cashly.cashly_api.finance.billing.credit_notes.domain.entity.CreditNote");
-        assertThat(applicationOwnershipViolations(Path.of("orders/application/create/use_case/Create.java"),
-                "import com.cashly.cashly_api.quotes.application.ports.in.QuoteQuery;"))
+        assertThat(applicationOwnershipViolations(Path.of("sales/orders/application/create/use_case/Create.java"),
+                "import com.cashly.cashly_api.sales.quotes.application.ports.in.QuoteQuery;"))
                 .isEmpty();
     }
 

@@ -8,12 +8,12 @@ import java.util.UUID;
 
 @Component
 public class LocalProductReferenceGatewayAdapter implements ProductReferenceGateway {
-    private final com.cashly.cashly_api.orders.application.ports.in.ProductReferenceQuery orders;
+    private final com.cashly.cashly_api.sales.orders.application.ports.in.ProductReferenceQuery orders;
     private final com.cashly.cashly_api.finance.billing.invoices.application.ports.in.ProductReferenceQuery invoices;
     private final com.cashly.cashly_api.finance.billing.returns.application.ports.in.ProductReferenceQuery returns;
     private final com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ProductReferenceQuery warehouses;
     public LocalProductReferenceGatewayAdapter(
-            com.cashly.cashly_api.orders.application.ports.in.ProductReferenceQuery orders,
+            com.cashly.cashly_api.sales.orders.application.ports.in.ProductReferenceQuery orders,
             com.cashly.cashly_api.finance.billing.invoices.application.ports.in.ProductReferenceQuery invoices,
             com.cashly.cashly_api.finance.billing.returns.application.ports.in.ProductReferenceQuery returns,
             com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ProductReferenceQuery warehouses) {
