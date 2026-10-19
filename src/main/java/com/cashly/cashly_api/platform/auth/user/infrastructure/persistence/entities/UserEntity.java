@@ -44,6 +44,29 @@ public class UserEntity {
     @Column(name = "user_name", length = 100, nullable = false)
     private String userName;
 
+    @Column(name="first_name",nullable=false,length=100)
+    private String firstName;
+    @Column(name="last_name",nullable=false,length=100)
+    private String lastName;
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="address",columnDefinition="json")
+    private com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile.Address address;
+    @Column(name="phone",length=16)
+    private String phone;
+    @JdbcTypeCode(SqlTypes.BINARY) @Column(name="role_id",columnDefinition="binary(16)",nullable=false)
+    private UUID roleId;
+    @org.hibernate.annotations.Formula("(select r.name from auth_roles r where r.id=role_id)")
+    private String roleName;
+    @org.hibernate.annotations.Formula("(select d.name from auth_departments d where d.id=department_id)")
+    private String departmentName;
+    @JdbcTypeCode(SqlTypes.BINARY) @Column(name="department_id",columnDefinition="binary(16)",nullable=false)
+    private UUID departmentId;
+    private void copyProfile(User user) {
+        var profile=user.getProfile();
+        this.firstName=profile.firstName();this.lastName=profile.lastName();this.address=profile.address();this.phone=profile.phone();
+        this.roleId=user.getRoleId();this.departmentId=user.getDepartmentId();
+    }
+
+
     @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
 
@@ -73,6 +96,7 @@ public class UserEntity {
 
         UserEntity entity = new UserEntity();
         entity.id = user.getId().getValue();
+        entity.copyProfile(user);
         entity.email = user.getEmail().getValue();
         entity.userName = user.getUserName().getValue();
         entity.passwordHash = user.getPassword().getHashedValue();
@@ -93,6 +117,7 @@ public class UserEntity {
             throw new IllegalArgumentException("User cannot be null");
         }
 
+        copyProfile(user);
         this.email = user.getEmail().getValue();
         this.userName = user.getUserName().getValue();
         this.passwordHash = user.getPassword().getHashedValue();
@@ -127,6 +152,10 @@ public class UserEntity {
                 .map(UserModulePermissionEntity::getModule)
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(BusinessModule.class)));
 
+        user.setAssignmentNames(roleName,departmentName);
+        user.updateProfile(new com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile(firstName,lastName,address,phone),roleId,departmentId);
+        user.setModulePermissions(permissions);
+
         try {
             java.lang.reflect.Field activeField = User.class.getDeclaredField("active");
             java.lang.reflect.Field emailVerifiedField = User.class.getDeclaredField("emailVerified");
@@ -147,7 +176,6 @@ public class UserEntity {
             throw new RuntimeException("Failed to set fields on domain entity", e);
         }
 
-        user.setModulePermissions(permissions);
 
         return user;
     }

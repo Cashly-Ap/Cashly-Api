@@ -43,7 +43,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:CREATE')")
     public ResponseEntity<CustomerCreateResponse> create(@Valid @RequestBody CreateCustomerRequest request,
                                                           Authentication authentication) {
         UUID grantedBy = UUID.fromString(authentication.getName());
@@ -52,7 +52,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ')")
     public ResponseEntity<PageResponse<CustomerListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String rif,
@@ -72,7 +72,7 @@ public class CustomerController {
     }
 
     @GetMapping("/picker")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ')")
     public ResponseEntity<PageResponse<CustomerListResponse>> getForPicker(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String type,
@@ -85,14 +85,14 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ')")
     public ResponseEntity<CustomerDetailResponse> getById(@PathVariable String id) {
         CustomerDetailResponse customer = getCustomerUseCase.execute(id);
         return ResponseEntity.ok(customer);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:UPDATE')")
     public ResponseEntity<CustomerDetailResponse> update(@PathVariable String id,
                                                           @Valid @RequestBody UpdateCustomerRequest request) {
         CustomerDetailResponse customer = updateCustomerUseCase.execute(id, request);
@@ -100,7 +100,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteCustomerUseCase.execute(id);
         return ResponseEntity.noContent().build();

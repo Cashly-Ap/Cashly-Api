@@ -1,5 +1,7 @@
 # AUTH Module
 
+Current user/profile/role/department and permission contracts are documented in [ACCESS_CONTROL.md](ACCESS_CONTROL.md). That source-reviewed reference supersedes fixed-role and public-registration examples below. Historical sections below have not been revalidated for this change.
+
 > Estructura actual del código: `auth/authentication`, `auth/token` y `auth/user`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
 
 ## Overview

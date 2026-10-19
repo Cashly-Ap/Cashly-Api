@@ -49,6 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('USERS:CREATE')")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest request) {
         UserResponse response = registerUserUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -77,7 +78,7 @@ public class AuthController {
             Authentication authentication,
             @Valid @RequestBody UpdateUserPasswordRequest request) {
         String userId = (String) authentication.getPrincipal();
-        UserResponse response = updateUserPasswordUseCase.execute(userId, request);
+        UserResponse response = updateUserPasswordUseCase.executeSelf(userId, request);
         return ResponseEntity.ok(response);
     }
 }

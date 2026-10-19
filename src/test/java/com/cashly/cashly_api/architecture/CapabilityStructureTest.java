@@ -19,7 +19,7 @@ class CapabilityStructureTest {
     private static final Path TEST_ROOT = Path.of("src/test/java/com/cashly/cashly_api");
     private static final Pattern PACKAGE = Pattern.compile("(?m)^package\\s+([a-zA-Z0-9_.]+)\\s*;");
     private static final Map<String, Set<String>> CAPABILITIES = Map.of(
-            "auth", Set.of("authentication", "token", "user"),
+            "auth", Set.of("authentication", "token", "user", "role", "department", "authorization"),
             "warehouses", Set.of("management", "stock", "reporting"),
             "customers", Set.of("profile", "balance", "credit", "warehouse_access"),
             "payments", Set.of("collection", "credit", "reporting"),

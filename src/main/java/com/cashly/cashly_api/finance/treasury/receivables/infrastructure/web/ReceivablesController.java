@@ -37,14 +37,14 @@ public class ReceivablesController {
     }
 
     @GetMapping("/summary")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<ReceivablesSummaryResponse> getSummary() {
         ReceivablesSummaryResponse response = getReceivablesSummaryUseCase.execute();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/customers")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<PageResponse<?>> getCustomersWithDebt(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
@@ -55,14 +55,14 @@ public class ReceivablesController {
     }
 
     @GetMapping("/customers/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<CustomerDebtSummaryResponse> getCustomerDebt(@PathVariable UUID id) {
         CustomerDebtSummaryResponse response = getCustomerDebtUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/customers/{id}/invoices")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<PageResponse<?>> getCustomerInvoices(
             @PathVariable UUID id,
             @RequestParam(required = false) String search,
@@ -74,7 +74,7 @@ public class ReceivablesController {
     }
 
     @GetMapping("/payments/history")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
     public ResponseEntity<PageResponse<?>> getPaymentHistory(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
@@ -84,7 +84,7 @@ public class ReceivablesController {
     }
 
     @GetMapping("/customers/{id}/payment-history")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
     public ResponseEntity<PageResponse<?>> getCustomerPaymentHistory(
             @PathVariable UUID id,
             @RequestParam(required = false) UUID invoiceId,

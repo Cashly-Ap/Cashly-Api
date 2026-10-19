@@ -31,5 +31,5 @@ public interface UserRepository {
 
     List<User> findByRole(UserRole role);
 
-    PageResponse<User> findAllWithFilters(String search, UserRole role, Boolean active, String excludeId, int page, int size, String orderBy, String orderDir);
+    PageResponse<User> findAllWithFilters(String search, UUID roleId, Boolean active, String excludeId, int page, int size, String orderBy, String orderDir);
 }

@@ -1,35 +1,35 @@
 package com.cashly.cashly_api.platform.auth.user.application.register.request;
 
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-public record RegisterUserRequest(
-    String email,
-    String userName,
-    String password,
-    UserRole role
-) {
+import java.util.UUID;
+
+public record RegisterUserRequest(String email, String userName, String password,
+        String firstName, String lastName, UserProfile.Address address, String phone,
+        UUID roleId, UUID departmentId) {
     public RegisterUserRequest {
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email is required");
-        }
-        if (userName == null || userName.trim().isEmpty()) {
+        if (userName == null || userName.isBlank()) {
             throw new IllegalArgumentException("User name is required");
         }
-        if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("Password is required");
+        var profile = new UserProfile(firstName, lastName, address, phone);
+        firstName = profile.firstName();
+        lastName = profile.lastName();
+        phone = profile.phone();
+        if (roleId == null || departmentId == null) {
+            throw new IllegalArgumentException("Role and department are required");
         }
-        if (role == null) {
-            throw new IllegalArgumentException("Role is required");
+        if (email == null || email.isBlank() || password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Email and password are required");
         }
-        validateRole(role);
     }
 
-    private static void validateRole(UserRole role) {
-        for (UserRole validRole : UserRole.values()) {
-            if (validRole == role) {
-                return;
-            }
-        }
-        throw new IllegalArgumentException("Invalid role: " + role);
+    @JsonAnySetter
+    public void rejectUnknownField(String name, Object value) {
+        throw new IllegalArgumentException("Unsupported user field: " + name);
+    }
+
+    public UserProfile profile() {
+        return new UserProfile(firstName, lastName, address, phone);
     }
 }

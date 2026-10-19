@@ -50,6 +50,11 @@ class JpaUserRepositoryUnitTest {
         Password password = Password.fromHash("$2a$10$hashedPassword");
 
         testUser = new User(userId, email, new UserName("Test User"), password);
+        testUser.updateProfile(
+                new com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile(
+                        "Test", "User", null, null),
+                UUID.fromString("90000000-0000-0000-0000-000000000003"),
+                UUID.fromString("91000000-0000-0000-0000-000000000001"));
 
         testUserEntity = UserEntity.fromDomain(testUser);
     }
@@ -297,7 +302,7 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_FindAllWithFilters_When_FiltersProvided")
     void should_FindAllWithFilters_When_FiltersProvided() {
         String search = "test";
-        UserRole role = UserRole.OPERATOR;
+        UUID role = testUser.getRoleId();
         Boolean active = true;
         String excludeId = null;
         int page = 0;
@@ -336,7 +341,7 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_FindAllWithFilters_When_UsingDescendingSortAndExcludeId")
     void should_FindAllWithFilters_When_UsingDescendingSortAndExcludeId() {
         String search = null;
-        UserRole role = null;
+        UUID role = null;
         Boolean active = null;
         String excludeId = "550e8400-e29b-41d4-a716-446655440000";
         int page = 0;
@@ -374,7 +379,7 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_FindAllWithFilters_When_DefaultSortAppliedForInvalidOrderBy")
     void should_FindAllWithFilters_When_DefaultSortAppliedForInvalidOrderBy() {
         String search = "";
-        UserRole role = UserRole.ADMIN;
+        UUID role = UUID.fromString("90000000-0000-0000-0000-000000000001");
         Boolean active = false;
         String excludeId = null;
         int page = 0;

@@ -31,14 +31,14 @@ public class CustomerWarehouseAccessController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:READ')")
     public ResponseEntity<List<CustomerWarehouseAccessResponse>> listWarehouses(
             @PathVariable UUID customerId) {
         return ResponseEntity.ok(listCustomerWarehousesUseCase.execute(customerId));
     }
 
     @PostMapping("/{warehouseId}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:CREATE')")
     public ResponseEntity<CustomerWarehouseAccessResponse> grantAccess(
             @PathVariable UUID customerId,
             @PathVariable UUID warehouseId,
@@ -50,7 +50,7 @@ public class CustomerWarehouseAccessController {
     }
 
     @DeleteMapping("/{warehouseId}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:DELETE')")
     public ResponseEntity<Void> revokeAccess(
             @PathVariable UUID customerId,
             @PathVariable UUID warehouseId) {

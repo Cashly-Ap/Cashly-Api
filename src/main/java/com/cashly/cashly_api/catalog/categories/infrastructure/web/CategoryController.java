@@ -41,13 +41,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:CREATE')")
     public ResponseEntity<CategoryDetailResponse> create(@Valid @RequestBody CreateCategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createCategoryUseCase.execute(request));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:READ')")
     public ResponseEntity<PageResponse<CategoryListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,
@@ -59,20 +59,20 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:READ')")
     public ResponseEntity<CategoryDetailResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(getCategoryUseCase.execute(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
     public ResponseEntity<CategoryDetailResponse> update(@PathVariable UUID id,
                                                           @Valid @RequestBody UpdateCategoryRequest request) {
         return ResponseEntity.ok(updateCategoryUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteCategoryUseCase.execute(id);
         return ResponseEntity.noContent().build();

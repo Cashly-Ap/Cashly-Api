@@ -1,7 +1,6 @@
 package com.cashly.cashly_api.platform.auth.user.infrastructure.web;
 
 import com.cashly.cashly_api.platform.auth.user.application.email.request.UpdateUserEmailRequest;
-import com.cashly.cashly_api.platform.auth.user.application.permissions.request.UpdateUserModulePermissionsRequest;
 import com.cashly.cashly_api.platform.auth.user.application.password.request.UpdateUserPasswordRequest;
 import com.cashly.cashly_api.platform.auth.user.application.update.request.UpdateUserRequest;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
@@ -10,7 +9,6 @@ import com.cashly.cashly_api.platform.auth.user.application.queries.use_case.Get
 import com.cashly.cashly_api.platform.auth.user.application.queries.use_case.GetUserByIdUseCase;
 import com.cashly.cashly_api.platform.auth.user.application.register.use_case.RegisterUserUseCase;
 import com.cashly.cashly_api.platform.auth.user.application.email.use_case.UpdateUserEmailUseCase;
-import com.cashly.cashly_api.platform.auth.user.application.permissions.use_case.UpdateUserModulePermissionsUseCase;
 import com.cashly.cashly_api.platform.auth.user.application.password.use_case.UpdateUserPasswordUseCase;
 import com.cashly.cashly_api.platform.auth.user.application.update.use_case.UpdateUserUseCase;
 import com.cashly.cashly_api.platform.auth.user.application.register.request.RegisterUserRequest;
@@ -34,7 +32,6 @@ public class UserController {
     private final DeleteUserUseCase deleteUserUseCase;
     private final UpdateUserEmailUseCase updateUserEmailUseCase;
     private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
-    private final UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase;
 
     public UserController(
             GetAllUsersUseCase getAllUsersUseCase,
@@ -43,8 +40,7 @@ public class UserController {
             UpdateUserUseCase updateUserUseCase,
             DeleteUserUseCase deleteUserUseCase,
             UpdateUserEmailUseCase updateUserEmailUseCase,
-            UpdateUserPasswordUseCase updateUserPasswordUseCase,
-            UpdateUserModulePermissionsUseCase updateUserModulePermissionsUseCase) {
+            UpdateUserPasswordUseCase updateUserPasswordUseCase) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
@@ -52,14 +48,13 @@ public class UserController {
         this.deleteUserUseCase = deleteUserUseCase;
         this.updateUserEmailUseCase = updateUserEmailUseCase;
         this.updateUserPasswordUseCase = updateUserPasswordUseCase;
-        this.updateUserModulePermissionsUseCase = updateUserModulePermissionsUseCase;
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:READ')")
     public ResponseEntity<PageResponse<UserResponse>> getAll(
             Authentication authentication,
-            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false) java.util.UUID roleId,
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
@@ -67,26 +62,26 @@ public class UserController {
             @RequestParam(defaultValue = "userName") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
         PageResponse<UserResponse> users = getAllUsersUseCase.execute(
-            authentication.getName(), role, active, search, page, size, orderBy, orderDir);
+            authentication.getName(), roleId, active, search, page, size, orderBy, orderDir);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:READ')")
     public ResponseEntity<UserResponse> getById(@PathVariable String id) {
         UserResponse user = getUserByIdUseCase.execute(id);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:CREATE')")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody RegisterUserRequest request) {
         UserResponse user = registerUserUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public ResponseEntity<UserResponse> update(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserRequest request) {
@@ -95,14 +90,14 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteUserUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/email")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public ResponseEntity<UserResponse> updateEmail(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserEmailRequest request) {
@@ -110,18 +105,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public ResponseEntity<UserResponse> updatePassword(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserPasswordRequest request) {
         return ResponseEntity.ok(updateUserPasswordUseCase.execute(id, request));
     }
 
-    @PutMapping("/{id}/module-permissions")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<UserResponse> updateModulePermissions(
-            @PathVariable String id,
-            @Valid @RequestBody UpdateUserModulePermissionsRequest request) {
-        return ResponseEntity.ok(updateUserModulePermissionsUseCase.execute(id, request));
-    }
 }

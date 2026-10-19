@@ -35,10 +35,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService accessService;
     public JwtAuthenticationFilter(TokenService tokenService,
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository, com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService accessService) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
+        this.accessService=accessService;
     }
 
     @Override
@@ -70,53 +72,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void authenticateUser(HttpServletRequest request, String subjectId) {
-        UserId userId = new UserId(UUID.fromString(subjectId));
-
-        tokenService.extractUserAccess(extractJwtFromRequest(request))
-            .ifPresentOrElse(
-                access -> authenticateUserFromToken(request, userId, access),
-                () -> authenticateUserFromRepository(request, userId)
-            );
-    }
-
-    private void authenticateUserFromToken(HttpServletRequest request, UserId userId, TokenService.UserAccess access) {
-        if (userRepository.canAuthenticate(userId)) {
-            setUserAuthentication(request, userId.getValue().toString(), access.role(), access.modulePermissions());
-        }
-    }
-
-    private void authenticateUserFromRepository(HttpServletRequest request, UserId userId) {
-        userRepository.findById(userId)
-            .filter(User::canAuthenticate)
-            .ifPresent(user -> setUserAuthentication(
-                request,
-                user.getId().getValue().toString(),
-                user.getRole(),
-                user.getModulePermissions()
-            ));
-    }
-
-    private void setUserAuthentication(HttpServletRequest request, String userId, UserRole role,
-                                       java.util.Set<BusinessModule> modulePermissions) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-
-        if (role == UserRole.SUPER_ADMIN) {
-            for (BusinessModule module : BusinessModule.values()) {
-                authorities.add(new SimpleGrantedAuthority("MODULE_" + module.name()));
-            }
-        } else {
-            for (BusinessModule module : modulePermissions) {
-                authorities.add(new SimpleGrantedAuthority("MODULE_" + module.name()));
-            }
-        }
-
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            userId,
-            null,
-            authorities
-        );
-
+        var access=accessService.resolve(UUID.fromString(subjectId));
+        List<GrantedAuthority> authorities=new ArrayList<>();
+        // Legacy enum/claims never decide access. Only persisted current grants do.
+        access.permissions().forEach((module,actions)->actions.forEach(action->
+            authorities.add(new SimpleGrantedAuthority(module.name()+":"+action.name()))));
+        var authentication=new UsernamePasswordAuthenticationToken(subjectId,null,authorities);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

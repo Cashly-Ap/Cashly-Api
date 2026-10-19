@@ -41,19 +41,19 @@ public class WarehouseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:CREATE')")
     public ResponseEntity<WarehouseDetailResponse> create(@Valid @RequestBody CreateWarehouseRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createWarehouseUseCase.execute(request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:READ')")
     public ResponseEntity<WarehouseDetailResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(getWarehouseUseCase.execute(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:READ')")
     public ResponseEntity<PageResponse<WarehouseListResponse>> list(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,
@@ -65,14 +65,14 @@ public class WarehouseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:UPDATE')")
     public ResponseEntity<WarehouseDetailResponse> update(@PathVariable UUID id,
                                                            @Valid @RequestBody UpdateWarehouseRequest request) {
         return ResponseEntity.ok(updateWarehouseUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteWarehouseUseCase.execute(id);
         return ResponseEntity.noContent().build();

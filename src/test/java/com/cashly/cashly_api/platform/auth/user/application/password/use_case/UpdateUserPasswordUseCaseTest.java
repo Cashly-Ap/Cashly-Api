@@ -36,6 +36,9 @@ class UpdateUserPasswordUseCaseTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
+
     @InjectMocks
     private UpdateUserPasswordUseCase useCase;
 
@@ -103,4 +106,27 @@ class UpdateUserPasswordUseCaseTest {
 
         verify(passwordEncoder).encode("NewSecurePass123!");
     }
+    @Test
+    void selfServiceRequiresCurrentPasswordBeforeChangingCredentials() {
+        var request = new UpdateUserPasswordRequest(null, "NewSecurePass123!");
+
+        assertThrows(com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
+                () -> useCase.executeSelf(userId, request));
+
+        verify(access).authorizeAccountMutation(UUID.fromString(userId), true);
+        verifyNoInteractions(userRepository, passwordEncoder);
+    }
+
+    @Test
+    void selfServiceRejectsIncorrectCurrentPassword() {
+        var request = new UpdateUserPasswordRequest("IncorrectPass123!", "NewSecurePass123!");
+        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("IncorrectPass123!", "$2a$10$oldHashedPassword")).thenReturn(false);
+
+        assertThrows(com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
+                () -> useCase.executeSelf(userId, request));
+
+        verify(userRepository, never()).save(any());
+    }
+
 }

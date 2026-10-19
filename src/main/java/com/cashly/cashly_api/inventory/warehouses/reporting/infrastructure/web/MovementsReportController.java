@@ -18,7 +18,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/inventory/movements")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
 public class MovementsReportController {
 
     private final GenerateMovementsPdfUseCase generateMovementsPdfUseCase;
@@ -32,6 +31,7 @@ public class MovementsReportController {
     }
 
     @GetMapping("/pdf")
+    @PreAuthorize("hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getMovementsPdf(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID productId,
@@ -47,6 +47,7 @@ public class MovementsReportController {
     }
 
     @GetMapping("/excel")
+    @PreAuthorize("hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getMovementsExcel(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID productId,

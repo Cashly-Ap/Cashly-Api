@@ -123,15 +123,15 @@ class GetAllUsersUseCaseTest {
             List.of(), 0L, 0, 10, 0, true, true, true
         );
 
-        when(userRepository.findAllWithFilters(eq(null), eq(UserRole.ADMIN), eq(true), eq(authenticatedUserId),
+        when(userRepository.findAllWithFilters(eq(null), eq(java.util.UUID.fromString("90000000-0000-0000-0000-000000000001")), eq(true), eq(authenticatedUserId),
                 eq(0), eq(10), eq("name"), eq("asc")))
             .thenReturn(emptyPage);
 
-        PageResponse<UserResponse> result = useCase.execute(authenticatedUserId, UserRole.ADMIN, null,
+        PageResponse<UserResponse> result = useCase.execute(authenticatedUserId, java.util.UUID.fromString("90000000-0000-0000-0000-000000000001"), null,
             null, 0, 10, "name", "asc");
 
         assertNotNull(result);
-        verify(userRepository).findAllWithFilters(eq(null), eq(UserRole.ADMIN), eq(true), eq(authenticatedUserId),
+        verify(userRepository).findAllWithFilters(eq(null), eq(java.util.UUID.fromString("90000000-0000-0000-0000-000000000001")), eq(true), eq(authenticatedUserId),
             eq(0), eq(10), eq("name"), eq("asc"));
     }
 

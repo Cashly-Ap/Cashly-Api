@@ -58,7 +58,7 @@ public class PurchaseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:CREATE') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<PurchaseDetailResponse> create(
             @Valid @RequestBody CreatePurchaseRequest request,
             Authentication authentication) {
@@ -68,7 +68,7 @@ public class PurchaseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ')")
     public ResponseEntity<List<PurchaseListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -84,7 +84,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/products")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<?> getProducts(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,
@@ -94,14 +94,14 @@ public class PurchaseController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<PurchaseDetailResponse> getById(@PathVariable UUID id) {
         PurchaseDetailResponse response = getPurchaseByIdUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:UPDATE') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<PurchaseDetailResponse> update(@PathVariable UUID id,
                                                           @Valid @RequestBody UpdatePurchaseRequest request) {
         PurchaseDetailResponse response = updatePurchaseUseCase.execute(id, request);
@@ -109,14 +109,14 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}/confirm")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<PurchaseDetailResponse> confirm(@PathVariable UUID id) {
         PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<PurchaseDetailResponse> cancel(@PathVariable UUID id,
                                                           @Valid @RequestBody CancelPurchaseRequest request) {
         PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id, request);
@@ -124,7 +124,7 @@ public class PurchaseController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePurchaseUseCase.execute(id);
         return ResponseEntity.noContent().build();

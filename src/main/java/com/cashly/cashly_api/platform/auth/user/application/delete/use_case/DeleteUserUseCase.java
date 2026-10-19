@@ -13,27 +13,22 @@ import java.util.UUID;
 @Service
 public class DeleteUserUseCase {
 
-    private static final UUID SUPER_ADMIN_USER_ID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd20a215");
-
     private final UserRepository userRepository;
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public DeleteUserUseCase(UserRepository userRepository) {
+    public DeleteUserUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
         this.userRepository = userRepository;
+        this.access=access;
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public void execute(String id) {
-        if (id.equals(SUPER_ADMIN_USER_ID.toString())) {
-            throw new IllegalArgumentException("Cannot delete the super admin user");
-        }
-
+        access.lockAdministration();
+        access.require(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS, com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DELETE);
+        access.protectAdministrator(UUID.fromString(id),null,false);
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-
-        if (user.isSuperAdmin()) {
-            throw new IllegalArgumentException("Cannot delete another SUPER_ADMIN user");
-        }
 
         if (userRepository.hasAssociatedRecords(userId)) {
             throw new UserHasAssociatedRecordsException(id);

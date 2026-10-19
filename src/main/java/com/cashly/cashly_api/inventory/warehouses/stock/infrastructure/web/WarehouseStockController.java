@@ -44,7 +44,7 @@ public class WarehouseStockController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:READ')")
     public ResponseEntity<PageResponse<WarehouseStockResponse>> getStock(
             @PathVariable UUID warehouseId,
             @RequestParam(defaultValue = "0") int page,
@@ -53,28 +53,28 @@ public class WarehouseStockController {
     }
 
     @PostMapping("/entry")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<List<StockMovementResponse>> entry(@PathVariable UUID warehouseId,
                                                               @Valid @RequestBody StockEntryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(stockEntryUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/exit")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<List<StockMovementResponse>> exit(@PathVariable UUID warehouseId,
                                                              @Valid @RequestBody StockExitRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(stockExitUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/adjustment")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<StockMovementResponse> adjustment(@PathVariable UUID warehouseId,
                                                              @Valid @RequestBody StockAdjustmentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(stockAdjustmentUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/transfer")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<List<StockMovementResponse>> transfer(@PathVariable UUID warehouseId,
                                                                   @Valid @RequestBody TransferStockRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(transferStockUseCase.execute(warehouseId, request));

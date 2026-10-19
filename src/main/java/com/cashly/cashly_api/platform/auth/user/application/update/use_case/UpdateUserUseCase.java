@@ -16,19 +16,25 @@ import java.util.UUID;
 public class UpdateUserUseCase {
 
     private final UserRepository userRepository;
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public UpdateUserUseCase(UserRepository userRepository) {
+    public UpdateUserUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
         this.userRepository = userRepository;
+        this.access=access;
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public UserResponse execute(String id, UpdateUserRequest request) {
+        access.lockAdministration();
+        access.require(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS, com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.UPDATE);
+        access.validateAssignment(request.roleId(),request.departmentId());
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
         user.updateUserName(new UserName(request.userName()));
-        user.setRole(request.role());
+        access.protectAdministrator(userId.getValue(),request.roleId(),request.active()==null?user.isActive():request.active());
+        user.updateProfile(request.profile(),request.roleId(),request.departmentId());
 
         if (request.active() != null) {
             if (request.active()) {

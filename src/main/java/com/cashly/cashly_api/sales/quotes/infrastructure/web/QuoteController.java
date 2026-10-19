@@ -65,7 +65,7 @@ public class QuoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<QuoteDetailResponse> create(
             @Valid @RequestBody CreateQuoteRequest request,
             Authentication authentication) {
@@ -75,7 +75,7 @@ public class QuoteController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ')")
     public ResponseEntity<List<QuoteListResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -90,14 +90,14 @@ public class QuoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<QuoteDetailResponse> getById(@PathVariable UUID id) {
         QuoteDetailResponse quote = getQuoteByIdUseCase.execute(id);
         return ResponseEntity.ok(quote);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<QuoteDetailResponse> update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateQuoteRequest request) {
@@ -106,14 +106,14 @@ public class QuoteController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteQuoteUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:EXECUTE')")
     public ResponseEntity<Void> cancel(
             @PathVariable UUID id,
             @Valid @RequestBody CancelQuoteRequest request) {
@@ -122,7 +122,7 @@ public class QuoteController {
     }
 
     @GetMapping("/warehouses")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<List<QuoteWarehouseResponse>> getWarehouses(
             @RequestParam UUID customerId) {
         List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase.execute(customerId);
@@ -130,7 +130,7 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/convert-to-order")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<QuoteConvertedToOrderResponse> convertToOrder(
             @PathVariable UUID id,
             Authentication authentication) {
@@ -140,7 +140,7 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/convert-to-invoice")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<QuoteConvertedToInvoiceResponse> convertToInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody ConvertQuoteToInvoiceRequest request,

@@ -36,6 +36,9 @@ class BackendStartupMySqlIT {
     @Autowired PasswordEncoder passwords;
     private String adminToken;
     private String restrictedToken;
+    private String delegatedAdminToken;
+    private String catalogReadToken;
+    private UUID administratorId;
 
     public static class IsolatedDatabaseOnly implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
@@ -52,6 +55,8 @@ class BackendStartupMySqlIT {
     static Stream<Endpoint> endpoints() {
         return Stream.of(
             new Endpoint("auth", "/api/users"),
+            new Endpoint("auth.role", "/api/roles"),
+            new Endpoint("auth.department", "/api/departments"),
             new Endpoint("cash_register", "/api/cash-register/history"),
             new Endpoint("categories", "/api/categories"),
             new Endpoint("credit_notes", "/api/credit-notes"),
@@ -79,15 +84,36 @@ class BackendStartupMySqlIT {
     void createSyntheticUsersAndLoginThroughRealHttp() {
         adminToken = createAndLogin("SUPER_ADMIN");
         restrictedToken = createAndLogin("OPERATOR");
+        UUID delegatedRole = createRole(Map.of("USERS", java.util.Set.of("READ", "UPDATE")));
+        delegatedAdminToken = createAndLogin("OPERATOR", delegatedRole);
+        UUID catalogRole = createRole(Map.of("CATALOG", java.util.Set.of("READ")));
+        catalogReadToken = createAndLogin("OPERATOR", catalogRole);
     }
 
     private String createAndLogin(String role) {
+        return createAndLogin(role, UUID.fromString(role.equals("SUPER_ADMIN")
+                ? "90000000-0000-0000-0000-000000000001"
+                : "90000000-0000-0000-0000-000000000003"));
+    }
+
+    private UUID createRole(Map<String, java.util.Set<String>> grants) {
         UUID id = UUID.randomUUID();
+        jdbc.update("insert into auth_roles(id,name,active,version) values(UUID_TO_BIN(?),?,true,0)",
+                id.toString(), "HTTP fixture " + id);
+        grants.forEach((module, actions) -> actions.forEach(action ->
+                jdbc.update("insert into auth_role_permissions(role_id,module,action) values(UUID_TO_BIN(?),?,?)",
+                        id.toString(), module, action)));
+        return id;
+    }
+
+    private String createAndLogin(String role, UUID accessRoleId) {
+        UUID id = UUID.randomUUID();
+        if (role.equals("SUPER_ADMIN")) administratorId = id;
         String email = "structure-" + id + "@example.test";
         String password = "Synthetic-Structure-2026!";
         byte[] binaryId = ByteBuffer.allocate(16).putLong(id.getMostSignificantBits()).putLong(id.getLeastSignificantBits()).array();
-        jdbc.update("INSERT INTO users (id,email,user_name,password_hash,role,active,email_verified,created_at,updated_at) VALUES (?,?,?,?,?,true,true,NOW(),NOW())",
-            binaryId, email, "Structure verification", passwords.encode(password), role);
+        jdbc.update("INSERT INTO users (id,email,user_name,password_hash,role,first_name,last_name,phone,role_id,department_id,active,email_verified,created_at,updated_at) VALUES (?,?,?,?,?,'Structure','Verification',NULL,UNHEX(?),UNHEX('91000000000000000000000000000001'),true,true,NOW(),NOW())",
+            binaryId, email, "Structure verification", passwords.encode(password), role, accessRoleId.toString().replace("-", ""));
         ResponseEntity<JsonNode> response = http.postForEntity("/api/auth/login", Map.of("email", email, "password", password), JsonNode.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -123,6 +149,42 @@ class BackendStartupMySqlIT {
     @Test
     void shouldReturnNotFoundForMissingWarehouseThroughRealPersistence() {
         assertThat(get("/api/warehouses/" + UUID.randomUUID(), adminToken).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void delegatedAdministratorCannotResetSystemAdministratorCredentials() {
+        String originalHash = jdbc.queryForObject("select password_hash from users where id=UUID_TO_BIN(?)",
+                String.class, administratorId.toString());
+        var headers = new HttpHeaders();
+        headers.setBearerAuth(delegatedAdminToken);
+        var response = http.exchange("/api/users/" + administratorId + "/password", HttpMethod.PUT,
+                new HttpEntity<>(Map.of("password", "Unauthorized-New-Pass123!"), headers), String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(jdbc.queryForObject("select password_hash from users where id=UUID_TO_BIN(?)",
+                String.class, administratorId.toString())).isEqualTo(originalHash);
+    }
+
+    @Test
+    void delegatedAdministratorCannotChangeSystemAdministratorEmail() {
+        var headers = new HttpHeaders();
+        headers.setBearerAuth(delegatedAdminToken);
+        var response = http.exchange("/api/users/" + administratorId + "/email", HttpMethod.PUT,
+                new HttpEntity<>(Map.of("email", "unauthorized@example.test"), headers), String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void catalogReadDoesNotPermitStockPickerOrInventoryAccess() {
+        assertThat(get("/api/products", catalogReadToken).getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(get("/api/products?customerId=" + UUID.randomUUID(), catalogReadToken).getStatusCode())
+                .isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(get("/api/warehouses", catalogReadToken).getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void missingCatalogExportCannotDownloadCommercialCatalog() {
+        assertThat(get("/api/reports/inventory/commercial-catalog/pdf", catalogReadToken).getStatusCode())
+                .isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     private ResponseEntity<String> get(String path, String token) {

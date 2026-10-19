@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/invoices")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
 public class InvoicesReportController {
 
     private final GenerateInvoicePdfUseCase generateInvoicePdfUseCase;
@@ -32,6 +31,7 @@ public class InvoicesReportController {
     }
 
     @GetMapping("/{id}/pdf")
+    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getInvoicePdf(@PathVariable UUID id) {
         byte[] pdf = generateInvoicePdfUseCase.execute(id);
         return ResponseEntity.ok()
@@ -41,6 +41,7 @@ public class InvoicesReportController {
     }
 
     @GetMapping("/pdf")
+    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getInvoicesReportPdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,

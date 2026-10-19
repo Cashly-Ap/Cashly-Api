@@ -29,13 +29,13 @@ public interface SpringDataUserRepository extends JpaRepository<UserEntity, UUID
     @Query("""
         SELECT u FROM UserEntity u
         WHERE (:search IS NULL OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
-        AND (:role IS NULL OR u.role = :role)
+        AND (:roleId IS NULL OR u.roleId = :roleId)
         AND (:active IS NULL OR u.active = :active)
         AND (:excludeId IS NULL OR u.id != :excludeId)
         """)
     Page<UserEntity> findAllWithFilters(
         @Param("search") String search,
-        @Param("role") UserRole role,
+        @Param("roleId") UUID roleId,
         @Param("active") Boolean active,
         @Param("excludeId") UUID excludeId,
         Pageable pageable

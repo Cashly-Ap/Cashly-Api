@@ -27,9 +27,12 @@ import com.cashly.cashly_api.shared.dto.PageResponse;
 @Component
 public class JpaUserRepository implements UserRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of("userName", "email", "role", "createdAt");
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("userName", "email", "roleName", "firstName", "lastName", "createdAt");
 
     private final SpringDataUserRepository springDataUserRepository;
+
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
 
     public JpaUserRepository(SpringDataUserRepository springDataUserRepository) {
         this.springDataUserRepository = springDataUserRepository;
@@ -52,6 +55,11 @@ public class JpaUserRepository implements UserRepository {
         }
 
         UserEntity savedEntity = springDataUserRepository.save(entity);
+        // Formulas reflect the selected names only after the row is written and reloaded.
+        if (entityManager != null) {
+            entityManager.flush();
+            entityManager.refresh(savedEntity);
+        }
         return savedEntity.toDomain();
     }
 
@@ -133,14 +141,14 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
-    public PageResponse<User> findAllWithFilters(String search, UserRole role, Boolean active, String excludeId,
+    public PageResponse<User> findAllWithFilters(String search, UUID roleId, Boolean active, String excludeId,
                                                   int page, int size, String orderBy, String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "userName";
         Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         UUID excludeUuid = excludeId != null ? UUID.fromString(excludeId) : null;
-        Page<UserEntity> result = springDataUserRepository.findAllWithFilters(search, role, active, excludeUuid, pageable);
+        Page<UserEntity> result = springDataUserRepository.findAllWithFilters(search, roleId, active, excludeUuid, pageable);
         Page<User> mapped = result.map(UserEntity::toDomain);
         return PageResponseMapper.from(mapped);
     }

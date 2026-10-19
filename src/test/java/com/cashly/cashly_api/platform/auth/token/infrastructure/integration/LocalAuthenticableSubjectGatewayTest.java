@@ -13,7 +13,8 @@ import static org.mockito.Mockito.*;
 
 class LocalAuthenticableSubjectGatewayTest {
     private final UserRepository users = mock(UserRepository.class);
-    private final LocalAuthenticableSubjectGateway gateway = new LocalAuthenticableSubjectGateway(users);
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access = mock(com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService.class);
+    private final LocalAuthenticableSubjectGateway gateway = new LocalAuthenticableSubjectGateway(users, access);
 
     @Test
     void should_resolve_user_without_querying_customers() {

@@ -56,12 +56,15 @@ class AuthControllerUnitTest {
 
     @BeforeEach
     void setUp() {
-        registerRequest = new RegisterUserRequest(
-            "test@example.com",
+        registerRequest = new RegisterUserRequest("test@example.com",
             "Test User",
             "SecurePassword123!",
-            UserRole.OPERATOR
-        );
+            "John",
+            "Doe",
+            null,
+            null,
+            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
+            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
 
         loginRequest = new LoginRequest(
             "test@example.com",
@@ -72,8 +75,7 @@ class AuthControllerUnitTest {
         logoutRequest = new LogoutRequest("refresh-token");
 
         LocalDateTime now = LocalDateTime.now();
-        userResponse = new UserResponse(
-            "user-id",
+        userResponse = new UserResponse("user-id",
             "test@example.com",
             "Test User",
             UserRole.OPERATOR,
@@ -81,9 +83,16 @@ class AuthControllerUnitTest {
             false,
             false,
             java.util.Set.of(),
+            "John",
+            "Doe",
+            null,
+            null,
+            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
+            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
+            "Custom role",
+            "Operations",
             now,
-            now
-        );
+            now);
 
         AuthenticatedEntityResponse entityResponse = new AuthenticatedEntityResponse(
             "user-id",

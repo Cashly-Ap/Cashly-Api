@@ -1,3 +1,5 @@
+Current access-control contracts: [users, roles, departments and permissions](ACCESS_CONTROL.md).
+
 Current reporting ownership is defined in [backend architecture](../ARCHITECTURE.md): each owner has a `reporting` submodule; legacy examples below do not override it.
 
 # Module Documentation

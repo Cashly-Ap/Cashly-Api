@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.shared.storage.infrastructure.web;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.cashly.cashly_api.shared.storage.domain.exceptions.FileNotFoundException;
 import com.cashly.cashly_api.shared.storage.domain.services.FileStorageService;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ public class FileController {
     }
 
     @GetMapping("/**")
+    @PreAuthorize("hasAuthority('CATALOG:READ')")
     public ResponseEntity<byte[]> serveFile(HttpServletRequest request) {
         String filePath = request.getRequestURI().replaceFirst("/api/files/", "");
 
@@ -36,7 +38,7 @@ public class FileController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, contentType)
-                    .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400")
+                    .header(HttpHeaders.CACHE_CONTROL, "private, no-store")
                     .body(content);
         } catch (FileNotFoundException e) {
             return ResponseEntity.notFound().build();

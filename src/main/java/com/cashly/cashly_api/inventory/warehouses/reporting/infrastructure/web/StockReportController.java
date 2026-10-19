@@ -16,7 +16,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/inventory/stock")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
 public class StockReportController {
 
     private final GenerateStockPdfUseCase generateStockPdfUseCase;
@@ -30,6 +29,7 @@ public class StockReportController {
     }
 
     @GetMapping("/pdf")
+    @PreAuthorize("hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getStockPdf(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID categoryId,
@@ -44,6 +44,7 @@ public class StockReportController {
     }
 
     @GetMapping("/excel")
+    @PreAuthorize("hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getStockExcel(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID categoryId,

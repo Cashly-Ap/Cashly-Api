@@ -75,6 +75,18 @@ public class GlobalExceptionHandler {
         return errorDetails;
     }
 
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException.class)
+    public ResponseEntity<Map<String,Object>> handleAccessConflict(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(createErrorResponse(HttpStatus.CONFLICT,"Access conflict",ex.getMessage()));
+    }
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException.class)
+    public ResponseEntity<Map<String,Object>> handleAccessReferenceNotFound(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(HttpStatus.NOT_FOUND,"Reference not found",ex.getMessage()));
+    }
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Map<String,Object>> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createErrorResponse(HttpStatus.FORBIDDEN,"Forbidden",ex.getMessage()));
+    }
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicateEmail(DuplicateEmailException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)

@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/purchases")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
 public class PurchasesReportController {
 
     private final GeneratePurchasePdfUseCase generatePurchasePdfUseCase;
@@ -32,6 +31,7 @@ public class PurchasesReportController {
     }
 
     @GetMapping("/{id}/pdf")
+    @PreAuthorize("hasAuthority('PURCHASES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getPurchasePdf(@PathVariable UUID id) {
         byte[] pdf = generatePurchasePdfUseCase.execute(id);
         return ResponseEntity.ok()
@@ -41,6 +41,7 @@ public class PurchasesReportController {
     }
 
     @GetMapping("/pdf")
+    @PreAuthorize("hasAuthority('PURCHASES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getPurchasesReportPdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,

@@ -23,37 +23,37 @@ public class DashboardController {
     }
 
     @GetMapping("/summary")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
     public ResponseEntity<DashboardSummaryResponse> getSummary() {
         return ResponseEntity.ok(getDashboardUseCase.getSummary());
     }
 
     @GetMapping("/monthly-sales")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
     public ResponseEntity<List<MonthlySalesResponse>> getMonthlySales() {
         return ResponseEntity.ok(getDashboardUseCase.getMonthlySales());
     }
 
     @GetMapping("/top-products")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
     public ResponseEntity<List<TopItemResponse>> getTopProducts(@RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(getDashboardUseCase.getTopProducts(limit));
     }
 
     @GetMapping("/top-customers")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
     public ResponseEntity<List<TopItemResponse>> getTopCustomers(@RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(getDashboardUseCase.getTopCustomers(limit));
     }
 
     @GetMapping("/recent-activity")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
     public ResponseEntity<List<Map<String, Object>>> getRecentActivity() {
         return ResponseEntity.ok(getDashboardUseCase.getRecentActivity());
     }
 
     @GetMapping("/invoice-due-schedule")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_DASHBOARD')")
+    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
     public ResponseEntity<List<InvoiceDueResponse>> getInvoiceDueSchedule() {
         return ResponseEntity.ok(getDashboardUseCase.getInvoiceDueSchedule());
     }

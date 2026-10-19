@@ -31,6 +31,9 @@ class RegisterUserUseCaseUnitTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
+
     @InjectMocks
     private RegisterUserUseCase registerUserUseCase;
 
@@ -38,12 +41,15 @@ class RegisterUserUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        validRequest = new RegisterUserRequest(
-            "test@example.com",
+        validRequest = new RegisterUserRequest("test@example.com",
             "Test User",
             "SecurePass123!",
-            UserRole.OPERATOR
-        );
+            "John",
+            "Doe",
+            null,
+            null,
+            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
+            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
     }
 
     @Test
@@ -84,12 +90,15 @@ class RegisterUserUseCaseUnitTest {
     @Test
     @DisplayName("should_ThrowException_When_InvalidEmailProvided")
     void should_ThrowException_When_InvalidEmailProvided() {
-        RegisterUserRequest invalidRequest = new RegisterUserRequest(
-            "invalid-email",
+        RegisterUserRequest invalidRequest = new RegisterUserRequest("invalid-email",
             "Test User",
             "SecurePass123!",
-            UserRole.OPERATOR
-        );
+            "John",
+            "Doe",
+            null,
+            null,
+            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
+            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
 
         assertThrows(
             IllegalArgumentException.class,
@@ -104,12 +113,15 @@ class RegisterUserUseCaseUnitTest {
     @Test
     @DisplayName("should_ThrowException_When_WeakPasswordProvided")
     void should_ThrowException_When_WeakPasswordProvided() {
-        RegisterUserRequest weakPasswordRequest = new RegisterUserRequest(
-            "test@example.com",
+        RegisterUserRequest weakPasswordRequest = new RegisterUserRequest("test@example.com",
             "Test User",
             "weak",
-            UserRole.OPERATOR
-        );
+            "John",
+            "Doe",
+            null,
+            null,
+            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
+            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
 
@@ -162,12 +174,15 @@ class RegisterUserUseCaseUnitTest {
     @Test
     @DisplayName("should_NormalizeEmail_When_Registering")
     void should_NormalizeEmail_When_Registering() {
-        RegisterUserRequest upperCaseEmailRequest = new RegisterUserRequest(
-            "TEST@EXAMPLE.COM",
+        RegisterUserRequest upperCaseEmailRequest = new RegisterUserRequest("TEST@EXAMPLE.COM",
             "Test User",
             "SecurePass123!",
-            UserRole.OPERATOR
-        );
+            "John",
+            "Doe",
+            null,
+            null,
+            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
+            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$hashedPassword");

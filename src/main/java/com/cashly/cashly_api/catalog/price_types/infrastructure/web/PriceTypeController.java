@@ -40,33 +40,33 @@ public class PriceTypeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:CREATE')")
     public ResponseEntity<PriceTypeResponse> create(@Valid @RequestBody CreatePriceTypeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createPriceTypeUseCase.execute(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
     public ResponseEntity<PriceTypeResponse> update(@PathVariable UUID id,
                                                      @Valid @RequestBody UpdatePriceTypeRequest request) {
         return ResponseEntity.ok(updatePriceTypeUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('CATALOG:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePriceTypeUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY') or hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('CATALOG:READ')")
     public ResponseEntity<PriceTypeResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(getPriceTypeUseCase.execute(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY') or hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('CATALOG:READ')")
     public ResponseEntity<PageResponse<PriceTypeResponse>> listAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,

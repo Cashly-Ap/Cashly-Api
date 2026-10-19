@@ -19,8 +19,8 @@ import com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder;
 public class AuthenticationConfig {
 
     @Bean
-    public AuthenticableResolver authenticableResolver(UserRepository userRepository) {
-        return new ChainedAuthenticableResolver(userRepository);
+    public AuthenticableResolver authenticableResolver(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+        return new ChainedAuthenticableResolver(userRepository,access);
     }
 
     @Bean
@@ -44,8 +44,8 @@ public class AuthenticationConfig {
     }
 
     @Bean
-    public AuthenticableSubjectGateway authenticableSubjectGateway(UserRepository userRepository) {
-        return new LocalAuthenticableSubjectGateway(userRepository);
+    public AuthenticableSubjectGateway authenticableSubjectGateway(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+        return new LocalAuthenticableSubjectGateway(userRepository,access);
     }
 
     @Bean

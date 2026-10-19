@@ -38,7 +38,7 @@ public class CreditNoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:CREATE')")
     public ResponseEntity<CreditNoteResponse> create(
             @Valid @RequestBody CreateCreditNoteRequest request,
             Authentication authentication) {
@@ -48,7 +48,7 @@ public class CreditNoteController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<List<CreditNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -58,14 +58,14 @@ public class CreditNoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<CreditNoteResponse> getById(@PathVariable UUID id) {
         CreditNoteResponse response = getCreditNoteByIdUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteCreditNoteUseCase.execute(id);
         return ResponseEntity.noContent().build();

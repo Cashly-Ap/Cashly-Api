@@ -59,7 +59,7 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> create(
             @Valid @RequestBody CreateOrderRequest request,
             Authentication authentication) {
@@ -69,7 +69,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ')")
     public ResponseEntity<List<OrderListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -84,14 +84,14 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<OrderDetailResponse> getById(@PathVariable UUID id) {
         OrderDetailResponse order = getOrderByIdUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> update(@PathVariable UUID id,
                                                        @Valid @RequestBody UpdateOrderRequest request) {
         OrderDetailResponse order = updateOrderUseCase.execute(id, request);
@@ -99,14 +99,14 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/confirm")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> confirm(@PathVariable UUID id) {
         OrderDetailResponse order = confirmOrderUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> cancel(@PathVariable UUID id,
                                                        @Valid @RequestBody CancelOrderRequest request) {
         OrderDetailResponse order = cancelOrderUseCase.execute(id, request);
@@ -114,7 +114,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/convert-to-invoice")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(@PathVariable UUID id,
                                                                       @Valid @RequestBody ConvertToInvoiceRequest request,
                                                                       Authentication authentication) {
@@ -124,7 +124,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_SALES')")
+    @PreAuthorize("hasAuthority('SALES:DELETE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteOrderUseCase.execute(id);
         return ResponseEntity.noContent().build();

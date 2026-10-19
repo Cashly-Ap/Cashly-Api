@@ -1,240 +1,167 @@
 package com.cashly.cashly_api.platform.auth.authentication.infrastructure.security;
 
 import com.cashly.cashly_api.platform.auth.authentication.domain.valueobjects.AuthenticableType;
+import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
 import com.cashly.cashly_api.platform.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("JwtAuthenticationFilter Unit Tests")
 class JwtAuthenticationFilterUnitTest {
+    private static final String TOKEN = "valid-access-token";
+    private static final UUID USER_ID = UUID.fromString("30000000-0000-0000-0000-000000000001");
+    private static final UUID ROLE_ID = UUID.fromString("10000000-0000-0000-0000-000000000001");
+    private static final UUID DEPARTMENT_ID = UUID.fromString("20000000-0000-0000-0000-000000000001");
 
-    @Mock
-    private TokenService tokenService;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
-
-    @Mock
-    private FilterChain filterChain;
-
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    private User testUser;
-    private UserId testUserId;
-    private String validToken;
+    @Mock private TokenService tokens;
+    @Mock private UserRepository users;
+    @Mock private AccessService access;
+    @Mock private HttpServletRequest request;
+    @Mock private HttpServletResponse response;
+    @Mock private FilterChain chain;
+    private JwtAuthenticationFilter filter;
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
-
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userRepository);
-
-        testUserId = UserId.generate();
-        Email email = new Email("test@example.com");
-        Password password = Password.fromHash("$2a$10$hashedPassword");
-        testUser = new User(testUserId, email, new UserName("Test User"), password, UserRole.ADMIN);
-
-        validToken = "valid-jwt-token";
+        filter = new JwtAuthenticationFilter(tokens, users, access);
     }
 
-    @Nested
-    @DisplayName("User Authentication Tests")
-    class UserAuthenticationTests {
-
-        @Test
-        @DisplayName("should_AuthenticateUser_When_ValidTokenProvided")
-        void should_AuthenticateUser_When_ValidTokenProvided() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(tokenService.extractUserAccess(validToken))
-                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
-            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(true);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-            assertEquals(testUserId.getValue().toString(), SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-            verify(userRepository, never()).findById(any(UserId.class));
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
-
-        @Test
-        @DisplayName("should_SetUserRole_When_UserAuthenticated")
-        void should_SetUserRole_When_UserAuthenticated() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(tokenService.extractUserAccess(validToken))
-                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
-            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(true);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-            assertTrue(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
-        }
-
-        @Test
-        @DisplayName("should_NotAuthenticate_When_UserNotFound")
-        void should_NotAuthenticate_When_UserCannotAuthenticate() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(tokenService.extractUserAccess(validToken))
-                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
-            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(false);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
-
-        @Test
-        @DisplayName("should_NotAuthenticate_When_UserInactive")
-        void should_NotAuthenticate_When_UserInactive() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(tokenService.extractUserAccess(validToken))
-                .thenReturn(Optional.of(new TokenService.UserAccess(UserRole.ADMIN, Set.of())));
-            when(userRepository.canAuthenticate(any(UserId.class))).thenReturn(false);
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
-
-        @Test
-        @DisplayName("should_FallbackToUserLookup_When_LegacyTokenHasNoAccessClaims")
-        void should_FallbackToUserLookup_When_LegacyTokenHasNoAccessClaims() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(true);
-            when(tokenService.extractSubjectType(validToken)).thenReturn(AuthenticableType.USER);
-            when(tokenService.extractSubjectId(validToken)).thenReturn(testUserId.getValue().toString());
-            when(tokenService.extractUserAccess(validToken)).thenReturn(Optional.empty());
-            when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
-
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
-            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(userRepository).findById(any(UserId.class));
-            verify(userRepository, never()).canAuthenticate(any(UserId.class));
-        }
+    @AfterEach
+    void clearContext() {
+        SecurityContextHolder.clearContext();
     }
 
-    @Nested
-    @DisplayName("Common Authentication Tests")
-    class CommonAuthenticationTests {
+    @Test
+    void authenticatesSubjectWithCurrentPersistedGrants() throws Exception {
+        validToken();
+        when(access.resolve(USER_ID)).thenReturn(current(Set.of(PermissionAction.READ)));
 
-        @Test
-        @DisplayName("should_NotAuthenticate_When_NoAuthorizationHeader")
-        void should_NotAuthenticate_When_NoAuthorizationHeader() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn(null);
+        filter.doFilterInternal(request, response, chain);
 
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
+                .isEqualTo(USER_ID.toString());
+        verify(access).resolve(USER_ID);
+        verify(tokens, never()).extractUserAccess(any());
+        verify(chain).doFilter(request, response);
+    }
 
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(tokenService, never()).validateToken(anyString());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
+    @Test
+    void emitsOnlyCurrentModuleActionAuthorities() throws Exception {
+        validToken();
+        when(access.resolve(USER_ID)).thenReturn(current(Set.of(PermissionAction.READ)));
 
-        @Test
-        @DisplayName("should_NotAuthenticate_When_InvalidTokenFormat")
-        void should_NotAuthenticate_When_InvalidTokenFormat() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("InvalidFormat " + validToken);
+        filter.doFilterInternal(request, response, chain);
 
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+                .extracting(authority -> authority.getAuthority())
+                .containsExactly("CATALOG:READ");
+    }
 
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(tokenService, never()).validateToken(anyString());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
+    @Test
+    void doesNotRestoreRevokedGrantFromAnAlreadyIssuedToken() throws Exception {
+        validToken();
+        when(access.resolve(USER_ID)).thenReturn(current(Set.of(PermissionAction.READ, PermissionAction.UPDATE)))
+                .thenReturn(current(Set.of(PermissionAction.READ)));
+        filter.doFilterInternal(request, response, chain);
+        SecurityContextHolder.clearContext();
 
-        @Test
-        @DisplayName("should_NotAuthenticate_When_TokenValidationFails")
-        void should_NotAuthenticate_When_TokenValidationFails() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(false);
+        filter.doFilterInternal(request, response, chain);
 
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+                .extracting(authority -> authority.getAuthority())
+                .doesNotContain("CATALOG:UPDATE");
+    }
 
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(tokenService, times(1)).validateToken(validToken);
-            verify(userRepository, never()).findById(any());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
+    @Test
+    void rejectsInactiveAccountOrRole() throws Exception {
+        validToken();
+        when(access.resolve(USER_ID)).thenThrow(new AccessDeniedException("Account unavailable"));
 
-        @Test
-        @DisplayName("should_ContinueFilterChain_When_ExceptionOccurs")
-        void should_ContinueFilterChain_When_ExceptionOccurs() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenThrow(new RuntimeException("Token validation error"));
+        filter.doFilterInternal(request, response, chain);
 
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        verify(chain).doFilter(request, response);
+    }
 
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
+    @Test
+    void failsClosedWhenAuthoritativeLookupFails() throws Exception {
+        validToken();
+        when(access.resolve(USER_ID)).thenThrow(new IllegalStateException("Database unavailable"));
 
-        @Test
-        @DisplayName("should_HandleEmptyBearerToken_When_OnlyPrefixPresent")
-        void should_HandleEmptyBearerToken_When_OnlyPrefixPresent() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn("Bearer ");
+        filter.doFilterInternal(request, response, chain);
 
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+    }
 
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
+    @Test
+    void ignoresMissingAuthorizationHeader() throws Exception {
+        filter.doFilterInternal(request, response, chain);
 
-        @Test
-        @DisplayName("should_CallFilterChain_When_ProcessingComplete")
-        void should_CallFilterChain_When_ProcessingComplete() throws Exception {
-            when(request.getHeader("Authorization")).thenReturn(null);
+        verifyNoInteractions(tokens, access);
+        verify(chain).doFilter(request, response);
+    }
 
-            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+    @Test
+    void ignoresOtherAuthorizationSchemes() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn("Basic credentials");
 
-            verify(filterChain, times(1)).doFilter(request, response);
-        }
+        filter.doFilterInternal(request, response, chain);
+
+        verifyNoInteractions(tokens, access);
+    }
+
+    @Test
+    void rejectsInvalidTokenBeforeResolvingPermissions() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + TOKEN);
+        when(tokens.validateToken(TOKEN)).thenReturn(false);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verifyNoInteractions(access);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+    }
+
+    @Test
+    void continuesFilterChainAfterTokenFailure() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + TOKEN);
+        when(tokens.validateToken(TOKEN)).thenThrow(new IllegalArgumentException("Malformed token"));
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(chain).doFilter(request, response);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+    }
+
+    private void validToken() {
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + TOKEN);
+        when(tokens.validateToken(TOKEN)).thenReturn(true);
+        when(tokens.extractSubjectType(TOKEN)).thenReturn(AuthenticableType.USER);
+        when(tokens.extractSubjectId(TOKEN)).thenReturn(USER_ID.toString());
+    }
+
+    private AccessService.CurrentAccess current(Set<PermissionAction> actions) {
+        return new AccessService.CurrentAccess(ROLE_ID, "Custom role", DEPARTMENT_ID, false,
+                Map.of(BusinessModule.CATALOG, actions));
     }
 }

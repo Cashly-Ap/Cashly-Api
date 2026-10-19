@@ -25,14 +25,14 @@ public class CustomerCreditController {
     }
 
     @GetMapping("/{customerId}/credit")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<CreditStatusResponse> getCreditStatus(@PathVariable UUID customerId) {
         CreditStatusResponse response = getCustomerCreditStatusUseCase.execute(customerId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/credit/overdue")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<List<OverdueInvoiceResponse>> getOverdueInvoices() {
         List<OverdueInvoiceResponse> response = getOverdueInvoicesUseCase.execute();
         return ResponseEntity.ok(response);

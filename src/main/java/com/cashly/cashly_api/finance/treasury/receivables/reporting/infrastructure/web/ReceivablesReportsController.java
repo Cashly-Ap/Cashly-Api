@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/finance")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
 public class ReceivablesReportsController {
 
     private final GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase;
@@ -26,6 +25,7 @@ public class ReceivablesReportsController {
     }
 
     @GetMapping("/accounts-receivable/pdf")
+    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getAccountsReceivablePdf(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(defaultValue = "false") boolean overdueOnly) {
@@ -38,6 +38,7 @@ public class ReceivablesReportsController {
     }
 
     @GetMapping("/collections/pdf")
+    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getCollectionsPdf(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate agingFrom) {

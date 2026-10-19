@@ -15,7 +15,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/inventory/commercial-catalog")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
 public class CommercialCatalogController {
 
     private final GenerateCommercialCatalogPdfUseCase generateCommercialCatalogPdfUseCase;
@@ -25,6 +24,7 @@ public class CommercialCatalogController {
     }
 
     @GetMapping("/pdf")
+    @PreAuthorize("hasAuthority('CATALOG:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getCatalogPdf(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,

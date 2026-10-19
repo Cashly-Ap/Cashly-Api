@@ -17,13 +17,16 @@ import java.util.UUID;
 public class UpdateUserEmailUseCase {
 
     private final UserRepository userRepository;
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public UpdateUserEmailUseCase(UserRepository userRepository) {
+    public UpdateUserEmailUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
         this.userRepository = userRepository;
+        this.access=access;
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public UserResponse execute(String id, UpdateUserEmailRequest request) {
+        access.authorizeAccountMutation(UUID.fromString(id), false);
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));

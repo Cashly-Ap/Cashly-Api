@@ -1,0 +1,1094 @@
+{
+  "method": "Static source inventory; runtime reflection coverage test pending execution",
+  "count": 181,
+  "unmapped": [],
+  "legacyPolicies": [],
+  "endpoints": [
+    {
+      "operation": "DashboardController#getSummary",
+      "verb": "GET",
+      "policy": "hasAuthority('DASHBOARD:READ')",
+      "file": "analytics/dashboard/infrastructure/web/DashboardController.java"
+    },
+    {
+      "operation": "DashboardController#getMonthlySales",
+      "verb": "GET",
+      "policy": "hasAuthority('DASHBOARD:READ')",
+      "file": "analytics/dashboard/infrastructure/web/DashboardController.java"
+    },
+    {
+      "operation": "DashboardController#getTopProducts",
+      "verb": "GET",
+      "policy": "hasAuthority('DASHBOARD:READ')",
+      "file": "analytics/dashboard/infrastructure/web/DashboardController.java"
+    },
+    {
+      "operation": "DashboardController#getTopCustomers",
+      "verb": "GET",
+      "policy": "hasAuthority('DASHBOARD:READ')",
+      "file": "analytics/dashboard/infrastructure/web/DashboardController.java"
+    },
+    {
+      "operation": "DashboardController#getRecentActivity",
+      "verb": "GET",
+      "policy": "hasAuthority('DASHBOARD:READ')",
+      "file": "analytics/dashboard/infrastructure/web/DashboardController.java"
+    },
+    {
+      "operation": "DashboardController#getInvoiceDueSchedule",
+      "verb": "GET",
+      "policy": "hasAuthority('DASHBOARD:READ')",
+      "file": "analytics/dashboard/infrastructure/web/DashboardController.java"
+    },
+    {
+      "operation": "CategoryController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('CATALOG:CREATE')",
+      "file": "catalog/categories/infrastructure/web/CategoryController.java"
+    },
+    {
+      "operation": "CategoryController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "catalog/categories/infrastructure/web/CategoryController.java"
+    },
+    {
+      "operation": "CategoryController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "catalog/categories/infrastructure/web/CategoryController.java"
+    },
+    {
+      "operation": "CategoryController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('CATALOG:UPDATE')",
+      "file": "catalog/categories/infrastructure/web/CategoryController.java"
+    },
+    {
+      "operation": "CategoryController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('CATALOG:DELETE')",
+      "file": "catalog/categories/infrastructure/web/CategoryController.java"
+    },
+    {
+      "operation": "PriceTypeController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('CATALOG:CREATE')",
+      "file": "catalog/price_types/infrastructure/web/PriceTypeController.java"
+    },
+    {
+      "operation": "PriceTypeController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('CATALOG:UPDATE')",
+      "file": "catalog/price_types/infrastructure/web/PriceTypeController.java"
+    },
+    {
+      "operation": "PriceTypeController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('CATALOG:DELETE')",
+      "file": "catalog/price_types/infrastructure/web/PriceTypeController.java"
+    },
+    {
+      "operation": "PriceTypeController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "catalog/price_types/infrastructure/web/PriceTypeController.java"
+    },
+    {
+      "operation": "PriceTypeController#listAll",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "catalog/price_types/infrastructure/web/PriceTypeController.java"
+    },
+    {
+      "operation": "ProductController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('CATALOG:CREATE')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#getForTransaction",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('CATALOG:UPDATE')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('CATALOG:DELETE')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#getStock",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#uploadPhoto",
+      "verb": "POST",
+      "policy": "hasAuthority('CATALOG:UPDATE')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "ProductController#removePhoto",
+      "verb": "DELETE",
+      "policy": "hasAuthority('CATALOG:UPDATE')",
+      "file": "catalog/products/infrastructure/web/ProductController.java"
+    },
+    {
+      "operation": "CommercialCatalogController#getCatalogPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "catalog/products/reporting/infrastructure/web/CommercialCatalogController.java"
+    },
+    {
+      "operation": "CreditNoteController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE')",
+      "file": "finance/billing/credit_notes/infrastructure/web/CreditNoteController.java"
+    },
+    {
+      "operation": "CreditNoteController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/credit_notes/infrastructure/web/CreditNoteController.java"
+    },
+    {
+      "operation": "CreditNoteController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/credit_notes/infrastructure/web/CreditNoteController.java"
+    },
+    {
+      "operation": "CreditNoteController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('FINANCES:DELETE')",
+      "file": "finance/billing/credit_notes/infrastructure/web/CreditNoteController.java"
+    },
+    {
+      "operation": "DebitNoteController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE')",
+      "file": "finance/billing/debit_notes/infrastructure/web/DebitNoteController.java"
+    },
+    {
+      "operation": "DebitNoteController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/debit_notes/infrastructure/web/DebitNoteController.java"
+    },
+    {
+      "operation": "DebitNoteController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/debit_notes/infrastructure/web/DebitNoteController.java"
+    },
+    {
+      "operation": "DebitNoteController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('FINANCES:DELETE')",
+      "file": "finance/billing/debit_notes/infrastructure/web/DebitNoteController.java"
+    },
+    {
+      "operation": "InvoiceController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#cancel",
+      "verb": "PUT",
+      "policy": "hasAuthority('FINANCES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#duplicate",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('FINANCES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#confirm",
+      "verb": "PUT",
+      "policy": "hasAuthority('FINANCES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoiceController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('FINANCES:DELETE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/invoices/infrastructure/web/InvoiceController.java"
+    },
+    {
+      "operation": "InvoicesReportController#getInvoicePdf",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/billing/invoices/reporting/infrastructure/web/InvoicesReportController.java"
+    },
+    {
+      "operation": "InvoicesReportController#getInvoicesReportPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/billing/invoices/reporting/infrastructure/web/InvoicesReportController.java"
+    },
+    {
+      "operation": "ReturnController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/returns/infrastructure/web/ReturnController.java"
+    },
+    {
+      "operation": "ReturnController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/returns/infrastructure/web/ReturnController.java"
+    },
+    {
+      "operation": "ReturnController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/billing/returns/infrastructure/web/ReturnController.java"
+    },
+    {
+      "operation": "ReturnController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('FINANCES:DELETE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "finance/billing/returns/infrastructure/web/ReturnController.java"
+    },
+    {
+      "operation": "CashRegisterExportController#exportRangeReport",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/cash_register/reporting/infrastructure/web/CashRegisterExportController.java"
+    },
+    {
+      "operation": "CashRegisterExportController#exportExcel",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/cash_register/reporting/infrastructure/web/CashRegisterExportController.java"
+    },
+    {
+      "operation": "CashRegisterExportController#exportSession",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/cash_register/reporting/infrastructure/web/CashRegisterExportController.java"
+    },
+    {
+      "operation": "CashRegisterController#open",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/cash_register/sessions/infrastructure/web/CashRegisterController.java"
+    },
+    {
+      "operation": "CashRegisterController#getActive",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/cash_register/sessions/infrastructure/web/CashRegisterController.java"
+    },
+    {
+      "operation": "CashRegisterController#close",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/cash_register/sessions/infrastructure/web/CashRegisterController.java"
+    },
+    {
+      "operation": "CashRegisterController#addMovement",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE')",
+      "file": "finance/treasury/cash_register/sessions/infrastructure/web/CashRegisterController.java"
+    },
+    {
+      "operation": "CashRegisterController#getHistory",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/cash_register/sessions/infrastructure/web/CashRegisterController.java"
+    },
+    {
+      "operation": "PaymentMethodController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE')",
+      "file": "finance/treasury/payment_methods/infrastructure/web/PaymentMethodController.java"
+    },
+    {
+      "operation": "PaymentMethodController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/payment_methods/infrastructure/web/PaymentMethodController.java"
+    },
+    {
+      "operation": "PaymentMethodController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/payment_methods/infrastructure/web/PaymentMethodController.java"
+    },
+    {
+      "operation": "PaymentMethodController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('FINANCES:UPDATE')",
+      "file": "finance/treasury/payment_methods/infrastructure/web/PaymentMethodController.java"
+    },
+    {
+      "operation": "PaymentMethodController#toggle",
+      "verb": "PATCH",
+      "policy": "hasAuthority('FINANCES:UPDATE')",
+      "file": "finance/treasury/payment_methods/infrastructure/web/PaymentMethodController.java"
+    },
+    {
+      "operation": "PaymentMethodController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('FINANCES:DELETE')",
+      "file": "finance/treasury/payment_methods/infrastructure/web/PaymentMethodController.java"
+    },
+    {
+      "operation": "PaymentController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:CREATE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#approve",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#reject",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#payInvoice",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#payAllCustomerDebt",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#payPartialDebt",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('FINANCES:UPDATE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('FINANCES:DELETE')",
+      "file": "finance/treasury/payments/collection/infrastructure/web/PaymentController.java"
+    },
+    {
+      "operation": "PaymentReportsController#getPaymentPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/payments/reporting/infrastructure/web/PaymentReportsController.java"
+    },
+    {
+      "operation": "PaymentReportsController#getPaymentHistoryPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/payments/reporting/infrastructure/web/PaymentReportsController.java"
+    },
+    {
+      "operation": "ReceivablesController#getSummary",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/receivables/infrastructure/web/ReceivablesController.java"
+    },
+    {
+      "operation": "ReceivablesController#getCustomersWithDebt",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/receivables/infrastructure/web/ReceivablesController.java"
+    },
+    {
+      "operation": "ReceivablesController#getCustomerDebt",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/receivables/infrastructure/web/ReceivablesController.java"
+    },
+    {
+      "operation": "ReceivablesController#getCustomerInvoices",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "finance/treasury/receivables/infrastructure/web/ReceivablesController.java"
+    },
+    {
+      "operation": "ReceivablesController#getPaymentHistory",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/receivables/infrastructure/web/ReceivablesController.java"
+    },
+    {
+      "operation": "ReceivablesController#getCustomerPaymentHistory",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "finance/treasury/receivables/infrastructure/web/ReceivablesController.java"
+    },
+    {
+      "operation": "ReceivablesReportsController#getAccountsReceivablePdf",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/receivables/reporting/infrastructure/web/ReceivablesReportsController.java"
+    },
+    {
+      "operation": "ReceivablesReportsController#getCollectionsPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "finance/treasury/receivables/reporting/infrastructure/web/ReceivablesReportsController.java"
+    },
+    {
+      "operation": "WarehouseController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('INVENTORY:CREATE')",
+      "file": "inventory/warehouses/management/infrastructure/web/WarehouseController.java"
+    },
+    {
+      "operation": "WarehouseController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:READ')",
+      "file": "inventory/warehouses/management/infrastructure/web/WarehouseController.java"
+    },
+    {
+      "operation": "WarehouseController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:READ')",
+      "file": "inventory/warehouses/management/infrastructure/web/WarehouseController.java"
+    },
+    {
+      "operation": "WarehouseController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('INVENTORY:UPDATE')",
+      "file": "inventory/warehouses/management/infrastructure/web/WarehouseController.java"
+    },
+    {
+      "operation": "WarehouseController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('INVENTORY:DELETE')",
+      "file": "inventory/warehouses/management/infrastructure/web/WarehouseController.java"
+    },
+    {
+      "operation": "CatalogReportController#getCatalog",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:READ')",
+      "file": "inventory/warehouses/reporting/infrastructure/web/CatalogReportController.java"
+    },
+    {
+      "operation": "CatalogReportController#getCatalogPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "inventory/warehouses/reporting/infrastructure/web/CatalogReportController.java"
+    },
+    {
+      "operation": "MovementsReportController#getMovementsPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "inventory/warehouses/reporting/infrastructure/web/MovementsReportController.java"
+    },
+    {
+      "operation": "MovementsReportController#getMovementsExcel",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "inventory/warehouses/reporting/infrastructure/web/MovementsReportController.java"
+    },
+    {
+      "operation": "StockReportController#getStockPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "inventory/warehouses/reporting/infrastructure/web/StockReportController.java"
+    },
+    {
+      "operation": "StockReportController#getStockExcel",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "inventory/warehouses/reporting/infrastructure/web/StockReportController.java"
+    },
+    {
+      "operation": "StockMovementController#getMovements",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:READ')",
+      "file": "inventory/warehouses/stock/infrastructure/web/StockMovementController.java"
+    },
+    {
+      "operation": "WarehouseStockController#getStock",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:READ')",
+      "file": "inventory/warehouses/stock/infrastructure/web/WarehouseStockController.java"
+    },
+    {
+      "operation": "WarehouseStockController#entry",
+      "verb": "POST",
+      "policy": "hasAuthority('INVENTORY:EXECUTE')",
+      "file": "inventory/warehouses/stock/infrastructure/web/WarehouseStockController.java"
+    },
+    {
+      "operation": "WarehouseStockController#exit",
+      "verb": "POST",
+      "policy": "hasAuthority('INVENTORY:EXECUTE')",
+      "file": "inventory/warehouses/stock/infrastructure/web/WarehouseStockController.java"
+    },
+    {
+      "operation": "WarehouseStockController#adjustment",
+      "verb": "POST",
+      "policy": "hasAuthority('INVENTORY:EXECUTE')",
+      "file": "inventory/warehouses/stock/infrastructure/web/WarehouseStockController.java"
+    },
+    {
+      "operation": "WarehouseStockController#transfer",
+      "verb": "POST",
+      "policy": "hasAuthority('INVENTORY:EXECUTE')",
+      "file": "inventory/warehouses/stock/infrastructure/web/WarehouseStockController.java"
+    },
+    {
+      "operation": "CustomerBalanceController#getBalance",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "partners/customers/balance/infrastructure/web/CustomerBalanceController.java"
+    },
+    {
+      "operation": "CustomerBalanceController#getTransactions",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "partners/customers/balance/infrastructure/web/CustomerBalanceController.java"
+    },
+    {
+      "operation": "CustomerBalanceController#createAdvance",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "partners/customers/balance/infrastructure/web/CustomerBalanceController.java"
+    },
+    {
+      "operation": "CustomerBalanceController#createRefund",
+      "verb": "POST",
+      "policy": "hasAuthority('FINANCES:EXECUTE')",
+      "file": "partners/customers/balance/infrastructure/web/CustomerBalanceController.java"
+    },
+    {
+      "operation": "CustomerCreditController#getCreditStatus",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "partners/customers/credit/infrastructure/web/CustomerCreditController.java"
+    },
+    {
+      "operation": "CustomerCreditController#getOverdueInvoices",
+      "verb": "GET",
+      "policy": "hasAuthority('FINANCES:READ')",
+      "file": "partners/customers/credit/infrastructure/web/CustomerCreditController.java"
+    },
+    {
+      "operation": "CustomerController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('SALES:CREATE')",
+      "file": "partners/customers/profile/infrastructure/web/CustomerController.java"
+    },
+    {
+      "operation": "CustomerController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ')",
+      "file": "partners/customers/profile/infrastructure/web/CustomerController.java"
+    },
+    {
+      "operation": "CustomerController#getForPicker",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ')",
+      "file": "partners/customers/profile/infrastructure/web/CustomerController.java"
+    },
+    {
+      "operation": "CustomerController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ')",
+      "file": "partners/customers/profile/infrastructure/web/CustomerController.java"
+    },
+    {
+      "operation": "CustomerController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('SALES:UPDATE')",
+      "file": "partners/customers/profile/infrastructure/web/CustomerController.java"
+    },
+    {
+      "operation": "CustomerController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('SALES:DELETE')",
+      "file": "partners/customers/profile/infrastructure/web/CustomerController.java"
+    },
+    {
+      "operation": "CustomerWarehouseAccessController#listWarehouses",
+      "verb": "GET",
+      "policy": "hasAuthority('INVENTORY:READ')",
+      "file": "partners/customers/warehouse_access/infrastructure/web/CustomerWarehouseAccessController.java"
+    },
+    {
+      "operation": "CustomerWarehouseAccessController#grantAccess",
+      "verb": "POST",
+      "policy": "hasAuthority('INVENTORY:CREATE')",
+      "file": "partners/customers/warehouse_access/infrastructure/web/CustomerWarehouseAccessController.java"
+    },
+    {
+      "operation": "CustomerWarehouseAccessController#revokeAccess",
+      "verb": "DELETE",
+      "policy": "hasAuthority('INVENTORY:DELETE')",
+      "file": "partners/customers/warehouse_access/infrastructure/web/CustomerWarehouseAccessController.java"
+    },
+    {
+      "operation": "SupplierController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('PURCHASES:CREATE')",
+      "file": "partners/suppliers/infrastructure/web/SupplierController.java"
+    },
+    {
+      "operation": "SupplierController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:READ')",
+      "file": "partners/suppliers/infrastructure/web/SupplierController.java"
+    },
+    {
+      "operation": "SupplierController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:READ')",
+      "file": "partners/suppliers/infrastructure/web/SupplierController.java"
+    },
+    {
+      "operation": "SupplierController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('PURCHASES:UPDATE')",
+      "file": "partners/suppliers/infrastructure/web/SupplierController.java"
+    },
+    {
+      "operation": "SupplierController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('PURCHASES:DELETE')",
+      "file": "partners/suppliers/infrastructure/web/SupplierController.java"
+    },
+    {
+      "operation": "AuthController#register",
+      "verb": "POST",
+      "policy": "hasAuthority('USERS:CREATE')",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
+    },
+    {
+      "operation": "AuthController#login",
+      "verb": "POST",
+      "policy": "SELF_SERVICE",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
+    },
+    {
+      "operation": "AuthController#refresh",
+      "verb": "POST",
+      "policy": "SELF_SERVICE",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
+    },
+    {
+      "operation": "AuthController#logout",
+      "verb": "POST",
+      "policy": "SELF_SERVICE",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
+    },
+    {
+      "operation": "AuthController#changePassword",
+      "verb": "PATCH",
+      "policy": "SELF_SERVICE",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
+    },
+    {
+      "operation": "CurrentAccessController#current",
+      "verb": "GET",
+      "policy": "SELF_SERVICE",
+      "file": "platform/auth/authorization/infrastructure/web/CurrentAccessController.java"
+    },
+    {
+      "operation": "DepartmentController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('DEPARTMENTS:READ')",
+      "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
+    },
+    {
+      "operation": "DepartmentController#options",
+      "verb": "GET",
+      "policy": "isAuthenticated()",
+      "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
+    },
+    {
+      "operation": "DepartmentController#find",
+      "verb": "GET",
+      "policy": "hasAuthority('DEPARTMENTS:READ')",
+      "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
+    },
+    {
+      "operation": "DepartmentController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('DEPARTMENTS:CREATE')",
+      "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
+    },
+    {
+      "operation": "DepartmentController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('DEPARTMENTS:UPDATE')",
+      "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
+    },
+    {
+      "operation": "DepartmentController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('DEPARTMENTS:DELETE')",
+      "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
+    },
+    {
+      "operation": "RoleController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('ROLES:READ')",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "RoleController#options",
+      "verb": "GET",
+      "policy": "isAuthenticated()",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "RoleController#find",
+      "verb": "GET",
+      "policy": "hasAuthority('ROLES:READ')",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "RoleController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('ROLES:CREATE')",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "RoleController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('ROLES:UPDATE')",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "RoleController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('ROLES:DELETE')",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "RoleController#registry",
+      "verb": "GET",
+      "policy": "hasAuthority('ROLES:READ')",
+      "file": "platform/auth/role/infrastructure/web/RoleController.java"
+    },
+    {
+      "operation": "UserController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('USERS:READ')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "UserController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('USERS:READ')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "UserController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('USERS:CREATE')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "UserController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('USERS:UPDATE')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "UserController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('USERS:DELETE')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "UserController#updateEmail",
+      "verb": "PUT",
+      "policy": "hasAuthority('USERS:UPDATE')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "UserController#updatePassword",
+      "verb": "PUT",
+      "policy": "hasAuthority('USERS:UPDATE')",
+      "file": "platform/auth/user/infrastructure/web/UserController.java"
+    },
+    {
+      "operation": "NotificationController#list",
+      "verb": "GET",
+      "policy": "SELF_SERVICE",
+      "file": "platform/notifications/infrastructure/web/NotificationController.java"
+    },
+    {
+      "operation": "NotificationController#unreadCount",
+      "verb": "GET",
+      "policy": "SELF_SERVICE",
+      "file": "platform/notifications/infrastructure/web/NotificationController.java"
+    },
+    {
+      "operation": "NotificationController#markAsRead",
+      "verb": "PUT",
+      "policy": "SELF_SERVICE",
+      "file": "platform/notifications/infrastructure/web/NotificationController.java"
+    },
+    {
+      "operation": "NotificationController#markAllAsRead",
+      "verb": "PUT",
+      "policy": "SELF_SERVICE",
+      "file": "platform/notifications/infrastructure/web/NotificationController.java"
+    },
+    {
+      "operation": "PurchaseController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('PURCHASES:CREATE') and hasAuthority('INVENTORY:READ')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:READ')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#getProducts",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('PURCHASES:UPDATE') and hasAuthority('INVENTORY:READ')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#confirm",
+      "verb": "PUT",
+      "policy": "hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#cancel",
+      "verb": "PUT",
+      "policy": "hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchaseController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('PURCHASES:DELETE')",
+      "file": "procurement/purchases/infrastructure/web/PurchaseController.java"
+    },
+    {
+      "operation": "PurchasesReportController#getPurchasePdf",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "procurement/purchases/reporting/infrastructure/web/PurchasesReportController.java"
+    },
+    {
+      "operation": "PurchasesReportController#getPurchasesReportPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('PURCHASES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "procurement/purchases/reporting/infrastructure/web/PurchasesReportController.java"
+    },
+    {
+      "operation": "OrderController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#getAll",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#confirm",
+      "verb": "PUT",
+      "policy": "hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#cancel",
+      "verb": "PUT",
+      "policy": "hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#convertToInvoice",
+      "verb": "POST",
+      "policy": "hasAuthority('SALES:EXECUTE') and hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrderController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('SALES:DELETE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/orders/infrastructure/web/OrderController.java"
+    },
+    {
+      "operation": "OrdersReportController#getOrderPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "sales/orders/reporting/infrastructure/web/OrdersReportController.java"
+    },
+    {
+      "operation": "OrdersReportController#getOrdersReportPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "sales/orders/reporting/infrastructure/web/OrdersReportController.java"
+    },
+    {
+      "operation": "QuoteController#create",
+      "verb": "POST",
+      "policy": "hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:READ')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#list",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#getById",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#update",
+      "verb": "PUT",
+      "policy": "hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:READ')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#delete",
+      "verb": "DELETE",
+      "policy": "hasAuthority('SALES:DELETE')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#cancel",
+      "verb": "PUT",
+      "policy": "hasAuthority('SALES:EXECUTE')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#getWarehouses",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#convertToOrder",
+      "verb": "POST",
+      "policy": "hasAuthority('SALES:EXECUTE') and hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuoteController#convertToInvoice",
+      "verb": "POST",
+      "policy": "hasAuthority('SALES:EXECUTE') and hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')",
+      "file": "sales/quotes/infrastructure/web/QuoteController.java"
+    },
+    {
+      "operation": "QuotesReportController#getQuotePdf",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "sales/quotes/reporting/infrastructure/web/QuotesReportController.java"
+    },
+    {
+      "operation": "QuotesReportController#getQuotesReportPdf",
+      "verb": "GET",
+      "policy": "hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')",
+      "file": "sales/quotes/reporting/infrastructure/web/QuotesReportController.java"
+    },
+    {
+      "operation": "FileController#serveFile",
+      "verb": "GET",
+      "policy": "hasAuthority('CATALOG:READ')",
+      "file": "shared/storage/infrastructure/web/FileController.java"
+    }
+  ]
+}

@@ -40,14 +40,14 @@ public class SupplierController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:CREATE')")
     public ResponseEntity<SupplierCreateResponse> create(@Valid @RequestBody CreateSupplierRequest request) {
         SupplierCreateResponse response = registerSupplierUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ')")
     public ResponseEntity<PageResponse<SupplierListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String type,
@@ -63,14 +63,14 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ')")
     public ResponseEntity<SupplierDetailResponse> getById(@PathVariable String id) {
         SupplierDetailResponse supplier = getSupplierUseCase.execute(id);
         return ResponseEntity.ok(supplier);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:UPDATE')")
     public ResponseEntity<SupplierDetailResponse> update(@PathVariable String id,
                                                           @Valid @RequestBody UpdateSupplierRequest request) {
         SupplierDetailResponse supplier = updateSupplierUseCase.execute(id, request);
@@ -78,7 +78,7 @@ public class SupplierController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') and hasAuthority('MODULE_PURCHASES')")
+    @PreAuthorize("hasAuthority('PURCHASES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteSupplierUseCase.execute(id);
         return ResponseEntity.noContent().build();

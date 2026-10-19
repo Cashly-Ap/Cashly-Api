@@ -18,14 +18,19 @@ public class RegisterUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public RegisterUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public RegisterUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder, com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+        this.access=access;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public UserResponse execute(RegisterUserRequest request) {
+        access.lockAdministration();
+        access.require(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS, com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CREATE);
+        access.validateAssignment(request.roleId(),request.departmentId());
         Email email = new Email(request.email());
         if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("Email already registered: " + request.email());
@@ -37,8 +42,9 @@ public class RegisterUserUseCase {
         String hashedPassword = passwordEncoder.encode(request.password());
         Password password = Password.fromHash(hashedPassword);
 
-        User user = new User(UserId.generate(), email, userName, password, request.role());
+        User user = new User(UserId.generate(), email, userName, password);
 
+        user.updateProfile(request.profile(),request.roleId(),request.departmentId());
         User savedUser = userRepository.save(user);
 
         return UserResponse.from(savedUser);

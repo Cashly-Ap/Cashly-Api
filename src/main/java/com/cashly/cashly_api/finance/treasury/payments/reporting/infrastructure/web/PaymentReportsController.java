@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports/finance")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
 public class PaymentReportsController {
 
     private final GeneratePaymentPdfUseCase generatePaymentPdfUseCase;
@@ -26,6 +25,7 @@ public class PaymentReportsController {
     }
 
     @GetMapping("/payments/{id}/pdf")
+    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getPaymentPdf(@PathVariable UUID id) {
         byte[] pdf = generatePaymentPdfUseCase.execute(id);
         return ResponseEntity.ok()
@@ -35,6 +35,7 @@ public class PaymentReportsController {
     }
 
     @GetMapping("/payment-history/pdf")
+    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getPaymentHistoryPdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,

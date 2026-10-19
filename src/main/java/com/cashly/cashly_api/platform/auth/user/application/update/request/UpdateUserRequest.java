@@ -1,20 +1,32 @@
 package com.cashly.cashly_api.platform.auth.user.application.update.request;
 
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
-public record UpdateUserRequest(
-    @NotBlank(message = "User name is required")
-    @Size(min = 2, max = 100, message = "User name must be between 2 and 100 characters")
-    String userName,
+public record UpdateUserRequest(String userName,
+        String firstName, String lastName, UserProfile.Address address, String phone,
+        UUID roleId, UUID departmentId, Boolean active, Boolean emailVerified) {
+    public UpdateUserRequest {
+        if (userName == null || userName.isBlank()) {
+            throw new IllegalArgumentException("User name is required");
+        }
+        var profile = new UserProfile(firstName, lastName, address, phone);
+        firstName = profile.firstName();
+        lastName = profile.lastName();
+        phone = profile.phone();
+        if (roleId == null || departmentId == null) {
+            throw new IllegalArgumentException("Role and department are required");
+        }
+    }
 
-    @NotNull(message = "Role is required")
-    UserRole role,
+    @JsonAnySetter
+    public void rejectUnknownField(String name, Object value) {
+        throw new IllegalArgumentException("Unsupported user field: " + name);
+    }
 
-    Boolean active,
-    Boolean emailVerified
-) {}
+    public UserProfile profile() {
+        return new UserProfile(firstName, lastName, address, phone);
+    }
+}

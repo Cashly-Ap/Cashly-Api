@@ -48,7 +48,7 @@ public class CashRegisterController {
     }
 
     @PostMapping("/open")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
     public ResponseEntity<CashRegisterResponse> open(
             @Valid @RequestBody OpenRegisterRequest request,
             Authentication authentication) {
@@ -59,13 +59,13 @@ public class CashRegisterController {
     }
 
     @GetMapping("/active")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<CashRegisterResponse> getActive() {
         return ResponseEntity.of(getActiveRegisterUseCase.execute());
     }
 
     @PostMapping("/{id}/close")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
     public ResponseEntity<CashRegisterResponse> close(
             @PathVariable UUID id,
             @Valid @RequestBody CloseRegisterRequest request,
@@ -77,7 +77,7 @@ public class CashRegisterController {
     }
 
     @PostMapping("/{id}/movements")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:CREATE')")
     public ResponseEntity<CashMovementResponse> addMovement(
             @PathVariable UUID id,
             @Valid @RequestBody CashMovementRequest request,
@@ -88,7 +88,7 @@ public class CashRegisterController {
     }
 
     @GetMapping("/history")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_FINANCES')")
+    @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<Page<CashRegisterResponse>> getHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,

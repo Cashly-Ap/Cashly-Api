@@ -23,12 +23,12 @@ public class GetAllUsersUseCase {
         this.userRepository = userRepository;
     }
 
-    public PageResponse<UserResponse> execute(String authenticatedUserId, UserRole role, Boolean active,
+    public PageResponse<UserResponse> execute(String authenticatedUserId, UUID roleId, Boolean active,
                                                String search, int page, int size,
                                                String orderBy, String orderDir) {
         Boolean effectiveActive = active != null ? active : true;
         PageResponse<User> userPage =
-            userRepository.findAllWithFilters(search, role, effectiveActive, authenticatedUserId, page, size, orderBy, orderDir);
+            userRepository.findAllWithFilters(search, roleId, effectiveActive, authenticatedUserId, page, size, orderBy, orderDir);
 
         Set<UUID> idsWithRecords = userRepository.findIdsWithAssociatedRecords(
             userPage.content().stream()
@@ -37,7 +37,7 @@ public class GetAllUsersUseCase {
         );
 
         List<UserResponse> content = userPage.content().stream()
-            .map(u -> UserResponse.from(u, !idsWithRecords.contains(u.getId().getValue()) && !u.isSuperAdmin()))
+            .map(u -> UserResponse.from(u, !idsWithRecords.contains(u.getId().getValue())))
             .toList();
 
         return new PageResponse<>(

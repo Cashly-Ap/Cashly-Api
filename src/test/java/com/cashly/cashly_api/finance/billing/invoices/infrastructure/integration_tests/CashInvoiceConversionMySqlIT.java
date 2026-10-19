@@ -93,7 +93,7 @@ class CashInvoiceConversionMySqlIT {
 
     private Fixture seed() {
         Fixture f = new Fixture(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
-        jdbc.update("insert into users(id,email,user_name,password_hash,role,active,email_verified,created_at,updated_at) values(UUID_TO_BIN(?),?,'Cash IT','unused','SUPER_ADMIN',true,true,NOW(),NOW())", f.actor().toString(), f.actor()+"@cash-it.test");
+        jdbc.update("insert into users(id,email,user_name,password_hash,role,first_name,last_name,phone,role_id,department_id,active,email_verified,created_at,updated_at) values(UUID_TO_BIN(?),?,'Cash IT','unused','SUPER_ADMIN','Cash','Integration',NULL,UNHEX('90000000000000000000000000000001'),UNHEX('91000000000000000000000000000001'),true,true,NOW(),NOW())", f.actor().toString(), f.actor()+"@cash-it.test");
         jdbc.update("insert into categories(id,name,active) values(UUID_TO_BIN(?),?,true)", f.category().toString(), "Cash "+f.category());
         jdbc.update("insert into products(id,code,name,category_id,composite,active) values(UUID_TO_BIN(?),?,'Cash product',UUID_TO_BIN(?),false,true)", f.product().toString(), "CS-"+f.product(), f.category().toString());
         jdbc.update("insert into customers(id,code,legal_name,type,rif,alias,credit_days,credit_limit,active,created_at,updated_at) values(UUID_TO_BIN(?),?,'Cash customer','INDIVIDUAL',?,'Cash IT',0,1000,true,NOW(),NOW())", f.customer().toString(), System.nanoTime(), "J-%08d-1".formatted(Math.floorMod(f.customer().hashCode(), 100000000)));

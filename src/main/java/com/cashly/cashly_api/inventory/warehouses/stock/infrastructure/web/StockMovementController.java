@@ -20,7 +20,7 @@ public class StockMovementController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'OPERATOR') and hasAuthority('MODULE_INVENTORY')")
+    @PreAuthorize("hasAuthority('INVENTORY:READ')")
     public PageResponse<StockMovementResponse> getMovements(
             @PathVariable UUID warehouseId,
             @RequestParam(required = false) UUID productId,

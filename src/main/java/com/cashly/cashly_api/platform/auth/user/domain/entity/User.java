@@ -19,6 +19,24 @@ public class User {
     private UserName userName;
     private Password password;
     private UserRole role;
+    private com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile;
+    private String roleName;
+    private String departmentName;
+    public String getRoleName() { return roleName; }
+    public String getDepartmentName() { return departmentName; }
+    public void setAssignmentNames(String roleName,String departmentName) { this.roleName=roleName;this.departmentName=departmentName; }
+    private java.util.UUID roleId;
+    private java.util.UUID departmentId;
+    public com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile getProfile() { return profile; }
+    public java.util.UUID getRoleId() { return roleId; }
+    public java.util.UUID getDepartmentId() { return departmentId; }
+    public void updateProfile(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile,java.util.UUID roleId,java.util.UUID departmentId) {
+        this.profile=java.util.Objects.requireNonNull(profile);
+        this.roleId=java.util.Objects.requireNonNull(roleId);
+        this.departmentId=java.util.Objects.requireNonNull(departmentId);
+        this.updatedAt=LocalDateTime.now();
+    }
+
     private boolean active;
     private boolean emailVerified;
     private Set<BusinessModule> modulePermissions;

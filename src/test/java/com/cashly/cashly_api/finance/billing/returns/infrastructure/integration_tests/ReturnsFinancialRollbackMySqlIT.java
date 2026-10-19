@@ -122,8 +122,8 @@ class ReturnsFinancialRollbackMySqlIT {
         LocalDateTime now = LocalDateTime.now();
 
         jdbc.update("""
-                INSERT INTO users (id, email, user_name, password_hash, role, active, email_verified, created_at, updated_at)
-                VALUES (UUID_TO_BIN(?), ?, ?, ?, 'OPERATOR', TRUE, TRUE, ?, ?)
+                INSERT INTO users (id, email, user_name, password_hash, role, first_name, last_name, phone, role_id, department_id, active, email_verified, created_at, updated_at)
+                VALUES (UUID_TO_BIN(?), ?, ?, ?, 'OPERATOR', 'Rollback', 'Operator', NULL, UNHEX('90000000000000000000000000000003'), UNHEX('91000000000000000000000000000001'), TRUE, TRUE, ?, ?)
                 """, fixture.actorId().toString(), fixture.actorId() + "@returns-it.test", "Rollback Operator",
                 "unused-password", now, now);
         jdbc.update("INSERT INTO categories (id, name, description) VALUES (UUID_TO_BIN(?), ?, ?)",
