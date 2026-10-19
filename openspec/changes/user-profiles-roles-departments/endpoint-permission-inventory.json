@@ -763,7 +763,7 @@
     {
       "operation": "DepartmentController#options",
       "verb": "GET",
-      "policy": "isAuthenticated()",
+      "policy": "hasAuthority('USERS:READ') and (hasAuthority('USERS:CREATE') or hasAuthority('USERS:UPDATE'))",
       "file": "platform/auth/department/infrastructure/web/DepartmentController.java"
     },
     {
@@ -799,7 +799,7 @@
     {
       "operation": "RoleController#options",
       "verb": "GET",
-      "policy": "isAuthenticated()",
+      "policy": "hasAuthority('USERS:READ') and (hasAuthority('USERS:CREATE') or hasAuthority('USERS:UPDATE'))",
       "file": "platform/auth/role/infrastructure/web/RoleController.java"
     },
     {

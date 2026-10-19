@@ -25,7 +25,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/options")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('USERS:READ') and (hasAuthority('USERS:CREATE') or hasAuthority('USERS:UPDATE'))")
     public List<ManageDepartmentsUseCase.Option> options() {
         return useCase.options();
     }

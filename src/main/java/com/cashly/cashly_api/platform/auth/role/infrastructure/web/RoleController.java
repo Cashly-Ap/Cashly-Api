@@ -25,7 +25,7 @@ public class RoleController {
     }
 
     @GetMapping("/options")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('USERS:READ') and (hasAuthority('USERS:CREATE') or hasAuthority('USERS:UPDATE'))")
     public List<ManageRolesUseCase.Option> options() {
         return useCase.options();
     }

@@ -55,6 +55,29 @@ class ManageRolesUseCaseTest {
     }
 
     @Test
+    void cannotStripPermissionsFromAnExistingRoleAboveTheActorScope() {
+        var actorId = UUID.randomUUID();
+        var actorRoleId = UUID.randomUUID();
+        var departmentId = UUID.randomUUID();
+        var actorRole = new Role(actorRoleId, "Limited administrator", null, true, 0, null,
+                Map.of(BusinessModule.ROLES, Set.of(PermissionAction.READ, PermissionAction.UPDATE)));
+        var superior = new Role(id, "Sales administrator", null, true, 2, null,
+                Map.of(BusinessModule.SALES, Set.of(PermissionAction.READ, PermissionAction.UPDATE)));
+        when(repository.assignment(actorId)).thenReturn(Optional.of(
+                new AccessRepository.Assignment(actorRoleId, departmentId, true)));
+        when(repository.role(actorRoleId)).thenReturn(Optional.of(actorRole));
+        when(repository.role(id)).thenReturn(Optional.of(superior));
+        var secured = new ManageRolesUseCase(repository, new AccessService(repository, () -> actorId));
+
+        assertThatThrownBy(() -> secured.save(id,
+                new ManageRolesUseCase.Request("Stripped", null, true, 2L, Map.of())))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(repository).lockAdministration();
+        verify(repository, never()).saveRole(any(), anyBoolean());
+    }
+
+    @Test
     void assignment_options_need_only_user_administration_and_filter_privilege_ceiling() {
         var allowed = role(null);
         var protectedRole = new Role(UUID.randomUUID(), "Recovery", null, true, 0, "SYSTEM_ADMIN", Map.of());

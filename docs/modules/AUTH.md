@@ -436,3 +436,11 @@ CREATE TABLE refresh_tokens (
 `GET /api/auth/profile` returns `UserResponse` for the authenticated user, including personal names, a single phone, address, assigned role and department names, account state, email verification and creation/update timestamps. Identity comes exclusively from `Authentication.getName()`; no path or query parameter can select another account. Authentication is required, but `USERS:READ` is not required for this self-service operation. Passwords, hashes and tokens are never part of this response.
 
 `PUT /api/auth/profile` updates only `userName`, `firstName`, `lastName`, a single `phone` and `address` for that same authenticated subject. Unknown top-level fields are rejected with 400, including identifiers, email, password, role, department, permissions and account state. The transaction takes the shared administration lock before loading the user under READ_COMMITTED isolation, preserving concurrent administrative assignments. The personal domain update does not change access, verification or credentials.
+
+### Permission enforcement
+
+Every protected controller action uses action-specific `@PreAuthorize` checks. The JWT filter resolves the account's current persisted role on every request, so removing a grant affects the next request even with an existing token. Read-only grants do not authorize writes, execution or exports. Report exports require both their owning module's EXPORT grant and DOCUMENT_ADMIN:EXPORT.
+
+Role and department option endpoints require USERS:READ plus USERS:CREATE or USERS:UPDATE, matching their assignment-only use case; role options contain only roles the administrator may delegate. Updating a role verifies both its existing permissions and requested permissions against the acting administrator's scope before saving, so replacing a superior role with fewer permissions cannot bypass that boundary.
+
+`EndpointPermissionEnforcementTest` executes the real Spring preauthorization evaluator for every protected controller operation, covering authenticated accounts without grants, read-only accounts, authorized accounts and individual missing actions. Endpoint coverage also denies newly introduced unmapped API operations.

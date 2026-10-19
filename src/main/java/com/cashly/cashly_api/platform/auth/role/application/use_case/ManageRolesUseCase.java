@@ -69,8 +69,12 @@ public class ManageRolesUseCase {
         repository.lockAdministration();
         boolean create = id == null;
         access.require(BusinessModule.ROLES, create ? PermissionAction.CREATE : PermissionAction.UPDATE);
-        if (!create && existing(id).systemAdministrator()) {
-            throw new AccessConflictException("Protected system role cannot be changed");
+        if (!create) {
+            var previous = existing(id);
+            if (previous.systemAdministrator()) {
+                throw new AccessConflictException("Protected system role cannot be changed");
+            }
+            access.delegable(previous);
         }
         if (!create && request.version() == null) {
             throw new IllegalArgumentException("Version is required");
