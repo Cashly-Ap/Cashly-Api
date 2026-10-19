@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 class EndpointPermissionCoverageTest {
     private static final Set<String> SELF_SERVICE = Set.of(
             "AuthController#login", "AuthController#refresh", "AuthController#logout",
-            "AuthController#changePassword", "CurrentAccessController#current",
+            "AuthController#changePassword", "AuthController#profile", "AuthController#updateProfile", "CurrentAccessController#current",
             "NotificationController#list", "NotificationController#unreadCount",
             "NotificationController#markAsRead", "NotificationController#markAllAsRead");
 
@@ -57,6 +57,16 @@ class EndpointPermissionCoverageTest {
         assertThat(mappings).as("The controller scan must discover the real API").isGreaterThan(180);
         assertThat(missing).as("Protected operations require explicit permissions").isEmpty();
         assertThat(legacy).as("Fixed role names and direct user grants cannot authorize operations").isEmpty();
+    }
+
+    @Test
+    void ownProfileHasAnExplicitSelfServiceException() throws Exception {
+        var controller = com.cashly.cashly_api.platform.auth.authentication.infrastructure.web.AuthController.class;
+        var handler = new HandlerMethod(mock(controller),
+                controller.getDeclaredMethod("profile", org.springframework.security.core.Authentication.class));
+        assertThat(new PermissionCoverageInterceptor().preHandle(
+                mock(jakarta.servlet.http.HttpServletRequest.class),
+                mock(jakarta.servlet.http.HttpServletResponse.class), handler)).isTrue();
     }
 
     @Test

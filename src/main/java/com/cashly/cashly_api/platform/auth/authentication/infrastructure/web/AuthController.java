@@ -6,6 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import com.cashly.cashly_api.platform.auth.user.application.update.request.UpdateOwnProfileRequest;
+import com.cashly.cashly_api.platform.auth.user.application.update.use_case.UpdateOwnProfileUseCase;
+import com.cashly.cashly_api.platform.auth.user.application.queries.use_case.GetUserByIdUseCase;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +33,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final UpdateOwnProfileUseCase updateOwnProfileUseCase;
+    private final GetUserByIdUseCase getUserByIdUseCase;
     private final RegisterUserUseCase registerUserUseCase;
     private final LoginUserUseCase loginUserUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
@@ -39,13 +46,28 @@ public class AuthController {
         LoginUserUseCase loginUserUseCase,
         RefreshTokenUseCase refreshTokenUseCase,
         LogoutUserUseCase logoutUserUseCase,
-        UpdateUserPasswordUseCase updateUserPasswordUseCase
+        UpdateUserPasswordUseCase updateUserPasswordUseCase,
+        GetUserByIdUseCase getUserByIdUseCase,
+        UpdateOwnProfileUseCase updateOwnProfileUseCase
     ) {
+        this.updateOwnProfileUseCase = updateOwnProfileUseCase;
+        this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
         this.loginUserUseCase = loginUserUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUserUseCase = logoutUserUseCase;
         this.updateUserPasswordUseCase = updateUserPasswordUseCase;
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponse> profile(Authentication authentication) {
+        return ResponseEntity.ok(getUserByIdUseCase.execute(authentication.getName()));
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserResponse> updateProfile(Authentication authentication,
+            @Valid @RequestBody UpdateOwnProfileRequest request) {
+        return ResponseEntity.ok(updateOwnProfileUseCase.execute(authentication.getName(), request));
     }
 
     @PostMapping("/register")

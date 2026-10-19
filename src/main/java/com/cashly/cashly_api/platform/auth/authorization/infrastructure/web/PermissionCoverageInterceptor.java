@@ -12,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class PermissionCoverageInterceptor implements HandlerInterceptor  {
     private static final Set<String> SELF_SERVICE = Set.of(
-    "AuthController#login", "AuthController#refresh", "AuthController#logout", "AuthController#changePassword",
+    "AuthController#login", "AuthController#refresh", "AuthController#logout", "AuthController#changePassword", "AuthController#profile", "AuthController#updateProfile",
     "CurrentAccessController#current",
     "NotificationController#list", "NotificationController#unreadCount", "NotificationController#markAsRead", "NotificationController#markAllAsRead");
     @Override

@@ -1,6 +1,6 @@
 {
-  "method": "Static source inventory; runtime reflection coverage test pending execution",
-  "count": 181,
+  "method": "Static source inventory; runtime reflection coverage and permission enforcement verified",
+  "count": 183,
   "unmapped": [],
   "legacyPolicies": [],
   "endpoints": [
@@ -1089,6 +1089,18 @@
       "verb": "GET",
       "policy": "hasAuthority('CATALOG:READ')",
       "file": "shared/storage/infrastructure/web/FileController.java"
+    },
+    {
+      "operation": "AuthController#profile",
+      "verb": "GET",
+      "policy": "Authenticated self-service; identity from Authentication.getName() only",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
+    },
+    {
+      "operation": "AuthController#updateProfile",
+      "verb": "PUT",
+      "policy": "Authenticated self-service; personal fields only; identity from Authentication.getName()",
+      "file": "platform/auth/authentication/infrastructure/web/AuthController.java"
     }
   ]
 }

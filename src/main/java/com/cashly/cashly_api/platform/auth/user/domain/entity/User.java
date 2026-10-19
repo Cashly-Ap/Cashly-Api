@@ -37,6 +37,11 @@ public class User {
         this.updatedAt=LocalDateTime.now();
     }
 
+    public void updatePersonalProfile(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile) {
+        this.profile = java.util.Objects.requireNonNull(profile);
+        this.updatedAt = LocalDateTime.now();
+    }
+
     private boolean active;
     private boolean emailVerified;
     private Set<BusinessModule> modulePermissions;

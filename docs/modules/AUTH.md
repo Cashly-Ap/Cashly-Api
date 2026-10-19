@@ -430,3 +430,9 @@ CREATE TABLE refresh_tokens (
 - Unit tests for domain entities and their business methods
 - Unit tests for use cases with mocked repositories
 - Integration tests for controllers with test database
+
+### Own account profile
+
+`GET /api/auth/profile` returns `UserResponse` for the authenticated user, including personal names, a single phone, address, assigned role and department names, account state, email verification and creation/update timestamps. Identity comes exclusively from `Authentication.getName()`; no path or query parameter can select another account. Authentication is required, but `USERS:READ` is not required for this self-service operation. Passwords, hashes and tokens are never part of this response.
+
+`PUT /api/auth/profile` updates only `userName`, `firstName`, `lastName`, a single `phone` and `address` for that same authenticated subject. Unknown top-level fields are rejected with 400, including identifiers, email, password, role, department, permissions and account state. The transaction takes the shared administration lock before loading the user under READ_COMMITTED isolation, preserving concurrent administrative assignments. The personal domain update does not change access, verification or credentials.
