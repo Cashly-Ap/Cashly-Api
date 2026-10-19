@@ -2,13 +2,9 @@
 -- Seed: Warehouses (5 almacenes) + Customer Warehouse Access
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
-DELETE FROM customer_warehouse_access;
 -- Note: stock_movements y warehouse_stock se crean en seed 13
 -- DELETE FROM stock_movements;
 -- DELETE FROM warehouse_stock;
-DELETE FROM warehouses;
-SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO warehouses (id, code, name, address, state, municipality, postal_code, active)
 VALUES

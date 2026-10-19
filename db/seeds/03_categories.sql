@@ -2,7 +2,6 @@
 -- Seed: Categories (10 categorías variadas)
 -- =============================================================================
 
-DELETE FROM categories;
 
 INSERT INTO categories (id, name, description, active)
 VALUES

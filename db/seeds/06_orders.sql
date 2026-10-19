@@ -16,12 +16,6 @@
 --   ORD-2026-0009  InvGlobal       DRAFT
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
-DELETE FROM order_line_allocations;
-DELETE FROM order_lines;
-DELETE FROM orders;
-DELETE FROM order_number_sequence;
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- Sequence: year 2026, next value starts at 10 (9 orders already used)
 INSERT INTO order_number_sequence (year, next_value)

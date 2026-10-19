@@ -13,10 +13,6 @@
 -- profit_margin = NULL (se calcula desde el frontend)
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
-DELETE FROM product_prices;
-DELETE FROM price_types;
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================================================
 -- PRICE TYPES

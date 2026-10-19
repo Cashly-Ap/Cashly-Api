@@ -36,7 +36,7 @@ VALUES
     (UNHEX('C1000000000000000000000000000001'), 'RET-2025-0001', @inv1, @cust1, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - items completos', 1250.00, @user1, 'Super Admin', NOW(), NOW()),
     (UNHEX('C1000000000000000000000000000002'), 'RET-2025-0002', @inv2, @cust2, 'MANUAL', 'Devolucion parcial - cliente reporta defecto en productos', 1725.00, @user2, 'Admin User', NOW(), NOW()),
     (UNHEX('C1000000000000000000000000000003'), 'RET-2025-0003', @inv3, @cust3, 'AUTOMATIC', 'Devolucion automatica por factura cancelada - orden no procesada', 8850.00, @user1, 'Super Admin', NOW(), NOW()),
-    (UNHEX('C1000000000000000000000000000004'), 'RET-2025-0004', @inv4, @cust4, 'MANUAL', 'Devolucion parcial - cantidades especificas solicitadas por cliente', 350.00, @user2, 'Admin User', NOW(), NOW());
+    (UNHEX('C1000000000000000000000000000004'), 'RET-2025-0004', @inv4, @cust4, 'MANUAL', 'Devolucion completa de una unidad', 175.00, @user2, 'Admin User', NOW(), NOW());
 
 INSERT INTO return_lines (id, return_id, invoice_line_id, product_id, quantity, unit_price, line_total)
 VALUES
@@ -48,7 +48,7 @@ VALUES
     (UNHEX('C2000000000000000000000000000006'), UNHEX('C1000000000000000000000000000003'), @invLine6, @prod1, 500.0000, 5.50, 2750.00),
     (UNHEX('C2000000000000000000000000000007'), UNHEX('C1000000000000000000000000000003'), @invLine7, @prod2, 150.0000, 14.00, 2100.00),
     (UNHEX('C2000000000000000000000000000008'), UNHEX('C1000000000000000000000000000003'), @invLine8, @prod3, 50.0000, 45.00, 2250.00),
-    (UNHEX('C2000000000000000000000000000009'), UNHEX('C1000000000000000000000000000004'), @invLine9, @prod5, 1.0000, 350.00, 350.00);
+    (UNHEX('C2000000000000000000000000000009'), UNHEX('C1000000000000000000000000000004'), @invLine9, @prod5, 1.0000, 175.00, 175.00);
 
 INSERT INTO return_line_allocations (id, return_line_id, warehouse_id, allocated)
 VALUES

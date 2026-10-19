@@ -35,7 +35,7 @@ VALUES (UNHEX('0E300000000000000000000000000004'), UNHEX('0E10000000000000000000
 
 -- Quote 3: CONVERTED_TO_ORDER - ComNorte
 INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, order_id, order_number, created_at, updated_at)
-VALUES (UNHEX('0E100000000000000000000000000003'), 'PRE-2026-0009', UNHEX('C1000000000000000000000000000003'), 'Comercial del Norte', 'J-10555444-1', UNHEX('C2AADE111E2D4BA0DD8F8DDBDF42C437'), 'Operator User', 'CONVERTED_TO_ORDER', 'Convertido a pedido', 6300.00, UNHEX('0D100000000000000000000000000001'), 'ORD-2026-0001', NOW(), NOW());
+VALUES (UNHEX('0E100000000000000000000000000003'), 'PRE-2026-0009', UNHEX('C1000000000000000000000000000003'), 'Comercial del Norte', 'J-10555444-1', UNHEX('C2AADE111E2D4BA0DD8F8DDBDF42C437'), 'Operator User', 'CONVERTED_TO_ORDER', 'Convertido a pedido', 6310.00, UNHEX('0D100000000000000000000000000001'), 'ORD-2026-0001', NOW(), NOW());
 
 INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
 VALUES (UNHEX('0E200000000000000000000000000005'), UNHEX('0E100000000000000000000000000003'), UNHEX('E0000000000000000000000000000005'), 'Taladro percutor 13mm', 'HERR-001', 10.0000, 350.00, 3500.00);
@@ -67,7 +67,7 @@ VALUES (UNHEX('0E300000000000000000000000000008'), UNHEX('0E10000000000000000000
 
 -- Quote 5: DRAFT - SumZulia (multi-line, multi-warehouse)
 INSERT INTO quotes (id, quote_number, customer_id, customer_name, customer_rif, created_by, created_by_name, status, notes, subtotal, created_at, updated_at)
-VALUES (UNHEX('0E100000000000000000000000000005'), 'PRE-2026-0011', UNHEX('C1000000000000000000000000000005'), 'Suministros Zulia', 'J-40234567-8', UNHEX('F5DDEA444B5A7ED3CC1B1AAED175F76A'), 'Gabriel', 'DRAFT', 'Presupuesto para remodelacion de oficina', 12450.00, NOW(), NOW());
+VALUES (UNHEX('0E100000000000000000000000000005'), 'PRE-2026-0011', UNHEX('C1000000000000000000000000000005'), 'Suministros Zulia', 'J-40234567-8', UNHEX('F5DDEA444B5A7ED3CC1B1AAED175F76A'), 'Gabriel', 'DRAFT', 'Presupuesto para remodelacion de oficina', 12447.00, NOW(), NOW());
 
 INSERT INTO quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total)
 VALUES (UNHEX('0E200000000000000000000000000009'), UNHEX('0E100000000000000000000000000005'), UNHEX('E0000000000000000000000000000001'), 'Cable UTP Cat6 (metro)', 'ELEC-001', 800.0000, 5.50, 4400.00);
@@ -164,3 +164,5 @@ SELECT quote_lines.id, products.category_id
 FROM quote_lines
 JOIN products ON products.id = quote_lines.product_id
 WHERE products.category_id IS NOT NULL;
+
+INSERT INTO quote_number_sequence (year,next_value) VALUES (2026,15);

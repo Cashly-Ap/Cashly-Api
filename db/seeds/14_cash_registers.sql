@@ -30,10 +30,6 @@
 --   PM-0008 Zelle
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
-DELETE FROM cash_register_details;
-DELETE FROM cash_registers;
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================================================
 -- Variables: Payment Methods (búsqueda por código, UUIDs dinámicos)

@@ -3,13 +3,6 @@
 -- $2a$10$JeWVj1G/YKilG0cOrefUIOJx8Z9dcnokwYFhRx0nN0Y7AWoTVQOdu
 -- =============================================================================
 
-SET FOREIGN_KEY_CHECKS = 0;
-DELETE FROM customer_warehouse_access;
-DELETE FROM customer_addresses;
-DELETE FROM customer_phones;
-DELETE FROM customer_emails;
-DELETE FROM customers;
-SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, created_at, updated_at)
 VALUES

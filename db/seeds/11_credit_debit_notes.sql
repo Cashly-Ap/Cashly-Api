@@ -11,7 +11,7 @@ INSERT INTO debit_notes (id, note_number, customer_id, invoice_id, amount, reaso
 VALUES
     (UNHEX('db000000000000000000000000000001'), 'DN-2025-0001', (SELECT id FROM customers WHERE code = 1004), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00029'), 75.00, 'Recargo por pago tardio', (SELECT id FROM users WHERE email = 'sales@cashly.com'), 'Sales User', NOW(), NOW()),
     (UNHEX('db000000000000000000000000000002'), 'DN-2025-0002', (SELECT id FROM customers WHERE code = 1005), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00030'), 120.00, 'Intereses por credito vencido', (SELECT id FROM users WHERE email = 'superadmin@cashly.com'), 'Super Admin', NOW(), NOW()),
-    (UNHEX('db000000000000000000000000000003'), 'DN-2025-0003', (SELECT id FROM customers WHERE code = 1007), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 50.00, 'Ajuste de precio', (SELECT id FROM users WHERE email = 'admin@cashly.com'), 'Admin User', NOW(), NOW());
+    (UNHEX('db000000000000000000000000000003'), 'DN-2025-0003', (SELECT id FROM customers WHERE code = 1001), (SELECT id FROM invoices WHERE invoice_number = 'INV-2026-00026'), 50.00, 'Ajuste de precio', (SELECT id FROM users WHERE email = 'admin@cashly.com'), 'Admin User', NOW(), NOW());
 
 INSERT INTO debit_note_number_sequence (year, next_value)
 VALUES (2025, 4);
