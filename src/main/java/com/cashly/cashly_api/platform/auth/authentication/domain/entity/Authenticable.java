@@ -12,6 +12,8 @@ public interface Authenticable {
 
     String getSubjectId();
 
+    default String getPhotoPath() { return null; }
+
     String getEmail();
 
     String getHashedPassword();

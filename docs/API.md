@@ -182,3 +182,18 @@ All endpoints are fully documented in the OpenAPI specification with example req
 ---
 
 [← Back to Main README](../README.md)
+## Installation company
+
+Cashly manages one company per installation. `GET /api/company` is available to every authenticated user for navigation branding. `PUT /api/company` requires `COMPANY:UPDATE` and accepts `legalName`, `tradeName`, `taxId`, `email`, `phone`, `website` and `address` (`street`, `city`, `region`, `country`, `postalCode`). The legal name and address object are required; optional values may be empty. Responses additionally include the immutable `id` and nullable `logoPath`.
+
+`POST /api/company/logo` accepts multipart `file`; `DELETE /api/company/logo` removes it. Both require `COMPANY:UPDATE` and return the updated company. `GET /api/company/logo` returns the authenticated PNG image, or 404 when absent. PNG and JPEG uploads are limited to 5 MiB and 4096 × 4096 pixels and are decoded and reencoded as PNG; uploaded SVG files and corrupt images are rejected.
+
+Migration V31 backfills all existing persistent application tables with a required `company_id` foreign key. Its database default also links future records inserted through existing repositories. The companies table enforces one immutable installation ID, so clients cannot switch data ownership. System administrators receive company permissions through the permission registry; existing roles with role-update access receive company read/update grants. Other roles can be granted those permissions through role administration.
+
+### User photos
+
+Authenticated users manage their own photo with `POST /api/auth/profile/photo` (multipart `file`) and `DELETE /api/auth/profile/photo`. `GET /api/auth/profile/photo` returns the PNG or 404 when no image exists. Identity comes from the authenticated principal, never a request-supplied user ID.
+
+Administrators read photos through `GET /api/users/{id}/photo` with `USERS:READ`, and upload/remove through `POST`/`DELETE` with `USERS:UPDATE`. Mutation responses return the updated user including nullable `photoPath`; login and profile responses also include that field. Migration V30 adds the photo reference.
+
+Photos use the same raster limits and normalization as company logos. Image reads return `no-store` and `nosniff`. The generic catalog file route excludes identity media so its catalog permission cannot bypass user-photo authorization. Replaced files are retired after commit, and newly stored files are cleaned up on transaction rollback.

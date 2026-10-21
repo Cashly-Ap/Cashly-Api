@@ -18,6 +18,7 @@ public final class PermissionRegistry  {
             if (Set.of(BusinessModule.CATALOG, BusinessModule.INVENTORY, BusinessModule.SALES, BusinessModule.FINANCES, BusinessModule.PURCHASES, BusinessModule.DOCUMENT_ADMIN).contains(module)) actions.add(PermissionAction.EXPORT);
             if (Set.of(BusinessModule.INVENTORY, BusinessModule.SALES, BusinessModule.FINANCES, BusinessModule.PURCHASES, BusinessModule.DOCUMENT_ADMIN).contains(module)) actions.add(PermissionAction.EXECUTE);
             if (module == BusinessModule.DOCUMENT_ADMIN) actions = EnumSet.of(PermissionAction.READ, PermissionAction.EXPORT);
+            if (module == BusinessModule.COMPANY) actions = EnumSet.of(PermissionAction.READ, PermissionAction.UPDATE);
             if (module == BusinessModule.DASHBOARD) actions = EnumSet.of(PermissionAction.READ);
             result.put(module, Collections.unmodifiableSet(actions));
         }

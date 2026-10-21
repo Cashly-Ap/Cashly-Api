@@ -22,8 +22,20 @@ public record UserResponse(
     java.util.UUID roleId, java.util.UUID departmentId,
     String roleName, String departmentName,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+    String photoPath
 ) {
+    public UserResponse(String id, String email, String userName, UserRole role, boolean active,
+            boolean emailVerified, boolean deletable, Set<BusinessModule> modulePermissions,
+            String firstName, String lastName,
+            com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile.Address address,
+            String phone, java.util.UUID roleId, java.util.UUID departmentId, String roleName,
+            String departmentName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, email, userName, role, active, emailVerified, deletable, modulePermissions,
+            firstName, lastName, address, phone, roleId, departmentId, roleName, departmentName,
+            createdAt, updatedAt, null);
+    }
+
     public static UserResponse from(User user) {
         return from(user, true);
     }
@@ -45,7 +57,8 @@ public record UserResponse(
             user.getRoleId(),user.getDepartmentId(),
             user.getRoleName(),user.getDepartmentName(),
             user.getCreatedAt(),
-            user.getUpdatedAt()
+            user.getUpdatedAt(),
+            user.getPhotoPath()
         );
     }
 }

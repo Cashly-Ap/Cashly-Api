@@ -15,6 +15,12 @@ import java.util.Set;
 
 public class User {
     private final UserId id;
+    private String photoPath;
+    public String getPhotoPath() { return photoPath; }
+    public void changePhoto(String photoPath) {
+        this.photoPath = photoPath;
+        this.updatedAt = LocalDateTime.now();
+    }
     private Email email;
     private UserName userName;
     private Password password;

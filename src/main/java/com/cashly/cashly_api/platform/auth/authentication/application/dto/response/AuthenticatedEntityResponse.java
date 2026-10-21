@@ -17,8 +17,15 @@ public record AuthenticatedEntityResponse(
     boolean active,
     Set<BusinessModule> modulePermissions,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+    String photoPath
 ) {
+    public AuthenticatedEntityResponse(String id, String email, String userName, AuthenticableType type,
+            UserRole role, boolean active, Set<BusinessModule> modulePermissions,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, email, userName, type, role, active, modulePermissions, createdAt, updatedAt, null);
+    }
+
     public static AuthenticatedEntityResponse from(Authenticable authenticable) {
         return new AuthenticatedEntityResponse(
             authenticable.getSubjectId(),
@@ -29,7 +36,8 @@ public record AuthenticatedEntityResponse(
             authenticable.isActive(),
             authenticable.getModulePermissions(),
             authenticable.getCreatedAt(),
-            authenticable.getUpdatedAt()
+            authenticable.getUpdatedAt(),
+            authenticable.getPhotoPath()
         );
     }
 }

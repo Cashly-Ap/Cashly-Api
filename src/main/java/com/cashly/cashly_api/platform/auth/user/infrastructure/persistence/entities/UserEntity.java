@@ -41,6 +41,9 @@ public class UserEntity {
     @Column(name = "email", length = 255, nullable = false, unique = true)
     private String email;
 
+    @Column(name = "photo_path", length = 500)
+    private String photoPath;
+
     @Column(name = "user_name", length = 100, nullable = false)
     private String userName;
 
@@ -97,6 +100,7 @@ public class UserEntity {
         UserEntity entity = new UserEntity();
         entity.id = user.getId().getValue();
         entity.copyProfile(user);
+        entity.photoPath = user.getPhotoPath();
         entity.email = user.getEmail().getValue();
         entity.userName = user.getUserName().getValue();
         entity.passwordHash = user.getPassword().getHashedValue();
@@ -118,6 +122,7 @@ public class UserEntity {
         }
 
         copyProfile(user);
+        this.photoPath = user.getPhotoPath();
         this.email = user.getEmail().getValue();
         this.userName = user.getUserName().getValue();
         this.passwordHash = user.getPassword().getHashedValue();
@@ -152,6 +157,7 @@ public class UserEntity {
                 .map(UserModulePermissionEntity::getModule)
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(BusinessModule.class)));
 
+        user.changePhoto(photoPath);
         user.setAssignmentNames(roleName,departmentName);
         user.updateProfile(new com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile(firstName,lastName,address,phone),roleId,departmentId);
         user.setModulePermissions(permissions);

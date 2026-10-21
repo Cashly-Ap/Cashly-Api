@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
+    private static final java.util.Set<String> IDENTITY_MEDIA_PREFIXES = java.util.Set.of("users/", "company/");
 
     private final FileStorageService fileStorageService;
 
@@ -27,6 +28,10 @@ public class FileController {
     @PreAuthorize("hasAuthority('CATALOG:READ')")
     public ResponseEntity<byte[]> serveFile(HttpServletRequest request) {
         String filePath = request.getRequestURI().replaceFirst("/api/files/", "");
+        String normalizedPath = java.nio.file.Path.of(filePath).normalize().toString().replace('\\', '/');
+        if (IDENTITY_MEDIA_PREFIXES.stream().anyMatch(normalizedPath::startsWith)) {
+            return ResponseEntity.notFound().build();
+        }
 
         if (!fileStorageService.exists(filePath)) {
             return ResponseEntity.notFound().build();
