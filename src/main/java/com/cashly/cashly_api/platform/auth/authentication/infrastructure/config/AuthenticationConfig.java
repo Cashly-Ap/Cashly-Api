@@ -28,13 +28,15 @@ public class AuthenticationConfig {
         AuthenticableResolver authenticableResolver,
         RefreshTokenRepository refreshTokenRepository,
         TokenService tokenService,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa
     ) {
         return new LoginUserUseCase(
             authenticableResolver,
             refreshTokenRepository,
             tokenService,
-            passwordEncoder
+            passwordEncoder,
+            mfa
         );
     }
 
@@ -51,7 +53,8 @@ public class AuthenticationConfig {
     @Bean
     public RefreshTokenUseCase refreshTokenUseCase(RefreshTokenRepository refreshTokenRepository,
                                                   AuthenticableSubjectGateway subjectGateway,
-                                                  TokenService tokenService) {
-        return new RefreshTokenUseCase(refreshTokenRepository, subjectGateway, tokenService);
+                                                  TokenService tokenService,
+                                                  com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore) {
+        return new RefreshTokenUseCase(refreshTokenRepository, subjectGateway, tokenService, mfaStore);
     }
 }

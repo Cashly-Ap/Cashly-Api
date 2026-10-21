@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class LoginUserUseCase {
 
+    private final com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa;
+
     private final AuthenticableResolver authenticableResolver;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenService tokenService;
@@ -23,15 +25,17 @@ public class LoginUserUseCase {
         AuthenticableResolver authenticableResolver,
         RefreshTokenRepository refreshTokenRepository,
         TokenService tokenService,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa
     ) {
+        this.mfa = mfa;
         this.authenticableResolver = authenticableResolver;
         this.refreshTokenRepository = refreshTokenRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = InvalidCredentialsException.class)
     public AuthenticationResponse execute(LoginRequest request) {
         String email = normalizeEmail(request.email());
 
@@ -45,6 +49,9 @@ public class LoginUserUseCase {
         if (!passwordEncoder.matches(request.password(), authenticable.getHashedPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
+
+        var challenge = mfa.challengeIfEnabled(authenticable);
+        if (challenge != null) return challenge;
 
         String accessToken = tokenService.generateAccessToken(authenticable);
 

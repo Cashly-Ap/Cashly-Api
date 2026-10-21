@@ -12,6 +12,8 @@ public interface RefreshTokenRepository {
 
     Optional<RefreshToken> findByToken(String token);
 
+    Optional<String> findSubjectIdByToken(String token);
+
     List<RefreshToken> findBySubjectId(String subjectId);
 
     List<RefreshToken> findByUserId(UserId userId);

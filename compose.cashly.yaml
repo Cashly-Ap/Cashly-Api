@@ -15,6 +15,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/cashly?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_0900_ai_ci
       SPRING_DATASOURCE_USERNAME: cashly
       SPRING_DATASOURCE_PASSWORD: ${CASHLY_DB_PASSWORD:?Set CASHLY_DB_PASSWORD in the workspace .env}
+      MFA_ENCRYPTION_KEY: ${MFA_ENCRYPTION_KEY:-}
       JWT_SECRET: ${CASHLY_JWT_SECRET:?Set CASHLY_JWT_SECRET in the workspace .env}
       CORS_ALLOWED_ORIGINS: http://localhost:${CASHLY_APP_PORT:-4201},http://127.0.0.1:${CASHLY_APP_PORT:-4201}
       STORAGE_TYPE: s3

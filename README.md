@@ -78,3 +78,7 @@ Use the repository Docker workflow and the commands described in [docs/TESTING.m
 - [Business rules](docs/BUSINESS_RULES.md)
 - [Workflows](docs/WORKFLOWS.md)
 - [Testing](docs/TESTING.md)
+
+Authenticator MFA is available from **Perfil → Seguridad**. Set the dedicated
+`MFA_ENCRYPTION_KEY` before enrolling users; see [Authenticator MFA setup](docs/SETUP.md#authenticator-mfa)
+for key generation, recovery codes, verification limits, and test instructions.

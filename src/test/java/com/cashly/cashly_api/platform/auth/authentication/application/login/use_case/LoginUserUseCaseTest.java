@@ -44,6 +44,9 @@ class LoginUserUseCaseTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa;
+
     @InjectMocks
     private LoginUserUseCase useCase;
 
@@ -91,6 +94,18 @@ class LoginUserUseCaseTest {
         verify(tokenService).generateAccessToken(testAuthenticable);
         verify(tokenService).generateRefreshToken(testAuthenticable);
         verify(refreshTokenRepository).save(any(RefreshToken.class));
+    }
+
+    @Test
+    void should_require_mfa_without_issuing_any_session_tokens() {
+        when(authenticableResolver.resolveByEmail("test@example.com")).thenReturn(Optional.of(testAuthenticable));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+        when(mfa.challengeIfEnabled(testAuthenticable)).thenReturn(AuthenticationResponse.mfaChallenge("challenge"));
+        var response = useCase.execute(validRequest);
+        assertTrue(response.mfaRequired());
+        assertNull(response.accessToken());
+        assertNull(response.refreshToken());
+        verifyNoInteractions(tokenService, refreshTokenRepository);
     }
 
     @Test

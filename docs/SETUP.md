@@ -259,3 +259,51 @@ docker compose exec -T db mysql -u lexand_user -p lexand_db < backup.sql
 ---
 
 [← Back to Main README](../README.md)
+
+## Authenticator MFA
+
+Cashly supports six-digit TOTP codes from Microsoft Authenticator, Google Authenticator,
+1Password, and other RFC 6238 compatible authenticators. Google sign-in is separate and
+is not enabled by this feature.
+
+Before enrolling an account, configure `MFA_ENCRYPTION_KEY` in the ignored API `.env`
+and in your production secret manager. Generate a dedicated 32-byte key, encoded in
+Base64, for example with `openssl rand -base64 32`. Both API Compose configurations pass
+this variable to the application. Recreate the API container after changing its environment.
+Existing accounts can still sign in without this setting; enrollment fails until a valid key
+is configured.
+
+Keep this key stable and back it up separately from the database. Authenticator secrets
+are encrypted with AES-256-GCM. Losing or replacing the key prevents validation of existing
+authenticator codes. Key rotation requires decrypting and re-encrypting enrolled secrets;
+simply replacing the environment variable does not rotate stored data.
+
+In **Perfil → Seguridad**, confirm the current password, scan the QR code, and enter a
+current authenticator code to enable MFA. The setup expires after ten minutes. Save the
+ten recovery codes when they are first shown: only their SHA-256 hashes are stored, and
+each recovery code works once. Disabling MFA requires both the current password and an
+authenticator or recovery code. Enable/disable invalidates refresh sessions and the web app
+asks the user to sign in again. Previously issued access tokens retain their existing short
+expiry (up to fifteen minutes).
+
+With MFA enabled, `POST /api/auth/login` returns `mfaRequired: true` and an opaque
+`challengeToken`, with no access or refresh token. Submit `{challengeToken, code}` to
+`POST /api/auth/mfa/verify` to finish signing in. Challenges expire after five minutes,
+are single-use, and a new password login replaces the previous challenge. Codes use a
+30-second period with one step of clock tolerance; an accepted step cannot be reused.
+Five failed MFA/password reauthentication attempts lock MFA verification for fifteen minutes.
+Starting another login does not reset that limit. Keep the server clock synchronized.
+
+Management endpoints require an authenticated user:
+
+| Endpoint | Request | Response |
+| --- | --- | --- |
+| `GET /api/auth/mfa` | — | `enabled`, `recoveryCodesRemaining` |
+| `POST /api/auth/mfa/setup` | `{password}` | `secret`, `otpauthUri`, `expiresIn` |
+| `POST /api/auth/mfa/enable` | `{code}` | `recoveryCodes` |
+| `POST /api/auth/mfa/disable` | `{password, code}` | HTTP 204 |
+
+Run `MfaTransactionsTest` with `MFA_TEST_JDBC_URL` pointing to the dedicated MySQL
+`mfa_verification` schema and `SPRING_DATASOURCE_USERNAME`/`SPRING_DATASOURCE_PASSWORD` set for that schema.
+The test recreates only the `auth_mfa` table in that isolated schema; never point it at a
+development or production schema.

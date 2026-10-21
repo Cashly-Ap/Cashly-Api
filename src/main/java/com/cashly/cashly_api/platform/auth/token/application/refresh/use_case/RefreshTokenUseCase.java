@@ -17,19 +17,26 @@ public class RefreshTokenUseCase {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticableSubjectGateway subjectGateway;
     private final TokenService tokenService;
+    private final com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore;
 
     public RefreshTokenUseCase(
         RefreshTokenRepository refreshTokenRepository,
         AuthenticableSubjectGateway subjectGateway,
-        TokenService tokenService
+        TokenService tokenService,
+        com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore
     ) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.subjectGateway = subjectGateway;
         this.tokenService = tokenService;
+        this.mfaStore = mfaStore;
     }
 
     @Transactional
     public AuthenticationResponse execute(RefreshTokenRequest request) {
+        String subjectId = refreshTokenRepository.findSubjectIdByToken(request.refreshToken())
+            .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
+        mfaStore.lock(subjectId);
+
         RefreshToken refreshToken = refreshTokenRepository.findByToken(request.refreshToken())
             .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
 

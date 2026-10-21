@@ -61,7 +61,8 @@ class EndpointPermissionEnforcementTest {
     @ParameterizedTest(name = "{0}: no module access")
     @MethodSource("operations")
     void deniesAnAuthenticatedUserWithoutPermissions(Operation operation) {
-        assertThat(authorized(operation, Set.of())).isFalse();
+        assertThat(authorized(operation, Set.of())).isEqualTo(
+                operation.policy().equals("isAuthenticated()") || operation.policy().equals("permitAll()"));
     }
 
     @ParameterizedTest(name = "{0}: read only")

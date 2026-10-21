@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +47,9 @@ class RefreshTokenUseCaseUnitTest {
     @Mock
     private TokenService tokenService;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore;
+
     private RefreshTokenUseCase refreshTokenUseCase;
 
     private RefreshTokenRequest validRequest;
@@ -58,7 +62,8 @@ class RefreshTokenUseCaseUnitTest {
         refreshTokenUseCase = new RefreshTokenUseCase(
             refreshTokenRepository,
             subjectGateway,
-            tokenService
+            tokenService,
+            mfaStore
         );
 
         String tokenString = UUID.randomUUID().toString();
@@ -72,6 +77,9 @@ class RefreshTokenUseCaseUnitTest {
             tokenString,
             LocalDateTime.now().plusDays(7)
         );
+
+        lenient().when(refreshTokenRepository.findSubjectIdByToken(anyString()))
+            .thenReturn(Optional.of(userId.getValue().toString()));
 
         Email email = new Email("test@example.com");
         Password password = Password.fromHash("$2a$10$hashedPassword");

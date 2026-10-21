@@ -70,6 +70,27 @@ class EndpointPermissionCoverageTest {
     }
 
     @Test
+    void mfaOperationsHaveExplicitSelfServiceAndPublicVerificationContracts() {
+        var controller = com.cashly.cashly_api.platform.auth.mfa.infrastructure.MfaController.class;
+        var interceptor = new PermissionCoverageInterceptor();
+        int mappings = 0;
+        for (var method : controller.getDeclaredMethods()) {
+            if (!AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class)) {
+                continue;
+            }
+            mappings++;
+            var permission = method.getAnnotation(PreAuthorize.class);
+            assertThat(permission).isNotNull();
+            assertThat(permission.value()).isEqualTo(method.getName().equals("verify")
+                ? "permitAll()" : "isAuthenticated()");
+            var handler = new HandlerMethod(mock(controller), method);
+            assertThat(interceptor.preHandle(mock(jakarta.servlet.http.HttpServletRequest.class),
+                mock(jakarta.servlet.http.HttpServletResponse.class), handler)).isTrue();
+        }
+        assertThat(mappings).isEqualTo(5);
+    }
+
+    @Test
     void newUnmappedOperationsFailClosed() throws Exception {
         var handler = new HandlerMethod(new UnmappedController(),
                 UnmappedController.class.getDeclaredMethod("write"));

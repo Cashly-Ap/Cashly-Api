@@ -48,6 +48,11 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
     }
 
     @Override
+    public Optional<String> findSubjectIdByToken(String token) {
+        return springDataRefreshTokenRepository.findSubjectIdByToken(token).map(UUID::toString);
+    }
+
+    @Override
     public Optional<RefreshToken> findByToken(String token) {
         if (token == null || token.trim().isEmpty()) {
             throw new IllegalArgumentException("Token cannot be null or empty");
