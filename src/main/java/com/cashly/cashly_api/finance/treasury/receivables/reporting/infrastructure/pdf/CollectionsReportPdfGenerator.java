@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.receivables.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -32,6 +33,12 @@ import java.util.Locale;
 
 public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
 
+    private final PdfBranding branding;
+
+    public CollectionsReportPdfGenerator() { this(new PdfBranding()); }
+
+    public CollectionsReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+
     private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
@@ -54,6 +61,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
+            document.add(branding.logo().setMarginBottom(12));
             document.add(buildTitle(bold));
             document.add(buildDate(data, regular));
             document.add(buildMainTable(data, bold, regular));

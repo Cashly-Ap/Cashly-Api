@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoicePdfPort;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.generate_invoice_pdf.use_case.GenerateInvoicePdfUseCase;
@@ -16,13 +17,13 @@ import org.springframework.context.annotation.Configuration;
 public class InvoicesReportConfig {
 
     @Bean
-    public InvoicePdfPort invoicePdfPort() {
-        return new InvoicePdfGenerator();
+    public InvoicePdfPort invoicePdfPort(PdfBranding branding) {
+        return new InvoicePdfGenerator(branding);
     }
 
     @Bean
-    public InvoicesReportPdfPort invoicesReportPdfPort() {
-        return new InvoicesReportPdfGenerator();
+    public InvoicesReportPdfPort invoicesReportPdfPort(PdfBranding branding) {
+        return new InvoicesReportPdfGenerator(branding);
     }
 
     @Bean

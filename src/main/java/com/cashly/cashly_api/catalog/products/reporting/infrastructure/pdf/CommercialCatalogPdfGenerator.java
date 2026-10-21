@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.catalog.products.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -49,8 +50,14 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
     private static final DecimalFormat PRICE_FORMAT = new DecimalFormat("#,##0.00");
 
     private final MediaGateway media;
+    private final PdfBranding branding;
 
-    public CommercialCatalogPdfGenerator(MediaGateway media) { this.media = media; }
+    public CommercialCatalogPdfGenerator(MediaGateway media) { this(media, new PdfBranding()); }
+
+    public CommercialCatalogPdfGenerator(MediaGateway media, PdfBranding branding) {
+        this.media = media;
+        this.branding = branding;
+    }
 
     @Override
     public byte[] generatePdf(List<CommercialCatalogResponse> items) {
@@ -83,6 +90,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(20);
 
+            document.add(branding.logo().setMarginBottom(12));
             document.add(title);
             document.add(subtitle);
 

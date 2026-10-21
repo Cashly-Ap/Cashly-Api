@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.report;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -28,6 +30,13 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class CashRegisterSessionReportGenerator implements CashRegisterReportPort {
+
+    private final PdfBranding branding;
+
+    public CashRegisterSessionReportGenerator() { this(new PdfBranding()); }
+
+    @Autowired
+    public CashRegisterSessionReportGenerator(PdfBranding branding) { this.branding = branding; }
 
     private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -66,6 +75,7 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
             PdfDocument pdf = new PdfDocument(new PdfWriter(output));
             Document document = new Document(pdf, PageSize.A4.rotate());
             var bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+            document.add(branding.logo().setMarginBottom(12));
             document.add(new Paragraph("Reporte de caja").setFont(bold).setFontSize(18));
             document.add(new Paragraph("Sesión: " + register.id()));
             document.add(new Paragraph("Apertura: " + format(register.openedAt())

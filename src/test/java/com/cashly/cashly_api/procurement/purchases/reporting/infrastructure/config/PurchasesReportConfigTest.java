@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchaseReportQueryGateway;
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchasePdfPort;
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchasesReportPdfPort;
@@ -43,7 +44,7 @@ class PurchasesReportConfigTest {
     void should_create_port_beans() {
         var config = new PurchasesReportConfig();
 
-        assertNotNull(config.purchasePdfPort());
-        assertNotNull(config.purchasesReportPdfPort());
+        assertNotNull(config.purchasePdfPort(new PdfBranding()));
+        assertNotNull(config.purchasesReportPdfPort(new PdfBranding()));
     }
 }

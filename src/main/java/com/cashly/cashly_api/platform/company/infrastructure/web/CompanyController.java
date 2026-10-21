@@ -2,6 +2,7 @@ package com.cashly.cashly_api.platform.company.infrastructure.web;
 
 import com.cashly.cashly_api.platform.company.application.CompanyService;
 import com.cashly.cashly_api.platform.company.domain.Company;
+import com.cashly.cashly_api.platform.company.infrastructure.CompanyPdfPreview;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import org.springframework.http.CacheControl;
@@ -21,11 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/company")
 public class CompanyController {
-    private static final long MAX_IMAGE_BYTES = 5L * 1024 * 1024;
     private final CompanyService service;
+    private final CompanyPdfPreview preview;
 
-    public CompanyController(CompanyService service) {
+    public CompanyController(CompanyService service, CompanyPdfPreview preview) {
         this.service = service;
+        this.preview = preview;
     }
 
     @GetMapping
@@ -43,8 +45,8 @@ public class CompanyController {
     @PostMapping(value = "/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
     public Company upload(@RequestParam("file") MultipartFile file) throws IOException {
-        if (file.isEmpty() || file.getSize() > MAX_IMAGE_BYTES) {
-            throw new IllegalArgumentException("Upload a PNG or JPEG image up to 5 MB");
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Upload a PNG or JPEG image");
         }
         return service.uploadLogo(file.getBytes());
     }
@@ -64,5 +66,51 @@ public class CompanyController {
         }
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
                 .header("X-Content-Type-Options", "nosniff").body(bytes);
+    }
+    @PostMapping(value = "/pdf-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    public Company uploadPdfLogo(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Upload a PNG or JPEG image");
+        }
+        return service.uploadPdfLogo(file.getBytes());
+    }
+
+    @DeleteMapping("/pdf-logo")
+    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    public Company deletePdfLogo() {
+        return service.deletePdfLogo();
+    }
+
+    @GetMapping(value = "/pdf-logo", produces = MediaType.IMAGE_PNG_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<byte[]> pdfLogo() {
+        var bytes = service.pdfLogo();
+        if (bytes == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .header("X-Content-Type-Options", "nosniff").body(bytes);
+    }
+    @PostMapping(value = "/pdf-logo/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_PDF_VALUE)
+    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    public ResponseEntity<byte[]> previewPdfLogo(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "companyLogo", required = false) MultipartFile companyLogo,
+            @RequestParam(value = "removePdfLogo", defaultValue = "false") boolean removePdfLogo,
+            @RequestParam(value = "removeLogo", defaultValue = "false") boolean removeLogo) throws IOException {
+        var bytes = preview.generate(previewBytes(file), removePdfLogo, previewBytes(companyLogo), removeLogo);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).cacheControl(CacheControl.noStore())
+                .header("Content-Disposition", "inline; filename=company-logo-preview.pdf")
+                .header("X-Content-Type-Options", "nosniff").body(bytes);
+    }
+
+    private static byte[] previewBytes(MultipartFile file) throws IOException {
+        if (file == null) return null;
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Upload a PNG or JPEG image");
+        }
+        return file.getBytes();
     }
 }

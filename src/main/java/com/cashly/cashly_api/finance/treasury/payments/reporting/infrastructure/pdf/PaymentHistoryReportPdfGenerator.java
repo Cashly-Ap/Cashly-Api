@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -32,6 +33,12 @@ import java.util.Locale;
 
 public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdfPort {
 
+    private final PdfBranding branding;
+
+    public PaymentHistoryReportPdfGenerator() { this(new PdfBranding()); }
+
+    public PaymentHistoryReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+
     private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
@@ -55,6 +62,7 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
+            document.add(branding.logo().setMarginBottom(12));
             document.add(buildTitle(bold));
             document.add(buildFilters(data, regular));
             document.add(buildMainTable(data, bold, regular));

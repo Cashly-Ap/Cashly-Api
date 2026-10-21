@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.receivables.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.AccountsReceivableReportPdfPort;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.CollectionsReportPdfPort;
@@ -41,7 +42,7 @@ class ReceivablesReportingConfigTest {
     void should_create_port_beans() {
         var config = new ReceivablesReportingConfig();
 
-        assertNotNull(config.accountsReceivableReportPdfPort());
-        assertNotNull(config.collectionsReportPdfPort());
+        assertNotNull(config.accountsReceivableReportPdfPort(new PdfBranding()));
+        assertNotNull(config.collectionsReportPdfPort(new PdfBranding()));
     }
 }

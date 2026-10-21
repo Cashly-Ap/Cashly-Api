@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.report;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -36,9 +38,16 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
     private static final DateTimeFormatter SPANISH_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final CashRegisterExcelPort excelPort;
+    private final PdfBranding branding;
 
     public CashRegisterRangeReportGenerator(CashRegisterExcelPort excelPort) {
+        this(excelPort, new PdfBranding());
+    }
+
+    @Autowired
+    public CashRegisterRangeReportGenerator(CashRegisterExcelPort excelPort, PdfBranding branding) {
         this.excelPort = excelPort;
+        this.branding = branding;
     }
 
     @Override
@@ -67,6 +76,7 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
             PdfDocument pdf = new PdfDocument(new PdfWriter(output));
             Document document = new Document(pdf, type == ReportType.DETAILED ? PageSize.A4.rotate() : PageSize.A4);
             var bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+            document.add(branding.logo().setMarginBottom(12));
             document.add(new Paragraph("Reporte de caja").setFont(bold).setFontSize(18));
             document.add(new Paragraph("Desde " + SPANISH_DATE_FORMAT.format(filter.dateFrom())
                     + " hasta " + SPANISH_DATE_FORMAT.format(filter.dateTo())));

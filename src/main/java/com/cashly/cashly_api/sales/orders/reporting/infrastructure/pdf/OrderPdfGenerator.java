@@ -34,6 +34,12 @@ import java.util.Locale;
 
 public class OrderPdfGenerator implements OrderPdfPort {
 
+    private final PdfBranding branding;
+
+    public OrderPdfGenerator() { this(new PdfBranding()); }
+
+    public OrderPdfGenerator(PdfBranding branding) { this.branding = branding; }
+
     private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
@@ -87,7 +93,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
         header.setMarginBottom(20);
 
         Cell logoCell = new Cell()
-                .add(PdfBranding.logo())
+                .add(branding.logo())
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);

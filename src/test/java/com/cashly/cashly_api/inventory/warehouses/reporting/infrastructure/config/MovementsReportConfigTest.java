@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsExcelPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsPdfPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsReportRepositoryPort;
@@ -48,7 +49,7 @@ class MovementsReportConfigTest {
         var config = new MovementsReportConfig();
 
         assertNotNull(config.movementsReportRepositoryPort(movementsReportJpaRepository));
-        assertNotNull(config.movementsPdfPort());
+        assertNotNull(config.movementsPdfPort(new PdfBranding()));
         assertNotNull(config.movementsExcelPort());
     }
 }

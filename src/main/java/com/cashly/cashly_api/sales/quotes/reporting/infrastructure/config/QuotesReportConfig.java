@@ -1,4 +1,5 @@
 package com.cashly.cashly_api.sales.quotes.reporting.infrastructure.config;
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuoteReportQueryGateway;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuotePdfPort;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuotesReportPdfPort;
@@ -13,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QuotesReportConfig {
     @Bean
-    public QuotePdfPort quotePdfPort() { return new QuotePdfGenerator(); }
+    public QuotePdfPort quotePdfPort(PdfBranding branding) { return new QuotePdfGenerator(branding); }
     @Bean
-    public QuotesReportPdfPort quotesReportPdfPort() { return new QuotesReportPdfGenerator(); }
+    public QuotesReportPdfPort quotesReportPdfPort(PdfBranding branding) { return new QuotesReportPdfGenerator(branding); }
     @Bean
     public GenerateQuotePdfUseCase generateQuotePdfUseCase(QuoteReportQueryGateway query, QuotePdfPort pdf) {
         return new GenerateQuotePdfUseCaseImpl(query, pdf);

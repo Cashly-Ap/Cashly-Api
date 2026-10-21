@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.receivables.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.AccountsReceivableReportPdfPort;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.CollectionsReportPdfPort;
@@ -16,13 +17,13 @@ import org.springframework.context.annotation.Configuration;
 public class ReceivablesReportingConfig {
 
     @Bean
-    public AccountsReceivableReportPdfPort accountsReceivableReportPdfPort() {
-        return new AccountsReceivableReportPdfGenerator();
+    public AccountsReceivableReportPdfPort accountsReceivableReportPdfPort(PdfBranding branding) {
+        return new AccountsReceivableReportPdfGenerator(branding);
     }
 
     @Bean
-    public CollectionsReportPdfPort collectionsReportPdfPort() {
-        return new CollectionsReportPdfGenerator();
+    public CollectionsReportPdfPort collectionsReportPdfPort(PdfBranding branding) {
+        return new CollectionsReportPdfGenerator(branding);
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -29,6 +30,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class StockPdfGenerator implements StockPdfPort {
+
+    private final PdfBranding branding;
+
+    public StockPdfGenerator() { this(new PdfBranding()); }
+
+    public StockPdfGenerator(PdfBranding branding) { this.branding = branding; }
 
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
@@ -64,6 +71,7 @@ public class StockPdfGenerator implements StockPdfPort {
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(16);
 
+            document.add(branding.logo().setMarginBottom(12));
             document.add(title);
             document.add(subtitle);
 

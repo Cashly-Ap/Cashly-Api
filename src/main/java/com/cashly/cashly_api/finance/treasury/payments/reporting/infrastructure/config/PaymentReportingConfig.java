@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.finance.treasury.payments.reporting.application.ports.out.PaymentReportQueryGateway;
 import com.cashly.cashly_api.finance.treasury.payments.reporting.application.ports.out.PaymentHistoryReportPdfPort;
 import com.cashly.cashly_api.finance.treasury.payments.reporting.application.ports.out.PaymentPdfPort;
@@ -16,13 +17,13 @@ import org.springframework.context.annotation.Configuration;
 public class PaymentReportingConfig {
 
     @Bean
-    public PaymentPdfPort paymentPdfPort() {
-        return new PaymentPdfGenerator();
+    public PaymentPdfPort paymentPdfPort(PdfBranding branding) {
+        return new PaymentPdfGenerator(branding);
     }
 
     @Bean
-    public PaymentHistoryReportPdfPort paymentHistoryReportPdfPort() {
-        return new PaymentHistoryReportPdfGenerator();
+    public PaymentHistoryReportPdfPort paymentHistoryReportPdfPort(PdfBranding branding) {
+        return new PaymentHistoryReportPdfGenerator(branding);
     }
 
     @Bean

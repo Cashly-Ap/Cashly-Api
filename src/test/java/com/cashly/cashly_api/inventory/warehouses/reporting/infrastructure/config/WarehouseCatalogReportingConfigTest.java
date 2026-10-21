@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.CatalogPdfPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.CatalogReportRepositoryPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.generate_catalog_pdf.use_case.GenerateCatalogPdfUseCase;
@@ -44,6 +45,6 @@ class WarehouseCatalogReportingConfigTest {
         var config = new WarehouseCatalogReportingConfig();
 
         assertNotNull(config.catalogReportRepositoryPort(catalogReportJpaRepository));
-        assertNotNull(config.catalogPdfPort());
+        assertNotNull(config.catalogPdfPort(new PdfBranding()));
     }
 }

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.finance.treasury.payments.reporting.application.ports.out.PaymentReportQueryGateway;
 import com.cashly.cashly_api.finance.treasury.payments.reporting.application.ports.out.PaymentHistoryReportPdfPort;
 import com.cashly.cashly_api.finance.treasury.payments.reporting.application.ports.out.PaymentPdfPort;
@@ -41,7 +42,7 @@ class PaymentReportingConfigTest {
     void should_create_port_beans() {
         var config = new PaymentReportingConfig();
 
-        assertNotNull(config.paymentPdfPort());
-        assertNotNull(config.paymentHistoryReportPdfPort());
+        assertNotNull(config.paymentPdfPort(new PdfBranding()));
+        assertNotNull(config.paymentHistoryReportPdfPort(new PdfBranding()));
     }
 }

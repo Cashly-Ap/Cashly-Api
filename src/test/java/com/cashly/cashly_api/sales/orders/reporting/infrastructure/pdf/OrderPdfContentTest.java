@@ -56,4 +56,25 @@ class OrderPdfContentTest {
         assertTrue(detailed.contains("Modo: Detallado"));
         assertTrue(text(generator.generatePdf(List.of(), "SIMPLE")).contains("Total: 0"));
     }
+    @Test
+    void reportEmbedsConfiguredCompanyLogoInsteadOfBundledBranding() throws Exception {
+        var image = new java.awt.image.BufferedImage(73, 29, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        var buffer = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(image, "png", buffer);
+        var generator = new OrdersReportPdfGenerator(new com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding(buffer::toByteArray));
+        try (var pdf = new PdfDocument(new PdfReader(new ByteArrayInputStream(generator.generatePdf(List.of(), "SIMPLE"))))) {
+            var resources = pdf.getFirstPage().getResources();
+            var objects = resources.getResource(com.itextpdf.kernel.pdf.PdfName.XObject);
+            assertNotNull(objects);
+            boolean customLogoFound = false;
+            for (var name : objects.keySet()) {
+                var stream = objects.getAsStream(name);
+                if (com.itextpdf.kernel.pdf.PdfName.Image.equals(stream.getAsName(com.itextpdf.kernel.pdf.PdfName.Subtype))) {
+                    var embedded = new com.itextpdf.kernel.pdf.xobject.PdfImageXObject(stream).getBufferedImage();
+                    customLogoFound |= embedded.getWidth() == 73 && embedded.getHeight() == 29;
+                }
+            }
+            assertTrue(customLogoFound, "Configured company PDF logo must be embedded in the generated report");
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuoteReportQueryGateway;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuotePdfPort;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuotesReportPdfPort;
@@ -43,7 +44,7 @@ class QuotesReportConfigTest {
     void should_create_port_beans() {
         var config = new QuotesReportConfig();
 
-        assertNotNull(config.quotePdfPort());
-        assertNotNull(config.quotesReportPdfPort());
+        assertNotNull(config.quotePdfPort(new PdfBranding()));
+        assertNotNull(config.quotesReportPdfPort(new PdfBranding()));
     }
 }

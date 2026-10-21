@@ -1,4 +1,5 @@
 package com.cashly.cashly_api.procurement.purchases.reporting.infrastructure.config;
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchaseReportQueryGateway;
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchasePdfPort;
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchasesReportPdfPort;
@@ -13,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PurchasesReportConfig {
     @Bean
-    public PurchasePdfPort purchasePdfPort() { return new PurchasePdfGenerator(); }
+    public PurchasePdfPort purchasePdfPort(PdfBranding branding) { return new PurchasePdfGenerator(branding); }
     @Bean
-    public PurchasesReportPdfPort purchasesReportPdfPort() { return new PurchasesReportPdfGenerator(); }
+    public PurchasesReportPdfPort purchasesReportPdfPort(PdfBranding branding) { return new PurchasesReportPdfGenerator(branding); }
     @Bean
     public GeneratePurchasePdfUseCase generatePurchasePdfUseCase(PurchaseReportQueryGateway query, PurchasePdfPort pdf) {
         return new GeneratePurchasePdfUseCaseImpl(query, pdf);

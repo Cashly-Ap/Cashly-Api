@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.orders.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrderReportQueryGateway;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrderPdfPort;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrdersReportPdfPort;
@@ -52,7 +53,7 @@ class OrdersReportConfigTest {
     void should_create_port_beans() {
         var config = new OrdersReportConfig();
 
-        assertNotNull(config.orderPdfPort());
-        assertNotNull(config.ordersReportPdfPort());
+        assertNotNull(config.orderPdfPort(new PdfBranding()));
+        assertNotNull(config.ordersReportPdfPort(new PdfBranding()));
     }
 }

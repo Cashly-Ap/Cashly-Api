@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.catalog.products.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.catalog.products.reporting.application.ports.out.CommercialCatalogPdfPort;
 import com.cashly.cashly_api.catalog.products.reporting.application.ports.out.CommercialCatalogRepositoryPort;
 import com.cashly.cashly_api.catalog.products.reporting.application.generate_commercial_catalog_pdf.use_case.GenerateCommercialCatalogPdfUseCase;
@@ -21,8 +22,8 @@ public class CommercialCatalogReportingConfig {
     }
 
     @Bean
-    public CommercialCatalogPdfPort commercialCatalogPdfPort(MediaGateway media) {
-        return new CommercialCatalogPdfGenerator(media);
+    public CommercialCatalogPdfPort commercialCatalogPdfPort(MediaGateway media, PdfBranding branding) {
+        return new CommercialCatalogPdfGenerator(media, branding);
     }
 
     @Bean

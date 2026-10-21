@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsExcelPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsPdfPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsReportRepositoryPort;
@@ -24,8 +25,8 @@ public class MovementsReportConfig {
     }
 
     @Bean
-    public MovementsPdfPort movementsPdfPort() {
-        return new MovementsPdfGenerator();
+    public MovementsPdfPort movementsPdfPort(PdfBranding branding) {
+        return new MovementsPdfGenerator(branding);
     }
 
     @Bean

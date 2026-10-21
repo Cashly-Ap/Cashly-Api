@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -33,6 +34,12 @@ import java.util.Locale;
 
 public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
 
+    private final PdfBranding branding;
+
+    public PurchasesReportPdfGenerator() { this(new PdfBranding()); }
+
+    public PurchasesReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
@@ -64,6 +71,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(4);
 
+            document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
             String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));

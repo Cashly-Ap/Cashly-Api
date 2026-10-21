@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockExcelPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockPdfPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockReportRepositoryPort;
@@ -24,8 +25,8 @@ public class StockReportConfig {
     }
 
     @Bean
-    public StockPdfPort stockPdfPort() {
-        return new StockPdfGenerator();
+    public StockPdfPort stockPdfPort(PdfBranding branding) {
+        return new StockPdfGenerator(branding);
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoicePdfPort;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
@@ -43,7 +44,7 @@ class InvoicesReportConfigTest {
     void should_create_port_beans() {
         var config = new InvoicesReportConfig();
 
-        assertNotNull(config.invoicePdfPort());
-        assertNotNull(config.invoicesReportPdfPort());
+        assertNotNull(config.invoicePdfPort(new PdfBranding()));
+        assertNotNull(config.invoicesReportPdfPort(new PdfBranding()));
     }
 }

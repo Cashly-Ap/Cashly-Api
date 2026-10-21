@@ -1,4 +1,5 @@
 package com.cashly.cashly_api.sales.orders.reporting.infrastructure.config;
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrderReportQueryGateway;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrderPdfPort;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrdersReportPdfPort;
@@ -13,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OrdersReportConfig {
     @Bean
-    public OrderPdfPort orderPdfPort() { return new OrderPdfGenerator(); }
+    public OrderPdfPort orderPdfPort(PdfBranding branding) { return new OrderPdfGenerator(branding); }
     @Bean
-    public OrdersReportPdfPort ordersReportPdfPort() { return new OrdersReportPdfGenerator(); }
+    public OrdersReportPdfPort ordersReportPdfPort(PdfBranding branding) { return new OrdersReportPdfGenerator(branding); }
     @Bean
     public GenerateOrderPdfUseCase generateOrderPdfUseCase(OrderReportQueryGateway query, OrderPdfPort pdf) {
         return new GenerateOrderPdfUseCaseImpl(query, pdf);

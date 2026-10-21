@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.CatalogPdfPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.CatalogReportRepositoryPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.generate_catalog_pdf.use_case.GenerateCatalogPdfUseCase;
@@ -28,8 +29,8 @@ public class WarehouseCatalogReportingConfig {
     }
 
     @Bean
-    public CatalogPdfPort catalogPdfPort() {
-        return new CatalogPdfGenerator();
+    public CatalogPdfPort catalogPdfPort(PdfBranding branding) {
+        return new CatalogPdfGenerator(branding);
     }
 
     @Bean

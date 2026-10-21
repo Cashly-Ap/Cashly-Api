@@ -23,6 +23,18 @@ class ReportingOwnershipTest {
     private static final Pattern GLOBAL_REFERENCE = Pattern.compile("\\bcom\\.cashly\\.cashly_api\\.reports(?:\\.|\\b)");
 
     @Test
+    void should_brand_every_generated_pdf_with_the_configured_company_logo() throws IOException {
+        var missing = new ArrayList<String>();
+        for (Path source : CapabilityStructureTest.javaSources(ROOTS.getFirst())) {
+            String code = Files.readString(source);
+            if (code.contains("new PdfDocument(") && !code.contains("branding.logo()")) {
+                missing.add(source.toString());
+            }
+        }
+        assertThat(missing).as("Every PDF document must use the shared company branding").isEmpty();
+    }
+
+    @Test
     void should_remove_global_reports_packages_and_references_in_production_and_tests() throws IOException {
         var violations = new ArrayList<String>();
         for (Path root : ROOTS) {

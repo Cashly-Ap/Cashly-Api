@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.config;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockExcelPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockPdfPort;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockReportRepositoryPort;
@@ -48,7 +49,7 @@ class StockReportConfigTest {
         var config = new StockReportConfig();
 
         assertNotNull(config.stockReportRepositoryPort(stockReportJpaRepository));
-        assertNotNull(config.stockPdfPort());
+        assertNotNull(config.stockPdfPort(new PdfBranding()));
         assertNotNull(config.stockExcelPort());
     }
 }

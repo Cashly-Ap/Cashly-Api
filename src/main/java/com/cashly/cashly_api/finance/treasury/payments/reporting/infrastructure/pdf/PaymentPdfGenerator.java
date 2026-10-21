@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -32,6 +33,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class PaymentPdfGenerator implements PaymentPdfPort {
+
+    private final PdfBranding branding;
+
+    public PaymentPdfGenerator() { this(new PdfBranding()); }
+
+    public PaymentPdfGenerator(PdfBranding branding) { this.branding = branding; }
 
     private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
@@ -76,7 +83,7 @@ public class PaymentPdfGenerator implements PaymentPdfPort {
         header.setMarginBottom(20);
 
         Cell logoCell = new Cell()
-                .add(new Paragraph("CASHLY").setFont(bold).setFontSize(26).setMarginBottom(0))
+                .add(branding.logo())
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -33,6 +34,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class PurchasePdfGenerator implements PurchasePdfPort {
+
+    private final PdfBranding branding;
+
+    public PurchasePdfGenerator() { this(new PdfBranding()); }
+
+    public PurchasePdfGenerator(PdfBranding branding) { this.branding = branding; }
 
     private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
@@ -87,7 +94,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
         header.setMarginBottom(20);
 
         Cell logoCell = new Cell()
-                .add(new Paragraph("CASHLY").setFont(bold).setFontSize(26).setMarginBottom(0))
+                .add(branding.logo())
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
