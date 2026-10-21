@@ -1,0 +1,17 @@
+schema: spec-driven
+change: simple-shortcuts-screen-hints
+status: completed
+current_phase: archive
+proposal: complete
+spec: complete
+design: complete
+tasks: complete
+apply: complete
+verify: complete
+archive: complete
+verification_verdict: pass
+backend_tests: 590
+frontend_tests: 72
+browser_tests: 9
+publication: not-requested
+completed_date: 2026-10-21
