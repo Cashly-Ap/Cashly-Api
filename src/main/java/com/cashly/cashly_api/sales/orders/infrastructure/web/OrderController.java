@@ -15,6 +15,7 @@ import com.cashly.cashly_api.sales.orders.application.delete.use_case.DeleteOrde
 import com.cashly.cashly_api.sales.orders.application.get.use_case.GetOrderByIdUseCase;
 import com.cashly.cashly_api.sales.orders.application.list.use_case.GetOrdersUseCase;
 import com.cashly.cashly_api.sales.orders.application.update.use_case.UpdateOrderUseCase;
+import com.cashly.cashly_api.shared.domain.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -78,9 +79,16 @@ public class OrderController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "createdAt") String orderBy,
-            @RequestParam(defaultValue = "desc") String orderDir) {
-        List<OrderListResponse> orders = getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir);
+            @RequestParam(defaultValue = "desc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
+        List<OrderListResponse> orders = action == null ? getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir) : getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(orders);
+    }
+
+    public ResponseEntity<List<OrderListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID customerId, String status,
+            UUID productId, UUID categoryId, String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")

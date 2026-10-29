@@ -15,6 +15,7 @@ import com.cashly.cashly_api.finance.billing.invoices.application.duplicate.use_
 import com.cashly.cashly_api.finance.billing.invoices.application.get.use_case.GetInvoiceByIdUseCase;
 import com.cashly.cashly_api.finance.billing.invoices.application.list.use_case.GetInvoicesUseCase;
 import com.cashly.cashly_api.finance.billing.invoices.application.update.use_case.UpdateInvoiceUseCase;
+import com.cashly.cashly_api.shared.domain.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -81,11 +82,20 @@ public class InvoiceController {
             @RequestParam(required = false) List<String> returnStatus,
             @RequestParam(required = false) String dueStatus,
             @RequestParam(defaultValue = "createdAt") String orderBy,
-            @RequestParam(defaultValue = "desc") String orderDir) {
-        List<InvoiceListResponse> invoices = search == null || search.isBlank()
-                ? getInvoicesUseCase.execute(fromDate, toDate, customerId, status, null, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir)
-                : getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir);
+            @RequestParam(defaultValue = "desc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
+        List<InvoiceListResponse> invoices = action == null
+                ? getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir)
+                : getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(invoices);
+    }
+
+    public ResponseEntity<List<InvoiceListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID customerId, String search, List<String> status,
+            UUID productId, UUID categoryId, List<String> returnStatus, String dueStatus,
+            String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, customerId, search, status, productId, categoryId,
+                returnStatus, dueStatus, orderBy, orderDir, null);
     }
 
     public ResponseEntity<List<InvoiceListResponse>> getAll(

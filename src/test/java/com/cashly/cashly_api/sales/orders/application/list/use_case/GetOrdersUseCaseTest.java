@@ -139,4 +139,47 @@ class GetOrdersUseCaseTest {
                 LocalDateTime.now()
         );
     }
+    @Test
+    void shouldQueryOnlyEligibleRecordsForEdit() {
+        getOrdersUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        verify(orderRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldQueryOnlyEligibleRecordsForConfirm() {
+        getOrdersUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.CONFIRM);
+        verify(orderRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldQueryOnlyEligibleRecordsForCancel() {
+        getOrdersUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.CANCEL);
+        verify(orderRepository).findAllWithFilters(null, null, null, "CONFIRMED", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldQueryOnlyEligibleRecordsForConvertToInvoice() {
+        getOrdersUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_INVOICE);
+        verify(orderRepository).findAllWithFilters(null, null, null, "CONFIRMED", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldReturnEmptyWhenRequestedStatusCannotPerformAction() {
+        var result = getOrdersUseCase.execute(null, null, null, "CANCELLED", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        assertTrue(result.isEmpty());
+        verifyNoInteractions(orderRepository);
+    }
+
+    @Test
+    void shouldRejectUnsupportedAction() {
+        assertThrows(IllegalArgumentException.class, () -> getOrdersUseCase.execute(null, null, null, null, null, null,
+                "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE));
+        verifyNoInteractions(orderRepository);
+    }
+
 }

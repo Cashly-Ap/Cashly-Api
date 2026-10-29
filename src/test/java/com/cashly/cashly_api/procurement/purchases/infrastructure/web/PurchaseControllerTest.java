@@ -255,4 +255,21 @@ class PurchaseControllerTest {
                 List.of()
         );
     }
+    @Test
+    void shouldRejectUnknownActionFilter() throws Exception {
+        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(purchaseController).build()
+                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/purchases")
+                        .param("action", "UNKNOWN"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void shouldPassActionFilterToListQuery() throws Exception {
+        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(purchaseController).build()
+                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/purchases")
+                        .param("action", "EDIT"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+        verify(listPurchasesUseCase).execute(null, null, null, null, null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+    }
+
 }

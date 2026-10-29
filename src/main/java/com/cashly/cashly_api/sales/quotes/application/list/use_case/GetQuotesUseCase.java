@@ -5,6 +5,8 @@ import com.cashly.cashly_api.sales.quotes.application.mappers.QuoteMapper;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 
+import com.cashly.cashly_api.shared.domain.DocumentAction;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -31,4 +33,19 @@ public class GetQuotesUseCase {
                 .map(QuoteMapper::toListResponse)
                 .toList();
     }
+    public List<QuoteListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
+                                              UUID customerId, String status,
+                                              UUID productId, UUID categoryId,
+                                              String orderBy, String orderDir, DocumentAction action) {
+        if (action == null) return execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir);
+        String eligibleStatus = switch (action) {
+            case EDIT, CONVERT_TO_ORDER, CONVERT_TO_INVOICE -> "DRAFT";
+            default -> throw new IllegalArgumentException("Unsupported quote action: " + action);
+        };
+        if (status != null && !status.isBlank() && !"ALL".equals(status) && !eligibleStatus.equals(status)) {
+            return List.of();
+        }
+        return execute(dateFrom, dateTo, customerId, eligibleStatus, productId, categoryId, orderBy, orderDir);
+    }
+
 }

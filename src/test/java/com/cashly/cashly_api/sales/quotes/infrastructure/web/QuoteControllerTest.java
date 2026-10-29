@@ -205,4 +205,21 @@ class QuoteControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
     }
+    @Test
+    void shouldRejectUnknownActionFilter() throws Exception {
+        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(quoteController).build()
+                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/quotes")
+                        .param("action", "UNKNOWN"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void shouldPassActionFilterToListQuery() throws Exception {
+        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(quoteController).build()
+                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/quotes")
+                        .param("action", "EDIT"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+        verify(getQuotesUseCase).execute(null, null, null, null, null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+    }
+
 }

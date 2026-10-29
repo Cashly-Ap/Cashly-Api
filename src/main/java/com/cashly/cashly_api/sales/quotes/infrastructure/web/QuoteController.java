@@ -18,6 +18,7 @@ import com.cashly.cashly_api.sales.quotes.application.get.use_case.GetQuoteByIdU
 import com.cashly.cashly_api.sales.quotes.application.list.use_case.GetQuotesUseCase;
 import com.cashly.cashly_api.sales.quotes.application.warehouses.use_case.GetWarehousesForQuoteUseCase;
 import com.cashly.cashly_api.sales.quotes.application.update.use_case.UpdateQuoteUseCase;
+import com.cashly.cashly_api.shared.domain.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -84,9 +85,16 @@ public class QuoteController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "createdAt") String orderBy,
-            @RequestParam(defaultValue = "desc") String orderDir) {
-        List<QuoteListResponse> quotes = getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir);
+            @RequestParam(defaultValue = "desc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
+        List<QuoteListResponse> quotes = action == null ? getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir) : getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(quotes);
+    }
+
+    public ResponseEntity<List<QuoteListResponse>> list(
+            LocalDate dateFrom, LocalDate dateTo, UUID customerId, String status,
+            UUID productId, UUID categoryId, String orderBy, String orderDir) {
+        return list(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")

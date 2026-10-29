@@ -83,4 +83,40 @@ class GetQuotesUseCaseTest {
 
         assertTrue(responses.isEmpty());
     }
+    @Test
+    void shouldQueryOnlyEligibleRecordsForEdit() {
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldQueryOnlyEligibleRecordsForConvertToOrder() {
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_ORDER);
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldQueryOnlyEligibleRecordsForConvertToInvoice() {
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_INVOICE);
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
+    void shouldReturnEmptyWhenRequestedStatusCannotPerformAction() {
+        var result = getQuotesUseCase.execute(null, null, null, "CANCELLED", null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        assertTrue(result.isEmpty());
+        verifyNoInteractions(quoteRepository);
+    }
+
+    @Test
+    void shouldRejectUnsupportedAction() {
+        assertThrows(IllegalArgumentException.class, () -> getQuotesUseCase.execute(null, null, null, null, null, null,
+                "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE));
+        verifyNoInteractions(quoteRepository);
+    }
+
 }

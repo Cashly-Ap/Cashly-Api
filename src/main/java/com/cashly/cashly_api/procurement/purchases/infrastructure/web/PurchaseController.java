@@ -13,6 +13,7 @@ import com.cashly.cashly_api.procurement.purchases.application.products.use_case
 import com.cashly.cashly_api.procurement.purchases.application.get.use_case.GetPurchaseByIdUseCase;
 import com.cashly.cashly_api.procurement.purchases.application.list.use_case.ListPurchasesUseCase;
 import com.cashly.cashly_api.procurement.purchases.application.update.use_case.UpdatePurchaseUseCase;
+import com.cashly.cashly_api.shared.domain.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -77,10 +78,18 @@ public class PurchaseController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "createdAt") String orderBy,
-            @RequestParam(defaultValue = "desc") String orderDir) {
-        List<PurchaseListResponse> purchases = listPurchasesUseCase.execute(
-                fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir);
+            @RequestParam(defaultValue = "desc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
+        List<PurchaseListResponse> purchases = action == null ? listPurchasesUseCase.execute(
+                fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir) : listPurchasesUseCase.execute(
+                fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(purchases);
+    }
+
+    public ResponseEntity<List<PurchaseListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID supplierId, String status,
+            UUID productId, UUID categoryId, String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir, null);
     }
 
     @GetMapping("/products")

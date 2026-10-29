@@ -189,4 +189,45 @@ class GetInvoicesUseCaseTest {
                 BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
         );
     }
+    @Test
+    void shouldQueryOnlyCancellableInvoicesRegardlessOfAllStatusRequest() {
+        getInvoicesUseCase.execute(null, null, null, List.of("ALL"), null, null, null,
+                null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.CANCEL);
+        verify(invoiceRepository).findAllWithFilters(null, null, null, List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
+                (List<String>) null, null, null, null, "createdAt", "desc");
+    }
+
+    @Test
+    void shouldIntersectRequestedAndEligibleStatusesBeforeQueryingInvoices() {
+        getInvoicesUseCase.execute(null, null, null, List.of("DRAFT", "PAID", "PARTIALLY_PAID"), "customer", null, null,
+                null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.CANCEL);
+        verify(invoiceRepository).findAllWithFilters(null, null, null, List.of("PARTIALLY_PAID"), "customer",
+                (List<String>) null, null, null, null, "createdAt", "desc");
+    }
+
+    @Test
+    void shouldNotQueryWhenNoRequestedInvoiceCanBeEdited() {
+        var result = getInvoicesUseCase.execute(null, null, null, List.of("PAID"), null, null, null,
+                null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        assertTrue(result.isEmpty());
+        verifyNoInteractions(invoiceRepository, paymentTotals, noteDetails);
+    }
+
+    @Test
+    void shouldQueryOnlyDraftInvoicesForConfirmation() {
+        getInvoicesUseCase.execute(null, null, null, null, null, null, null,
+                null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.CONFIRM);
+        verify(invoiceRepository).findAllWithFilters(null, null, null, List.of("DRAFT"),
+                (List<String>) null, null, null, null, "createdAt", "desc");
+    }
+
+    @Test
+    void shouldAllowDuplicatingInvoicesFromEveryStatus() {
+        getInvoicesUseCase.execute(null, null, null, null, null, null, null,
+                null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE);
+        verify(invoiceRepository).findAllWithFilters(null, null, null,
+                java.util.Arrays.stream(InvoiceStatus.values()).map(Enum::name).toList(),
+                (List<String>) null, null, null, null, "createdAt", "desc");
+    }
+
 }
