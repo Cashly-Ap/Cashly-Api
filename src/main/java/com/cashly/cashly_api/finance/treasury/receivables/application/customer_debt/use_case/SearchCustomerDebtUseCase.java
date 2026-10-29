@@ -16,7 +16,12 @@ public class SearchCustomerDebtUseCase {
 
     @Transactional(readOnly = true)
     public PageResponse<CustomerDebtListResponse> execute(String search, int page, int size, String sort) {
-        PageResponse<CustomerDebtListResponse> result = receivablesRepository.findCustomersWithDebt(search, page, size, sort);
-        return result;
+        return receivablesRepository.findCustomersWithDebt(search, page, size, sort);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<CustomerDebtListResponse> execute(String search, int page, int size, String sort, CustomerDebtAction action) {
+        return action == null ? execute(search, page, size, sort)
+                : receivablesRepository.findCustomersWithDebt(search, page, size, sort, action);
     }
 }

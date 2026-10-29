@@ -49,9 +49,15 @@ public class ReceivablesController {
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) String sort) {
-        PageResponse<?> response = searchCustomerDebtUseCase.execute(search, page, size, sort);
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction action) {
+        PageResponse<?> response = action == null ? searchCustomerDebtUseCase.execute(search, page, size, sort)
+                : searchCustomerDebtUseCase.execute(search, page, size, sort, action);
         return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<PageResponse<?>> getCustomersWithDebt(String search, int page, int size, String sort) {
+        return getCustomersWithDebt(search, page, size, sort, null);
     }
 
     @GetMapping("/customers/{id}")

@@ -20,8 +20,8 @@ public class RoleController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLES:READ')")
-    public List<Role> list() {
-        return useCase.list();
+    public List<Role> list(@RequestParam(required = false) ManageRolesUseCase.ListAction action) {
+        return useCase.list(action);
     }
 
     @GetMapping("/options")

@@ -18,6 +18,7 @@ public interface ReceivablesQueryGateway {
     ReceivablesSummaryResponse findSummary();
 
     PageResponse<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort);
+    PageResponse<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort, com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction action);
 
     CustomerDebtSummaryResponse findCustomerDebt(UUID customerId);
 

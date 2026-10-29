@@ -89,4 +89,17 @@ class ManageRolesUseCaseTest {
         assertThat(useCase.options()).containsExactly(new ManageRolesUseCase.Option(id, "Finance"));
         verify(access, never()).require(BusinessModule.ROLES, PermissionAction.READ);
     }
+    @Test
+    void editing_selector_only_returns_editable_roles_within_actor_scope() {
+        var allowed = role(null);
+        var superior = new Role(UUID.randomUUID(), "Superior", null, true, 0, null, Map.of());
+        when(repository.editableRoles()).thenReturn(List.of(allowed, superior));
+        doThrow(new org.springframework.security.access.AccessDeniedException("Not delegable"))
+                .when(access).delegable(superior);
+
+        assertThat(useCase.list(ManageRolesUseCase.ListAction.EDIT)).containsExactly(allowed);
+        verify(access).require(BusinessModule.ROLES, PermissionAction.UPDATE);
+        verify(repository, never()).roles();
+    }
+
 }

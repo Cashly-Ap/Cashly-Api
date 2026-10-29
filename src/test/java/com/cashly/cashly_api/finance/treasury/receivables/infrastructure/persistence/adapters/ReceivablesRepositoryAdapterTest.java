@@ -1050,4 +1050,35 @@ class ReceivablesRepositoryAdapterTest {
 
         assertThat(adapter.findAccountsReceivableForReport(null, false).getFirst().customerId()).isEqualTo(customerId);
     }
+    @Test
+    void eligibility_filters_both_page_and_count_queries_before_pagination() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
+        when(nativeQuery.getResultList()).thenReturn(List.of());
+        when(nativeQuery.getSingleResult()).thenReturn(3L);
+        var result = adapter.findCustomersWithDebt("Client", 1, 2, null,
+                com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction.REFUND);
+        var sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(entityManager, org.mockito.Mockito.times(2)).createNativeQuery(sql.capture());
+        assertThat(sql.getAllValues()).allSatisfy(query -> {
+            assertThat(query).contains("AND COALESCE(cb.total_balance, 0) > 0");
+            assertThat(query).contains("AND (c.legal_name LIKE :search OR c.rif LIKE :search)");
+        });
+        assertThat(result.totalElements()).isEqualTo(3);
+        org.mockito.Mockito.verify(nativeQuery).setFirstResult(2);
+        org.mockito.Mockito.verify(nativeQuery).setMaxResults(2);
+    }
+
+    @Test
+    void payment_actions_filter_customers_with_positive_debt() throws Exception {
+        Method method = ReceivablesRepositoryAdapter.class.getDeclaredMethod("buildCustomersWithDebtQuery",
+                String.class, String.class,
+                com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction.class);
+        method.setAccessible(true);
+        for (var action : List.of(
+                com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction.PAY_ALL,
+                com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction.PAY_PARTIAL)) {
+            assertThat((String) method.invoke(adapter, null, null, action)).contains("AND COALESCE(d.total_debt, 0) > 0");
+        }
+    }
+
 }

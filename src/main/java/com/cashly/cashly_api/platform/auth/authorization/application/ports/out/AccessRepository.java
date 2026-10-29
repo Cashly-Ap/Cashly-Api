@@ -9,6 +9,7 @@ import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 public interface AccessRepository  {
     Optional<Role> role(UUID id);
     List<Role> roles();
+    List<Role> editableRoles();
     void saveRole(Role role, boolean create);
     void deleteRole(UUID id);
     Optional<Department> department(UUID id);

@@ -120,6 +120,14 @@ class GetAllPaymentsUseCaseTest {
         verify(paymentRepository).findAllWithFilters(null, null, null, null);
     }
 
+    @Test
+    void actionSelectorsOnlyQueryPendingPaymentsEvenIfAnotherStatusIsRequested() {
+        when(paymentRepository.findAllWithFilters(null, null, null, "PENDING")).thenReturn(List.of());
+        useCase.execute(null, null, null, null, "APPLIED", GetAllPaymentsUseCase.ListAction.APPROVE);
+        useCase.execute(null, null, null, null, "APPLIED", GetAllPaymentsUseCase.ListAction.REJECT);
+        verify(paymentRepository, org.mockito.Mockito.times(2)).findAllWithFilters(null, null, null, "PENDING");
+    }
+
     private Payment buildPayment() {
         return Payment.reconstitute(
                 PaymentId.generate(),

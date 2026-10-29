@@ -16,9 +16,16 @@ public class GetAllPaymentsUseCase {
         this.paymentRepository = paymentRepository;
     }
 
+    public enum ListAction { APPROVE, REJECT }
+
     public List<PaymentListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
                                                UUID customerId, String type, String status) {
-        String effectiveStatus = (type != null && status == null) ? type : status;
+        return execute(dateFrom, dateTo, customerId, type, status, null);
+    }
+
+    public List<PaymentListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
+                                             UUID customerId, String type, String status, ListAction action) {
+        String effectiveStatus = action != null ? "PENDING" : (type != null && status == null) ? type : status;
         return paymentRepository.findAllWithFilters(dateFrom, dateTo, customerId, effectiveStatus)
                 .stream()
                 .map(PaymentMapper::toListResponse)

@@ -86,9 +86,16 @@ public class PaymentController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) String status) {
-        List<PaymentListResponse> payments = getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId, type, status);
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) GetAllPaymentsUseCase.ListAction action) {
+        List<PaymentListResponse> payments = action == null ? getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId, type, status)
+                : getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId, type, status, action);
         return ResponseEntity.ok(payments);
+    }
+
+    public ResponseEntity<List<PaymentListResponse>> getAll(LocalDate dateFrom, LocalDate dateTo,
+                                                           UUID customerId, String type, String status) {
+        return getAll(dateFrom, dateTo, customerId, type, status, null);
     }
 
     @GetMapping("/{id}")

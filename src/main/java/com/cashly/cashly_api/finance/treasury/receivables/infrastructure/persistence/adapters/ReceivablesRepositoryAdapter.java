@@ -119,9 +119,15 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
 
     @Override
     public PageResponse<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort) {
+        return findCustomersWithDebt(search, page, size, sort, null);
+    }
+
+    @Override
+    public PageResponse<CustomerDebtListResponse> findCustomersWithDebt(String search, int page, int size, String sort,
+            com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction action) {
         PageRequest pageable = PageRequest.of(page, size);
 
-        String sql = buildCustomersWithDebtQuery(search, sort);
+        String sql = buildCustomersWithDebtQuery(search, sort, action);
         Query query = entityManager.createNativeQuery(sql);
         if (search != null && !search.isBlank()) {
             query.setParameter("search", "%" + search + "%");
@@ -130,7 +136,12 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
         query.setMaxResults(size);
 
         long total;
-        if (search != null && !search.isBlank()) {
+        if (action != null) {
+            String countSql = "SELECT COUNT(*) FROM (" + sql.substring(0, sql.lastIndexOf(" ORDER BY ")) + ") eligible_customers";
+            Query countQuery = entityManager.createNativeQuery(countSql);
+            if (search != null && !search.isBlank()) countQuery.setParameter("search", "%" + search + "%");
+            total = ((Number) countQuery.getSingleResult()).longValue();
+        } else if (search != null && !search.isBlank()) {
             total = receivablesJpaRepository.countCustomersWithDebtBySearch(search);
         } else {
             total = receivablesJpaRepository.countAllCustomers();
@@ -166,6 +177,11 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
     }
 
     private String buildCustomersWithDebtQuery(String search, String sort) {
+        return buildCustomersWithDebtQuery(search, sort, null);
+    }
+
+    private String buildCustomersWithDebtQuery(String search, String sort,
+            com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction action) {
         String baseSql = """
             SELECT c.id, c.legal_name AS customerName, c.rif AS customerRif,
                    COALESCE(d.total_debt, 0) AS totalDebt,
@@ -211,11 +227,18 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
             ) pending ON pending.customer_id = c.id
             """;
 
+        baseSql += " WHERE 1=1";
         if (search != null && !search.isBlank()) {
-            baseSql += " WHERE c.legal_name LIKE :search OR c.rif LIKE :search";
+            baseSql += " AND (c.legal_name LIKE :search OR c.rif LIKE :search)";
+        }
+        if (action != null) {
+            baseSql += switch (action) {
+                case PAY_ALL, PAY_PARTIAL -> " AND COALESCE(d.total_debt, 0) > 0";
+                case REFUND -> " AND COALESCE(cb.total_balance, 0) > 0";
+            };
         }
 
-        baseSql += " ORDER BY " + buildOrderBy(sort);
+        baseSql +=  " ORDER BY " + buildOrderBy(sort);
         return baseSql;
     }
 

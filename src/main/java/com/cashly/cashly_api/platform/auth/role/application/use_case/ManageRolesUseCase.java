@@ -31,8 +31,18 @@ public class ManageRolesUseCase {
                           Map<BusinessModule, Set<PermissionAction>> permissions) {}
     public record Option(UUID id, String name) {}
 
+    public enum ListAction { EDIT }
+
     public List<Role> list() {
+        return list(null);
+    }
+
+    public List<Role> list(ListAction action) {
         access.require(BusinessModule.ROLES, PermissionAction.READ);
+        if (action == ListAction.EDIT) {
+            access.require(BusinessModule.ROLES, PermissionAction.UPDATE);
+            return repository.editableRoles().stream().filter(this::assignable).toList();
+        }
         return repository.roles();
     }
 

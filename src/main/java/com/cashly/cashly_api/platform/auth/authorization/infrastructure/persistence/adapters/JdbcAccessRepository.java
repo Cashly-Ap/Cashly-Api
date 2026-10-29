@@ -70,7 +70,16 @@ public class JdbcAccessRepository implements AccessRepository {
 
     @Override
     public List<Role> roles() {
-        var roles = jdbc.query("select * from auth_roles order by name", this::mapRole);
+        return roles(false);
+    }
+
+    @Override
+    public List<Role> editableRoles() {
+        return roles(true);
+    }
+
+    private List<Role> roles(boolean editableOnly) {
+        var roles = jdbc.query("select * from auth_roles" + (editableOnly ? " where system_key IS NULL" : "") + " order by name", this::mapRole);
         Map<UUID, Map<BusinessModule, Set<PermissionAction>>> allGrants = new HashMap<>();
         jdbc.query("select role_id,module,action from auth_role_permissions", (RowCallbackHandler) row -> {
             var grants = allGrants.computeIfAbsent(uuid(row.getBytes("role_id")),
