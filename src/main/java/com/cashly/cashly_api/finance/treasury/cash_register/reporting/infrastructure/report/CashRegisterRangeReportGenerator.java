@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.report;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.itextpdf.io.font.constants.StandardFonts;
@@ -35,7 +36,7 @@ import java.util.List;
 @Component
 public class CashRegisterRangeReportGenerator implements CashRegisterRangeReportPort {
 
-    private static final DateTimeFormatter SPANISH_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 
     private final CashRegisterExcelPort excelPort;
     private final PdfBranding branding;
@@ -77,9 +78,9 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
             Document document = new Document(pdf, type == ReportType.DETAILED ? PageSize.A4.rotate() : PageSize.A4);
             var bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
             document.add(branding.logo().setMarginBottom(12));
-            document.add(new Paragraph("Reporte de caja").setFont(bold).setFontSize(18));
-            document.add(new Paragraph("Desde " + SPANISH_DATE_FORMAT.format(filter.dateFrom())
-                    + " hasta " + SPANISH_DATE_FORMAT.format(filter.dateTo())));
+            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterReport")).setFont(bold).setFontSize(18));
+            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.from") + ReportMessages.dateFormatter().format(filter.dateFrom())
+                    + ReportMessages.text("finance.treasury.cash_register.reports.to") + ReportMessages.dateFormatter().format(filter.dateTo())));
             document.add(new Paragraph(reportTypeLabel(type)));
             if (type == ReportType.DETAILED) {
                 addDetailedPdf(document, rows, bold);
@@ -97,18 +98,18 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
 
     private void addSimplePdf(Document document, DailyTotals totals, com.itextpdf.kernel.font.PdfFont bold) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{2, 1})).useAllAvailableWidth();
-        addHeader(table, new String[]{"Concepto", "Total"}, bold);
-        addMoneyRow(table, "Facturación neta", totals.totalInvoiced());
-        addMoneyRow(table, "Ingresos", totals.totalRevenue());
-        addMoneyRow(table, "Egresos", totals.totalExpenses());
-        addMoneyRow(table, "Balance", totals.totalRevenue().subtract(totals.totalExpenses()));
+        addHeader(table, new String[]{ReportMessages.text("finance.treasury.cash_register.reports.description"), ReportMessages.text("finance.treasury.cash_register.reports.total")}, bold);
+        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.netInvoicing"), totals.totalInvoiced());
+        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.inflows"), totals.totalRevenue());
+        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.outflows"), totals.totalExpenses());
+        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.balance"), totals.totalRevenue().subtract(totals.totalExpenses()));
         document.add(table);
     }
 
     private void addGroupedPdf(Document document, List<CustomerSummary> summaries,
                                com.itextpdf.kernel.font.PdfFont bold) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{2.4f, 1, 1, 1, 1})).useAllAvailableWidth();
-        addHeader(table, new String[]{"Cliente", "Facturación", "Pagado", "Devuelto", "Balance"}, bold);
+        addHeader(table, new String[]{ReportMessages.text("finance.treasury.cash_register.reports.customer"), ReportMessages.text("finance.treasury.cash_register.reports.invoicing"), ReportMessages.text("finance.treasury.cash_register.reports.paid"), ReportMessages.text("finance.treasury.cash_register.reports.refunded"), ReportMessages.text("finance.treasury.cash_register.reports.balance")}, bold);
         summaries.forEach(summary -> {
             table.addCell(summary.customerName());
             table.addCell(money(summary.totalInvoiced()));
@@ -124,14 +125,14 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
         Table table = new Table(UnitValue.createPercentArray(new float[]{12, 7, 15, 12, 25, 29}))
                 .useAllAvailableWidth()
                 .setFontSize(8);
-        addHeader(table, new String[]{"Fecha", "Tipo", "Documento", "Operación", "Método", "Cliente"}, bold);
+        addHeader(table, new String[]{ReportMessages.text("finance.treasury.cash_register.reports.date"), ReportMessages.text("finance.treasury.cash_register.reports.type"), ReportMessages.text("finance.treasury.cash_register.reports.document"), ReportMessages.text("finance.treasury.cash_register.reports.operation"), ReportMessages.text("finance.treasury.cash_register.reports.method"), ReportMessages.text("finance.treasury.cash_register.reports.customer")}, bold);
         rows.stream()
                 .sorted(Comparator.comparing(CashRegisterExportRow::emissionDate)
                         .thenComparing(CashRegisterExportRow::documentType)
                         .thenComparingInt(CashRegisterExportRow::sortOrder))
                 .forEach(row -> {
-                    table.addCell(SPANISH_DATE_FORMAT.format(row.emissionDate()));
-                    table.addCell(row.documentType());
+                    table.addCell(ReportMessages.dateFormatter().format(row.emissionDate()));
+                    table.addCell(ReportMessages.code(row.documentType()));
                     table.addCell(row.documentNumber());
                     table.addCell(money(row.totalOperation()));
                     table.addCell(paymentSummary(row));
@@ -168,7 +169,7 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
     private List<CustomerSummary> customerSummaries(List<CashRegisterExportRow> rows) {
         var grouped = new LinkedHashMap<String, List<CashRegisterExportRow>>();
         rows.forEach(row -> grouped.computeIfAbsent(
-                row.customerName() == null || row.customerName().isBlank() ? "Sin cliente" : row.customerName(),
+                row.customerName() == null || row.customerName().isBlank() ? ReportMessages.text("finance.treasury.cash_register.reports.noCustomer") : row.customerName(),
                 ignored -> new ArrayList<>()).add(row));
         return grouped.entrySet().stream().map(entry -> {
             List<CashRegisterExportRow> customerRows = entry.getValue();
@@ -182,10 +183,10 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
 
     private List<CashRegisterDetail> paymentDetails(List<CashRegisterExportRow> rows) {
         List<CashRegisterDetail> details = new ArrayList<>();
-        addPaymentDetail(details, rows, "Efectivo Bs.", CashRegisterExportRow::efectivoBs);
-        addPaymentDetail(details, rows, "Dólar", CashRegisterExportRow::dolar);
-        addPaymentDetail(details, rows, "Transferencia dólar", CashRegisterExportRow::transfDolar);
-        addPaymentDetail(details, rows, "Zelle", CashRegisterExportRow::zelle);
+        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.cashInBs"), CashRegisterExportRow::efectivoBs);
+        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.usDollar"), CashRegisterExportRow::dolar);
+        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.usdTransfer"), CashRegisterExportRow::transfDolar);
+        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.zelle"), CashRegisterExportRow::zelle);
         return details;
     }
 
@@ -200,28 +201,28 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
     }
 
     private BigDecimal sum(List<CashRegisterExportRow> rows, String type) {
-        return rows.stream().filter(row -> type.equals(row.documentType()))
+        return rows.stream().filter(row -> type.equals(ReportMessages.code(row.documentType())))
                 .map(CashRegisterExportRow::totalOperation).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private int count(List<CashRegisterExportRow> rows, String type) {
-        return Math.toIntExact(rows.stream().filter(row -> type.equals(row.documentType())).count());
+        return Math.toIntExact(rows.stream().filter(row -> type.equals(ReportMessages.code(row.documentType()))).count());
     }
 
     private String paymentSummary(CashRegisterExportRow row) {
         List<String> parts = new ArrayList<>();
-        if (row.efectivoBs().signum() > 0) parts.add("Efectivo " + money(row.efectivoBs()));
-        if (row.dolar().signum() > 0) parts.add("Dólar " + money(row.dolar()));
-        if (row.transfDolar().signum() > 0) parts.add("Transferencia " + money(row.transfDolar()));
-        if (row.zelle().signum() > 0) parts.add("Zelle " + money(row.zelle()));
+        if (row.efectivoBs().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.cash") + money(row.efectivoBs()));
+        if (row.dolar().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.usDollar") + money(row.dolar()));
+        if (row.transfDolar().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.transfer") + money(row.transfDolar()));
+        if (row.zelle().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.zelle") + money(row.zelle()));
         return parts.isEmpty() ? "-" : String.join(", ", parts);
     }
 
     private String reportTypeLabel(ReportType type) {
         return switch (type) {
-            case SIMPLE -> "Resumen simple";
-            case DETAILED -> "Detalle de operaciones";
-            case GROUPED -> "Agrupado por cliente";
+            case SIMPLE -> ReportMessages.text("finance.treasury.cash_register.reports.simpleSummary");
+            case DETAILED -> ReportMessages.text("finance.treasury.cash_register.reports.operationDetails");
+            case GROUPED -> ReportMessages.text("finance.treasury.cash_register.reports.groupedByCustomer");
         };
     }
 

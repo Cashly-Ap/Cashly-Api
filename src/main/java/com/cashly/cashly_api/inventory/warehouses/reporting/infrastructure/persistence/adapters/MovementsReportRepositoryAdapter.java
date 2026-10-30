@@ -8,22 +8,9 @@ import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.ou
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.query.model.MovementsPdfQuery;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class MovementsReportRepositoryAdapter implements MovementsReportRepositoryPort {
-
-    private static final Map<String, String> TYPE_LABELS = Map.of(
-            "ENTRY", "Entrada",
-            "EXIT", "Salida",
-            "ADJUSTMENT", "Ajuste",
-            "TRANSFER_IN", "Transferencia Entrada",
-            "TRANSFER_OUT", "Transferencia Salida",
-            "COMPONENT_EXIT", "Salida Componente",
-            "RETURN_ENTRY", "Entrada por Devolución",
-            "CANCEL_ENTRY", "Entrada por Anulación",
-            "SALE_EXIT", "Salida por Venta"
-    );
 
     private final MovementsReportJpaRepository jpaRepository;
 
@@ -44,13 +31,12 @@ public class MovementsReportRepositoryAdapter implements MovementsReportReposito
     }
 
     private MovementReportResponse toResponse(MovementsReportProjection p) {
-        String label = TYPE_LABELS.getOrDefault(p.getMovementType(), p.getMovementType());
         return new MovementReportResponse(
                 UUID.fromString(p.getMovementId()),
                 p.getWarehouseName(),
                 p.getProductName(),
                 p.getSku(),
-                label,
+                p.getMovementType(),
                 p.getQuantity(),
                 p.getPreviousStock(),
                 p.getNewStock(),

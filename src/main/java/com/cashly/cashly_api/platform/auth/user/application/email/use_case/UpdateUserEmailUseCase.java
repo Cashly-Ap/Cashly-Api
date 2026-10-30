@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.user.application.email.use_case;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+
 import com.cashly.cashly_api.platform.auth.user.application.email.request.UpdateUserEmailRequest;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
 import com.cashly.cashly_api.platform.auth.user.application.exceptions.DuplicateEmailException;
@@ -15,11 +17,14 @@ import java.util.UUID;
 
 @Service
 public class UpdateUserEmailUseCase {
+    private final UserPreferencesRepository preferences;
+
 
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public UpdateUserEmailUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public UpdateUserEmailUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access, UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.userRepository = userRepository;
         this.access=access;
     }
@@ -39,6 +44,6 @@ public class UpdateUserEmailUseCase {
 
         user.updateEmail(newEmail);
         User saved = userRepository.save(user);
-        return UserResponse.from(saved);
+        return UserResponse.from(saved).withLanguage(preferences.languageFor(saved.getId().getValue()));
     }
 }

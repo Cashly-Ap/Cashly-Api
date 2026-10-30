@@ -64,14 +64,88 @@ import java.util.stream.Collectors;
 @ResponseBody
 public class GlobalExceptionHandler {
 
+    private final com.cashly.cashly_api.shared.infrastructure.i18n.MessageTranslator translator = new com.cashly.cashly_api.shared.infrastructure.i18n.MessageTranslator();
+
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    private static final Map<String, String> DETAIL_KEYS = Map.ofEntries(
+        Map.entry("Unsupported language", "validation.unsupported_language"),
+        Map.entry("Upload a PNG or JPEG image", "validation.image_upload"),
+        Map.entry("Only PNG and JPEG images are supported", "validation.image_upload"),
+        Map.entry("Invalid PNG or JPEG image", "validation.invalid_image"),
+        Map.entry("Invalid image dimensions", "validation.image_dimensions"),
+        Map.entry("Cannot read image", "validation.invalid_image"),
+        Map.entry("Cannot decode image", "validation.invalid_image"),
+        Map.entry("Invalid logo image", "validation.invalid_image"),
+        Map.entry("Cannot process logo image", "validation.invalid_image"),
+        Map.entry("Invalid phone number", "validation.phone"),
+        Map.entry("Required text is missing", "validation.required_text"),
+        Map.entry("Password cannot be null or empty", "validation.password_required"),
+        Map.entry("Email cannot be null or empty", "validation.email_required"),
+        Map.entry("Email cannot exceed 255 characters", "validation.email_length"),
+        Map.entry("User name is required", "validation.username_required"),
+        Map.entry("Role and department are required", "validation.assignments_required"),
+        Map.entry("Email and password are required", "validation.credentials_required"),
+        Map.entry("Current password is required", "validation.current_password_required"),
+        Map.entry("Current password is incorrect", "validation.current_password_incorrect"),
+        Map.entry("Select active role and department", "access.active_assignments"),
+        Map.entry("At least one active system administrator must remain", "access.keep_administrator"),
+        Map.entry("Protected system role cannot be changed", "access.protected_role"),
+        Map.entry("Role name already exists", "access.duplicate_role"),
+        Map.entry("Reassign users before deactivating role", "access.role_reassign"),
+        Map.entry("Protected or referenced role cannot be deleted", "access.role_delete"),
+        Map.entry("Department name already exists", "access.duplicate_department"),
+        Map.entry("Reassign users before deactivating department", "access.department_reassign"),
+        Map.entry("Reassign users before deleting department", "access.department_delete"),
+        Map.entry("Record changed; reload and retry", "access.changed"),
+        Map.entry("Quantity must be greater than zero", "validation.quantity_positive"),
+        Map.entry("Unit price must be greater than zero", "validation.price_positive"),
+        Map.entry("Adjusted quantity cannot be negative", "validation.quantity_negative"),
+        Map.entry("Product id cannot be null", "validation.product_required"),
+        Map.entry("Product name cannot be null", "validation.product_name_required"),
+        Map.entry("Product code cannot be null", "validation.product_code_required"),
+        Map.entry("Page must be zero or greater", "validation.page"),
+        Map.entry("Stock quantity must be positive", "validation.quantity_positive"),
+        Map.entry("Allocation quantity must be positive", "validation.quantity_positive"),
+        Map.entry("Amount to add must be positive", "validation.quantity_positive"),
+        Map.entry("Amount to remove must be positive", "validation.quantity_positive"),
+        Map.entry("Amount to reserve must be positive", "validation.quantity_positive"),
+        Map.entry("Amount to release must be positive", "validation.quantity_positive"),
+        Map.entry("Amount to deduct must be positive", "validation.quantity_positive"));
+
+    private String translatedDetail(String message, String fallbackKey) {
+        if (message == null) return translator.text(fallbackKey);
+        String exact = DETAIL_KEYS.get(message);
+        if (exact != null) return translator.text(exact);
+        if (message.startsWith("Invalid email format:")) return translator.text("validation.email_format");
+        var stock = java.util.regex.Pattern.compile("(?:available|reserved)=(-?\\d+), requested=(\\d+)").matcher(message);
+        if (stock.find()) return translator.text(message.contains("reserved=") ? "validation.reserved_quantity" : "validation.stock_quantity", stock.group(1), stock.group(2));
+        var length = java.util.regex.Pattern.compile("Invalid text length \\(maximum (\\d+)\\)").matcher(message);
+        if (length.find()) return translator.text("validation.text_length", length.group(1));
+        var password = java.util.regex.Pattern.compile("Password must be at least (\\d+) characters long").matcher(message);
+        if (password.find()) return translator.text("validation.password_length", password.group(1));
+        var returned = java.util.regex.Pattern.compile("La cantidad devuelta \\(([^)]+)\\) excede la cantidad original \\(([^)]+)\\)").matcher(message);
+        if (returned.find()) return translator.text("validation.return_quantity", returned.group(1), returned.group(2));
+        var limits = java.util.regex.Pattern.compile("(?:User name|Password) (must be at least|cannot exceed) (\\d+) characters").matcher(message);
+        if (limits.find()) return translator.text("validation." + (message.startsWith("Password") ? "password_" : "username_")
+                + (limits.group(1).equals("cannot exceed") ? "maximum" : "minimum"), limits.group(2));
+        var search = java.util.regex.Pattern.compile("Search must not exceed (\\d+)").matcher(message);
+        if (search.find()) return translator.text("validation.search_maximum", search.group(1));
+        var size = java.util.regex.Pattern.compile("Size must be between (\\d+) and (\\d+)").matcher(message);
+        if (size.find()) return translator.text("validation.page_size_limits", size.group(1), size.group(2));
+        String business = BusinessErrorMessages.translate(message, translator);
+        return business != null ? business : translator.text(fallbackKey);
+    }
 
     private Map<String, Object> createErrorResponse(HttpStatus status, String error, String message) {
         Map<String, Object> errorDetails = new HashMap<>();
         errorDetails.put("timestamp", LocalDateTime.now().toString());
         errorDetails.put("status", status.value());
-        errorDetails.put("error", error);
-        errorDetails.put("message", message);
+        String code = error.toUpperCase(java.util.Locale.ROOT).replaceAll("[^A-Z0-9]+", "_");
+        String key = "errors." + code.toLowerCase(java.util.Locale.ROOT);
+        errorDetails.put("code", code);
+        errorDetails.put("error", translator.text(key));
+        errorDetails.put("message", translatedDetail(message, key));
         return errorDetails;
     }
 
@@ -373,11 +447,12 @@ public class GlobalExceptionHandler {
         String errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(error -> LocalizedValidationMessages.translate(error, translator))
                 .collect(Collectors.joining(", "));
 
-        return ResponseEntity.badRequest()
-                .body(createErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors));
+        var body = createErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors);
+        body.put("message", errors);
+        return ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -414,6 +489,12 @@ public class GlobalExceptionHandler {
                 .body(createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid parameter",
                         "Invalid value '" + value + "' for parameter '" + name
                                 + "'. Expected a valid " + requiredType + "."));
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleUploadTooLarge(org.springframework.web.multipart.MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(createErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE, "File too large", null));
     }
 
     @ExceptionHandler(Exception.class)

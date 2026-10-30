@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.receivables.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -43,7 +44,7 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 
     @Override
     public byte[] generateReport(AccountsReceivableReportData data) {
@@ -75,7 +76,7 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
     }
 
     private Paragraph buildTitle(PdfFont bold) {
-        return new Paragraph("CUENTAS POR COBRAR")
+        return new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.accountsReceivable"))
                 .setFont(bold)
                 .setFontSize(18)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -83,7 +84,7 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
     }
 
     private Paragraph buildDate(AccountsReceivableReportData data, PdfFont regular) {
-        return new Paragraph("Fecha: " + data.reportDate().format(DATE_FORMATTER))
+        return new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.date") + data.reportDate().format(ReportMessages.dateFormatter()))
                 .setFont(regular)
                 .setFontSize(10)
                 .setFontColor(ColorConstants.DARK_GRAY)
@@ -95,7 +96,7 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
         float[] columnWidths = {4f, 2.5f, 2.5f, 2.5f, 2.5f, 2f, 2f, 2f, 2f, 2f};
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
 
-        String[] headers = {"Cliente", "RIF", "Límite Crédito", "Saldo Pendiente", "Disponible", "0-30", "31-60", "61-90", "91-120", "120+"};
+        String[] headers = {ReportMessages.text("finance.treasury.receivables.reports.customer"), ReportMessages.text("finance.treasury.receivables.reports.taxId"), ReportMessages.text("finance.treasury.receivables.reports.creditLimit"), ReportMessages.text("finance.treasury.receivables.reports.outstandingBalance"), ReportMessages.text("finance.treasury.receivables.reports.available"), "0-30", "31-60", "61-90", "91-120", "120+"};
         for (String h : headers) {
             table.addHeaderCell(createHeaderCell(h, bold));
         }
@@ -147,10 +148,10 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginTop(20);
 
-        table.addCell(buildSummaryCell("Total Cuentas por Cobrar:", "$ " + formatDecimal(summary.totalReceivable()), bold, regular));
-        table.addCell(buildSummaryCell("Por Vencer:", "$ " + formatDecimal(summary.notYetDue()), bold, regular));
-        table.addCell(buildSummaryCell("Vencidas:", "$ " + formatDecimal(summary.overdue()), bold, regular));
-        table.addCell(buildSummaryCell("Clientes con Crédito Excedido:", String.valueOf(summary.customersExceededCredit()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.totalAccountsReceivable"), "$ " + formatDecimal(summary.totalReceivable()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.notYetDue"), "$ " + formatDecimal(summary.notYetDue()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.overdue"), "$ " + formatDecimal(summary.overdue()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.customersOverCreditLimit"), String.valueOf(summary.customersExceededCredit()), bold, regular));
 
         return table;
     }
@@ -168,7 +169,7 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private static class PageFooterHandler implements IEventHandler {
@@ -192,7 +193,7 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.page") + pageNumber + ReportMessages.text("finance.treasury.receivables.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

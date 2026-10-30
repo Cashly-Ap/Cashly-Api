@@ -32,7 +32,7 @@ class CashRegisterSessionReportGeneratorTest {
             assertEquals("Facturación neta", summary.getRow(4).getCell(0).getStringCellValue());
             assertEquals(125.0, summary.getRow(4).getCell(1).getNumericCellValue());
             var sheet = workbook.getSheet("Detalle");
-            assertEquals("PAYMENT", sheet.getRow(1).getCell(2).getStringCellValue());
+            assertEquals("Pago", sheet.getRow(1).getCell(2).getStringCellValue());
             assertEquals(50.0, sheet.getRow(1).getCell(4).getNumericCellValue());
         }
     }

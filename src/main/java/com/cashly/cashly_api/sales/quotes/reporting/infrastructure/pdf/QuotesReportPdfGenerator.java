@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -62,7 +63,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph("Reporte de Presupuestos")
+            Paragraph title = new Paragraph(ReportMessages.text("sales.quotes.reports.quotesReport"))
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
@@ -71,9 +72,9 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            String modeLabel = detailed ? "Detallado" : "Simple";
-            Paragraph subtitle = new Paragraph("Generado el " + fecha + " | Modo: " + modeLabel + " | Total: " + quotes.size() + " presupuestos")
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            String modeLabel = detailed ? ReportMessages.text("sales.quotes.reports.detailed") : ReportMessages.text("sales.quotes.reports.simple");
+            Paragraph subtitle = new Paragraph(ReportMessages.text("sales.quotes.reports.generatedOn") + fecha + ReportMessages.text("sales.quotes.reports.mode") + modeLabel + ReportMessages.text("sales.quotes.reports.totalLabel") + quotes.size() + ReportMessages.text("sales.quotes.reports.quotes"))
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -89,8 +90,8 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{"N° Presupuesto", "Cliente", "Estado", "Total", "Fecha"}
-                    : new String[]{"N° Presupuesto", "Cliente", "Total", "Fecha"};
+                    ? new String[]{ReportMessages.text("sales.quotes.reports.quoteNoLabel"), ReportMessages.text("sales.quotes.reports.customerLabel"), ReportMessages.text("sales.quotes.reports.status"), ReportMessages.text("sales.quotes.reports.total"), ReportMessages.text("sales.quotes.reports.dateLabel")}
+                    : new String[]{ReportMessages.text("sales.quotes.reports.quoteNoLabel"), ReportMessages.text("sales.quotes.reports.customerLabel"), ReportMessages.text("sales.quotes.reports.total"), ReportMessages.text("sales.quotes.reports.dateLabel")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
@@ -114,12 +115,12 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
                 }
 
                 addCell(table, "$" + formatDecimal(quote.subtotal()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, quote.createdAt().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, quote.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph totalLabel = new Paragraph("Total de Presupuestos: " + quotes.size())
+            Paragraph totalLabel = new Paragraph(ReportMessages.text("sales.quotes.reports.totalQuotes") + quotes.size())
                     .setFont(bold)
                     .setFontSize(11)
                     .setTextAlignment(TextAlignment.RIGHT)
@@ -131,7 +132,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
             long convertedToInvoice = quotes.stream().filter(q -> "CONVERTED_TO_INVOICE".equals(q.status())).count();
             long cancelled = quotes.stream().filter(q -> "CANCELLED".equals(q.status())).count();
 
-            Paragraph summary = new Paragraph(String.format("Borrador: %d | Convertidos a Pedido: %d | Convertidos a Factura: %d | Cancelados: %d",
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text("sales.quotes.reports.draftDConvertedToOrderDConvertedToInvoiceDCancelledD"),
                     draft, convertedToOrder, convertedToInvoice, cancelled))
                     .setFont(regular)
                     .setFontSize(9)
@@ -140,7 +141,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
                     .setMarginTop(8);
             document.add(summary);
 
-            Paragraph footer = new Paragraph("Documento generado automaticamente por CASHLY")
+            Paragraph footer = new Paragraph(ReportMessages.text("sales.quotes.reports.documentAutomaticallyGeneratedByCashly"))
                     .setFont(regular)
                     .setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
@@ -156,16 +157,16 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private String formatStatus(String status) {
         if (status == null) return "-";
         return switch (status) {
-            case "DRAFT" -> "Borrador";
-            case "CONVERTED_TO_ORDER" -> "Pedido";
-            case "CONVERTED_TO_INVOICE" -> "Factura";
-            case "CANCELLED" -> "Cancelado";
+            case "DRAFT" -> ReportMessages.text("sales.quotes.reports.draft");
+            case "CONVERTED_TO_ORDER" -> ReportMessages.text("sales.quotes.reports.order");
+            case "CONVERTED_TO_INVOICE" -> ReportMessages.text("sales.quotes.reports.invoice");
+            case "CANCELLED" -> ReportMessages.text("sales.quotes.reports.cancelled");
             default -> status;
         };
     }
@@ -222,7 +223,7 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Pagina " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("sales.quotes.reports.page") + pageNumber + ReportMessages.text("sales.quotes.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

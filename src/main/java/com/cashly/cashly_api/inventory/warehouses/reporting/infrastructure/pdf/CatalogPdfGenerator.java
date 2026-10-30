@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -57,14 +58,14 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph("Reporte de Productos")
+            Paragraph title = new Paragraph(ReportMessages.text("inventory.warehouses.reports.productsReport"))
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(4);
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            Paragraph subtitle = new Paragraph("Generado el " + fecha)
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            Paragraph subtitle = new Paragraph(ReportMessages.text("inventory.warehouses.reports.generatedOn") + fecha)
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -79,7 +80,7 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
-            String[] headers = {"Producto", "SKU", "Categoría", "Almacén", "Tipo", "Stock", "Estado"};
+            String[] headers = {ReportMessages.text("inventory.warehouses.reports.product"), ReportMessages.text("inventory.warehouses.reports.sku"), ReportMessages.text("inventory.warehouses.reports.category"), ReportMessages.text("inventory.warehouses.reports.warehouse"), ReportMessages.text("inventory.warehouses.reports.type"), ReportMessages.text("inventory.warehouses.reports.stock"), ReportMessages.text("inventory.warehouses.reports.status")};
             for (String h : headers) {
                 Cell headerCell = new Cell()
                         .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -98,9 +99,9 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
                 addCell(table, item.sku(), regular, rowColor, TextAlignment.CENTER);
                 addCell(table, item.categoryName(), regular, rowColor, TextAlignment.LEFT);
                 addCell(table, item.warehouseName() != null ? item.warehouseName() : "-", regular, rowColor, TextAlignment.LEFT);
-                addCell(table, Boolean.TRUE.equals(item.composite()) ? "Compuesto" : "Simple", regular, rowColor, TextAlignment.CENTER);
+                addCell(table, Boolean.TRUE.equals(item.composite()) ? ReportMessages.text("inventory.warehouses.reports.composite") : ReportMessages.text("inventory.warehouses.reports.simple"), regular, rowColor, TextAlignment.CENTER);
                 addCell(table, item.quantity() != null ? item.quantity().toPlainString() : "0", regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, Boolean.TRUE.equals(item.active()) ? "Activo" : "Inactivo", regular, rowColor, TextAlignment.CENTER);
+                addCell(table, Boolean.TRUE.equals(item.active()) ? ReportMessages.text("inventory.warehouses.reports.active") : ReportMessages.text("inventory.warehouses.reports.inactive"), regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
@@ -146,7 +147,7 @@ public class CatalogPdfGenerator implements CatalogPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("inventory.warehouses.reports.page") + pageNumber + ReportMessages.text("inventory.warehouses.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

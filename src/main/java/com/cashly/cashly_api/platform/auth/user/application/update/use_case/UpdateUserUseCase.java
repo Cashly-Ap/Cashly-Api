@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.user.application.update.use_case;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+
 import com.cashly.cashly_api.platform.auth.user.application.update.request.UpdateUserRequest;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
 import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException;
@@ -14,11 +16,14 @@ import java.util.UUID;
 
 @Service
 public class UpdateUserUseCase {
+    private final UserPreferencesRepository preferences;
+
 
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public UpdateUserUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public UpdateUserUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access, UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.userRepository = userRepository;
         this.access=access;
     }
@@ -49,6 +54,7 @@ public class UpdateUserUseCase {
         }
 
         User savedUser = userRepository.save(user);
-        return UserResponse.from(savedUser);
+        if (request.language() != null) preferences.updateLanguage(savedUser.getId().getValue(), request.language());
+        return UserResponse.from(savedUser).withLanguage(preferences.languageFor(savedUser.getId().getValue()));
     }
 }

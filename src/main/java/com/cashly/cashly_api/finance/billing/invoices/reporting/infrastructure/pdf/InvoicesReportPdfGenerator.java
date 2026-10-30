@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -61,7 +62,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph("Reporte de Facturas")
+            Paragraph title = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.invoicesReport"))
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
@@ -70,9 +71,9 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            String modeLabel = detailed ? "Detallado" : "Simple";
-            Paragraph subtitle = new Paragraph("Generado el " + fecha + " | Modo: " + modeLabel + " | Total: " + invoices.size() + " facturas")
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            String modeLabel = detailed ? ReportMessages.text("finance.billing.invoices.reports.detailed") : ReportMessages.text("finance.billing.invoices.reports.simple");
+            Paragraph subtitle = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.generatedOn") + fecha + ReportMessages.text("finance.billing.invoices.reports.mode") + modeLabel + ReportMessages.text("finance.billing.invoices.reports.total") + invoices.size() + ReportMessages.text("finance.billing.invoices.reports.invoices"))
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -88,8 +89,8 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{"N° Factura", "Cliente", "Tipo Pago", "Líneas", "Estado", "Total", "Fecha"}
-                    : new String[]{"N° Factura", "Cliente", "Total", "Fecha"};
+                    ? new String[]{ReportMessages.text("finance.billing.invoices.reports.invoiceNo"), ReportMessages.text("finance.billing.invoices.reports.customer"), ReportMessages.text("finance.billing.invoices.reports.paymentType"), ReportMessages.text("finance.billing.invoices.reports.lines"), ReportMessages.text("finance.billing.invoices.reports.status"), ReportMessages.text("finance.billing.invoices.reports.totalLabel"), ReportMessages.text("finance.billing.invoices.reports.date")}
+                    : new String[]{ReportMessages.text("finance.billing.invoices.reports.invoiceNo"), ReportMessages.text("finance.billing.invoices.reports.customer"), ReportMessages.text("finance.billing.invoices.reports.totalLabel"), ReportMessages.text("finance.billing.invoices.reports.date")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
@@ -115,12 +116,12 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                 }
 
                 addCell(table, "$" + formatDecimal(invoice.total()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, invoice.createdAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, invoice.createdAt().format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph totalLabel = new Paragraph("Total de Facturas: " + invoices.size())
+            Paragraph totalLabel = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.totalInvoices") + invoices.size())
                     .setFont(bold)
                     .setFontSize(11)
                     .setTextAlignment(TextAlignment.RIGHT)
@@ -132,7 +133,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
             long cancelled = invoices.stream().filter(o -> "CANCELLED".equals(o.status())).count();
             long draft = invoices.stream().filter(o -> "DRAFT".equals(o.status())).count();
 
-            Paragraph summary = new Paragraph(String.format("Pagadas: %d | Pendientes: %d | Canceladas: %d | Borrador: %d",
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text("finance.billing.invoices.reports.paidDPendingDCancelledDDraftD"),
                     paid, pending, cancelled, draft))
                     .setFont(regular)
                     .setFontSize(9)
@@ -141,7 +142,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                     .setMarginTop(8);
             document.add(summary);
 
-            Paragraph footer = new Paragraph("Documento generado automáticamente por CASHLY")
+            Paragraph footer = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.documentAutomaticallyGeneratedByCashly"))
                     .setFont(regular)
                     .setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
@@ -159,8 +160,8 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
     private static String formatPaymentType(String paymentType) {
         if (paymentType == null) return "-";
         return switch (paymentType.toUpperCase()) {
-            case "CASH" -> "CONTADO";
-            case "CREDIT" -> "CREDITO";
+            case "CASH" -> ReportMessages.text("finance.billing.invoices.reports.cash");
+            case "CREDIT" -> ReportMessages.text("finance.billing.invoices.reports.credit");
             default -> paymentType;
         };
     }
@@ -168,17 +169,17 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
     private static String formatStatus(String status) {
         if (status == null) return "-";
         return switch (status) {
-            case "PAID" -> "Pagada";
-            case "PENDING_PAYMENT" -> "Pendiente de Pago";
-            case "PARTIALLY_PAID" -> "Parcialmente Pagada";
-            case "CANCELLED" -> "Cancelada";
-            case "OVERDUE" -> "Vencida";
+            case "PAID" -> ReportMessages.text("finance.billing.invoices.reports.paid");
+            case "PENDING_PAYMENT" -> ReportMessages.text("finance.billing.invoices.reports.pendingPayment");
+            case "PARTIALLY_PAID" -> ReportMessages.text("finance.billing.invoices.reports.partiallyPaid");
+            case "CANCELLED" -> ReportMessages.text("finance.billing.invoices.reports.cancelled");
+            case "OVERDUE" -> ReportMessages.text("finance.billing.invoices.reports.overdue");
             default -> status;
         };
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
@@ -233,7 +234,7 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("finance.billing.invoices.reports.page") + pageNumber + ReportMessages.text("finance.billing.invoices.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

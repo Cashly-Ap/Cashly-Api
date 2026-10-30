@@ -62,7 +62,17 @@ class UserPreferencesControllerTest {
     void rejectsMissingOrNullHintPreference(String body) throws Exception {
         mvc.perform(put("/api/auth/preferences").with(user(own.toString())).contentType("application/json").content(body))
             .andExpect(status().isBadRequest());
-        verifyNoInteractions(repository);
+        verify(repository, never()).save(any(), any());
+    }
+    @Test void persistsEnglishAndRejectsUnsupportedLanguage() throws Exception {
+        String body = "{\"themeMode\":\"system\",\"colorMode\":\"minimal\",\"shortcutsEnabled\":false,\"showShortcutHints\":true,\"language\":\"en\"}";
+        mvc.perform(put("/api/auth/preferences").with(user(own.toString())).contentType("application/json").content(body))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.language").value("en"));
+        verify(repository).save(eq(own), argThat(p -> p.language().equals("en")));
+        clearInvocations(repository);
+        mvc.perform(put("/api/auth/preferences").with(user(own.toString())).contentType("application/json").content(body.replace("\"en\"", "\"fr\"")))
+            .andExpect(status().isBadRequest());
+        verify(repository, never()).save(any(), any());
     }
     @Test void anonymousRequestsCannotReadOrWrite() throws Exception {
         mvc.perform(get("/api/auth/preferences")).andExpect(status().isUnauthorized());
@@ -75,6 +85,6 @@ class UserPreferencesControllerTest {
     void rejectsInvalidOrMissingPreferences(String body) throws Exception {
         mvc.perform(put("/api/auth/preferences").with(user(own.toString())).contentType("application/json").content(body))
             .andExpect(status().isBadRequest());
-        verifyNoInteractions(repository);
+        verify(repository, never()).save(any(), any());
     }
 }

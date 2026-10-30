@@ -38,7 +38,7 @@ class QuotePdfContentTest {
         when(line.lineTotal()).thenReturn(new BigDecimal("27.90"));
         when(data.lines()).thenReturn(List.of(line));
         var content = text(new QuotePdfGenerator().generatePdf(data));
-        for (var expected : List.of("DOC-123", "Customer Example", "RIF-123", "27.90", "Delivery instructions", "Cancellation reason", "P-123", "Product Example", "2.25", "12.40")) assertTrue(content.contains(expected), expected + " missing: " + content);
+        for (var expected : List.of("DOC-123", "Customer Example", "RIF-123", "27,90", "Delivery instructions", "Cancellation reason", "P-123", "Product Example", "2,25", "12,40")) assertTrue(content.contains(expected), expected + " missing: " + content);
     }
     @Test
     void listPreservesSimpleDetailedAndEmptyContent() throws Exception {
@@ -51,7 +51,7 @@ class QuotePdfContentTest {
         var generator = new QuotesReportPdfGenerator();
         var simple = text(generator.generatePdf(List.of(row), "SIMPLE"));
         var detailed = text(generator.generatePdf(List.of(row), "detailed"));
-        for (var content : List.of(simple, detailed)) for (var expected : List.of("ROW-123", "Report Customer", "31.25", "Borrador: 1")) assertTrue(content.contains(expected), expected + " missing: " + content);
+        for (var content : List.of(simple, detailed)) for (var expected : List.of("ROW-123", "Report Customer", "31,25", "Borrador: 1")) assertTrue(content.contains(expected), expected + " missing: " + content);
         assertTrue(simple.contains("Modo: Simple"));
         assertTrue(detailed.contains("Modo: Detallado"));
         assertTrue(text(generator.generatePdf(List.of(), "SIMPLE")).contains("Total: 0"));

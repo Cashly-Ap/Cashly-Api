@@ -116,6 +116,7 @@ class JwtAuthenticationEntryPointUnitTest {
     @Test
     @DisplayName("should_IncludeErrorMessage_When_WritingErrorResponse")
     void should_IncludeErrorMessage_When_WritingErrorResponse() throws IOException {
+        when(request.getHeader("Accept-Language")).thenReturn("en");
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
@@ -190,4 +191,15 @@ class JwtAuthenticationEntryPointUnitTest {
         assertTrue(errorResponse.containsKey("message"));
         assertTrue(errorResponse.containsKey("path"));
     }
+    @Test
+    void defaultsToSpanishWhenNoLanguageHeaderIsAvailable() throws IOException {
+        jwtAuthenticationEntryPoint.commence(request, response, authException);
+        ArgumentCaptor<byte[]> payload = ArgumentCaptor.forClass(byte[].class);
+        verify(outputStream).write(payload.capture());
+        String json = new String(payload.getValue(), java.nio.charset.StandardCharsets.UTF_8);
+        assertTrue(json.contains("Debes iniciar sesión para continuar"));
+        assertTrue(json.contains("AUTHENTICATION_REQUIRED"));
+        verify(response).setHeader("Content-Language", "es");
+    }
+
 }

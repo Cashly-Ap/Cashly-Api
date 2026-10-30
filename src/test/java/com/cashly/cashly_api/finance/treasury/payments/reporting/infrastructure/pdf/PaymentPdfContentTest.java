@@ -28,7 +28,7 @@ class PaymentPdfContentTest {
         when(data.status()).thenReturn("VERIFIED");
         when(data.notes()).thenReturn("Payment instructions");
         var content = text(new PaymentPdfGenerator().generatePaymentPdf(data));
-        for (var expected : List.of("PAY-123", "02/01/2026 10:30", "123.45", "REF-123", "VERIFIED", "Payment instructions")) assertTrue(content.contains(expected), expected + " missing: " + content);
+        for (var expected : List.of("PAY-123", "02/01/2026 10:30", "123,45", "REF-123", "VERIFIED", "Payment instructions")) assertTrue(content.contains(expected), expected + " missing: " + content);
     }
     @Test
     void paymentPdfSupportsMissingReferenceStatusAndNotes() throws Exception {
@@ -38,7 +38,7 @@ class PaymentPdfContentTest {
         when(data.amount()).thenReturn(BigDecimal.ZERO);
         var content = text(new PaymentPdfGenerator().generatePaymentPdf(data));
         assertTrue(content.contains("PAY-EMPTY"));
-        assertTrue(content.contains("0.00"));
+        assertTrue(content.contains("0,00"));
         assertTrue(content.contains("-"));
         assertFalse(content.contains("OBSERVACIONES"));
     }

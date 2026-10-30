@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.excel;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.response.MovementReportResponse;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.MovementsExcelPort;
 import org.apache.poi.ss.usermodel.*;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class MovementsExcelGenerator implements MovementsExcelPort {
 
-    private static final String[] HEADERS = {"Fecha", "Almacén", "Producto", "SKU", "Tipo", "Cantidad", "Stock Anterior", "Stock Nuevo", "Notas"};
+    private static String[] headers() { return new String[]{ReportMessages.text("inventory.warehouses.reports.date"), ReportMessages.text("inventory.warehouses.reports.warehouse"), ReportMessages.text("inventory.warehouses.reports.product"), ReportMessages.text("inventory.warehouses.reports.sku"), ReportMessages.text("inventory.warehouses.reports.type"), ReportMessages.text("inventory.warehouses.reports.quantity"), ReportMessages.text("inventory.warehouses.reports.previousStock"), ReportMessages.text("inventory.warehouses.reports.newStock"), ReportMessages.text("inventory.warehouses.reports.notes")}; }
 
     @Override
     public byte[] generateExcel(List<MovementReportResponse> items) {
@@ -21,7 +22,7 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
-            Sheet sheet = workbook.createSheet("Historial de Movimientos");
+            Sheet sheet = workbook.createSheet(ReportMessages.text("inventory.warehouses.reports.stockMovementHistory"));
 
             CellStyle headerStyle = createHeaderStyle(workbook);
             CellStyle cellStyle = createCellStyle(workbook);
@@ -29,24 +30,24 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
 
             Row titleRow = sheet.createRow(0);
             Cell titleCell = titleRow.createCell(0);
-            titleCell.setCellValue("Historial de Movimientos");
+            titleCell.setCellValue(ReportMessages.text("inventory.warehouses.reports.stockMovementHistory"));
             titleCell.setCellStyle(createTitleStyle(workbook));
-            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0, 0, 0, HEADERS.length - 1));
+            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0, 0, 0, headers().length - 1));
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
             Row dateRow = sheet.createRow(1);
             Cell dateCell = dateRow.createCell(0);
-            dateCell.setCellValue("Generado el " + fecha);
+            dateCell.setCellValue(ReportMessages.text("inventory.warehouses.reports.generatedOn") + fecha);
             dateCell.setCellStyle(dateStyle);
 
             Row headerRow = sheet.createRow(3);
-            for (int i = 0; i < HEADERS.length; i++) {
+            for (int i = 0; i < headers().length; i++) {
                 Cell cell = headerRow.createCell(i);
-                cell.setCellValue(HEADERS[i]);
+                cell.setCellValue(headers()[i]);
                 cell.setCellStyle(headerStyle);
             }
 
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            DateTimeFormatter dtf = ReportMessages.dateTimeFormatter();
 
             for (int i = 0; i < items.size(); i++) {
                 Row row = sheet.createRow(4 + i);
@@ -56,7 +57,7 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
                 createStringCell(row, 1, item.warehouseName(), cellStyle);
                 createStringCell(row, 2, item.productName(), cellStyle);
                 createStringCell(row, 3, item.sku(), cellStyle);
-                createStringCell(row, 4, item.movementType(), cellStyle);
+                createStringCell(row, 4, ReportMessages.code(item.movementType()), cellStyle);
                 createNumericCell(row, 5, item.quantity(), cellStyle);
                 createNumericCell(row, 6, item.previousStock(), cellStyle);
                 createNumericCell(row, 7, item.newStock(), cellStyle);

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.billing.invoices.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -46,7 +47,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
     private static final DeviceRgb COLOR_GREEN = new DeviceRgb(34, 139, 34);
     private static final DeviceRgb COLOR_RED = new DeviceRgb(220, 20, 60);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 
     @Override
     public byte[] generatePdf(InvoiceReportData invoice) {
@@ -65,19 +66,19 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
             document.add(buildHeader(invoice, bold, regular));
-            document.add(buildSectionTitle("DATOS DEL CLIENTE", bold));
+            document.add(buildSectionTitle(ReportMessages.text("finance.billing.invoices.reports.customerDetails"), bold));
             document.add(buildClientTable(invoice, bold, regular));
-            document.add(buildSectionTitle("DETALLE DE LA NOTA", bold));
+            document.add(buildSectionTitle(ReportMessages.text("finance.billing.invoices.reports.noteDetails"), bold));
             document.add(buildLinesTable(invoice, bold, regular));
             document.add(buildTotalsTable(invoice, bold, regular));
 
             if (invoice.notes() != null && !invoice.notes().isEmpty()) {
-                document.add(buildSectionTitle("OBSERVACIONES", bold));
+                document.add(buildSectionTitle(ReportMessages.text("finance.billing.invoices.reports.notes"), bold));
                 document.add(new Paragraph(invoice.notes()).setFont(regular).setFontSize(10).setFontColor(ColorConstants.DARK_GRAY));
             }
 
             if (invoice.status().equals("CANCELLED") && invoice.cancelledReason() != null) {
-                document.add(buildSectionTitle("MOTIVO DE CANCELACIÓN", bold));
+                document.add(buildSectionTitle(ReportMessages.text("finance.billing.invoices.reports.cancellationReason"), bold));
                 document.add(new Paragraph(invoice.cancelledReason()).setFont(regular).setFontSize(10).setFontColor(COLOR_RED));
             }
 
@@ -98,15 +99,15 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
 
-        String invoiceDate = invoice.createdAt().format(DATE_FORMATTER);
+        String invoiceDate = invoice.createdAt().format(ReportMessages.dateTimeFormatter());
         Cell infoCell = new Cell()
-                .add(new Paragraph("Nota N: " + invoice.invoiceNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
-                .add(new Paragraph("Fecha: " + invoiceDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
+                .add(new Paragraph(ReportMessages.text("finance.billing.invoices.reports.noteNo") + invoice.invoiceNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
+                .add(new Paragraph(ReportMessages.text("finance.billing.invoices.reports.dateLabel") + invoiceDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
 
         if (invoice.orderNumber() != null) {
-            infoCell.add(new Paragraph("N° de Orden: " + invoice.orderNumber()).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY));
+            infoCell.add(new Paragraph(ReportMessages.text("finance.billing.invoices.reports.orderNo") + invoice.orderNumber()).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY));
         }
 
         header.addCell(infoCell);
@@ -127,8 +128,8 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        table.addCell(buildClientCell("Cliente: ", invoice.customerName(), bold, regular, true));
-        table.addCell(buildClientCell("RIF: ", invoice.customerRif() != null ? invoice.customerRif() : "-", bold, regular, false));
+        table.addCell(buildClientCell(ReportMessages.text("finance.billing.invoices.reports.customerLabel"), invoice.customerName(), bold, regular, true));
+        table.addCell(buildClientCell(ReportMessages.text("finance.billing.invoices.reports.taxId"), invoice.customerRif() != null ? invoice.customerRif() : "-", bold, regular, false));
 
         return table;
     }
@@ -152,7 +153,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        String[] headers = {"Codigo", "Descripcion", "Cantidad", "Precio Unit.", "Total"};
+        String[] headers = {ReportMessages.text("finance.billing.invoices.reports.code"), ReportMessages.text("finance.billing.invoices.reports.description"), ReportMessages.text("finance.billing.invoices.reports.quantity"), ReportMessages.text("finance.billing.invoices.reports.unitPrice"), ReportMessages.text("finance.billing.invoices.reports.totalLabel")};
         for (String h : headers) {
             table.addHeaderCell(new Cell()
                     .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -184,9 +185,9 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
         table.setMarginTop(8);
         table.setBorder(new SolidBorder(BORDER_COLOR, 1));
 
-        addTotalsRow(table, "SUBTOTAL:", "$ " + formatDecimal(invoice.subtotal()), bold, regular, null);
-        addTotalsRow(table, "FORMA DE PAGO:", invoice.paymentType() != null ? formatPaymentType(invoice.paymentType()) : "-", bold, regular, null);
-        addTotalsRow(table, "TOTAL:", "$ " + formatDecimal(invoice.total()), bold, regular, COLOR_GREEN);
+        addTotalsRow(table, ReportMessages.text("finance.billing.invoices.reports.subtotal"), "$ " + formatDecimal(invoice.subtotal()), bold, regular, null);
+        addTotalsRow(table, ReportMessages.text("finance.billing.invoices.reports.paymentMethod"), invoice.paymentType() != null ? formatPaymentType(invoice.paymentType()) : "-", bold, regular, null);
+        addTotalsRow(table, ReportMessages.text("finance.billing.invoices.reports.totalLabelAlt"), "$ " + formatDecimal(invoice.total()), bold, regular, COLOR_GREEN);
 
         return table;
     }
@@ -211,14 +212,14 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
     private static String formatPaymentType(String paymentType) {
         if (paymentType == null) return "-";
         return switch (paymentType.toUpperCase()) {
-            case "CASH" -> "CONTADO";
-            case "CREDIT" -> "CREDITO";
+            case "CASH" -> ReportMessages.text("finance.billing.invoices.reports.cash");
+            case "CREDIT" -> ReportMessages.text("finance.billing.invoices.reports.credit");
             default -> paymentType;
         };
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
@@ -257,7 +258,7 @@ public class InvoicePdfGenerator implements InvoicePdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("finance.billing.invoices.reports.page") + pageNumber + ReportMessages.text("finance.billing.invoices.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

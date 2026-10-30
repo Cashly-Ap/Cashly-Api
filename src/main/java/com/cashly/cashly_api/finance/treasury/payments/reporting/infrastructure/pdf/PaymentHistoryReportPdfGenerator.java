@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -43,8 +44,8 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+
 
     @Override
     public byte[] generateReport(PaymentHistoryReportData data) {
@@ -76,7 +77,7 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
     }
 
     private Paragraph buildTitle(PdfFont bold) {
-        return new Paragraph("HISTORIAL DE PAGOS")
+        return new Paragraph(ReportMessages.text("finance.treasury.payments.reports.paymentHistory"))
                 .setFont(bold)
                 .setFontSize(18)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -86,18 +87,18 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
     private Paragraph buildFilters(PaymentHistoryReportData data, PdfFont regular) {
         StringBuilder filters = new StringBuilder();
         if (data.dateFrom() != null) {
-            filters.append("Desde: ").append(data.dateFrom().format(DATE_FORMATTER));
+            filters.append(ReportMessages.text("finance.treasury.payments.reports.from")).append(data.dateFrom().format(ReportMessages.dateFormatter()));
         }
         if (data.dateTo() != null) {
             if (!filters.isEmpty()) filters.append(" | ");
-            filters.append("Hasta: ").append(data.dateTo().format(DATE_FORMATTER));
+            filters.append(ReportMessages.text("finance.treasury.payments.reports.to")).append(data.dateTo().format(ReportMessages.dateFormatter()));
         }
         if (data.customerId() != null) {
             if (!filters.isEmpty()) filters.append(" | ");
-            filters.append("Cliente: ").append(data.customerId());
+            filters.append(ReportMessages.text("finance.treasury.payments.reports.customer")).append(data.customerId());
         }
 
-        return new Paragraph(filters.isEmpty() ? "Fecha: " + java.time.LocalDate.now().format(DATE_FORMATTER) : filters.toString())
+        return new Paragraph(filters.isEmpty() ? ReportMessages.text("finance.treasury.payments.reports.date") + java.time.LocalDate.now().format(ReportMessages.dateFormatter()) : filters.toString())
                 .setFont(regular)
                 .setFontSize(10)
                 .setFontColor(ColorConstants.DARK_GRAY)
@@ -109,7 +110,7 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
         float[] columnWidths = {2.5f, 4f, 2f, 2f, 2.5f, 3f, 2f};
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
 
-        String[] headers = {"N° Pago", "Cliente", "Tipo", "Método", "Monto", "Fecha", "Estado"};
+        String[] headers = {ReportMessages.text("finance.treasury.payments.reports.paymentNo"), ReportMessages.text("finance.treasury.payments.reports.customerLabel"), ReportMessages.text("finance.treasury.payments.reports.type"), ReportMessages.text("finance.treasury.payments.reports.method"), ReportMessages.text("finance.treasury.payments.reports.amount"), ReportMessages.text("finance.treasury.payments.reports.dateLabel"), ReportMessages.text("finance.treasury.payments.reports.status")};
         for (String h : headers) {
             table.addHeaderCell(createHeaderCell(h, bold));
         }
@@ -123,7 +124,7 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
             addTableCell(table, row.type(), regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, row.method(), regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, "$ " + formatDecimal(row.amount()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, row.date().format(DATETIME_FORMATTER), regular, rowBg, TextAlignment.CENTER);
+            addTableCell(table, row.date().format(ReportMessages.dateTimeFormatter()), regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, row.status(), regular, rowBg, TextAlignment.CENTER);
         }
 
@@ -158,10 +159,10 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginTop(20);
 
-        table.addCell(buildSummaryCell("Total Pagos:", String.valueOf(summary.totalPayments()), bold, regular));
-        table.addCell(buildSummaryCell("Monto Total Cobrado:", "$ " + formatDecimal(summary.totalAmount()), bold, regular));
-        table.addCell(buildSummaryCell("Pagos:", String.valueOf(summary.paymentCount()), bold, regular));
-        table.addCell(buildSummaryCell("Anticipos:", String.valueOf(summary.advanceCount()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.totalPayments"), String.valueOf(summary.totalPayments()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.totalAmountCollected"), "$ " + formatDecimal(summary.totalAmount()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.payments"), String.valueOf(summary.paymentCount()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.advances"), String.valueOf(summary.advanceCount()), bold, regular));
 
         return table;
     }
@@ -179,7 +180,7 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private static class PageFooterHandler implements IEventHandler {
@@ -203,7 +204,7 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("finance.treasury.payments.reports.page") + pageNumber + ReportMessages.text("finance.treasury.payments.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

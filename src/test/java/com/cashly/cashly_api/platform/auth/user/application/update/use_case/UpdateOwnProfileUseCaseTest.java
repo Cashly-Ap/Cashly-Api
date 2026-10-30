@@ -34,7 +34,7 @@ class UpdateOwnProfileUseCaseTest {
         var request = new UpdateOwnProfileRequest(" New Name ", " New ", " Last ",
                 new UserProfile.Address("Street", "City", "Region", "Country", "10000"), "+34 600 000 000");
 
-        var response = new UpdateOwnProfileUseCase(users, access).execute(user.getId().getValue().toString(), request);
+        var response = new UpdateOwnProfileUseCase(users, access, mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class)).execute(user.getId().getValue().toString(), request);
 
         var order = inOrder(access, users);
         order.verify(access).lockAdministration();
@@ -73,7 +73,7 @@ class UpdateOwnProfileUseCaseTest {
         var access = mock(AccessService.class);
         var id = UserId.generate();
         when(users.findById(id)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> new UpdateOwnProfileUseCase(users, access).execute(id.getValue().toString(),
+        assertThatThrownBy(() -> new UpdateOwnProfileUseCase(users, access, mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class)).execute(id.getValue().toString(),
                 new UpdateOwnProfileRequest("Name", "First", "Last", null, null)))
                 .isInstanceOf(com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException.class);
         verify(users, never()).save(any());

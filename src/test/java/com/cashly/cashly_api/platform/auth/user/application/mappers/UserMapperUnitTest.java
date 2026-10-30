@@ -21,7 +21,7 @@ class UserMapperUnitTest {
 
     @BeforeEach
     void setUp() {
-        userMapper = new UserMapper();
+        userMapper = new UserMapper(org.mockito.Mockito.mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class));
 
         UserId userId = UserId.generate();
         Email email = new Email("test@example.com");

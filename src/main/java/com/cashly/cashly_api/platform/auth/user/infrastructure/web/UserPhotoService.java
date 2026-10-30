@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.user.infrastructure.web;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
 import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException;
@@ -13,11 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserPhotoService {
+    private final UserPreferencesRepository preferences;
+
     private final UserRepository users;
     private final AccessService access;
     private final SafeImageStorage images;
 
-    public UserPhotoService(UserRepository users, AccessService access, SafeImageStorage images) {
+    public UserPhotoService(UserRepository users, AccessService access, SafeImageStorage images, UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.users = users;
         this.access = access;
         this.images = images;
@@ -29,7 +34,7 @@ public class UserPhotoService {
         User user = find(id);
         String oldPath = user.getPhotoPath();
         user.changePhoto(images.store(file, "users/" + user.getId().getValue()));
-        UserResponse result = UserResponse.from(users.save(user));
+        UserResponse result = UserResponse.from(users.save(user)).withLanguage(preferences.languageFor(user.getId().getValue()));
         images.deleteAfterCommit(oldPath);
         return result;
     }
@@ -40,7 +45,7 @@ public class UserPhotoService {
         User user = find(id);
         String oldPath = user.getPhotoPath();
         user.changePhoto(null);
-        UserResponse result = UserResponse.from(users.save(user));
+        UserResponse result = UserResponse.from(users.save(user)).withLanguage(preferences.languageFor(user.getId().getValue()));
         images.deleteAfterCommit(oldPath);
         return result;
     }

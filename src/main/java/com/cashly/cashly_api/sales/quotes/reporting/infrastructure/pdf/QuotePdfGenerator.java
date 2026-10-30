@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -47,7 +48,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
     private static final DeviceRgb COLOR_GREEN = new DeviceRgb(34, 139, 34);
     private static final DeviceRgb COLOR_RED = new DeviceRgb(220, 20, 60);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 
     @Override
     public byte[] generatePdf(QuoteReportData quote) {
@@ -66,19 +67,19 @@ public class QuotePdfGenerator implements QuotePdfPort {
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
             document.add(buildHeader(quote, bold, regular));
-            document.add(buildSectionTitle("DATOS DEL CLIENTE", bold));
+            document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.customerDetails"), bold));
             document.add(buildClientTable(quote, bold, regular));
-            document.add(buildSectionTitle("DETALLE DEL PRESUPUESTO", bold));
+            document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.quoteDetails"), bold));
             document.add(buildLinesTable(quote, bold, regular));
             document.add(buildTotalsTable(quote, bold, regular));
 
             if (quote.notes() != null && !quote.notes().isEmpty()) {
-                document.add(buildSectionTitle("OBSERVACIONES", bold));
+                document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.notes"), bold));
                 document.add(new Paragraph(quote.notes()).setFont(regular).setFontSize(10).setFontColor(ColorConstants.DARK_GRAY));
             }
 
             if (quote.status().equals("CANCELLED") && quote.cancelledReason() != null) {
-                document.add(buildSectionTitle("MOTIVO DE CANCELACION", bold));
+                document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.cancellationReason"), bold));
                 document.add(new Paragraph(quote.cancelledReason()).setFont(regular).setFontSize(10).setFontColor(COLOR_RED));
             }
 
@@ -99,10 +100,10 @@ public class QuotePdfGenerator implements QuotePdfPort {
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
 
-        String quoteDate = quote.createdAt().atZone(ZoneId.systemDefault()).format(DATE_FORMATTER);
+        String quoteDate = quote.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter());
         Cell infoCell = new Cell()
-                .add(new Paragraph("Presupuesto N: " + quote.quoteNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
-                .add(new Paragraph("Fecha: " + quoteDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
+                .add(new Paragraph(ReportMessages.text("sales.quotes.reports.quoteNo") + quote.quoteNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
+                .add(new Paragraph(ReportMessages.text("sales.quotes.reports.date") + quoteDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(infoCell);
@@ -123,8 +124,8 @@ public class QuotePdfGenerator implements QuotePdfPort {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        table.addCell(buildClientCell("Cliente: ", quote.customerName(), bold, regular, true));
-        table.addCell(buildClientCell("RIF: ", quote.customerRif() != null ? quote.customerRif() : "-", bold, regular, false));
+        table.addCell(buildClientCell(ReportMessages.text("sales.quotes.reports.customer"), quote.customerName(), bold, regular, true));
+        table.addCell(buildClientCell(ReportMessages.text("sales.quotes.reports.taxId"), quote.customerRif() != null ? quote.customerRif() : "-", bold, regular, false));
 
         return table;
     }
@@ -148,7 +149,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        String[] headers = {"Codigo", "Descripcion", "Cantidad", "Precio Unit.", "Total"};
+        String[] headers = {ReportMessages.text("sales.quotes.reports.code"), ReportMessages.text("sales.quotes.reports.description"), ReportMessages.text("sales.quotes.reports.quantity"), ReportMessages.text("sales.quotes.reports.unitPrice"), ReportMessages.text("sales.quotes.reports.total")};
         for (String h : headers) {
             table.addHeaderCell(new Cell()
                     .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -180,7 +181,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
         table.setMarginTop(8);
         table.setBorder(new SolidBorder(BORDER_COLOR, 1));
 
-        addTotalsRow(table, "SUBTOTAL:", "$ " + formatDecimal(quote.subtotal()), bold, regular, null);
+        addTotalsRow(table, ReportMessages.text("sales.quotes.reports.subtotal"), "$ " + formatDecimal(quote.subtotal()), bold, regular, null);
 
         return table;
     }
@@ -203,7 +204,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
@@ -242,7 +243,7 @@ public class QuotePdfGenerator implements QuotePdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Pagina " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("sales.quotes.reports.page") + pageNumber + ReportMessages.text("sales.quotes.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.user.application.queries.use_case;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
 import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
@@ -16,10 +18,13 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class GetAllUsersUseCase {
+    private final UserPreferencesRepository preferences;
+
 
     private final UserRepository userRepository;
 
-    public GetAllUsersUseCase(UserRepository userRepository) {
+    public GetAllUsersUseCase(UserRepository userRepository, UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.userRepository = userRepository;
     }
 
@@ -36,8 +41,10 @@ public class GetAllUsersUseCase {
                 .collect(Collectors.toSet())
         );
 
+        var languages = preferences.languagesFor(userPage.content().stream().map(user -> user.getId().getValue()).collect(Collectors.toSet()));
+
         List<UserResponse> content = userPage.content().stream()
-            .map(u -> UserResponse.from(u, !idsWithRecords.contains(u.getId().getValue())))
+            .map(u -> UserResponse.from(u, !idsWithRecords.contains(u.getId().getValue())).withLanguage(languages.getOrDefault(u.getId().getValue(), "es")))
             .toList();
 
         return new PageResponse<>(

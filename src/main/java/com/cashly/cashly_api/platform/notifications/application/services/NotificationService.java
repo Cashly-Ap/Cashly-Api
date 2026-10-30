@@ -46,6 +46,16 @@ public class NotificationService {
         return saved;
     }
 
+    private Notification createLocalized(UUID userId, UUID customerId, NotificationType type,
+            String referenceType, UUID referenceId, String... arguments) {
+        String key = "notifications." + type.name().toLowerCase(java.util.Locale.ROOT);
+        var notification = Notification.create(userId, customerId, type, key + ".title", key + ".message", referenceType, referenceId)
+                .withTranslation(key + ".title", key + ".message", java.util.Arrays.asList(arguments));
+        var saved = notificationRepository.save(notification);
+        deliveryGateway.deliver(saved);
+        return saved;
+    }
+
     @Transactional(readOnly = true)
     public List<Notification> listByUser(UUID userId) {
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
@@ -105,140 +115,74 @@ public class NotificationService {
 
     @Transactional
     public void notifyPaymentPendingApproval(UUID adminUserId, UUID paymentId, String customerName, BigDecimal amount) {
-        create(adminUserId, NotificationType.PAYMENT_PENDING_APPROVAL,
-                "Pago pendiente de verificacion",
-                String.format("%s registro un pago por %s", customerName, amount),
-                "PAYMENT", paymentId);
+        createLocalized(adminUserId, null, NotificationType.PAYMENT_PENDING_APPROVAL, "PAYMENT", paymentId, customerName, amount.toPlainString());
     }
-
     @Transactional
-    public void notifyPaymentApproved(UUID customerUserId, UUID paymentId) {
-        create(customerUserId, NotificationType.PAYMENT_APPROVED,
-                "Pago aprobado",
-                "Tu pago ha sido verificado y aprobado.",
-                "PAYMENT", paymentId);
+    public void notifyPaymentApproved(UUID userId, UUID paymentId) {
+        createLocalized(userId, null, NotificationType.PAYMENT_APPROVED, "PAYMENT", paymentId);
     }
-
     @Transactional
-    public void notifyPaymentRejected(UUID customerUserId, UUID paymentId, String reason) {
-        create(customerUserId, NotificationType.PAYMENT_REJECTED,
-                "Pago rechazado",
-                "Tu pago fue rechazado: " + reason,
-                "PAYMENT", paymentId);
+    public void notifyPaymentRejected(UUID userId, UUID paymentId, String reason) {
+        createLocalized(userId, null, NotificationType.PAYMENT_REJECTED, "PAYMENT", paymentId, reason);
     }
-
     @Transactional
     public void notifyAdminsPaymentPending(UUID paymentId, String customerName, BigDecimal amount) {
-        List<UUID> recipientIds = recipientGateway.findAllUserIds();
-        for (UUID recipientId : recipientIds) {
-            notifyPaymentPendingApproval(recipientId, paymentId, customerName, amount);
-        }
+        for (var recipient : recipientGateway.findAllUserIds()) notifyPaymentPendingApproval(recipient, paymentId, customerName, amount);
     }
-
     @Transactional
     public void notifyAdminsQuoteCreated(UUID quoteId, String customerName) {
-        List<UUID> recipientIds = recipientGateway.findAllUserIds();
-        for (UUID recipientId : recipientIds) {
-            create(recipientId, NotificationType.QUOTE_CREATED, "Presupuesto creado", customerName + " ha creado un nuevo presupuesto.", "QUOTE", quoteId);
-        }
+        for (var recipient : recipientGateway.findAllUserIds()) createLocalized(recipient, null, NotificationType.QUOTE_CREATED, "QUOTE", quoteId, customerName);
     }
-
     @Transactional
     public void notifyAdminsOrderCreated(UUID orderId, String customerName) {
-        List<UUID> recipientIds = recipientGateway.findAllUserIds();
-        for (UUID recipientId : recipientIds) {
-            create(recipientId, NotificationType.ORDER_CREATED, "Pedido creado", customerName + " ha creado un nuevo pedido.", "ORDER", orderId);
-        }
+        for (var recipient : recipientGateway.findAllUserIds()) createLocalized(recipient, null, NotificationType.ORDER_CREATED, "ORDER", orderId, customerName);
     }
-
     @Transactional
-    public void notifyCustomerPaymentApproved(UUID customerId, UUID paymentId) {
-        createForCustomer(customerId, NotificationType.PAYMENT_APPROVED,
-                "Pago aprobado",
-                "Tu pago ha sido verificado y aprobado.",
-                "PAYMENT", paymentId);
+    public void notifyCustomerPaymentApproved(UUID customerId, UUID referenceId) {
+        createLocalized(null, customerId, NotificationType.PAYMENT_APPROVED, "PAYMENT", referenceId);
     }
-
     @Transactional
-    public void notifyCustomerPaymentRejected(UUID customerId, UUID paymentId, String reason) {
-        createForCustomer(customerId, NotificationType.PAYMENT_REJECTED,
-                "Pago rechazado",
-                "Tu pago fue rechazado: " + reason,
-                "PAYMENT", paymentId);
+    public void notifyCustomerPaymentRejected(UUID customerId, UUID referenceId, String reason) {
+        createLocalized(null, customerId, NotificationType.PAYMENT_REJECTED, "PAYMENT", referenceId, reason);
     }
-
     @Transactional
-    public void notifyCustomerQuoteApproved(UUID customerId, UUID quoteId) {
-        createForCustomer(customerId, NotificationType.QUOTE_APPROVED,
-                "Presupuesto aprobado",
-                "Tu presupuesto ha sido aprobado.",
-                "QUOTE", quoteId);
+    public void notifyCustomerQuoteApproved(UUID customerId, UUID referenceId) {
+        createLocalized(null, customerId, NotificationType.QUOTE_APPROVED, "QUOTE", referenceId);
     }
-
     @Transactional
-    public void notifyCustomerQuoteRejected(UUID customerId, UUID quoteId, String reason) {
-        createForCustomer(customerId, NotificationType.QUOTE_REJECTED,
-                "Presupuesto rechazado",
-                "Tu presupuesto fue rechazado: " + reason,
-                "QUOTE", quoteId);
+    public void notifyCustomerQuoteRejected(UUID customerId, UUID referenceId, String reason) {
+        createLocalized(null, customerId, NotificationType.QUOTE_REJECTED, "QUOTE", referenceId, reason);
     }
-
     @Transactional
-    public void notifyCustomerQuoteConvertedToOrder(UUID customerId, UUID quoteId, String orderNumber) {
-        createForCustomer(customerId, NotificationType.QUOTE_CONVERTED_TO_ORDER,
-                "Presupuesto convertido a pedido",
-                "Tu presupuesto ha sido convertido al pedido #" + orderNumber + ".",
-                "QUOTE", quoteId);
+    public void notifyCustomerQuoteConvertedToOrder(UUID customerId, UUID referenceId, String orderNumber) {
+        createLocalized(null, customerId, NotificationType.QUOTE_CONVERTED_TO_ORDER, "QUOTE", referenceId, orderNumber);
     }
-
     @Transactional
-    public void notifyCustomerQuoteConvertedToInvoice(UUID customerId, UUID quoteId, String invoiceNumber) {
-        createForCustomer(customerId, NotificationType.QUOTE_CONVERTED_TO_INVOICE,
-                "Presupuesto convertido a factura",
-                "Tu presupuesto ha sido convertido a la factura #" + invoiceNumber + ".",
-                "QUOTE", quoteId);
+    public void notifyCustomerQuoteConvertedToInvoice(UUID customerId, UUID referenceId, String invoiceNumber) {
+        createLocalized(null, customerId, NotificationType.QUOTE_CONVERTED_TO_INVOICE, "QUOTE", referenceId, invoiceNumber);
     }
-
     @Transactional
-    public void notifyCustomerOrderApproved(UUID customerId, UUID orderId) {
-        createForCustomer(customerId, NotificationType.ORDER_APPROVED,
-                "Pedido aprobado",
-                "Tu pedido ha sido aprobado.",
-                "ORDER", orderId);
+    public void notifyCustomerOrderApproved(UUID customerId, UUID referenceId) {
+        createLocalized(null, customerId, NotificationType.ORDER_APPROVED, "ORDER", referenceId);
     }
-
     @Transactional
-    public void notifyCustomerOrderRejected(UUID customerId, UUID orderId, String reason) {
-        createForCustomer(customerId, NotificationType.ORDER_REJECTED,
-                "Pedido rechazado",
-                "Tu pedido fue rechazado: " + reason,
-                "ORDER", orderId);
+    public void notifyCustomerOrderRejected(UUID customerId, UUID referenceId, String reason) {
+        createLocalized(null, customerId, NotificationType.ORDER_REJECTED, "ORDER", referenceId, reason);
     }
-
     @Transactional
-    public void notifyCustomerOrderConvertedToInvoice(UUID customerId, UUID orderId, String invoiceNumber) {
-        createForCustomer(customerId, NotificationType.ORDER_CONVERTED_TO_INVOICE,
-                "Pedido convertido a factura",
-                "Tu pedido ha sido convertido a la factura #" + invoiceNumber + ".",
-                "ORDER", orderId);
+    public void notifyCustomerOrderConvertedToInvoice(UUID customerId, UUID referenceId, String invoiceNumber) {
+        createLocalized(null, customerId, NotificationType.ORDER_CONVERTED_TO_INVOICE, "ORDER", referenceId, invoiceNumber);
     }
-
     @Transactional
-    public void notifyCustomerInvoiceCreated(UUID customerId, UUID invoiceId, String invoiceNumber) {
-        createForCustomer(customerId, NotificationType.INVOICE_CREATED,
-                "Factura creada", "Se ha creado la factura #" + invoiceNumber + ".", "INVOICE", invoiceId);
+    public void notifyCustomerInvoiceCreated(UUID customerId, UUID referenceId, String invoiceNumber) {
+        createLocalized(null, customerId, NotificationType.INVOICE_CREATED, "INVOICE", referenceId, invoiceNumber);
     }
-
     @Transactional
-    public void notifyCustomerInvoiceConfirmed(UUID customerId, UUID invoiceId, String invoiceNumber) {
-        createForCustomer(customerId, NotificationType.INVOICE_CONFIRMED,
-                "Factura confirmada", "Tu factura #" + invoiceNumber + " ha sido confirmada.", "INVOICE", invoiceId);
+    public void notifyCustomerInvoiceConfirmed(UUID customerId, UUID referenceId, String invoiceNumber) {
+        createLocalized(null, customerId, NotificationType.INVOICE_CONFIRMED, "INVOICE", referenceId, invoiceNumber);
     }
-
     @Transactional
-    public void notifyCustomerInvoiceCancelled(UUID customerId, UUID invoiceId, String invoiceNumber, String reason) {
-        createForCustomer(customerId, NotificationType.INVOICE_CANCELLED,
-                "Factura cancelada", "Tu factura #" + invoiceNumber + " fue cancelada: " + reason,
-                "INVOICE", invoiceId);
+    public void notifyCustomerInvoiceCancelled(UUID customerId, UUID referenceId, String invoiceNumber, String reason) {
+        createLocalized(null, customerId, NotificationType.INVOICE_CANCELLED, "INVOICE", referenceId, invoiceNumber, reason);
     }
 }

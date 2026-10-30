@@ -38,6 +38,7 @@ class OwnProfileControllerTest {
     @MockitoBean LogoutUserUseCase logout;
     @MockitoBean UpdateUserPasswordUseCase password;
     @MockitoBean GetUserByIdUseCase query;
+    @MockitoBean com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
     @MockitoBean com.cashly.cashly_api.platform.auth.user.application.update.use_case.UpdateOwnProfileUseCase update;
     @MockitoBean JwtAuthenticationFilter jwtFilter;
     @MockitoBean(name = "corsConfigurationSource") CorsConfigurationSource cors;

@@ -39,6 +39,9 @@ class UpdateUserPasswordUseCaseTest {
     @Mock
     private com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+
     @InjectMocks
     private UpdateUserPasswordUseCase useCase;
 

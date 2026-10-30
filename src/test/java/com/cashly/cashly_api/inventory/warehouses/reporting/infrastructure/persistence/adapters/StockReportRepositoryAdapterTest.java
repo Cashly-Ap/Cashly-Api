@@ -50,7 +50,7 @@ class StockReportRepositoryAdapterTest {
         assertEquals(1, result.size());
         assertEquals("Main Warehouse", result.get(0).warehouseName());
         assertEquals("Product A", result.get(0).productName());
-        assertEquals("Con Stock", result.get(0).status());
+        assertEquals("IN_STOCK", result.get(0).status());
         verify(jpaRepository).findAllForPdf(any(), any(), any(), any());
     }
 
@@ -71,7 +71,7 @@ class StockReportRepositoryAdapterTest {
 
         List<StockReportResponse> result = adapter.findAllForPdf(query);
 
-        assertEquals("Sin Stock", result.get(0).status());
+        assertEquals("OUT_OF_STOCK", result.get(0).status());
     }
 
     @Test

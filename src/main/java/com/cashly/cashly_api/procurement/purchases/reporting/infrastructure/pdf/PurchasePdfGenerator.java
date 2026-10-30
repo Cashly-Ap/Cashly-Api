@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -47,7 +48,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
     private static final DeviceRgb COLOR_GREEN = new DeviceRgb(34, 139, 34);
     private static final DeviceRgb COLOR_RED = new DeviceRgb(220, 20, 60);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 
     @Override
     public byte[] generatePdf(PurchaseReportData purchase) {
@@ -66,19 +67,19 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
             document.add(buildHeader(purchase, bold, regular));
-            document.add(buildSectionTitle("DATOS DEL PROVEEDOR", bold));
+            document.add(buildSectionTitle(ReportMessages.text("procurement.purchases.reports.supplierDetails"), bold));
             document.add(buildSupplierTable(purchase, bold, regular));
-            document.add(buildSectionTitle("DETALLE DE LA COMPRA", bold));
+            document.add(buildSectionTitle(ReportMessages.text("procurement.purchases.reports.purchaseDetails"), bold));
             document.add(buildLinesTable(purchase, bold, regular));
             document.add(buildTotalsTable(purchase, bold, regular));
 
             if (purchase.notes() != null && !purchase.notes().isEmpty()) {
-                document.add(buildSectionTitle("OBSERVACIONES", bold));
+                document.add(buildSectionTitle(ReportMessages.text("procurement.purchases.reports.notes"), bold));
                 document.add(new Paragraph(purchase.notes()).setFont(regular).setFontSize(10).setFontColor(ColorConstants.DARK_GRAY));
             }
 
             if (purchase.status().equals("CANCELLED") && purchase.cancelledReason() != null) {
-                document.add(buildSectionTitle("MOTIVO DE CANCELACION", bold));
+                document.add(buildSectionTitle(ReportMessages.text("procurement.purchases.reports.cancellationReason"), bold));
                 document.add(new Paragraph(purchase.cancelledReason()).setFont(regular).setFontSize(10).setFontColor(COLOR_RED));
             }
 
@@ -99,10 +100,10 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
 
-        String purchaseDate = purchase.createdAt().atZone(ZoneId.systemDefault()).format(DATE_FORMATTER);
+        String purchaseDate = purchase.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter());
         Cell infoCell = new Cell()
-                .add(new Paragraph("Compra N: " + purchase.purchaseNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
-                .add(new Paragraph("Fecha: " + purchaseDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
+                .add(new Paragraph(ReportMessages.text("procurement.purchases.reports.purchaseNo") + purchase.purchaseNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
+                .add(new Paragraph(ReportMessages.text("procurement.purchases.reports.date") + purchaseDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(infoCell);
@@ -123,8 +124,8 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        table.addCell(buildSupplierCell("Proveedor: ", purchase.supplierName(), bold, regular, true));
-        table.addCell(buildSupplierCell("RIF: ", purchase.supplierRif() != null ? purchase.supplierRif() : "-", bold, regular, false));
+        table.addCell(buildSupplierCell(ReportMessages.text("procurement.purchases.reports.supplier"), purchase.supplierName(), bold, regular, true));
+        table.addCell(buildSupplierCell(ReportMessages.text("procurement.purchases.reports.taxId"), purchase.supplierRif() != null ? purchase.supplierRif() : "-", bold, regular, false));
 
         return table;
     }
@@ -148,7 +149,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        String[] headers = {"Codigo", "Descripcion", "Cantidad", "Costo Unit.", "Total"};
+        String[] headers = {ReportMessages.text("procurement.purchases.reports.code"), ReportMessages.text("procurement.purchases.reports.description"), ReportMessages.text("procurement.purchases.reports.quantity"), ReportMessages.text("procurement.purchases.reports.unitCost"), ReportMessages.text("procurement.purchases.reports.total")};
         for (String h : headers) {
             table.addHeaderCell(new Cell()
                     .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -180,7 +181,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
         table.setMarginTop(8);
         table.setBorder(new SolidBorder(BORDER_COLOR, 1));
 
-        addTotalsRow(table, "SUBTOTAL:", "$ " + formatDecimal(purchase.subtotal()), bold, regular, null);
+        addTotalsRow(table, ReportMessages.text("procurement.purchases.reports.subtotal"), "$ " + formatDecimal(purchase.subtotal()), bold, regular, null);
 
         return table;
     }
@@ -203,7 +204,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
@@ -242,7 +243,7 @@ public class PurchasePdfGenerator implements PurchasePdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Pagina " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("procurement.purchases.reports.page") + pageNumber + ReportMessages.text("procurement.purchases.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

@@ -42,7 +42,7 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        notificationService = new NotificationService(notificationRepository, recipientGateway, new WebSocketNotificationDeliveryAdapter(messagingTemplate));
+        notificationService = new NotificationService(notificationRepository, recipientGateway, new WebSocketNotificationDeliveryAdapter(messagingTemplate, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class, org.mockito.Mockito.CALLS_REAL_METHODS)));
     }
 
     @Test
@@ -170,6 +170,7 @@ class NotificationServiceTest {
     }
 
     private boolean usesBudgetTerminology(Notification notification) {
+        notification = new com.cashly.cashly_api.platform.notifications.infrastructure.messaging.NotificationTranslator().render(notification, java.util.Locale.forLanguageTag("es"));
         String visibleText = notification.getTitle() + " " + notification.getMessage();
         return visibleText.contains("Presupuesto")
                 && !visibleText.toLowerCase().contains("cotizacion")

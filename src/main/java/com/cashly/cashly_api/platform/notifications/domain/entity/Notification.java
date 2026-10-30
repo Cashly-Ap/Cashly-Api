@@ -16,6 +16,9 @@ public class Notification {
     private final NotificationType type;
     private final String title;
     private final String message;
+    private String titleKey;
+    private String messageKey;
+    private java.util.List<String> messageArguments = java.util.List.of();
     private final String referenceType;
     private final UUID referenceId;
     private boolean isRead;
@@ -63,6 +66,16 @@ public class Notification {
         return new Notification(id, userId, customerId, type, title, message, referenceType,
                 referenceId, isRead, readAt, createdAt);
     }
+
+    public Notification withTranslation(String titleKey, String messageKey, java.util.List<String> arguments) {
+        this.titleKey = titleKey;
+        this.messageKey = messageKey;
+        this.messageArguments = arguments == null ? java.util.List.of() : java.util.List.copyOf(arguments);
+        return this;
+    }
+    public String getTitleKey() { return titleKey; }
+    public String getMessageKey() { return messageKey; }
+    public java.util.List<String> getMessageArguments() { return messageArguments; }
 
     public void markAsRead() {
         if (!this.isRead) {

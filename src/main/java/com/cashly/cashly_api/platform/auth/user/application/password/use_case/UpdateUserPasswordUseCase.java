@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.user.application.password.use_case;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+
 import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
 import com.cashly.cashly_api.platform.auth.user.application.password.request.UpdateUserPasswordRequest;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
@@ -16,12 +18,15 @@ import java.util.UUID;
 
 @Service
 public class UpdateUserPasswordUseCase {
+    private final UserPreferencesRepository preferences;
+
 
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
     private final PasswordEncoder passwordEncoder;
 
-    public UpdateUserPasswordUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public UpdateUserPasswordUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access, UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.userRepository = userRepository;
         this.access=access;
         this.passwordEncoder = passwordEncoder;
@@ -52,6 +57,6 @@ public class UpdateUserPasswordUseCase {
         }
         Password.validateRawPassword(request.password());
         user.changePassword(Password.fromHash(passwordEncoder.encode(request.password())));
-        return UserResponse.from(userRepository.save(user));
+        return UserResponse.from(userRepository.save(user)).withLanguage(preferences.languageFor(user.getId().getValue()));
     }
 }

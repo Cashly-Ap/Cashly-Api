@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.excel;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.response.StockReportResponse;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.out.StockExcelPort;
 import org.apache.poi.ss.usermodel.*;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class StockExcelGenerator implements StockExcelPort {
 
-    private static final String[] HEADERS = {"Almacén", "Producto", "SKU", "Categoría", "Stock Actual", "Estado"};
+    private static String[] headers() { return new String[]{ReportMessages.text("inventory.warehouses.reports.warehouse"), ReportMessages.text("inventory.warehouses.reports.product"), ReportMessages.text("inventory.warehouses.reports.sku"), ReportMessages.text("inventory.warehouses.reports.category"), ReportMessages.text("inventory.warehouses.reports.currentStock"), ReportMessages.text("inventory.warehouses.reports.status")}; }
 
     @Override
     public byte[] generateExcel(List<StockReportResponse> items) {
@@ -21,7 +22,7 @@ public class StockExcelGenerator implements StockExcelPort {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
-            Sheet sheet = workbook.createSheet("Stock de Almacenes");
+            Sheet sheet = workbook.createSheet(ReportMessages.text("inventory.warehouses.reports.warehouseStock"));
 
             CellStyle headerStyle = createHeaderStyle(workbook);
             CellStyle cellStyle = createCellStyle(workbook);
@@ -29,20 +30,20 @@ public class StockExcelGenerator implements StockExcelPort {
 
             Row titleRow = sheet.createRow(0);
             Cell titleCell = titleRow.createCell(0);
-            titleCell.setCellValue("Stock de Almacenes");
+            titleCell.setCellValue(ReportMessages.text("inventory.warehouses.reports.warehouseStock"));
             titleCell.setCellStyle(createTitleStyle(workbook));
-            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0, 0, 0, HEADERS.length - 1));
+            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0, 0, 0, headers().length - 1));
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
             Row dateRow = sheet.createRow(1);
             Cell dateCell = dateRow.createCell(0);
-            dateCell.setCellValue("Generado el " + fecha);
+            dateCell.setCellValue(ReportMessages.text("inventory.warehouses.reports.generatedOn") + fecha);
             dateCell.setCellStyle(dateStyle);
 
             Row headerRow = sheet.createRow(3);
-            for (int i = 0; i < HEADERS.length; i++) {
+            for (int i = 0; i < headers().length; i++) {
                 Cell cell = headerRow.createCell(i);
-                cell.setCellValue(HEADERS[i]);
+                cell.setCellValue(headers()[i]);
                 cell.setCellStyle(headerStyle);
             }
 
@@ -55,7 +56,7 @@ public class StockExcelGenerator implements StockExcelPort {
                 createStringCell(row, 2, item.sku(), cellStyle);
                 createStringCell(row, 3, item.categoryName(), cellStyle);
                 createNumericCell(row, 4, item.quantity(), cellStyle);
-                createStringCell(row, 5, item.status(), cellStyle);
+                createStringCell(row, 5, ReportMessages.code(item.status()), cellStyle);
             }
 
             sheet.setColumnWidth(0, 6000);

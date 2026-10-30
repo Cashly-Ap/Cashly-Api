@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -65,7 +66,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph("Reporte de Compras")
+            Paragraph title = new Paragraph(ReportMessages.text("procurement.purchases.reports.purchasesReport"))
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
@@ -74,9 +75,9 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            String modeLabel = detailed ? "Detallado" : "Simple";
-            Paragraph subtitle = new Paragraph("Generado el " + fecha + " | Modo: " + modeLabel + " | Total: " + purchases.size() + " compras")
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            String modeLabel = detailed ? ReportMessages.text("procurement.purchases.reports.detailed") : ReportMessages.text("procurement.purchases.reports.simple");
+            Paragraph subtitle = new Paragraph(ReportMessages.text("procurement.purchases.reports.generatedOn") + fecha + ReportMessages.text("procurement.purchases.reports.mode") + modeLabel + ReportMessages.text("procurement.purchases.reports.totalLabel") + purchases.size() + ReportMessages.text("procurement.purchases.reports.purchases"))
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -92,8 +93,8 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{"N° Compra", "Proveedor", "Estado", "Total", "Fecha"}
-                    : new String[]{"N° Compra", "Proveedor", "Total", "Fecha"};
+                    ? new String[]{ReportMessages.text("procurement.purchases.reports.purchaseNoLabel"), ReportMessages.text("procurement.purchases.reports.supplierLabel"), ReportMessages.text("procurement.purchases.reports.status"), ReportMessages.text("procurement.purchases.reports.total"), ReportMessages.text("procurement.purchases.reports.dateLabel")}
+                    : new String[]{ReportMessages.text("procurement.purchases.reports.purchaseNoLabel"), ReportMessages.text("procurement.purchases.reports.supplierLabel"), ReportMessages.text("procurement.purchases.reports.total"), ReportMessages.text("procurement.purchases.reports.dateLabel")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
@@ -117,12 +118,12 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
                 }
 
                 addCell(table, "$" + formatDecimal(purchase.subtotal()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, purchase.createdAt().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, purchase.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph totalLabel = new Paragraph("Total de Compras: " + purchases.size())
+            Paragraph totalLabel = new Paragraph(ReportMessages.text("procurement.purchases.reports.totalPurchases") + purchases.size())
                     .setFont(bold)
                     .setFontSize(11)
                     .setTextAlignment(TextAlignment.RIGHT)
@@ -133,7 +134,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
             long confirmed = purchases.stream().filter(q -> "CONFIRMED".equals(q.status())).count();
             long cancelled = purchases.stream().filter(q -> "CANCELLED".equals(q.status())).count();
 
-            Paragraph summary = new Paragraph(String.format("Borrador: %d | Confirmadas: %d | Canceladas: %d",
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text("procurement.purchases.reports.draftDConfirmedDCancelledD"),
                     draft, confirmed, cancelled))
                     .setFont(regular)
                     .setFontSize(9)
@@ -142,7 +143,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
                     .setMarginTop(8);
             document.add(summary);
 
-            Paragraph footer = new Paragraph("Documento generado automaticamente por CASHLY")
+            Paragraph footer = new Paragraph(ReportMessages.text("procurement.purchases.reports.documentAutomaticallyGeneratedByCashly"))
                     .setFont(regular)
                     .setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
@@ -158,15 +159,15 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private String formatStatus(String status) {
         if (status == null) return "-";
         return switch (status) {
-            case "DRAFT" -> "Borrador";
-            case "CONFIRMED" -> "Confirmado";
-            case "CANCELLED" -> "Cancelado";
+            case "DRAFT" -> ReportMessages.text("procurement.purchases.reports.draft");
+            case "CONFIRMED" -> ReportMessages.text("procurement.purchases.reports.confirmed");
+            case "CANCELLED" -> ReportMessages.text("procurement.purchases.reports.cancelled");
             default -> status;
         };
     }
@@ -206,7 +207,7 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Pagina " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("procurement.purchases.reports.page") + pageNumber + ReportMessages.text("procurement.purchases.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

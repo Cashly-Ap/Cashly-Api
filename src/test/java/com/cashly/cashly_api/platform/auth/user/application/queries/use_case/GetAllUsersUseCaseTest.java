@@ -31,6 +31,9 @@ class GetAllUsersUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+
     @InjectMocks
     private GetAllUsersUseCase useCase;
 

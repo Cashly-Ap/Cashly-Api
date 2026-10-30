@@ -39,6 +39,14 @@ public class NotificationEntity {
     @Column(name = "message", length = 1000, nullable = false)
     private String message;
 
+    @Column(name = "title_key", length = 150)
+    private String titleKey;
+    @Column(name = "message_key", length = 150)
+    private String messageKey;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "message_arguments", columnDefinition = "json")
+    private java.util.List<String> messageArguments;
+
     @Column(name = "reference_type", length = 50)
     private String referenceType;
 

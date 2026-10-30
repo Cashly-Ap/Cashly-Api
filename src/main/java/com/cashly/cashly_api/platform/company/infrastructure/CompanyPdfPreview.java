@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.platform.company.infrastructure;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.platform.company.application.CompanyService;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.dto.model.InvoiceReportData;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.infrastructure.pdf.InvoicePdfGenerator;
@@ -21,10 +22,10 @@ public class CompanyPdfPreview {
         var pdfLogo = file == null ? null : SafeImageStorage.normalize(file);
         var navbarLogo = companyLogo == null ? null : SafeImageStorage.normalize(companyLogo);
         var selected = company.previewDocumentLogo(pdfLogo, removePdfLogo, navbarLogo, removeLogo);
-        var data = new InvoiceReportData(UUID.randomUUID(), "VISTA PREVIA", "Cliente de ejemplo", "B12345678",
-                "PED-001", "DRAFT", "Documento de ejemplo. Los cambios todavía no se han guardado.", null,
+        var data = new InvoiceReportData(UUID.randomUUID(), ReportMessages.text("platform.company.reports.preview"), ReportMessages.text("platform.company.reports.sampleCustomer"), "B12345678",
+                "PED-001", "DRAFT", ReportMessages.text("platform.company.reports.sampleDocumentChangesHaveNotBeenSavedYet"), null,
                 LocalDateTime.now(), new BigDecimal("150.00"), "CASH", new BigDecimal("150.00"),
-                List.of(new InvoiceReportData.Line("REF-001", "Producto o servicio de ejemplo",
+                List.of(new InvoiceReportData.Line("REF-001", ReportMessages.text("platform.company.reports.sampleProductOrService"),
                         new BigDecimal("2"), new BigDecimal("75.00"), new BigDecimal("150.00"))));
         return new InvoicePdfGenerator(new PdfBranding(() -> selected)).generatePdf(data);
     }

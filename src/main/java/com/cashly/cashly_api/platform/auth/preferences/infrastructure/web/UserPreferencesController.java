@@ -18,7 +18,7 @@ public class UserPreferencesController {
     public record UpdateRequest(
             @NotNull @Pattern(regexp = "system|light|dark") String themeMode,
             @NotNull @Pattern(regexp = "minimal|informative") String colorMode,
-            @NotNull Boolean shortcutsEnabled, @NotNull Boolean showShortcutHints) {
+            @NotNull Boolean shortcutsEnabled, @NotNull Boolean showShortcutHints, @Pattern(regexp = "es|en") String language) {
         UserPreferences toDomain() { return new UserPreferences(themeMode, colorMode, shortcutsEnabled, showShortcutHints); }
     }
     @GetMapping
@@ -29,7 +29,7 @@ public class UserPreferencesController {
     @PutMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserPreferences> update(@Valid @RequestBody UpdateRequest request) {
-        return noStore(service.update(request.toDomain()));
+        return noStore(service.update(request.toDomain(), request.language()));
     }
     private ResponseEntity<UserPreferences> noStore(UserPreferences preferences) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(preferences);

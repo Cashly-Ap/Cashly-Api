@@ -58,7 +58,7 @@ class MovementsReportRepositoryAdapterTest {
         assertEquals(1, result.size());
         assertEquals("Main Warehouse", result.get(0).warehouseName());
         assertEquals("Product A", result.get(0).productName());
-        assertEquals("Entrada", result.get(0).movementType());
+        assertEquals("ENTRY", result.get(0).movementType());
         assertEquals(10, result.get(0).quantity());
         assertEquals(15, result.get(0).newStock());
         verify(jpaRepository).findAllForPdf(any(), any(), any(), any(), any());
@@ -99,8 +99,8 @@ class MovementsReportRepositoryAdapterTest {
 
         List<MovementReportResponse> result = adapter.findAllForPdf(query);
 
-        assertEquals("Entrada", result.get(0).movementType());
-        assertEquals("Salida", result.get(1).movementType());
-        assertEquals("Transferencia Entrada", result.get(2).movementType());
+        assertEquals("ENTRY", result.get(0).movementType());
+        assertEquals("EXIT", result.get(1).movementType());
+        assertEquals("TRANSFER_IN", result.get(2).movementType());
     }
 }

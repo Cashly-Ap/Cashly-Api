@@ -34,6 +34,9 @@ class RegisterUserUseCaseUnitTest {
     @Mock
     private com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+
     @InjectMocks
     private RegisterUserUseCase registerUserUseCase;
 
@@ -63,6 +66,8 @@ class RegisterUserUseCaseUnitTest {
 
         assertNotNull(response);
         assertEquals("test@example.com", response.email());
+        assertEquals("es", response.language());
+        verify(preferences).updateLanguage(java.util.UUID.fromString(response.id()), "es");
         assertTrue(response.active());
         assertFalse(response.emailVerified());
 

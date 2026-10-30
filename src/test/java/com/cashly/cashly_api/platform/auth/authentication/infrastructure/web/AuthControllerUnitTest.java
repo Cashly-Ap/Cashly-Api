@@ -44,6 +44,9 @@ class AuthControllerUnitTest {
     @Mock
     private LogoutUserUseCase logoutUserUseCase;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+
     @InjectMocks
     private AuthController authController;
 

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.catalog.products.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -75,15 +76,15 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
 
-            Paragraph title = new Paragraph("Cat\u00e1logo Comercial")
+            Paragraph title = new Paragraph(ReportMessages.text("catalog.products.reports.commercialCatalog"))
                     .setFont(bold)
                     .setFontSize(20)
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(2);
 
-            Paragraph subtitle = new Paragraph("Generado el " + fecha)
+            Paragraph subtitle = new Paragraph(ReportMessages.text("catalog.products.reports.generatedOn") + fecha)
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -181,7 +182,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                         .setBorder(new SolidBorder(BORDER_COLOR, 0.5f))
                         .setTextAlignment(TextAlignment.CENTER)
                         .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                        .add(new Paragraph("Sin imagen")
+                        .add(new Paragraph(ReportMessages.text("catalog.products.reports.noImage"))
                                 .setFont(regular)
                                 .setFontSize(9)
                                 .setFontColor(ColorConstants.GRAY));
@@ -189,7 +190,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                 cell.add(placeholder);
             }
         } catch (Exception e) {
-            Paragraph errorText = new Paragraph("Sin imagen")
+            Paragraph errorText = new Paragraph(ReportMessages.text("catalog.products.reports.noImage"))
                     .setFont(regular)
                     .setFontSize(9)
                     .setFontColor(ColorConstants.GRAY);
@@ -212,7 +213,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                 .setFontColor(ColorConstants.BLACK)
                 .setMarginBottom(2);
 
-        Paragraph sku = new Paragraph("SKU: " + item.sku())
+        Paragraph sku = new Paragraph(ReportMessages.text("catalog.products.reports.sku") + item.sku())
                 .setFont(regular)
                 .setFontSize(9)
                 .setFontColor(ColorConstants.DARK_GRAY)
@@ -239,8 +240,8 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                     .setMarginBottom(1);
 
             String priceTypeLabel = item.priceTypeName() != null
-                    ? "Precio " + item.priceTypeName()
-                    : "Precio";
+                    ? ReportMessages.text("catalog.products.reports.price") + item.priceTypeName()
+                    : ReportMessages.text("catalog.products.reports.priceLabel");
 
             Paragraph priceType = new Paragraph(priceTypeLabel)
                     .setFont(regular)
@@ -275,7 +276,7 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("P\u00e1gina " + pageNumber + " de " + totalPages)
+                        new Paragraph("P\u00e1gina " + pageNumber + ReportMessages.text("catalog.products.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

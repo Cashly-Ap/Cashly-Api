@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.excel;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.application.dto.model.CashRegisterExportRow;
 import com.cashly.cashly_api.finance.treasury.cash_register.application.ports.out.CashRegisterQueryGateway;
 import org.apache.poi.ss.usermodel.*;
@@ -21,10 +22,10 @@ import java.util.stream.Collectors;
 @Service
 public class CashRegisterExcelExportService {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final String MODULE_VENTAS = "VENTAS";
-    private static final String MODULE_CXC = "CUENTAS POR COBRAR";
-    private static final String MODULE_CAJA = "OPERACIONES DE CAJA";
+
+    private static final String MODULE_VENTAS = ReportMessages.text("finance.treasury.cash_register.reports.sales");
+    private static final String MODULE_CXC = ReportMessages.text("finance.treasury.cash_register.reports.accountsReceivable");
+    private static final String MODULE_CAJA = ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterOperations");
     private static final String[] MODULE_ORDER = {MODULE_VENTAS, MODULE_CXC, MODULE_CAJA};
 
     private static final int COL_EMISSION_DATE = 0;
@@ -40,11 +41,11 @@ public class CashRegisterExcelExportService {
     private static final int COL_CUSTOMER = 10;
     private static final int COLUMN_COUNT = 11;
 
-    private static final String SHEET_NAME = "Detalle Cierre de Caja";
-    private static final String TITLE_TEXT = "CIERRE DE CAJA DETALLADO CON DIVISAS";
+    private static final String SHEET_NAME = ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterClosureDetails");
+    private static final String TITLE_TEXT = ReportMessages.text("finance.treasury.cash_register.reports.detailedCashRegisterClosureByCurrency");
 
-    private static final String MSG_NO_DATA = "No se encontraron transacciones para la fecha especificada";
-    private static final String ERROR_EXCEL = "Error al generar el archivo Excel";
+    private static final String MSG_NO_DATA = ReportMessages.text("finance.treasury.cash_register.reports.noTransactionsFoundForTheSpecifiedDate");
+    private static final String ERROR_EXCEL = ReportMessages.text("finance.treasury.cash_register.reports.unableToGenerateTheExcelFile");
 
     private final CashRegisterQueryGateway repository;
 
@@ -127,7 +128,7 @@ public class CashRegisterExcelExportService {
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
-                        "SUBTOTAL " + module, moduleTotal,
+                        ReportMessages.text("finance.treasury.cash_register.reports.subtotal") + module, moduleTotal,
                         moduleEfectivo, moduleDolar, moduleTransf, moduleZelle,
                         moduleAnticipo, moduleNC);
                 rowNum++;
@@ -144,7 +145,7 @@ public class CashRegisterExcelExportService {
             }
 
             writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
-                    "TOTAL GENERAL", grandTotal,
+                    ReportMessages.text("finance.treasury.cash_register.reports.grandTotal"), grandTotal,
                     grandEfectivo, grandDolar, grandTransf, grandZelle,
                     grandAnticipo, grandNC);
 
@@ -168,9 +169,9 @@ public class CashRegisterExcelExportService {
     private int writeHeader(Sheet sheet, CellStyle headerStyle, int rowNum) {
         Row headerRow = sheet.createRow(rowNum);
         String[] headers = {
-                "Fecha Emisión", "Tipo Doc.", "Documento", "Total Operación",
-                "Efectivo Bs.", "Dólar", "Transf.Dólar", "Zelle",
-                "Anticipo Aplicado", "N/C Aplicado", "Cliente"
+                ReportMessages.text("finance.treasury.cash_register.reports.issueDate"), ReportMessages.text("finance.treasury.cash_register.reports.documentType"), ReportMessages.text("finance.treasury.cash_register.reports.document"), ReportMessages.text("finance.treasury.cash_register.reports.transactionTotal"),
+                ReportMessages.text("finance.treasury.cash_register.reports.cashInBs"), ReportMessages.text("finance.treasury.cash_register.reports.usDollar"), ReportMessages.text("finance.treasury.cash_register.reports.usdTransfer"), ReportMessages.text("finance.treasury.cash_register.reports.zelle"),
+                ReportMessages.text("finance.treasury.cash_register.reports.advanceApplied"), ReportMessages.text("finance.treasury.cash_register.reports.creditNoteApplied"), ReportMessages.text("finance.treasury.cash_register.reports.customer")
         };
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -187,7 +188,7 @@ public class CashRegisterExcelExportService {
 
         Cell dateCell = dataRow.createCell(COL_EMISSION_DATE);
         dateCell.setCellValue(row.emissionDate() != null
-                ? row.emissionDate().format(DATE_FORMATTER) : "");
+                ? row.emissionDate().format(ReportMessages.dateFormatter()) : "");
         dateCell.setCellStyle(dateStyle);
 
         Cell docTypeCell = dataRow.createCell(COL_DOC_TYPE);

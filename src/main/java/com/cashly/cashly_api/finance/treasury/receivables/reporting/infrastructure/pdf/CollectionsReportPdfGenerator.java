@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.receivables.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -43,7 +44,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 
     @Override
     public byte[] generateReport(CollectionsReportData data) {
@@ -75,7 +76,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
     }
 
     private Paragraph buildTitle(PdfFont bold) {
-        return new Paragraph("REPORTE DE COBRANZAS")
+        return new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.collectionsReport"))
                 .setFont(bold)
                 .setFontSize(18)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -83,7 +84,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
     }
 
     private Paragraph buildDate(CollectionsReportData data, PdfFont regular) {
-        return new Paragraph("Fecha: " + data.reportDate().format(DATE_FORMATTER))
+        return new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.date") + data.reportDate().format(ReportMessages.dateFormatter()))
                 .setFont(regular)
                 .setFontSize(10)
                 .setFontColor(ColorConstants.DARK_GRAY)
@@ -95,7 +96,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
         float[] columnWidths = {4f, 2.5f, 2.5f, 2.5f, 2f, 2.5f};
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
 
-        String[] headers = {"Cliente", "RIF", "N° Factura", "Vencimiento", "Días Vencida", "Saldo Pendiente"};
+        String[] headers = {ReportMessages.text("finance.treasury.receivables.reports.customer"), ReportMessages.text("finance.treasury.receivables.reports.taxId"), ReportMessages.text("finance.treasury.receivables.reports.invoiceNo"), ReportMessages.text("finance.treasury.receivables.reports.dueDate"), ReportMessages.text("finance.treasury.receivables.reports.daysOverdue"), ReportMessages.text("finance.treasury.receivables.reports.outstandingBalance")};
         for (String h : headers) {
             table.addHeaderCell(createHeaderCell(h, bold));
         }
@@ -107,7 +108,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
             addTableCell(table, row.customerName(), regular, rowBg, TextAlignment.LEFT);
             addTableCell(table, row.rif() != null ? row.rif() : "-", regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, row.invoiceNumber(), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, row.dueDate().format(DATE_FORMATTER), regular, rowBg, TextAlignment.CENTER);
+            addTableCell(table, row.dueDate().format(ReportMessages.dateFormatter()), regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, String.valueOf(row.daysOverdue()), regular, rowBg, TextAlignment.CENTER);
             addTableCell(table, "$ " + formatDecimal(row.pendingBalance()), regular, rowBg, TextAlignment.RIGHT);
         }
@@ -143,13 +144,13 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginTop(20);
 
-        table.addCell(buildSummaryCell("Total Facturas Vencidas:", String.valueOf(summary.totalInvoices()), bold, regular));
-        table.addCell(buildSummaryCell("Monto Total Vencido:", "$ " + formatDecimal(summary.totalOverdue()), bold, regular));
-        table.addCell(buildSummaryCell("0-30 días:", "$ " + formatDecimal(summary.age0_30()), bold, regular));
-        table.addCell(buildSummaryCell("31-60 días:", "$ " + formatDecimal(summary.age31_60()), bold, regular));
-        table.addCell(buildSummaryCell("61-90 días:", "$ " + formatDecimal(summary.age61_90()), bold, regular));
-        table.addCell(buildSummaryCell("91-120 días:", "$ " + formatDecimal(summary.age91_120()), bold, regular));
-        table.addCell(buildSummaryCell("120+ días:", "$ " + formatDecimal(summary.age120Plus()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.totalOverdueInvoices"), String.valueOf(summary.totalInvoices()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.totalOverdueAmount"), "$ " + formatDecimal(summary.totalOverdue()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.030Days"), "$ " + formatDecimal(summary.age0_30()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.3160Days"), "$ " + formatDecimal(summary.age31_60()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.6190Days"), "$ " + formatDecimal(summary.age61_90()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.91120Days"), "$ " + formatDecimal(summary.age91_120()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.120Days"), "$ " + formatDecimal(summary.age120Plus()), bold, regular));
 
         return table;
     }
@@ -167,7 +168,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private static class PageFooterHandler implements IEventHandler {
@@ -191,7 +192,7 @@ public class CollectionsReportPdfGenerator implements CollectionsReportPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.page") + pageNumber + ReportMessages.text("finance.treasury.receivables.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

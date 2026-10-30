@@ -17,6 +17,9 @@ public class NotificationJpaMapper {
         entity.setType(notification.getType().name());
         entity.setTitle(notification.getTitle());
         entity.setMessage(notification.getMessage());
+        entity.setTitleKey(notification.getTitleKey());
+        entity.setMessageKey(notification.getMessageKey());
+        entity.setMessageArguments(notification.getMessageArguments());
         entity.setReferenceType(notification.getReferenceType());
         entity.setReferenceId(notification.getReferenceId());
         entity.setRead(notification.isRead());
@@ -38,6 +41,6 @@ public class NotificationJpaMapper {
                 entity.isRead(),
                 entity.getReadAt(),
                 entity.getCreatedAt()
-        );
+        ).withTranslation(entity.getTitleKey(), entity.getMessageKey(), entity.getMessageArguments());
     }
 }

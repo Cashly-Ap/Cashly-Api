@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.orders.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
@@ -46,7 +47,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
     private static final DeviceRgb COLOR_GREEN = new DeviceRgb(34, 139, 34);
     private static final DeviceRgb COLOR_RED = new DeviceRgb(220, 20, 60);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 
     @Override
     public byte[] generatePdf(OrderReportData order) {
@@ -65,19 +66,19 @@ public class OrderPdfGenerator implements OrderPdfPort {
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
             document.add(buildHeader(order, bold, regular));
-            document.add(buildSectionTitle("DATOS DEL CLIENTE", bold));
+            document.add(buildSectionTitle(ReportMessages.text("sales.orders.reports.customerDetails"), bold));
             document.add(buildClientTable(order, bold, regular));
-            document.add(buildSectionTitle("DETALLE DE LA FACTURA", bold));
+            document.add(buildSectionTitle(ReportMessages.text("sales.orders.reports.invoiceDetails"), bold));
             document.add(buildLinesTable(order, bold, regular));
             document.add(buildTotalsTable(order, bold, regular));
 
             if (order.notes() != null && !order.notes().isEmpty()) {
-                document.add(buildSectionTitle("OBSERVACIONES", bold));
+                document.add(buildSectionTitle(ReportMessages.text("sales.orders.reports.notes"), bold));
                 document.add(new Paragraph(order.notes()).setFont(regular).setFontSize(10).setFontColor(ColorConstants.DARK_GRAY));
             }
 
             if (order.status().equals("CANCELLED") && order.cancelledReason() != null) {
-                document.add(buildSectionTitle("MOTIVO DE CANCELACIÓN", bold));
+                document.add(buildSectionTitle(ReportMessages.text("sales.orders.reports.cancellationReason"), bold));
                 document.add(new Paragraph(order.cancelledReason()).setFont(regular).setFontSize(10).setFontColor(COLOR_RED));
             }
 
@@ -98,10 +99,10 @@ public class OrderPdfGenerator implements OrderPdfPort {
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
 
-        String orderDate = order.createdAt().format(DATE_FORMATTER);
+        String orderDate = order.createdAt().format(ReportMessages.dateTimeFormatter());
         Cell infoCell = new Cell()
-                .add(new Paragraph("Nota N: " + order.orderNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
-                .add(new Paragraph("Fecha: " + orderDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
+                .add(new Paragraph(ReportMessages.text("sales.orders.reports.noteNo") + order.orderNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
+                .add(new Paragraph(ReportMessages.text("sales.orders.reports.dateLabel") + orderDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(infoCell);
@@ -122,8 +123,8 @@ public class OrderPdfGenerator implements OrderPdfPort {
         Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        table.addCell(buildClientCell("Cliente: ", order.customerName(), bold, regular, true));
-        table.addCell(buildClientCell("RIF: ", order.customerRif() != null ? order.customerRif() : "-", bold, regular, false));
+        table.addCell(buildClientCell(ReportMessages.text("sales.orders.reports.customerLabel"), order.customerName(), bold, regular, true));
+        table.addCell(buildClientCell(ReportMessages.text("sales.orders.reports.taxId"), order.customerRif() != null ? order.customerRif() : "-", bold, regular, false));
 
         return table;
     }
@@ -147,7 +148,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
         Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        String[] headers = {"Codigo", "Descripcion", "Cantidad", "Precio Unit.", "Total"};
+        String[] headers = {ReportMessages.text("sales.orders.reports.code"), ReportMessages.text("sales.orders.reports.description"), ReportMessages.text("sales.orders.reports.quantity"), ReportMessages.text("sales.orders.reports.unitPrice"), ReportMessages.text("sales.orders.reports.totalLabel")};
         for (String h : headers) {
             table.addHeaderCell(new Cell()
                     .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -179,9 +180,9 @@ public class OrderPdfGenerator implements OrderPdfPort {
         table.setMarginTop(8);
         table.setBorder(new SolidBorder(BORDER_COLOR, 1));
 
-        addTotalsRow(table, "SUBTOTAL:", "$ " + formatDecimal(order.subtotal()), bold, regular, null);
-        addTotalsRow(table, "TOTAL PAGADO:", "$ 0,00", bold, regular, COLOR_GREEN);
-        addTotalsRow(table, "SALDO PENDIENTE:", "$ " + formatDecimal(order.subtotal()), bold, regular, COLOR_RED);
+        addTotalsRow(table, ReportMessages.text("sales.orders.reports.subtotal"), "$ " + formatDecimal(order.subtotal()), bold, regular, null);
+        addTotalsRow(table, ReportMessages.text("sales.orders.reports.totalPaid"), "$ 0,00", bold, regular, COLOR_GREEN);
+        addTotalsRow(table, ReportMessages.text("sales.orders.reports.outstandingBalance"), "$ " + formatDecimal(order.subtotal()), bold, regular, COLOR_RED);
 
         return table;
     }
@@ -204,7 +205,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
@@ -243,7 +244,7 @@ public class OrderPdfGenerator implements OrderPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("sales.orders.reports.page") + pageNumber + ReportMessages.text("sales.orders.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

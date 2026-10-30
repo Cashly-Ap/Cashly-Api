@@ -13,8 +13,11 @@ import org.slf4j.LoggerFactory;
 public class WebSocketNotificationDeliveryAdapter implements NotificationDeliveryGateway {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketNotificationDeliveryAdapter.class);
     private final SimpMessagingTemplate messagingTemplate;
+    private final com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    private final NotificationTranslator translator = new NotificationTranslator();
 
-    public WebSocketNotificationDeliveryAdapter(SimpMessagingTemplate messagingTemplate) {
+    public WebSocketNotificationDeliveryAdapter(SimpMessagingTemplate messagingTemplate, com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -40,6 +43,7 @@ public class WebSocketNotificationDeliveryAdapter implements NotificationDeliver
         String destination = notification.getUserId() != null
                 ? "/topic/notifications/user/" + notification.getUserId()
                 : "/topic/notifications/customer/" + notification.getCustomerId();
-        messagingTemplate.convertAndSend(destination, notification);
+        String language = notification.getUserId() == null ? "es" : preferences.languageFor(notification.getUserId());
+        messagingTemplate.convertAndSend(destination, translator.render(notification, java.util.Locale.forLanguageTag("en".equals(language) ? "en" : "es")));
     }
 }

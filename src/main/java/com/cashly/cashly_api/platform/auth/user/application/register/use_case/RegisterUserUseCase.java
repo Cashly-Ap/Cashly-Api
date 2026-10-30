@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.user.application.register.use_case;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+
 import com.cashly.cashly_api.platform.auth.user.application.register.request.RegisterUserRequest;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;
 import com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder;
@@ -15,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterUserUseCase {
+    private final UserPreferencesRepository preferences;
+
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public RegisterUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder, com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public RegisterUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder, com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access, UserPreferencesRepository preferences) {
+        this.preferences = preferences;
         this.access=access;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -47,6 +52,7 @@ public class RegisterUserUseCase {
         user.updateProfile(request.profile(),request.roleId(),request.departmentId());
         User savedUser = userRepository.save(user);
 
-        return UserResponse.from(savedUser);
+        preferences.updateLanguage(savedUser.getId().getValue(), request.language());
+        return UserResponse.from(savedUser).withLanguage(request.language());
     }
 }

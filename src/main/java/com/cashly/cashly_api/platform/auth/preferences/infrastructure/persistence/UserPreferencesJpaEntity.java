@@ -24,8 +24,11 @@ public class UserPreferencesJpaEntity {
     private boolean shortcutsEnabled;
     @Column(name = "show_shortcut_hints", nullable = false)
     private boolean showShortcutHints;
+    @Column(name = "language", nullable = false, length = 2)
+    private String language;
+    public UUID userId() { return userId; }
     protected UserPreferencesJpaEntity() {}
     public UserPreferences toDomain() {
-        return new UserPreferences(themeMode, colorMode, shortcutsEnabled, showShortcutHints);
+        return new UserPreferences(themeMode, colorMode, shortcutsEnabled, showShortcutHints, language);
     }
 }

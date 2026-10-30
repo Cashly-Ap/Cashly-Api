@@ -15,7 +15,7 @@ class UserPhotoServiceTest {
     private final UserRepository users = mock(UserRepository.class);
     private final AccessService access = mock(AccessService.class);
     private final SafeImageStorage images = mock(SafeImageStorage.class);
-    private final UserPhotoService service = new UserPhotoService(users, access, images);
+    private final UserPhotoService service = new UserPhotoService(users, access, images, mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class));
     private User user() {
         var user = new User(UserId.generate(), new Email("photo@example.com"), new UserName("Photo User"), Password.fromHash("hash"));
         user.changePhoto("old.png");

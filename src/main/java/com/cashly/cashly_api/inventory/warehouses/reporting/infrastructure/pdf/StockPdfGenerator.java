@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -57,14 +58,14 @@ public class StockPdfGenerator implements StockPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph("Stock de Almacenes")
+            Paragraph title = new Paragraph(ReportMessages.text("inventory.warehouses.reports.warehouseStock"))
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMarginBottom(4);
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            Paragraph subtitle = new Paragraph("Generado el " + fecha)
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            Paragraph subtitle = new Paragraph(ReportMessages.text("inventory.warehouses.reports.generatedOn") + fecha)
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -79,7 +80,7 @@ public class StockPdfGenerator implements StockPdfPort {
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
-            String[] headers = {"Almacén", "Producto", "SKU", "Categoría", "Stock Actual", "Estado"};
+            String[] headers = {ReportMessages.text("inventory.warehouses.reports.warehouse"), ReportMessages.text("inventory.warehouses.reports.product"), ReportMessages.text("inventory.warehouses.reports.sku"), ReportMessages.text("inventory.warehouses.reports.category"), ReportMessages.text("inventory.warehouses.reports.currentStock"), ReportMessages.text("inventory.warehouses.reports.status")};
             for (String h : headers) {
                 Cell headerCell = new Cell()
                         .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
@@ -99,12 +100,12 @@ public class StockPdfGenerator implements StockPdfPort {
                 addCell(table, item.sku(), regular, rowColor, TextAlignment.CENTER);
                 addCell(table, item.categoryName(), regular, rowColor, TextAlignment.LEFT);
                 addCell(table, String.valueOf(item.quantity()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, item.status(), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, ReportMessages.code(item.status()), regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph total = new Paragraph("Total de productos listados: " + items.size())
+            Paragraph total = new Paragraph(ReportMessages.text("inventory.warehouses.reports.totalListedProducts") + items.size())
                     .setFont(bold)
                     .setFontSize(10)
                     .setTextAlignment(TextAlignment.RIGHT)
@@ -153,7 +154,7 @@ public class StockPdfGenerator implements StockPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("inventory.warehouses.reports.page") + pageNumber + ReportMessages.text("inventory.warehouses.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

@@ -26,7 +26,7 @@ class CompanyPdfPreviewTest {
         try(var pdf=new PdfDocument(new PdfReader(new ByteArrayInputStream(bytes)))) {
             assertThat(pdf.getNumberOfPages()).isEqualTo(1);
             var text=PdfTextExtractor.getTextFromPage(pdf.getFirstPage());
-            assertThat(text).contains("VISTA PREVIA","Cliente de ejemplo","150.00");
+            assertThat(text).contains("VISTA PREVIA","Cliente de ejemplo","150,00");
             var objects=pdf.getFirstPage().getResources().getResource(PdfName.XObject);
             assertThat(objects).isNotNull();
             boolean trimmed=false;

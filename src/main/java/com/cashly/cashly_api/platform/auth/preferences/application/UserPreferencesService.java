@@ -14,6 +14,11 @@ public class UserPreferencesService {
     public UserPreferences current() {
         return repository.findByUserId(actor.requireId()).orElseGet(UserPreferences::defaults);
     }
+    public UserPreferences update(UserPreferences preferences, String language) {
+        String effectiveLanguage = language == null ? repository.findByUserId(actor.requireId())
+                .orElseGet(UserPreferences::defaults).language() : language;
+        return update(preferences.withLanguage(effectiveLanguage));
+    }
     public UserPreferences update(UserPreferences preferences) {
         repository.save(actor.requireId(), preferences);
         return preferences;

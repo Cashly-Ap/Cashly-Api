@@ -20,10 +20,16 @@ public class UserPreferencesRepositoryAdapter implements UserPreferencesReposito
         return repository.findById(userId).map(UserPreferencesJpaEntity::toDomain);
     }
     @Override
+    @Transactional(readOnly = true)
+    public java.util.Map<UUID, String> languagesFor(java.util.Set<UUID> userIds) {
+        return repository.findAllById(userIds).stream().collect(java.util.stream.Collectors.toMap(
+                UserPreferencesJpaEntity::userId, entity -> entity.toDomain().language()));
+    }
+    @Override
     @Transactional
     public void save(UUID userId, UserPreferences preferences) {
         byte[] binaryId = ByteBuffer.allocate(16).putLong(userId.getMostSignificantBits())
                 .putLong(userId.getLeastSignificantBits()).array();
-        repository.upsert(binaryId, preferences.themeMode(), preferences.colorMode(), preferences.shortcutsEnabled(), preferences.showShortcutHints());
+        repository.upsert(binaryId, preferences.themeMode(), preferences.colorMode(), preferences.shortcutsEnabled(), preferences.showShortcutHints(), preferences.language());
     }
 }

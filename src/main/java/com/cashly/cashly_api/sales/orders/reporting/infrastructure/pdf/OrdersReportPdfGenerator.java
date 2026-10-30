@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.orders.reporting.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -61,8 +62,8 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
 
-            
-            Paragraph title = new Paragraph("Reporte de Pedidos")
+
+            Paragraph title = new Paragraph(ReportMessages.text("sales.orders.reports.ordersReport"))
                     .setFont(bold)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.LEFT)
@@ -71,9 +72,9 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            String modeLabel = detailed ? "Detallado" : "Simple";
-            Paragraph subtitle = new Paragraph("Generado el " + fecha + " | Modo: " + modeLabel + " | Total: " + orders.size() + " pedidos")
+            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            String modeLabel = detailed ? ReportMessages.text("sales.orders.reports.detailed") : ReportMessages.text("sales.orders.reports.simple");
+            Paragraph subtitle = new Paragraph(ReportMessages.text("sales.orders.reports.generatedOn") + fecha + ReportMessages.text("sales.orders.reports.mode") + modeLabel + ReportMessages.text("sales.orders.reports.total") + orders.size() + ReportMessages.text("sales.orders.reports.orders"))
                     .setFont(regular)
                     .setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
@@ -82,17 +83,17 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             document.add(subtitle);
 
-            
+
             float[] columnWidths = detailed
                     ? new float[]{2f, 3f, 1.5f, 1.5f, 2f, 2f, 1.5f}
                     : new float[]{2f, 3f, 2f, 2f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
-            
+
             String[] headers = detailed
-                    ? new String[]{"N° Pedido", "Cliente", "Líneas", "Factura", "Estado", "Total", "Fecha"}
-                    : new String[]{"N° Pedido", "Cliente", "Total", "Fecha"};
+                    ? new String[]{ReportMessages.text("sales.orders.reports.orderNo"), ReportMessages.text("sales.orders.reports.customer"), ReportMessages.text("sales.orders.reports.lines"), ReportMessages.text("sales.orders.reports.invoice"), ReportMessages.text("sales.orders.reports.status"), ReportMessages.text("sales.orders.reports.totalLabel"), ReportMessages.text("sales.orders.reports.date")}
+                    : new String[]{ReportMessages.text("sales.orders.reports.orderNo"), ReportMessages.text("sales.orders.reports.customer"), ReportMessages.text("sales.orders.reports.totalLabel"), ReportMessages.text("sales.orders.reports.date")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
@@ -103,7 +104,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
                 table.addHeaderCell(headerCell);
             }
 
-            
+
             for (int i = 0; i < orders.size(); i++) {
                 OrderReportRow order = orders.get(i);
                 boolean even = i % 2 == 0;
@@ -114,31 +115,31 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
                 if (detailed) {
                     addCell(table, String.valueOf(order.lineCount()), regular, rowColor, TextAlignment.CENTER);
-                    addCell(table, order.invoiceId() != null ? "Sí" : "-", regular, rowColor, TextAlignment.CENTER);
+                    addCell(table, order.invoiceId() != null ? ReportMessages.text("sales.orders.reports.yes") : "-", regular, rowColor, TextAlignment.CENTER);
                     addStatusCell(table, formatStatus(order.status()), regular, rowColor, TextAlignment.CENTER, order.status());
                 }
 
                 addCell(table, "$" + formatDecimal(order.subtotal()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, order.createdAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, order.createdAt().format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            
-            Paragraph totalLabel = new Paragraph("Total de Pedidos: " + orders.size())
+
+            Paragraph totalLabel = new Paragraph(ReportMessages.text("sales.orders.reports.totalOrders") + orders.size())
                     .setFont(bold)
                     .setFontSize(11)
                     .setTextAlignment(TextAlignment.RIGHT)
                     .setMarginTop(16);
             document.add(totalLabel);
 
-            
+
             long confirmed = orders.stream().filter(o -> "CONFIRMED".equals(o.status())).count();
             long invoiced = orders.stream().filter(o -> "INVOICED".equals(o.status())).count();
             long cancelled = orders.stream().filter(o -> "CANCELLED".equals(o.status())).count();
             long draft = orders.stream().filter(o -> "DRAFT".equals(o.status())).count();
 
-            Paragraph summary = new Paragraph(String.format("Confirmados: %d | Facturados: %d | Cancelados: %d | Borrador: %d",
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text("sales.orders.reports.confirmedDInvoicedDCancelledDDraftD"),
                     confirmed, invoiced, cancelled, draft))
                     .setFont(regular)
                     .setFontSize(9)
@@ -147,8 +148,8 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
                     .setMarginTop(8);
             document.add(summary);
 
-            
-            Paragraph footer = new Paragraph("Documento generado automáticamente por CASHLY")
+
+            Paragraph footer = new Paragraph(ReportMessages.text("sales.orders.reports.documentAutomaticallyGeneratedByCashly"))
                     .setFont(regular)
                     .setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
@@ -164,20 +165,20 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
     }
 
     private static String formatDecimal(BigDecimal value) {
-        return String.format(Locale.US, "%.2f", value);
+        return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
     private static String formatStatus(String status) {
         if (status == null) return "-";
         return switch (status) {
-            case "DRAFT" -> "Borrador";
-            case "CONFIRMED" -> "Confirmado";
-            case "INVOICED" -> "Facturado";
-            case "IN_PREPARATION" -> "En Preparación";
-            case "READY_FOR_DISPATCH" -> "Listo para Despacho";
-            case "DISPATCHED" -> "Despachado";
-            case "DELIVERED" -> "Entregado";
-            case "CANCELLED" -> "Cancelado";
+            case "DRAFT" -> ReportMessages.text("sales.orders.reports.draft");
+            case "CONFIRMED" -> ReportMessages.text("sales.orders.reports.confirmed");
+            case "INVOICED" -> ReportMessages.text("sales.orders.reports.invoiced");
+            case "IN_PREPARATION" -> ReportMessages.text("sales.orders.reports.inPreparation");
+            case "READY_FOR_DISPATCH" -> ReportMessages.text("sales.orders.reports.readyForDispatch");
+            case "DISPATCHED" -> ReportMessages.text("sales.orders.reports.dispatched");
+            case "DELIVERED" -> ReportMessages.text("sales.orders.reports.delivered");
+            case "CANCELLED" -> ReportMessages.text("sales.orders.reports.cancelled");
             default -> status;
         };
     }
@@ -244,7 +245,7 @@ public class OrdersReportPdfGenerator implements OrdersReportPdfPort {
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph("Página " + pageNumber + " de " + totalPages)
+                        new Paragraph(ReportMessages.text("sales.orders.reports.page") + pageNumber + ReportMessages.text("sales.orders.reports.of") + totalPages)
                                 .setFont(font)
                                 .setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),

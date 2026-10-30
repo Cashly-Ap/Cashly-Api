@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.shared.infrastructure.pdf;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.cashly.cashly_api.platform.company.application.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public final class PdfBranding {
         byte[] configured = companyLogo.get();
         var branding = new Div().setWidth(LOGO_MAX_WIDTH).setKeepTogether(true);
         if (configured == null) {
-            return branding.add(new Paragraph("Logotipo").setFontSize(20).setBold().setMargin(0));
+            return branding.add(new Paragraph(ReportMessages.text("shared.reports.logo")).setFontSize(20).setBold().setMargin(0));
         }
         return branding.add(new Image(ImageDataFactory.create(trimOuterMargins(configured)))
                 .scaleToFit(LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT));

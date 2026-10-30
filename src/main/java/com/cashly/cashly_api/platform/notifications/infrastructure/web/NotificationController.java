@@ -14,6 +14,7 @@ import java.util.UUID;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final com.cashly.cashly_api.platform.notifications.infrastructure.messaging.NotificationTranslator translator = new com.cashly.cashly_api.platform.notifications.infrastructure.messaging.NotificationTranslator();
 
     public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
@@ -27,6 +28,7 @@ public class NotificationController {
         List<NotificationResponse> notifications = notificationService.listByUser(userId)
                 .stream()
                 .filter(n -> unread == null || n.isRead() != unread)
+                .map(n -> translator.render(n, org.springframework.context.i18n.LocaleContextHolder.getLocale()))
                 .map(n -> new NotificationResponse(
                         n.getId().value(), n.getType().name(), n.getTitle(),
                         n.getMessage(), n.getReferenceType(), n.getReferenceId(),
@@ -47,7 +49,7 @@ public class NotificationController {
             @PathVariable UUID id,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        var notification = notificationService.markAsRead(id, userId);
+        var notification = translator.render(notificationService.markAsRead(id, userId), org.springframework.context.i18n.LocaleContextHolder.getLocale());
         return ResponseEntity.ok(new NotificationResponse(
                 notification.getId().value(), notification.getType().name(),
                 notification.getTitle(), notification.getMessage(),

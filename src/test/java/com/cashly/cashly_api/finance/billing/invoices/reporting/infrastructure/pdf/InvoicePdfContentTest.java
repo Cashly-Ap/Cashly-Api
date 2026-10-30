@@ -43,7 +43,7 @@ class InvoicePdfContentTest {
         when(line.unitPrice()).thenReturn(new BigDecimal("12.40"));
         when(line.lineTotal()).thenReturn(new BigDecimal("27.90"));
         var content = text(new InvoicePdfGenerator().generatePdf(invoice));
-        for (var expected : List.of("INV-CONTENT", "Customer Example", "RIF-123", "ORD-123", "02/01/2026 10:30", "P-123", "Product Example", "2.25", "12.40", "27.90", "CREDITO", "Delivery instructions", "Cancellation reason")) assertTrue(content.contains(expected), expected + " missing from " + content);
+        for (var expected : List.of("INV-CONTENT", "Customer Example", "RIF-123", "ORD-123", "02/01/2026 10:30", "P-123", "Product Example", "2,25", "12,40", "27,90", "CREDITO", "Delivery instructions", "Cancellation reason")) assertTrue(content.contains(expected), expected + " missing from " + content);
     }
     @Test
     void reportPdfPreservesSimpleDetailedAndEmptyModes() throws Exception {
@@ -58,7 +58,7 @@ class InvoicePdfContentTest {
         var generator = new InvoicesReportPdfGenerator();
         var simple = text(generator.generatePdf(List.of(row), "SIMPLE"));
         var detailed = text(generator.generatePdf(List.of(row), "detailed"));
-        for (var content : List.of(simple, detailed)) for (var expected : List.of("INV-REPORT", "Report Customer", "31.25", "02/01/2026 10:30", "Pagadas: 1")) assertTrue(content.contains(expected), expected);
+        for (var content : List.of(simple, detailed)) for (var expected : List.of("INV-REPORT", "Report Customer", "31,25", "02/01/2026 10:30", "Pagadas: 1")) assertTrue(content.contains(expected), expected);
         assertTrue(simple.contains("Modo: Simple"));
         assertTrue(detailed.contains("Modo: Detallado"));
         assertTrue(detailed.contains("CONTADO"));

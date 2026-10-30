@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.excel;
 
+import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.application.dto.model.CashRegisterExportRow;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.application.dto.model.CustomerSummary;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.dto.response.DailyTotals;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     private static final String MODULE_VENTAS = "VENTAS";
     private static final String MODULE_CXC = "CUENTAS POR COBRAR";
     private static final String MODULE_CAJA = "OPERACIONES DE CAJA";
@@ -39,16 +40,16 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     private static final int COL_CUSTOMER = 10;
     private static final int COLUMN_COUNT = 11;
 
-    private static final String SHEET_NAME = "Detalle Cierre de Caja";
-    private static final String TITLE_TEXT = "CIERRE DE CAJA DETALLADO CON DIVISAS";
 
-    private static final String MSG_NO_DATA = "No se encontraron transacciones para la fecha especificada";
-    private static final String ERROR_EXCEL = "Error al generar el archivo Excel";
+
+
+
+
 
     @Override
     public byte[] generateSimpleExcel(List<CashRegisterDetail> paymentSummary, DailyTotals totals) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Resumen de Caja");
+            Sheet sheet = workbook.createSheet(ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterSummary"));
 
             CellStyle titleStyle = createTitleStyle(workbook);
             CellStyle headerStyle = createHeaderStyle(workbook);
@@ -62,7 +63,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             rowNum = writeTitle(sheet, titleStyle, rowNum);
             rowNum = writeEmptyRow(sheet, rowNum);
 
-            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "Resumen por Metodo de Pago");
+            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.summaryByPaymentMethod"));
             rowNum = writePaymentMethodHeader(sheet, headerStyle, rowNum);
 
             BigDecimal totalAmount = BigDecimal.ZERO;
@@ -88,7 +89,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
             Row totalRow = sheet.createRow(rowNum);
             Cell totalLabelCell = totalRow.createCell(0);
-            totalLabelCell.setCellValue("TOTAL");
+            totalLabelCell.setCellValue(ReportMessages.text("finance.treasury.cash_register.reports.total"));
             totalLabelCell.setCellStyle(subtotalStyle);
             Cell totalTxCell = totalRow.createCell(1);
             totalTxCell.setCellValue(totalTx);
@@ -99,28 +100,28 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             totalRow.setHeightInPoints(20);
             rowNum += 2;
 
-            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "Totales Generales");
+            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.grandTotals"));
             rowNum = writeTotalsHeader(sheet, headerStyle, rowNum);
 
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Facturado", totals.totalInvoiced());
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.totalInvoiced"), totals.totalInvoiced());
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Ingresado", totals.totalRevenue());
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.totalReceived"), totals.totalRevenue());
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Total Gastado", totals.totalExpenses());
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.totalSpent"), totals.totalExpenses());
             rowNum++;
             BigDecimal balance = totals.totalRevenue().subtract(totals.totalExpenses());
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Balance", balance);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.balance"), balance);
 
             return toBytes(workbook);
         } catch (IOException e) {
-            throw new RuntimeException(ERROR_EXCEL, e);
+            throw new RuntimeException(ReportMessages.text("finance.treasury.cash_register.reports.unableToGenerateTheExcelFile"), e);
         }
     }
 
     @Override
     public byte[] generateGroupedExcel(List<CustomerSummary> customerSummaries) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Cierre por Cliente");
+            Sheet sheet = workbook.createSheet(ReportMessages.text("finance.treasury.cash_register.reports.closureByCustomer"));
 
             CellStyle titleStyle = createTitleStyle(workbook);
             CellStyle headerStyle = createHeaderStyle(workbook);
@@ -134,13 +135,13 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             int rowNum = 0;
             Row titleRow = sheet.createRow(rowNum);
             Cell titleCell = titleRow.createCell(0);
-            titleCell.setCellValue("CIERRE DE CAJA POR CLIENTE");
+            titleCell.setCellValue(ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterClosureByCustomer"));
             titleCell.setCellStyle(titleStyle);
             sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 4));
             titleRow.setHeightInPoints(30);
             rowNum += 2;
 
-            String[] headers = {"Cliente", "Total Facturado", "Total Pagado", "Total Devuelto", "Balance"};
+            String[] headers = {ReportMessages.text("finance.treasury.cash_register.reports.customer"), ReportMessages.text("finance.treasury.cash_register.reports.totalInvoiced"), ReportMessages.text("finance.treasury.cash_register.reports.totalPaid"), ReportMessages.text("finance.treasury.cash_register.reports.totalRefunded"), ReportMessages.text("finance.treasury.cash_register.reports.balance")};
             Row headerRow = sheet.createRow(rowNum);
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -175,7 +176,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
             Row subtotalRow = sheet.createRow(rowNum);
             Cell subtotalLabelCell = subtotalRow.createCell(0);
-            subtotalLabelCell.setCellValue("TOTAL GENERAL");
+            subtotalLabelCell.setCellValue(ReportMessages.text("finance.treasury.cash_register.reports.grandTotal"));
             subtotalLabelCell.setCellStyle(subtotalStyle);
             writeCurrencyCell(subtotalRow, 1, grandInvoiced, currencySubtotalStyle);
             writeCurrencyCell(subtotalRow, 2, grandPaid, currencySubtotalStyle);
@@ -185,14 +186,14 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
             return toBytes(workbook);
         } catch (IOException e) {
-            throw new RuntimeException(ERROR_EXCEL, e);
+            throw new RuntimeException(ReportMessages.text("finance.treasury.cash_register.reports.unableToGenerateTheExcelFile"), e);
         }
     }
 
     @Override
     public byte[] generateExcel(List<CashRegisterExportRow> rows) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet(SHEET_NAME);
+            Sheet sheet = workbook.createSheet(ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterClosureDetails"));
 
             CellStyle titleStyle = createTitleStyle(workbook);
             CellStyle headerStyle = createHeaderStyle(workbook);
@@ -258,7 +259,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
-                        "SUBTOTAL " + module, moduleTotal,
+                        ReportMessages.text("finance.treasury.cash_register.reports.subtotal") + ReportMessages.code(module), moduleTotal,
                         moduleEfectivo, moduleDolar, moduleTransf, moduleZelle,
                         moduleAnticipo, moduleNC, moduleND);
                 rowNum++;
@@ -288,27 +289,27 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal balance = totalIncome.subtract(totalExpense);
 
-            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, "RESUMEN GENERAL");
+            rowNum = writeSectionTitle(sheet, subtotalStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.generalSummary"));
             rowNum = writeTotalsHeader(sheet, headerStyle, rowNum);
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Facturación neta", netInvoiced);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.netInvoicing"), netInvoiced);
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Ingresos", totalIncome);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.inflows"), totalIncome);
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Egresos", totalExpense);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.outflows"), totalExpense);
             rowNum++;
-            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, "Balance", balance);
+            writeTotalsRow(sheet, dataStyle, currencyStyle, rowNum, ReportMessages.text("finance.treasury.cash_register.reports.balance"), balance);
 
             return toBytes(workbook);
 
         } catch (IOException e) {
-            throw new RuntimeException(ERROR_EXCEL, e);
+            throw new RuntimeException(ReportMessages.text("finance.treasury.cash_register.reports.unableToGenerateTheExcelFile"), e);
         }
     }
 
     private int writeTitle(Sheet sheet, CellStyle titleStyle, int rowNum) {
         Row titleRow = sheet.createRow(rowNum);
         Cell titleCell = titleRow.createCell(COL_EMISSION_DATE);
-        titleCell.setCellValue(TITLE_TEXT);
+        titleCell.setCellValue(ReportMessages.text("finance.treasury.cash_register.reports.detailedCashRegisterClosureByCurrency"));
         titleCell.setCellStyle(titleStyle);
         sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, COL_EMISSION_DATE, COL_CUSTOMER));
         titleRow.setHeightInPoints(30);
@@ -318,9 +319,9 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     private int writeHeader(Sheet sheet, CellStyle headerStyle, int rowNum) {
         Row headerRow = sheet.createRow(rowNum);
         String[] headers = {
-                "Fecha Emisión", "Documento", "Total Operación",
-                "Efectivo Bs.", "Dólar", "Transf.Dólar", "Zelle",
-                "Anticipo Aplicado", "N/C Aplicado", "N/D Aplicado", "Cliente"
+                ReportMessages.text("finance.treasury.cash_register.reports.issueDate"), ReportMessages.text("finance.treasury.cash_register.reports.document"), ReportMessages.text("finance.treasury.cash_register.reports.transactionTotal"),
+                ReportMessages.text("finance.treasury.cash_register.reports.cashInBs"), ReportMessages.text("finance.treasury.cash_register.reports.usDollar"), ReportMessages.text("finance.treasury.cash_register.reports.usdTransfer"), ReportMessages.text("finance.treasury.cash_register.reports.zelle"),
+                ReportMessages.text("finance.treasury.cash_register.reports.advanceApplied"), ReportMessages.text("finance.treasury.cash_register.reports.creditNoteApplied"), ReportMessages.text("finance.treasury.cash_register.reports.debitNoteApplied"), ReportMessages.text("finance.treasury.cash_register.reports.customer")
         };
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -337,7 +338,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
         Cell dateCell = dataRow.createCell(COL_EMISSION_DATE);
         dateCell.setCellValue(row.emissionDate() != null
-                ? row.emissionDate().format(DATE_FORMATTER) : "");
+                ? row.emissionDate().format(ReportMessages.dateFormatter()) : "");
         dateCell.setCellStyle(dateStyle);
 
         Cell docNumCell = dataRow.createCell(COL_DOC_NUMBER);
@@ -437,7 +438,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
     private void writeNoDataRow(Sheet sheet, CellStyle dataStyle, int rowNum) {
         Row row = sheet.createRow(rowNum);
         Cell cell = row.createCell(COL_EMISSION_DATE);
-        cell.setCellValue(MSG_NO_DATA);
+        cell.setCellValue(ReportMessages.text("finance.treasury.cash_register.reports.noTransactionsFoundForTheSpecifiedDate"));
         cell.setCellStyle(dataStyle);
         sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, COL_EMISSION_DATE, COL_CUSTOMER));
     }
@@ -594,7 +595,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
     private int writePaymentMethodHeader(Sheet sheet, CellStyle style, int rowNum) {
         Row headerRow = sheet.createRow(rowNum);
-        String[] headers = {"Metodo de Pago", "Transacciones", "Monto"};
+        String[] headers = {ReportMessages.text("finance.treasury.cash_register.reports.paymentMethod"), ReportMessages.text("finance.treasury.cash_register.reports.transactions"), ReportMessages.text("finance.treasury.cash_register.reports.amount")};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
@@ -606,7 +607,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
 
     private int writeTotalsHeader(Sheet sheet, CellStyle style, int rowNum) {
         Row headerRow = sheet.createRow(rowNum);
-        String[] headers = {"Concepto", "Monto"};
+        String[] headers = {ReportMessages.text("finance.treasury.cash_register.reports.description"), ReportMessages.text("finance.treasury.cash_register.reports.amount")};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
@@ -635,7 +636,7 @@ public class CashRegisterExcelGenerator implements CashRegisterExcelPort {
             workbook.write(baos);
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(ERROR_EXCEL, e);
+            throw new RuntimeException(ReportMessages.text("finance.treasury.cash_register.reports.unableToGenerateTheExcelFile"), e);
         }
     }
 }
