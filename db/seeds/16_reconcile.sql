@@ -19,7 +19,8 @@ FROM stock_movements;
 UPDATE stock_movements m JOIN seed_stock_running r ON r.id=m.id SET m.previous_stock=r.new_quantity-r.delta,m.new_stock=r.new_quantity;
 DROP TEMPORARY TABLE seed_stock_running;
 UPDATE warehouse_stock w SET quantity=(SELECT SUM(CASE WHEN m.movement_type IN ('SALE_EXIT','EXIT','TRANSFER_OUT') THEN -m.quantity ELSE m.quantity END) FROM stock_movements m WHERE m.warehouse_id=w.warehouse_id AND m.product_id=w.product_id),
-reserved=COALESCE((SELECT SUM(a.allocated) FROM order_line_allocations a JOIN order_lines l ON l.id=a.order_line_id JOIN orders o ON o.id=l.order_id WHERE a.warehouse_id=w.warehouse_id AND l.product_id=w.product_id AND o.status='CONFIRMED'),0),
+reserved=COALESCE((SELECT SUM(a.allocated) FROM order_line_allocations a JOIN order_lines l ON l.id=a.order_line_id JOIN orders o ON o.id=l.order_id WHERE a.warehouse_id=w.warehouse_id AND l.product_id=w.product_id AND o.status='DRAFT'),0)
+       +COALESCE((SELECT SUM(a.allocated) FROM invoice_line_allocations a JOIN invoice_lines l ON l.id=a.invoice_line_id JOIN invoices i ON i.id=l.invoice_id WHERE a.warehouse_id=w.warehouse_id AND l.product_id=w.product_id AND i.status='DRAFT'),0),
 last_movement_at=(SELECT MAX(m.created_at) FROM stock_movements m WHERE m.warehouse_id=w.warehouse_id AND m.product_id=w.product_id);
 
 -- An advance is exactly the unapplied part of an approved payment.

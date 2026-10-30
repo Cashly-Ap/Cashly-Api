@@ -61,6 +61,8 @@ SET @seed_violations = (SELECT COUNT(*) FROM customer_balances b WHERE ABS(b.tot
 CALL cashly_seed_assert(@seed_violations,'Customer balance ledger mismatch');
 SET @seed_violations = (SELECT COUNT(*) FROM warehouse_stock w WHERE w.quantity<0 OR w.reserved<0 OR w.reserved>w.quantity OR ABS(w.quantity-(SELECT COALESCE(SUM(CASE WHEN m.movement_type IN ('SALE_EXIT','EXIT','TRANSFER_OUT') THEN -m.quantity ELSE m.quantity END),0) FROM stock_movements m WHERE m.warehouse_id=w.warehouse_id AND m.product_id=w.product_id))>0.0001);
 CALL cashly_seed_assert(@seed_violations,'Warehouse stock ledger mismatch');
+SET @seed_violations = (SELECT COUNT(*) FROM warehouse_stock w WHERE ABS(w.reserved-COALESCE((SELECT SUM(a.allocated) FROM order_line_allocations a JOIN order_lines l ON l.id=a.order_line_id JOIN orders o ON o.id=l.order_id WHERE a.warehouse_id=w.warehouse_id AND l.product_id=w.product_id AND o.status='DRAFT'),0)-COALESCE((SELECT SUM(a.allocated) FROM invoice_line_allocations a JOIN invoice_lines l ON l.id=a.invoice_line_id JOIN invoices i ON i.id=l.invoice_id WHERE a.warehouse_id=w.warehouse_id AND l.product_id=w.product_id AND i.status='DRAFT'),0))>0.0001);
+CALL cashly_seed_assert(@seed_violations,'Warehouse reservations mismatch');
 SET @seed_violations = (SELECT COUNT(*) FROM stock_movements m WHERE m.previous_stock<0 OR m.new_stock<0 OR ABS(m.new_stock-m.previous_stock-CASE WHEN m.movement_type IN ('SALE_EXIT','EXIT','TRANSFER_OUT') THEN -m.quantity ELSE m.quantity END)>0.0001);
 CALL cashly_seed_assert(@seed_violations,'Stock movement arithmetic mismatch');
 SET @seed_violations = (SELECT COUNT(*) FROM cash_registers WHERE ABS(expected_closing_balance-(total_payments+total_advances+total_debit_notes-total_returns-total_credit_notes))>0.01);
