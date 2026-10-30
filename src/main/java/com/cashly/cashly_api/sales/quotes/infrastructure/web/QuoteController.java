@@ -84,17 +84,28 @@ public class QuoteController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
         List<QuoteListResponse> quotes = action == null ? getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir) : getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir, action);
-        return ResponseEntity.ok(quotes);
+        return ResponseEntity.ok(quotes.stream()
+                .filter(quote -> matchesSearch(search, quote.quoteNumber(), quote.customerName(), quote.customerRif()))
+                .toList());
+    }
+
+    private boolean matchesSearch(String search, String... values) {
+        if (search == null || search.isBlank()) return true;
+        String term = search.trim().toLowerCase();
+        return java.util.Arrays.stream(values)
+                .filter(java.util.Objects::nonNull)
+                .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
     public ResponseEntity<List<QuoteListResponse>> list(
             LocalDate dateFrom, LocalDate dateTo, UUID customerId, String status,
             UUID productId, UUID categoryId, String orderBy, String orderDir) {
-        return list(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir, null);
+        return list(dateFrom, dateTo, customerId, status, productId, categoryId, null, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")

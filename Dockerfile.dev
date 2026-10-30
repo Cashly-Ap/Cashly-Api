@@ -17,7 +17,7 @@ COPY src ./src
 
 # Copy dev entrypoint script (hot reload via inotify + DevTools)
 COPY scripts/dev-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/dev-entrypoint.sh && chmod +x /usr/local/bin/dev-entrypoint.sh
 
 EXPOSE 8080
 

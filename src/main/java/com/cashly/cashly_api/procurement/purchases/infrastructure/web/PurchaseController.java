@@ -77,19 +77,30 @@ public class PurchaseController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
         List<PurchaseListResponse> purchases = action == null ? listPurchasesUseCase.execute(
                 fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir) : listPurchasesUseCase.execute(
                 fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir, action);
-        return ResponseEntity.ok(purchases);
+        return ResponseEntity.ok(purchases.stream()
+                .filter(purchase -> matchesSearch(search, purchase.purchaseNumber(), purchase.supplierName()))
+                .toList());
+    }
+
+    private boolean matchesSearch(String search, String... values) {
+        if (search == null || search.isBlank()) return true;
+        String term = search.trim().toLowerCase();
+        return java.util.Arrays.stream(values)
+                .filter(java.util.Objects::nonNull)
+                .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
     public ResponseEntity<List<PurchaseListResponse>> getAll(
             LocalDate fromDate, LocalDate toDate, UUID supplierId, String status,
             UUID productId, UUID categoryId, String orderBy, String orderDir) {
-        return getAll(fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir, null);
+        return getAll(fromDate, toDate, supplierId, status, productId, categoryId, null, orderBy, orderDir, null);
     }
 
     @GetMapping("/products")
