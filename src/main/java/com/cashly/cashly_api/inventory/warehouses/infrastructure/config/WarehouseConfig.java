@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.inventory.warehouses.infrastructure.config;
 
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockMovementQueryGateway;
 
 import com.cashly.cashly_api.inventory.warehouses.management.application.create.use_case.CreateWarehouseUseCase;
 import com.cashly.cashly_api.inventory.warehouses.management.application.delete.use_case.DeleteWarehouseUseCase;
@@ -113,9 +114,10 @@ public class WarehouseConfig {
     public GetStockMovementsUseCase getStockMovementsUseCase(
             WarehouseRepository warehouseRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            StockMovementQueryGateway movementQueryGateway) {
         return new GetStockMovementsUseCase(warehouseRepository,
-                stockMovementRepository, catalog);
+                stockMovementRepository, catalog, movementQueryGateway);
     }
 
 }

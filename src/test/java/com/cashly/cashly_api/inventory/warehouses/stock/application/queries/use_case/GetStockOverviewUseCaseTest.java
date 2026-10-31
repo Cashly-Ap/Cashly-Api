@@ -2,9 +2,12 @@ package com.cashly.cashly_api.inventory.warehouses.stock.application.queries.use
 
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockOverviewQueryGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.queries.model.StockOverviewFilter;
+import com.cashly.cashly_api.inventory.warehouses.stock.application.queries.model.StockOverviewGroupBy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -19,6 +22,35 @@ class GetStockOverviewUseCaseTest {
         useCase.execute(null, null, "  APP  ", 2, 10);
         verify(gateway)
                 .search(new StockOverviewFilter(null, null, "APP", 2, 10));
+    }
+
+    @Test
+    void defaultsToUngroupedWhenGroupingIsNotProvided() {
+        useCase.execute(null, null, null, 0, 10);
+
+        verify(gateway).search(new StockOverviewFilter(null, null, "", 0, 10,
+                StockOverviewGroupBy.NONE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(StockOverviewGroupBy.class)
+    void forwardsEverySupportedGroupingStrategy(
+            StockOverviewGroupBy groupBy) {
+        var warehouseId = UUID.randomUUID();
+        var categoryId = UUID.randomUUID();
+
+        useCase.execute(warehouseId, categoryId, "  APP  ", 3, 25, groupBy);
+
+        verify(gateway).search(new StockOverviewFilter(warehouseId, categoryId,
+                "APP", 3, 25, groupBy));
+    }
+
+    @Test
+    void treatsNullGroupingAsUngrouped() {
+        useCase.execute(null, null, "APP", 0, 10, null);
+
+        verify(gateway).search(new StockOverviewFilter(null, null, "APP", 0,
+                10, StockOverviewGroupBy.NONE));
     }
 
     @ParameterizedTest

@@ -17,7 +17,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
+import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -83,6 +85,51 @@ class StockOverviewControllerTest {
         mvc.perform(get("/api/warehouses/stock").param("groupBy", "UNKNOWN"))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(gateway);
+    }
+
+    @Test
+    @WithMockUser(authorities = "INVENTORY:READ")
+    void defaultsToTheGlobalUngroupedView() throws Exception {
+        when(gateway.search(any())).thenReturn(ungroupedResponse());
+        MockMvcBuilders.standaloneSetup(controller).build()
+                .perform(get("/api/warehouses/stock"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.groupBy").value("NONE"))
+                .andExpect(jsonPath("$.groups").value(nullValue()))
+                .andExpect(jsonPath("$.stock.totalElements").value(0));
+        verify(gateway).search(new StockOverviewFilter(null, null, "", 0, 10,
+                StockOverviewGroupBy.NONE));
+    }
+
+    @Test
+    @WithMockUser(authorities = "INVENTORY:READ")
+    void bindsEveryFilterAndGroupingTogether() throws Exception {
+        var warehouseId = UUID.randomUUID();
+        var categoryId = UUID.randomUUID();
+        var response = new StockOverviewResponse(null,
+                new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
+                List.of(), StockOverviewGroupBy.WAREHOUSE,
+                new PageResponse<>(List.of(), 0, 0, 25, 2, false, true, true));
+        when(gateway.search(any())).thenReturn(response);
+        MockMvcBuilders.standaloneSetup(controller).build()
+                .perform(get("/api/warehouses/stock")
+                        .param("warehouseId", warehouseId.toString())
+                        .param("categoryId", categoryId.toString())
+                        .param("search", "  M-01  ").param("page", "2")
+                        .param("size", "25")
+                        .param("groupBy", "WAREHOUSE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.groupBy").value("WAREHOUSE"))
+                .andExpect(jsonPath("$.groups.totalElements").value(0));
+        verify(gateway).search(new StockOverviewFilter(warehouseId, categoryId,
+                "M-01", 2, 25, StockOverviewGroupBy.WAREHOUSE));
+    }
+
+    private static StockOverviewResponse ungroupedResponse() {
+        return new StockOverviewResponse(
+                new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true),
+                new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
+                List.of());
     }
 
     @Configuration

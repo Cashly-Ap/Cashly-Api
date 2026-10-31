@@ -7,17 +7,29 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.StockMovem
 import java.time.LocalDateTime;
 
 public record StockMovementResponse(String id, String warehouseId,
-        String productId, String productCode, String productName,
-        MovementType movementType, int quantity, int previousStock,
-        int newStock, String originMovementId, String transferBatchId,
-        ReferenceType referenceType, String referenceId, String referenceNumber,
-        String notes, LocalDateTime createdAt) {
+        String warehouseName, String productId, String productCode,
+        String productName, String categoryName, MovementType movementType,
+        int quantity, int previousStock, int newStock, String originMovementId,
+        String transferBatchId, ReferenceType referenceType, String referenceId,
+        String referenceNumber, String notes, LocalDateTime createdAt) {
+    public static StockMovementResponse from(StockMovement m, String productCode,
+            String productName) {
+        return from(m, null, productCode, productName, null);
+    }
+
     public static StockMovementResponse from(StockMovement m,
-            String productCode, String productName) {
+            String warehouseName, String productCode, String productName) {
+        return from(m, warehouseName, productCode, productName, null);
+    }
+
+    public static StockMovementResponse from(StockMovement m,
+            String warehouseName, String productCode, String productName,
+            String categoryName) {
         return new StockMovementResponse(
                 m.getId() != null ? m.getId().toString() : null,
-                m.getWarehouseId().toString(), m.getProductId().toString(),
-                productCode, productName, m.getMovementType(), m.getQuantity(),
+                m.getWarehouseId().toString(), warehouseName,
+                m.getProductId().toString(), productCode, productName,
+                categoryName, m.getMovementType(), m.getQuantity(),
                 m.getPreviousStock(), m.getNewStock(),
                 m.getOriginMovementId() != null
                         ? m.getOriginMovementId().toString()

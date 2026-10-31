@@ -85,4 +85,39 @@ class MovementTypeUnitTest {
         MovementType[] values = MovementType.values();
         assertEquals(9, values.length);
     }
+
+    @Test
+    @DisplayName("entry movements are classified as increments")
+    void shouldClassifyEntryMovements() {
+        assertTrue(MovementType.ENTRY.isEntry());
+        assertTrue(MovementType.TRANSFER_IN.isEntry());
+        assertTrue(MovementType.RETURN_ENTRY.isEntry());
+        assertTrue(MovementType.CANCEL_ENTRY.isEntry());
+
+        assertFalse(MovementType.ENTRY.isExit());
+        assertFalse(MovementType.TRANSFER_IN.isExit());
+        assertFalse(MovementType.RETURN_ENTRY.isExit());
+        assertFalse(MovementType.CANCEL_ENTRY.isExit());
+    }
+
+    @Test
+    @DisplayName("exit movements are classified as decrements")
+    void shouldClassifyExitMovements() {
+        assertTrue(MovementType.EXIT.isExit());
+        assertTrue(MovementType.TRANSFER_OUT.isExit());
+        assertTrue(MovementType.COMPONENT_EXIT.isExit());
+        assertTrue(MovementType.SALE_EXIT.isExit());
+
+        assertFalse(MovementType.EXIT.isEntry());
+        assertFalse(MovementType.TRANSFER_OUT.isEntry());
+        assertFalse(MovementType.COMPONENT_EXIT.isEntry());
+        assertFalse(MovementType.SALE_EXIT.isEntry());
+    }
+
+    @Test
+    @DisplayName("adjustments are neither an entry nor an exit")
+    void shouldNotClassifyAdjustments() {
+        assertFalse(MovementType.ADJUSTMENT.isEntry());
+        assertFalse(MovementType.ADJUSTMENT.isExit());
+    }
 }

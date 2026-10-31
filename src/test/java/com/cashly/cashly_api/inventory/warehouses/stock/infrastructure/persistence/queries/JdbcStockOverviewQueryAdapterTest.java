@@ -242,6 +242,70 @@ class JdbcStockOverviewQueryAdapterTest {
         assertThat(beyond.summary().totalQuantity()).isEqualTo(35);
     }
 
+    @Test
+    void defaultsToTheGlobalUngroupedView() {
+        var response = adapter
+                .search(new StockOverviewFilter(null, null, null, 0, 10));
+        assertThat(response.groupBy()).isEqualTo(StockOverviewGroupBy.NONE);
+        assertThat(response.stock()).isNotNull();
+        assertThat(response.groups()).isNull();
+        assertThat(response.stock().totalElements()).isEqualTo(4);
+    }
+
+    @Test
+    void keepsTheGlobalSummaryAcrossEveryGroupingMode() {
+        var ungrouped = adapter
+                .search(new StockOverviewFilter(null, null, null, 0, 10))
+                .summary();
+        var byProduct = adapter.search(new StockOverviewFilter(null, null, null,
+                0, 10, StockOverviewGroupBy.PRODUCT)).summary();
+        var byWarehouse = adapter.search(new StockOverviewFilter(null, null,
+                null, 0, 10, StockOverviewGroupBy.WAREHOUSE)).summary();
+        assertThat(byProduct).isEqualTo(ungrouped);
+        assertThat(byWarehouse).isEqualTo(ungrouped);
+        assertThat(ungrouped.totalQuantity()).isEqualTo(35);
+    }
+
+    @Test
+    void includesCompletePaginationMetadataForUngroupedRows() {
+        var first = adapter
+                .search(new StockOverviewFilter(null, null, null, 0, 2)).stock();
+        assertThat(first.totalElements()).isEqualTo(4);
+        assertThat(first.totalPages()).isEqualTo(2);
+        assertThat(first.size()).isEqualTo(2);
+        assertThat(first.number()).isZero();
+        assertThat(first.first()).isTrue();
+        assertThat(first.last()).isFalse();
+        assertThat(first.empty()).isFalse();
+        var last = adapter
+                .search(new StockOverviewFilter(null, null, null, 1, 2)).stock();
+        assertThat(last.content()).hasSize(2);
+        assertThat(last.number()).isEqualTo(1);
+        assertThat(last.first()).isFalse();
+        assertThat(last.last()).isTrue();
+    }
+
+    @Test
+    void treatsWhitespaceOnlySearchAsNoFilter() {
+        var response = adapter
+                .search(new StockOverviewFilter(null, null, "   ", 0, 10));
+        assertThat(response.stock().totalElements()).isEqualTo(4);
+        assertThat(response.summary().totalQuantity()).isEqualTo(35);
+    }
+
+    @Test
+    void treatsUnderscoreWildcardsAsLiteralCharacters() {
+        UUID underscore = UUID.randomUUID();
+        jdbc.update("INSERT INTO products VALUES (?, ?, ?, ?, ?)",
+                bytes(underscore), "A_C", "A_C item", bytes(fruit), false);
+        stock(alpha, underscore, 1, 0);
+        var response = adapter
+                .search(new StockOverviewFilter(null, null, "_", 0, 10));
+        assertThat(response.stock().totalElements()).isEqualTo(1);
+        assertThat(response.stock().content().getFirst().productName())
+                .isEqualTo("A_C item");
+    }
+
     private void stock(UUID warehouse, UUID product, int quantity,
             int reserved) {
         jdbc.update("INSERT INTO warehouse_stock VALUES (?, ?, ?, ?, ?)",
