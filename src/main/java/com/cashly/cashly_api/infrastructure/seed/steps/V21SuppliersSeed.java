@@ -3,6 +3,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.id;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierType;
 import com.cashly.cashly_api.partners.suppliers.infrastructure.persistence.entities.SupplierAddressEntity;
 import com.cashly.cashly_api.partners.suppliers.infrastructure.persistence.entities.SupplierEmailEntity;
 import com.cashly.cashly_api.partners.suppliers.infrastructure.persistence.entities.SupplierEntity;
@@ -31,14 +32,19 @@ public class V21SuppliersSeed implements SeedStep {
     private void supplier(String key, long code, String legalName, String alias,
             String rif, String emailValue, String phoneValue) {
         var supplierId = id("supplier." + key);
-        if (entityManager.find(SupplierEntity.class, supplierId) != null)
+        var existing = entityManager.find(SupplierEntity.class, supplierId);
+        if (existing != null) {
+            if ("NATIONAL".equals(existing.getType())) {
+                existing.setType(SupplierType.JURIDICO.name());
+            }
             return;
+        }
         var supplier = new SupplierEntity();
         supplier.setId(supplierId);
         supplier.setCode(code);
         supplier.setLegalName(legalName);
         supplier.setAlias(alias);
-        supplier.setType("NATIONAL");
+        supplier.setType(SupplierType.JURIDICO.name());
         supplier.setRif(rif);
         supplier.setNotes("Deterministic seed supplier");
         supplier.setActive(true);

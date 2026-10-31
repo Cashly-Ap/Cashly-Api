@@ -3,6 +3,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType;
 import com.cashly.cashly_api.partners.customers.balance.infrastructure.persistence.entities.BalanceTransactionEntity;
 import com.cashly.cashly_api.partners.customers.balance.infrastructure.persistence.entities.CustomerBalanceEntity;
 import com.cashly.cashly_api.partners.customers.profile.infrastructure.persistence.entities.CustomerAddressEntity;
@@ -100,15 +101,23 @@ public class V06CustomersSeed implements SeedStep {
     private void persistTransaction(UUID customerId, BigDecimal amount,
             String number) {
         UUID transactionId = id("balance-transaction." + customerId);
-        if (entityManager.find(BalanceTransactionEntity.class,
-                transactionId) != null)
+        var existing = entityManager.find(BalanceTransactionEntity.class,
+                transactionId);
+        if (existing != null) {
+            if ("DEBIT".equals(existing.getType())) {
+                existing.setType(BalanceType.ADVANCED.name());
+            }
+            if ("SEED".equals(existing.getReferenceType())) {
+                existing.setReferenceType(BalanceType.ADVANCED.name());
+            }
             return;
+        }
         var transaction = new BalanceTransactionEntity();
         transaction.setId(transactionId);
         transaction.setCustomerId(customerId);
-        transaction.setType("DEBIT");
+        transaction.setType(BalanceType.ADVANCED.name());
         transaction.setAmount(amount);
-        transaction.setReferenceType("SEED");
+        transaction.setReferenceType(BalanceType.ADVANCED.name());
         transaction.setNumber(number);
         transaction.setReferenceNumber(number);
         transaction.setCreatedBy(ADMIN_USER);
