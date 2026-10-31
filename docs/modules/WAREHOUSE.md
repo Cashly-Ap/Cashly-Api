@@ -699,6 +699,7 @@ public record StockMovementResponse(
 | GET /api/warehouses/{id} | None | WarehouseDetailResponse |
 | GET /api/warehouses/{id}/stock | `page`, `size` | PageResponse\<WarehouseStockResponse\> |
 | GET /api/warehouses/{id}/movements | `productId`, `movementType`, `page`, `size` | PageResponse\<StockMovementResponse\> |
+| GET /api/warehouses/movements | `warehouseId`, `productId`, `movementType`, `search`, `page`, `size`, `groupBy` | StockMovementsResponse |
 | POST /api/warehouses | CreateWarehouseRequest | WarehouseCreateResponse |
 | PUT /api/warehouses/{id} | UpdateWarehouseRequest | WarehouseDetailResponse |
 | DELETE /api/warehouses/{id} | None | void (204 No Content) |
@@ -710,6 +711,28 @@ public record StockMovementResponse(
 composite products without issuing an additional product request. Registering an entry for a
 composite product consumes `component quantity × entry quantity` from every configured component
 and records a `COMPONENT_EXIT` movement before recording the composite `ENTRY` movement.
+
+### Consolidated movements view
+
+`GET /api/warehouses/movements` serves the cross-warehouse history used by the
+movements page. Every filter is optional: absent, empty or blank values mean "no
+filter", and `groupBy` accepts `NONE`, `PRODUCT`, `WAREHOUSE` and `MOVEMENT_TYPE`
+(default `NONE`). `page` defaults to `0` and `size` to `20`.
+
+`StockMovementsResponse` always carries:
+
+- `summary`: `movementCount`, `productCount`, `warehouseCount`, `entryQuantity`,
+  `exitQuantity` and `netQuantity` computed over every movement matching the filters.
+- `warehouses` (`id`, `name`) and `products` (`id`, `name`, `code`) so the client can
+  render the filter selectors in the same round trip.
+- `groupBy` plus exactly one of `movements` (`NONE`) or `groups`.
+
+Each `StockMovementResponse` exposes `warehouseName` and `categoryName`, and each
+`StockMovementGroup` exposes its `categoryName`, `movementCount`, `entryQuantity`,
+`exitQuantity`, `netQuantity` and the underlying `items`. Entry quantities add
+`ENTRY`, `TRANSFER_IN`, `RETURN_ENTRY` and `CANCEL_ENTRY`; exit quantities add
+`EXIT`, `TRANSFER_OUT`, `COMPONENT_EXIT` and `SALE_EXIT`; `ADJUSTMENT` only counts
+as a movement.
 
 ---
 
