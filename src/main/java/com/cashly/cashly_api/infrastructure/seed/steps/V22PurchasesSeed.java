@@ -1,12 +1,15 @@
 package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
+import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.entities.PurchaseEntity;
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.entities.PurchaseLineAllocationEntity;
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.entities.PurchaseLineEntity;
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.entities.PurchaseNumberSequenceEntity;
+import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseStatus;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,12 +38,23 @@ public class V22PurchasesSeed implements SeedStep {
         purchase("two", "PUR-2025-0002", id("supplier.two"),
                 "Spring Water, C.A.", "J-20000002-2", PRODUCT_WATER,
                 "Mineral water", "PRD-0002", "24", "0.45");
-        if (entityManager.find(PurchaseNumberSequenceEntity.class,
-                2025) == null) {
-            var s = new PurchaseNumberSequenceEntity();
-            s.setYear(2025);
-            s.setNextValue(3);
+        for (var sample : SeedDocuments.additional()) {
+            purchase(sample.key(), sample.documentNumber("PUR"),
+                    sample.supplierId(), sample.supplierName(),
+                    sample.supplierRif(), sample.productId(),
+                    sample.productName(), sample.productCode(),
+                    sample.quantity(), sample.cost());
+            applyScenario(sample, sample.scenario());
+        }
+        var s = entityManager.find(PurchaseNumberSequenceEntity.class,
+                SeedDocuments.YEAR);
+        if (s == null) {
+            s = new PurchaseNumberSequenceEntity();
+            s.setYear(SeedDocuments.YEAR);
+            s.setNextValue(SeedDocuments.NEXT_NUMBER);
             entityManager.persist(s);
+        } else if (s.getNextValue() < SeedDocuments.NEXT_NUMBER) {
+            s.setNextValue(SeedDocuments.NEXT_NUMBER);
         }
     }
 
@@ -85,4 +99,27 @@ public class V22PurchasesSeed implements SeedStep {
         purchase.getLines().add(line);
         entityManager.persist(purchase);
     }
+
+    private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {
+        var purchase = entityManager.find(PurchaseEntity.class,
+                id("purchase." + sample.key()));
+        if (purchase == null
+                || !"Deterministic seed purchase".equals(purchase.getNotes())) {
+            return;
+        }
+        purchase.setStatus(scenario.purchase().name());
+        purchase.setConfirmedAt(scenario.purchase() == PurchaseStatus.CONFIRMED
+                ? EVENT_AT
+                : null);
+        purchase.setCancelledAt(scenario.purchase() == PurchaseStatus.CANCELLED
+                ? EVENT_AT
+                : null);
+        purchase.setCancelledReason(
+                scenario.purchase() == PurchaseStatus.CANCELLED
+                        ? CANCELLATION_REASON
+                        : null);
+        purchase.setNotes(SCENARIO_NOTES);
+        purchase.setUpdatedAt(EVENT_AT);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderLineAllocationEntity;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderLineEntity;
 import jakarta.persistence.EntityManager;
@@ -23,6 +24,10 @@ public class V12OrderAllocationsSeed implements SeedStep {
     public void seed() {
         allocation("one", "order-line.one", WAREHOUSE_MAIN, "2");
         allocation("two", "order-line.two", WAREHOUSE_MAIN, "3");
+        for (var sample : SeedDocuments.additional()) {
+            allocation(sample.key(), "order-line." + sample.key(),
+                    WAREHOUSE_MAIN, sample.quantity());
+        }
     }
     private void allocation(String key, String lineKey,
             java.util.UUID warehouseId, String quantity) {

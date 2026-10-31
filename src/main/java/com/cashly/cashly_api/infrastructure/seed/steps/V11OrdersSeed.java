@@ -1,11 +1,14 @@
 package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
+import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderEntity;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderLineEntity;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderNumberSequenceEntity;
+import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,11 +35,24 @@ public class V11OrdersSeed implements SeedStep {
         order(ORDER_TWO, "ORD-2025-0002", CUSTOMER_TWO, "Ana Pérez",
                 "V-10000002-2", id("order-line.two"), PRODUCT_WATER,
                 "Mineral water", "PRD-0002", "3", "1.00", CATEGORY_DRINKS);
-        if (entityManager.find(OrderNumberSequenceEntity.class, 2025) == null) {
-            var sequence = new OrderNumberSequenceEntity();
-            sequence.setYear(2025);
-            sequence.setNextValue(3);
+        for (var sample : SeedDocuments.additional()) {
+            order(id("order." + sample.key()), sample.documentNumber("ORD"),
+                    sample.customerId(), sample.customerName(),
+                    sample.customerRif(), id("order-line." + sample.key()),
+                    sample.productId(), sample.productName(),
+                    sample.productCode(), sample.quantity(), sample.price(),
+                    CATEGORY_DRINKS);
+            applyScenario(sample, sample.scenario());
+        }
+        var sequence = entityManager.find(OrderNumberSequenceEntity.class,
+                SeedDocuments.YEAR);
+        if (sequence == null) {
+            sequence = new OrderNumberSequenceEntity();
+            sequence.setYear(SeedDocuments.YEAR);
+            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
             entityManager.persist(sequence);
+        } else if (sequence.getNextValue() < SeedDocuments.NEXT_NUMBER) {
+            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
         }
     }
     private void order(UUID id, String number, UUID customerId,
@@ -73,4 +89,28 @@ public class V11OrdersSeed implements SeedStep {
         order.getLines().add(line);
         entityManager.persist(order);
     }
+
+    private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {
+        var order = entityManager.find(OrderEntity.class,
+                id("order." + sample.key()));
+        if (order == null
+                || !"Deterministic seed order".equals(order.getNotes())) {
+            return;
+        }
+        order.setStatus(scenario.order().name());
+        order.setInvoiceId(scenario.order() == OrderStatus.INVOICED
+                ? id("invoice." + sample.key())
+                : null);
+        order.setInvoiceNumber(scenario.order() == OrderStatus.INVOICED
+                ? sample.documentNumber("INV")
+                : null);
+        order.setCancelledAt(
+                scenario.order() == OrderStatus.CANCELLED ? EVENT_AT : null);
+        order.setCancelledReason(scenario.order() == OrderStatus.CANCELLED
+                ? CANCELLATION_REASON
+                : null);
+        order.setNotes(SCENARIO_NOTES);
+        order.setUpdatedAt(EVENT_AT);
+    }
+
 }

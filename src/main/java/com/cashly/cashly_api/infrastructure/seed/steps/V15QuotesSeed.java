@@ -1,12 +1,16 @@
 package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
+import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteAllocationJpaEntity;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteJpaEntity;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteLineJpaEntity;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteNumberSequenceJpaEntity;
+import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteStatus;
+import java.time.ZoneOffset;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,18 +36,29 @@ public class V15QuotesSeed implements SeedStep {
 
     @Override
     public void seed() {
-        quote(QUOTE_ONE, "QUO-2025-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
+        quote(QUOTE_ONE, "PRE-2025-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
                 "J-10000001-1", "one", PRODUCT_COFFEE, "Ground coffee",
                 "PRD-0001", "4", "6.50", CATEGORY_DRINKS);
-        quote(QUOTE_TWO, "QUO-2025-0002", CUSTOMER_TWO, "Ana Pérez",
+        quote(QUOTE_TWO, "PRE-2025-0002", CUSTOMER_TWO, "Ana Pérez",
                 "V-10000002-2", "two", PRODUCT_WATER, "Mineral water",
                 "PRD-0002", "6", "1.00", CATEGORY_DRINKS);
-        if (entityManager.find(QuoteNumberSequenceJpaEntity.class,
-                2025) == null) {
-            var sequence = new QuoteNumberSequenceJpaEntity();
-            sequence.setYear(2025);
-            sequence.setNextValue(3);
+        for (var sample : SeedDocuments.additional()) {
+            quote(id("quote." + sample.key()), sample.documentNumber("PRE"),
+                    sample.customerId(), sample.customerName(),
+                    sample.customerRif(), sample.key(), sample.productId(),
+                    sample.productName(), sample.productCode(),
+                    sample.quantity(), sample.price(), CATEGORY_DRINKS);
+            applyScenario(sample, sample.scenario());
+        }
+        var sequence = entityManager.find(QuoteNumberSequenceJpaEntity.class,
+                SeedDocuments.YEAR);
+        if (sequence == null) {
+            sequence = new QuoteNumberSequenceJpaEntity();
+            sequence.setYear(SeedDocuments.YEAR);
+            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
             entityManager.persist(sequence);
+        } else if (sequence.getNextValue() < SeedDocuments.NEXT_NUMBER) {
+            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
         }
     }
 
@@ -51,7 +66,12 @@ public class V15QuotesSeed implements SeedStep {
             String customerName, String rif, String key, UUID productId,
             String productName, String code, String quantity, String price,
             UUID categoryId) {
-        if (entityManager.find(QuoteJpaEntity.class, id) != null) {
+        var existing = entityManager.find(QuoteJpaEntity.class, id);
+        if (existing != null) {
+            if (existing.getQuoteNumber()
+                    .equals(number.replace("PRE-", "QUO-"))) {
+                existing.setQuoteNumber(number);
+            }
             return;
         }
         BigDecimal qty = new BigDecimal(quantity),
@@ -93,4 +113,36 @@ public class V15QuotesSeed implements SeedStep {
         quote.getLines().add(line);
         entityManager.persist(quote);
     }
+
+    private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {
+        var quote = entityManager.find(QuoteJpaEntity.class,
+                id("quote." + sample.key()));
+        if (quote == null
+                || !"Deterministic seed quote".equals(quote.getNotes())) {
+            return;
+        }
+        quote.setStatus(scenario.quote().name());
+        quote.setOrderId(scenario.quote() == QuoteStatus.CONVERTED_TO_ORDER
+                ? id("order." + sample.key())
+                : null);
+        quote.setOrderNumber(scenario.quote() == QuoteStatus.CONVERTED_TO_ORDER
+                ? sample.documentNumber("ORD")
+                : null);
+        quote.setInvoiceId(scenario.quote() == QuoteStatus.CONVERTED_TO_INVOICE
+                ? id("invoice." + sample.key())
+                : null);
+        quote.setInvoiceNumber(
+                scenario.quote() == QuoteStatus.CONVERTED_TO_INVOICE
+                        ? sample.documentNumber("INV")
+                        : null);
+        quote.setCancelledAt(scenario.quote() == QuoteStatus.CANCELLED
+                ? EVENT_AT.toInstant(ZoneOffset.UTC)
+                : null);
+        quote.setCancelledReason(scenario.quote() == QuoteStatus.CANCELLED
+                ? CANCELLATION_REASON
+                : null);
+        quote.setNotes(SCENARIO_NOTES);
+        quote.setUpdatedAt(EVENT_AT.toInstant(ZoneOffset.UTC));
+    }
+
 }

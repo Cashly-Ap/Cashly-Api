@@ -1,11 +1,15 @@
 package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
+import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
 
+import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceEntity;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceNumberSequenceEntity;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
+import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,12 +38,25 @@ public class V13InvoicesSeed implements SeedStep {
         invoice(INVOICE_TWO, "INV-2025-0002", CUSTOMER_TWO, "Ana Pérez",
                 "V-10000002-2", ORDER_TWO, "ORD-2025-0002", "invoice-line.two",
                 PRODUCT_WATER, "Mineral water", "PRD-0002", "3", "1.00");
-        if (entityManager.find(InvoiceNumberSequenceEntity.class,
-                2025) == null) {
-            var sequence = new InvoiceNumberSequenceEntity();
-            sequence.setYear(2025);
-            sequence.setNextValue(3);
+        for (var sample : SeedDocuments.additional()) {
+            invoice(id("invoice." + sample.key()), sample.documentNumber("INV"),
+                    sample.customerId(), sample.customerName(),
+                    sample.customerRif(), id("order." + sample.key()),
+                    sample.documentNumber("ORD"),
+                    "invoice-line." + sample.key(), sample.productId(),
+                    sample.productName(), sample.productCode(),
+                    sample.quantity(), sample.price());
+            applyScenario(sample, sample.scenario());
+        }
+        var sequence = entityManager.find(InvoiceNumberSequenceEntity.class,
+                SeedDocuments.YEAR);
+        if (sequence == null) {
+            sequence = new InvoiceNumberSequenceEntity();
+            sequence.setYear(SeedDocuments.YEAR);
+            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
             entityManager.persist(sequence);
+        } else if (sequence.getNextValue() < SeedDocuments.NEXT_NUMBER) {
+            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
         }
     }
     private void invoice(UUID id, String number, UUID customerId,
@@ -83,4 +100,32 @@ public class V13InvoicesSeed implements SeedStep {
         invoice.getLines().add(line);
         entityManager.persist(invoice);
     }
+
+    private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {
+        var invoice = entityManager.find(InvoiceEntity.class,
+                id("invoice." + sample.key()));
+        if (invoice == null
+                || !"Deterministic seed invoice".equals(invoice.getNotes())) {
+            return;
+        }
+        invoice.setStatus(scenario.invoice().name());
+        invoice.setPaymentType(scenario.paymentType().name());
+        invoice.getOrderIds().clear();
+        invoice.getQuoteIds().clear();
+        invoice.setOrderId(null);
+        invoice.setOrderNumber(null);
+        if (scenario.order() == OrderStatus.INVOICED) {
+            invoice.setOrderId(id("order." + sample.key()));
+            invoice.setOrderNumber(sample.documentNumber("ORD"));
+        }
+        invoice.setCancelledAt(scenario.invoice() == InvoiceStatus.CANCELLED
+                ? EVENT_AT
+                : null);
+        invoice.setCancelledReason(scenario.invoice() == InvoiceStatus.CANCELLED
+                ? CANCELLATION_REASON
+                : null);
+        invoice.setNotes(PENDING_LINKS_NOTES);
+        invoice.setUpdatedAt(EVENT_AT);
+    }
+
 }

@@ -5,6 +5,7 @@ import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,10 @@ public class V14InvoiceAllocationsSeed implements SeedStep {
     public void seed() {
         allocation("one", "invoice-line.one", "2");
         allocation("two", "invoice-line.two", "3");
+        for (var sample : SeedDocuments.additional()) {
+            allocation(sample.key(), "invoice-line." + sample.key(),
+                    sample.quantity());
+        }
     }
     private void allocation(String key, String lineKey, String quantity) {
         var allocationId = id("invoice-allocation." + key);
