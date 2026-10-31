@@ -173,6 +173,8 @@ class LayerDependencyTest {
         return references(source).stream()
                 .filter(type -> !moduleOf(type).equals(owner))
                 .filter(type -> !type.contains(".application.ports.in."))
+                .filter(type -> !type.startsWith(
+                        "com.cashly.cashly_api.shared.domain."))
                 .filter(type -> type.contains(".domain.")
                         || type.contains(".application.")
                         || type.contains(".infrastructure."))

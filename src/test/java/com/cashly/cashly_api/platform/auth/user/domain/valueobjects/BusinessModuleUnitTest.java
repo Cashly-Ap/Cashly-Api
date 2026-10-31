@@ -46,9 +46,9 @@ class BusinessModuleUnitTest {
     }
 
     @Test
-    void should_return_ten_values() {
+    void should_return_eleven_values() {
         BusinessModule[] values = BusinessModule.values();
-        assertEquals(10, values.length);
+        assertEquals(11, values.length);
     }
 
     @Test

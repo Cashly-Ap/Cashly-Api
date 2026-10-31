@@ -23,7 +23,7 @@ class CapabilityStructureTest {
             .compile("(?m)^package\\s+([a-zA-Z0-9_.]+)\\s*;");
     private static final Map<String, Set<String>> CAPABILITIES = Map.of("auth",
             Set.of("authentication", "token", "user", "role", "department",
-                    "authorization"),
+                    "authorization", "mfa", "preferences"),
             "warehouses", Set.of("management", "stock", "reporting"),
             "customers",
             Set.of("profile", "balance", "credit", "warehouse_access"),
