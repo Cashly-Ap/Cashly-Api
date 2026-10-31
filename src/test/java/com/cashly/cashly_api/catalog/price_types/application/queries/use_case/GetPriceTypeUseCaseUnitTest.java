@@ -32,9 +32,11 @@ class GetPriceTypeUseCaseUnitTest {
     void should_ReturnPriceType_When_IdExists() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType priceType = PriceType.reconstitute(id, "Mayorista", "Precio mayorista", true, now, now);
+        PriceType priceType = PriceType.reconstitute(id, "Mayorista",
+                "Precio mayorista", true, now, now);
 
-        when(priceTypeRepository.findById(id)).thenReturn(Optional.of(priceType));
+        when(priceTypeRepository.findById(id))
+                .thenReturn(Optional.of(priceType));
 
         PriceTypeResponse response = getPriceTypeUseCase.execute(id);
 
@@ -52,7 +54,8 @@ class GetPriceTypeUseCaseUnitTest {
 
         when(priceTypeRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(PriceTypeNotFoundException.class, () -> getPriceTypeUseCase.execute(id));
+        assertThrows(PriceTypeNotFoundException.class,
+                () -> getPriceTypeUseCase.execute(id));
         verify(priceTypeRepository).findById(id);
     }
 
@@ -60,9 +63,11 @@ class GetPriceTypeUseCaseUnitTest {
     void should_ReturnInactivePriceType_When_IdExistsAndInactive() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType priceType = PriceType.reconstitute(id, "Especial", null, false, now, now);
+        PriceType priceType = PriceType.reconstitute(id, "Especial", null,
+                false, now, now);
 
-        when(priceTypeRepository.findById(id)).thenReturn(Optional.of(priceType));
+        when(priceTypeRepository.findById(id))
+                .thenReturn(Optional.of(priceType));
 
         PriceTypeResponse response = getPriceTypeUseCase.execute(id);
 

@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.finance.billing.returns.infrastructure.persistence.adapters;
 
-
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.Return;
 import com.cashly.cashly_api.finance.billing.returns.domain.valueobjects.ReturnId;
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.ReturnLine;
@@ -69,33 +68,19 @@ class JpaReturnRepositoryTest {
         UUID lineInvoiceLineId = UUID.randomUUID();
         UUID lineProductId = UUID.randomUUID();
 
-        List<ReturnLine> lines = List.of(
-                ReturnLine.create(
-                        lineInvoiceLineId,
-                        lineProductId,
-                        new BigDecimal("2"),
-                        new BigDecimal("125.00"),
-                        new BigDecimal("250.00"),
-                        List.of(
-                                ReturnLineAllocation.reconstitute(
-                                        UUID.randomUUID(),
-                                        UUID.randomUUID(),
-                                        new BigDecimal("2")
-                                )
-                        )
-                )
-        );
+        List<ReturnLine> lines = List.of(ReturnLine.create(lineInvoiceLineId,
+                lineProductId, new BigDecimal("2"), new BigDecimal("125.00"),
+                new BigDecimal("250.00"),
+                List.of(ReturnLineAllocation.reconstitute(UUID.randomUUID(),
+                        UUID.randomUUID(), new BigDecimal("2")))));
 
         UUID createdBy = UUID.randomUUID();
         String createdByName = "John Doe";
         LocalDateTime now = LocalDateTime.now();
 
-        return Return.reconstitute(
-                id, returnNumber, invoiceId, customerId,
-                returnType, reason, total, lines,
-                List.of(),
-                createdBy, createdByName, now, now
-        );
+        return Return.reconstitute(id, returnNumber, invoiceId, customerId,
+                returnType, reason, total, lines, List.of(), createdBy,
+                createdByName, now, now);
     }
 
     private ReturnEntity createTestEntity(Return domain) {
@@ -123,20 +108,18 @@ class JpaReturnRepositoryTest {
                     le.setUnitPrice(line.getUnitPrice());
                     le.setLineTotal(line.getSubtotal());
 
-                    List<ReturnLineAllocationEntity> allocEntities = line.getAllocations().stream()
-                            .map(alloc -> {
+                    List<ReturnLineAllocationEntity> allocEntities = line
+                            .getAllocations().stream().map(alloc -> {
                                 ReturnLineAllocationEntity ae = new ReturnLineAllocationEntity();
                                 ae.setId(alloc.getId());
                                 ae.setReturnLine(le);
                                 ae.setWarehouseId(alloc.getWarehouseId());
                                 ae.setAllocated(alloc.getAllocated());
                                 return ae;
-                            })
-                            .toList();
+                            }).toList();
                     le.getAllocations().addAll(allocEntities);
                     return le;
-                })
-                .toList();
+                }).toList();
 
         entity.getLines().addAll(lineEntities);
         return entity;
@@ -167,14 +150,17 @@ class JpaReturnRepositoryTest {
 
             ReturnEntity captured = entityCaptor.getValue();
             assertEquals(return_.getId().value(), captured.getId());
-            assertEquals(return_.getReturnNumber().value(), captured.getReturnNumber());
+            assertEquals(return_.getReturnNumber().value(),
+                    captured.getReturnNumber());
             assertEquals(return_.getInvoiceId(), captured.getInvoiceId());
             assertEquals(return_.getCustomerId(), captured.getCustomerId());
-            assertEquals(return_.getReturnType().name(), captured.getReturnType());
+            assertEquals(return_.getReturnType().name(),
+                    captured.getReturnType());
             assertEquals(return_.getReason(), captured.getReason());
             assertEquals(return_.getTotal(), captured.getTotal());
             assertEquals(return_.getCreatedBy(), captured.getCreatedBy());
-            assertEquals(return_.getCreatedByName(), captured.getCreatedByName());
+            assertEquals(return_.getCreatedByName(),
+                    captured.getCreatedByName());
             assertEquals(return_.getCreatedAt(), captured.getCreatedAt());
             assertEquals(return_.getUpdatedAt(), captured.getUpdatedAt());
             assertEquals(return_.getLines().size(), captured.getLines().size());
@@ -188,8 +174,8 @@ class JpaReturnRepositoryTest {
         void save_Create_When_EntityNotFound() {
             Return return_ = createTestReturn();
 
-            when(entityManager.find(ReturnEntity.class, return_.getId().value()))
-                    .thenReturn(null);
+            when(entityManager.find(ReturnEntity.class,
+                    return_.getId().value())).thenReturn(null);
             doNothing().when(entityManager).persist(entityCaptor.capture());
 
             Return saved = adapter.save(return_);
@@ -203,11 +189,16 @@ class JpaReturnRepositoryTest {
             assertEquals(1, captured.getLines().size());
 
             ReturnLineEntity lineEntity = captured.getLines().getFirst();
-            assertEquals(return_.getLines().getFirst().getInvoiceLineId(), lineEntity.getInvoiceLineId());
-            assertEquals(return_.getLines().getFirst().getProductId(), lineEntity.getProductId());
-            assertEquals(return_.getLines().getFirst().getQuantity(), lineEntity.getQuantity());
-            assertEquals(return_.getLines().getFirst().getUnitPrice(), lineEntity.getUnitPrice());
-            assertEquals(return_.getLines().getFirst().getSubtotal(), lineEntity.getLineTotal());
+            assertEquals(return_.getLines().getFirst().getInvoiceLineId(),
+                    lineEntity.getInvoiceLineId());
+            assertEquals(return_.getLines().getFirst().getProductId(),
+                    lineEntity.getProductId());
+            assertEquals(return_.getLines().getFirst().getQuantity(),
+                    lineEntity.getQuantity());
+            assertEquals(return_.getLines().getFirst().getUnitPrice(),
+                    lineEntity.getUnitPrice());
+            assertEquals(return_.getLines().getFirst().getSubtotal(),
+                    lineEntity.getLineTotal());
             assertNotNull(lineEntity.getAllocations());
             assertEquals(1, lineEntity.getAllocations().size());
 
@@ -221,8 +212,8 @@ class JpaReturnRepositoryTest {
             Return return_ = createTestReturn();
             ReturnEntity existingEntity = createTestEntity(return_);
 
-            when(entityManager.find(ReturnEntity.class, return_.getId().value()))
-                    .thenReturn(existingEntity);
+            when(entityManager.find(ReturnEntity.class,
+                    return_.getId().value())).thenReturn(existingEntity);
             when(entityManager.merge(any(ReturnEntity.class)))
                     .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -257,17 +248,21 @@ class JpaReturnRepositoryTest {
 
             assertTrue(result.isPresent());
             assertEquals(domain.getId(), result.get().getId());
-            assertEquals(domain.getReturnNumber(), result.get().getReturnNumber());
+            assertEquals(domain.getReturnNumber(),
+                    result.get().getReturnNumber());
             assertEquals(domain.getInvoiceId(), result.get().getInvoiceId());
             assertEquals(domain.getCustomerId(), result.get().getCustomerId());
             assertEquals(domain.getReturnType(), result.get().getReturnType());
             assertEquals(domain.getReason(), result.get().getReason());
             assertEquals(domain.getTotal(), result.get().getTotal());
             assertEquals(domain.getCreatedBy(), result.get().getCreatedBy());
-            assertEquals(domain.getCreatedByName(), result.get().getCreatedByName());
-            assertEquals(domain.getLines().size(), result.get().getLines().size());
+            assertEquals(domain.getCreatedByName(),
+                    result.get().getCreatedByName());
+            assertEquals(domain.getLines().size(),
+                    result.get().getLines().size());
 
-            verify(entityManager).find(ReturnEntity.class, domain.getId().value());
+            verify(entityManager).find(ReturnEntity.class,
+                    domain.getId().value());
         }
 
         @Test
@@ -297,7 +292,8 @@ class JpaReturnRepositoryTest {
 
             when(entityManager.createQuery(anyString(), eq(ReturnEntity.class)))
                     .thenReturn(typedQuery);
-            when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+            when(typedQuery.setParameter(anyString(), any()))
+                    .thenReturn(typedQuery);
             when(typedQuery.getResultList()).thenReturn(List.of(entity));
 
             LocalDate dateFrom = LocalDate.of(2026, 1, 1);
@@ -305,14 +301,17 @@ class JpaReturnRepositoryTest {
             UUID customerId = UUID.randomUUID();
             UUID invoiceId = UUID.randomUUID();
 
-            List<Return> results = adapter.findAllWithFilters(dateFrom, dateTo, customerId, invoiceId);
+            List<Return> results = adapter.findAllWithFilters(dateFrom, dateTo,
+                    customerId, invoiceId);
 
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(domain.getId(), results.getFirst().getId());
-            assertEquals(domain.getReturnNumber(), results.getFirst().getReturnNumber());
+            assertEquals(domain.getReturnNumber(),
+                    results.getFirst().getReturnNumber());
 
-            verify(entityManager).createQuery(anyString(), eq(ReturnEntity.class));
+            verify(entityManager).createQuery(anyString(),
+                    eq(ReturnEntity.class));
             verify(typedQuery, times(4)).setParameter(anyString(), any());
             verify(typedQuery).getResultList();
         }
@@ -325,18 +324,21 @@ class JpaReturnRepositoryTest {
 
             when(entityManager.createQuery(anyString(), eq(ReturnEntity.class)))
                     .thenReturn(typedQuery);
-            when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+            when(typedQuery.setParameter(anyString(), any()))
+                    .thenReturn(typedQuery);
             when(typedQuery.getResultList()).thenReturn(List.of(entity));
 
             LocalDate dateFrom = LocalDate.of(2026, 1, 1);
 
-            List<Return> results = adapter.findAllWithFilters(dateFrom, null, null, null);
+            List<Return> results = adapter.findAllWithFilters(dateFrom, null,
+                    null, null);
 
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(domain.getId(), results.getFirst().getId());
 
-            verify(entityManager).createQuery(anyString(), eq(ReturnEntity.class));
+            verify(entityManager).createQuery(anyString(),
+                    eq(ReturnEntity.class));
             verify(typedQuery, times(1)).setParameter(anyString(), any());
             verify(typedQuery).getResultList();
         }
@@ -348,12 +350,14 @@ class JpaReturnRepositoryTest {
                     .thenReturn(typedQuery);
             when(typedQuery.getResultList()).thenReturn(List.of());
 
-            List<Return> results = adapter.findAllWithFilters(null, null, null, null);
+            List<Return> results = adapter.findAllWithFilters(null, null, null,
+                    null);
 
             assertNotNull(results);
             assertTrue(results.isEmpty());
 
-            verify(entityManager).createQuery(anyString(), eq(ReturnEntity.class));
+            verify(entityManager).createQuery(anyString(),
+                    eq(ReturnEntity.class));
             verify(typedQuery, never()).setParameter(anyString(), any());
             verify(typedQuery).getResultList();
         }
@@ -374,7 +378,8 @@ class JpaReturnRepositoryTest {
 
             adapter.delete(domain.getId());
 
-            verify(entityManager).find(ReturnEntity.class, domain.getId().value());
+            verify(entityManager).find(ReturnEntity.class,
+                    domain.getId().value());
             verify(entityManager).remove(entity);
         }
 
@@ -405,9 +410,8 @@ class JpaReturnRepositoryTest {
             existingSeq.setYear(year);
             existingSeq.setNextValue(5);
 
-            when(entityManager.find(
-                    eq(ReturnNumberSequenceEntity.class), eq(year),
-                    eq(LockModeType.PESSIMISTIC_WRITE)))
+            when(entityManager.find(eq(ReturnNumberSequenceEntity.class),
+                    eq(year), eq(LockModeType.PESSIMISTIC_WRITE)))
                     .thenReturn(existingSeq);
             when(entityManager.merge(any(ReturnNumberSequenceEntity.class)))
                     .thenAnswer(invocation -> invocation.getArgument(0));
@@ -417,9 +421,8 @@ class JpaReturnRepositoryTest {
             assertEquals(6, next);
             assertEquals(6, existingSeq.getNextValue().intValue());
 
-            verify(entityManager).find(
-                    eq(ReturnNumberSequenceEntity.class), eq(year),
-                    eq(LockModeType.PESSIMISTIC_WRITE));
+            verify(entityManager).find(eq(ReturnNumberSequenceEntity.class),
+                    eq(year), eq(LockModeType.PESSIMISTIC_WRITE));
             verify(entityManager).merge(existingSeq);
         }
 
@@ -428,9 +431,8 @@ class JpaReturnRepositoryTest {
         void getNextSequenceForYear_NewSequence() {
             int year = 2026;
 
-            when(entityManager.find(
-                    eq(ReturnNumberSequenceEntity.class), eq(year),
-                    eq(LockModeType.PESSIMISTIC_WRITE)))
+            when(entityManager.find(eq(ReturnNumberSequenceEntity.class),
+                    eq(year), eq(LockModeType.PESSIMISTIC_WRITE)))
                     .thenReturn(null);
             when(entityManager.merge(sequenceCaptor.capture()))
                     .thenAnswer(invocation -> invocation.getArgument(0));
@@ -443,9 +445,8 @@ class JpaReturnRepositoryTest {
             assertEquals(year, captured.getYear().intValue());
             assertEquals(1, captured.getNextValue().intValue());
 
-            verify(entityManager).find(
-                    eq(ReturnNumberSequenceEntity.class), eq(year),
-                    eq(LockModeType.PESSIMISTIC_WRITE));
+            verify(entityManager).find(eq(ReturnNumberSequenceEntity.class),
+                    eq(year), eq(LockModeType.PESSIMISTIC_WRITE));
             verify(entityManager).merge(any(ReturnNumberSequenceEntity.class));
         }
     }

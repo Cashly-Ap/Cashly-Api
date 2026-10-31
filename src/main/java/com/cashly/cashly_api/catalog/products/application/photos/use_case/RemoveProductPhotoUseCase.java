@@ -13,7 +13,7 @@ public class RemoveProductPhotoUseCase {
     private final ProductFileStorageGateway fileStorageService;
 
     public RemoveProductPhotoUseCase(ProductRepository productRepository,
-                                      ProductFileStorageGateway fileStorageService) {
+            ProductFileStorageGateway fileStorageService) {
         this.productRepository = productRepository;
         this.fileStorageService = fileStorageService;
     }

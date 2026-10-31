@@ -23,8 +23,9 @@ public class LocalCustomerCashGateway implements CustomerCashGateway {
     public void record(CustomerCashMovement movement) {
         cashMovements.record(
                 CashMovementDirection.valueOf(movement.direction()),
-                CashMovementType.valueOf(movement.type()),
-                movement.amount(), movement.paymentMethodId(), movement.description(),
-                movement.sourceType(), movement.sourceId(), movement.actorId(), movement.actorName());
+                CashMovementType.valueOf(movement.type()), movement.amount(),
+                movement.paymentMethodId(), movement.description(),
+                movement.sourceType(), movement.sourceId(), movement.actorId(),
+                movement.actorName());
     }
 }

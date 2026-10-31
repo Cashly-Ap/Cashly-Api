@@ -55,33 +55,45 @@ class CreateProductUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CreateProductUseCase(productRepository, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categoryRepository)), new LocalProductPriceTypeGatewayAdapter(new RepositoryProductPriceTypeQuery(priceTypeRepository)), productMapper);
+        useCase = new CreateProductUseCase(productRepository,
+                new LocalProductCategoryGatewayAdapter(
+                        new RepositoryProductCategoryQuery(categoryRepository)),
+                new LocalProductPriceTypeGatewayAdapter(
+                        new RepositoryProductPriceTypeQuery(
+                                priceTypeRepository)),
+                productMapper);
     }
 
     @Test
     void should_CreateProduct_When_ValidRequest() {
         UUID categoryId = UUID.randomUUID();
         UUID priceTypeId = UUID.randomUUID();
-        CreateProductRequest request = new CreateProductRequest(
-                null, "Test Product", "Description", categoryId, false,
+        CreateProductRequest request = new CreateProductRequest(null,
+                "Test Product", "Description", categoryId, false,
                 new BigDecimal("10.00"), null,
-                List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("25.00"), null)));
+                List.of(new ProductPriceRequest(priceTypeId,
+                        new BigDecimal("25.00"), null)));
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Electronics");
 
-        Product savedProduct = Product.reconstitute(UUID.randomUUID(), "PROD-001", "Test Product",
-                "Description", categoryId, false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product savedProduct = Product.reconstitute(UUID.randomUUID(),
+                "PROD-001", "Test Product", "Description", categoryId, false,
+                true, null, new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
+        ProductDetailResponse expectedResponse = mock(
+                ProductDetailResponse.class);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(category));
         when(productRepository.generateNextCode()).thenReturn("PROD-001");
-        when(priceTypeRepository.findById(priceTypeId)).thenReturn(Optional.of(mock(PriceType.class)));
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-        when(productMapper.toDetailResponse(any(), anyString(), any(), any())).thenReturn(expectedResponse);
+        when(priceTypeRepository.findById(priceTypeId))
+                .thenReturn(Optional.of(mock(PriceType.class)));
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(savedProduct);
+        when(productMapper.toDetailResponse(any(), anyString(), any(), any()))
+                .thenReturn(expectedResponse);
 
         ProductDetailResponse result = useCase.execute(request);
 
@@ -95,29 +107,36 @@ class CreateProductUseCaseTest {
     void should_CreateCompositeWithComponents_When_CompositeRequest() {
         UUID categoryId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
-        CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(componentId, 2);
-        CreateProductRequest request = new CreateProductRequest(
-                null, "Composite Product", "Description", categoryId, true,
-                null, List.of(compReq), null);
+        CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(
+                componentId, 2);
+        CreateProductRequest request = new CreateProductRequest(null,
+                "Composite Product", "Description", categoryId, true, null,
+                List.of(compReq), null);
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Kit");
 
-        Product componentProduct = Product.reconstitute(componentId, "COMP-001", "Component",
-                "desc", categoryId, false, true, null, null,
+        Product componentProduct = Product.reconstitute(componentId, "COMP-001",
+                "Component", "desc", categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
-        Product savedProduct = Product.reconstitute(UUID.randomUUID(), "COMP-KIT-001", "Composite Product",
-                "Description", categoryId, true, true, null,
-                null, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product savedProduct = Product.reconstitute(UUID.randomUUID(),
+                "COMP-KIT-001", "Composite Product", "Description", categoryId,
+                true, true, null, null, List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
+        ProductDetailResponse expectedResponse = mock(
+                ProductDetailResponse.class);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(category));
         when(productRepository.generateNextCode()).thenReturn("COMP-KIT-001");
-        when(productRepository.findById(componentId)).thenReturn(Optional.of(componentProduct));
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-        when(productMapper.toDetailResponse(any(), anyString(), any(), any())).thenReturn(expectedResponse);
+        when(productRepository.findById(componentId))
+                .thenReturn(Optional.of(componentProduct));
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(savedProduct);
+        when(productMapper.toDetailResponse(any(), anyString(), any(), any()))
+                .thenReturn(expectedResponse);
 
         ProductDetailResponse result = useCase.execute(request);
 
@@ -128,13 +147,15 @@ class CreateProductUseCaseTest {
     @Test
     void should_ThrowException_When_CategoryNotFound() {
         UUID categoryId = UUID.randomUUID();
-        CreateProductRequest request = new CreateProductRequest(
-                null, "Test Product", "Description", categoryId, false,
-                null, null, null);
+        CreateProductRequest request = new CreateProductRequest(null,
+                "Test Product", "Description", categoryId, false, null, null,
+                null);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(CategoryNotFoundException.class, () -> useCase.execute(request));
+        assertThrows(CategoryNotFoundException.class,
+                () -> useCase.execute(request));
         verify(productRepository, never()).save(any());
     }
 
@@ -142,18 +163,21 @@ class CreateProductUseCaseTest {
     void should_ThrowException_When_PriceTypeNotFound() {
         UUID categoryId = UUID.randomUUID();
         UUID priceTypeId = UUID.randomUUID();
-        CreateProductRequest request = new CreateProductRequest(
-                null, "Test Product", "Description", categoryId, false,
-                null, null,
-                List.of(new ProductPriceRequest(priceTypeId, new BigDecimal("10.00"), null)));
+        CreateProductRequest request = new CreateProductRequest(null,
+                "Test Product", "Description", categoryId, false, null, null,
+                List.of(new ProductPriceRequest(priceTypeId,
+                        new BigDecimal("10.00"), null)));
 
         Category category = mock(Category.class);
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(category));
         when(productRepository.generateNextCode()).thenReturn("PROD-001");
-        when(priceTypeRepository.findById(priceTypeId)).thenReturn(Optional.empty());
+        when(priceTypeRepository.findById(priceTypeId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(PriceTypeNotFoundException.class, () -> useCase.execute(request));
+        assertThrows(PriceTypeNotFoundException.class,
+                () -> useCase.execute(request));
         verify(productRepository, never()).save(any());
     }
 
@@ -161,49 +185,62 @@ class CreateProductUseCaseTest {
     void should_ThrowException_When_DuplicateComponent() {
         UUID categoryId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
-        CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(componentId, 2);
-        CreateProductRequest request = new CreateProductRequest(
-                null, "Composite", "Description", categoryId, true,
-                null, List.of(compReq, compReq), null);
+        CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(
+                componentId, 2);
+        CreateProductRequest request = new CreateProductRequest(null,
+                "Composite", "Description", categoryId, true, null,
+                List.of(compReq, compReq), null);
 
-        Product componentProduct = Product.reconstitute(componentId, "COMP-001", "Component",
-                "desc", categoryId, false, true, null, null,
+        Product componentProduct = Product.reconstitute(componentId, "COMP-001",
+                "Component", "desc", categoryId, false, true, null, null,
                 List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
 
-        Product savedProduct = Product.reconstitute(UUID.randomUUID(), "KIT-001", "Composite",
-                "Description", categoryId, true, true, null,
-                null, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product savedProduct = Product.reconstitute(UUID.randomUUID(),
+                "KIT-001", "Composite", "Description", categoryId, true, true,
+                null, null, List.of(), List.of(), LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mock(Category.class)));
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(mock(Category.class)));
         when(productRepository.generateNextCode()).thenReturn("KIT-001");
-        when(productRepository.findById(componentId)).thenReturn(Optional.of(componentProduct));
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+        when(productRepository.findById(componentId))
+                .thenReturn(Optional.of(componentProduct));
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(savedProduct);
 
-        assertThrows(DuplicateProductComponentException.class, () -> useCase.execute(request));
+        assertThrows(DuplicateProductComponentException.class,
+                () -> useCase.execute(request));
     }
 
     @Test
     void should_ThrowException_When_ComponentIsComposite() {
         UUID categoryId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
-        CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(componentId, 2);
-        CreateProductRequest request = new CreateProductRequest(
-                null, "Composite", "Description", categoryId, true,
-                null, List.of(compReq), null);
+        CreateProductRequest.ComponentRequest compReq = new CreateProductRequest.ComponentRequest(
+                componentId, 2);
+        CreateProductRequest request = new CreateProductRequest(null,
+                "Composite", "Description", categoryId, true, null,
+                List.of(compReq), null);
 
-        Product compositeComponent = Product.reconstitute(componentId, "COMP-001", "Component",
-                "desc", categoryId, true, true, null, null,
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product compositeComponent = Product.reconstitute(componentId,
+                "COMP-001", "Component", "desc", categoryId, true, true, null,
+                null, List.of(), List.of(), LocalDateTime.now(),
+                LocalDateTime.now());
 
-        Product savedProduct = Product.reconstitute(UUID.randomUUID(), "KIT-001", "Composite",
-                "Description", categoryId, true, true, null,
-                null, List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product savedProduct = Product.reconstitute(UUID.randomUUID(),
+                "KIT-001", "Composite", "Description", categoryId, true, true,
+                null, null, List.of(), List.of(), LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mock(Category.class)));
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(mock(Category.class)));
         when(productRepository.generateNextCode()).thenReturn("KIT-001");
-        when(productRepository.findById(componentId)).thenReturn(Optional.of(compositeComponent));
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+        when(productRepository.findById(componentId))
+                .thenReturn(Optional.of(compositeComponent));
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(savedProduct);
 
-        assertThrows(CompositeProductCannotBeComponentException.class, () -> useCase.execute(request));
+        assertThrows(CompositeProductCannotBeComponentException.class,
+                () -> useCase.execute(request));
     }
 }

@@ -4,11 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record InvoiceDueResponse(
-        UUID invoiceId,
-        String invoiceNumber,
-        UUID customerId,
-        String customerName,
-        LocalDate dueDate,
-        BigDecimal amount
-) {}
+public record InvoiceDueResponse(UUID invoiceId, String invoiceNumber,
+        UUID customerId, String customerName, LocalDate dueDate,
+        BigDecimal amount) {
+}

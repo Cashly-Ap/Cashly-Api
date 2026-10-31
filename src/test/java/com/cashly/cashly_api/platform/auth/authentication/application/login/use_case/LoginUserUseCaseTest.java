@@ -55,13 +55,8 @@ class LoginUserUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        testAuthenticable = new TestAuthenticable(
-            "user-123",
-            "test@example.com",
-            "$2a$10$hashedPassword",
-            "Test User",
-            true
-        );
+        testAuthenticable = new TestAuthenticable("user-123",
+                "test@example.com", "$2a$10$hashedPassword", "Test User", true);
         validRequest = new LoginRequest("test@example.com", "SecurePass123!");
     }
 
@@ -71,13 +66,13 @@ class LoginUserUseCaseTest {
         RefreshToken refreshToken = createRefreshToken();
 
         when(authenticableResolver.resolveByEmail("test@example.com"))
-            .thenReturn(Optional.of(testAuthenticable));
+                .thenReturn(Optional.of(testAuthenticable));
         when(passwordEncoder.matches("SecurePass123!", "$2a$10$hashedPassword"))
-            .thenReturn(true);
+                .thenReturn(true);
         when(tokenService.generateAccessToken(isA(Authenticable.class)))
-            .thenReturn("access-token-123");
+                .thenReturn("access-token-123");
         when(tokenService.generateRefreshToken(isA(Authenticable.class)))
-            .thenReturn(refreshToken);
+                .thenReturn(refreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900L);
 
         AuthenticationResponse response = useCase.execute(validRequest);
@@ -90,7 +85,8 @@ class LoginUserUseCaseTest {
         assertNotNull(response.entity());
 
         verify(authenticableResolver).resolveByEmail("test@example.com");
-        verify(passwordEncoder).matches("SecurePass123!", "$2a$10$hashedPassword");
+        verify(passwordEncoder).matches("SecurePass123!",
+                "$2a$10$hashedPassword");
         verify(tokenService).generateAccessToken(testAuthenticable);
         verify(tokenService).generateRefreshToken(testAuthenticable);
         verify(refreshTokenRepository).save(any(RefreshToken.class));
@@ -98,9 +94,12 @@ class LoginUserUseCaseTest {
 
     @Test
     void should_require_mfa_without_issuing_any_session_tokens() {
-        when(authenticableResolver.resolveByEmail("test@example.com")).thenReturn(Optional.of(testAuthenticable));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(mfa.challengeIfEnabled(testAuthenticable)).thenReturn(AuthenticationResponse.mfaChallenge("challenge"));
+        when(authenticableResolver.resolveByEmail("test@example.com"))
+                .thenReturn(Optional.of(testAuthenticable));
+        when(passwordEncoder.matches(anyString(), anyString()))
+                .thenReturn(true);
+        when(mfa.challengeIfEnabled(testAuthenticable))
+                .thenReturn(AuthenticationResponse.mfaChallenge("challenge"));
         var response = useCase.execute(validRequest);
         assertTrue(response.mfaRequired());
         assertNull(response.accessToken());
@@ -112,59 +111,57 @@ class LoginUserUseCaseTest {
     @DisplayName("should_ThrowInvalidCredentialsException_When_UserNotFound")
     void should_ThrowInvalidCredentialsException_When_UserNotFound() {
         when(authenticableResolver.resolveByEmail("test@example.com"))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         InvalidCredentialsException exception = assertThrows(
-            InvalidCredentialsException.class,
-            () -> useCase.execute(validRequest)
-        );
+                InvalidCredentialsException.class,
+                () -> useCase.execute(validRequest));
 
         assertEquals("Invalid email or password", exception.getMessage());
         verify(authenticableResolver).resolveByEmail("test@example.com");
         verify(passwordEncoder, never()).matches(anyString(), anyString());
-        verify(tokenService, never()).generateAccessToken(isA(Authenticable.class));
+        verify(tokenService, never())
+                .generateAccessToken(isA(Authenticable.class));
     }
 
     @Test
     @DisplayName("should_ThrowInvalidCredentialsException_When_PasswordDoesNotMatch")
     void should_ThrowInvalidCredentialsException_When_PasswordDoesNotMatch() {
         when(authenticableResolver.resolveByEmail("test@example.com"))
-            .thenReturn(Optional.of(testAuthenticable));
+                .thenReturn(Optional.of(testAuthenticable));
         when(passwordEncoder.matches("WrongPassword", "$2a$10$hashedPassword"))
-            .thenReturn(false);
+                .thenReturn(false);
 
-        LoginRequest wrongPasswordRequest = new LoginRequest("test@example.com", "WrongPassword");
+        LoginRequest wrongPasswordRequest = new LoginRequest("test@example.com",
+                "WrongPassword");
 
         InvalidCredentialsException exception = assertThrows(
-            InvalidCredentialsException.class,
-            () -> useCase.execute(wrongPasswordRequest)
-        );
+                InvalidCredentialsException.class,
+                () -> useCase.execute(wrongPasswordRequest));
 
         assertEquals("Invalid email or password", exception.getMessage());
-        verify(passwordEncoder).matches("WrongPassword", "$2a$10$hashedPassword");
-        verify(tokenService, never()).generateAccessToken(isA(Authenticable.class));
+        verify(passwordEncoder).matches("WrongPassword",
+                "$2a$10$hashedPassword");
+        verify(tokenService, never())
+                .generateAccessToken(isA(Authenticable.class));
     }
 
     @Test
     @DisplayName("should_ThrowInvalidCredentialsException_When_AccountNotActive")
     void should_ThrowInvalidCredentialsException_When_AccountNotActive() {
-        Authenticable inactiveAuthenticable = new TestAuthenticable(
-            "user-456",
-            "inactive@example.com",
-            "$2a$10$hashedPassword",
-            "Inactive User",
-            false
-        );
+        Authenticable inactiveAuthenticable = new TestAuthenticable("user-456",
+                "inactive@example.com", "$2a$10$hashedPassword",
+                "Inactive User", false);
 
         when(authenticableResolver.resolveByEmail("inactive@example.com"))
-            .thenReturn(Optional.of(inactiveAuthenticable));
+                .thenReturn(Optional.of(inactiveAuthenticable));
 
-        LoginRequest request = new LoginRequest("inactive@example.com", "SecurePass123!");
+        LoginRequest request = new LoginRequest("inactive@example.com",
+                "SecurePass123!");
 
         InvalidCredentialsException exception = assertThrows(
-            InvalidCredentialsException.class,
-            () -> useCase.execute(request)
-        );
+                InvalidCredentialsException.class,
+                () -> useCase.execute(request));
 
         assertEquals("Account is not active", exception.getMessage());
         verify(passwordEncoder, never()).matches(anyString(), anyString());
@@ -175,16 +172,17 @@ class LoginUserUseCaseTest {
     void should_NormalizeEmail_When_EmailHasWhitespaceOrUppercase() {
         RefreshToken refreshToken = createRefreshToken();
 
-        LoginRequest request = new LoginRequest("  TEST@EXAMPLE.COM  ", "SecurePass123!");
+        LoginRequest request = new LoginRequest("  TEST@EXAMPLE.COM  ",
+                "SecurePass123!");
 
         when(authenticableResolver.resolveByEmail("test@example.com"))
-            .thenReturn(Optional.of(testAuthenticable));
+                .thenReturn(Optional.of(testAuthenticable));
         when(passwordEncoder.matches("SecurePass123!", "$2a$10$hashedPassword"))
-            .thenReturn(true);
+                .thenReturn(true);
         when(tokenService.generateAccessToken(isA(Authenticable.class)))
-            .thenReturn("access-token-123");
+                .thenReturn("access-token-123");
         when(tokenService.generateRefreshToken(isA(Authenticable.class)))
-            .thenReturn(refreshToken);
+                .thenReturn(refreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900L);
 
         AuthenticationResponse response = useCase.execute(request);
@@ -199,13 +197,13 @@ class LoginUserUseCaseTest {
         RefreshToken refreshToken = createRefreshToken();
 
         when(authenticableResolver.resolveByEmail("test@example.com"))
-            .thenReturn(Optional.of(testAuthenticable));
+                .thenReturn(Optional.of(testAuthenticable));
         when(passwordEncoder.matches("SecurePass123!", "$2a$10$hashedPassword"))
-            .thenReturn(true);
+                .thenReturn(true);
         when(tokenService.generateAccessToken(isA(Authenticable.class)))
-            .thenReturn("access-token-123");
+                .thenReturn("access-token-123");
         when(tokenService.generateRefreshToken(isA(Authenticable.class)))
-            .thenReturn(refreshToken);
+                .thenReturn(refreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900L);
 
         useCase.execute(validRequest);
@@ -214,16 +212,11 @@ class LoginUserUseCaseTest {
     }
 
     private RefreshToken createRefreshToken() {
-        return new RefreshToken(
-            RefreshTokenId.generate(),
-            "user-123",
-            AuthenticableType.USER,
-            "refresh-token-123",
-            LocalDateTime.now().plusDays(7)
-        );
+        return new RefreshToken(RefreshTokenId.generate(), "user-123",
+                AuthenticableType.USER, "refresh-token-123",
+                LocalDateTime.now().plusDays(7));
     }
 
-    
     private static class TestAuthenticable implements Authenticable {
         private final String subjectId;
         private final String email;
@@ -232,7 +225,7 @@ class LoginUserUseCaseTest {
         private final boolean active;
 
         TestAuthenticable(String subjectId, String email, String hashedPassword,
-                          String userName, boolean active) {
+                String userName, boolean active) {
             this.subjectId = subjectId;
             this.email = email;
             this.hashedPassword = hashedPassword;
@@ -241,27 +234,43 @@ class LoginUserUseCaseTest {
         }
 
         @Override
-        public String getSubjectId() { return subjectId; }
+        public String getSubjectId() {
+            return subjectId;
+        }
 
         @Override
-        public String getEmail() { return email; }
+        public String getEmail() {
+            return email;
+        }
 
         @Override
-        public String getHashedPassword() { return hashedPassword; }
+        public String getHashedPassword() {
+            return hashedPassword;
+        }
 
         @Override
-        public String getUserName() { return userName; }
+        public String getUserName() {
+            return userName;
+        }
 
         @Override
-        public AuthenticableType getType() { return AuthenticableType.USER; }
+        public AuthenticableType getType() {
+            return AuthenticableType.USER;
+        }
 
         @Override
-        public boolean canAuthenticate() { return active; }
+        public boolean canAuthenticate() {
+            return active;
+        }
 
         @Override
-        public boolean isActive() { return active; }
+        public boolean isActive() {
+            return active;
+        }
 
         @Override
-        public LocalDateTime getCreatedAt() { return LocalDateTime.now(); }
+        public LocalDateTime getCreatedAt() {
+            return LocalDateTime.now();
+        }
     }
 }

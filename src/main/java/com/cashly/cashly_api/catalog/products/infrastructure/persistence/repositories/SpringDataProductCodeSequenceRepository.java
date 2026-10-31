@@ -3,5 +3,7 @@ package com.cashly.cashly_api.catalog.products.infrastructure.persistence.reposi
 import com.cashly.cashly_api.catalog.products.infrastructure.persistence.entities.ProductCodeSequenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SpringDataProductCodeSequenceRepository extends JpaRepository<ProductCodeSequenceEntity, Long> {
+public interface SpringDataProductCodeSequenceRepository
+        extends
+            JpaRepository<ProductCodeSequenceEntity, Long> {
 }

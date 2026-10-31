@@ -11,9 +11,12 @@ class FileControllerIdentityMediaTest {
     void catalogFileAccessCannotBypassUserOrCompanyMediaEndpoints() {
         var files = mock(FileStorageService.class);
         var controller = new FileController(files);
-        for (String path : new String[]{"users/user-id/photo.png", "company/logo.png", "products/../users/user-id/photo.png"}) {
-            var request = new MockHttpServletRequest("GET", "/api/files/" + path);
-            assertThat(controller.serveFile(request).getStatusCode().value()).isEqualTo(404);
+        for (String path : new String[]{"users/user-id/photo.png",
+                "company/logo.png", "products/../users/user-id/photo.png"}) {
+            var request = new MockHttpServletRequest("GET",
+                    "/api/files/" + path);
+            assertThat(controller.serveFile(request).getStatusCode().value())
+                    .isEqualTo(404);
         }
         verifyNoInteractions(files);
     }
@@ -23,7 +26,9 @@ class FileControllerIdentityMediaTest {
         var files = mock(FileStorageService.class);
         when(files.exists("products/product.png")).thenReturn(true);
         when(files.load("products/product.png")).thenReturn(new byte[]{1});
-        var request = new MockHttpServletRequest("GET", "/api/files/products/product.png");
-        assertThat(new FileController(files).serveFile(request).getStatusCode().value()).isEqualTo(200);
+        var request = new MockHttpServletRequest("GET",
+                "/api/files/products/product.png");
+        assertThat(new FileController(files).serveFile(request).getStatusCode()
+                .value()).isEqualTo(200);
     }
 }

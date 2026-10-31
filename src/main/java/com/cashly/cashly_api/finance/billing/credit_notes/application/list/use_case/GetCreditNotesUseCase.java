@@ -20,30 +20,31 @@ public class GetCreditNotesUseCase {
     private final CreditNoteInvoiceGateway invoices;
 
     public GetCreditNotesUseCase(CreditNoteRepository creditNoteRepository,
-                                  CreditNoteInvoiceGateway invoices) {
+            CreditNoteInvoiceGateway invoices) {
         this.creditNoteRepository = creditNoteRepository;
         this.invoices = invoices;
     }
 
-    public List<CreditNoteResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId) {
-        List<CreditNote> creditNotes = creditNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId);
+    public List<CreditNoteResponse> execute(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId) {
+        List<CreditNote> creditNotes = creditNoteRepository
+                .findAllWithFilters(dateFrom, dateTo, customerId);
 
         Set<UUID> invoiceIds = creditNotes.stream()
-                .map(CreditNote::getInvoiceId)
-                .distinct()
+                .map(CreditNote::getInvoiceId).distinct()
                 .collect(Collectors.toSet());
 
         var invoiceContexts = invoices.findAll(invoiceIds);
 
-        return creditNotes.stream()
-                .map(cn -> {
-                    var invoice = invoiceContexts.get(cn.getInvoiceId());
-                    String customerName = invoice != null ? invoice.customerName() : null;
-                    String customerRif = invoice != null ? invoice.customerRif() : null;
-                    String invoiceNumber = invoice != null ? invoice.number() : null;
-                    return CreditNoteMapper.toCreditNoteResponse(cn, customerName, customerRif, invoiceNumber);
-                })
-                .toList();
+        return creditNotes.stream().map(cn -> {
+            var invoice = invoiceContexts.get(cn.getInvoiceId());
+            String customerName = invoice != null
+                    ? invoice.customerName()
+                    : null;
+            String customerRif = invoice != null ? invoice.customerRif() : null;
+            String invoiceNumber = invoice != null ? invoice.number() : null;
+            return CreditNoteMapper.toCreditNoteResponse(cn, customerName,
+                    customerRif, invoiceNumber);
+        }).toList();
     }
 }

@@ -30,9 +30,9 @@ public class CreateProductUseCase {
     private final ProductMapper productMapper;
 
     public CreateProductUseCase(ProductRepository productRepository,
-                                 ProductCategoryGateway categoryRepository,
-                                 ProductPriceTypeGateway priceTypeRepository,
-                                 ProductMapper productMapper) {
+            ProductCategoryGateway categoryRepository,
+            ProductPriceTypeGateway priceTypeRepository,
+            ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.priceTypeRepository = priceTypeRepository;
@@ -44,37 +44,46 @@ public class CreateProductUseCase {
         var category = categoryRepository.require(request.categoryId());
 
         String code = request.code() != null && !request.code().isBlank()
-            ? request.code()
-            : productRepository.generateNextCode();
+                ? request.code()
+                : productRepository.generateNextCode();
 
-        List<ProductPrice> productPrices = buildProductPrices(request.productPrices());
+        List<ProductPrice> productPrices = buildProductPrices(
+                request.productPrices());
 
-        Product product = Product.create(code, request.name(), request.description(),
-                request.categoryId(), Boolean.TRUE.equals(request.composite()),
+        Product product = Product.create(code, request.name(),
+                request.description(), request.categoryId(),
+                Boolean.TRUE.equals(request.composite()),
                 request.purchasePrice());
 
         product.setProductPrices(productPrices);
 
         Product saved = productRepository.save(product);
 
-        if (Boolean.TRUE.equals(request.composite()) && request.components() != null && !request.components().isEmpty()) {
-            List<ProductComponent> components = buildComponents(saved.getId(), request.components());
+        if (Boolean.TRUE.equals(request.composite())
+                && request.components() != null
+                && !request.components().isEmpty()) {
+            List<ProductComponent> components = buildComponents(saved.getId(),
+                    request.components());
             saved.setComponents(components);
             saved = productRepository.save(saved);
         }
 
         Map<UUID, Product> componentProducts = loadComponentProducts(saved);
-        Map<UUID, String> priceTypeNames = resolvePriceTypeNames(saved.getProductPrices());
-        return productMapper.toDetailResponse(saved, category.name(), componentProducts, priceTypeNames);
+        Map<UUID, String> priceTypeNames = resolvePriceTypeNames(
+                saved.getProductPrices());
+        return productMapper.toDetailResponse(saved, category.name(),
+                componentProducts, priceTypeNames);
     }
 
-    private List<ProductPrice> buildProductPrices(List<ProductPriceRequest> requests) {
+    private List<ProductPrice> buildProductPrices(
+            List<ProductPriceRequest> requests) {
         if (requests == null || requests.isEmpty()) {
             return List.of();
         }
         return requests.stream().map(r -> {
             priceTypeRepository.require(r.priceTypeId());
-            return ProductPrice.create(r.priceTypeId(), r.price(), r.profitMargin());
+            return ProductPrice.create(r.priceTypeId(), r.price(),
+                    r.profitMargin());
         }).toList();
     }
 
@@ -83,31 +92,33 @@ public class CreateProductUseCase {
         Set<UUID> seen = new HashSet<>();
         return requests.stream().map(r -> {
             if (!seen.add(r.componentProductId())) {
-                throw new DuplicateProductComponentException(r.componentProductId());
+                throw new DuplicateProductComponentException(
+                        r.componentProductId());
             }
             Product comp = productRepository.findById(r.componentProductId())
-                .orElseThrow(() -> new ProductNotFoundException(r.componentProductId()));
+                    .orElseThrow(() -> new ProductNotFoundException(
+                            r.componentProductId()));
             if (comp.isComposite()) {
-                throw new CompositeProductCannotBeComponentException(r.componentProductId());
+                throw new CompositeProductCannotBeComponentException(
+                        r.componentProductId());
             }
-            return new ProductComponent(UUID.randomUUID(), parentId, r.componentProductId(), r.quantity());
+            return new ProductComponent(UUID.randomUUID(), parentId,
+                    r.componentProductId(), r.quantity());
         }).toList();
     }
 
     private Map<UUID, Product> loadComponentProducts(Product product) {
         return product.getComponents().stream()
-            .map(c -> productRepository.findById(c.getComponentProductId()).orElse(null))
-            .filter(p -> p != null)
-            .collect(Collectors.toMap(Product::getId, p -> p));
+                .map(c -> productRepository.findById(c.getComponentProductId())
+                        .orElse(null))
+                .filter(p -> p != null)
+                .collect(Collectors.toMap(Product::getId, p -> p));
     }
 
     private Map<UUID, String> resolvePriceTypeNames(List<ProductPrice> prices) {
         return prices.stream()
-            .collect(Collectors.toMap(
-                ProductPrice::getPriceTypeId,
-                pp -> priceTypeRepository.findById(pp.getPriceTypeId())
-                    .map(pt -> pt.name())
-                    .orElse("")
-            ));
+                .collect(Collectors.toMap(ProductPrice::getPriceTypeId,
+                        pp -> priceTypeRepository.findById(pp.getPriceTypeId())
+                                .map(pt -> pt.name()).orElse("")));
     }
 }

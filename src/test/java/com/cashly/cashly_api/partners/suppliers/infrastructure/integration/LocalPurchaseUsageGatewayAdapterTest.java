@@ -12,7 +12,8 @@ class LocalPurchaseUsageGatewayAdapterTest {
     private final PurchaseRepository purchases = mock(PurchaseRepository.class);
     private final UUID supplierId = UUID.randomUUID();
     private final LocalPurchaseUsageGatewayAdapter adapter = new LocalPurchaseUsageGatewayAdapter(
-            new SupplierPurchaseUsageConfig().supplierPurchaseUsageQuery(purchases));
+            new SupplierPurchaseUsageConfig()
+                    .supplierPurchaseUsageQuery(purchases));
 
     @Test
     void shouldExposeExistingPurchaseUsageThroughPublicQuery() {
@@ -29,18 +30,22 @@ class LocalPurchaseUsageGatewayAdapterTest {
 
     @Test
     void shouldPropagatePersistenceFailuresWithoutClaimingSupplierIsUnused() {
-        IllegalStateException failure = new IllegalStateException("Purchase lookup failed");
+        IllegalStateException failure = new IllegalStateException(
+                "Purchase lookup failed");
         when(purchases.existsBySupplierId(supplierId)).thenThrow(failure);
-        assertSame(failure, assertThrows(IllegalStateException.class, () -> adapter.hasPurchases(supplierId)));
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> adapter.hasPurchases(supplierId)));
     }
 
     @Test
     void shouldReturnSupplierIdsWithPurchasesUsingOneBatchQuery() {
         Set<UUID> supplierIds = Set.of(UUID.randomUUID(), UUID.randomUUID());
         Set<UUID> usedSupplierIds = Set.of(supplierIds.iterator().next());
-        when(purchases.findSupplierIdsWithPurchases(supplierIds)).thenReturn(usedSupplierIds);
+        when(purchases.findSupplierIdsWithPurchases(supplierIds))
+                .thenReturn(usedSupplierIds);
 
-        assertEquals(usedSupplierIds, adapter.findSupplierIdsWithPurchases(supplierIds));
+        assertEquals(usedSupplierIds,
+                adapter.findSupplierIdsWithPurchases(supplierIds));
         verify(purchases).findSupplierIdsWithPurchases(supplierIds);
     }
 }

@@ -33,10 +33,10 @@ class GenerateStockExcelUseCaseImplTest {
     @Test
     @DisplayName("should generate stock Excel from query")
     void should_generate_stock_excel() {
-        StockPdfQuery query = new StockPdfQuery(
-                UUID.randomUUID(), UUID.randomUUID(), true, false);
-        List<StockReportResponse> items = List.of(
-                new StockReportResponse("Warehouse", "Product", "SKU001", "Category", 10, "Con Stock"));
+        StockPdfQuery query = new StockPdfQuery(UUID.randomUUID(),
+                UUID.randomUUID(), true, false);
+        List<StockReportResponse> items = List.of(new StockReportResponse(
+                "Warehouse", "Product", "SKU001", "Category", 10, "Con Stock"));
         byte[] expectedExcel = "Excel content".getBytes();
 
         when(repository.findAllForPdf(query)).thenReturn(items);

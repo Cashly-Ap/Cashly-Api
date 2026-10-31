@@ -52,16 +52,18 @@ class InvoiceInventoryConcurrencyIT {
     private static final int TIMEOUT_SECONDS = 30;
 
     static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("invoice_inventory_test").withUsername("inventory_test")
-            .withPassword("inventory_test");
+            .withDatabaseName("invoice_inventory_test")
+            .withUsername("inventory_test").withPassword("inventory_test");
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
         String externalUrl = System.getProperty("inventory.test.url");
         if (externalUrl != null) {
             registry.add("inventory.test.url", () -> externalUrl);
-            registry.add("inventory.test.username", () -> System.getProperty("inventory.test.username", "inventory_test"));
-            registry.add("inventory.test.password", () -> System.getProperty("inventory.test.password", "inventory_test"));
+            registry.add("inventory.test.username", () -> System
+                    .getProperty("inventory.test.username", "inventory_test"));
+            registry.add("inventory.test.password", () -> System
+                    .getProperty("inventory.test.password", "inventory_test"));
             return;
         }
         MYSQL.start();
@@ -84,8 +86,9 @@ class InvoiceInventoryConcurrencyIT {
     private UUID productId;
 
     @Autowired
-    InvoiceInventoryConcurrencyIT(InvoiceInventoryApi inventory, SpringDataWarehouseStockRepository stocks,
-                                  PlatformTransactionManager transactionManager) {
+    InvoiceInventoryConcurrencyIT(InvoiceInventoryApi inventory,
+            SpringDataWarehouseStockRepository stocks,
+            PlatformTransactionManager transactionManager) {
         this.inventory = inventory;
         this.stocks = stocks;
         this.transactionManager = transactionManager;
@@ -96,26 +99,35 @@ class InvoiceInventoryConcurrencyIT {
         warehouseId = UUID.randomUUID();
         productId = UUID.randomUUID();
         var now = LocalDateTime.now();
-        stocks.saveAndFlush(WarehouseStockEntity.fromDomain(new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, STOCK_QUANTITY, 0, now, now)));
+        stocks.saveAndFlush(WarehouseStockEntity
+                .fromDomain(new WarehouseStock(UUID.randomUUID(), warehouseId,
+                        productId, STOCK_QUANTITY, 0, now, now)));
     }
 
     @Test
-    void should_allow_only_one_of_two_concurrent_reservations() throws Exception {
+    void should_allow_only_one_of_two_concurrent_reservations()
+            throws Exception {
         var ready = new CountDownLatch(2);
         var start = new CountDownLatch(1);
         try (var executor = Executors.newFixedThreadPool(2)) {
             var first = executor.submit(() -> reserveAfterSignal(ready, start));
-            var second = executor.submit(() -> reserveAfterSignal(ready, start));
-            assertTrue(ready.await(TIMEOUT_SECONDS, TimeUnit.SECONDS), "Reservation workers did not start");
+            var second = executor
+                    .submit(() -> reserveAfterSignal(ready, start));
+            assertTrue(ready.await(TIMEOUT_SECONDS, TimeUnit.SECONDS),
+                    "Reservation workers did not start");
             start.countDown();
             var outcomes = List.of(first.get(TIMEOUT_SECONDS, TimeUnit.SECONDS),
                     second.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
-            assertEquals(1, outcomes.stream().filter(ReservationOutcome::successful).count());
-            assertEquals(1, outcomes.stream().filter(result -> !result.successful()).count());
+            assertEquals(1, outcomes.stream()
+                    .filter(ReservationOutcome::successful).count());
+            assertEquals(1, outcomes.stream()
+                    .filter(result -> !result.successful()).count());
             assertTrue(outcomes.stream().filter(result -> !result.successful())
-                    .allMatch(result -> result.failure().startsWith("Insufficient available stock:")));
-            WarehouseStockEntity saved = stocks.findByWarehouseIdAndProductId(warehouseId, productId).orElseThrow();
+                    .allMatch(result -> result.failure()
+                            .startsWith("Insufficient available stock:")));
+            WarehouseStockEntity saved = stocks
+                    .findByWarehouseIdAndProductId(warehouseId, productId)
+                    .orElseThrow();
             assertEquals(REQUESTED_QUANTITY, saved.getReserved());
             assertEquals(STOCK_QUANTITY, saved.getQuantity());
         } finally {
@@ -126,29 +138,37 @@ class InvoiceInventoryConcurrencyIT {
     @Test
     void should_roll_back_prior_reservation_when_later_allocation_is_missing() {
         UUID missingProductId = UUID.randomUUID();
-        assertThrows(ProductNotInWarehouseException.class, () -> inventory.reserveAllocations(List.of(
-                new Allocation(warehouseId, productId, REQUESTED_QUANTITY),
-                new Allocation(warehouseId, missingProductId, 1))));
-        WarehouseStockEntity saved = stocks.findByWarehouseIdAndProductId(warehouseId, productId).orElseThrow();
+        assertThrows(ProductNotInWarehouseException.class,
+                () -> inventory.reserveAllocations(List.of(
+                        new Allocation(warehouseId, productId,
+                                REQUESTED_QUANTITY),
+                        new Allocation(warehouseId, missingProductId, 1))));
+        WarehouseStockEntity saved = stocks
+                .findByWarehouseIdAndProductId(warehouseId, productId)
+                .orElseThrow();
         assertEquals(0, saved.getReserved());
         assertEquals(STOCK_QUANTITY, saved.getQuantity());
     }
 
-    private ReservationOutcome reserveAfterSignal(CountDownLatch ready, CountDownLatch start) throws Exception {
+    private ReservationOutcome reserveAfterSignal(CountDownLatch ready,
+            CountDownLatch start) throws Exception {
         ready.countDown();
         if (!start.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             throw new IllegalStateException("Reservation start timed out");
         }
         try {
-            new TransactionTemplate(transactionManager).executeWithoutResult(status ->
-                    inventory.reserveAllocations(List.of(new Allocation(warehouseId, productId, REQUESTED_QUANTITY))));
+            new TransactionTemplate(transactionManager).executeWithoutResult(
+                    status -> inventory.reserveAllocations(
+                            List.of(new Allocation(warehouseId, productId,
+                                    REQUESTED_QUANTITY))));
             return new ReservationOutcome(true, null);
         } catch (IllegalStateException exception) {
             return new ReservationOutcome(false, exception.getMessage());
         }
     }
 
-    private record ReservationOutcome(boolean successful, String failure) {}
+    private record ReservationOutcome(boolean successful, String failure) {
+    }
 
     @Configuration
     @EnableTransactionManagement
@@ -156,36 +176,42 @@ class InvoiceInventoryConcurrencyIT {
     static class PersistenceConfig {
         @Bean
         DataSource dataSource(Environment environment) {
-            return new DriverManagerDataSource(environment.getRequiredProperty("inventory.test.url"),
+            return new DriverManagerDataSource(
+                    environment.getRequiredProperty("inventory.test.url"),
                     environment.getRequiredProperty("inventory.test.username"),
                     environment.getRequiredProperty("inventory.test.password"));
         }
 
         @Bean
-        LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+        LocalContainerEntityManagerFactoryBean entityManagerFactory(
+                DataSource dataSource) {
             var factory = new LocalContainerEntityManagerFactoryBean();
             factory.setDataSource(dataSource);
-            factory.setPackagesToScan(WarehouseStockEntity.class.getPackageName());
+            factory.setPackagesToScan(
+                    WarehouseStockEntity.class.getPackageName());
             factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-            factory.setJpaPropertyMap(Map.of("hibernate.hbm2ddl.auto", "create-drop"));
+            factory.setJpaPropertyMap(
+                    Map.of("hibernate.hbm2ddl.auto", "create-drop"));
             return factory;
         }
 
         @Bean
-        PlatformTransactionManager transactionManager(EntityManagerFactory factory) {
+        PlatformTransactionManager transactionManager(
+                EntityManagerFactory factory) {
             return new JpaTransactionManager(factory);
         }
 
         @Bean
-        WarehouseStockRepository stockRepository(SpringDataWarehouseStockRepository stocks) {
+        WarehouseStockRepository stockRepository(
+                SpringDataWarehouseStockRepository stocks) {
             return new JpaWarehouseStockRepository(stocks);
         }
 
         @Bean
-        InvoiceInventoryApi invoiceInventoryApi(WarehouseStockRepository stocks) {
-            return new InvoiceInventoryService(stocks, mock(StockMovementRepository.class));
+        InvoiceInventoryApi invoiceInventoryApi(
+                WarehouseStockRepository stocks) {
+            return new InvoiceInventoryService(stocks,
+                    mock(StockMovementRepository.class));
         }
     }
 }
-
-

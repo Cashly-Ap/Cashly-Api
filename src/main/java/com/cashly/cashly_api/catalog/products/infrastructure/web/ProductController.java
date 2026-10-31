@@ -43,14 +43,14 @@ public class ProductController {
     private final GetProductsForTransactionUseCase getProductsForTransactionUseCase;
 
     public ProductController(CreateProductUseCase createProductUseCase,
-                              GetProductUseCase getProductUseCase,
-                              ListProductsUseCase listProductsUseCase,
-                              UpdateProductUseCase updateProductUseCase,
-                              DeleteProductUseCase deleteProductUseCase,
-                              UploadProductPhotoUseCase uploadProductPhotoUseCase,
-                              RemoveProductPhotoUseCase removeProductPhotoUseCase,
-                              GetProductStockUseCase getProductStockUseCase,
-                              GetProductsForTransactionUseCase getProductsForTransactionUseCase) {
+            GetProductUseCase getProductUseCase,
+            ListProductsUseCase listProductsUseCase,
+            UpdateProductUseCase updateProductUseCase,
+            DeleteProductUseCase deleteProductUseCase,
+            UploadProductPhotoUseCase uploadProductPhotoUseCase,
+            RemoveProductPhotoUseCase removeProductPhotoUseCase,
+            GetProductStockUseCase getProductStockUseCase,
+            GetProductsForTransactionUseCase getProductsForTransactionUseCase) {
         this.createProductUseCase = createProductUseCase;
         this.getProductUseCase = getProductUseCase;
         this.listProductsUseCase = listProductsUseCase;
@@ -64,8 +64,10 @@ public class ProductController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('CATALOG:CREATE')")
-    public ResponseEntity<ProductDetailResponse> create(@Valid @RequestBody CreateProductRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createProductUseCase.execute(request));
+    public ResponseEntity<ProductDetailResponse> create(
+            @Valid @RequestBody CreateProductRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(createProductUseCase.execute(request));
     }
 
     @GetMapping(params = "!customerId")
@@ -79,8 +81,8 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        return ResponseEntity.ok(
-            listProductsUseCase.execute(search, categoryId, active, composite, page, size, orderBy, orderDir));
+        return ResponseEntity.ok(listProductsUseCase.execute(search, categoryId,
+                active, composite, page, size, orderBy, orderDir));
     }
 
     @GetMapping(params = "customerId")
@@ -94,23 +96,26 @@ public class ProductController {
             @RequestParam(required = false, defaultValue = "true") Boolean withStock,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        PageResponse<ProductWithStockResponse> response =
-                getProductsForTransactionUseCase.execute(
-                        customerIds == null || customerIds.isEmpty() ? List.of(customerId) : customerIds,
+        PageResponse<ProductWithStockResponse> response = getProductsForTransactionUseCase
+                .execute(
+                        customerIds == null || customerIds.isEmpty()
+                                ? List.of(customerId)
+                                : customerIds,
                         search, categoryId, composite, withStock, page, size);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('CATALOG:READ')")
-    public ResponseEntity<ProductDetailResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<ProductDetailResponse> getById(
+            @PathVariable UUID id) {
         return ResponseEntity.ok(getProductUseCase.execute(id));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
     public ResponseEntity<ProductDetailResponse> update(@PathVariable UUID id,
-                                                         @Valid @RequestBody UpdateProductRequest request) {
+            @Valid @RequestBody UpdateProductRequest request) {
         return ResponseEntity.ok(updateProductUseCase.execute(id, request));
     }
 
@@ -123,20 +128,23 @@ public class ProductController {
 
     @GetMapping("/{id}/stock")
     @PreAuthorize("hasAuthority('CATALOG:READ') and hasAuthority('INVENTORY:READ')")
-    public ResponseEntity<List<ProductStockByWarehouseResponse>> getStock(@PathVariable UUID id) {
+    public ResponseEntity<List<ProductStockByWarehouseResponse>> getStock(
+            @PathVariable UUID id) {
         return ResponseEntity.ok(getProductStockUseCase.execute(id));
     }
 
     @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
-    public ResponseEntity<ProductDetailResponse> uploadPhoto(@PathVariable UUID id,
-                                                              @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ProductDetailResponse> uploadPhoto(
+            @PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         try {
             ProductDetailResponse response = uploadProductPhotoUseCase.execute(
-                    id, file.getOriginalFilename(), file.getInputStream(), file.getContentType());
+                    id, file.getOriginalFilename(), file.getInputStream(),
+                    file.getContentType());
             return ResponseEntity.ok(response);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
         }
     }
 

@@ -3,5 +3,6 @@ import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.
 import java.util.List;
 import java.util.UUID;
 public interface AccountsReceivableQueryGateway {
-    List<AccountReceivableRow> findAccountsReceivableForReport(UUID customerId, boolean overdueOnly);
+    List<AccountReceivableRow> findAccountsReceivableForReport(UUID customerId,
+            boolean overdueOnly);
 }

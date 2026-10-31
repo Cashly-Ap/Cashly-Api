@@ -13,9 +13,10 @@ public class ChainedAuthenticableResolver implements AuthenticableResolver {
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public ChainedAuthenticableResolver(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public ChainedAuthenticableResolver(UserRepository userRepository,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
         this.userRepository = userRepository;
-        this.access=access;
+        this.access = access;
     }
 
     @Override
@@ -27,8 +28,14 @@ public class ChainedAuthenticableResolver implements AuthenticableResolver {
         String normalizedEmail = email.trim().toLowerCase();
 
         return userRepository.findByEmail(new Email(normalizedEmail))
-            .filter(user -> { try { access.resolve(user.getId().getValue());return true; } catch (org.springframework.security.access.AccessDeniedException ex) { return false; } })
-            .map(UserAuthenticableAdapter::new);
+                .filter(user -> {
+                    try {
+                        access.resolve(user.getId().getValue());
+                        return true;
+                    } catch (org.springframework.security.access.AccessDeniedException ex) {
+                        return false;
+                    }
+                }).map(UserAuthenticableAdapter::new);
     }
 
 }

@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface CommercialCatalogJpaRepository extends JpaRepository<ProductEntity, UUID> {
+public interface CommercialCatalogJpaRepository
+        extends
+            JpaRepository<ProductEntity, UUID> {
 
     @Query(value = """
             SELECT DISTINCT
@@ -32,8 +34,7 @@ public interface CommercialCatalogJpaRepository extends JpaRepository<ProductEnt
               AND (:search IS NULL OR p.name LIKE CONCAT('%', :search, '%'))
               AND (:categoryId IS NULL OR p.category_id = UNHEX(REPLACE(:categoryId, '-', '')))
             ORDER BY c.name ASC, p.name ASC
-            """,
-            nativeQuery = true)
+            """, nativeQuery = true)
     List<CommercialCatalogProjection> findCommercialCatalog(
             @Param("search") String search,
             @Param("categoryId") String categoryId,

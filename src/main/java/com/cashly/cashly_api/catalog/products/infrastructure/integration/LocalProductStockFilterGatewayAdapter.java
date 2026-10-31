@@ -7,9 +7,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-public class LocalProductStockFilterGatewayAdapter implements ProductStockFilterGateway {
+public class LocalProductStockFilterGatewayAdapter
+        implements
+            ProductStockFilterGateway {
     private final AvailableStockProductsQuery stocks;
-    public LocalProductStockFilterGatewayAdapter(AvailableStockProductsQuery stocks) {
+    public LocalProductStockFilterGatewayAdapter(
+            AvailableStockProductsQuery stocks) {
         this.stocks = stocks;
     }
     @Override

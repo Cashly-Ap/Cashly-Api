@@ -7,7 +7,8 @@ import com.cashly.cashly_api.finance.billing.debit_notes.infrastructure.persiste
 
 public class DebitNoteJpaMapper {
 
-    private DebitNoteJpaMapper() {}
+    private DebitNoteJpaMapper() {
+    }
 
     public static DebitNoteEntity toEntity(DebitNote debitNote) {
         DebitNoteEntity entity = new DebitNoteEntity();
@@ -25,17 +26,11 @@ public class DebitNoteJpaMapper {
     }
 
     public static DebitNote toDomain(DebitNoteEntity entity) {
-        return DebitNote.reconstitute(
-                DebitNoteId.of(entity.getId()),
+        return DebitNote.reconstitute(DebitNoteId.of(entity.getId()),
                 new DebitNoteNumber(entity.getNoteNumber()),
-                entity.getCustomerId(),
-                entity.getInvoiceId(),
-                entity.getAmount(),
-                entity.getReason(),
-                entity.getCreatedBy(),
-                entity.getCreatedByName(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+                entity.getCustomerId(), entity.getInvoiceId(),
+                entity.getAmount(), entity.getReason(), entity.getCreatedBy(),
+                entity.getCreatedByName(), entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 }

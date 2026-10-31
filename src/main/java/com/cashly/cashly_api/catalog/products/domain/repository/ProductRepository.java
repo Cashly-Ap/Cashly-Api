@@ -13,12 +13,12 @@ public interface ProductRepository {
     boolean existsByCode(String code);
     boolean existsByCodeAndIdNot(String code, UUID id);
     boolean existsByCategoryId(UUID categoryId);
-    PageResponse<Product> findAllWithFilters(String search, UUID categoryId, Boolean active,
-                                              Boolean composite, int page, int size,
-                                              String orderBy, String orderDir);
-    PageResponse<Product> findAllForOrder(String search, UUID categoryId, Boolean composite,
-                                          Boolean withStock, Set<UUID> allowedWarehouseIds,
-                                          int page, int size);
+    PageResponse<Product> findAllWithFilters(String search, UUID categoryId,
+            Boolean active, Boolean composite, int page, int size,
+            String orderBy, String orderDir);
+    PageResponse<Product> findAllForOrder(String search, UUID categoryId,
+            Boolean composite, Boolean withStock, Set<UUID> allowedWarehouseIds,
+            int page, int size);
     void delete(UUID id);
     void deleteComponentReferencesByProductId(UUID productId);
     Set<UUID> findIdsWithReferences(Set<UUID> ids);

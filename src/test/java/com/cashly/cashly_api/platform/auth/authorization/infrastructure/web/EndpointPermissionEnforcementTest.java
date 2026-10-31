@@ -27,31 +27,42 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EndpointPermissionEnforcementTest {
-    private static final Pattern AUTHORITY = Pattern.compile("hasAuthority\\('([^']+)'\\)");
-    private static final Set<String> ALL = PermissionRegistry.modules().entrySet().stream()
-            .flatMap(entry -> entry.getValue().stream().map(action -> entry.getKey() + ":" + action))
+    private static final Pattern AUTHORITY = Pattern
+            .compile("hasAuthority\\('([^']+)'\\)");
+    private static final Set<String> ALL = PermissionRegistry.modules()
+            .entrySet().stream()
+            .flatMap(entry -> entry.getValue().stream()
+                    .map(action -> entry.getKey() + ":" + action))
             .collect(java.util.stream.Collectors.toUnmodifiableSet());
 
     record Operation(Method method, String policy) {
         @Override
         public String toString() {
-            return method.getDeclaringClass().getSimpleName() + "#" + method.getName();
+            return method.getDeclaringClass().getSimpleName() + "#"
+                    + method.getName();
         }
     }
 
     static Stream<Operation> operations() throws ClassNotFoundException {
         var scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
+        scanner.addIncludeFilter(
+                new AnnotationTypeFilter(RestController.class));
         var result = new ArrayList<Operation>();
-        for (var definition : scanner.findCandidateComponents("com.cashly.cashly_api")) {
+        for (var definition : scanner
+                .findCandidateComponents("com.cashly.cashly_api")) {
             var controller = Class.forName(definition.getBeanClassName());
             for (var method : controller.getDeclaredMethods()) {
-                if (!AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class)) continue;
-                var annotation = AnnotatedElementUtils.findMergedAnnotation(method, PreAuthorize.class);
+                if (!AnnotatedElementUtils.hasAnnotation(method,
+                        RequestMapping.class))
+                    continue;
+                var annotation = AnnotatedElementUtils
+                        .findMergedAnnotation(method, PreAuthorize.class);
                 if (annotation == null) {
-                    annotation = AnnotatedElementUtils.findMergedAnnotation(controller, PreAuthorize.class);
+                    annotation = AnnotatedElementUtils.findMergedAnnotation(
+                            controller, PreAuthorize.class);
                 }
-                if (annotation != null) result.add(new Operation(method, annotation.value()));
+                if (annotation != null)
+                    result.add(new Operation(method, annotation.value()));
             }
         }
         assertThat(result.size()).isGreaterThan(170);
@@ -61,8 +72,9 @@ class EndpointPermissionEnforcementTest {
     @ParameterizedTest(name = "{0}: no module access")
     @MethodSource("operations")
     void deniesAnAuthenticatedUserWithoutPermissions(Operation operation) {
-        assertThat(authorized(operation, Set.of())).isEqualTo(
-                operation.policy().equals("isAuthenticated()") || operation.policy().equals("permitAll()"));
+        assertThat(authorized(operation, Set.of()))
+                .isEqualTo(operation.policy().equals("isAuthenticated()")
+                        || operation.policy().equals("permitAll()"));
     }
 
     @ParameterizedTest(name = "{0}: read only")
@@ -70,40 +82,54 @@ class EndpointPermissionEnforcementTest {
     void readOnlyNeverAuthorizesWritesOrExports(Operation operation) {
         var read = ALL.stream().filter(authority -> authority.endsWith(":READ"))
                 .collect(java.util.stream.Collectors.toSet());
-        boolean requiresOnlyRead = required(operation).stream().allMatch(value -> value.endsWith(":READ"));
+        boolean requiresOnlyRead = required(operation).stream()
+                .allMatch(value -> value.endsWith(":READ"));
         assertThat(authorized(operation, read)).isEqualTo(requiresOnlyRead);
     }
 
     @ParameterizedTest(name = "{0}: required actions")
     @MethodSource("operations")
-    void requiresEveryDeclaredActionAndAcceptsAuthorizedUsers(Operation operation) {
+    void requiresEveryDeclaredActionAndAcceptsAuthorizedUsers(
+            Operation operation) {
         assertThat(authorized(operation, ALL)).isTrue();
         if (operation.policy().contains(" or ")) {
-            assertThat(authorized(operation, Set.of("USERS:READ", "USERS:CREATE"))).isTrue();
-            assertThat(authorized(operation, Set.of("USERS:READ", "USERS:UPDATE"))).isTrue();
-            assertThat(authorized(operation, Set.of("USERS:CREATE", "USERS:UPDATE"))).isFalse();
+            assertThat(
+                    authorized(operation, Set.of("USERS:READ", "USERS:CREATE")))
+                    .isTrue();
+            assertThat(
+                    authorized(operation, Set.of("USERS:READ", "USERS:UPDATE")))
+                    .isTrue();
+            assertThat(authorized(operation,
+                    Set.of("USERS:CREATE", "USERS:UPDATE"))).isFalse();
             return;
         }
         for (var authority : required(operation)) {
             var reduced = new HashSet<>(ALL);
             reduced.remove(authority);
-            assertThat(authorized(operation, reduced)).as("Missing %s", authority).isFalse();
+            assertThat(authorized(operation, reduced))
+                    .as("Missing %s", authority).isFalse();
         }
     }
 
     private static List<String> required(Operation operation) {
-        return AUTHORITY.matcher(operation.policy()).results().map(match -> match.group(1)).toList();
+        return AUTHORITY.matcher(operation.policy()).results()
+                .map(match -> match.group(1)).toList();
     }
 
     private boolean authorized(Operation operation, Set<String> authorities) {
         var invocation = mock(MethodInvocation.class);
         when(invocation.getMethod()).thenReturn(operation.method());
-        when(invocation.getThis()).thenReturn(mock(operation.method().getDeclaringClass()));
-        when(invocation.getArguments()).thenReturn(new Object[operation.method().getParameterCount()]);
-        var authentication = new UsernamePasswordAuthenticationToken("current-user", null,
+        when(invocation.getThis())
+                .thenReturn(mock(operation.method().getDeclaringClass()));
+        when(invocation.getArguments())
+                .thenReturn(new Object[operation.method().getParameterCount()]);
+        var authentication = new UsernamePasswordAuthenticationToken(
+                "current-user", null,
                 authorities.stream().map(SimpleGrantedAuthority::new).toList());
-        var decision = new PreAuthorizeAuthorizationManager().check(() -> authentication, invocation);
-        assertThat(decision).as("A concrete authorization policy is required").isNotNull();
+        var decision = new PreAuthorizeAuthorizationManager()
+                .check(() -> authentication, invocation);
+        assertThat(decision).as("A concrete authorization policy is required")
+                .isNotNull();
         return decision.isGranted();
     }
 }

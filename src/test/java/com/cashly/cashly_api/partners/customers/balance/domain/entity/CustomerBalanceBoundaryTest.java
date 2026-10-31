@@ -12,10 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CustomerBalanceBoundaryTest {
     @Test
     void should_expose_neutral_pagination_to_the_domain() {
-        assertThat(Arrays.stream(CustomerBalanceRepository.class.getDeclaredMethods())
-                .flatMap(method -> Stream.concat(Stream.of(method.getReturnType()),
+        assertThat(Arrays
+                .stream(CustomerBalanceRepository.class.getDeclaredMethods())
+                .flatMap(method -> Stream.concat(
+                        Stream.of(method.getReturnType()),
                         Arrays.stream(method.getParameterTypes())))
                 .map(Class::getPackageName))
-                .noneMatch(packageName -> packageName.startsWith("org.springframework"));
+                .noneMatch(packageName -> packageName
+                        .startsWith("org.springframework"));
     }
 }

@@ -43,44 +43,26 @@ class InvoiceRepositoryAdapterTest {
         jpaRepository = mock(InvoiceJpaRepository.class);
         sequenceJpaRepository = mock(InvoiceNumberSequenceJpaRepository.class);
         entityCaptor = ArgumentCaptor.forClass(InvoiceEntity.class);
-        adapter = new InvoiceRepositoryAdapter(jpaRepository, sequenceJpaRepository);
+        adapter = new InvoiceRepositoryAdapter(jpaRepository,
+                sequenceJpaRepository);
     }
 
     private InvoiceLine createTestLine() {
-        return InvoiceLine.reconstitute(
-                InvoiceLineId.of(UUID.randomUUID()),
-                UUID.randomUUID(),
-                "Test Product",
-                "PRD-001",
-                new BigDecimal("2"),
-                new BigDecimal("50.00"),
-                BigDecimal.ZERO,
-                List.of(InvoiceLineAllocation.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("2")))
-        );
+        return InvoiceLine.reconstitute(InvoiceLineId.of(UUID.randomUUID()),
+                UUID.randomUUID(), "Test Product", "PRD-001",
+                new BigDecimal("2"), new BigDecimal("50.00"), BigDecimal.ZERO,
+                List.of(InvoiceLineAllocation.reconstitute(UUID.randomUUID(),
+                        UUID.randomUUID(), new BigDecimal("2"))));
     }
 
     private Invoice createTestInvoice() {
-        return Invoice.reconstitute(
-                InvoiceId.of(UUID.randomUUID()),
-                InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Test Customer",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "John Doe",
-                UUID.randomUUID(),
-                "ORD-2026-00001",
-                InvoiceStatus.DRAFT,
-                PaymentType.CREDIT,
-                "Test notes",
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(createTestLine()),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        return Invoice.reconstitute(InvoiceId.of(UUID.randomUUID()),
+                InvoiceNumber.of(2026, 1), UUID.randomUUID(), "Test Customer",
+                "J-12345678-9", UUID.randomUUID(), "John Doe",
+                UUID.randomUUID(), "ORD-2026-00001", InvoiceStatus.DRAFT,
+                PaymentType.CREDIT, "Test notes", BigDecimal.ZERO, null, null,
+                null, List.of(createTestLine()), LocalDateTime.now(),
+                LocalDateTime.now());
     }
 
     @Nested
@@ -92,7 +74,8 @@ class InvoiceRepositoryAdapterTest {
             Invoice invoice = createTestInvoice();
 
             InvoiceEntity expectedEntity = InvoiceJpaMapper.toEntity(invoice);
-            when(jpaRepository.saveAndFlush(entityCaptor.capture())).thenReturn(expectedEntity);
+            when(jpaRepository.saveAndFlush(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             Invoice saved = adapter.save(invoice);
 
@@ -108,12 +91,14 @@ class InvoiceRepositoryAdapterTest {
 
             InvoiceEntity captured = entityCaptor.getValue();
             assertEquals(invoice.getId().value(), captured.getId());
-            assertEquals(invoice.getInvoiceNumber().value(), captured.getInvoiceNumber());
+            assertEquals(invoice.getInvoiceNumber().value(),
+                    captured.getInvoiceNumber());
             assertEquals(invoice.getCustomerId(), captured.getCustomerId());
             assertEquals(invoice.getCustomerName(), captured.getCustomerName());
             assertEquals(invoice.getCustomerRif(), captured.getCustomerRif());
             assertEquals(invoice.getStatus().name(), captured.getStatus());
-            assertEquals(invoice.getPaymentType().name(), captured.getPaymentType());
+            assertEquals(invoice.getPaymentType().name(),
+                    captured.getPaymentType());
             assertEquals(invoice.getSubtotal(), captured.getSubtotal());
             assertEquals(invoice.getCreatedAt(), captured.getCreatedAt());
             assertEquals(invoice.getUpdatedAt(), captured.getUpdatedAt());
@@ -131,13 +116,15 @@ class InvoiceRepositoryAdapterTest {
             Invoice invoice = createTestInvoice();
             InvoiceEntity entity = InvoiceJpaMapper.toEntity(invoice);
 
-            when(jpaRepository.findWithLinesById(invoice.getId().value())).thenReturn(Optional.of(entity));
+            when(jpaRepository.findWithLinesById(invoice.getId().value()))
+                    .thenReturn(Optional.of(entity));
 
             Optional<Invoice> result = adapter.findById(invoice.getId());
 
             assertTrue(result.isPresent());
             assertEquals(invoice.getId(), result.get().getId());
-            assertEquals(invoice.getInvoiceNumber(), result.get().getInvoiceNumber());
+            assertEquals(invoice.getInvoiceNumber(),
+                    result.get().getInvoiceNumber());
             assertEquals(invoice.getCustomerId(), result.get().getCustomerId());
             assertEquals(invoice.getStatus(), result.get().getStatus());
             verify(jpaRepository).findWithLinesById(invoice.getId().value());
@@ -146,7 +133,8 @@ class InvoiceRepositoryAdapterTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             InvoiceId id = InvoiceId.generate();
-            when(jpaRepository.findWithLinesById(id.value())).thenReturn(Optional.empty());
+            when(jpaRepository.findWithLinesById(id.value()))
+                    .thenReturn(Optional.empty());
 
             Optional<Invoice> result = adapter.findById(id);
 
@@ -164,83 +152,61 @@ class InvoiceRepositoryAdapterTest {
             Invoice invoice = createTestInvoice();
             InvoiceEntity entity = InvoiceJpaMapper.toEntity(invoice);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity));
 
-            List<Invoice> result = adapter.findAllWithFilters(null, null, null, null, null, null, null, null, null);
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, null, null);
 
             assertNotNull(result);
             assertEquals(1, result.size());
             assertEquals(invoice.getId(), result.getFirst().getId());
-            verify(jpaRepository).findAllWithFilters(null, null, null, null, null, null, null);
+            verify(jpaRepository).findAllWithFilters(null, null, null, null,
+                    null, null, null);
         }
 
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of());
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of());
 
-            List<Invoice> result = adapter.findAllWithFilters(null, null, null, null, null, null, null, null, null);
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, null, null);
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
-            verify(jpaRepository).findAllWithFilters(null, null, null, null, null, null, null);
+            verify(jpaRepository).findAllWithFilters(null, null, null, null,
+                    null, null, null);
         }
 
         @Test
         void should_ApplySorting_When_OrderByIsProvided() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "A Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CASH,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "B Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.DRAFT, PaymentType.CASH,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "customerName", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "customerName", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -256,403 +222,244 @@ class InvoiceRepositoryAdapterTest {
             LocalDate dateFrom = LocalDate.of(2026, 1, 1);
             LocalDate dateTo = LocalDate.of(2026, 12, 31);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity));
 
-            List<Invoice> result = adapter.findAllWithFilters(dateFrom, dateTo, null, null, null, null, null, null, null);
+            List<Invoice> result = adapter.findAllWithFilters(dateFrom, dateTo,
+                    null, null, null, null, null, null, null);
 
             assertNotNull(result);
             assertEquals(1, result.size());
 
-            verify(jpaRepository).findAllWithFilters(
-                    dateFrom.atStartOfDay(),
-                    dateTo.atTime(23, 59, 59),
-                    null, null, null, null, null
-            );
+            verify(jpaRepository).findAllWithFilters(dateFrom.atStartOfDay(),
+                    dateTo.atTime(23, 59, 59), null, null, null, null, null);
         }
 
         @Test
         void should_SortByInvoiceNumber() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "B Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.PENDING_PAYMENT,
-                    PaymentType.CASH,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "A Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.PENDING_PAYMENT,
+                    PaymentType.CASH, "Notes", BigDecimal.ZERO, null, null,
+                    null, List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "invoiceNumber", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "invoiceNumber", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertEquals(invoice1.getInvoiceNumber(), result.getFirst().getInvoiceNumber());
-            assertEquals(invoice2.getInvoiceNumber(), result.getLast().getInvoiceNumber());
+            assertEquals(invoice1.getInvoiceNumber(),
+                    result.getFirst().getInvoiceNumber());
+            assertEquals(invoice2.getInvoiceNumber(),
+                    result.getLast().getInvoiceNumber());
         }
 
         @Test
         void should_SortByStatus() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "B Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.PENDING_PAYMENT,
-                    PaymentType.CASH,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "A Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.PENDING_PAYMENT,
+                    PaymentType.CASH, "Notes", BigDecimal.ZERO, null, null,
+                    null, List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "status", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "status", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
             assertEquals(InvoiceStatus.DRAFT, result.getFirst().getStatus());
-            assertEquals(InvoiceStatus.PENDING_PAYMENT, result.getLast().getStatus());
+            assertEquals(InvoiceStatus.PENDING_PAYMENT,
+                    result.getLast().getStatus());
         }
 
         @Test
         void should_SortBySubtotal() {
             InvoiceLine line1 = InvoiceLine.reconstitute(
-                    InvoiceLineId.of(UUID.randomUUID()),
-                    UUID.randomUUID(),
-                    "Product A",
-                    "PRD-001",
-                    new BigDecimal("3"),
-                    new BigDecimal("100.00"),
-                    BigDecimal.ZERO,
-                    List.of(InvoiceLineAllocation.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("3")))
-            );
+                    InvoiceLineId.of(UUID.randomUUID()), UUID.randomUUID(),
+                    "Product A", "PRD-001", new BigDecimal("3"),
+                    new BigDecimal("100.00"), BigDecimal.ZERO,
+                    List.of(InvoiceLineAllocation.reconstitute(
+                            UUID.randomUUID(), UUID.randomUUID(),
+                            new BigDecimal("3"))));
 
             InvoiceLine line2 = InvoiceLine.reconstitute(
-                    InvoiceLineId.of(UUID.randomUUID()),
-                    UUID.randomUUID(),
-                    "Product B",
-                    "PRD-002",
-                    new BigDecimal("5"),
-                    new BigDecimal("200.00"),
-                    BigDecimal.ZERO,
-                    List.of(InvoiceLineAllocation.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("5")))
-            );
+                    InvoiceLineId.of(UUID.randomUUID()), UUID.randomUUID(),
+                    "Product B", "PRD-002", new BigDecimal("5"),
+                    new BigDecimal("200.00"), BigDecimal.ZERO,
+                    List.of(InvoiceLineAllocation.reconstitute(
+                            UUID.randomUUID(), UUID.randomUUID(),
+                            new BigDecimal("5"))));
 
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(line1),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "B Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", BigDecimal.ZERO, null, null, null, List.of(line1),
+                    LocalDateTime.now(), LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CASH,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(line2),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "A Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.DRAFT, PaymentType.CASH,
+                    "Notes", BigDecimal.ZERO, null, null, null, List.of(line2),
+                    LocalDateTime.now(), LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "subtotal", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "subtotal", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertTrue(result.getFirst().getSubtotal().compareTo(result.getLast().getSubtotal()) < 0);
+            assertTrue(result.getFirst().getSubtotal()
+                    .compareTo(result.getLast().getSubtotal()) < 0);
         }
 
         @Test
         void should_SortByTotal() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    new BigDecimal("50.00"),
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "B Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", new BigDecimal("50.00"), null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CASH,
-                    "Notes",
-                    new BigDecimal("10.00"),
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "A Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.DRAFT, PaymentType.CASH,
+                    "Notes", new BigDecimal("10.00"), null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "total", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "total", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertEquals(invoice1.getInvoiceNumber(), result.getFirst().getInvoiceNumber());
-            assertEquals(invoice2.getInvoiceNumber(), result.getLast().getInvoiceNumber());
+            assertEquals(invoice1.getInvoiceNumber(),
+                    result.getFirst().getInvoiceNumber());
+            assertEquals(invoice2.getInvoiceNumber(),
+                    result.getLast().getInvoiceNumber());
         }
 
         @Test
         void should_SortByTotal_When_ReturnedTotalIsNull() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "B Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", null, null, null, null, List.of(createTestLine()),
+                    LocalDateTime.now(), LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CASH,
-                    "Notes",
-                    new BigDecimal("10.00"),
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "A Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.DRAFT, PaymentType.CASH,
+                    "Notes", new BigDecimal("10.00"), null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             entity1.setReturnedTotal(null);
 
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "total", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "total", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertEquals(invoice2.getInvoiceNumber(), result.getFirst().getInvoiceNumber());
-            assertEquals(invoice1.getInvoiceNumber(), result.getLast().getInvoiceNumber());
+            assertEquals(invoice2.getInvoiceNumber(),
+                    result.getFirst().getInvoiceNumber());
+            assertEquals(invoice1.getInvoiceNumber(),
+                    result.getLast().getInvoiceNumber());
         }
 
         @Test
         void should_SortByPaymentType() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CASH,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "B Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CASH,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.PENDING_PAYMENT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "A Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.PENDING_PAYMENT,
+                    PaymentType.CREDIT, "Notes", BigDecimal.ZERO, null, null,
+                    null, List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "paymentType", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "paymentType", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -668,11 +475,11 @@ class InvoiceRepositoryAdapterTest {
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity1, entity2));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity1, entity2));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "unknownField", "asc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "unknownField", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -681,57 +488,31 @@ class InvoiceRepositoryAdapterTest {
         @Test
         void should_ApplyDescendingSort() {
             Invoice invoice1 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00001",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CREDIT,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 1),
+                    UUID.randomUUID(), "A Customer", "J-11111111-1",
+                    UUID.randomUUID(), "John Doe", UUID.randomUUID(),
+                    "ORD-2026-00001", InvoiceStatus.DRAFT, PaymentType.CREDIT,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             Invoice invoice2 = Invoice.reconstitute(
-                    InvoiceId.of(UUID.randomUUID()),
-                    InvoiceNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    UUID.randomUUID(),
-                    "ORD-2026-00002",
-                    InvoiceStatus.DRAFT,
-                    PaymentType.CASH,
-                    "Notes",
-                    BigDecimal.ZERO,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    InvoiceId.of(UUID.randomUUID()), InvoiceNumber.of(2026, 2),
+                    UUID.randomUUID(), "B Customer", "J-22222222-2",
+                    UUID.randomUUID(), "Jane Doe", UUID.randomUUID(),
+                    "ORD-2026-00002", InvoiceStatus.DRAFT, PaymentType.CASH,
+                    "Notes", BigDecimal.ZERO, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             InvoiceEntity entity1 = InvoiceJpaMapper.toEntity(invoice1);
             InvoiceEntity entity2 = InvoiceJpaMapper.toEntity(invoice2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity1, entity2));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any(), any())).thenReturn(List.of(entity1, entity2));
 
-            List<Invoice> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, "customerName", "desc");
+            List<Invoice> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, "customerName", "desc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -765,7 +546,8 @@ class InvoiceRepositoryAdapterTest {
             existingSeq.setYear(year);
             existingSeq.setNextValue(5);
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.of(existingSeq));
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.of(existingSeq));
 
             int next = adapter.getNextSequenceForYear(year);
 
@@ -779,13 +561,15 @@ class InvoiceRepositoryAdapterTest {
         void should_CreateNewSequenceAndReturnOne_When_NoExistingSequence() {
             int year = LocalDate.now().getYear();
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.empty());
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.empty());
 
             int next = adapter.getNextSequenceForYear(year);
 
             assertEquals(1, next);
             verify(sequenceJpaRepository).findByYearForUpdate(year);
-            verify(sequenceJpaRepository).save(any(InvoiceNumberSequenceEntity.class));
+            verify(sequenceJpaRepository)
+                    .save(any(InvoiceNumberSequenceEntity.class));
         }
     }
 }

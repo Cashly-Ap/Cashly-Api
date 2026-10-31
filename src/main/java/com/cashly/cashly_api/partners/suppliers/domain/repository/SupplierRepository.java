@@ -13,7 +13,9 @@ public interface SupplierRepository {
     Optional<Supplier> findById(SupplierId id);
     List<Supplier> findAllById(Collection<SupplierId> ids);
     List<Supplier> findAll();
-    PageResponse<Supplier> findAllWithFilters(String search, String type, Boolean active, String state, int page, int size, String orderBy, String orderDir);
+    PageResponse<Supplier> findAllWithFilters(String search, String type,
+            Boolean active, String state, int page, int size, String orderBy,
+            String orderDir);
     void delete(SupplierId id);
     boolean existsById(SupplierId id);
     long getNextCode();

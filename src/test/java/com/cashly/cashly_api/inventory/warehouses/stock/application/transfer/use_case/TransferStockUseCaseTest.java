@@ -57,8 +57,10 @@ class TransferStockUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new TransferStockUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
+        useCase = new TransferStockUseCase(warehouseRepository,
+                warehouseStockRepository, stockMovementRepository,
+                new LocalStockCatalogGatewayAdapter(
+                        new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
@@ -72,24 +74,41 @@ class TransferStockUseCaseTest {
         sourceStock.addStock(100);
         WarehouseStock destStock = WarehouseStock.create(destId, productId);
 
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 20, "Transfer");
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 20, "Transfer");
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
-        when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId, productId)).thenReturn(true);
-        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(any(), eq(productId)))
-                .thenAnswer(invocation -> invocation.getArgument(0).equals(sourceId) ? sourceStock : destStock);
-        when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
-            StockMovement m = inv.getArgument(0);
-            return new StockMovement(UUID.randomUUID(), m.getWarehouseId(), m.getProductId(),
-                    m.getMovementType(), m.getQuantity(), m.getPreviousStock(), m.getNewStock(),
-                    m.getOriginMovementId(), m.getTransferBatchId(), m.getReferenceType(),
-                    m.getReferenceId(), m.getReferenceNumber(), m.getNotes(), m.getCreatedAt());
-        });
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(destId))
+                .thenReturn(Optional.of(dest));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId,
+                productId)).thenReturn(true);
+        when(warehouseStockRepository
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(any(),
+                        eq(productId)))
+                .thenAnswer(
+                        invocation -> invocation.getArgument(0).equals(sourceId)
+                                ? sourceStock
+                                : destStock);
+        when(warehouseStockRepository.save(any(WarehouseStock.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(stockMovementRepository.save(any(StockMovement.class)))
+                .thenAnswer(inv -> {
+                    StockMovement m = inv.getArgument(0);
+                    return new StockMovement(UUID.randomUUID(),
+                            m.getWarehouseId(), m.getProductId(),
+                            m.getMovementType(), m.getQuantity(),
+                            m.getPreviousStock(), m.getNewStock(),
+                            m.getOriginMovementId(), m.getTransferBatchId(),
+                            m.getReferenceType(), m.getReferenceId(),
+                            m.getReferenceNumber(), m.getNotes(),
+                            m.getCreatedAt());
+                });
 
-        List<StockMovementResponse> response = useCase.execute(sourceId, request);
+        List<StockMovementResponse> response = useCase.execute(sourceId,
+                request);
 
         assertNotNull(response);
         assertEquals(2, response.size());
@@ -99,46 +118,61 @@ class TransferStockUseCaseTest {
         assertEquals(20, response.get(1).quantity());
         assertEquals(80, response.get(0).newStock());
         assertEquals(20, response.get(1).newStock());
-        verify(stockMovementRepository, times(2)).save(any(StockMovement.class));
-        verify(warehouseStockRepository).existsByWarehouseIdAndProductId(sourceId, productId);
+        verify(stockMovementRepository, times(2))
+                .save(any(StockMovement.class));
+        verify(warehouseStockRepository)
+                .existsByWarehouseIdAndProductId(sourceId, productId);
         UUID firstLock = sourceId.compareTo(destId) < 0 ? sourceId : destId;
         UUID secondLock = sourceId.compareTo(destId) < 0 ? destId : sourceId;
         InOrder lockOrder = inOrder(warehouseStockRepository);
-        lockOrder.verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(firstLock, productId);
-        lockOrder.verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(secondLock, productId);
+        lockOrder.verify(warehouseStockRepository)
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(firstLock,
+                        productId);
+        lockOrder.verify(warehouseStockRepository)
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(secondLock,
+                        productId);
     }
 
     @Test
     @DisplayName("throws WarehouseNotFoundException when source not found")
     void shouldThrowWhenSourceNotFound() {
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 10, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 10, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     @Test
     @DisplayName("throws WarehouseNotFoundException when destination not found")
     void shouldThrowWhenDestinationNotFound() {
         Warehouse source = buildActiveWarehouse(sourceId);
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 10, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 10, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
         when(warehouseRepository.findById(destId)).thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     @Test
     @DisplayName("throws WarehouseNotActiveException when source inactive")
     void shouldThrowWhenSourceNotActive() {
         Warehouse source = buildInactiveWarehouse(sourceId);
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 10, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 10, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
 
-        assertThrows(WarehouseNotActiveException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(WarehouseNotActiveException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     @Test
@@ -146,12 +180,16 @@ class TransferStockUseCaseTest {
     void shouldThrowWhenDestinationNotActive() {
         Warehouse source = buildActiveWarehouse(sourceId);
         Warehouse dest = buildInactiveWarehouse(destId);
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 10, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 10, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
-        when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(destId))
+                .thenReturn(Optional.of(dest));
 
-        assertThrows(WarehouseNotActiveException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(WarehouseNotActiveException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     @Test
@@ -159,13 +197,18 @@ class TransferStockUseCaseTest {
     void shouldThrowWhenProductNotFound() {
         Warehouse source = buildActiveWarehouse(sourceId);
         Warehouse dest = buildActiveWarehouse(destId);
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 10, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 10, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
-        when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(destId))
+                .thenReturn(Optional.of(dest));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(ProductNotFoundException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     @Test
@@ -174,14 +217,20 @@ class TransferStockUseCaseTest {
         Warehouse source = buildActiveWarehouse(sourceId);
         Warehouse dest = buildActiveWarehouse(destId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 10, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 10, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
-        when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId, productId)).thenReturn(false);
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(destId))
+                .thenReturn(Optional.of(dest));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId,
+                productId)).thenReturn(false);
 
-        assertThrows(ProductNotInWarehouseException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(ProductNotInWarehouseException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     @Test
@@ -192,39 +241,45 @@ class TransferStockUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         WarehouseStock sourceStock = WarehouseStock.create(sourceId, productId);
-        sourceStock.addStock(5); 
+        sourceStock.addStock(5);
 
-        TransferStockRequest request = new TransferStockRequest(productId, destId, 20, null);
+        TransferStockRequest request = new TransferStockRequest(productId,
+                destId, 20, null);
 
-        when(warehouseRepository.findById(sourceId)).thenReturn(Optional.of(source));
-        when(warehouseRepository.findById(destId)).thenReturn(Optional.of(dest));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId, productId)).thenReturn(true);
-        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(any(), eq(productId)))
-                .thenAnswer(invocation -> invocation.getArgument(0).equals(sourceId) ? sourceStock : WarehouseStock.create(destId, productId));
+        when(warehouseRepository.findById(sourceId))
+                .thenReturn(Optional.of(source));
+        when(warehouseRepository.findById(destId))
+                .thenReturn(Optional.of(dest));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository.existsByWarehouseIdAndProductId(sourceId,
+                productId)).thenReturn(true);
+        when(warehouseStockRepository
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(any(),
+                        eq(productId)))
+                .thenAnswer(
+                        invocation -> invocation.getArgument(0).equals(sourceId)
+                                ? sourceStock
+                                : WarehouseStock.create(destId, productId));
 
-        assertThrows(InsufficientStockException.class, () -> useCase.execute(sourceId, request));
+        assertThrows(InsufficientStockException.class,
+                () -> useCase.execute(sourceId, request));
     }
 
     private Warehouse buildActiveWarehouse(UUID id) {
-        return Warehouse.reconstitute(
-                id, "WH-001", "Main", "Addr", "State", "Mun", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Warehouse.reconstitute(id, "WH-001", "Main", "Addr", "State",
+                "Mun", "10001", true, LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Warehouse buildInactiveWarehouse(UUID id) {
-        return Warehouse.reconstitute(
-                id, "WH-001", "Main", "Addr", "State", "Mun", "10001",
-                false, LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Warehouse.reconstitute(id, "WH-001", "Main", "Addr", "State",
+                "Mun", "10001", false, LocalDateTime.now(),
+                LocalDateTime.now());
     }
 
     private Product buildProduct(UUID id, String code, String name) {
-        return Product.reconstitute(
-                id, code, name, "Desc", null, false, true, null,
-                BigDecimal.ZERO,
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(id, code, name, "Desc", null, false, true,
+                null, BigDecimal.ZERO, List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

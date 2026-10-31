@@ -15,7 +15,9 @@ public class LocalStockDeductionGateway implements StockDeductionGateway {
 
     @Override
     public void deduct(List<Allocation> allocations) {
-        api.deduct(allocations.stream().map(item -> new StockDeductionApi.Allocation(item.warehouseId(),
-                item.productId(), item.quantity())).toList());
+        api.deduct(allocations.stream()
+                .map(item -> new StockDeductionApi.Allocation(
+                        item.warehouseId(), item.productId(), item.quantity()))
+                .toList());
     }
 }

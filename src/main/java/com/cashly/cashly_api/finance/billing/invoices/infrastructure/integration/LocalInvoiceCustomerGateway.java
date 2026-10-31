@@ -7,8 +7,12 @@ import java.util.UUID;
 @Component
 public class LocalInvoiceCustomerGateway implements InvoiceCustomerGateway {
     private final InvoiceCustomerQuery customers;
-    public LocalInvoiceCustomerGateway(InvoiceCustomerQuery customers) { this.customers = customers; }
+    public LocalInvoiceCustomerGateway(InvoiceCustomerQuery customers) {
+        this.customers = customers;
+    }
     public Optional<Customer> findCustomer(UUID id) {
-        return customers.findCustomer(id).map(customer -> new Customer(customer.id(), customer.name(), customer.rif()));
+        return customers.findCustomer(id)
+                .map(customer -> new Customer(customer.id(), customer.name(),
+                        customer.rif()));
     }
 }

@@ -19,36 +19,41 @@ public class ListProductsUseCase {
     private final ProductMapper productMapper;
 
     public ListProductsUseCase(ProductRepository productRepository,
-                                ProductCategoryGateway categoryRepository,
-                                ProductMapper productMapper) {
+            ProductCategoryGateway categoryRepository,
+            ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductListResponse> execute(String search, UUID categoryId, Boolean active,
-                                                       Boolean composite, int page, int size,
-                                                       String orderBy, String orderDir) {
-        PageResponse<com.cashly.cashly_api.catalog.products.domain.entity.Product> result =
-            productRepository.findAllWithFilters(search, categoryId, active, composite, page, size, orderBy, orderDir);
+    public PageResponse<ProductListResponse> execute(String search,
+            UUID categoryId, Boolean active, Boolean composite, int page,
+            int size, String orderBy, String orderDir) {
+        PageResponse<com.cashly.cashly_api.catalog.products.domain.entity.Product> result = productRepository
+                .findAllWithFilters(search, categoryId, active, composite, page,
+                        size, orderBy, orderDir);
 
-        Set<UUID> productIds = result.content().stream()
-            .map(com.cashly.cashly_api.catalog.products.domain.entity.Product::getId)
-            .collect(Collectors.toSet());
+        Set<UUID> productIds = result.content().stream().map(
+                com.cashly.cashly_api.catalog.products.domain.entity.Product::getId)
+                .collect(Collectors.toSet());
 
-        Set<UUID> idsWithReferences = productRepository.findIdsWithReferences(productIds);
+        Set<UUID> idsWithReferences = productRepository
+                .findIdsWithReferences(productIds);
 
         List<ProductListResponse> content = result.content().stream()
-            .map(product -> {
-                String categoryName = categoryRepository.findById(product.getCategoryId())
-                    .map(c -> c.name()).orElse("");
-                boolean deletable = !idsWithReferences.contains(product.getId());
-                return productMapper.toListResponse(product, categoryName, deletable);
-            })
-            .toList();
+                .map(product -> {
+                    String categoryName = categoryRepository
+                            .findById(product.getCategoryId())
+                            .map(c -> c.name()).orElse("");
+                    boolean deletable = !idsWithReferences
+                            .contains(product.getId());
+                    return productMapper.toListResponse(product, categoryName,
+                            deletable);
+                }).toList();
 
-        return new PageResponse<>(content, result.totalElements(), result.totalPages(),
-                result.size(), result.number(), result.first(), result.last(), result.empty());
+        return new PageResponse<>(content, result.totalElements(),
+                result.totalPages(), result.size(), result.number(),
+                result.first(), result.last(), result.empty());
     }
 }

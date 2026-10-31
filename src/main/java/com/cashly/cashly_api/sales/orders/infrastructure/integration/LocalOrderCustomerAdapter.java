@@ -18,7 +18,9 @@ public class LocalOrderCustomerAdapter implements OrderCustomerGateway {
     @Override
     public Optional<Customer> findById(UUID customerId) {
         var profile = customers.find(customerId);
-        return profile == null ? Optional.empty()
-                : Optional.of(new Customer(profile.id(), profile.legalName(), profile.rif()));
+        return profile == null
+                ? Optional.empty()
+                : Optional.of(new Customer(profile.id(), profile.legalName(),
+                        profile.rif()));
     }
 }

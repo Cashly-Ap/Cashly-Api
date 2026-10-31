@@ -5,25 +5,18 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.enti
 import java.math.BigDecimal;
 import java.util.List;
 
-public record DailyTotals(
-        BigDecimal totalPayments,
-        int paymentCount,
-        BigDecimal totalAdvances,
-        int advanceCount,
-        BigDecimal totalReturns,
-        int returnCount,
-        BigDecimal totalCreditNotes,
-        BigDecimal totalDebitNotes,
-        BigDecimal totalInvoices,
-        int invoiceCount,
-        BigDecimal totalInvoiced,
-        BigDecimal totalRevenue,
-        BigDecimal totalExpenses,
-        List<CashRegisterDetail> paymentDetails
-) {
+public record DailyTotals(BigDecimal totalPayments, int paymentCount,
+        BigDecimal totalAdvances, int advanceCount, BigDecimal totalReturns,
+        int returnCount, BigDecimal totalCreditNotes,
+        BigDecimal totalDebitNotes, BigDecimal totalInvoices, int invoiceCount,
+        BigDecimal totalInvoiced, BigDecimal totalRevenue,
+        BigDecimal totalExpenses, List<CashRegisterDetail> paymentDetails) {
     public DailyTotals {
-        if (totalInvoiced == null) totalInvoiced = totalInvoices;
-        if (totalRevenue == null) totalRevenue = totalPayments;
-        if (totalExpenses == null) totalExpenses = totalReturns.add(totalCreditNotes);
+        if (totalInvoiced == null)
+            totalInvoiced = totalInvoices;
+        if (totalRevenue == null)
+            totalRevenue = totalPayments;
+        if (totalExpenses == null)
+            totalExpenses = totalReturns.add(totalCreditNotes);
     }
 }

@@ -34,13 +34,16 @@ class PaymentReportsControllerTest {
         UUID paymentId = UUID.randomUUID();
         byte[] pdfContent = "PDF content".getBytes();
 
-        when(generatePaymentPdfUseCase.execute(paymentId)).thenReturn(pdfContent);
+        when(generatePaymentPdfUseCase.execute(paymentId))
+                .thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getPaymentPdf(paymentId);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("attachment; filename=\"pago-" + paymentId + ".pdf\""));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains(
+                        "attachment; filename=\"pago-" + paymentId + ".pdf\""));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generatePaymentPdfUseCase).execute(paymentId);
@@ -54,17 +57,18 @@ class PaymentReportsControllerTest {
         UUID customerId = UUID.randomUUID();
         byte[] pdfContent = "History PDF".getBytes();
 
-        when(generatePaymentHistoryReportPdfUseCase.execute(dateFrom, dateTo, customerId, "APPLIED", "CASH"))
-                .thenReturn(pdfContent);
+        when(generatePaymentHistoryReportPdfUseCase.execute(dateFrom, dateTo,
+                customerId, "APPLIED", "CASH")).thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getPaymentHistoryPdf(
-                dateFrom, dateTo, customerId, "APPLIED", "CASH"
-        );
+                dateFrom, dateTo, customerId, "APPLIED", "CASH");
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("historial-pagos-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("historial-pagos-"));
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generatePaymentHistoryReportPdfUseCase).execute(dateFrom, dateTo, customerId, "APPLIED", "CASH");
+        verify(generatePaymentHistoryReportPdfUseCase).execute(dateFrom, dateTo,
+                customerId, "APPLIED", "CASH");
     }
 }

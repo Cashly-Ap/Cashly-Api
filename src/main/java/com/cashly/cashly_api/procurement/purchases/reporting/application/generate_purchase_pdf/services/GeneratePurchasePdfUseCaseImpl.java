@@ -6,12 +6,17 @@ import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.o
 import com.cashly.cashly_api.procurement.purchases.reporting.application.ports.out.PurchasePdfPort;
 import java.util.UUID;
 
-public class GeneratePurchasePdfUseCaseImpl implements GeneratePurchasePdfUseCase {
+public class GeneratePurchasePdfUseCaseImpl
+        implements
+            GeneratePurchasePdfUseCase {
     private final PurchaseReportQueryGateway query;
     private final PurchasePdfPort pdf;
-    public GeneratePurchasePdfUseCaseImpl(PurchaseReportQueryGateway query, PurchasePdfPort pdf) {
+    public GeneratePurchasePdfUseCaseImpl(PurchaseReportQueryGateway query,
+            PurchasePdfPort pdf) {
         this.query = query;
         this.pdf = pdf;
     }
-    public byte[] execute(UUID id) { return pdf.generatePdf(query.find(id)); }
+    public byte[] execute(UUID id) {
+        return pdf.generatePdf(query.find(id));
+    }
 }

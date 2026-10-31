@@ -8,6 +8,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.reporting.applicatio
 import java.util.List;
 
 public interface CashRegisterRangeReportPort {
-    byte[] generate(List<CashRegisterExportRow> rows, CashRegisterReportFilter filter,
-                    ReportFormat format, ReportType type);
+    byte[] generate(List<CashRegisterExportRow> rows,
+            CashRegisterReportFilter filter, ReportFormat format,
+            ReportType type);
 }

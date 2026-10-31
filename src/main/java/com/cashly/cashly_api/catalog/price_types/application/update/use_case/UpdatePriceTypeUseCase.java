@@ -21,13 +21,14 @@ public class UpdatePriceTypeUseCase {
     @Transactional
     public PriceTypeResponse execute(UUID id, UpdatePriceTypeRequest request) {
         PriceType priceType = priceTypeRepository.findById(id)
-            .orElseThrow(() -> new PriceTypeNotFoundException(id));
+                .orElseThrow(() -> new PriceTypeNotFoundException(id));
 
         if (priceTypeRepository.existsByNameAndIdNot(request.name(), id)) {
             throw new DuplicatePriceTypeNameException(request.name());
         }
 
-        priceType.update(request.name(), request.description(), request.active());
+        priceType.update(request.name(), request.description(),
+                request.active());
         PriceType saved = priceTypeRepository.save(priceType);
         return PriceTypeResponse.from(saved);
     }

@@ -6,7 +6,8 @@ import java.util.UUID;
 public record PurchaseLineAllocationId(UUID value) {
 
     public PurchaseLineAllocationId {
-        Objects.requireNonNull(value, "PurchaseLineAllocationId cannot be null");
+        Objects.requireNonNull(value,
+                "PurchaseLineAllocationId cannot be null");
     }
 
     public static PurchaseLineAllocationId generate() {

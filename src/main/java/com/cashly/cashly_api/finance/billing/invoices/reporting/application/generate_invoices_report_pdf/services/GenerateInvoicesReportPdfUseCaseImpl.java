@@ -6,19 +6,22 @@ import com.cashly.cashly_api.finance.billing.invoices.reporting.application.dto.
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
 
-
-public class GenerateInvoicesReportPdfUseCaseImpl implements GenerateInvoicesReportPdfUseCase {
+public class GenerateInvoicesReportPdfUseCaseImpl
+        implements
+            GenerateInvoicesReportPdfUseCase {
 
     private final InvoiceReportQueryGateway query;
     private final InvoicesReportPdfPort invoicesReportPdfPort;
 
-    public GenerateInvoicesReportPdfUseCaseImpl(InvoiceReportQueryGateway query, InvoicesReportPdfPort invoicesReportPdfPort) {
+    public GenerateInvoicesReportPdfUseCaseImpl(InvoiceReportQueryGateway query,
+            InvoicesReportPdfPort invoicesReportPdfPort) {
         this.query = query;
         this.invoicesReportPdfPort = invoicesReportPdfPort;
     }
 
     @Override
     public byte[] execute(InvoiceReportFilter filter, String mode) {
-        return invoicesReportPdfPort.generatePdf(query.findAll(filter), mode != null ? mode : "simple");
+        return invoicesReportPdfPort.generatePdf(query.findAll(filter),
+                mode != null ? mode : "simple");
     }
 }

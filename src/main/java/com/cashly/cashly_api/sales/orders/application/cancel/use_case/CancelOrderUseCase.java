@@ -21,8 +21,8 @@ public class CancelOrderUseCase {
     private final OrderNotificationGateway notifications;
 
     public CancelOrderUseCase(OrderRepository orderRepository,
-                               OrderInventoryGateway inventory,
-                               OrderNotificationGateway notifications) {
+            OrderInventoryGateway inventory,
+            OrderNotificationGateway notifications) {
         this.orderRepository = orderRepository;
         this.inventory = inventory;
         this.notifications = notifications;
@@ -38,20 +38,26 @@ public class CancelOrderUseCase {
         revertStockAllocations(order, previousStatus);
 
         Order saved = orderRepository.save(order);
-        notifications.notifyCustomerOrderRejected(order.getCustomerId(), saved.getId().value(), request.reason());
+        notifications.notifyCustomerOrderRejected(order.getCustomerId(),
+                saved.getId().value(), request.reason());
         return OrderMapper.toDetailResponse(saved);
     }
 
-    private void revertStockAllocations(Order order, OrderStatus previousStatus) {
+    private void revertStockAllocations(Order order,
+            OrderStatus previousStatus) {
         boolean wasConfirmedOrInvoiced = previousStatus == OrderStatus.CONFIRMED
                 || previousStatus == OrderStatus.INVOICED;
 
-        var allocations = order.getLines().stream().flatMap(line -> line.getAllocations().stream()
-                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
-                        line.getProductId(), allocation.getAllocated().intValue()))).toList();
+        var allocations = order.getLines().stream().flatMap(line -> line
+                .getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(
+                        allocation.getWarehouseId(), line.getProductId(),
+                        allocation.getAllocated().intValue())))
+                .toList();
         if (wasConfirmedOrInvoiced) {
-            inventory.restore(allocations, new OrderInventoryGateway.Reference(order.getId().value(),
-                    order.getOrderNumber().value(), "Order cancelled"));
+            inventory.restore(allocations,
+                    new OrderInventoryGateway.Reference(order.getId().value(),
+                            order.getOrderNumber().value(), "Order cancelled"));
         } else {
             inventory.release(allocations);
         }

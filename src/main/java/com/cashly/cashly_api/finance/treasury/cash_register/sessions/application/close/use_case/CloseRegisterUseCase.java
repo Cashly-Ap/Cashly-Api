@@ -15,28 +15,30 @@ public class CloseRegisterUseCase {
     private final CashRegisterRepository closureRepository;
     private final CashRegisterQueryGateway queries;
 
-    public CloseRegisterUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+    public CloseRegisterUseCase(CashRegisterRepository closureRepository,
+            CashRegisterQueryGateway queries) {
         this.closureRepository = closureRepository;
         this.queries = queries;
     }
 
-    public CashRegisterResponse execute(UUID closureId, UUID closedBy, String closedByName,
-                                        BigDecimal declaredBalance, String closingNotes) {
-        CashRegister closure = closureRepository.findById(RegisterId.of(closureId))
-                .orElseThrow(() -> new IllegalArgumentException("Closure not found: " + closureId));
+    public CashRegisterResponse execute(UUID closureId, UUID closedBy,
+            String closedByName, BigDecimal declaredBalance,
+            String closingNotes) {
+        CashRegister closure = closureRepository
+                .findById(RegisterId.of(closureId))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Closure not found: " + closureId));
 
         var dailyTotals = queries.findSessionTotals(closure.getId());
 
-        closure.applyTotals(
-                dailyTotals.totalPayments(), dailyTotals.paymentCount(),
-                dailyTotals.totalAdvances(), dailyTotals.advanceCount(),
-                dailyTotals.totalReturns(), dailyTotals.returnCount(),
-                dailyTotals.totalCreditNotes(),
-                dailyTotals.totalDebitNotes(),
-                dailyTotals.totalInvoices(), dailyTotals.invoiceCount(),
-                dailyTotals.paymentDetails()
-        );
-        closure.applyMovementTotals(dailyTotals.totalRevenue(), dailyTotals.totalExpenses());
+        closure.applyTotals(dailyTotals.totalPayments(),
+                dailyTotals.paymentCount(), dailyTotals.totalAdvances(),
+                dailyTotals.advanceCount(), dailyTotals.totalReturns(),
+                dailyTotals.returnCount(), dailyTotals.totalCreditNotes(),
+                dailyTotals.totalDebitNotes(), dailyTotals.totalInvoices(),
+                dailyTotals.invoiceCount(), dailyTotals.paymentDetails());
+        closure.applyMovementTotals(dailyTotals.totalRevenue(),
+                dailyTotals.totalExpenses());
 
         closure.close(closedBy, closedByName, declaredBalance, closingNotes);
         CashRegister saved = closureRepository.save(closure);

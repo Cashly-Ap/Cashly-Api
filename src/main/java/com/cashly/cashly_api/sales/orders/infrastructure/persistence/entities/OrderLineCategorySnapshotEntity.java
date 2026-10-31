@@ -29,17 +29,25 @@ public class OrderLineCategorySnapshotEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID categoryId;
 
-    protected OrderLineCategorySnapshotEntity() {}
+    protected OrderLineCategorySnapshotEntity() {
+    }
 
-    public OrderLineCategorySnapshotEntity(OrderLineEntity line, UUID categoryId) {
+    public OrderLineCategorySnapshotEntity(OrderLineEntity line,
+            UUID categoryId) {
         this.line = line;
         this.categoryId = categoryId;
     }
 
-    public UUID getId() { return id; }
+    public UUID getId() {
+        return id;
+    }
 
     /** Restore the persisted shared key before merging an existing snapshot. New snapshots keep a null id. */
-    public void setId(UUID id) { this.id = id; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public UUID getCategoryId() { return categoryId; }
+    public UUID getCategoryId() {
+        return categoryId;
+    }
 }

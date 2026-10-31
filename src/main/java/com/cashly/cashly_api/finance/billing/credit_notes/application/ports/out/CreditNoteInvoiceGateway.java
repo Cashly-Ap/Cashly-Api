@@ -10,7 +10,8 @@ public interface CreditNoteInvoiceGateway {
     Map<UUID, CreditNoteInvoiceContext> findAll(Set<UUID> invoiceIds);
     void recalculate(UUID invoiceId);
 
-    record CreditNoteInvoiceContext(UUID id, String number, String status, String statusLabel,
-                                    String customerName, String customerRif,
-                                    BigDecimal totalBeforeNotes) {}
+    record CreditNoteInvoiceContext(UUID id, String number, String status,
+            String statusLabel, String customerName, String customerRif,
+            BigDecimal totalBeforeNotes) {
+    }
 }

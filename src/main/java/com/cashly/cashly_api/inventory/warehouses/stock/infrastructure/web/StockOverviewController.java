@@ -28,11 +28,14 @@ public class StockOverviewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "NONE") StockOverviewGroupBy groupBy) {
-        return useCase.execute(warehouseId, categoryId, search, page, size, groupBy);
+        return useCase.execute(warehouseId, categoryId, search, page, size,
+                groupBy);
     }
 
     @PreAuthorize("hasAuthority('INVENTORY:READ')")
-    public StockOverviewResponse getStock(UUID warehouseId, UUID categoryId, String search, int page, int size) {
-        return getStock(warehouseId, categoryId, search, page, size, StockOverviewGroupBy.NONE);
+    public StockOverviewResponse getStock(UUID warehouseId, UUID categoryId,
+            String search, int page, int size) {
+        return getStock(warehouseId, categoryId, search, page, size,
+                StockOverviewGroupBy.NONE);
     }
 }

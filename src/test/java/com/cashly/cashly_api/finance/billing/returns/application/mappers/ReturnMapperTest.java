@@ -26,17 +26,22 @@ class ReturnMapperTest {
     void shouldMapResolvedInvoiceAndWarehouseLabels() {
         UUID invoiceId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
-        Return returned = returned(invoiceId, List.of(ReturnLine.create(UUID.randomUUID(), UUID.randomUUID(),
-                BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN,
-                List.of(ReturnLineAllocation.create(warehouseId, BigDecimal.ONE)))));
-        var invoice = new ReturnProjectionQueryGateway.InvoiceLabels("INV-1", "Customer", "J-1");
+        Return returned = returned(invoiceId,
+                List.of(ReturnLine.create(UUID.randomUUID(), UUID.randomUUID(),
+                        BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN,
+                        List.of(ReturnLineAllocation.create(warehouseId,
+                                BigDecimal.ONE)))));
+        var invoice = new ReturnProjectionQueryGateway.InvoiceLabels("INV-1",
+                "Customer", "J-1");
 
-        ReturnResponse response = mapper.toResponse(returned, invoice, Map.of(warehouseId, "Main"));
+        ReturnResponse response = mapper.toResponse(returned, invoice,
+                Map.of(warehouseId, "Main"));
 
         assertThat(response.invoiceNumber()).isEqualTo("INV-1");
         assertThat(response.customerName()).isEqualTo("Customer");
         assertThat(response.customerRif()).isEqualTo("J-1");
-        assertThat(response.lines().getFirst().allocations().getFirst().warehouseName()).isEqualTo("Main");
+        assertThat(response.lines().getFirst().allocations().getFirst()
+                .warehouseName()).isEqualTo("Main");
     }
 
     @Test
@@ -56,19 +61,26 @@ class ReturnMapperTest {
     @Test
     void shouldConvertRequestLineWithoutInfrastructureReads() {
         UUID warehouseId = UUID.randomUUID();
-        var request = new CreateReturnRequest.ReturnLineRequest(UUID.randomUUID(), UUID.randomUUID(),
-                BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, null,
-                List.of(new CreateReturnRequest.ReturnLineRequest.AllocationRequest(warehouseId, BigDecimal.ONE)));
+        var request = new CreateReturnRequest.ReturnLineRequest(
+                UUID.randomUUID(), UUID.randomUUID(), BigDecimal.ONE,
+                BigDecimal.TEN, BigDecimal.TEN, null,
+                List.of(new CreateReturnRequest.ReturnLineRequest.AllocationRequest(
+                        warehouseId, BigDecimal.ONE)));
 
         ReturnLine line = ReturnMapper.toLine(request);
 
-        assertThat(line.getAllocations()).extracting(ReturnLineAllocation::getWarehouseId).containsExactly(warehouseId);
+        assertThat(line.getAllocations())
+                .extracting(ReturnLineAllocation::getWarehouseId)
+                .containsExactly(warehouseId);
     }
 
     private Return returned(UUID invoiceId, List<ReturnLine> lines) {
-        return Return.reconstitute(com.cashly.cashly_api.finance.billing.returns.domain.valueobjects.ReturnId.generate(),
-                ReturnNumber.of(2026, 1), invoiceId, UUID.randomUUID(), ReturnType.AUTOMATIC, "Reason",
-                BigDecimal.TEN, lines, List.of(), UUID.randomUUID(), "Operator",
-                LocalDateTime.now(), LocalDateTime.now());
+        return Return.reconstitute(
+                com.cashly.cashly_api.finance.billing.returns.domain.valueobjects.ReturnId
+                        .generate(),
+                ReturnNumber.of(2026, 1), invoiceId, UUID.randomUUID(),
+                ReturnType.AUTOMATIC, "Reason", BigDecimal.TEN, lines,
+                List.of(), UUID.randomUUID(), "Operator", LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

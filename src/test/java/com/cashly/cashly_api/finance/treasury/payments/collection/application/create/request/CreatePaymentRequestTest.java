@@ -17,10 +17,9 @@ class CreatePaymentRequestTest {
         UUID customerId = UUID.randomUUID();
         UUID paymentMethodId = UUID.randomUUID();
 
-        CreatePaymentRequest request = new CreatePaymentRequest(
-                customerId, "APPLIED", new BigDecimal("500.00"),
-                paymentMethodId, "REF-001", LocalDate.of(2026, 6, 15), "Test payment"
-        );
+        CreatePaymentRequest request = new CreatePaymentRequest(customerId,
+                "APPLIED", new BigDecimal("500.00"), paymentMethodId, "REF-001",
+                LocalDate.of(2026, 6, 15), "Test payment");
 
         assertEquals(customerId, request.customerId());
         assertEquals("APPLIED", request.status());
@@ -34,9 +33,8 @@ class CreatePaymentRequestTest {
     @Test
     void should_CreateRequest_WithNullNotesAndReference() {
         CreatePaymentRequest request = new CreatePaymentRequest(
-                UUID.randomUUID(), "APPLIED", BigDecimal.TEN,
-                UUID.randomUUID(), null, LocalDate.now(), null
-        );
+                UUID.randomUUID(), "APPLIED", BigDecimal.TEN, UUID.randomUUID(),
+                null, LocalDate.now(), null);
 
         assertNull(request.notes());
         assertNull(request.referenceNumber());

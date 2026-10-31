@@ -22,39 +22,46 @@ public class SupplierConfig {
     }
 
     @Bean
-    public SupplierCodeGenerator supplierCodeGenerator(SupplierRepository supplierRepository) {
+    public SupplierCodeGenerator supplierCodeGenerator(
+            SupplierRepository supplierRepository) {
         return new SequentialSupplierCodeGenerator(supplierRepository);
     }
 
     @Bean
-    public RegisterSupplierUseCase registerSupplierUseCase(SupplierRepository supplierRepository,
-                                                            SupplierCodeGenerator supplierCodeGenerator,
-                                                            SupplierMapper supplierMapper) {
-        return new RegisterSupplierUseCase(supplierRepository, supplierCodeGenerator, supplierMapper);
+    public RegisterSupplierUseCase registerSupplierUseCase(
+            SupplierRepository supplierRepository,
+            SupplierCodeGenerator supplierCodeGenerator,
+            SupplierMapper supplierMapper) {
+        return new RegisterSupplierUseCase(supplierRepository,
+                supplierCodeGenerator, supplierMapper);
     }
 
     @Bean
-    public GetSupplierUseCase getSupplierUseCase(SupplierRepository supplierRepository,
-                                                  SupplierMapper supplierMapper) {
+    public GetSupplierUseCase getSupplierUseCase(
+            SupplierRepository supplierRepository,
+            SupplierMapper supplierMapper) {
         return new GetSupplierUseCase(supplierRepository, supplierMapper);
     }
 
     @Bean
-    public ListSuppliersUseCase listSuppliersUseCase(SupplierRepository supplierRepository,
-                                                       SupplierMapper supplierMapper,
-                                                       PurchaseUsageGateway purchaseUsage) {
-        return new ListSuppliersUseCase(supplierRepository, supplierMapper, purchaseUsage);
+    public ListSuppliersUseCase listSuppliersUseCase(
+            SupplierRepository supplierRepository,
+            SupplierMapper supplierMapper, PurchaseUsageGateway purchaseUsage) {
+        return new ListSuppliersUseCase(supplierRepository, supplierMapper,
+                purchaseUsage);
     }
 
     @Bean
-    public UpdateSupplierUseCase updateSupplierUseCase(SupplierRepository supplierRepository,
-                                                        SupplierMapper supplierMapper) {
+    public UpdateSupplierUseCase updateSupplierUseCase(
+            SupplierRepository supplierRepository,
+            SupplierMapper supplierMapper) {
         return new UpdateSupplierUseCase(supplierRepository, supplierMapper);
     }
 
     @Bean
-    public DeleteSupplierUseCase deleteSupplierUseCase(SupplierRepository supplierRepository,
-                                                        PurchaseUsageGateway purchaseUsage) {
+    public DeleteSupplierUseCase deleteSupplierUseCase(
+            SupplierRepository supplierRepository,
+            PurchaseUsageGateway purchaseUsage) {
         return new DeleteSupplierUseCase(supplierRepository, purchaseUsage);
     }
 }

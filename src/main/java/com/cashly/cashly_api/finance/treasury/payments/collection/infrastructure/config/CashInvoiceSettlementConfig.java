@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CashInvoiceSettlementConfig {
     @Bean
-    public CashInvoiceSettlement cashInvoiceSettlement(PaymentRepository payments, PaymentAllocationRepository allocations, CashRegisterGateway cashRegister) {
-        return new CashInvoiceSettlementService(payments, allocations, cashRegister);
+    public CashInvoiceSettlement cashInvoiceSettlement(
+            PaymentRepository payments, PaymentAllocationRepository allocations,
+            CashRegisterGateway cashRegister) {
+        return new CashInvoiceSettlementService(payments, allocations,
+                cashRegister);
     }
 }

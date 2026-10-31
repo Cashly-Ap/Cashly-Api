@@ -36,10 +36,12 @@ class StockReportConfigTest {
     void should_create_use_case_beans() {
         var config = new StockReportConfig();
 
-        var pdfUseCase = config.generateStockPdfUseCase(stockReportRepositoryPort, stockPdfPort);
+        var pdfUseCase = config.generateStockPdfUseCase(
+                stockReportRepositoryPort, stockPdfPort);
         assertNotNull(pdfUseCase);
 
-        var excelUseCase = config.generateStockExcelUseCase(stockReportRepositoryPort, stockExcelPort);
+        var excelUseCase = config.generateStockExcelUseCase(
+                stockReportRepositoryPort, stockExcelPort);
         assertNotNull(excelUseCase);
     }
 
@@ -48,7 +50,8 @@ class StockReportConfigTest {
     void should_create_port_and_adapter_beans() {
         var config = new StockReportConfig();
 
-        assertNotNull(config.stockReportRepositoryPort(stockReportJpaRepository));
+        assertNotNull(
+                config.stockReportRepositoryPort(stockReportJpaRepository));
         assertNotNull(config.stockPdfPort(new PdfBranding()));
         assertNotNull(config.stockExcelPort());
     }

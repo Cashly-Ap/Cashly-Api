@@ -35,13 +35,12 @@ class GetCustomerCreditStatusUseCaseTest {
     @Test
     void should_ReturnCreditStatus() {
         UUID customerId = UUID.randomUUID();
-        CreditStatusResponse expected = new CreditStatusResponse(
-                customerId, "Empresa Test", "J-12345678-9",
-                new BigDecimal("5000.00"), new BigDecimal("1500.00"),
-                new BigDecimal("200.00"), new BigDecimal("3700.00"),
-                List.of(), false, true
-        );
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(expected);
+        CreditStatusResponse expected = new CreditStatusResponse(customerId,
+                "Empresa Test", "J-12345678-9", new BigDecimal("5000.00"),
+                new BigDecimal("1500.00"), new BigDecimal("200.00"),
+                new BigDecimal("3700.00"), List.of(), false, true);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(expected);
 
         CreditStatusResponse result = useCase.execute(customerId);
 
@@ -58,15 +57,13 @@ class GetCustomerCreditStatusUseCaseTest {
         UUID customerId = UUID.randomUUID();
         List<OverdueInvoiceResponse> overdue = List.of(
                 new OverdueInvoiceResponse("FAC-001", new BigDecimal("500.00"),
-                        LocalDate.now().minusDays(10), 10)
-        );
-        CreditStatusResponse expected = new CreditStatusResponse(
-                customerId, "Empresa Test", "J-12345678-9",
-                new BigDecimal("5000.00"), new BigDecimal("1500.00"),
-                BigDecimal.ZERO, new BigDecimal("3500.00"),
-                overdue, true, false
-        );
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(expected);
+                        LocalDate.now().minusDays(10), 10));
+        CreditStatusResponse expected = new CreditStatusResponse(customerId,
+                "Empresa Test", "J-12345678-9", new BigDecimal("5000.00"),
+                new BigDecimal("1500.00"), BigDecimal.ZERO,
+                new BigDecimal("3500.00"), overdue, true, false);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(expected);
 
         CreditStatusResponse result = useCase.execute(customerId);
 

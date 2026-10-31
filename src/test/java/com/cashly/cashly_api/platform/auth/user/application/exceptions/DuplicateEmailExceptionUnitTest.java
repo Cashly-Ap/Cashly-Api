@@ -12,9 +12,10 @@ class DuplicateEmailExceptionUnitTest {
     @DisplayName("should_CreateException_When_MessageProvided")
     void should_CreateException_When_MessageProvided() {
         String message = "Email already exists";
-        
-        DuplicateEmailException exception = new DuplicateEmailException(message);
-        
+
+        DuplicateEmailException exception = new DuplicateEmailException(
+                message);
+
         assertNotNull(exception);
         assertEquals(message, exception.getMessage());
     }
@@ -23,7 +24,7 @@ class DuplicateEmailExceptionUnitTest {
     @DisplayName("should_BeRuntimeException_When_Created")
     void should_BeRuntimeException_When_Created() {
         DuplicateEmailException exception = new DuplicateEmailException("test");
-        
+
         assertInstanceOf(RuntimeException.class, exception);
     }
 
@@ -31,7 +32,7 @@ class DuplicateEmailExceptionUnitTest {
     @DisplayName("should_BeThrowable_When_Created")
     void should_BeThrowable_When_Created() {
         String message = "User with email test@example.com already exists";
-        
+
         assertThrows(DuplicateEmailException.class, () -> {
             throw new DuplicateEmailException(message);
         });
@@ -41,12 +42,12 @@ class DuplicateEmailExceptionUnitTest {
     @DisplayName("should_ContainMessage_When_Thrown")
     void should_ContainMessage_When_Thrown() {
         String message = "Email test@example.com is already registered";
-        
+
         DuplicateEmailException exception = assertThrows(
-            DuplicateEmailException.class,
-            () -> { throw new DuplicateEmailException(message); }
-        );
-        
+                DuplicateEmailException.class, () -> {
+                    throw new DuplicateEmailException(message);
+                });
+
         assertEquals(message, exception.getMessage());
     }
 }

@@ -6,7 +6,9 @@ import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.Ret
 import org.springframework.stereotype.Component;
 
 @Component
-public class LocalReturnInventoryGatewayAdapter implements ReturnInventoryGateway {
+public class LocalReturnInventoryGatewayAdapter
+        implements
+            ReturnInventoryGateway {
     private final ReturnInventoryApi inventory;
 
     public LocalReturnInventoryGatewayAdapter(ReturnInventoryApi inventory) {
@@ -24,8 +26,12 @@ public class LocalReturnInventoryGatewayAdapter implements ReturnInventoryGatewa
     }
 
     private ReturnStockCommand toWarehouseCommand(Command command) {
-        return new ReturnStockCommand(command.returnId(), command.returnNumber(), command.userName(),
-                command.allocations().stream().map(allocation -> new ReturnStockCommand.Allocation(
-                        allocation.warehouseId(), allocation.productId(), allocation.quantity())).toList());
+        return new ReturnStockCommand(command.returnId(),
+                command.returnNumber(), command.userName(),
+                command.allocations().stream()
+                        .map(allocation -> new ReturnStockCommand.Allocation(
+                                allocation.warehouseId(),
+                                allocation.productId(), allocation.quantity()))
+                        .toList());
     }
 }

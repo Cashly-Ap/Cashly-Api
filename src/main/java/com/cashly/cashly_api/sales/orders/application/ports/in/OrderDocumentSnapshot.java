@@ -5,9 +5,14 @@ import java.util.UUID;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record OrderDocumentSnapshot(
-        UUID id, String orderNumber, String customerName, String customerRif, String status,
-        String notes, String cancelledReason, LocalDateTime createdAt, BigDecimal subtotal, List<Line> lines) {
-    public OrderDocumentSnapshot { lines = List.copyOf(lines); }
-    public record Line(String productCode, String productName, BigDecimal quantity, BigDecimal unitPrice, BigDecimal lineTotal) {}
+public record OrderDocumentSnapshot(UUID id, String orderNumber,
+        String customerName, String customerRif, String status, String notes,
+        String cancelledReason, LocalDateTime createdAt, BigDecimal subtotal,
+        List<Line> lines) {
+    public OrderDocumentSnapshot {
+        lines = List.copyOf(lines);
+    }
+    public record Line(String productCode, String productName,
+            BigDecimal quantity, BigDecimal unitPrice, BigDecimal lineTotal) {
+    }
 }

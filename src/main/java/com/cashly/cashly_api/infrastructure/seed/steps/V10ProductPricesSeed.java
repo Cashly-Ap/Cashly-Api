@@ -13,17 +13,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class V10ProductPricesSeed implements SeedStep {
     private final EntityManager entityManager;
-    public V10ProductPricesSeed(EntityManager entityManager) { this.entityManager = entityManager; }
-    @Override public int version() { return 10; }
-    @Override public void seed() {
+    public V10ProductPricesSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    @Override
+    public int version() {
+        return 10;
+    }
+    @Override
+    public void seed() {
         price("coffee-base", PRODUCT_COFFEE, "6.50", "44.44");
         price("water-base", PRODUCT_WATER, "1.00", "66.67");
         price("bundle-base", id("product.breakfast-bundle"), "8.00", "56.86");
     }
-    private void price(String key, UUID productId, String amount, String margin) {
-        UUID id = id("product-price." + key); if (entityManager.find(ProductPriceEntity.class, id) != null) return;
-        var price = new ProductPriceEntity(); price.setId(id); price.setProduct(entityManager.getReference(ProductEntity.class, productId));
-        price.setPriceTypeId(id("price-type.base")); price.setPrice(new BigDecimal(amount)); price.setProfitMargin(new BigDecimal(margin));
+    private void price(String key, UUID productId, String amount,
+            String margin) {
+        UUID id = id("product-price." + key);
+        if (entityManager.find(ProductPriceEntity.class, id) != null)
+            return;
+        var price = new ProductPriceEntity();
+        price.setId(id);
+        price.setProduct(
+                entityManager.getReference(ProductEntity.class, productId));
+        price.setPriceTypeId(id("price-type.base"));
+        price.setPrice(new BigDecimal(amount));
+        price.setProfitMargin(new BigDecimal(margin));
         entityManager.persist(price);
     }
 }

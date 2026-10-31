@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CustomerProfileQueryConfig {
     @Bean
-    public CustomerProfileQuery customerProfileQuery(CustomerRepository customers, CustomerBalanceRepository balances) {
+    public CustomerProfileQuery customerProfileQuery(
+            CustomerRepository customers, CustomerBalanceRepository balances) {
         return new RepositoryCustomerProfileQuery(customers, balances);
     }
 }

@@ -33,8 +33,7 @@ public class UserController {
     private final UpdateUserEmailUseCase updateUserEmailUseCase;
     private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
 
-    public UserController(
-            GetAllUsersUseCase getAllUsersUseCase,
+    public UserController(GetAllUsersUseCase getAllUsersUseCase,
             GetUserByIdUseCase getUserByIdUseCase,
             RegisterUserUseCase registerUserUseCase,
             UpdateUserUseCase updateUserUseCase,
@@ -62,7 +61,8 @@ public class UserController {
             @RequestParam(defaultValue = "userName") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
         PageResponse<UserResponse> users = getAllUsersUseCase.execute(
-            authentication.getName(), roleId, active, search, page, size, orderBy, orderDir);
+                authentication.getName(), roleId, active, search, page, size,
+                orderBy, orderDir);
         return ResponseEntity.ok(users);
     }
 
@@ -75,15 +75,15 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('USERS:CREATE')")
-    public ResponseEntity<UserResponse> create(@Valid @RequestBody RegisterUserRequest request) {
+    public ResponseEntity<UserResponse> create(
+            @Valid @RequestBody RegisterUserRequest request) {
         UserResponse user = registerUserUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USERS:UPDATE')")
-    public ResponseEntity<UserResponse> update(
-            @PathVariable String id,
+    public ResponseEntity<UserResponse> update(@PathVariable String id,
             @Valid @RequestBody UpdateUserRequest request) {
         UserResponse user = updateUserUseCase.execute(id, request);
         return ResponseEntity.ok(user);
@@ -98,18 +98,17 @@ public class UserController {
 
     @PutMapping("/{id}/email")
     @PreAuthorize("hasAuthority('USERS:UPDATE')")
-    public ResponseEntity<UserResponse> updateEmail(
-            @PathVariable String id,
+    public ResponseEntity<UserResponse> updateEmail(@PathVariable String id,
             @Valid @RequestBody UpdateUserEmailRequest request) {
         return ResponseEntity.ok(updateUserEmailUseCase.execute(id, request));
     }
 
     @PutMapping("/{id}/password")
     @PreAuthorize("hasAuthority('USERS:UPDATE')")
-    public ResponseEntity<UserResponse> updatePassword(
-            @PathVariable String id,
+    public ResponseEntity<UserResponse> updatePassword(@PathVariable String id,
             @Valid @RequestBody UpdateUserPasswordRequest request) {
-        return ResponseEntity.ok(updateUserPasswordUseCase.execute(id, request));
+        return ResponseEntity
+                .ok(updateUserPasswordUseCase.execute(id, request));
     }
 
 }

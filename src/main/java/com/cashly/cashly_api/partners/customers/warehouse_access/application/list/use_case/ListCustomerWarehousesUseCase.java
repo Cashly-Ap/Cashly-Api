@@ -18,27 +18,27 @@ public class ListCustomerWarehousesUseCase {
     private final CustomerRepository customerRepository;
     private final WarehouseDirectoryGateway warehouseDirectory;
 
-    public ListCustomerWarehousesUseCase(CustomerWarehouseAccessRepository accessRepository,
-                                          CustomerRepository customerRepository,
-                                          WarehouseDirectoryGateway warehouseDirectory) {
+    public ListCustomerWarehousesUseCase(
+            CustomerWarehouseAccessRepository accessRepository,
+            CustomerRepository customerRepository,
+            WarehouseDirectoryGateway warehouseDirectory) {
         this.accessRepository = accessRepository;
         this.customerRepository = customerRepository;
         this.warehouseDirectory = warehouseDirectory;
     }
 
     public List<CustomerWarehouseAccessResponse> execute(UUID customerId) {
-        customerRepository.findById(new CustomerId(customerId))
-                .orElseThrow(() -> new CustomerNotFoundException(customerId.toString()));
+        customerRepository.findById(new CustomerId(customerId)).orElseThrow(
+                () -> new CustomerNotFoundException(customerId.toString()));
 
-        List<CustomerWarehouseAccess> accesses = accessRepository.findByCustomerId(customerId);
+        List<CustomerWarehouseAccess> accesses = accessRepository
+                .findByCustomerId(customerId);
 
-        return accesses.stream()
-                .map(access -> {
-                    WarehouseSnapshot warehouse = warehouseDirectory.findById(access.getWarehouseId())
-                            .orElse(null);
-                    String name = warehouse != null ? warehouse.name() : "Unknown";
-                    return CustomerWarehouseAccessResponse.from(access, name);
-                })
-                .toList();
+        return accesses.stream().map(access -> {
+            WarehouseSnapshot warehouse = warehouseDirectory
+                    .findById(access.getWarehouseId()).orElse(null);
+            String name = warehouse != null ? warehouse.name() : "Unknown";
+            return CustomerWarehouseAccessResponse.from(access, name);
+        }).toList();
     }
 }

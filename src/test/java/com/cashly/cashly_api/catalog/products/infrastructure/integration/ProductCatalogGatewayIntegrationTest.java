@@ -15,12 +15,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ProductCatalogGatewayIntegrationTest {
-    private final CategoryRepository categories = mock(CategoryRepository.class);
-    private final PriceTypeRepository priceTypes = mock(PriceTypeRepository.class);
+    private final CategoryRepository categories = mock(
+            CategoryRepository.class);
+    private final PriceTypeRepository priceTypes = mock(
+            PriceTypeRepository.class);
     private final LocalProductCategoryGatewayAdapter categoryGateway = new LocalProductCategoryGatewayAdapter(
             new ProductCategoryQueryConfig().productCategoryQuery(categories));
     private final LocalProductPriceTypeGatewayAdapter priceTypeGateway = new LocalProductPriceTypeGatewayAdapter(
-            new ProductPriceTypeQueryConfig().productPriceTypeQuery(priceTypes));
+            new ProductPriceTypeQueryConfig()
+                    .productPriceTypeQuery(priceTypes));
     private final UUID id = UUID.randomUUID();
 
     @Test
@@ -37,7 +40,8 @@ class ProductCatalogGatewayIntegrationTest {
     @Test
     void shouldAllowMissingCategoryForReadAndRejectItForMutation() {
         assertTrue(categoryGateway.findById(id).isEmpty());
-        assertThrows(CategoryNotFoundException.class, () -> categoryGateway.require(id));
+        assertThrows(CategoryNotFoundException.class,
+                () -> categoryGateway.require(id));
     }
 
     @Test
@@ -54,15 +58,19 @@ class ProductCatalogGatewayIntegrationTest {
     @Test
     void shouldAllowMissingPriceTypeForReadAndRejectItForMutation() {
         assertTrue(priceTypeGateway.findById(id).isEmpty());
-        assertThrows(PriceTypeNotFoundException.class, () -> priceTypeGateway.require(id));
+        assertThrows(PriceTypeNotFoundException.class,
+                () -> priceTypeGateway.require(id));
     }
 
     @Test
     void shouldPropagateCatalogLookupFailures() {
-        IllegalStateException failure = new IllegalStateException("Lookup failed");
+        IllegalStateException failure = new IllegalStateException(
+                "Lookup failed");
         when(categories.findById(id)).thenThrow(failure);
         when(priceTypes.findById(id)).thenThrow(failure);
-        assertSame(failure, assertThrows(IllegalStateException.class, () -> categoryGateway.findById(id)));
-        assertSame(failure, assertThrows(IllegalStateException.class, () -> priceTypeGateway.findById(id)));
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> categoryGateway.findById(id)));
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> priceTypeGateway.findById(id)));
     }
 }

@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class CatalogUsageBoundaryTest {
     @Test
     void shouldKeepProductUsageOutsideCatalogDomainRepositories() {
-        for (Class<?> repository : new Class<?>[]{CategoryRepository.class, PriceTypeRepository.class}) {
+        for (Class<?> repository : new Class<?>[]{CategoryRepository.class,
+                PriceTypeRepository.class}) {
             assertFalse(Arrays.stream(repository.getDeclaredMethods())
                     .anyMatch(method -> method.getName().contains("Products")));
         }

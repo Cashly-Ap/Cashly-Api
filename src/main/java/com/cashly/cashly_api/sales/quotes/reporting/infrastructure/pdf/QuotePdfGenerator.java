@@ -38,17 +38,21 @@ public class QuotePdfGenerator implements QuotePdfPort {
 
     private final PdfBranding branding;
 
-    public QuotePdfGenerator() { this(new PdfBranding()); }
+    public QuotePdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public QuotePdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public QuotePdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
-    private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
+    private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245,
+            245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb COLOR_GREEN = new DeviceRgb(34, 139, 34);
     private static final DeviceRgb COLOR_RED = new DeviceRgb(220, 20, 60);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-
 
     @Override
     public byte[] generatePdf(QuoteReportData quote) {
@@ -61,26 +65,43 @@ public class QuotePdfGenerator implements QuotePdfPort {
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
             document.add(buildHeader(quote, bold, regular));
-            document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.customerDetails"), bold));
+            document.add(buildSectionTitle(
+                    ReportMessages.text("sales.quotes.reports.customerDetails"),
+                    bold));
             document.add(buildClientTable(quote, bold, regular));
-            document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.quoteDetails"), bold));
+            document.add(buildSectionTitle(
+                    ReportMessages.text("sales.quotes.reports.quoteDetails"),
+                    bold));
             document.add(buildLinesTable(quote, bold, regular));
             document.add(buildTotalsTable(quote, bold, regular));
 
             if (quote.notes() != null && !quote.notes().isEmpty()) {
-                document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.notes"), bold));
-                document.add(new Paragraph(quote.notes()).setFont(regular).setFontSize(10).setFontColor(ColorConstants.DARK_GRAY));
+                document.add(buildSectionTitle(
+                        ReportMessages.text("sales.quotes.reports.notes"),
+                        bold));
+                document.add(new Paragraph(quote.notes()).setFont(regular)
+                        .setFontSize(10)
+                        .setFontColor(ColorConstants.DARK_GRAY));
             }
 
-            if (quote.status().equals("CANCELLED") && quote.cancelledReason() != null) {
-                document.add(buildSectionTitle(ReportMessages.text("sales.quotes.reports.cancellationReason"), bold));
-                document.add(new Paragraph(quote.cancelledReason()).setFont(regular).setFontSize(10).setFontColor(COLOR_RED));
+            if (quote.status().equals("CANCELLED")
+                    && quote.cancelledReason() != null) {
+                document.add(buildSectionTitle(
+                        ReportMessages.text(
+                                "sales.quotes.reports.cancellationReason"),
+                        bold));
+                document.add(
+                        new Paragraph(quote.cancelledReason()).setFont(regular)
+                                .setFontSize(10).setFontColor(COLOR_RED));
             }
 
             document.close();
@@ -90,20 +111,33 @@ public class QuotePdfGenerator implements QuotePdfPort {
         return baos.toByteArray();
     }
 
-    private Table buildHeader(QuoteReportData quote, PdfFont bold, PdfFont regular) {
-        Table header = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
+    private Table buildHeader(QuoteReportData quote, PdfFont bold,
+            PdfFont regular) {
+        Table header = new Table(
+                UnitValue.createPercentArray(new float[]{50f, 50f}))
+                .useAllAvailableWidth();
         header.setMarginBottom(20);
 
-        Cell logoCell = new Cell()
-                .add(branding.logo())
+        Cell logoCell = new Cell().add(branding.logo())
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(logoCell);
 
-        String quoteDate = quote.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter());
+        String quoteDate = quote.createdAt().atZone(ZoneId.systemDefault())
+                .format(ReportMessages.dateTimeFormatter());
         Cell infoCell = new Cell()
-                .add(new Paragraph(ReportMessages.text("sales.quotes.reports.quoteNo") + quote.quoteNumber()).setFont(bold).setFontSize(11).setTextAlignment(TextAlignment.RIGHT).setMarginBottom(2))
-                .add(new Paragraph(ReportMessages.text("sales.quotes.reports.date") + quoteDate).setFont(regular).setFontSize(10).setTextAlignment(TextAlignment.RIGHT).setFontColor(ColorConstants.DARK_GRAY))
+                .add(new Paragraph(
+                        ReportMessages.text("sales.quotes.reports.quoteNo")
+                                + quote.quoteNumber())
+                        .setFont(bold).setFontSize(11)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                        .setMarginBottom(2))
+                .add(new Paragraph(
+                        ReportMessages.text("sales.quotes.reports.date")
+                                + quoteDate)
+                        .setFont(regular).setFontSize(10)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                        .setFontColor(ColorConstants.DARK_GRAY))
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
         header.addCell(infoCell);
@@ -112,50 +146,61 @@ public class QuotePdfGenerator implements QuotePdfPort {
     }
 
     private Paragraph buildSectionTitle(String title, PdfFont bold) {
-        return new Paragraph(title)
-                .setFont(bold)
-                .setFontSize(11)
-                .setMarginTop(16)
-                .setMarginBottom(6)
+        return new Paragraph(title).setFont(bold).setFontSize(11)
+                .setMarginTop(16).setMarginBottom(6)
                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1));
     }
 
-    private Table buildClientTable(QuoteReportData quote, PdfFont bold, PdfFont regular) {
-        Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
+    private Table buildClientTable(QuoteReportData quote, PdfFont bold,
+            PdfFont regular) {
+        Table table = new Table(
+                UnitValue.createPercentArray(new float[]{50f, 50f}))
+                .useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        table.addCell(buildClientCell(ReportMessages.text("sales.quotes.reports.customer"), quote.customerName(), bold, regular, true));
-        table.addCell(buildClientCell(ReportMessages.text("sales.quotes.reports.taxId"), quote.customerRif() != null ? quote.customerRif() : "-", bold, regular, false));
+        table.addCell(buildClientCell(
+                ReportMessages.text("sales.quotes.reports.customer"),
+                quote.customerName(), bold, regular, true));
+        table.addCell(buildClientCell(
+                ReportMessages.text("sales.quotes.reports.taxId"),
+                quote.customerRif() != null ? quote.customerRif() : "-", bold,
+                regular, false));
 
         return table;
     }
 
-    private Cell buildClientCell(String label, String value, PdfFont bold, PdfFont regular, boolean leftBorder) {
+    private Cell buildClientCell(String label, String value, PdfFont bold,
+            PdfFont regular, boolean leftBorder) {
         Paragraph p = new Paragraph()
-                .add(new com.itextpdf.layout.element.Text(label).setFont(bold).setFontSize(10))
-                .add(new com.itextpdf.layout.element.Text(value).setFont(regular).setFontSize(10));
+                .add(new com.itextpdf.layout.element.Text(label).setFont(bold)
+                        .setFontSize(10))
+                .add(new com.itextpdf.layout.element.Text(value)
+                        .setFont(regular).setFontSize(10));
 
-        Cell cell = new Cell()
-                .add(p)
-                .setBackgroundColor(LIGHT_GRAY_ROW)
-                .setPadding(8)
-                .setBorder(new SolidBorder(BORDER_COLOR, 1));
+        Cell cell = new Cell().add(p).setBackgroundColor(LIGHT_GRAY_ROW)
+                .setPadding(8).setBorder(new SolidBorder(BORDER_COLOR, 1));
 
         return cell;
     }
 
-    private Table buildLinesTable(QuoteReportData quote, PdfFont bold, PdfFont regular) {
+    private Table buildLinesTable(QuoteReportData quote, PdfFont bold,
+            PdfFont regular) {
         float[] columnWidths = {2f, 4f, 2f, 2f, 2f};
-        Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+        Table table = new Table(UnitValue.createPercentArray(columnWidths))
+                .useAllAvailableWidth();
         table.setMarginBottom(8);
 
-        String[] headers = {ReportMessages.text("sales.quotes.reports.code"), ReportMessages.text("sales.quotes.reports.description"), ReportMessages.text("sales.quotes.reports.quantity"), ReportMessages.text("sales.quotes.reports.unitPrice"), ReportMessages.text("sales.quotes.reports.total")};
+        String[] headers = {ReportMessages.text("sales.quotes.reports.code"),
+                ReportMessages.text("sales.quotes.reports.description"),
+                ReportMessages.text("sales.quotes.reports.quantity"),
+                ReportMessages.text("sales.quotes.reports.unitPrice"),
+                ReportMessages.text("sales.quotes.reports.total")};
         for (String h : headers) {
             table.addHeaderCell(new Cell()
-                    .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                    .add(new Paragraph(h).setFont(bold).setFontSize(9)
+                            .setFontColor(HEADER_TEXT))
                     .setBackgroundColor(HEADER_BG)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setPadding(6)
+                    .setTextAlignment(TextAlignment.CENTER).setPadding(6)
                     .setBorder(Border.NO_BORDER));
         }
 
@@ -163,42 +208,51 @@ public class QuotePdfGenerator implements QuotePdfPort {
             var line = quote.lines().get(i);
             DeviceRgb rowBg = (i % 2 != 0) ? LIGHT_GRAY_ROW : null;
 
-            addTableCell(table, line.productCode() != null ? line.productCode() : "-", regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, line.productName(), regular, rowBg, TextAlignment.LEFT);
-            addTableCell(table, formatDecimal(line.quantity()), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, "$ " + formatDecimal(line.unitPrice()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(line.lineTotal()), regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table,
+                    line.productCode() != null ? line.productCode() : "-",
+                    regular, rowBg, TextAlignment.CENTER);
+            addTableCell(table, line.productName(), regular, rowBg,
+                    TextAlignment.LEFT);
+            addTableCell(table, formatDecimal(line.quantity()), regular, rowBg,
+                    TextAlignment.CENTER);
+            addTableCell(table, "$ " + formatDecimal(line.unitPrice()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(line.lineTotal()), regular,
+                    rowBg, TextAlignment.RIGHT);
         }
 
         return table;
     }
 
-    private Table buildTotalsTable(QuoteReportData quote, PdfFont bold, PdfFont regular) {
+    private Table buildTotalsTable(QuoteReportData quote, PdfFont bold,
+            PdfFont regular) {
         float[] widths = {70f, 30f};
         Table table = new Table(UnitValue.createPercentArray(widths));
-        table.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT);
+        table.setHorizontalAlignment(
+                com.itextpdf.layout.properties.HorizontalAlignment.RIGHT);
         table.setWidth(UnitValue.createPercentValue(45));
         table.setMarginTop(8);
         table.setBorder(new SolidBorder(BORDER_COLOR, 1));
 
-        addTotalsRow(table, ReportMessages.text("sales.quotes.reports.subtotal"), "$ " + formatDecimal(quote.subtotal()), bold, regular, null);
+        addTotalsRow(table,
+                ReportMessages.text("sales.quotes.reports.subtotal"),
+                "$ " + formatDecimal(quote.subtotal()), bold, regular, null);
 
         return table;
     }
 
-    private void addTotalsRow(Table table, String label, String value, PdfFont bold, PdfFont regular, DeviceRgb valueColor) {
+    private void addTotalsRow(Table table, String label, String value,
+            PdfFont bold, PdfFont regular, DeviceRgb valueColor) {
         table.addCell(new Cell()
                 .add(new Paragraph(label).setFont(bold).setFontSize(9))
-                .setPadding(6)
-                .setBorder(Border.NO_BORDER));
+                .setPadding(6).setBorder(Border.NO_BORDER));
 
-        Paragraph valueParagraph = new Paragraph(value).setFont(bold).setFontSize(9).setTextAlignment(TextAlignment.RIGHT);
+        Paragraph valueParagraph = new Paragraph(value).setFont(bold)
+                .setFontSize(9).setTextAlignment(TextAlignment.RIGHT);
         if (valueColor != null) {
             valueParagraph.setFontColor(valueColor);
         }
-        table.addCell(new Cell()
-                .add(valueParagraph)
-                .setPadding(6)
+        table.addCell(new Cell().add(valueParagraph).setPadding(6)
                 .setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.RIGHT));
     }
@@ -207,14 +261,13 @@ public class QuotePdfGenerator implements QuotePdfPort {
         return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
-    private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addTableCell(Table table, String text, PdfFont font,
+            DeviceRgb bg, TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "").setFont(font).setFontSize(9))
-                .setTextAlignment(align)
-                .setPaddingTop(5)
-                .setPaddingBottom(5)
-                .setPaddingLeft(6)
-                .setPaddingRight(6)
+                .add(new Paragraph(text != null ? text : "").setFont(font)
+                        .setFontSize(9))
+                .setTextAlignment(align).setPaddingTop(5).setPaddingBottom(5)
+                .setPaddingLeft(6).setPaddingRight(6)
                 .setBorder(Border.NO_BORDER);
         if (bg != null) {
             cell.setBackgroundColor(bg);
@@ -238,19 +291,21 @@ public class QuotePdfGenerator implements QuotePdfPort {
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("sales.quotes.reports.page") + pageNumber + ReportMessages.text("sales.quotes.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
+                        new Paragraph(
+                                ReportMessages.text("sales.quotes.reports.page")
+                                        + pageNumber
+                                        + ReportMessages
+                                                .text("sales.quotes.reports.of")
+                                        + totalPages)
+                                .setFont(font).setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

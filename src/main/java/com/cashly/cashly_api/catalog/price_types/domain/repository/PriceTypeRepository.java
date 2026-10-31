@@ -11,8 +11,7 @@ public interface PriceTypeRepository {
     PriceType save(PriceType priceType);
     Optional<PriceType> findById(UUID id);
     PageResponse<PriceType> findAllWithFilters(String search, Boolean active,
-                                                int page, int size,
-                                                String orderBy, String orderDir);
+            int page, int size, String orderBy, String orderDir);
     boolean existsById(UUID id);
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);

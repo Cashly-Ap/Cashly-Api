@@ -16,17 +16,31 @@ import java.util.UUID;
 public class CompanyPdfPreview {
     private final CompanyService company;
 
-    public CompanyPdfPreview(CompanyService company) { this.company = company; }
+    public CompanyPdfPreview(CompanyService company) {
+        this.company = company;
+    }
 
-    public byte[] generate(byte[] file, boolean removePdfLogo, byte[] companyLogo, boolean removeLogo) {
+    public byte[] generate(byte[] file, boolean removePdfLogo,
+            byte[] companyLogo, boolean removeLogo) {
         var pdfLogo = file == null ? null : SafeImageStorage.normalize(file);
-        var navbarLogo = companyLogo == null ? null : SafeImageStorage.normalize(companyLogo);
-        var selected = company.previewDocumentLogo(pdfLogo, removePdfLogo, navbarLogo, removeLogo);
-        var data = new InvoiceReportData(UUID.randomUUID(), ReportMessages.text("platform.company.reports.preview"), ReportMessages.text("platform.company.reports.sampleCustomer"), "B12345678",
-                "PED-001", "DRAFT", ReportMessages.text("platform.company.reports.sampleDocumentChangesHaveNotBeenSavedYet"), null,
-                LocalDateTime.now(), new BigDecimal("150.00"), "CASH", new BigDecimal("150.00"),
-                List.of(new InvoiceReportData.Line("REF-001", ReportMessages.text("platform.company.reports.sampleProductOrService"),
-                        new BigDecimal("2"), new BigDecimal("75.00"), new BigDecimal("150.00"))));
-        return new InvoicePdfGenerator(new PdfBranding(() -> selected)).generatePdf(data);
+        var navbarLogo = companyLogo == null
+                ? null
+                : SafeImageStorage.normalize(companyLogo);
+        var selected = company.previewDocumentLogo(pdfLogo, removePdfLogo,
+                navbarLogo, removeLogo);
+        var data = new InvoiceReportData(UUID.randomUUID(),
+                ReportMessages.text("platform.company.reports.preview"),
+                ReportMessages.text("platform.company.reports.sampleCustomer"),
+                "B12345678", "PED-001", "DRAFT",
+                ReportMessages.text(
+                        "platform.company.reports.sampleDocumentChangesHaveNotBeenSavedYet"),
+                null, LocalDateTime.now(), new BigDecimal("150.00"), "CASH",
+                new BigDecimal("150.00"),
+                List.of(new InvoiceReportData.Line("REF-001", ReportMessages
+                        .text("platform.company.reports.sampleProductOrService"),
+                        new BigDecimal("2"), new BigDecimal("75.00"),
+                        new BigDecimal("150.00"))));
+        return new InvoicePdfGenerator(new PdfBranding(() -> selected))
+                .generatePdf(data);
     }
 }

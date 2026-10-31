@@ -26,7 +26,8 @@ import static org.mockito.Mockito.*;
 @DisplayName("CloseRegisterUseCase Unit Tests")
 class CloseRegisterUseCaseUnitTest {
 
-    @Mock private CashRegisterQueryGateway queries;
+    @Mock
+    private CashRegisterQueryGateway queries;
 
     @Mock
     private CashRegisterRepository closureRepository;
@@ -40,19 +41,21 @@ class CloseRegisterUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         useCase = new CloseRegisterUseCase(closureRepository, queries);
-        openClosure = CashRegister.open(RegisterId.of(closureId), LocalDate.now(), userId, "Operator");
+        openClosure = CashRegister.open(RegisterId.of(closureId),
+                LocalDate.now(), userId, "Operator");
     }
 
     @Test
     void should_CloseClosure_When_StatusIsOpen() {
-        when(closureRepository.findById(RegisterId.of(closureId))).thenReturn(Optional.of(openClosure));
+        when(closureRepository.findById(RegisterId.of(closureId)))
+                .thenReturn(Optional.of(openClosure));
         when(queries.findSessionTotals(any(RegisterId.class)))
-                .thenReturn(new DailyTotals(
-                        BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
-                        BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,
+                .thenReturn(new DailyTotals(BigDecimal.ZERO, 0, BigDecimal.ZERO,
+                        0, BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,
                         BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,
                         BigDecimal.ZERO, Collections.emptyList()));
-        when(closureRepository.save(any(CashRegister.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(closureRepository.save(any(CashRegister.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UUID closedBy = UUID.randomUUID();
         var response = useCase.execute(closureId, closedBy, "Supervisor",
@@ -69,9 +72,11 @@ class CloseRegisterUseCaseUnitTest {
 
     @Test
     void should_ThrowException_When_ClosureNotFound() {
-        when(closureRepository.findById(RegisterId.of(closureId))).thenReturn(Optional.empty());
+        when(closureRepository.findById(RegisterId.of(closureId)))
+                .thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
-                () -> useCase.execute(closureId, UUID.randomUUID(), "Test", BigDecimal.ZERO, null));
+                () -> useCase.execute(closureId, UUID.randomUUID(), "Test",
+                        BigDecimal.ZERO, null));
     }
 }

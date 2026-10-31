@@ -18,10 +18,10 @@ public class LocalDebitNoteCashApi implements DebitNoteCashApi {
     }
 
     @Override
-    public void recordDebitNoteIn(BigDecimal amount, String noteNumber, UUID noteId,
-                                  UUID authenticatedUserId, String createdByName) {
-        movements.record(CashMovementDirection.IN, CashMovementType.DEBIT_NOTE, amount,
-                null, "Nota de débito " + noteNumber, "DEBIT_NOTE", noteId,
-                authenticatedUserId, createdByName);
+    public void recordDebitNoteIn(BigDecimal amount, String noteNumber,
+            UUID noteId, UUID authenticatedUserId, String createdByName) {
+        movements.record(CashMovementDirection.IN, CashMovementType.DEBIT_NOTE,
+                amount, null, "Nota de débito " + noteNumber, "DEBIT_NOTE",
+                noteId, authenticatedUserId, createdByName);
     }
 }

@@ -27,12 +27,16 @@ class LocalInvoiceNoteApiTest {
         when(invoice.getId()).thenReturn(InvoiceId.of(invoiceId));
         when(invoice.getInvoiceNumber()).thenReturn(number);
         when(number.value()).thenReturn("FAC-1");
-        when(invoice.getStatus()).thenReturn(com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus.PAID);
-        when(invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO)).thenReturn(new BigDecimal("75.00"));
+        when(invoice.getStatus()).thenReturn(
+                com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus.PAID);
+        when(invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))
+                .thenReturn(new BigDecimal("75.00"));
         when(invoice.getCustomerName()).thenReturn("Acme");
         when(invoice.getCustomerRif()).thenReturn("RIF-1");
-        when(invoices.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.of(invoice));
-        when(invoices.findAllById(List.of(InvoiceId.of(invoiceId)))).thenReturn(List.of(invoice));
+        when(invoices.findById(InvoiceId.of(invoiceId)))
+                .thenReturn(Optional.of(invoice));
+        when(invoices.findAllById(List.of(InvoiceId.of(invoiceId))))
+                .thenReturn(List.of(invoice));
         LocalInvoiceNoteApi api = new LocalInvoiceNoteApi(invoices, statuses);
 
         var single = api.find(invoiceId);

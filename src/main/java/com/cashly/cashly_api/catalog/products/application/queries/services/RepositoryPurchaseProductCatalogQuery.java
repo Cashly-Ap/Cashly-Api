@@ -5,7 +5,9 @@ import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepositor
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import java.util.UUID;
 
-public class RepositoryPurchaseProductCatalogQuery implements PurchaseProductCatalogQuery {
+public class RepositoryPurchaseProductCatalogQuery
+        implements
+            PurchaseProductCatalogQuery {
     private final ProductRepository products;
 
     public RepositoryPurchaseProductCatalogQuery(ProductRepository products) {
@@ -13,11 +15,17 @@ public class RepositoryPurchaseProductCatalogQuery implements PurchaseProductCat
     }
 
     @Override
-    public PageResponse<Entry> find(String search, UUID categoryId, int page, int size) {
-        var result = products.findAllWithFilters(search, categoryId, true, false, page, size, "name", "asc");
-        var content = result.content().stream().map(product -> new Entry(product.getId(), product.getCode(),
-                product.getName(), product.getCategoryId(), product.isActive(), product.getPurchasePrice())).toList();
-        return new PageResponse<>(content, result.totalElements(), result.totalPages(), result.size(), result.number(),
+    public PageResponse<Entry> find(String search, UUID categoryId, int page,
+            int size) {
+        var result = products.findAllWithFilters(search, categoryId, true,
+                false, page, size, "name", "asc");
+        var content = result.content().stream()
+                .map(product -> new Entry(product.getId(), product.getCode(),
+                        product.getName(), product.getCategoryId(),
+                        product.isActive(), product.getPurchasePrice()))
+                .toList();
+        return new PageResponse<>(content, result.totalElements(),
+                result.totalPages(), result.size(), result.number(),
                 result.first(), result.last(), result.empty());
     }
 }

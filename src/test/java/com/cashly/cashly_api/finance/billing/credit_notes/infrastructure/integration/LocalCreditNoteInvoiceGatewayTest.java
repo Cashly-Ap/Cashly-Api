@@ -14,13 +14,15 @@ class LocalCreditNoteInvoiceGatewayTest {
     @Test
     void givenProviderContext_whenFindingInvoice_thenMapsNeutralFieldsAndDelegatesRecalculation() {
         InvoiceNoteApi provider = mock(InvoiceNoteApi.class);
-        LocalCreditNoteInvoiceGateway gateway = new LocalCreditNoteInvoiceGateway(provider);
+        LocalCreditNoteInvoiceGateway gateway = new LocalCreditNoteInvoiceGateway(
+                provider);
         UUID invoiceId = UUID.randomUUID();
         when(provider.find(invoiceId)).thenReturn(new InvoiceNoteApi.Context(
-                invoiceId, "FAC-1", "PENDING_PAYMENT", "Pendiente", "Customer", "RIF",
-                new BigDecimal("80.00")));
+                invoiceId, "FAC-1", "PENDING_PAYMENT", "Pendiente", "Customer",
+                "RIF", new BigDecimal("80.00")));
 
-        CreditNoteInvoiceGateway.CreditNoteInvoiceContext result = gateway.find(invoiceId);
+        CreditNoteInvoiceGateway.CreditNoteInvoiceContext result = gateway
+                .find(invoiceId);
         gateway.recalculate(invoiceId);
 
         assertEquals("FAC-1", result.number());

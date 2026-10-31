@@ -16,8 +16,8 @@ class CatalogReportQueryTest {
         UUID categoryId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
 
-        var query = new CatalogReportQuery(
-                "search", categoryId, warehouseId, true, false, true, 0, 50);
+        var query = new CatalogReportQuery("search", categoryId, warehouseId,
+                true, false, true, 0, 50);
 
         assertEquals("search", query.search());
         assertEquals(categoryId, query.categoryId());
@@ -32,8 +32,8 @@ class CatalogReportQueryTest {
     @Test
     @DisplayName("should create query with default page values")
     void should_create_query_with_default_page_values() {
-        var query = new CatalogReportQuery(
-                null, null, null, null, null, null, 0, 20);
+        var query = new CatalogReportQuery(null, null, null, null, null, null,
+                0, 20);
 
         assertEquals(0, query.page());
         assertEquals(20, query.size());

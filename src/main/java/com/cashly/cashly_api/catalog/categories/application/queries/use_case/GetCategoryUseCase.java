@@ -16,7 +16,9 @@ public class GetCategoryUseCase {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public GetCategoryUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public GetCategoryUseCase(CategoryUsageGateway usageGateway,
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
         this.usageGateway = usageGateway;
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;

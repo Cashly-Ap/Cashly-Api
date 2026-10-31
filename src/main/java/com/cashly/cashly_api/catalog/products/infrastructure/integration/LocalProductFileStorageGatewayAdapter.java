@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 
 @Component
-public class LocalProductFileStorageGatewayAdapter implements ProductFileStorageGateway {
+public class LocalProductFileStorageGatewayAdapter
+        implements
+            ProductFileStorageGateway {
     private final FileStorageService storage;
 
     public LocalProductFileStorageGatewayAdapter(FileStorageService storage) {
@@ -15,7 +17,8 @@ public class LocalProductFileStorageGatewayAdapter implements ProductFileStorage
     }
 
     @Override
-    public String store(String filename, InputStream inputStream, String contentType) {
+    public String store(String filename, InputStream inputStream,
+            String contentType) {
         return storage.store(filename, inputStream, contentType);
     }
 

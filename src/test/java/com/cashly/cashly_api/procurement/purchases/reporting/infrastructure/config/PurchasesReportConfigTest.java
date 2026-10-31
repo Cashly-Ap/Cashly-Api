@@ -32,10 +32,12 @@ class PurchasesReportConfigTest {
     void should_create_use_case_beans() {
         var config = new PurchasesReportConfig();
 
-        var purchasePdfUseCase = config.generatePurchasePdfUseCase(query, purchasePdfPort);
+        var purchasePdfUseCase = config.generatePurchasePdfUseCase(query,
+                purchasePdfPort);
         assertNotNull(purchasePdfUseCase);
 
-        var reportPdfUseCase = config.generatePurchasesReportPdfUseCase(query, purchasesReportPdfPort);
+        var reportPdfUseCase = config.generatePurchasesReportPdfUseCase(query,
+                purchasesReportPdfPort);
         assertNotNull(reportPdfUseCase);
     }
 

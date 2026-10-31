@@ -31,8 +31,8 @@ class StockReportRepositoryAdapterTest {
     @Test
     @DisplayName("should find stock and map to response with status")
     void should_find_stock() {
-        StockPdfQuery query = new StockPdfQuery(
-                UUID.randomUUID(), UUID.randomUUID(), true, false);
+        StockPdfQuery query = new StockPdfQuery(UUID.randomUUID(),
+                UUID.randomUUID(), true, false);
 
         StockReportProjection projection = mock(StockReportProjection.class);
         when(projection.getWarehouseName()).thenReturn("Main Warehouse");

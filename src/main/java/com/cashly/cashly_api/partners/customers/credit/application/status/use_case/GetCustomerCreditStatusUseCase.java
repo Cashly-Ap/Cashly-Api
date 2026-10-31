@@ -10,7 +10,8 @@ public class GetCustomerCreditStatusUseCase {
 
     private final CreditValidationGateway creditValidationGateway;
 
-    public GetCustomerCreditStatusUseCase(CreditValidationGateway creditValidationGateway) {
+    public GetCustomerCreditStatusUseCase(
+            CreditValidationGateway creditValidationGateway) {
         this.creditValidationGateway = creditValidationGateway;
     }
 

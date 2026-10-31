@@ -31,8 +31,6 @@ class OrdersReportControllerTest {
     @Mock
     private GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase;
 
-
-
     @InjectMocks
     private OrdersReportController controller;
 
@@ -46,9 +44,10 @@ class OrdersReportControllerTest {
 
         ResponseEntity<byte[]> result = controller.getOrderPdf(orderId);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("pedido-" + orderId + ".pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("pedido-" + orderId + ".pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generateOrderPdfUseCase).execute(orderId);
@@ -65,15 +64,18 @@ class OrdersReportControllerTest {
         byte[] pdfContent = "Orders report PDF".getBytes();
         List<OrderReportRow> orders = List.of();
 
-        var filter = new OrderReportFilter(dateFrom, dateTo, customerId, "PENDING", productId, categoryId);
-        when(generateOrdersReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new OrderReportFilter(dateFrom, dateTo, customerId,
+                "PENDING", productId, categoryId);
+        when(generateOrdersReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getOrdersReportPdf(
-                dateFrom, dateTo, customerId, "PENDING", productId, categoryId, "SIMPLE");
+        ResponseEntity<byte[]> result = controller.getOrdersReportPdf(dateFrom,
+                dateTo, customerId, "PENDING", productId, categoryId, "SIMPLE");
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("reporte-pedidos-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("reporte-pedidos-"));
         assertArrayEquals(pdfContent, result.getBody());
 
         verify(generateOrdersReportPdfUseCase).execute(filter, "SIMPLE");
@@ -86,10 +88,11 @@ class OrdersReportControllerTest {
         List<OrderReportRow> orders = List.of();
 
         var filter = new OrderReportFilter(null, null, null, null, null, null);
-        when(generateOrdersReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        when(generateOrdersReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getOrdersReportPdf(
-                null, null, null, null, null, null, "SIMPLE");
+        ResponseEntity<byte[]> result = controller.getOrdersReportPdf(null,
+                null, null, null, null, null, "SIMPLE");
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateOrdersReportPdfUseCase).execute(filter, "SIMPLE");

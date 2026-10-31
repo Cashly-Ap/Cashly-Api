@@ -6,5 +6,6 @@ import java.util.UUID;
 public interface CashRegisterPaymentMethodGateway {
     Optional<PaymentMethod> findById(UUID paymentMethodId);
 
-    record PaymentMethod(UUID id, String name) {}
+    record PaymentMethod(UUID id, String name) {
+    }
 }

@@ -16,23 +16,25 @@ public class ListPaymentMethodsUseCase {
     private final PaymentMethodRepository repository;
     private final PaymentMethodUsageGateway usageGateway;
 
-    public ListPaymentMethodsUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
+    public ListPaymentMethodsUseCase(PaymentMethodRepository repository,
+            PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
         this.usageGateway = usageGateway;
     }
 
-    public PageResponse<PaymentMethodResponse> execute(String search, Boolean active,
-                                                        int page, int size,
-                                                        String orderBy, String orderDir) {
+    public PageResponse<PaymentMethodResponse> execute(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir) {
         PageResponse<PaymentMethod> pageResult = repository.findAllWithFilters(
                 search, active, page, size, orderBy, orderDir);
 
         List<PaymentMethodResponse> content = pageResult.content().stream()
-                .map(pm -> PaymentMethodMapper.toResponse(pm, usageGateway.hasAssociatedRecords(pm.getId().value())))
+                .map(pm -> PaymentMethodMapper.toResponse(pm,
+                        usageGateway.hasAssociatedRecords(pm.getId().value())))
                 .toList();
 
-        return new PageResponse<>(content, pageResult.totalElements(), pageResult.totalPages(),
-                pageResult.size(), pageResult.number(), pageResult.first(),
-                pageResult.last(), pageResult.empty());
+        return new PageResponse<>(content, pageResult.totalElements(),
+                pageResult.totalPages(), pageResult.size(), pageResult.number(),
+                pageResult.first(), pageResult.last(), pageResult.empty());
     }
 }

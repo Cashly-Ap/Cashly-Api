@@ -35,9 +35,12 @@ public class ProductPriceEntity {
     @Column(name = "profit_margin")
     private BigDecimal profitMargin;
 
-    public static ProductPriceEntity fromDomain(ProductPrice productPrice, ProductEntity product) {
+    public static ProductPriceEntity fromDomain(ProductPrice productPrice,
+            ProductEntity product) {
         ProductPriceEntity entity = new ProductPriceEntity();
-        entity.id = productPrice.getId() != null ? productPrice.getId() : UUID.randomUUID();
+        entity.id = productPrice.getId() != null
+                ? productPrice.getId()
+                : UUID.randomUUID();
         entity.product = product;
         entity.priceTypeId = productPrice.getPriceTypeId();
         entity.price = productPrice.getPrice();

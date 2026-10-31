@@ -7,15 +7,11 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 public record TransferStockRequest(
-        @NotNull(message = "Product ID is required")
-        UUID productId,
+        @NotNull(message = "Product ID is required") UUID productId,
 
-        @NotNull(message = "Destination warehouse ID is required")
-        UUID destinationWarehouseId,
+        @NotNull(message = "Destination warehouse ID is required") UUID destinationWarehouseId,
 
-        @Min(value = 1, message = "Quantity must be at least 1")
-        int quantity,
+        @Min(value = 1, message = "Quantity must be at least 1") int quantity,
 
-        @Size(max = 500, message = "Notes cannot exceed 500 characters")
-        String notes
-) {}
+        @Size(max = 500, message = "Notes cannot exceed 500 characters") String notes) {
+}

@@ -45,18 +45,18 @@ class UpdatePaymentMethodUseCaseTest {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
         LocalDateTime now = LocalDateTime.now();
 
-        PaymentMethod existing = PaymentMethod.reconstitute(
-                paymentMethodId, "PM-0001", "Cash", "Cash payment",
-                true, now, now);
+        PaymentMethod existing = PaymentMethod.reconstitute(paymentMethodId,
+                "PM-0001", "Cash", "Cash payment", true, now, now);
 
         UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest(
                 "Credit Card", "Credit card payment", false);
 
-        when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
+        when(repository.findById(paymentMethodId))
+                .thenReturn(Optional.of(existing));
 
-        PaymentMethod saved = PaymentMethod.reconstitute(
-                paymentMethodId, "PM-0001", "Credit Card", "Credit card payment",
-                false, now, LocalDateTime.now());
+        PaymentMethod saved = PaymentMethod.reconstitute(paymentMethodId,
+                "PM-0001", "Credit Card", "Credit card payment", false, now,
+                LocalDateTime.now());
         when(repository.save(any(PaymentMethod.class))).thenReturn(saved);
         when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
@@ -81,15 +81,16 @@ class UpdatePaymentMethodUseCaseTest {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
         LocalDateTime now = LocalDateTime.now();
 
-        PaymentMethod existing = PaymentMethod.reconstitute(
-                paymentMethodId, "PM-0001", "Cash", "Cash payment",
-                true, now, now);
+        PaymentMethod existing = PaymentMethod.reconstitute(paymentMethodId,
+                "PM-0001", "Cash", "Cash payment", true, now, now);
 
         UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest(
                 "Updated Cash", "Updated description", null);
 
-        when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
-        when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(paymentMethodId))
+                .thenReturn(Optional.of(existing));
+        when(repository.save(any(PaymentMethod.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id, request);
@@ -108,7 +109,8 @@ class UpdatePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
                 () -> useCase.execute(id, request));
 
         assertTrue(exception.getMessage().contains("Payment method not found"));

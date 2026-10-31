@@ -62,8 +62,10 @@ class JpaUserRepositoryUnitTest {
     @Test
     @DisplayName("should_SaveUser_When_NewUserProvided")
     void should_SaveUser_When_NewUserProvided() {
-        when(springDataUserRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-        when(springDataUserRepository.save(any(UserEntity.class))).thenReturn(testUserEntity);
+        when(springDataUserRepository.findById(any(UUID.class)))
+                .thenReturn(Optional.empty());
+        when(springDataUserRepository.save(any(UserEntity.class)))
+                .thenReturn(testUserEntity);
 
         User savedUser = jpaUserRepository.save(testUser);
 
@@ -77,8 +79,10 @@ class JpaUserRepositoryUnitTest {
     @Test
     @DisplayName("should_UpdateUser_When_ExistingUserProvided")
     void should_UpdateUser_When_ExistingUserProvided() {
-        when(springDataUserRepository.findById(any(UUID.class))).thenReturn(Optional.of(testUserEntity));
-        when(springDataUserRepository.save(any(UserEntity.class))).thenReturn(testUserEntity);
+        when(springDataUserRepository.findById(any(UUID.class)))
+                .thenReturn(Optional.of(testUserEntity));
+        when(springDataUserRepository.save(any(UserEntity.class)))
+                .thenReturn(testUserEntity);
 
         User savedUser = jpaUserRepository.save(testUser);
 
@@ -91,9 +95,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ThrowException_When_SavingNullUser")
     void should_ThrowException_When_SavingNullUser() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> jpaUserRepository.save(null)
-        );
+                IllegalArgumentException.class,
+                () -> jpaUserRepository.save(null));
 
         assertEquals("User cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).save(any());
@@ -104,7 +107,7 @@ class JpaUserRepositoryUnitTest {
     void should_FindUserById_When_UserExists() {
         UserId userId = testUser.getId();
         when(springDataUserRepository.findById(userId.getValue()))
-            .thenReturn(Optional.of(testUserEntity));
+                .thenReturn(Optional.of(testUserEntity));
 
         Optional<User> foundUser = jpaUserRepository.findById(userId);
 
@@ -119,7 +122,7 @@ class JpaUserRepositoryUnitTest {
     void should_ReturnEmpty_When_UserNotFoundById() {
         UserId userId = UserId.generate();
         when(springDataUserRepository.findById(userId.getValue()))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         Optional<User> foundUser = jpaUserRepository.findById(userId);
 
@@ -131,9 +134,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ThrowException_When_FindingByNullId")
     void should_ThrowException_When_FindingByNullId() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> jpaUserRepository.findById(null)
-        );
+                IllegalArgumentException.class,
+                () -> jpaUserRepository.findById(null));
 
         assertEquals("User ID cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).findById(any(UUID.class));
@@ -144,7 +146,7 @@ class JpaUserRepositoryUnitTest {
     void should_FindUserByEmail_When_UserExists() {
         Email email = testUser.getEmail();
         when(springDataUserRepository.findByEmail(email.getValue()))
-            .thenReturn(Optional.of(testUserEntity));
+                .thenReturn(Optional.of(testUserEntity));
 
         Optional<User> foundUser = jpaUserRepository.findByEmail(email);
 
@@ -158,7 +160,7 @@ class JpaUserRepositoryUnitTest {
     void should_ReturnEmpty_When_UserNotFoundByEmail() {
         Email email = new Email("nonexistent@example.com");
         when(springDataUserRepository.findByEmail(email.getValue()))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         Optional<User> foundUser = jpaUserRepository.findByEmail(email);
 
@@ -170,9 +172,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ThrowException_When_FindingByNullEmail")
     void should_ThrowException_When_FindingByNullEmail() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> jpaUserRepository.findByEmail(null)
-        );
+                IllegalArgumentException.class,
+                () -> jpaUserRepository.findByEmail(null));
 
         assertEquals("Email cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).findByEmail(anyString());
@@ -182,7 +183,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ReturnTrue_When_UserExistsByEmail")
     void should_ReturnTrue_When_UserExistsByEmail() {
         Email email = testUser.getEmail();
-        when(springDataUserRepository.existsByEmail(email.getValue())).thenReturn(true);
+        when(springDataUserRepository.existsByEmail(email.getValue()))
+                .thenReturn(true);
 
         boolean exists = jpaUserRepository.existsByEmail(email);
 
@@ -194,7 +196,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ReturnFalse_When_UserDoesNotExistByEmail")
     void should_ReturnFalse_When_UserDoesNotExistByEmail() {
         Email email = new Email("nonexistent@example.com");
-        when(springDataUserRepository.existsByEmail(email.getValue())).thenReturn(false);
+        when(springDataUserRepository.existsByEmail(email.getValue()))
+                .thenReturn(false);
 
         boolean exists = jpaUserRepository.existsByEmail(email);
 
@@ -206,9 +209,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ThrowException_When_CheckingExistenceWithNullEmail")
     void should_ThrowException_When_CheckingExistenceWithNullEmail() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> jpaUserRepository.existsByEmail(null)
-        );
+                IllegalArgumentException.class,
+                () -> jpaUserRepository.existsByEmail(null));
 
         assertEquals("Email cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).existsByEmail(anyString());
@@ -221,16 +223,16 @@ class JpaUserRepositoryUnitTest {
 
         jpaUserRepository.delete(testUser);
 
-        verify(springDataUserRepository, times(1)).deleteById(testUser.getId().getValue());
+        verify(springDataUserRepository, times(1))
+                .deleteById(testUser.getId().getValue());
     }
 
     @Test
     @DisplayName("should_ThrowException_When_DeletingNullUser")
     void should_ThrowException_When_DeletingNullUser() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> jpaUserRepository.delete(null)
-        );
+                IllegalArgumentException.class,
+                () -> jpaUserRepository.delete(null));
 
         assertEquals("User cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).deleteById(any(UUID.class));
@@ -239,7 +241,8 @@ class JpaUserRepositoryUnitTest {
     @Test
     @DisplayName("should_ReturnAllUsers_When_UsersExist")
     void should_ReturnAllUsers_When_UsersExist() {
-        when(springDataUserRepository.findAll()).thenReturn(List.of(testUserEntity));
+        when(springDataUserRepository.findAll())
+                .thenReturn(List.of(testUserEntity));
 
         List<User> users = jpaUserRepository.findAll();
 
@@ -252,7 +255,8 @@ class JpaUserRepositoryUnitTest {
     @Test
     @DisplayName("should_ReturnEmptyList_When_NoUsersExist")
     void should_ReturnEmptyList_When_NoUsersExist() {
-        when(springDataUserRepository.findAll()).thenReturn(Collections.emptyList());
+        when(springDataUserRepository.findAll())
+                .thenReturn(Collections.emptyList());
 
         List<User> users = jpaUserRepository.findAll();
 
@@ -264,7 +268,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_FindUsersByRole_When_UsersExist")
     void should_FindUsersByRole_When_UsersExist() {
         UserRole role = UserRole.OPERATOR;
-        when(springDataUserRepository.findByRole(role)).thenReturn(List.of(testUserEntity));
+        when(springDataUserRepository.findByRole(role))
+                .thenReturn(List.of(testUserEntity));
 
         List<User> users = jpaUserRepository.findByRole(role);
 
@@ -278,7 +283,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ReturnEmptyList_When_NoUsersFoundByRole")
     void should_ReturnEmptyList_When_NoUsersFoundByRole() {
         UserRole role = UserRole.ADMIN;
-        when(springDataUserRepository.findByRole(role)).thenReturn(Collections.emptyList());
+        when(springDataUserRepository.findByRole(role))
+                .thenReturn(Collections.emptyList());
 
         List<User> users = jpaUserRepository.findByRole(role);
 
@@ -290,9 +296,8 @@ class JpaUserRepositoryUnitTest {
     @DisplayName("should_ThrowException_When_FindingByNullRole")
     void should_ThrowException_When_FindingByNullRole() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> jpaUserRepository.findByRole(null)
-        );
+                IllegalArgumentException.class,
+                () -> jpaUserRepository.findByRole(null));
 
         assertEquals("Role cannot be null", exception.getMessage());
         verify(springDataUserRepository, never()).findByRole(any());
@@ -314,13 +319,12 @@ class JpaUserRepositoryUnitTest {
         PageRequest pageable = PageRequest.of(page, size);
         Page<UserEntity> entityPage = new PageImpl<>(entities, pageable, 1);
 
-        when(springDataUserRepository.findAllWithFilters(
-            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
-        )).thenReturn(entityPage);
+        when(springDataUserRepository.findAllWithFilters(eq(search), eq(role),
+                eq(active), isNull(), any(PageRequest.class)))
+                .thenReturn(entityPage);
 
-        PageResponse<User> result = jpaUserRepository.findAllWithFilters(
-            search, role, active, excludeId, page, size, orderBy, orderDir
-        );
+        PageResponse<User> result = jpaUserRepository.findAllWithFilters(search,
+                role, active, excludeId, page, size, orderBy, orderDir);
 
         assertNotNull(result);
         assertEquals(1, result.content().size());
@@ -333,8 +337,8 @@ class JpaUserRepositoryUnitTest {
         assertTrue(result.last());
         assertFalse(result.empty());
         verify(springDataUserRepository, times(1)).findAllWithFilters(
-            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
-        );
+                eq(search), eq(role), eq(active), isNull(),
+                any(PageRequest.class));
     }
 
     @Test
@@ -354,13 +358,12 @@ class JpaUserRepositoryUnitTest {
         PageRequest pageable = PageRequest.of(page, size);
         Page<UserEntity> entityPage = new PageImpl<>(entities, pageable, 1);
 
-        when(springDataUserRepository.findAllWithFilters(
-            isNull(), isNull(), isNull(), eq(excludeUuid), any(PageRequest.class)
-        )).thenReturn(entityPage);
+        when(springDataUserRepository.findAllWithFilters(isNull(), isNull(),
+                isNull(), eq(excludeUuid), any(PageRequest.class)))
+                .thenReturn(entityPage);
 
-        PageResponse<User> result = jpaUserRepository.findAllWithFilters(
-            search, role, active, excludeId, page, size, orderBy, orderDir
-        );
+        PageResponse<User> result = jpaUserRepository.findAllWithFilters(search,
+                role, active, excludeId, page, size, orderBy, orderDir);
 
         assertNotNull(result);
         assertEquals(1, result.content().size());
@@ -370,9 +373,8 @@ class JpaUserRepositoryUnitTest {
         assertEquals(size, result.size());
         assertTrue(result.first());
         assertTrue(result.last());
-        verify(springDataUserRepository, times(1)).findAllWithFilters(
-            isNull(), isNull(), isNull(), eq(excludeUuid), any(PageRequest.class)
-        );
+        verify(springDataUserRepository, times(1)).findAllWithFilters(isNull(),
+                isNull(), isNull(), eq(excludeUuid), any(PageRequest.class));
     }
 
     @Test
@@ -391,20 +393,19 @@ class JpaUserRepositoryUnitTest {
         PageRequest pageable = PageRequest.of(page, size);
         Page<UserEntity> entityPage = new PageImpl<>(entities, pageable, 0);
 
-        when(springDataUserRepository.findAllWithFilters(
-            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
-        )).thenReturn(entityPage);
+        when(springDataUserRepository.findAllWithFilters(eq(search), eq(role),
+                eq(active), isNull(), any(PageRequest.class)))
+                .thenReturn(entityPage);
 
-        PageResponse<User> result = jpaUserRepository.findAllWithFilters(
-            search, role, active, excludeId, page, size, orderBy, orderDir
-        );
+        PageResponse<User> result = jpaUserRepository.findAllWithFilters(search,
+                role, active, excludeId, page, size, orderBy, orderDir);
 
         assertNotNull(result);
         assertTrue(result.content().isEmpty());
         assertEquals(0, result.totalElements());
         assertTrue(result.empty());
         verify(springDataUserRepository, times(1)).findAllWithFilters(
-            eq(search), eq(role), eq(active), isNull(), any(PageRequest.class)
-        );
+                eq(search), eq(role), eq(active), isNull(),
+                any(PageRequest.class));
     }
 }

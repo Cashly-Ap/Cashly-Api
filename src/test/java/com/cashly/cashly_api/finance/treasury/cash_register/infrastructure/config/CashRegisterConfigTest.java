@@ -16,8 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("CashRegisterConfig Unit Tests")
 class CashRegisterConfigTest {
 
-    @Mock private CashRegisterRepository repository;
-    @Mock private CashRegisterQueryGateway queries;
+    @Mock
+    private CashRegisterRepository repository;
+    @Mock
+    private CashRegisterQueryGateway queries;
 
     @Test
     void should_create_open_register_use_case() {
@@ -58,7 +60,8 @@ class CashRegisterConfigTest {
     void should_create_generate_excel_use_case() {
         var config = new CashRegisterConfig();
         var excelPort = config.cashRegisterExcelPort();
-        var useCase = config.generateCashRegisterExcelUseCase(queries, excelPort);
+        var useCase = config.generateCashRegisterExcelUseCase(queries,
+                excelPort);
         assertNotNull(useCase);
     }
 }

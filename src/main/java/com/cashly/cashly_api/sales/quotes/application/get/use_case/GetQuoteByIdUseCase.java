@@ -18,7 +18,8 @@ public class GetQuoteByIdUseCase {
     private final QuoteRepository quoteRepository;
     private final QuoteWarehouseGateway warehouses;
 
-    public GetQuoteByIdUseCase(QuoteRepository quoteRepository, QuoteWarehouseGateway warehouses) {
+    public GetQuoteByIdUseCase(QuoteRepository quoteRepository,
+            QuoteWarehouseGateway warehouses) {
         this.quoteRepository = quoteRepository;
         this.warehouses = warehouses;
     }
@@ -27,17 +28,19 @@ public class GetQuoteByIdUseCase {
         Quote quote = quoteRepository.findById(id)
                 .orElseThrow(() -> new QuoteNotFoundException(id));
 
-        Map<UUID, List<QuoteMapper.WarehouseStockInfo>> stockByProduct = quote.getLines().stream()
-                .map(QuoteLine::getProductId)
-                .distinct()
-                .collect(Collectors.toMap(productId -> productId, this::fetchStockForProduct));
+        Map<UUID, List<QuoteMapper.WarehouseStockInfo>> stockByProduct = quote
+                .getLines().stream().map(QuoteLine::getProductId).distinct()
+                .collect(Collectors.toMap(productId -> productId,
+                        this::fetchStockForProduct));
 
         return QuoteMapper.toDetailResponse(quote, stockByProduct);
     }
 
-    private List<QuoteMapper.WarehouseStockInfo> fetchStockForProduct(UUID productId) {
+    private List<QuoteMapper.WarehouseStockInfo> fetchStockForProduct(
+            UUID productId) {
         return warehouses.findStockByProductId(productId).stream()
-                .map(stock -> new QuoteMapper.WarehouseStockInfo(stock.warehouseId(), stock.warehouseName(),
+                .map(stock -> new QuoteMapper.WarehouseStockInfo(
+                        stock.warehouseId(), stock.warehouseName(),
                         stock.available()))
                 .toList();
     }

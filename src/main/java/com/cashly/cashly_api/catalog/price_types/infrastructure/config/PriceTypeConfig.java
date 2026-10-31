@@ -14,27 +14,34 @@ import org.springframework.context.annotation.Configuration;
 public class PriceTypeConfig {
 
     @Bean
-    public CreatePriceTypeUseCase createPriceTypeUseCase(PriceTypeRepository priceTypeRepository) {
+    public CreatePriceTypeUseCase createPriceTypeUseCase(
+            PriceTypeRepository priceTypeRepository) {
         return new CreatePriceTypeUseCase(priceTypeRepository);
     }
 
     @Bean
-    public UpdatePriceTypeUseCase updatePriceTypeUseCase(PriceTypeRepository priceTypeRepository) {
+    public UpdatePriceTypeUseCase updatePriceTypeUseCase(
+            PriceTypeRepository priceTypeRepository) {
         return new UpdatePriceTypeUseCase(priceTypeRepository);
     }
 
     @Bean
-    public DeletePriceTypeUseCase deletePriceTypeUseCase(PriceTypeUsageGateway usageGateway, PriceTypeRepository priceTypeRepository) {
+    public DeletePriceTypeUseCase deletePriceTypeUseCase(
+            PriceTypeUsageGateway usageGateway,
+            PriceTypeRepository priceTypeRepository) {
         return new DeletePriceTypeUseCase(usageGateway, priceTypeRepository);
     }
 
     @Bean
-    public GetPriceTypeUseCase getPriceTypeUseCase(PriceTypeRepository priceTypeRepository) {
+    public GetPriceTypeUseCase getPriceTypeUseCase(
+            PriceTypeRepository priceTypeRepository) {
         return new GetPriceTypeUseCase(priceTypeRepository);
     }
 
     @Bean
-    public ListPriceTypesUseCase listPriceTypesUseCase(PriceTypeUsageGateway usageGateway, PriceTypeRepository priceTypeRepository) {
+    public ListPriceTypesUseCase listPriceTypesUseCase(
+            PriceTypeUsageGateway usageGateway,
+            PriceTypeRepository priceTypeRepository) {
         return new ListPriceTypesUseCase(usageGateway, priceTypeRepository);
     }
 }

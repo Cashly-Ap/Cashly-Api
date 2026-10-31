@@ -34,96 +34,98 @@ public class CreateReturnUseCase {
     private final ReturnBalanceGateway balances;
     private final ReturnInventoryGateway inventoryGateway;
     private final ReturnCashGateway cash;
-    public CreateReturnUseCase(ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway, ReturnRepository returnRepository,
-            ReturnResponseAssembler responses, ReturnInvoiceQueryGateway invoiceQueries, ReturnPaymentSettlementGateway paymentSettlements,
-            ReturnBalanceGateway balances, ReturnInventoryGateway inventoryGateway, ReturnCashGateway cash) {
-        this.invoiceAdjustmentGateway = invoiceAdjustmentGateway; this.returnRepository = returnRepository;
-        this.responses = responses; this.invoiceQueries = invoiceQueries; this.paymentSettlements = paymentSettlements;
-        this.balances = balances; this.inventoryGateway = inventoryGateway; this.cash = cash;
+    public CreateReturnUseCase(
+            ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway,
+            ReturnRepository returnRepository,
+            ReturnResponseAssembler responses,
+            ReturnInvoiceQueryGateway invoiceQueries,
+            ReturnPaymentSettlementGateway paymentSettlements,
+            ReturnBalanceGateway balances,
+            ReturnInventoryGateway inventoryGateway, ReturnCashGateway cash) {
+        this.invoiceAdjustmentGateway = invoiceAdjustmentGateway;
+        this.returnRepository = returnRepository;
+        this.responses = responses;
+        this.invoiceQueries = invoiceQueries;
+        this.paymentSettlements = paymentSettlements;
+        this.balances = balances;
+        this.inventoryGateway = inventoryGateway;
+        this.cash = cash;
     }
 
     @Transactional
-    public ReturnResponse execute(CreateReturnRequest request, UUID authenticatedUserId, String userName) {
+    public ReturnResponse execute(CreateReturnRequest request,
+            UUID authenticatedUserId, String userName) {
         int year = LocalDate.now().getYear();
         int sequence = returnRepository.getNextSequenceForYear(year);
         ReturnNumber returnNumber = ReturnNumber.of(year, sequence);
 
         List<ReturnLine> lines = request.lines().stream()
-                .map(ReturnMapper::toLine)
-                .toList();
+                .map(ReturnMapper::toLine).toList();
 
-        BigDecimal total = lines.stream()
-                .map(ReturnLine::getSubtotal)
+        BigDecimal total = lines.stream().map(ReturnLine::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Return return_ = Return.create(
-                returnNumber,
-                request.invoiceId(),
-                request.customerId(),
-                ReturnType.valueOf(request.returnType()),
-                request.reason(),
-                total,
-                lines,
-                authenticatedUserId,
-                userName
-        );
+        Return return_ = Return.create(returnNumber, request.invoiceId(),
+                request.customerId(), ReturnType.valueOf(request.returnType()),
+                request.reason(), total, lines, authenticatedUserId, userName);
 
         Return saved = returnRepository.save(return_);
-        cash.record(new ReturnCashGateway.Entry(saved.getTotal(), saved.getId().value(), saved.getReturnNumber().value(), authenticatedUserId, userName));
+        cash.record(new ReturnCashGateway.Entry(saved.getTotal(),
+                saved.getId().value(), saved.getReturnNumber().value(),
+                authenticatedUserId, userName));
 
-        inventoryGateway.restoreStock(ReturnInventoryGateway.Command.from(saved, null));
+        inventoryGateway
+                .restoreStock(ReturnInventoryGateway.Command.from(saved, null));
 
         invoiceAdjustmentGateway.apply(saved);
         var invoice = invoiceQueries.requireById(return_.getInvoiceId());
 
-
-
-        BigDecimal totalPaid = paymentSettlements.allocatedAmount(return_.getInvoiceId());
+        BigDecimal totalPaid = paymentSettlements
+                .allocatedAmount(return_.getInvoiceId());
 
         if (return_.getReturnType() == ReturnType.AUTOMATIC) {
-            List<CancelledAllocation> snapshot = paymentSettlements.capture(return_.getInvoiceId());
+            List<CancelledAllocation> snapshot = paymentSettlements
+                    .capture(return_.getInvoiceId());
             paymentSettlements.cancelInvoicePayments(return_.getInvoiceId());
-            saved = returnRepository.save(rebuildReturnWithCancelledAllocations(saved, snapshot));
+            saved = returnRepository.save(
+                    rebuildReturnWithCancelledAllocations(saved, snapshot));
         }
 
-        BigDecimal totalCreditNotes = invoiceQueries.creditNoteAmounts(return_.getInvoiceId()).stream()
+        BigDecimal totalCreditNotes = invoiceQueries
+                .creditNoteAmounts(return_.getInvoiceId()).stream()
                 .map(c -> c != null ? c : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalDebitNotes = invoiceQueries.debitNoteAmounts(return_.getInvoiceId()).stream()
+        BigDecimal totalDebitNotes = invoiceQueries
+                .debitNoteAmounts(return_.getInvoiceId()).stream()
                 .map(d -> d != null ? d : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal effectiveTotal = invoice.calculateTotal(totalCreditNotes, totalDebitNotes);
+        BigDecimal effectiveTotal = invoice.calculateTotal(totalCreditNotes,
+                totalDebitNotes);
         if (effectiveTotal.compareTo(BigDecimal.ZERO) < 0) {
             effectiveTotal = BigDecimal.ZERO;
         }
         BigDecimal surplus = totalPaid.subtract(effectiveTotal);
 
         if (surplus.compareTo(BigDecimal.ZERO) > 0) {
-            balances.credit(new ReturnBalanceGateway.Command(return_.getCustomerId(), surplus, return_.getId().value(),
-                    return_.getReturnNumber().value(), invoice.number(), authenticatedUserId));
+            balances.credit(new ReturnBalanceGateway.Command(
+                    return_.getCustomerId(), surplus, return_.getId().value(),
+                    return_.getReturnNumber().value(), invoice.number(),
+                    authenticatedUserId));
         }
 
         return responses.toResponse(saved);
     }
 
-    
-    private Return rebuildReturnWithCancelledAllocations(Return original, List<CancelledAllocation> cancelledAllocations) {
-        return Return.reconstitute(
-                original.getId(),
-                original.getReturnNumber(),
-                original.getInvoiceId(),
-                original.getCustomerId(),
-                original.getReturnType(),
-                original.getReason(),
-                original.getTotal(),
-                new ArrayList<>(original.getLines()),
-                cancelledAllocations,
-                original.getCreatedBy(),
-                original.getCreatedByName(),
-                original.getCreatedAt(),
-                original.getUpdatedAt()
-        );
+    private Return rebuildReturnWithCancelledAllocations(Return original,
+            List<CancelledAllocation> cancelledAllocations) {
+        return Return.reconstitute(original.getId(), original.getReturnNumber(),
+                original.getInvoiceId(), original.getCustomerId(),
+                original.getReturnType(), original.getReason(),
+                original.getTotal(), new ArrayList<>(original.getLines()),
+                cancelledAllocations, original.getCreatedBy(),
+                original.getCreatedByName(), original.getCreatedAt(),
+                original.getUpdatedAt());
     }
 }

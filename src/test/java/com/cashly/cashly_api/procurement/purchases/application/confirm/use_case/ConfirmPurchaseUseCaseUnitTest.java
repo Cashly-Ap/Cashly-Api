@@ -57,15 +57,23 @@ class ConfirmPurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         confirmPurchaseUseCase = new ConfirmPurchaseUseCase(purchaseRepository,
-                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(
+                        warehouseStockRepository, stockMovementRepository)),
+                new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
+                        new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(
+                                new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(
+                                        warehouseRepository,
+                                        mock(WarehouseStockRepository.class)))));
     }
 
     @Test
     void should_ConfirmPurchase_When_PurchaseIsDraft() {
         UUID id = UUID.randomUUID();
         Purchase purchase = buildPurchase(id, PurchaseStatus.DRAFT);
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id);
 
@@ -77,9 +85,11 @@ class ConfirmPurchaseUseCaseUnitTest {
     @Test
     void should_ThrowException_When_PurchaseNotFound() {
         UUID id = UUID.randomUUID();
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.empty());
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(PurchaseNotFoundException.class, () -> confirmPurchaseUseCase.execute(id));
+        assertThrows(PurchaseNotFoundException.class,
+                () -> confirmPurchaseUseCase.execute(id));
         verify(purchaseRepository, never()).save(any());
     }
 
@@ -87,9 +97,11 @@ class ConfirmPurchaseUseCaseUnitTest {
     void should_ThrowException_When_ConfirmingNonDraftPurchase() {
         UUID id = UUID.randomUUID();
         Purchase purchase = buildPurchase(id, PurchaseStatus.CANCELLED);
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
 
-        assertThrows(IllegalStateException.class, () -> confirmPurchaseUseCase.execute(id));
+        assertThrows(IllegalStateException.class,
+                () -> confirmPurchaseUseCase.execute(id));
         verify(purchaseRepository, never()).save(any());
     }
 
@@ -98,32 +110,41 @@ class ConfirmPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.DRAFT, warehouseId, productId);
+        Purchase purchase = buildPurchaseWithAllocation(id,
+                PurchaseStatus.DRAFT, warehouseId, productId);
 
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(warehouseStockRepository
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                        productId))
                 .thenReturn(stock);
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseStockRepository.save(any(WarehouseStock.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         confirmPurchaseUseCase.execute(id);
 
-        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
-        verify(warehouseStockRepository).save(argThat(savedStock ->
-                savedStock.getQuantity() == 10));
-        verify(stockMovementRepository).save(argThat(movement ->
-                movement.getMovementType() == MovementType.ENTRY &&
-                movement.getReferenceType() == ReferenceType.PURCHASE &&
-                movement.getQuantity() == 10 &&
-                movement.getProductId().equals(productId) &&
-                movement.getWarehouseId().equals(warehouseId) &&
-                movement.getPreviousStock() == 0 && movement.getNewStock() == 10 &&
-                movement.getReferenceId().equals(id) &&
-                movement.getReferenceNumber().equals(purchase.getPurchaseNumber().getValue()) &&
-                movement.getNotes().equals("Compra confirmada")
-        ));
+        verify(warehouseStockRepository)
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                        productId);
+        verify(warehouseStockRepository)
+                .save(argThat(savedStock -> savedStock.getQuantity() == 10));
+        verify(stockMovementRepository).save(argThat(
+                movement -> movement.getMovementType() == MovementType.ENTRY
+                        && movement.getReferenceType() == ReferenceType.PURCHASE
+                        && movement.getQuantity() == 10
+                        && movement.getProductId().equals(productId)
+                        && movement.getWarehouseId().equals(warehouseId)
+                        && movement.getPreviousStock() == 0
+                        && movement.getNewStock() == 10
+                        && movement.getReferenceId().equals(id)
+                        && movement.getReferenceNumber()
+                                .equals(purchase.getPurchaseNumber().getValue())
+                        && movement.getNotes().equals("Compra confirmada")));
     }
 
     @Test
@@ -131,31 +152,40 @@ class ConfirmPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.DRAFT, warehouseId, productId);
+        Purchase purchase = buildPurchaseWithAllocation(id,
+                PurchaseStatus.DRAFT, warehouseId, productId);
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(warehouseStockRepository
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                        productId))
                 .thenReturn(WarehouseStock.create(warehouseId, productId));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseStockRepository.save(any(WarehouseStock.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         confirmPurchaseUseCase.execute(id);
 
-        verify(warehouseStockRepository).findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
-        verify(warehouseStockRepository).save(argThat(savedStock ->
-                savedStock.getQuantity() == 10));
-        verify(stockMovementRepository).save(argThat(movement ->
-                movement.getMovementType() == MovementType.ENTRY &&
-                movement.getReferenceType() == ReferenceType.PURCHASE
-        ));
+        verify(warehouseStockRepository)
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                        productId);
+        verify(warehouseStockRepository)
+                .save(argThat(savedStock -> savedStock.getQuantity() == 10));
+        verify(stockMovementRepository).save(argThat(movement -> movement
+                .getMovementType() == MovementType.ENTRY
+                && movement.getReferenceType() == ReferenceType.PURCHASE));
     }
 
     @Test
     void should_SavePurchaseExactlyOnce_When_ConfirmationSucceeds() {
         UUID id = UUID.randomUUID();
         Purchase purchase = buildPurchase(id, PurchaseStatus.DRAFT);
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         confirmPurchaseUseCase.execute(id);
 
@@ -163,58 +193,27 @@ class ConfirmPurchaseUseCaseUnitTest {
     }
 
     private Purchase buildPurchase(UUID id, PurchaseStatus status) {
-        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Purchase.reconstitute(
-                PurchaseId.of(id),
-                PurchaseNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                status,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Purchase.reconstitute(PurchaseId.of(id),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name", status, null,
+                BigDecimal.ZERO, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Purchase buildPurchaseWithAllocation(UUID id, PurchaseStatus status,
-                                                  UUID warehouseId, UUID productId) {
-        PurchaseLineAllocation allocation = PurchaseLineAllocation.create(warehouseId, BigDecimal.TEN);
+            UUID warehouseId, UUID productId) {
+        PurchaseLineAllocation allocation = PurchaseLineAllocation
+                .create(warehouseId, BigDecimal.TEN);
         PurchaseLine line = PurchaseLine.reconstitute(
-                PurchaseLineId.of(UUID.randomUUID()),
-                productId,
-                "Test Product",
-                "PROD-001",
-                BigDecimal.TEN,
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(100),
-                List.of(allocation)
-        );
-        return Purchase.reconstitute(
-                PurchaseId.of(id),
-                PurchaseNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                status,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                PurchaseLineId.of(UUID.randomUUID()), productId, "Test Product",
+                "PROD-001", BigDecimal.TEN, BigDecimal.valueOf(10),
+                BigDecimal.valueOf(100), List.of(allocation));
+        return Purchase.reconstitute(PurchaseId.of(id),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name", status, null,
+                BigDecimal.ZERO, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

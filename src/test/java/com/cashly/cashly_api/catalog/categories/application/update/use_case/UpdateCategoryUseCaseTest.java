@@ -38,24 +38,26 @@ class UpdateCategoryUseCaseTest {
     @Test
     void should_UpdateCategory_When_ValidRequest() {
         UUID id = UUID.randomUUID();
-        UpdateCategoryRequest request = new UpdateCategoryRequest("Updated Name", "Updated Desc", true);
+        UpdateCategoryRequest request = new UpdateCategoryRequest(
+                "Updated Name", "Updated Desc", true);
 
-        Category existing = Category.reconstitute(
-                id, "Old Name", "Old Desc", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category existing = Category.reconstitute(id, "Old Name", "Old Desc",
+                true, LocalDateTime.now(), LocalDateTime.now());
 
-        Category saved = Category.reconstitute(
-                id, "Updated Name", "Updated Desc", true,
-                existing.getCreatedAt(), LocalDateTime.now());
+        Category saved = Category.reconstitute(id, "Updated Name",
+                "Updated Desc", true, existing.getCreatedAt(),
+                LocalDateTime.now());
 
         CategoryDetailResponse expectedResponse = new CategoryDetailResponse(
                 id.toString(), "Updated Name", "Updated Desc", true, 0L,
                 saved.getCreatedAt(), saved.getUpdatedAt());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(categoryRepository.existsByNameAndIdNot("Updated Name", id)).thenReturn(false);
+        when(categoryRepository.existsByNameAndIdNot("Updated Name", id))
+                .thenReturn(false);
         when(categoryRepository.save(any(Category.class))).thenReturn(saved);
-        when(categoryMapper.toDetailResponse(saved, 0L)).thenReturn(expectedResponse);
+        when(categoryMapper.toDetailResponse(saved, 0L))
+                .thenReturn(expectedResponse);
 
         CategoryDetailResponse result = useCase.execute(id, request);
 
@@ -69,30 +71,35 @@ class UpdateCategoryUseCaseTest {
     @Test
     void should_ThrowNotFoundException_When_CategoryDoesNotExist() {
         UUID id = UUID.randomUUID();
-        UpdateCategoryRequest request = new UpdateCategoryRequest("Name", "Desc", true);
+        UpdateCategoryRequest request = new UpdateCategoryRequest("Name",
+                "Desc", true);
 
         when(categoryRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(CategoryNotFoundException.class, () -> useCase.execute(id, request));
+        assertThrows(CategoryNotFoundException.class,
+                () -> useCase.execute(id, request));
 
         verify(categoryRepository).findById(id);
-        verify(categoryRepository, never()).existsByNameAndIdNot(anyString(), any());
+        verify(categoryRepository, never()).existsByNameAndIdNot(anyString(),
+                any());
         verify(categoryRepository, never()).save(any());
     }
 
     @Test
     void should_ThrowDuplicateException_When_NameExistsForDifferentCategory() {
         UUID id = UUID.randomUUID();
-        UpdateCategoryRequest request = new UpdateCategoryRequest("Duplicate Name", "Desc", true);
+        UpdateCategoryRequest request = new UpdateCategoryRequest(
+                "Duplicate Name", "Desc", true);
 
-        Category existing = Category.reconstitute(
-                id, "Old Name", "Old Desc", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category existing = Category.reconstitute(id, "Old Name", "Old Desc",
+                true, LocalDateTime.now(), LocalDateTime.now());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(categoryRepository.existsByNameAndIdNot("Duplicate Name", id)).thenReturn(true);
+        when(categoryRepository.existsByNameAndIdNot("Duplicate Name", id))
+                .thenReturn(true);
 
-        assertThrows(DuplicateCategoryNameException.class, () -> useCase.execute(id, request));
+        assertThrows(DuplicateCategoryNameException.class,
+                () -> useCase.execute(id, request));
 
         verify(categoryRepository).findById(id);
         verify(categoryRepository).existsByNameAndIdNot("Duplicate Name", id);

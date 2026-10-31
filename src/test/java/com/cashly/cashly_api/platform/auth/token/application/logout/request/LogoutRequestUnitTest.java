@@ -20,22 +20,22 @@ class LogoutRequestUnitTest {
     @Test
     void should_ThrowException_When_RefreshTokenIsNull() {
         assertThatThrownBy(() -> new LogoutRequest(null))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Refresh token is required");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Refresh token is required");
     }
 
     @Test
     void should_ThrowException_When_RefreshTokenIsEmpty() {
         assertThatThrownBy(() -> new LogoutRequest(""))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Refresh token is required");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Refresh token is required");
     }
 
     @Test
     void should_ThrowException_When_RefreshTokenIsBlank() {
         assertThatThrownBy(() -> new LogoutRequest("   "))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Refresh token is required");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Refresh token is required");
     }
 
     @Test

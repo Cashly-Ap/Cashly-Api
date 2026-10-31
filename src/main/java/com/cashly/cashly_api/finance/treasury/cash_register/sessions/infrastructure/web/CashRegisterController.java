@@ -36,10 +36,10 @@ public class CashRegisterController {
     private final RecordCashMovementUseCase recordCashMovementUseCase;
 
     public CashRegisterController(OpenRegisterUseCase openRegisterUseCase,
-                                  GetActiveRegisterUseCase getActiveRegisterUseCase,
-                                  CloseRegisterUseCase closeRegisterUseCase,
-                                  GetRegisterHistoryUseCase getRegisterHistoryUseCase,
-                                  RecordCashMovementUseCase recordCashMovementUseCase) {
+            GetActiveRegisterUseCase getActiveRegisterUseCase,
+            CloseRegisterUseCase closeRegisterUseCase,
+            GetRegisterHistoryUseCase getRegisterHistoryUseCase,
+            RecordCashMovementUseCase recordCashMovementUseCase) {
         this.openRegisterUseCase = openRegisterUseCase;
         this.getActiveRegisterUseCase = getActiveRegisterUseCase;
         this.closeRegisterUseCase = closeRegisterUseCase;
@@ -53,8 +53,8 @@ public class CashRegisterController {
             @Valid @RequestBody OpenRegisterRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CashRegisterResponse response = openRegisterUseCase.execute(userId, request.openedByName(),
-                request.openingBalance());
+        CashRegisterResponse response = openRegisterUseCase.execute(userId,
+                request.openedByName(), request.openingBalance());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -66,13 +66,13 @@ public class CashRegisterController {
 
     @PostMapping("/{id}/close")
     @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
-    public ResponseEntity<CashRegisterResponse> close(
-            @PathVariable UUID id,
+    public ResponseEntity<CashRegisterResponse> close(@PathVariable UUID id,
             @Valid @RequestBody CloseRegisterRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CashRegisterResponse response = closeRegisterUseCase.execute(id, userId, request.closedByName(),
-                request.declaredBalance(), request.closingNotes());
+        CashRegisterResponse response = closeRegisterUseCase.execute(id, userId,
+                request.closedByName(), request.declaredBalance(),
+                request.closingNotes());
         return ResponseEntity.ok(response);
     }
 
@@ -96,11 +96,20 @@ public class CashRegisterController {
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo,
             @RequestParam(defaultValue = "false") boolean detailed) {
-        var history = getRegisterHistoryUseCase.execute(page, size, sort, dateFrom, dateTo, detailed);
-        String[] sortParts = sort == null || sort.isBlank() ? new String[0] : sort.split(",");
-        Sort historySort = sortParts.length == 0 ? Sort.unsorted() : sortParts.length < 2 ? Sort.by(sortParts[0].trim())
-                : Sort.by(Sort.Direction.fromString(sortParts[1].trim()), sortParts[0].trim());
+        var history = getRegisterHistoryUseCase.execute(page, size, sort,
+                dateFrom, dateTo, detailed);
+        String[] sortParts = sort == null || sort.isBlank()
+                ? new String[0]
+                : sort.split(",");
+        Sort historySort = sortParts.length == 0
+                ? Sort.unsorted()
+                : sortParts.length < 2
+                        ? Sort.by(sortParts[0].trim())
+                        : Sort.by(
+                                Sort.Direction.fromString(sortParts[1].trim()),
+                                sortParts[0].trim());
         return ResponseEntity.ok(new PageImpl<>(history.content(),
-                PageRequest.of(page, size, historySort), history.totalElements()));
+                PageRequest.of(page, size, historySort),
+                history.totalElements()));
     }
 }

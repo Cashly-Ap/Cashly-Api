@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("DebitNoteMapper Unit Tests")
 class DebitNoteMapperTest {
 
-    private static final DebitNoteNumber NOTE_NUMBER = DebitNoteNumber.of(2026, 1);
+    private static final DebitNoteNumber NOTE_NUMBER = DebitNoteNumber.of(2026,
+            1);
     private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final UUID INVOICE_ID = UUID.randomUUID();
     private static final BigDecimal AMOUNT = new BigDecimal("50.00");
@@ -27,8 +28,8 @@ class DebitNoteMapperTest {
     private static final String INVOICE_NUMBER = "FAC-001";
 
     private DebitNote createDebitNote() {
-        return DebitNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+        return DebitNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID, AMOUNT,
+                REASON, CREATED_BY, CREATED_BY_NAME);
     }
 
     @Nested
@@ -40,8 +41,7 @@ class DebitNoteMapperTest {
             DebitNote debitNote = createDebitNote();
 
             DebitNoteResponse response = DebitNoteMapper.toDebitNoteResponse(
-                    debitNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER
-            );
+                    debitNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER);
 
             assertEquals(debitNote.getId().value(), response.id());
             assertEquals(NOTE_NUMBER.value(), response.noteNumber());
@@ -62,9 +62,8 @@ class DebitNoteMapperTest {
         void should_MapWithNullRelations() {
             DebitNote debitNote = createDebitNote();
 
-            DebitNoteResponse response = DebitNoteMapper.toDebitNoteResponse(
-                    debitNote, null, null, null
-            );
+            DebitNoteResponse response = DebitNoteMapper
+                    .toDebitNoteResponse(debitNote, null, null, null);
 
             assertNull(response.customerName());
             assertNull(response.customerRif());
@@ -76,8 +75,7 @@ class DebitNoteMapperTest {
             DebitNote debitNote = createDebitNote();
 
             DebitNoteResponse response = DebitNoteMapper.toDebitNoteResponse(
-                    debitNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER
-            );
+                    debitNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER);
 
             assertEquals(AMOUNT, response.amount());
             assertEquals(REASON, response.reason());

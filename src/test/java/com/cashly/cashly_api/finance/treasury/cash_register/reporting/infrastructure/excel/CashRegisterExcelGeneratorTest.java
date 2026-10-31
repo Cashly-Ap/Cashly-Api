@@ -38,23 +38,26 @@ class CashRegisterExcelGeneratorTest {
     @DisplayName("Should generate Excel with data rows grouped by module")
     void shouldGenerateExcelWithDataRows() {
         List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(500), BigDecimal.valueOf(300), BigDecimal.valueOf(200),
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente A", MODULE_VENTAS, 1),
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-002", BigDecimal.valueOf(2000),
-                        BigDecimal.valueOf(2000), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente B", MODULE_VENTAS, 2),
-                CashRegisterExportRow.of(TEST_DATE, "PAG", "PAY-001", BigDecimal.valueOf(500),
-                        BigDecimal.valueOf(500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente C", MODULE_CXC, 1001),
-                CashRegisterExportRow.of(TEST_DATE, "NC", "NC-001", BigDecimal.valueOf(150),
+                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001",
+                        BigDecimal.valueOf(1000), BigDecimal.valueOf(500),
+                        BigDecimal.valueOf(300), BigDecimal.valueOf(200),
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.valueOf(150), BigDecimal.ZERO,
-                        "Cliente D", MODULE_CAJA, 2001)
-        );
+                        BigDecimal.ZERO, "Cliente A", MODULE_VENTAS, 1),
+                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-002",
+                        BigDecimal.valueOf(2000), BigDecimal.valueOf(2000),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente B", MODULE_VENTAS, 2),
+                CashRegisterExportRow.of(TEST_DATE, "PAG", "PAY-001",
+                        BigDecimal.valueOf(500), BigDecimal.valueOf(500),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente C", MODULE_CXC, 1001),
+                CashRegisterExportRow.of(TEST_DATE, "NC", "NC-001",
+                        BigDecimal.valueOf(150), BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.valueOf(150),
+                        BigDecimal.ZERO, "Cliente D", MODULE_CAJA, 2001));
 
         byte[] excelBytes = generator.generateExcel(rows);
 
@@ -78,12 +81,11 @@ class CashRegisterExcelGeneratorTest {
     @Test
     @DisplayName("Should handle single module data correctly")
     void shouldHandleSingleModule() {
-        List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1500),
-                        BigDecimal.valueOf(1500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Test", MODULE_VENTAS, 1)
-        );
+        List<CashRegisterExportRow> rows = List.of(CashRegisterExportRow.of(
+                TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1500),
+                BigDecimal.valueOf(1500), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, "Test", MODULE_VENTAS, 1));
 
         byte[] excelBytes = generator.generateExcel(rows);
 
@@ -94,12 +96,11 @@ class CashRegisterExcelGeneratorTest {
     @Test
     @DisplayName("Should handle REI (Reintegro) document type")
     void shouldHandleReintegroDocumentType() {
-        List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "REI", "REI-001", BigDecimal.valueOf(100),
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente Reintegro", MODULE_CAJA, 1)
-        );
+        List<CashRegisterExportRow> rows = List.of(CashRegisterExportRow.of(
+                TEST_DATE, "REI", "REI-001", BigDecimal.valueOf(100),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, "Cliente Reintegro", MODULE_CAJA, 1));
 
         byte[] excelBytes = generator.generateExcel(rows);
 
@@ -110,13 +111,12 @@ class CashRegisterExcelGeneratorTest {
     @Test
     @DisplayName("Should handle all payment method distributions")
     void shouldHandleAllPaymentMethods() {
-        List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(5000),
-                        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(500), BigDecimal.valueOf(500), BigDecimal.ZERO,
-                        "Multi Pago", MODULE_VENTAS, 1)
-        );
+        List<CashRegisterExportRow> rows = List.of(CashRegisterExportRow.of(
+                TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(5000),
+                BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(500), BigDecimal.valueOf(500),
+                BigDecimal.ZERO, "Multi Pago", MODULE_VENTAS, 1));
 
         byte[] excelBytes = generator.generateExcel(rows);
 
@@ -127,23 +127,17 @@ class CashRegisterExcelGeneratorTest {
     @Test
     @DisplayName("Should generate simple Excel without errors")
     void shouldGenerateSimpleExcel() {
-        var detail1 = CashRegisterDetail.create(
-                UUID.randomUUID(), "Efectivo", 5, BigDecimal.valueOf(2500));
-        var detail2 = CashRegisterDetail.create(
-                UUID.randomUUID(), "Transferencia", 3, BigDecimal.valueOf(1500));
+        var detail1 = CashRegisterDetail.create(UUID.randomUUID(), "Efectivo",
+                5, BigDecimal.valueOf(2500));
+        var detail2 = CashRegisterDetail.create(UUID.randomUUID(),
+                "Transferencia", 3, BigDecimal.valueOf(1500));
         var details = List.of(detail1, detail2);
 
-        var totals = new DailyTotals(
-                BigDecimal.valueOf(4000), 8,
-                BigDecimal.ZERO, 0,
-                BigDecimal.valueOf(1000), 2,
+        var totals = new DailyTotals(BigDecimal.valueOf(4000), 8,
+                BigDecimal.ZERO, 0, BigDecimal.valueOf(1000), 2,
                 BigDecimal.valueOf(300), BigDecimal.ZERO,
-                BigDecimal.valueOf(3500), 5,
-                BigDecimal.valueOf(3500),
-                BigDecimal.valueOf(4000),
-                BigDecimal.valueOf(1300),
-                details
-        );
+                BigDecimal.valueOf(3500), 5, BigDecimal.valueOf(3500),
+                BigDecimal.valueOf(4000), BigDecimal.valueOf(1300), details);
 
         byte[] excelBytes = generator.generateSimpleExcel(details, totals);
 
@@ -160,8 +154,7 @@ class CashRegisterExcelGeneratorTest {
                         BigDecimal.valueOf(4600)),
                 new CustomerSummary("Cliente B", BigDecimal.valueOf(3000),
                         BigDecimal.valueOf(3000), BigDecimal.ZERO,
-                        BigDecimal.valueOf(3000))
-        );
+                        BigDecimal.valueOf(3000)));
 
         byte[] excelBytes = generator.generateGroupedExcel(summaries);
 
@@ -170,7 +163,8 @@ class CashRegisterExcelGeneratorTest {
     }
 
     private void verifyExcelContent(byte[] excelBytes, int expectedDataRows) {
-        try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(excelBytes))) {
+        try (Workbook workbook = new XSSFWorkbook(
+                new ByteArrayInputStream(excelBytes))) {
             Sheet sheet = workbook.getSheetAt(0);
             assertNotNull(sheet);
 

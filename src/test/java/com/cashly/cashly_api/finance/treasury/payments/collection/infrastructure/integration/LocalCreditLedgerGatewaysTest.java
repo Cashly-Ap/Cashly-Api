@@ -25,7 +25,9 @@ class LocalCreditLedgerGatewaysTest {
         UUID id = UUID.randomUUID();
         var gateway = new LocalCustomerCreditContextGateway(query);
         assertThat(gateway.findById(id)).isEmpty();
-        when(query.findById(id)).thenReturn(Optional.of(new CustomerCreditContextEntry(id, "Customer", "RIF", new BigDecimal("200"), new BigDecimal("50"))));
+        when(query.findById(id)).thenReturn(
+                Optional.of(new CustomerCreditContextEntry(id, "Customer",
+                        "RIF", new BigDecimal("200"), new BigDecimal("50"))));
         var result = gateway.findById(id).orElseThrow();
         assertThat(result.customerId()).isEqualTo(id);
         assertThat(result.name()).isEqualTo("Customer");
@@ -37,7 +39,9 @@ class LocalCreditLedgerGatewaysTest {
     void should_map_customer_and_global_invoice_queries_without_foreign_models() {
         var query = mock(InvoiceCreditLedgerQuery.class);
         UUID customerId = UUID.randomUUID();
-        var entry = new InvoiceCreditLedgerEntry(UUID.randomUUID(), "INV-01", true, new BigDecimal("100"), new BigDecimal("20"), LocalDate.now());
+        var entry = new InvoiceCreditLedgerEntry(UUID.randomUUID(), "INV-01",
+                true, new BigDecimal("100"), new BigDecimal("20"),
+                LocalDate.now());
         when(query.findByCustomerId(customerId)).thenReturn(List.of(entry));
         when(query.findAll()).thenReturn(List.of(entry));
         var gateway = new LocalInvoiceCreditLedgerGateway(query);
@@ -55,9 +59,15 @@ class LocalCreditLedgerGatewaysTest {
         UUID invoiceId = UUID.randomUUID();
         var credits = mock(CreditNoteLedgerQuery.class);
         var debits = mock(DebitNoteLedgerQuery.class);
-        when(credits.amountsByInvoiceId(invoiceId)).thenReturn(List.of(new BigDecimal("40")));
-        when(debits.amountsByInvoiceId(invoiceId)).thenReturn(List.of(new BigDecimal("10")));
-        assertThat(new LocalCreditNoteLedgerGateway(credits).amountsByInvoiceId(invoiceId)).containsExactly(new BigDecimal("40"));
-        assertThat(new LocalDebitNoteLedgerGateway(debits).amountsByInvoiceId(invoiceId)).containsExactly(new BigDecimal("10"));
+        when(credits.amountsByInvoiceId(invoiceId))
+                .thenReturn(List.of(new BigDecimal("40")));
+        when(debits.amountsByInvoiceId(invoiceId))
+                .thenReturn(List.of(new BigDecimal("10")));
+        assertThat(new LocalCreditNoteLedgerGateway(credits)
+                .amountsByInvoiceId(invoiceId))
+                .containsExactly(new BigDecimal("40"));
+        assertThat(new LocalDebitNoteLedgerGateway(debits)
+                .amountsByInvoiceId(invoiceId))
+                .containsExactly(new BigDecimal("10"));
     }
 }

@@ -27,7 +27,8 @@ class GetCategoryUseCaseTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Mock private CategoryUsageGateway usageGateway;
+    @Mock
+    private CategoryUsageGateway usageGateway;
 
     @Mock
     private CategoryMapper categoryMapper;
@@ -38,9 +39,8 @@ class GetCategoryUseCaseTest {
     @Test
     void should_ReturnDetailWithProductCount_When_CategoryExists() {
         UUID id = UUID.randomUUID();
-        Category category = Category.reconstitute(
-                id, "Test Category", "Description", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category category = Category.reconstitute(id, "Test Category",
+                "Description", true, LocalDateTime.now(), LocalDateTime.now());
 
         CategoryDetailResponse expectedResponse = new CategoryDetailResponse(
                 id.toString(), "Test Category", "Description", true, 5L,
@@ -48,7 +48,8 @@ class GetCategoryUseCaseTest {
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
         when(usageGateway.countActiveProductsByCategory(id)).thenReturn(5L);
-        when(categoryMapper.toDetailResponse(category, 5L)).thenReturn(expectedResponse);
+        when(categoryMapper.toDetailResponse(category, 5L))
+                .thenReturn(expectedResponse);
 
         CategoryDetailResponse result = useCase.execute(id);
 
@@ -66,7 +67,8 @@ class GetCategoryUseCaseTest {
 
         when(categoryRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(CategoryNotFoundException.class, () -> useCase.execute(id));
+        assertThrows(CategoryNotFoundException.class,
+                () -> useCase.execute(id));
 
         verify(categoryRepository).findById(id);
         verify(usageGateway, never()).countActiveProductsByCategory(any());

@@ -35,19 +35,17 @@ class CreateWarehouseUseCaseTest {
     @Test
     @DisplayName("creates warehouse, saves, returns detail")
     void shouldCreateWarehouseAndReturnDetail() {
-        CreateWarehouseRequest request = new CreateWarehouseRequest(
-                "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001"
-        );
+        CreateWarehouseRequest request = new CreateWarehouseRequest("WH-001",
+                "Main Warehouse", "123 Main St", "State A", "Municipality B",
+                "10001");
 
         when(warehouseRepository.existsByCode("WH-001")).thenReturn(false);
         when(warehouseRepository.save(any(Warehouse.class))).thenAnswer(inv -> {
             Warehouse w = inv.getArgument(0);
-            return Warehouse.reconstitute(
-                    UUID.randomUUID(), w.getCode(), w.getName(), w.getAddress(),
-                    w.getState(), w.getMunicipality(), w.getPostalCode(),
-                    w.isActive(), w.getCreatedAt(), w.getUpdatedAt()
-            );
+            return Warehouse.reconstitute(UUID.randomUUID(), w.getCode(),
+                    w.getName(), w.getAddress(), w.getState(),
+                    w.getMunicipality(), w.getPostalCode(), w.isActive(),
+                    w.getCreatedAt(), w.getUpdatedAt());
         });
 
         WarehouseDetailResponse response = useCase.execute(request);
@@ -64,14 +62,14 @@ class CreateWarehouseUseCaseTest {
     @Test
     @DisplayName("throws DuplicateWarehouseCodeException when code exists")
     void shouldThrowWhenCodeAlreadyExists() {
-        CreateWarehouseRequest request = new CreateWarehouseRequest(
-                "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001"
-        );
+        CreateWarehouseRequest request = new CreateWarehouseRequest("WH-001",
+                "Main Warehouse", "123 Main St", "State A", "Municipality B",
+                "10001");
 
         when(warehouseRepository.existsByCode("WH-001")).thenReturn(true);
 
-        assertThrows(DuplicateWarehouseCodeException.class, () -> useCase.execute(request));
+        assertThrows(DuplicateWarehouseCodeException.class,
+                () -> useCase.execute(request));
 
         verify(warehouseRepository).existsByCode("WH-001");
         verify(warehouseRepository, never()).save(any());
@@ -81,18 +79,16 @@ class CreateWarehouseUseCaseTest {
     @DisplayName("code is trimmed and uppercased")
     void shouldTrimAndUppercaseCode() {
         CreateWarehouseRequest request = new CreateWarehouseRequest(
-                "  wh-001  ", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001"
-        );
+                "  wh-001  ", "Main Warehouse", "123 Main St", "State A",
+                "Municipality B", "10001");
 
         when(warehouseRepository.existsByCode("WH-001")).thenReturn(false);
         when(warehouseRepository.save(any(Warehouse.class))).thenAnswer(inv -> {
             Warehouse w = inv.getArgument(0);
-            return Warehouse.reconstitute(
-                    UUID.randomUUID(), w.getCode(), w.getName(), w.getAddress(),
-                    w.getState(), w.getMunicipality(), w.getPostalCode(),
-                    w.isActive(), w.getCreatedAt(), w.getUpdatedAt()
-            );
+            return Warehouse.reconstitute(UUID.randomUUID(), w.getCode(),
+                    w.getName(), w.getAddress(), w.getState(),
+                    w.getMunicipality(), w.getPostalCode(), w.isActive(),
+                    w.getCreatedAt(), w.getUpdatedAt());
         });
 
         WarehouseDetailResponse response = useCase.execute(request);

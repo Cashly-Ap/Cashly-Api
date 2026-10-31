@@ -11,7 +11,8 @@ class ProductReferenceQueryBoundaryTest {
         for (var method : SpringDataProductRepository.class.getMethods()) {
             Query query = method.getAnnotation(Query.class);
             if (query != null) {
-                for (String table : List.of("order_lines", "warehouse_stock", "stock_movements", "invoice_lines", "return_lines")) {
+                for (String table : List.of("order_lines", "warehouse_stock",
+                        "stock_movements", "invoice_lines", "return_lines")) {
                     assertFalse(query.value().contains(table), table);
                 }
             }

@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class LocalProductWarehouseStockGatewayAdapter implements ProductWarehouseStockGateway {
+public class LocalProductWarehouseStockGatewayAdapter
+        implements
+            ProductWarehouseStockGateway {
     private final ProductStockQuery stocks;
 
     public LocalProductWarehouseStockGatewayAdapter(ProductStockQuery stocks) {
@@ -16,8 +18,12 @@ public class LocalProductWarehouseStockGatewayAdapter implements ProductWarehous
 
     @Override
     public List<Stock> findByProductId(UUID productId) {
-        return stocks.findByProductId(productId).stream().map(stock -> new Stock(stock.warehouseId(),
-                stock.warehouseCode(), stock.warehouseName(), stock.warehouseExists(), stock.quantity(),
-                stock.reserved(), stock.available(), stock.lastMovementAt())).toList();
+        return stocks.findByProductId(productId).stream()
+                .map(stock -> new Stock(stock.warehouseId(),
+                        stock.warehouseCode(), stock.warehouseName(),
+                        stock.warehouseExists(), stock.quantity(),
+                        stock.reserved(), stock.available(),
+                        stock.lastMovementAt()))
+                .toList();
     }
 }

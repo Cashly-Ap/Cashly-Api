@@ -15,7 +15,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface SpringDataUserRepository extends JpaRepository<UserEntity, UUID> {
+public interface SpringDataUserRepository
+        extends
+            JpaRepository<UserEntity, UUID> {
 
     Optional<UserEntity> findByEmail(String email);
 
@@ -27,32 +29,28 @@ public interface SpringDataUserRepository extends JpaRepository<UserEntity, UUID
     List<UserEntity> findByRole(UserRole role);
 
     @Query("""
-        SELECT u FROM UserEntity u
-        WHERE (:search IS NULL OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
-        AND (:roleId IS NULL OR u.roleId = :roleId)
-        AND (:active IS NULL OR u.active = :active)
-        AND (:excludeId IS NULL OR u.id != :excludeId)
-        """)
-    Page<UserEntity> findAllWithFilters(
-        @Param("search") String search,
-        @Param("roleId") UUID roleId,
-        @Param("active") Boolean active,
-        @Param("excludeId") UUID excludeId,
-        Pageable pageable
-    );
+            SELECT u FROM UserEntity u
+            WHERE (:search IS NULL OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (:roleId IS NULL OR u.roleId = :roleId)
+            AND (:active IS NULL OR u.active = :active)
+            AND (:excludeId IS NULL OR u.id != :excludeId)
+            """)
+    Page<UserEntity> findAllWithFilters(@Param("search") String search,
+            @Param("roleId") UUID roleId, @Param("active") Boolean active,
+            @Param("excludeId") UUID excludeId, Pageable pageable);
 
     @Query("""
-        SELECT u.id FROM UserEntity u WHERE u.id IN :ids AND (
-          EXISTS (SELECT 1 FROM OrderEntity o WHERE o.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM QuoteJpaEntity q WHERE q.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM PaymentEntity p WHERE p.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM ReturnEntity r WHERE r.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM CreditNoteEntity cn WHERE cn.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM DebitNoteEntity dn WHERE dn.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM BalanceTransactionEntity bt WHERE bt.createdBy = u.id)
-          OR EXISTS (SELECT 1 FROM PurchaseEntity pch WHERE pch.createdBy = u.id)
-        )
-        """)
+            SELECT u.id FROM UserEntity u WHERE u.id IN :ids AND (
+              EXISTS (SELECT 1 FROM OrderEntity o WHERE o.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM QuoteJpaEntity q WHERE q.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM PaymentEntity p WHERE p.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM ReturnEntity r WHERE r.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM CreditNoteEntity cn WHERE cn.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM DebitNoteEntity dn WHERE dn.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM BalanceTransactionEntity bt WHERE bt.createdBy = u.id)
+              OR EXISTS (SELECT 1 FROM PurchaseEntity pch WHERE pch.createdBy = u.id)
+            )
+            """)
     Set<UUID> findIdsWithAssociatedRecords(@Param("ids") Set<UUID> ids);
 }

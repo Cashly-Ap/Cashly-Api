@@ -17,17 +17,16 @@ class PaymentHistoryReportDataTest {
     @Test
     @DisplayName("should create payment history data with all fields")
     void should_create_payment_history_data() {
-        var row = new PaymentHistoryReportData.PaymentHistoryRow(
-                "PAG-001", "Customer A", "APPLIED", "CASH",
-                BigDecimal.valueOf(1000), LocalDateTime.of(2026, 6, 15, 10, 30), "COMPLETED");
+        var row = new PaymentHistoryReportData.PaymentHistoryRow("PAG-001",
+                "Customer A", "APPLIED", "CASH", BigDecimal.valueOf(1000),
+                LocalDateTime.of(2026, 6, 15, 10, 30), "COMPLETED");
 
-        var summary = new PaymentHistoryReportData.Summary(
-                5, BigDecimal.valueOf(5000), 3, 2);
+        var summary = new PaymentHistoryReportData.Summary(5,
+                BigDecimal.valueOf(5000), 3, 2);
 
-        var data = new PaymentHistoryReportData(
-                LocalDate.of(2026, 1, 1), LocalDate.of(2026, 12, 31),
-                UUID.randomUUID(), "APPLIED", "CASH",
-                List.of(row), summary);
+        var data = new PaymentHistoryReportData(LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 12, 31), UUID.randomUUID(), "APPLIED",
+                "CASH", List.of(row), summary);
 
         assertEquals(LocalDate.of(2026, 1, 1), data.dateFrom());
         assertEquals(LocalDate.of(2026, 12, 31), data.dateTo());
@@ -39,10 +38,11 @@ class PaymentHistoryReportDataTest {
     @Test
     @DisplayName("should create payment history data with null filters")
     void should_create_payment_history_data_with_null_filters() {
-        var summary = new PaymentHistoryReportData.Summary(0, BigDecimal.ZERO, 0, 0);
+        var summary = new PaymentHistoryReportData.Summary(0, BigDecimal.ZERO,
+                0, 0);
 
-        var data = new PaymentHistoryReportData(
-                null, null, null, null, null, List.of(), summary);
+        var data = new PaymentHistoryReportData(null, null, null, null, null,
+                List.of(), summary);
 
         assertNull(data.dateFrom());
         assertNull(data.customerId());

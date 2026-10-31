@@ -13,7 +13,8 @@ public class CreateCategoryUseCase {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public CreateCategoryUseCase(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CreateCategoryUseCase(CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
@@ -23,7 +24,8 @@ public class CreateCategoryUseCase {
         if (categoryRepository.existsByName(request.name().trim())) {
             throw new DuplicateCategoryNameException(request.name());
         }
-        Category category = Category.create(request.name().trim(), request.description());
+        Category category = Category.create(request.name().trim(),
+                request.description());
         Category saved = categoryRepository.save(category);
         return categoryMapper.toDetailResponse(saved, 0L);
     }

@@ -34,9 +34,13 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
 
     private final PdfBranding branding;
 
-    public MovementsPdfGenerator() { this(new PdfBranding()); }
+    public MovementsPdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public MovementsPdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public MovementsPdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
@@ -53,40 +57,56 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph(ReportMessages.text("inventory.warehouses.reports.stockMovementHistory"))
-                    .setFont(bold)
-                    .setFontSize(18)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(4);
+            Paragraph title = new Paragraph(ReportMessages
+                    .text("inventory.warehouses.reports.stockMovementHistory"))
+                    .setFont(bold).setFontSize(18)
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(4);
 
-            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
-            Paragraph subtitle = new Paragraph(ReportMessages.text("inventory.warehouses.reports.generatedOn") + fecha)
-                    .setFont(regular)
-                    .setFontSize(10)
+            String fecha = LocalDate.now()
+                    .format(ReportMessages.dateFormatter());
+            Paragraph subtitle = new Paragraph(ReportMessages
+                    .text("inventory.warehouses.reports.generatedOn") + fecha)
+                    .setFont(regular).setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(16);
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(16);
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
             document.add(subtitle);
 
-            float[] columnWidths = {2f, 2.5f, 3f, 1.5f, 2f, 1.2f, 1.5f, 1.5f, 3f};
+            float[] columnWidths = {2f, 2.5f, 3f, 1.5f, 2f, 1.2f, 1.5f, 1.5f,
+                    3f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths))
                     .useAllAvailableWidth();
 
-            String[] headers = {ReportMessages.text("inventory.warehouses.reports.date"), ReportMessages.text("inventory.warehouses.reports.warehouse"), ReportMessages.text("inventory.warehouses.reports.product"), ReportMessages.text("inventory.warehouses.reports.sku"), ReportMessages.text("inventory.warehouses.reports.type"), ReportMessages.text("inventory.warehouses.reports.quantity"), ReportMessages.text("inventory.warehouses.reports.previousStock"), ReportMessages.text("inventory.warehouses.reports.newStock"), ReportMessages.text("inventory.warehouses.reports.notes")};
+            String[] headers = {
+                    ReportMessages.text("inventory.warehouses.reports.date"),
+                    ReportMessages
+                            .text("inventory.warehouses.reports.warehouse"),
+                    ReportMessages.text("inventory.warehouses.reports.product"),
+                    ReportMessages.text("inventory.warehouses.reports.sku"),
+                    ReportMessages.text("inventory.warehouses.reports.type"),
+                    ReportMessages
+                            .text("inventory.warehouses.reports.quantity"),
+                    ReportMessages
+                            .text("inventory.warehouses.reports.previousStock"),
+                    ReportMessages
+                            .text("inventory.warehouses.reports.newStock"),
+                    ReportMessages.text("inventory.warehouses.reports.notes")};
             for (String h : headers) {
                 Cell headerCell = new Cell()
-                        .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                        .add(new Paragraph(h).setFont(bold).setFontSize(9)
+                                .setFontColor(HEADER_TEXT))
                         .setBackgroundColor(HEADER_BG)
-                        .setTextAlignment(TextAlignment.CENTER)
-                        .setPadding(6);
+                        .setTextAlignment(TextAlignment.CENTER).setPadding(6);
                 table.addHeaderCell(headerCell);
             }
 
@@ -97,15 +117,27 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 
-                addCell(table, item.createdAt() != null ? item.createdAt().format(dtf) : "-", regular, rowColor, TextAlignment.CENTER);
-                addCell(table, item.warehouseName(), regular, rowColor, TextAlignment.LEFT);
-                addCell(table, item.productName(), regular, rowColor, TextAlignment.LEFT);
-                addCell(table, item.sku(), regular, rowColor, TextAlignment.CENTER);
-                addCell(table, ReportMessages.code(item.movementType()), regular, rowColor, TextAlignment.CENTER);
-                addCell(table, String.valueOf(item.quantity()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, String.valueOf(item.previousStock()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, String.valueOf(item.newStock()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, item.notes() != null ? item.notes() : "-", regular, rowColor, TextAlignment.LEFT);
+                addCell(table,
+                        item.createdAt() != null
+                                ? item.createdAt().format(dtf)
+                                : "-",
+                        regular, rowColor, TextAlignment.CENTER);
+                addCell(table, item.warehouseName(), regular, rowColor,
+                        TextAlignment.LEFT);
+                addCell(table, item.productName(), regular, rowColor,
+                        TextAlignment.LEFT);
+                addCell(table, item.sku(), regular, rowColor,
+                        TextAlignment.CENTER);
+                addCell(table, ReportMessages.code(item.movementType()),
+                        regular, rowColor, TextAlignment.CENTER);
+                addCell(table, String.valueOf(item.quantity()), regular,
+                        rowColor, TextAlignment.RIGHT);
+                addCell(table, String.valueOf(item.previousStock()), regular,
+                        rowColor, TextAlignment.RIGHT);
+                addCell(table, String.valueOf(item.newStock()), regular,
+                        rowColor, TextAlignment.RIGHT);
+                addCell(table, item.notes() != null ? item.notes() : "-",
+                        regular, rowColor, TextAlignment.LEFT);
             }
 
             document.add(table);
@@ -116,14 +148,13 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
         return baos.toByteArray();
     }
 
-    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg,
+            TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "").setFont(font).setFontSize(8))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(5)
-                .setPaddingRight(5);
+                .add(new Paragraph(text != null ? text : "").setFont(font)
+                        .setFontSize(8))
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(5).setPaddingRight(5);
         if (bg != null) {
             cell.setBackgroundColor(bg);
         }
@@ -146,19 +177,20 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("inventory.warehouses.reports.page") + pageNumber + ReportMessages.text("inventory.warehouses.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
+                        new Paragraph(ReportMessages
+                                .text("inventory.warehouses.reports.page")
+                                + pageNumber
+                                + ReportMessages
+                                        .text("inventory.warehouses.reports.of")
+                                + totalPages).setFont(font).setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

@@ -2,7 +2,6 @@ package com.cashly.cashly_api.finance.billing.invoices.reporting.application.gen
 
 import com.cashly.cashly_api.finance.billing.invoices.reporting.application.dto.model.InvoiceReportFilter;
 
-
 public interface GenerateInvoicesReportPdfUseCase {
     byte[] execute(InvoiceReportFilter filter, String mode);
 }

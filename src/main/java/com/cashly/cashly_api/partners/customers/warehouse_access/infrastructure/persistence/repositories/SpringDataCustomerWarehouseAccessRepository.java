@@ -8,9 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SpringDataCustomerWarehouseAccessRepository
-        extends JpaRepository<CustomerWarehouseAccessEntity, UUID> {
+        extends
+            JpaRepository<CustomerWarehouseAccessEntity, UUID> {
 
-    Optional<CustomerWarehouseAccessEntity> findByCustomerIdAndWarehouseId(UUID customerId, UUID warehouseId);
+    Optional<CustomerWarehouseAccessEntity> findByCustomerIdAndWarehouseId(
+            UUID customerId, UUID warehouseId);
 
     List<CustomerWarehouseAccessEntity> findByCustomerId(UUID customerId);
 

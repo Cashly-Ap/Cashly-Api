@@ -16,7 +16,8 @@ public record ReturnNumber(String value) {
 
     public static ReturnNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
         return new ReturnNumber(String.format(FORMAT, PREFIX, year, sequence));
     }

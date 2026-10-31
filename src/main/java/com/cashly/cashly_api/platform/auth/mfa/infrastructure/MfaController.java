@@ -24,16 +24,22 @@ public class MfaController {
         this.mfa = mfa;
     }
 
-    public record PasswordRequest(@NotBlank @Size(max = 128) String password) {}
-    public record CodeRequest(@NotBlank @Size(max = 64) String code) {}
+    public record PasswordRequest(@NotBlank @Size(max = 128) String password) {
+    }
+    public record CodeRequest(@NotBlank @Size(max = 64) String code) {
+    }
     public record DisableRequest(@NotBlank @Size(max = 128) String password,
-        @NotBlank @Size(max = 64) String code) {}
-    public record VerifyRequest(@NotBlank @Size(max = 128) String challengeToken,
-        @NotBlank @Size(max = 64) String code) {}
+            @NotBlank @Size(max = 64) String code) {
+    }
+    public record VerifyRequest(
+            @NotBlank @Size(max = 128) String challengeToken,
+            @NotBlank @Size(max = 64) String code) {
+    }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MfaService.Status> status(Authentication authentication) {
+    public ResponseEntity<MfaService.Status> status(
+            Authentication authentication) {
         return noStore(mfa.status(authentication.getName()));
     }
 
@@ -46,7 +52,8 @@ public class MfaController {
 
     @PostMapping("/enable")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MfaService.RecoveryCodes> enable(Authentication authentication,
+    public ResponseEntity<MfaService.RecoveryCodes> enable(
+            Authentication authentication,
             @Valid @RequestBody CodeRequest request) {
         return noStore(mfa.enable(authentication.getName(), request.code()));
     }
@@ -55,17 +62,20 @@ public class MfaController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> disable(Authentication authentication,
             @Valid @RequestBody DisableRequest request) {
-        mfa.disable(authentication.getName(), request.password(), request.code());
+        mfa.disable(authentication.getName(), request.password(),
+                request.code());
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/verify")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<AuthenticationResponse> verify(@Valid @RequestBody VerifyRequest request) {
+    public ResponseEntity<AuthenticationResponse> verify(
+            @Valid @RequestBody VerifyRequest request) {
         return noStore(mfa.verify(request.challengeToken(), request.code()));
     }
 
     private <T> ResponseEntity<T> noStore(T body) {
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(body);
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .body(body);
     }
 }

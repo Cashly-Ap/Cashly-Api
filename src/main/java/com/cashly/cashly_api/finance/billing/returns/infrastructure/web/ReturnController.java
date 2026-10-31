@@ -29,9 +29,9 @@ public class ReturnController {
     private final DeleteReturnUseCase deleteReturnUseCase;
 
     public ReturnController(CreateReturnUseCase createReturnUseCase,
-                             GetAllReturnsUseCase getAllReturnsUseCase,
-                             GetReturnByIdUseCase getReturnByIdUseCase,
-                             DeleteReturnUseCase deleteReturnUseCase) {
+            GetAllReturnsUseCase getAllReturnsUseCase,
+            GetReturnByIdUseCase getReturnByIdUseCase,
+            DeleteReturnUseCase deleteReturnUseCase) {
         this.createReturnUseCase = createReturnUseCase;
         this.getAllReturnsUseCase = getAllReturnsUseCase;
         this.getReturnByIdUseCase = getReturnByIdUseCase;
@@ -44,7 +44,8 @@ public class ReturnController {
             @Valid @RequestBody CreateReturnRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        ReturnResponse response = createReturnUseCase.execute(request, userId, "User");
+        ReturnResponse response = createReturnUseCase.execute(request, userId,
+                "User");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -55,7 +56,8 @@ public class ReturnController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID invoiceId) {
-        List<ReturnListResponse> returns = getAllReturnsUseCase.execute(dateFrom, dateTo, customerId, invoiceId);
+        List<ReturnListResponse> returns = getAllReturnsUseCase
+                .execute(dateFrom, dateTo, customerId, invoiceId);
         return ResponseEntity.ok(returns);
     }
 
@@ -69,7 +71,7 @@ public class ReturnController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('FINANCES:DELETE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id,
-                                        Authentication authentication) {
+            Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         deleteReturnUseCase.execute(id, userId, "User");
         return ResponseEntity.noContent().build();

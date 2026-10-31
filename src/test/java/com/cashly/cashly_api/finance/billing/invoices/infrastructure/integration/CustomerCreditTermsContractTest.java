@@ -22,7 +22,8 @@ class CustomerCreditTermsContractTest {
         UUID customerId = UUID.randomUUID();
         Customer customer = mock(Customer.class);
         when(customer.getCreditDays()).thenReturn(new CreditDays(CREDIT_DAYS));
-        when(customers.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+        when(customers.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
         assertEquals(CREDIT_DAYS, gateway.creditDays(customerId));
         verify(customers).findById(new CustomerId(customerId));
     }
@@ -30,8 +31,10 @@ class CustomerCreditTermsContractTest {
     @Test
     void should_preserve_the_missing_customer_error() {
         UUID customerId = UUID.randomUUID();
-        when(customers.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customers.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.empty());
         assertEquals("Customer not found: " + customerId,
-                assertThrows(IllegalArgumentException.class, () -> gateway.creditDays(customerId)).getMessage());
+                assertThrows(IllegalArgumentException.class,
+                        () -> gateway.creditDays(customerId)).getMessage());
     }
 }

@@ -31,9 +31,8 @@ class DeleteDebitNoteUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        deleteDebitNoteUseCase = new DeleteDebitNoteUseCase(
-                debitNoteRepository, invoices
-        );
+        deleteDebitNoteUseCase = new DeleteDebitNoteUseCase(debitNoteRepository,
+                invoices);
     }
 
     @Nested

@@ -18,9 +18,10 @@ public class RefundCustomerBalanceUseCase {
     private final CustomerCashGateway cashGateway;
     private final CustomerActorGateway actorGateway;
 
-    public RefundCustomerBalanceUseCase(ConsumeCustomerBalanceUseCase consumeBalance,
-                                        CustomerCashGateway cashGateway,
-                                        CustomerActorGateway actorGateway) {
+    public RefundCustomerBalanceUseCase(
+            ConsumeCustomerBalanceUseCase consumeBalance,
+            CustomerCashGateway cashGateway,
+            CustomerActorGateway actorGateway) {
         this.consumeBalance = consumeBalance;
         this.cashGateway = cashGateway;
         this.actorGateway = actorGateway;
@@ -28,22 +29,24 @@ public class RefundCustomerBalanceUseCase {
 
     @Transactional
     public CustomerBalanceResponse execute(UUID customerId, BigDecimal amount,
-                                           UUID paymentMethodId, String notes, UUID userId) {
+            UUID paymentMethodId, String notes, UUID userId) {
         cashGateway.requireOpenRegister();
         String userName = userName(userId);
-        String description = notes == null || notes.isBlank() ? "Devolución de saldo a favor" : notes;
-        var mutation = consumeBalance.executeWithTransaction(
-                customerId, BalanceType.REFUND, amount, BalanceType.REFUND,
-                null, description, null, userId);
-        cashGateway.record(new CustomerCashMovement(
-                "OUT", "REFUND", amount, paymentMethodId, description,
-                "CUSTOMER_BALANCE", mutation.transactionId(), userId, userName));
+        String description = notes == null || notes.isBlank()
+                ? "Devolución de saldo a favor"
+                : notes;
+        var mutation = consumeBalance.executeWithTransaction(customerId,
+                BalanceType.REFUND, amount, BalanceType.REFUND, null,
+                description, null, userId);
+        cashGateway.record(new CustomerCashMovement("OUT", "REFUND", amount,
+                paymentMethodId, description, "CUSTOMER_BALANCE",
+                mutation.transactionId(), userId, userName));
         return mutation.balance();
     }
 
     private String userName(UUID userId) {
-        return actorGateway.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId))
+        return actorGateway.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("User not found: " + userId))
                 .name();
     }
 }

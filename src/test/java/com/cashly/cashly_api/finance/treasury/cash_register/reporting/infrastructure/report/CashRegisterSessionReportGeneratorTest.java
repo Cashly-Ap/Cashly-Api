@@ -29,18 +29,23 @@ class CashRegisterSessionReportGeneratorTest {
 
         try (var workbook = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
             var summary = workbook.getSheet("Resumen");
-            assertEquals("Facturación neta", summary.getRow(4).getCell(0).getStringCellValue());
-            assertEquals(125.0, summary.getRow(4).getCell(1).getNumericCellValue());
+            assertEquals("Facturación neta",
+                    summary.getRow(4).getCell(0).getStringCellValue());
+            assertEquals(125.0,
+                    summary.getRow(4).getCell(1).getNumericCellValue());
             var sheet = workbook.getSheet("Detalle");
-            assertEquals("Pago", sheet.getRow(1).getCell(2).getStringCellValue());
-            assertEquals(50.0, sheet.getRow(1).getCell(4).getNumericCellValue());
+            assertEquals("Pago",
+                    sheet.getRow(1).getCell(2).getStringCellValue());
+            assertEquals(50.0,
+                    sheet.getRow(1).getCell(4).getNumericCellValue());
         }
     }
 
     @Test
     void should_generate_valid_pdf_for_simple_and_detailed_views() {
         byte[] simple = generator.generatePdf(register(), ReportType.SIMPLE);
-        byte[] detailed = generator.generatePdf(register(), ReportType.DETAILED);
+        byte[] detailed = generator.generatePdf(register(),
+                ReportType.DETAILED);
 
         assertTrue(new String(simple, 0, 4).startsWith("%PDF"));
         assertTrue(new String(detailed, 0, 4).startsWith("%PDF"));
@@ -50,17 +55,19 @@ class CashRegisterSessionReportGeneratorTest {
     private CashRegisterResponse register() {
         UUID registerId = UUID.randomUUID();
         CashMovementResponse movement = new CashMovementResponse(
-                UUID.randomUUID(), CashMovementDirection.IN, CashMovementType.PAYMENT,
-                new BigDecimal("50.00"), UUID.randomUUID(), "Efectivo", "Cobro factura",
-                "PAYMENT", UUID.randomUUID(), UUID.randomUUID(), "Operator", LocalDateTime.now());
-        return new CashRegisterResponse(
-                registerId, LocalDate.now(), RegisterStatus.CLOSED,
-                UUID.randomUUID(), "Operator", LocalDateTime.now().minusHours(8),
-                UUID.randomUUID(), "Operator", LocalDateTime.now(), "Sin incidencias",
-                List.of(), new BigDecimal("125.00"), new BigDecimal("50.00"), BigDecimal.ZERO,
-                new BigDecimal("50.00"), List.of(), List.of(),
-                new BigDecimal("100.00"), new BigDecimal("50.00"), BigDecimal.ZERO,
-                new BigDecimal("150.00"), new BigDecimal("150.00"), BigDecimal.ZERO,
-                List.of(movement));
+                UUID.randomUUID(), CashMovementDirection.IN,
+                CashMovementType.PAYMENT, new BigDecimal("50.00"),
+                UUID.randomUUID(), "Efectivo", "Cobro factura", "PAYMENT",
+                UUID.randomUUID(), UUID.randomUUID(), "Operator",
+                LocalDateTime.now());
+        return new CashRegisterResponse(registerId, LocalDate.now(),
+                RegisterStatus.CLOSED, UUID.randomUUID(), "Operator",
+                LocalDateTime.now().minusHours(8), UUID.randomUUID(),
+                "Operator", LocalDateTime.now(), "Sin incidencias", List.of(),
+                new BigDecimal("125.00"), new BigDecimal("50.00"),
+                BigDecimal.ZERO, new BigDecimal("50.00"), List.of(), List.of(),
+                new BigDecimal("100.00"), new BigDecimal("50.00"),
+                BigDecimal.ZERO, new BigDecimal("150.00"),
+                new BigDecimal("150.00"), BigDecimal.ZERO, List.of(movement));
     }
 }

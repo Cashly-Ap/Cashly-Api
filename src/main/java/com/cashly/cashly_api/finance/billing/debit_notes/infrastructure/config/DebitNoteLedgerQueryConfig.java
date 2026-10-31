@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DebitNoteLedgerQueryConfig {
     @Bean
-    public DebitNoteLedgerQuery debitNoteLedgerQuery(DebitNoteRepository notes) {
+    public DebitNoteLedgerQuery debitNoteLedgerQuery(
+            DebitNoteRepository notes) {
         return new RepositoryDebitNoteLedgerQuery(notes);
     }
 }

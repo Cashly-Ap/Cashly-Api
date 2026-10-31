@@ -42,34 +42,35 @@ class StockAvailabilityQueryServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StockAvailabilityQueryService(
-                warehouseStockRepository, warehouseRepository, new CustomerWarehouseAccessAdapter(new RepositoryCustomerWarehouseAccessQuery(customerWarehouseAccessRepository))
-        );
+        service = new StockAvailabilityQueryService(warehouseStockRepository,
+                warehouseRepository,
+                new CustomerWarehouseAccessAdapter(
+                        new RepositoryCustomerWarehouseAccessQuery(
+                                customerWarehouseAccessRepository)));
     }
 
     @Test
     void should_EnrichStock_When_AllocationsProvided() {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Warehouse warehouse = Warehouse.reconstitute(
-                warehouseId, "WH-MAIN", "Deposito Principal",
-                "Dir", "Estado", "Municipio", "9999", true,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
-        WarehouseStock stock = new WarehouseStock(
-                UUID.randomUUID(), warehouseId, productId, 50, 10,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        Warehouse warehouse = Warehouse.reconstitute(warehouseId, "WH-MAIN",
+                "Deposito Principal", "Dir", "Estado", "Municipio", "9999",
+                true, LocalDateTime.now(), LocalDateTime.now());
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 50, 10, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId,
+                productId)).thenReturn(Optional.of(stock));
 
-        List<StockAvailabilityQuery.AllocationData> allocations = List.of(
-                new StockAvailabilityQuery.AllocationData(warehouseId, productId, 5)
-        );
+        List<StockAvailabilityQuery.AllocationData> allocations = List
+                .of(new StockAvailabilityQuery.AllocationData(warehouseId,
+                        productId, 5));
 
-        List<StockAvailabilityQuery.EnrichedStock> result = service.enrich(allocations);
+        List<StockAvailabilityQuery.EnrichedStock> result = service
+                .enrich(allocations);
 
         assertEquals(1, result.size());
         assertEquals(warehouseId, result.get(0).warehouseId());
@@ -78,7 +79,8 @@ class StockAvailabilityQueryServiceTest {
         assertEquals("Deposito Principal", result.get(0).warehouseName());
         assertEquals(55, result.get(0).availableStock());
         verify(warehouseRepository).findById(warehouseId);
-        verify(warehouseStockRepository).findByWarehouseIdAndProductId(warehouseId, productId);
+        verify(warehouseStockRepository)
+                .findByWarehouseIdAndProductId(warehouseId, productId);
     }
 
     @Test
@@ -88,26 +90,29 @@ class StockAvailabilityQueryServiceTest {
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Principal");
-        WarehouseStock stock = new WarehouseStock(
-                UUID.randomUUID(), warehouseId, productId, 100, 0,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 100, 0, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.of(stock));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId,
+                productId)).thenReturn(Optional.of(stock));
 
         List<StockAvailabilityQuery.AllocationData> allocations = List.of(
-                new StockAvailabilityQuery.AllocationData(warehouseId, productId, 3),
-                new StockAvailabilityQuery.AllocationData(warehouseId, productId, 7)
-        );
+                new StockAvailabilityQuery.AllocationData(warehouseId,
+                        productId, 3),
+                new StockAvailabilityQuery.AllocationData(warehouseId,
+                        productId, 7));
 
-        List<StockAvailabilityQuery.EnrichedStock> result = service.enrich(allocations);
+        List<StockAvailabilityQuery.EnrichedStock> result = service
+                .enrich(allocations);
 
         assertEquals(1, result.size());
         assertEquals(110, result.get(0).availableStock());
         verify(warehouseRepository).findById(warehouseId);
-        verify(warehouseStockRepository).findByWarehouseIdAndProductId(warehouseId, productId);
+        verify(warehouseStockRepository)
+                .findByWarehouseIdAndProductId(warehouseId, productId);
     }
 
     @Test
@@ -115,13 +120,15 @@ class StockAvailabilityQueryServiceTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        List<StockAvailabilityQuery.AllocationData> allocations = List.of(
-                new StockAvailabilityQuery.AllocationData(warehouseId, productId, 5)
-        );
+        List<StockAvailabilityQuery.AllocationData> allocations = List
+                .of(new StockAvailabilityQuery.AllocationData(warehouseId,
+                        productId, 5));
 
-        List<StockAvailabilityQuery.EnrichedStock> result = service.enrich(allocations);
+        List<StockAvailabilityQuery.EnrichedStock> result = service
+                .enrich(allocations);
 
         assertTrue(result.isEmpty());
     }
@@ -134,15 +141,17 @@ class StockAvailabilityQueryServiceTest {
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Principal");
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId, productId))
-                .thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(warehouseStockRepository.findByWarehouseIdAndProductId(warehouseId,
+                productId)).thenReturn(Optional.empty());
 
-        List<StockAvailabilityQuery.AllocationData> allocations = List.of(
-                new StockAvailabilityQuery.AllocationData(warehouseId, productId, 5)
-        );
+        List<StockAvailabilityQuery.AllocationData> allocations = List
+                .of(new StockAvailabilityQuery.AllocationData(warehouseId,
+                        productId, 5));
 
-        List<StockAvailabilityQuery.EnrichedStock> result = service.enrich(allocations);
+        List<StockAvailabilityQuery.EnrichedStock> result = service
+                .enrich(allocations);
 
         assertEquals(1, result.size());
         assertEquals(5, result.get(0).availableStock());
@@ -150,7 +159,8 @@ class StockAvailabilityQueryServiceTest {
 
     @Test
     void should_ReturnEmptyList_When_NoAllocations() {
-        List<StockAvailabilityQuery.EnrichedStock> result = service.enrich(List.of());
+        List<StockAvailabilityQuery.EnrichedStock> result = service
+                .enrich(List.of());
 
         assertTrue(result.isEmpty());
         verifyNoInteractions(warehouseRepository, warehouseStockRepository);
@@ -162,15 +172,14 @@ class StockAvailabilityQueryServiceTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
         CustomerWarehouseAccess access = new CustomerWarehouseAccess(
-                UUID.randomUUID(), customerId, warehouseId, LocalDateTime.now(), UUID.randomUUID()
-        );
+                UUID.randomUUID(), customerId, warehouseId, LocalDateTime.now(),
+                UUID.randomUUID());
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Deposito Principal");
-        WarehouseStock stock = new WarehouseStock(
-                UUID.randomUUID(), warehouseId, productId, 50, 10,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 50, 10, LocalDateTime.now(),
+                LocalDateTime.now());
 
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
                 .thenReturn(List.of(access));
@@ -179,8 +188,8 @@ class StockAvailabilityQueryServiceTest {
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
 
-        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result =
-                service.getAllStockByProducts(customerId, List.of(productId));
+        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result = service
+                .getAllStockByProducts(customerId, List.of(productId));
 
         assertEquals(1, result.size());
         assertTrue(result.containsKey(productId));
@@ -200,8 +209,8 @@ class StockAvailabilityQueryServiceTest {
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
                 .thenReturn(List.of());
 
-        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result =
-                service.getAllStockByProducts(customerId, List.of(productId));
+        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result = service
+                .getAllStockByProducts(customerId, List.of(productId));
 
         assertEquals(1, result.size());
         assertTrue(result.containsKey(productId));
@@ -215,17 +224,17 @@ class StockAvailabilityQueryServiceTest {
         UUID productId1 = UUID.randomUUID();
         UUID productId2 = UUID.randomUUID();
         CustomerWarehouseAccess access = new CustomerWarehouseAccess(
-                UUID.randomUUID(), customerId, warehouseId, LocalDateTime.now(), UUID.randomUUID()
-        );
+                UUID.randomUUID(), customerId, warehouseId, LocalDateTime.now(),
+                UUID.randomUUID());
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Principal");
-        WarehouseStock stock1 = new WarehouseStock(
-                UUID.randomUUID(), warehouseId, productId1, 30, 5, LocalDateTime.now(), LocalDateTime.now()
-        );
-        WarehouseStock stock2 = new WarehouseStock(
-                UUID.randomUUID(), warehouseId, productId2, 20, 2, LocalDateTime.now(), LocalDateTime.now()
-        );
+        WarehouseStock stock1 = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId1, 30, 5, LocalDateTime.now(),
+                LocalDateTime.now());
+        WarehouseStock stock2 = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId2, 20, 2, LocalDateTime.now(),
+                LocalDateTime.now());
 
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
                 .thenReturn(List.of(access));
@@ -236,8 +245,9 @@ class StockAvailabilityQueryServiceTest {
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
 
-        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result =
-                service.getAllStockByProducts(customerId, List.of(productId1, productId2));
+        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result = service
+                .getAllStockByProducts(customerId,
+                        List.of(productId1, productId2));
 
         assertEquals(2, result.size());
         assertEquals(25, result.get(productId1).get(0).available());
@@ -251,19 +261,17 @@ class StockAvailabilityQueryServiceTest {
         UUID restrictedWarehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
         CustomerWarehouseAccess access = new CustomerWarehouseAccess(
-                UUID.randomUUID(), customerId, accessibleWarehouseId, LocalDateTime.now(), UUID.randomUUID()
-        );
+                UUID.randomUUID(), customerId, accessibleWarehouseId,
+                LocalDateTime.now(), UUID.randomUUID());
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.getCode()).thenReturn("WH-ACC");
         when(warehouse.getName()).thenReturn("Accessible");
-        WarehouseStock accessibleStock = new WarehouseStock(
-                UUID.randomUUID(), accessibleWarehouseId, productId, 10, 0,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
-        WarehouseStock restrictedStock = new WarehouseStock(
-                UUID.randomUUID(), restrictedWarehouseId, productId, 99, 0,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        WarehouseStock accessibleStock = new WarehouseStock(UUID.randomUUID(),
+                accessibleWarehouseId, productId, 10, 0, LocalDateTime.now(),
+                LocalDateTime.now());
+        WarehouseStock restrictedStock = new WarehouseStock(UUID.randomUUID(),
+                restrictedWarehouseId, productId, 99, 0, LocalDateTime.now(),
+                LocalDateTime.now());
 
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
                 .thenReturn(List.of(access));
@@ -272,8 +280,8 @@ class StockAvailabilityQueryServiceTest {
         when(warehouseRepository.findById(accessibleWarehouseId))
                 .thenReturn(Optional.of(warehouse));
 
-        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result =
-                service.getAllStockByProducts(customerId, List.of(productId));
+        Map<UUID, List<StockAvailabilityQuery.WarehouseStockInfo>> result = service
+                .getAllStockByProducts(customerId, List.of(productId));
 
         assertEquals(1, result.get(productId).size());
         assertEquals(10, result.get(productId).get(0).available());

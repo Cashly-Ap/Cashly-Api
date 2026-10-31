@@ -11,26 +11,32 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-public class LocalInvoiceNoteDetailsAdapter implements InvoiceNoteDetailsGateway {
+public class LocalInvoiceNoteDetailsAdapter
+        implements
+            InvoiceNoteDetailsGateway {
     private final InvoiceCreditNoteDetailsQuery credits;
     private final InvoiceDebitNoteDetailsQuery debits;
 
     public LocalInvoiceNoteDetailsAdapter(InvoiceCreditNoteDetailsQuery credits,
-                                          InvoiceDebitNoteDetailsQuery debits) {
+            InvoiceDebitNoteDetailsQuery debits) {
         this.credits = credits;
         this.debits = debits;
     }
 
     @Override
     public List<Note> findCreditNotes(UUID invoiceId) {
-        return credits.findByInvoiceId(invoiceId).stream().map(note ->
-                new Note(note.id(), note.number(), note.amount(), note.reason(), note.createdAt())).toList();
+        return credits.findByInvoiceId(invoiceId).stream()
+                .map(note -> new Note(note.id(), note.number(), note.amount(),
+                        note.reason(), note.createdAt()))
+                .toList();
     }
 
     @Override
     public List<Note> findDebitNotes(UUID invoiceId) {
-        return debits.findByInvoiceId(invoiceId).stream().map(note ->
-                new Note(note.id(), note.number(), note.amount(), note.reason(), note.createdAt())).toList();
+        return debits.findByInvoiceId(invoiceId).stream()
+                .map(note -> new Note(note.id(), note.number(), note.amount(),
+                        note.reason(), note.createdAt()))
+                .toList();
     }
 
     @Override

@@ -13,16 +13,16 @@ public class GetAllReturnsUseCase {
     private final ReturnRepository returnRepository;
     private final ReturnResponseAssembler responses;
 
-    public GetAllReturnsUseCase(ReturnRepository returnRepository, ReturnResponseAssembler responses) {
+    public GetAllReturnsUseCase(ReturnRepository returnRepository,
+            ReturnResponseAssembler responses) {
         this.returnRepository = returnRepository;
         this.responses = responses;
     }
 
-    public List<ReturnListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                             UUID customerId, UUID invoiceId) {
-        return returnRepository.findAllWithFilters(dateFrom, dateTo, customerId, invoiceId)
-                .stream()
-                .map(responses::toListResponse)
-                .toList();
+    public List<ReturnListResponse> execute(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, UUID invoiceId) {
+        return returnRepository
+                .findAllWithFilters(dateFrom, dateTo, customerId, invoiceId)
+                .stream().map(responses::toListResponse).toList();
     }
 }

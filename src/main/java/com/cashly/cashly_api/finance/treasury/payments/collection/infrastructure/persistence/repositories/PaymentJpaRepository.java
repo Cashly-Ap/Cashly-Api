@@ -10,7 +10,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface PaymentJpaRepository extends JpaRepository<PaymentEntity, UUID> {
+public interface PaymentJpaRepository
+        extends
+            JpaRepository<PaymentEntity, UUID> {
 
     @Query("""
             SELECT p FROM PaymentEntity p
@@ -23,8 +25,7 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentEntity, UUID>
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status
-    );
+            @Param("status") String status);
 
     @Query("""
             SELECT COALESCE(SUM(p.amount), 0)
@@ -32,7 +33,8 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentEntity, UUID>
             WHERE p.customerId = :customerId
             AND p.status = 'APPLIED'
             """)
-    BigDecimal getRefundableAmountByCustomerId(@Param("customerId") UUID customerId);
+    BigDecimal getRefundableAmountByCustomerId(
+            @Param("customerId") UUID customerId);
 
     long countByPaymentMethodId(UUID paymentMethodId);
 }

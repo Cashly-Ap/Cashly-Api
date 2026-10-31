@@ -15,7 +15,6 @@ public interface WarehouseRepository {
     boolean hasActiveStock(UUID id);
     Set<UUID> findIdsWithActiveStock(Set<UUID> ids);
     PageResponse<Warehouse> findAllWithFilters(String search, Boolean active,
-                                               int page, int size,
-                                               String orderBy, String orderDir);
+            int page, int size, String orderBy, String orderDir);
     void delete(UUID id);
 }

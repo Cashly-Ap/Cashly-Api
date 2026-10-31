@@ -38,7 +38,8 @@ class CashRegisterRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new CashRegisterRepositoryAdapter(jpaRepository, entityManager);
+        adapter = new CashRegisterRepositoryAdapter(jpaRepository,
+                entityManager);
     }
 
     @Test
@@ -46,22 +47,16 @@ class CashRegisterRepositoryAdapterTest {
     void should_include_all_caja_items_in_total_expenses() {
         var today = LocalDate.now();
 
-        when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
+        when(entityManager.createNativeQuery(anyString()))
+                .thenReturn(nativeQuery);
         when(nativeQuery.setParameter("date", today)).thenReturn(nativeQuery);
 
-        when(nativeQuery.getSingleResult())
-                .thenReturn(BigDecimal.ZERO)
-                .thenReturn(0)
-                .thenReturn(BigDecimal.ZERO)
-                .thenReturn(0)
-                .thenReturn(BigDecimal.ZERO)
-                .thenReturn(0)
-                .thenReturn(BigDecimal.valueOf(100.00))
-                .thenReturn(1)
-                .thenReturn(BigDecimal.ZERO)
-                .thenReturn(0)
-                .thenReturn(BigDecimal.ZERO)
-                .thenReturn(BigDecimal.ZERO);
+        when(nativeQuery.getSingleResult()).thenReturn(BigDecimal.ZERO)
+                .thenReturn(0).thenReturn(BigDecimal.ZERO).thenReturn(0)
+                .thenReturn(BigDecimal.ZERO).thenReturn(0)
+                .thenReturn(BigDecimal.valueOf(100.00)).thenReturn(1)
+                .thenReturn(BigDecimal.ZERO).thenReturn(0)
+                .thenReturn(BigDecimal.ZERO).thenReturn(BigDecimal.ZERO);
 
         when(nativeQuery.getResultList()).thenReturn(List.of());
 
@@ -69,7 +64,8 @@ class CashRegisterRepositoryAdapterTest {
 
         assertThat(result.totalReturns()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.returnCount()).isEqualTo(1);
-        assertThat(result.totalExpenses()).isEqualByComparingTo(new BigDecimal("100.00"));
+        assertThat(result.totalExpenses())
+                .isEqualByComparingTo(new BigDecimal("100.00"));
     }
 
     @Test
@@ -78,22 +74,28 @@ class CashRegisterRepositoryAdapterTest {
         var dateFrom = LocalDate.now().minusDays(1);
         var dateTo = LocalDate.now();
 
-        when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
-        when(nativeQuery.setParameter("dateFrom", dateFrom)).thenReturn(nativeQuery);
-        when(nativeQuery.setParameter("dateTo", dateTo)).thenReturn(nativeQuery);
+        when(entityManager.createNativeQuery(anyString()))
+                .thenReturn(nativeQuery);
+        when(nativeQuery.setParameter("dateFrom", dateFrom))
+                .thenReturn(nativeQuery);
+        when(nativeQuery.setParameter("dateTo", dateTo))
+                .thenReturn(nativeQuery);
 
         Object[] efectivoRow = {UUID.randomUUID(), "Efectivo", 1500.0, 3};
         Object[] dolarRow = {UUID.randomUUID(), "Dolar", 2000.0, 2};
-        when(nativeQuery.getResultList()).thenReturn(List.of(efectivoRow, dolarRow));
+        when(nativeQuery.getResultList())
+                .thenReturn(List.of(efectivoRow, dolarRow));
 
         var result = adapter.findPaymentMethodSummary(dateFrom, dateTo);
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getPaymentMethodName()).isEqualTo("Efectivo");
-        assertThat(result.get(0).getExpectedAmount()).isEqualByComparingTo(new BigDecimal("1500.00"));
+        assertThat(result.get(0).getExpectedAmount())
+                .isEqualByComparingTo(new BigDecimal("1500.00"));
         assertThat(result.get(0).getTransactionCount()).isEqualTo(3);
         assertThat(result.get(1).getPaymentMethodName()).isEqualTo("Dolar");
-        assertThat(result.get(1).getExpectedAmount()).isEqualByComparingTo(new BigDecimal("2000.00"));
+        assertThat(result.get(1).getExpectedAmount())
+                .isEqualByComparingTo(new BigDecimal("2000.00"));
         assertThat(result.get(1).getTransactionCount()).isEqualTo(2);
     }
 
@@ -103,9 +105,12 @@ class CashRegisterRepositoryAdapterTest {
         var dateFrom = LocalDate.now().minusDays(7);
         var dateTo = LocalDate.now();
 
-        when(entityManager.createNativeQuery(anyString())).thenReturn(nativeQuery);
-        when(nativeQuery.setParameter("dateFrom", dateFrom)).thenReturn(nativeQuery);
-        when(nativeQuery.setParameter("dateTo", dateTo)).thenReturn(nativeQuery);
+        when(entityManager.createNativeQuery(anyString()))
+                .thenReturn(nativeQuery);
+        when(nativeQuery.setParameter("dateFrom", dateFrom))
+                .thenReturn(nativeQuery);
+        when(nativeQuery.setParameter("dateTo", dateTo))
+                .thenReturn(nativeQuery);
         when(nativeQuery.getResultList()).thenReturn(List.of());
 
         var result = adapter.findPaymentMethodSummary(dateFrom, dateTo);

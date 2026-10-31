@@ -14,7 +14,7 @@ public class Category {
     private LocalDateTime updatedAt;
 
     private Category(UUID id, String name, String description, boolean active,
-                     LocalDateTime createdAt, LocalDateTime updatedAt) {
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateName(name);
         this.id = id;
         this.name = name;
@@ -29,16 +29,19 @@ public class Category {
         return new Category(null, name, description, true, now, now);
     }
 
-    public static Category reconstitute(UUID id, String name, String description, boolean active,
-                                         LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new Category(id, name, description, active, createdAt, updatedAt);
+    public static Category reconstitute(UUID id, String name,
+            String description, boolean active, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        return new Category(id, name, description, active, createdAt,
+                updatedAt);
     }
 
     public void update(String name, String description, Boolean active) {
         validateName(name);
         this.name = name;
         this.description = validateDescription(description);
-        if (active != null) this.active = active;
+        if (active != null)
+            this.active = active;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -54,43 +57,64 @@ public class Category {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Category name cannot be null or blank");
+            throw new IllegalArgumentException(
+                    "Category name cannot be null or blank");
         }
         if (name.trim().length() < 2) {
-            throw new IllegalArgumentException("Category name must be at least 2 characters");
+            throw new IllegalArgumentException(
+                    "Category name must be at least 2 characters");
         }
         if (name.trim().length() > 100) {
-            throw new IllegalArgumentException("Category name cannot exceed 100 characters");
+            throw new IllegalArgumentException(
+                    "Category name cannot exceed 100 characters");
         }
     }
 
     private String validateDescription(String description) {
         if (description != null && description.length() > 300) {
-            throw new IllegalArgumentException("Category description cannot exceed 300 characters");
+            throw new IllegalArgumentException(
+                    "Category description cannot exceed 300 characters");
         }
         return description;
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public boolean isActive() { return active; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public UUID getId() {
+        return id;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public boolean isActive() {
+        return active;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Category that = (Category) o;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(id); }
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     @Override
     public String toString() {
-        return "Category{id=" + id + ", name='" + name + "', active=" + active + "}";
+        return "Category{id=" + id + ", name='" + name + "', active=" + active
+                + "}";
     }
 }

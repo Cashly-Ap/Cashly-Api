@@ -38,11 +38,11 @@ public class JwtTokenService implements TokenService {
     private final long refreshTokenExpiration;
 
     public JwtTokenService(
-        @Value("${jwt.secret:defaultSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm}") String secret,
-        @Value("${jwt.access-token-expiration:900000}") long accessTokenExpiration,
-        @Value("${jwt.refresh-token-expiration:604800000}") long refreshTokenExpiration
-    ) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            @Value("${jwt.secret:defaultSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm}") String secret,
+            @Value("${jwt.access-token-expiration:900000}") long accessTokenExpiration,
+            @Value("${jwt.refresh-token-expiration:604800000}") long refreshTokenExpiration) {
+        this.secretKey = Keys
+                .hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
@@ -56,16 +56,15 @@ public class JwtTokenService implements TokenService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
-        return Jwts.builder()
-            .subject(user.getId().getValue().toString())
-            .claim("email", user.getEmail().getValue())
-            .claim("type", AuthenticableType.USER.name())
-            .claim("role", user.getRole().name())
-            .claim("modules", user.getModulePermissions().stream().map(Enum::name).toList())
-            .issuedAt(now)
-            .expiration(expiryDate)
-            .signWith(secretKey)
-            .compact();
+        return Jwts.builder().subject(user.getId().getValue().toString())
+                .claim("email", user.getEmail().getValue())
+                .claim("type", AuthenticableType.USER.name())
+                .claim("role", user.getRole().name())
+                .claim("modules",
+                        user.getModulePermissions().stream().map(Enum::name)
+                                .toList())
+                .issuedAt(now).expiration(expiryDate).signWith(secretKey)
+                .compact();
     }
 
     @Override
@@ -77,21 +76,17 @@ public class JwtTokenService implements TokenService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
-        var builder = Jwts.builder()
-            .subject(authenticable.getSubjectId())
-            .claim("email", authenticable.getEmail())
-            .claim("type", authenticable.getType().name())
-            .issuedAt(now);
+        var builder = Jwts.builder().subject(authenticable.getSubjectId())
+                .claim("email", authenticable.getEmail())
+                .claim("type", authenticable.getType().name()).issuedAt(now);
 
         if (authenticable.getType() == AuthenticableType.USER) {
             builder.claim("role", authenticable.getRole().name())
-                .claim("modules", authenticable.getModulePermissions().stream().map(Enum::name).toList());
+                    .claim("modules", authenticable.getModulePermissions()
+                            .stream().map(Enum::name).toList());
         }
 
-        return builder
-            .expiration(expiryDate)
-            .signWith(secretKey)
-            .compact();
+        return builder.expiration(expiryDate).signWith(secretKey).compact();
     }
 
     @Override
@@ -101,15 +96,12 @@ public class JwtTokenService implements TokenService {
         }
 
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000);
+        LocalDateTime expiresAt = LocalDateTime.now()
+                .plusSeconds(refreshTokenExpiration / 1000);
 
-        return new RefreshToken(
-            RefreshTokenId.generate(),
-            user.getId().getValue().toString(),
-            AuthenticableType.USER,
-            token,
-            expiresAt
-        );
+        return new RefreshToken(RefreshTokenId.generate(),
+                user.getId().getValue().toString(), AuthenticableType.USER,
+                token, expiresAt);
     }
 
     @Override
@@ -119,15 +111,12 @@ public class JwtTokenService implements TokenService {
         }
 
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000);
+        LocalDateTime expiresAt = LocalDateTime.now()
+                .plusSeconds(refreshTokenExpiration / 1000);
 
-        return new RefreshToken(
-            RefreshTokenId.generate(),
-            authenticable.getSubjectId(),
-            authenticable.getType(),
-            token,
-            expiresAt
-        );
+        return new RefreshToken(RefreshTokenId.generate(),
+                authenticable.getSubjectId(), authenticable.getType(), token,
+                expiresAt);
     }
 
     @Override
@@ -137,12 +126,13 @@ public class JwtTokenService implements TokenService {
         }
 
         try {
-            Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token);
+            Jwts.parser().verifyWith(secretKey).build()
+                    .parseSignedClaims(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | io.jsonwebtoken.MalformedJwtException | io.jsonwebtoken.ExpiredJwtException | IllegalArgumentException e) {
+        } catch (io.jsonwebtoken.security.SecurityException
+                | io.jsonwebtoken.MalformedJwtException
+                | io.jsonwebtoken.ExpiredJwtException
+                | IllegalArgumentException e) {
             return false;
         }
     }
@@ -191,12 +181,14 @@ public class JwtTokenService implements TokenService {
         }
 
         List<?> modules = claims.get("modules", List.class);
-        Set<BusinessModule> modulePermissions = modules == null ? Set.of() : modules.stream()
-            .map(String::valueOf)
-            .map(BusinessModule::valueOf)
-            .collect(Collectors.toUnmodifiableSet());
+        Set<BusinessModule> modulePermissions = modules == null
+                ? Set.of()
+                : modules.stream().map(String::valueOf)
+                        .map(BusinessModule::valueOf)
+                        .collect(Collectors.toUnmodifiableSet());
 
-        return Optional.of(new UserAccess(UserRole.valueOf(role), modulePermissions));
+        return Optional
+                .of(new UserAccess(UserRole.valueOf(role), modulePermissions));
     }
 
     @Override
@@ -218,9 +210,8 @@ public class JwtTokenService implements TokenService {
 
         Claims claims = extractClaims(token);
         Date expiration = claims.getExpiration();
-        return expiration.toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime();
+        return expiration.toInstant().atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
     @Override
@@ -234,10 +225,7 @@ public class JwtTokenService implements TokenService {
     }
 
     private Claims extractClaims(String token) {
-        return Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+        return Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(token).getPayload();
     }
 }

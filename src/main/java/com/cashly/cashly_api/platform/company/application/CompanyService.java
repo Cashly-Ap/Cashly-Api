@@ -16,27 +16,24 @@ public class CompanyService {
     private final CompanyRepository repository;
     private final CompanyMediaStorage images;
 
-    public CompanyService(CompanyRepository repository, CompanyMediaStorage images) {
+    public CompanyService(CompanyRepository repository,
+            CompanyMediaStorage images) {
         this.repository = repository;
         this.images = images;
     }
 
-    public record AddressRequest(
-            @Size(max = 255) String street,
-            @Size(max = 100) String city,
-            @Size(max = 100) String region,
+    public record AddressRequest(@Size(max = 255) String street,
+            @Size(max = 100) String city, @Size(max = 100) String region,
             @Size(max = 100) String country,
-            @Size(max = 30) String postalCode) {}
+            @Size(max = 30) String postalCode) {
+    }
 
-    public record Request(
-            @NotBlank @Size(max = 200) String legalName,
-            @Size(max = 200) String tradeName,
-            @Size(max = 50) String taxId,
-            @Email @Size(max = 254) String email,
-            @Size(max = 40) String phone,
-            @Size(max = 255) @Pattern(regexp = "(?i)^(https?://[^\\s]+)?$",
-                    message = "Website must use HTTP or HTTPS") String website,
-            @NotNull @Valid AddressRequest address) {}
+    public record Request(@NotBlank @Size(max = 200) String legalName,
+            @Size(max = 200) String tradeName, @Size(max = 50) String taxId,
+            @Email @Size(max = 254) String email, @Size(max = 40) String phone,
+            @Size(max = 255) @Pattern(regexp = "(?i)^(https?://[^\\s]+)?$", message = "Website must use HTTP or HTTPS") String website,
+            @NotNull @Valid AddressRequest address) {
+    }
 
     @Transactional(readOnly = true)
     public Company find() {
@@ -47,10 +44,14 @@ public class CompanyService {
     public Company update(Request request) {
         var previous = repository.lock();
         var address = request.address();
-        var company = new Company(previous.id(), request.legalName().trim(), clean(request.tradeName()),
-                clean(request.taxId()), clean(request.email()), clean(request.phone()), clean(request.website()),
-                new Company.Address(clean(address.street()), clean(address.city()), clean(address.region()),
-                        clean(address.country()), clean(address.postalCode())), previous.logoPath(), previous.pdfLogoPath());
+        var company = new Company(previous.id(), request.legalName().trim(),
+                clean(request.tradeName()), clean(request.taxId()),
+                clean(request.email()), clean(request.phone()),
+                clean(request.website()),
+                new Company.Address(clean(address.street()),
+                        clean(address.city()), clean(address.region()),
+                        clean(address.country()), clean(address.postalCode())),
+                previous.logoPath(), previous.pdfLogoPath());
         repository.save(company);
         return company;
     }
@@ -107,27 +108,39 @@ public class CompanyService {
     @Transactional(readOnly = true)
     public byte[] documentLogo() {
         var company = repository.find();
-        var path = company.pdfLogoPath() != null ? company.pdfLogoPath() : company.logoPath();
+        var path = company.pdfLogoPath() != null
+                ? company.pdfLogoPath()
+                : company.logoPath();
         return path == null ? null : images.load(path);
     }
 
     @Transactional(readOnly = true)
-    public byte[] previewDocumentLogo(byte[] pdfLogo, boolean removePdfLogo, byte[] logo, boolean removeLogo) {
+    public byte[] previewDocumentLogo(byte[] pdfLogo, boolean removePdfLogo,
+            byte[] logo, boolean removeLogo) {
         var company = repository.find();
-        if (pdfLogo != null) return pdfLogo;
-        if (!removePdfLogo && company.pdfLogoPath() != null) return images.load(company.pdfLogoPath());
-        if (logo != null) return logo;
-        return !removeLogo && company.logoPath() != null ? images.load(company.logoPath()) : null;
+        if (pdfLogo != null)
+            return pdfLogo;
+        if (!removePdfLogo && company.pdfLogoPath() != null)
+            return images.load(company.pdfLogoPath());
+        if (logo != null)
+            return logo;
+        return !removeLogo && company.logoPath() != null
+                ? images.load(company.logoPath())
+                : null;
     }
 
     private static Company withPdfLogo(Company company, String path) {
-        return new Company(company.id(), company.legalName(), company.tradeName(), company.taxId(),
-                company.email(), company.phone(), company.website(), company.address(), company.logoPath(), path);
+        return new Company(company.id(), company.legalName(),
+                company.tradeName(), company.taxId(), company.email(),
+                company.phone(), company.website(), company.address(),
+                company.logoPath(), path);
     }
 
     private static Company withLogo(Company company, String path) {
-        return new Company(company.id(), company.legalName(), company.tradeName(), company.taxId(),
-                company.email(), company.phone(), company.website(), company.address(), path, company.pdfLogoPath());
+        return new Company(company.id(), company.legalName(),
+                company.tradeName(), company.taxId(), company.email(),
+                company.phone(), company.website(), company.address(), path,
+                company.pdfLogoPath());
     }
 
     private static String clean(String value) {

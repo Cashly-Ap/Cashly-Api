@@ -11,7 +11,8 @@ public class RevokeWarehouseAccessUseCase {
 
     private final CustomerWarehouseAccessRepository accessRepository;
 
-    public RevokeWarehouseAccessUseCase(CustomerWarehouseAccessRepository accessRepository) {
+    public RevokeWarehouseAccessUseCase(
+            CustomerWarehouseAccessRepository accessRepository) {
         this.accessRepository = accessRepository;
     }
 
@@ -19,7 +20,8 @@ public class RevokeWarehouseAccessUseCase {
     public void execute(UUID customerId, UUID warehouseId) {
         CustomerWarehouseAccess access = accessRepository
                 .findByCustomerIdAndWarehouseId(customerId, warehouseId)
-                .orElseThrow(() -> new CustomerWarehouseAccessNotFoundException(customerId, warehouseId));
+                .orElseThrow(() -> new CustomerWarehouseAccessNotFoundException(
+                        customerId, warehouseId));
 
         accessRepository.delete(access);
     }

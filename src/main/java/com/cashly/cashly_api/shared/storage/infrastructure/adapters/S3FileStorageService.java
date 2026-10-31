@@ -26,7 +26,8 @@ public class S3FileStorageService implements FileStorageService {
     private final S3Client s3Client;
     private final String bucketName;
 
-    public S3FileStorageService(String endpoint, String accessKey, String secretKey, String bucketName, String region) {
+    public S3FileStorageService(String endpoint, String accessKey,
+            String secretKey, String bucketName, String region) {
         this.bucketName = bucketName;
 
         S3ClientBuilder builder = S3Client.builder().region(Region.of(region));
@@ -44,11 +45,13 @@ public class S3FileStorageService implements FileStorageService {
     }
 
     @Override
-    public String store(String filename, InputStream inputStream, String contentType) {
+    public String store(String filename, InputStream inputStream,
+            String contentType) {
         try {
             byte[] bytes = inputStream.readAllBytes();
             if (bytes.length == 0) {
-                throw new StorageException("Failed to store empty file: " + filename);
+                throw new StorageException(
+                        "Failed to store empty file: " + filename);
             }
 
             String extension = getFileExtension(filename);
@@ -56,16 +59,14 @@ public class S3FileStorageService implements FileStorageService {
             String key = directory + UUID.randomUUID() + extension;
 
             PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .contentType(contentType)
-                    .contentLength((long) bytes.length)
-                    .build();
+                    .bucket(bucketName).key(key).contentType(contentType)
+                    .contentLength((long) bytes.length).build();
 
             s3Client.putObject(request, RequestBody.fromBytes(bytes));
             return key;
         } catch (IOException e) {
-            throw new StorageException("Failed to store file in S3: " + filename, e);
+            throw new StorageException(
+                    "Failed to store file in S3: " + filename, e);
         }
     }
 
@@ -73,14 +74,13 @@ public class S3FileStorageService implements FileStorageService {
     public byte[] load(String filePath) {
         try {
             GetObjectRequest request = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(filePath)
-                    .build();
+                    .bucket(bucketName).key(filePath).build();
             return s3Client.getObjectAsBytes(request).asByteArray();
         } catch (NoSuchKeyException e) {
             throw new FileNotFoundException(filePath);
         } catch (Exception e) {
-            throw new StorageException("Failed to load file from S3: " + filePath, e);
+            throw new StorageException(
+                    "Failed to load file from S3: " + filePath, e);
         }
     }
 
@@ -88,12 +88,11 @@ public class S3FileStorageService implements FileStorageService {
     public void delete(String filePath) {
         try {
             DeleteObjectRequest request = DeleteObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(filePath)
-                    .build();
+                    .bucket(bucketName).key(filePath).build();
             s3Client.deleteObject(request);
         } catch (Exception e) {
-            throw new StorageException("Failed to delete file from S3: " + filePath, e);
+            throw new StorageException(
+                    "Failed to delete file from S3: " + filePath, e);
         }
     }
 
@@ -104,9 +103,7 @@ public class S3FileStorageService implements FileStorageService {
         }
         try {
             HeadObjectRequest request = HeadObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(filePath)
-                    .build();
+                    .bucket(bucketName).key(filePath).build();
             s3Client.headObject(request);
             return true;
         } catch (NoSuchKeyException e) {

@@ -20,21 +20,32 @@ public class LocalPaymentCashRegisterGateway implements CashRegisterGateway {
         this.operations = operations;
     }
     public void requireOpenRegister() {
-        if (movements != null) movements.requireOpenRegister();
-        else operations.requireOpenRegister();
+        if (movements != null)
+            movements.requireOpenRegister();
+        else
+            operations.requireOpenRegister();
     }
     public void recordMovement(Movement movement) {
         PaymentEntry entry = movement.payment();
         if (movements != null) {
-            movements.record(movement.direction() == Direction.IN ? CashMovementDirection.IN : CashMovementDirection.OUT,
-                    movement.type() == Type.REFUND ? CashMovementType.REFUND : CashMovementType.PAYMENT,
-                    entry.amount(), entry.paymentMethodId(), entry.notes(), "PAYMENT", entry.paymentId(),
-                    entry.actorId(), entry.actorName());
+            movements.record(
+                    movement.direction() == Direction.IN
+                            ? CashMovementDirection.IN
+                            : CashMovementDirection.OUT,
+                    movement.type() == Type.REFUND
+                            ? CashMovementType.REFUND
+                            : CashMovementType.PAYMENT,
+                    entry.amount(), entry.paymentMethodId(), entry.notes(),
+                    "PAYMENT", entry.paymentId(), entry.actorId(),
+                    entry.actorName());
         } else {
             operations.record(new CashRegisterOperations.Entry(
-                    movement.direction() == Direction.IN ? CashRegisterOperations.Direction.IN : CashRegisterOperations.Direction.OUT,
-                    CashRegisterOperations.EntryType.PAYMENT, entry.amount(), entry.paymentMethodId(), entry.notes(),
-                    "PAYMENT", entry.paymentId(), entry.actorId(), entry.actorName()));
+                    movement.direction() == Direction.IN
+                            ? CashRegisterOperations.Direction.IN
+                            : CashRegisterOperations.Direction.OUT,
+                    CashRegisterOperations.EntryType.PAYMENT, entry.amount(),
+                    entry.paymentMethodId(), entry.notes(), "PAYMENT",
+                    entry.paymentId(), entry.actorId(), entry.actorName()));
         }
     }
     public void recordPayment(PaymentEntry entry) {

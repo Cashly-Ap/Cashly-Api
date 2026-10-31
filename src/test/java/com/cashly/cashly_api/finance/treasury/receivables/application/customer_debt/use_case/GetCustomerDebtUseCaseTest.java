@@ -36,15 +36,14 @@ class GetCustomerDebtUseCaseTest {
     void should_ReturnCustomerDebt_When_CustomerExists() {
         UUID customerId = UUID.randomUUID();
         CustomerDebtSummaryResponse expected = new CustomerDebtSummaryResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                "04121234567", "cliente@test.com",
-                new BigDecimal("5000.00"), new BigDecimal("1000.00"),
-                new BigDecimal("5000.00"), new BigDecimal("10000.00"),
-                new BigDecimal("5000.00"), new BigDecimal("1000.00"),
-                List.of(), 2L
-        );
+                customerId, "Cliente Test", "J-12345678-9", "04121234567",
+                "cliente@test.com", new BigDecimal("5000.00"),
+                new BigDecimal("1000.00"), new BigDecimal("5000.00"),
+                new BigDecimal("10000.00"), new BigDecimal("5000.00"),
+                new BigDecimal("1000.00"), List.of(), 2L);
 
-        when(receivablesRepository.findCustomerDebt(customerId)).thenReturn(expected);
+        when(receivablesRepository.findCustomerDebt(customerId))
+                .thenReturn(expected);
 
         CustomerDebtSummaryResponse result = useCase.execute(customerId);
 
@@ -63,25 +62,25 @@ class GetCustomerDebtUseCaseTest {
                 UUID.randomUUID(), "INV-2026-00001", "PENDING_PAYMENT",
                 LocalDate.now(), new BigDecimal("1000.00"), BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                new BigDecimal("1000.00"), new BigDecimal("1000.00"),
-                null, null
-        );
+                new BigDecimal("1000.00"), new BigDecimal("1000.00"), null,
+                null);
         CustomerDebtSummaryResponse expected = new CustomerDebtSummaryResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                null, null,
+                customerId, "Cliente Test", "J-12345678-9", null, null,
                 new BigDecimal("1000.00"), BigDecimal.ZERO,
                 new BigDecimal("9000.00"), new BigDecimal("10000.00"),
                 new BigDecimal("9000.00"), BigDecimal.ZERO,
-                List.of(invoiceDebt), 0L
-        );
+                List.of(invoiceDebt), 0L);
 
-        when(receivablesRepository.findCustomerDebt(customerId)).thenReturn(expected);
+        when(receivablesRepository.findCustomerDebt(customerId))
+                .thenReturn(expected);
 
         CustomerDebtSummaryResponse result = useCase.execute(customerId);
 
         assertEquals(1, result.invoicesWithDebt().size());
-        assertEquals("INV-2026-00001", result.invoicesWithDebt().get(0).invoiceNumber());
-        assertEquals(new BigDecimal("1000.00"), result.invoicesWithDebt().get(0).balance());
+        assertEquals("INV-2026-00001",
+                result.invoicesWithDebt().get(0).invoiceNumber());
+        assertEquals(new BigDecimal("1000.00"),
+                result.invoicesWithDebt().get(0).balance());
         verify(receivablesRepository).findCustomerDebt(customerId);
     }
 
@@ -89,15 +88,13 @@ class GetCustomerDebtUseCaseTest {
     void should_ReturnZeroDebt_When_CustomerHasNoDebt() {
         UUID customerId = UUID.randomUUID();
         CustomerDebtSummaryResponse expected = new CustomerDebtSummaryResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO,
+                customerId, "Cliente Test", "J-12345678-9", null, null,
+                BigDecimal.ZERO, BigDecimal.ZERO, new BigDecimal("10000.00"),
                 new BigDecimal("10000.00"), new BigDecimal("10000.00"),
-                new BigDecimal("10000.00"), BigDecimal.ZERO,
-                List.of(), 0L
-        );
+                BigDecimal.ZERO, List.of(), 0L);
 
-        when(receivablesRepository.findCustomerDebt(customerId)).thenReturn(expected);
+        when(receivablesRepository.findCustomerDebt(customerId))
+                .thenReturn(expected);
 
         CustomerDebtSummaryResponse result = useCase.execute(customerId);
 

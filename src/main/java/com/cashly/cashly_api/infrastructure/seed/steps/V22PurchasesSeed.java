@@ -29,9 +29,14 @@ public class V22PurchasesSeed implements SeedStep {
 
     @Override
     public void seed() {
-        purchase("one", "PUR-2025-0001", id("supplier.one"), "Coffee Growers, C.A.", "J-20000001-1", PRODUCT_COFFEE, "Ground coffee", "PRD-0001", "10", "3.50");
-        purchase("two", "PUR-2025-0002", id("supplier.two"), "Spring Water, C.A.", "J-20000002-2", PRODUCT_WATER, "Mineral water", "PRD-0002", "24", "0.45");
-        if (entityManager.find(PurchaseNumberSequenceEntity.class, 2025) == null) {
+        purchase("one", "PUR-2025-0001", id("supplier.one"),
+                "Coffee Growers, C.A.", "J-20000001-1", PRODUCT_COFFEE,
+                "Ground coffee", "PRD-0001", "10", "3.50");
+        purchase("two", "PUR-2025-0002", id("supplier.two"),
+                "Spring Water, C.A.", "J-20000002-2", PRODUCT_WATER,
+                "Mineral water", "PRD-0002", "24", "0.45");
+        if (entityManager.find(PurchaseNumberSequenceEntity.class,
+                2025) == null) {
             var s = new PurchaseNumberSequenceEntity();
             s.setYear(2025);
             s.setNextValue(3);
@@ -39,13 +44,15 @@ public class V22PurchasesSeed implements SeedStep {
         }
     }
 
-    private void purchase(String key, String number, UUID supplierId, String supplierName, String rif, UUID productId,
-            String productName, String code, String quantity, String cost) {
+    private void purchase(String key, String number, UUID supplierId,
+            String supplierName, String rif, UUID productId, String productName,
+            String code, String quantity, String cost) {
         var purchaseId = id("purchase." + key);
         if (entityManager.find(PurchaseEntity.class, purchaseId) != null) {
             return;
         }
-        BigDecimal qty = new BigDecimal(quantity), unitCost = new BigDecimal(cost), total = qty.multiply(unitCost);
+        BigDecimal qty = new BigDecimal(quantity),
+                unitCost = new BigDecimal(cost), total = qty.multiply(unitCost);
         var purchase = new PurchaseEntity();
         purchase.setId(purchaseId);
         purchase.setPurchaseNumber(number);

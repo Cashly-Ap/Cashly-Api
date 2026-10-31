@@ -19,12 +19,14 @@ public class CustomerId {
 
     public static CustomerId from(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("Customer ID string cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "Customer ID string cannot be null or empty");
         }
         try {
             return new CustomerId(UUID.fromString(value));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Customer ID format: " + value, e);
+            throw new IllegalArgumentException(
+                    "Invalid Customer ID format: " + value, e);
         }
     }
 
@@ -34,8 +36,10 @@ public class CustomerId {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         CustomerId that = (CustomerId) obj;
         return Objects.equals(value, that.value);
     }

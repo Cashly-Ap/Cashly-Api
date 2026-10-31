@@ -30,24 +30,23 @@ class InvoiceUnitTest {
     private static final String CUSTOMER_NAME = "Cliente Test";
     private static final String CUSTOMER_RIF = "J-12345678-9";
     private static final String CREATED_BY_NAME = "Vendedor Test";
-    private static final InvoiceNumber INVOICE_NUMBER = InvoiceNumber.of(2026, 1);
+    private static final InvoiceNumber INVOICE_NUMBER = InvoiceNumber.of(2026,
+            1);
 
     private List<InvoiceLine> validLines;
 
     @BeforeEach
     void setUp() {
-        validLines = List.of(
-                InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"), List.of())
-        );
+        validLines = List.of(InvoiceLine.create(UUID.randomUUID(), "Producto A",
+                "PROD-001", new BigDecimal("2"), new BigDecimal("10.00"),
+                List.of()));
     }
-
-    
 
     @Test
     void should_CreateInvoice_When_ValidDataProvided() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, "Notas", validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, "Notas", validLines);
 
         assertNotNull(invoice.getId());
         assertEquals(INVOICE_NUMBER, invoice.getInvoiceNumber());
@@ -74,9 +73,10 @@ class InvoiceUnitTest {
         LocalDate issueDate = LocalDate.of(2026, 9, 1);
         LocalDate dueDate = issueDate.plusDays(29);
 
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, List.of(), List.of(), PaymentType.CREDIT,
-                null, validLines, issueDate, dueDate);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, List.of(), List.of(), PaymentType.CREDIT, null,
+                validLines, issueDate, dueDate);
 
         assertEquals(issueDate, invoice.getIssueDate());
         assertEquals(LocalDate.of(2026, 9, 30), invoice.getDueDate());
@@ -87,8 +87,9 @@ class InvoiceUnitTest {
         UUID orderId = UUID.randomUUID();
         String orderNumber = "ORD-2026-00001";
 
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, orderId, orderNumber, PaymentType.CREDIT, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME,
+                orderId, orderNumber, PaymentType.CREDIT, null, validLines);
 
         assertEquals(orderId, invoice.getOrderId());
         assertEquals(orderNumber, invoice.getOrderNumber());
@@ -96,8 +97,9 @@ class InvoiceUnitTest {
 
     @Test
     void should_AllowNullNotes_When_Creating() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
 
         assertNull(invoice.getNotes());
     }
@@ -106,99 +108,115 @@ class InvoiceUnitTest {
     void should_CalculateSubtotal_When_MultipleLines() {
         List<InvoiceLine> lines = List.of(
                 InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"), List.of()),
+                        new BigDecimal("2"), new BigDecimal("10.00"),
+                        List.of()),
                 InvoiceLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
-                        new BigDecimal("3"), new BigDecimal("5.00"), List.of())
-        );
+                        new BigDecimal("3"), new BigDecimal("5.00"),
+                        List.of()));
 
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, lines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, lines);
 
         assertEquals(new BigDecimal("35.00"), invoice.getSubtotal());
     }
 
     @Test
     void should_ThrowException_When_InvoiceNumberIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(null, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(null, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_CustomerIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(INVOICE_NUMBER, null, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(INVOICE_NUMBER, null, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_CustomerNameIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, null, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, null,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_CustomerRifIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, null,
-                        CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        null, CREATED_BY, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_CreatedByIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        null, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, null, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_CreatedByNameIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, null, null, null, PaymentType.CASH, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, null, null, null,
+                        PaymentType.CASH, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_PaymentTypeIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null, null, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                        null, null, validLines));
     }
 
     @Test
     void should_ThrowException_When_LinesIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, null));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, null));
 
-        assertEquals("Invoice must have at least one line", exception.getMessage());
+        assertEquals("Invoice must have at least one line",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_LinesIsEmpty() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, List.of()));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                        PaymentType.CASH, null, List.of()));
 
-        assertEquals("Invoice must have at least one line", exception.getMessage());
+        assertEquals("Invoice must have at least one line",
+                exception.getMessage());
     }
 
     @Test
     void should_ReturnUnmodifiableLines_When_GetLinesCalled() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                invoice.getLines().add(validLines.get(0)));
+        assertThrows(UnsupportedOperationException.class,
+                () -> invoice.getLines().add(validLines.get(0)));
     }
 
-    
-
     @Test
-    void should_TransitionToPaid_When_ConfirmingCashInvoice() throws InterruptedException {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+    void should_TransitionToPaid_When_ConfirmingCashInvoice()
+            throws InterruptedException {
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
         LocalDateTime beforeConfirm = invoice.getUpdatedAt();
 
         Thread.sleep(10);
@@ -209,9 +227,11 @@ class InvoiceUnitTest {
     }
 
     @Test
-    void should_TransitionToPendingPayment_When_ConfirmingCreditInvoice() throws InterruptedException {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CREDIT, null, validLines);
+    void should_TransitionToPendingPayment_When_ConfirmingCreditInvoice()
+            throws InterruptedException {
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CREDIT, null, validLines);
         LocalDateTime beforeConfirm = invoice.getUpdatedAt();
 
         Thread.sleep(10);
@@ -223,21 +243,23 @@ class InvoiceUnitTest {
 
     @Test
     void should_ThrowException_When_ConfirmingNonDraftInvoice() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
         invoice.cancel("Motivo válido");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, invoice::confirm);
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, invoice::confirm);
 
-        assertEquals("Only DRAFT invoices can be confirmed", exception.getMessage());
+        assertEquals("Only DRAFT invoices can be confirmed",
+                exception.getMessage());
     }
-
-    
 
     @Test
     void should_CancelInvoice_When_StatusIsDraft() throws InterruptedException {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
         LocalDateTime beforeCancel = invoice.getUpdatedAt();
 
         Thread.sleep(10);
@@ -245,42 +267,46 @@ class InvoiceUnitTest {
 
         assertEquals(InvoiceStatus.CANCELLED, invoice.getStatus());
         assertNotNull(invoice.getCancelledAt());
-        assertEquals("Cliente solicitó cancelación", invoice.getCancelledReason());
+        assertEquals("Cliente solicitó cancelación",
+                invoice.getCancelledReason());
         assertTrue(invoice.getUpdatedAt().isAfter(beforeCancel));
     }
 
     @Test
     void should_ThrowException_When_CancellingAlreadyCancelledInvoice() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
         invoice.cancel("Primera cancelación");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                invoice.cancel("Segunda cancelación"));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> invoice.cancel("Segunda cancelación"));
 
         assertEquals("Invoice is already cancelled", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_CancelReasonIsNull() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
 
         assertThrows(NullPointerException.class, () -> invoice.cancel(null));
     }
 
     @Test
     void should_ThrowException_When_CancelReasonIsBlank() {
-        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, PaymentType.CASH, null, validLines);
+        Invoice invoice = Invoice.create(INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                null, PaymentType.CASH, null, validLines);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                invoice.cancel("   "));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> invoice.cancel("   "));
 
-        assertEquals("Cancellation reason cannot be blank", exception.getMessage());
+        assertEquals("Cancellation reason cannot be blank",
+                exception.getMessage());
     }
-
-    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
@@ -288,10 +314,11 @@ class InvoiceUnitTest {
         LocalDateTime now = LocalDateTime.now();
         UUID orderId = UUID.randomUUID();
 
-        Invoice invoice = Invoice.reconstitute(id, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
-                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, orderId, "ORD-2026-00001",
-                InvoiceStatus.PAID, PaymentType.CASH, "notas",
-                BigDecimal.ZERO, null, null, null, validLines, now, now);
+        Invoice invoice = Invoice.reconstitute(id, INVOICE_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME,
+                orderId, "ORD-2026-00001", InvoiceStatus.PAID, PaymentType.CASH,
+                "notas", BigDecimal.ZERO, null, null, null, validLines, now,
+                now);
 
         assertEquals(id, invoice.getId());
         assertEquals(InvoiceStatus.PAID, invoice.getStatus());
@@ -300,82 +327,80 @@ class InvoiceUnitTest {
         assertEquals(now, invoice.getCreatedAt());
     }
 
-    
-
     @Test
     void should_CalculateTotal_When_NormalCase() {
         List<InvoiceLine> lines = List.of(
                 InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"), List.of()),
+                        new BigDecimal("2"), new BigDecimal("10.00"),
+                        List.of()),
                 InvoiceLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
-                        new BigDecimal("3"), new BigDecimal("5.00"), List.of())
-        );
-        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
-                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                new BigDecimal("5.00"), null,
-                null, null, lines, LocalDateTime.now(), LocalDateTime.now());
+                        new BigDecimal("3"), new BigDecimal("5.00"),
+                        List.of()));
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(),
+                INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, new BigDecimal("5.00"), null, null,
+                null, lines, LocalDateTime.now(), LocalDateTime.now());
 
-        BigDecimal result = invoice.calculateTotal(new BigDecimal("10.00"), new BigDecimal("3.00"));
+        BigDecimal result = invoice.calculateTotal(new BigDecimal("10.00"),
+                new BigDecimal("3.00"));
 
-        
         assertEquals(new BigDecimal("23.00"), result);
     }
 
     @Test
     void should_CalculateTotal_When_FullyReturned() {
-        List<InvoiceLine> lines = List.of(
-                InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"), List.of())
-        );
-        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
-                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+        List<InvoiceLine> lines = List.of(InvoiceLine.create(UUID.randomUUID(),
+                "Producto A", "PROD-001", new BigDecimal("2"),
+                new BigDecimal("10.00"), List.of()));
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(),
+                INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null,
                 InvoiceStatus.FULLY_RETURNED, PaymentType.CASH, null,
-                new BigDecimal("20.00"), InvoiceReturnStatus.FULL,
-                null, null, lines, LocalDateTime.now(), LocalDateTime.now());
+                new BigDecimal("20.00"), InvoiceReturnStatus.FULL, null, null,
+                lines, LocalDateTime.now(), LocalDateTime.now());
 
-        BigDecimal result = invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO);
+        BigDecimal result = invoice.calculateTotal(BigDecimal.ZERO,
+                BigDecimal.ZERO);
 
-        
-        
-        assertEquals(0, result.compareTo(BigDecimal.ZERO), "Expected 0.00 to be equal to 0 in value");
+        assertEquals(0, result.compareTo(BigDecimal.ZERO),
+                "Expected 0.00 to be equal to 0 in value");
     }
 
     @Test
     void should_CalculateTotal_When_ZeroDefaultOverload() {
-        List<InvoiceLine> lines = List.of(
-                InvoiceLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("5"), new BigDecimal("100.00"), List.of())
-        );
-        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
-                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                new BigDecimal("100.00"), null,
-                null, null, lines, LocalDateTime.now(), LocalDateTime.now());
+        List<InvoiceLine> lines = List.of(InvoiceLine.create(UUID.randomUUID(),
+                "Producto A", "PROD-001", new BigDecimal("5"),
+                new BigDecimal("100.00"), List.of()));
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(),
+                INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, new BigDecimal("100.00"), null, null,
+                null, lines, LocalDateTime.now(), LocalDateTime.now());
 
         BigDecimal result = invoice.calculateTotal();
 
-        
         assertEquals(new BigDecimal("400.00"), result);
     }
 
     @Test
     void should_CalculateTotal_When_NullSubtotal() throws Exception {
-        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
-                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                BigDecimal.ZERO, null,
-                null, null, List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(),
+                INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
 
-        java.lang.reflect.Field subtotalField = Invoice.class.getDeclaredField("subtotal");
+        java.lang.reflect.Field subtotalField = Invoice.class
+                .getDeclaredField("subtotal");
         subtotalField.setAccessible(true);
         subtotalField.set(invoice, null);
 
-        BigDecimal result = invoice.calculateTotal(BigDecimal.TEN, BigDecimal.ONE);
+        BigDecimal result = invoice.calculateTotal(BigDecimal.TEN,
+                BigDecimal.ONE);
 
         assertEquals(BigDecimal.ZERO, result);
     }
-
 
     // ============================================================
     // revertReturn()
@@ -383,19 +408,20 @@ class InvoiceUnitTest {
 
     @Test
     void should_RevertReturnedTotalAndReturnedQuantity_When_ValidReturnProvided() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), UUID.randomUUID(), "Product", "CODE",
-                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                UUID.randomUUID(), "Product", "CODE", new BigDecimal("10"),
+                BigDecimal.TEN, new BigDecimal("5"), List.of());
         InvoiceId invoiceId = InvoiceId.generate();
-        Invoice invoice = Invoice.reconstitute(
-                invoiceId, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                new BigDecimal("50.00"), InvoiceReturnStatus.PARTIAL,
-                null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = Invoice.reconstitute(invoiceId, INVOICE_NUMBER,
+                CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY,
+                CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, new BigDecimal("50.00"),
+                InvoiceReturnStatus.PARTIAL, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
 
         InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
-        InvoiceReturnAdjustment.Line returnLine = mock(InvoiceReturnAdjustment.Line.class);
+        InvoiceReturnAdjustment.Line returnLine = mock(
+                InvoiceReturnAdjustment.Line.class);
         when(return_.invoiceId()).thenReturn(invoiceId.value());
         when(return_.total()).thenReturn(new BigDecimal("50.00"));
         when(return_.lines()).thenReturn(List.of(returnLine));
@@ -410,19 +436,20 @@ class InvoiceUnitTest {
 
     @Test
     void should_SetReturnStatusToNull_When_NoReturnsRemain() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), UUID.randomUUID(), "Product", "CODE",
-                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                UUID.randomUUID(), "Product", "CODE", new BigDecimal("10"),
+                BigDecimal.TEN, new BigDecimal("5"), List.of());
         InvoiceId invoiceId = InvoiceId.generate();
-        Invoice invoice = Invoice.reconstitute(
-                invoiceId, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                new BigDecimal("50.00"), InvoiceReturnStatus.PARTIAL,
-                null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = Invoice.reconstitute(invoiceId, INVOICE_NUMBER,
+                CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY,
+                CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, new BigDecimal("50.00"),
+                InvoiceReturnStatus.PARTIAL, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
 
         InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
-        InvoiceReturnAdjustment.Line returnLine = mock(InvoiceReturnAdjustment.Line.class);
+        InvoiceReturnAdjustment.Line returnLine = mock(
+                InvoiceReturnAdjustment.Line.class);
         when(return_.invoiceId()).thenReturn(invoiceId.value());
         when(return_.total()).thenReturn(new BigDecimal("50.00"));
         when(return_.lines()).thenReturn(List.of(returnLine));
@@ -436,22 +463,23 @@ class InvoiceUnitTest {
 
     @Test
     void should_SetReturnStatusToPartial_When_SomeReturnsRemain() {
-        InvoiceLine line1 = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), UUID.randomUUID(), "Product A", "CODE-A",
-                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("5"), List.of());
-        InvoiceLine line2 = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), UUID.randomUUID(), "Product B", "CODE-B",
-                new BigDecimal("10"), BigDecimal.TEN, new BigDecimal("3"), List.of());
+        InvoiceLine line1 = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                UUID.randomUUID(), "Product A", "CODE-A", new BigDecimal("10"),
+                BigDecimal.TEN, new BigDecimal("5"), List.of());
+        InvoiceLine line2 = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                UUID.randomUUID(), "Product B", "CODE-B", new BigDecimal("10"),
+                BigDecimal.TEN, new BigDecimal("3"), List.of());
         InvoiceId invoiceId = InvoiceId.generate();
-        Invoice invoice = Invoice.reconstitute(
-                invoiceId, INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                new BigDecimal("80.00"), InvoiceReturnStatus.PARTIAL,
-                null, null, List.of(line1, line2), LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = Invoice.reconstitute(invoiceId, INVOICE_NUMBER,
+                CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY,
+                CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, new BigDecimal("80.00"),
+                InvoiceReturnStatus.PARTIAL, null, null, List.of(line1, line2),
+                LocalDateTime.now(), LocalDateTime.now());
 
         InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
-        InvoiceReturnAdjustment.Line returnLine = mock(InvoiceReturnAdjustment.Line.class);
+        InvoiceReturnAdjustment.Line returnLine = mock(
+                InvoiceReturnAdjustment.Line.class);
         when(return_.invoiceId()).thenReturn(invoiceId.value());
         when(return_.total()).thenReturn(new BigDecimal("20.00"));
         when(return_.lines()).thenReturn(List.of(returnLine));
@@ -466,31 +494,32 @@ class InvoiceUnitTest {
 
     @Test
     void should_ThrowException_When_ReturnDoesNotBelongToInvoice() {
-        Invoice invoice = Invoice.reconstitute(
-                InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                BigDecimal.ZERO, null,
-                null, null, validLines, LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(),
+                INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                validLines, LocalDateTime.now(), LocalDateTime.now());
 
         InvoiceReturnAdjustment return_ = mock(InvoiceReturnAdjustment.class);
         when(return_.invoiceId()).thenReturn(InvoiceId.generate().value());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
                 () -> invoice.revertReturn(return_));
 
-        assertEquals("La devolución no pertenece a esta factura", exception.getMessage());
+        assertEquals("La devolución no pertenece a esta factura",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_ReturnIsNull() {
-        Invoice invoice = Invoice.reconstitute(
-                InvoiceId.generate(), INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null,
-                InvoiceStatus.PAID, PaymentType.CASH, null,
-                BigDecimal.ZERO, null,
-                null, null, validLines, LocalDateTime.now(), LocalDateTime.now());
+        Invoice invoice = Invoice.reconstitute(InvoiceId.generate(),
+                INVOICE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
+                CREATED_BY, CREATED_BY_NAME, null, null, InvoiceStatus.PAID,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                validLines, LocalDateTime.now(), LocalDateTime.now());
 
-        assertThrows(NullPointerException.class, () -> invoice.revertReturn(null));
+        assertThrows(NullPointerException.class,
+                () -> invoice.revertReturn(null));
     }
 }

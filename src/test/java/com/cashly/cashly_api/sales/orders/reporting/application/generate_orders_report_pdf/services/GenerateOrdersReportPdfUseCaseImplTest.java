@@ -23,7 +23,8 @@ class GenerateOrdersReportPdfUseCaseImplTest {
     @Mock
     private OrdersReportPdfPort ordersReportPdfPort;
 
-    @Mock private OrderReportQueryGateway query;
+    @Mock
+    private OrderReportQueryGateway query;
     @InjectMocks
     private GenerateOrdersReportPdfUseCaseImpl useCase;
 
@@ -35,7 +36,8 @@ class GenerateOrdersReportPdfUseCaseImplTest {
         when(query.findAll(filter)).thenReturn(orders);
         byte[] expectedPdf = "Orders report PDF".getBytes();
 
-        when(ordersReportPdfPort.generatePdf(orders, "DETAILED")).thenReturn(expectedPdf);
+        when(ordersReportPdfPort.generatePdf(orders, "DETAILED"))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(filter, "DETAILED");
 
@@ -51,7 +53,8 @@ class GenerateOrdersReportPdfUseCaseImplTest {
         when(query.findAll(filter)).thenReturn(orders);
         byte[] expectedPdf = "Default PDF".getBytes();
 
-        when(ordersReportPdfPort.generatePdf(orders, "simple")).thenReturn(expectedPdf);
+        when(ordersReportPdfPort.generatePdf(orders, "simple"))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(filter, null);
 

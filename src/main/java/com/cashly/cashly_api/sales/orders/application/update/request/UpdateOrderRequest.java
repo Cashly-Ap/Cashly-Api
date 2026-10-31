@@ -10,32 +10,22 @@ import java.util.List;
 import java.util.UUID;
 
 public record UpdateOrderRequest(
-        @Size(max = 1000, message = "Notes must be at most 1000 characters")
-        String notes,
+        @Size(max = 1000, message = "Notes must be at most 1000 characters") String notes,
 
-        @NotEmpty(message = "At least one order line is required")
-        @Valid
-        List<OrderLineRequest> lines
-) {
+        @NotEmpty(message = "At least one order line is required") @Valid List<OrderLineRequest> lines) {
     public record OrderLineRequest(
-            @NotNull(message = "Product is required")
-            UUID productId,
+            @NotNull(message = "Product is required") UUID productId,
 
-            @NotNull(message = "Quantity is required")
-            BigDecimal quantity,
+            @NotNull(message = "Quantity is required") BigDecimal quantity,
 
-            @NotNull(message = "Unit price is required")
-            BigDecimal unitPrice,
+            @NotNull(message = "Unit price is required") BigDecimal unitPrice,
 
-            @Valid
-            List<WarehouseAllocationRequest> warehouseAllocations
-    ) {}
+            @Valid List<WarehouseAllocationRequest> warehouseAllocations) {
+    }
 
     public record WarehouseAllocationRequest(
-            @NotNull(message = "Warehouse is required")
-            UUID warehouseId,
+            @NotNull(message = "Warehouse is required") UUID warehouseId,
 
-            @NotNull(message = "Allocated quantity is required")
-            BigDecimal allocated
-    ) {}
+            @NotNull(message = "Allocated quantity is required") BigDecimal allocated) {
+    }
 }

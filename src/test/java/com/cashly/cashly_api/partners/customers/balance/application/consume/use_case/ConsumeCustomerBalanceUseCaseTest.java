@@ -56,14 +56,17 @@ class ConsumeCustomerBalanceUseCaseTest {
                 UUID.randomUUID(), customerId, initialBalance,
                 LocalDateTime.now(), LocalDateTime.now());
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.of(balance));
-        when(customerBalanceRepository.save(any(CustomerBalance.class))).thenReturn(balance);
-        when(customerBalanceRepository.saveTransaction(any(BalanceTransaction.class)))
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.of(balance));
+        when(customerBalanceRepository.save(any(CustomerBalance.class)))
+                .thenReturn(balance);
+        when(customerBalanceRepository
+                .saveTransaction(any(BalanceTransaction.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
-        CustomerBalanceResponse response = useCase.execute(
-                customerId, BalanceType.REFUND, consumeAmount,
-                BalanceType.REFUND, null, null, null, createdBy);
+        CustomerBalanceResponse response = useCase.execute(customerId,
+                BalanceType.REFUND, consumeAmount, BalanceType.REFUND, null,
+                null, null, createdBy);
 
         assertNotNull(response);
         assertEquals(new BigDecimal("300.00"), response.totalBalance());
@@ -73,7 +76,8 @@ class ConsumeCustomerBalanceUseCaseTest {
         CustomerBalance savedBalance = balanceCaptor.getValue();
         assertEquals(new BigDecimal("300.00"), savedBalance.getTotalBalance());
 
-        verify(customerBalanceRepository).saveTransaction(transactionCaptor.capture());
+        verify(customerBalanceRepository)
+                .saveTransaction(transactionCaptor.capture());
         BalanceTransaction savedTx = transactionCaptor.getValue();
         assertEquals(BalanceType.REFUND, savedTx.getType());
         assertEquals(consumeAmount.negate(), savedTx.getAmount());
@@ -85,11 +89,14 @@ class ConsumeCustomerBalanceUseCaseTest {
     void should_throw_when_customer_balance_not_found() {
         UUID customerId = UUID.randomUUID();
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.empty());
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> useCase.execute(customerId, BalanceType.REFUND, BigDecimal.TEN,
-                        BalanceType.REFUND, null, null, null, UUID.randomUUID()));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> useCase.execute(customerId, BalanceType.REFUND,
+                        BigDecimal.TEN, BalanceType.REFUND, null, null, null,
+                        UUID.randomUUID()));
 
         assertTrue(exception.getMessage().contains(customerId.toString()));
         verify(customerBalanceRepository).findByCustomerId(customerId);
@@ -106,13 +113,17 @@ class ConsumeCustomerBalanceUseCaseTest {
                 UUID.randomUUID(), customerId, new BigDecimal("50.00"),
                 LocalDateTime.now(), LocalDateTime.now());
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.of(balance));
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.of(balance));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> useCase.execute(customerId, BalanceType.REFUND, new BigDecimal("100.00"),
-                        BalanceType.REFUND, null, null, null, UUID.randomUUID()));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> useCase.execute(customerId, BalanceType.REFUND,
+                        new BigDecimal("100.00"), BalanceType.REFUND, null,
+                        null, null, UUID.randomUUID()));
 
-        assertTrue(exception.getMessage().contains("Amount exceeds current balance"));
+        assertTrue(exception.getMessage()
+                .contains("Amount exceeds current balance"));
         verify(customerBalanceRepository).findByCustomerId(customerId);
         verify(customerBalanceRepository, never()).save(any());
         verify(customerBalanceRepository, never()).saveTransaction(any());

@@ -18,9 +18,9 @@ public class GetWarehousesForQuoteUseCase {
     @Transactional(readOnly = true)
     public List<QuoteWarehouseResponse> execute(UUID customerId) {
         return warehouses.accessibleWarehouseIds(customerId).stream()
-                .map(warehouses::findById)
-                .flatMap(java.util.Optional::stream)
-                .map(warehouse -> new QuoteWarehouseResponse(warehouse.id().toString(), warehouse.name(),
+                .map(warehouses::findById).flatMap(java.util.Optional::stream)
+                .map(warehouse -> new QuoteWarehouseResponse(
+                        warehouse.id().toString(), warehouse.name(),
                         warehouse.address()))
                 .toList();
     }

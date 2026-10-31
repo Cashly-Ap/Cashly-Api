@@ -10,9 +10,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class V28MfaSeed implements SeedStep {
     private final JdbcMfaStore mfaStore;
-    public V28MfaSeed(JdbcMfaStore mfaStore) { this.mfaStore = mfaStore; }
-    @Override public int version() { return 28; }
-    @Override public void seed() {
+    public V28MfaSeed(JdbcMfaStore mfaStore) {
+        this.mfaStore = mfaStore;
+    }
+    @Override
+    public int version() {
+        return 28;
+    }
+    @Override
+    public void seed() {
         mfaStore.lock(ADMIN_USER.toString());
         mfaStore.lock(OPERATOR_USER.toString());
     }

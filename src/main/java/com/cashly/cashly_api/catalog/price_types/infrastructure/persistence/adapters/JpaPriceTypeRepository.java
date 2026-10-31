@@ -20,13 +20,13 @@ import java.util.UUID;
 @Component
 public class JpaPriceTypeRepository implements PriceTypeRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of(
-        "name", "active", "createdAt", "updatedAt"
-    );
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("name", "active",
+            "createdAt", "updatedAt");
 
     private final SpringDataPriceTypeRepository springDataRepository;
 
-    public JpaPriceTypeRepository(SpringDataPriceTypeRepository springDataRepository) {
+    public JpaPriceTypeRepository(
+            SpringDataPriceTypeRepository springDataRepository) {
         this.springDataRepository = springDataRepository;
     }
 
@@ -34,11 +34,13 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
     public PriceType save(PriceType priceType) {
         if (priceType.getId() != null) {
             return springDataRepository.findById(priceType.getId())
-                .map(entity -> {
-                    entity.updateFromDomain(priceType);
-                    return springDataRepository.save(entity).toDomain();
-                })
-                .orElseGet(() -> springDataRepository.save(PriceTypeEntity.fromDomain(priceType)).toDomain());
+                    .map(entity -> {
+                        entity.updateFromDomain(priceType);
+                        return springDataRepository.save(entity).toDomain();
+                    })
+                    .orElseGet(() -> springDataRepository
+                            .save(PriceTypeEntity.fromDomain(priceType))
+                            .toDomain());
         }
         PriceTypeEntity entity = PriceTypeEntity.fromDomain(priceType);
         entity.setId(UUID.randomUUID());
@@ -51,15 +53,20 @@ public class JpaPriceTypeRepository implements PriceTypeRepository {
     }
 
     @Override
-    public PageResponse<PriceType> findAllWithFilters(String search, Boolean active,
-                                                        int page, int size,
-                                                        String orderBy, String orderDir) {
-        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "createdAt";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+    public PageResponse<PriceType> findAllWithFilters(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir) {
+        String field = ALLOWED_ORDER_BY.contains(orderBy)
+                ? orderBy
+                : "createdAt";
+        Sort sort = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.by(field).descending()
+                : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
-        Page<PriceType> result = springDataRepository.findAllWithFilters(search, active, pageable)
-            .map(PriceTypeEntity::toDomain);
+        Page<PriceType> result = springDataRepository
+                .findAllWithFilters(search, active, pageable)
+                .map(PriceTypeEntity::toDomain);
 
         return PageResponseMapper.from(result);
     }

@@ -44,14 +44,14 @@ public class Invoice {
     private LocalDate issueDate;
     private LocalDate dueDate;
 
-    private Invoice(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId, String customerName,
-                    String customerRif, UUID createdBy, String createdByName,
-                    UUID orderId, String orderNumber,
-                    List<UUID> orderIds, List<UUID> quoteIds,
-                    InvoiceStatus status, PaymentType paymentType, String notes,
-                    BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
-                    LocalDateTime cancelledAt, String cancelledReason,
-                    List<InvoiceLine> lines, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Invoice(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, UUID orderId, String orderNumber,
+            List<UUID> orderIds, List<UUID> quoteIds, InvoiceStatus status,
+            PaymentType paymentType, String notes, BigDecimal returnedTotal,
+            InvoiceReturnStatus returnStatus, LocalDateTime cancelledAt,
+            String cancelledReason, List<InvoiceLine> lines,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.invoiceNumber = invoiceNumber;
         this.customerId = customerId;
@@ -61,12 +61,16 @@ public class Invoice {
         this.createdByName = createdByName;
         this.orderId = orderId;
         this.orderNumber = orderNumber;
-        this.orderIds = new ArrayList<>(orderIds != null ? orderIds : List.of());
-        this.quoteIds = new ArrayList<>(quoteIds != null ? quoteIds : List.of());
+        this.orderIds = new ArrayList<>(
+                orderIds != null ? orderIds : List.of());
+        this.quoteIds = new ArrayList<>(
+                quoteIds != null ? quoteIds : List.of());
         this.status = status;
         this.paymentType = paymentType;
         this.notes = notes;
-        this.returnedTotal = returnedTotal != null ? returnedTotal : BigDecimal.ZERO;
+        this.returnedTotal = returnedTotal != null
+                ? returnedTotal
+                : BigDecimal.ZERO;
         this.returnStatus = returnStatus;
         this.cancelledAt = cancelledAt;
         this.cancelledReason = cancelledReason;
@@ -78,19 +82,20 @@ public class Invoice {
         this.subtotal = calculateSubtotal();
     }
 
-    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId, String customerName,
-                                  String customerRif, UUID createdBy, String createdByName,
-                                  UUID orderId, String orderNumber,
-                                  PaymentType paymentType, String notes, List<InvoiceLine> lines) {
-        return create(invoiceNumber, customerId, customerName, customerRif, createdBy, createdByName,
-                orderId, orderNumber, List.of(), List.of(), paymentType, notes, lines);
+    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, UUID orderId, String orderNumber,
+            PaymentType paymentType, String notes, List<InvoiceLine> lines) {
+        return create(invoiceNumber, customerId, customerName, customerRif,
+                createdBy, createdByName, orderId, orderNumber, List.of(),
+                List.of(), paymentType, notes, lines);
     }
 
-    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId, String customerName,
-                                  String customerRif, UUID createdBy, String createdByName,
-                                  UUID orderId, String orderNumber, List<UUID> orderIds,
-                                  List<UUID> quoteIds, PaymentType paymentType, String notes,
-                                  List<InvoiceLine> lines) {
+    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, UUID orderId, String orderNumber,
+            List<UUID> orderIds, List<UUID> quoteIds, PaymentType paymentType,
+            String notes, List<InvoiceLine> lines) {
         Objects.requireNonNull(invoiceNumber, "Invoice number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
@@ -100,56 +105,60 @@ public class Invoice {
         Objects.requireNonNull(paymentType, "Payment type cannot be null");
 
         if (lines == null || lines.isEmpty()) {
-            throw new IllegalArgumentException("Invoice must have at least one line");
+            throw new IllegalArgumentException(
+                    "Invoice must have at least one line");
         }
 
         LocalDateTime now = LocalDateTime.now();
-        return new Invoice(InvoiceId.generate(), invoiceNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, orderId, orderNumber,
-                orderIds, quoteIds,
-                InvoiceStatus.DRAFT, paymentType, notes,
-                BigDecimal.ZERO, null,
-                null, null, lines, now, now);
+        return new Invoice(InvoiceId.generate(), invoiceNumber, customerId,
+                customerName, customerRif, createdBy, createdByName, orderId,
+                orderNumber, orderIds, quoteIds, InvoiceStatus.DRAFT,
+                paymentType, notes, BigDecimal.ZERO, null, null, null, lines,
+                now, now);
     }
 
-    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId, String customerName,
-                                  String customerRif, UUID createdBy, String createdByName,
-                                  UUID orderId, String orderNumber, List<UUID> orderIds,
-                                  List<UUID> quoteIds, PaymentType paymentType, String notes,
-                                  List<InvoiceLine> lines, LocalDate issueDate, LocalDate dueDate) {
-        Invoice invoice = create(invoiceNumber, customerId, customerName, customerRif, createdBy,
-                createdByName, orderId, orderNumber, orderIds, quoteIds, paymentType, notes, lines);
+    public static Invoice create(InvoiceNumber invoiceNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, UUID orderId, String orderNumber,
+            List<UUID> orderIds, List<UUID> quoteIds, PaymentType paymentType,
+            String notes, List<InvoiceLine> lines, LocalDate issueDate,
+            LocalDate dueDate) {
+        Invoice invoice = create(invoiceNumber, customerId, customerName,
+                customerRif, createdBy, createdByName, orderId, orderNumber,
+                orderIds, quoteIds, paymentType, notes, lines);
         invoice.setDates(issueDate, dueDate);
         return invoice;
     }
 
-    public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
-                                        String customerName, String customerRif,
-                                        UUID createdBy, String createdByName,
-                                        UUID orderId, String orderNumber,
-                                        InvoiceStatus status, PaymentType paymentType, String notes,
-                                        BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
-                                        LocalDateTime cancelledAt, String cancelledReason,
-                                        List<InvoiceLine> lines, LocalDateTime createdAt,
-                                        LocalDateTime updatedAt) {
-        return reconstitute(id, invoiceNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, orderId, orderNumber, List.of(), List.of(), status,
-                paymentType, notes, returnedTotal, returnStatus, cancelledAt, cancelledReason,
-                lines, createdAt, updatedAt);
+    public static Invoice reconstitute(InvoiceId id,
+            InvoiceNumber invoiceNumber, UUID customerId, String customerName,
+            String customerRif, UUID createdBy, String createdByName,
+            UUID orderId, String orderNumber, InvoiceStatus status,
+            PaymentType paymentType, String notes, BigDecimal returnedTotal,
+            InvoiceReturnStatus returnStatus, LocalDateTime cancelledAt,
+            String cancelledReason, List<InvoiceLine> lines,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return reconstitute(id, invoiceNumber, customerId, customerName,
+                customerRif, createdBy, createdByName, orderId, orderNumber,
+                List.of(), List.of(), status, paymentType, notes, returnedTotal,
+                returnStatus, cancelledAt, cancelledReason, lines, createdAt,
+                updatedAt);
     }
 
-    public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
-                                        String customerName, String customerRif,
-                                        UUID createdBy, String createdByName,
-                                        UUID orderId, String orderNumber, List<UUID> orderIds,
-                                        List<UUID> quoteIds, InvoiceStatus status, PaymentType paymentType,
-                                        String notes, BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
-                                        LocalDateTime cancelledAt, String cancelledReason,
-                                        List<InvoiceLine> lines, LocalDateTime createdAt,
-                                        LocalDateTime updatedAt, LocalDate issueDate, LocalDate dueDate) {
-        Invoice invoice = reconstitute(id, invoiceNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, orderId, orderNumber, orderIds, quoteIds, status,
-                paymentType, notes, returnedTotal, returnStatus, cancelledAt, cancelledReason,
+    public static Invoice reconstitute(InvoiceId id,
+            InvoiceNumber invoiceNumber, UUID customerId, String customerName,
+            String customerRif, UUID createdBy, String createdByName,
+            UUID orderId, String orderNumber, List<UUID> orderIds,
+            List<UUID> quoteIds, InvoiceStatus status, PaymentType paymentType,
+            String notes, BigDecimal returnedTotal,
+            InvoiceReturnStatus returnStatus, LocalDateTime cancelledAt,
+            String cancelledReason, List<InvoiceLine> lines,
+            LocalDateTime createdAt, LocalDateTime updatedAt,
+            LocalDate issueDate, LocalDate dueDate) {
+        Invoice invoice = reconstitute(id, invoiceNumber, customerId,
+                customerName, customerRif, createdBy, createdByName, orderId,
+                orderNumber, orderIds, quoteIds, status, paymentType, notes,
+                returnedTotal, returnStatus, cancelledAt, cancelledReason,
                 lines, createdAt, updatedAt);
         invoice.setDates(issueDate, dueDate);
         return invoice;
@@ -159,7 +168,8 @@ public class Invoice {
         Objects.requireNonNull(issueDate, "Issue date cannot be null");
         Objects.requireNonNull(dueDate, "Due date cannot be null");
         if (dueDate.isBefore(issueDate)) {
-            throw new IllegalArgumentException("Due date cannot be before issue date");
+            throw new IllegalArgumentException(
+                    "Due date cannot be before issue date");
         }
         this.issueDate = issueDate;
         this.dueDate = dueDate;
@@ -167,37 +177,39 @@ public class Invoice {
 
     public void updateDates(LocalDate issueDate, LocalDate dueDate) {
         if (this.status != InvoiceStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT invoices can be updated");
+            throw new IllegalStateException(
+                    "Only DRAFT invoices can be updated");
         }
         setDates(issueDate, dueDate);
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static Invoice reconstitute(InvoiceId id, InvoiceNumber invoiceNumber, UUID customerId,
-                                        String customerName, String customerRif,
-                                        UUID createdBy, String createdByName,
-                                        UUID orderId, String orderNumber, List<UUID> orderIds,
-                                        List<UUID> quoteIds, InvoiceStatus status, PaymentType paymentType, String notes,
-                                        BigDecimal returnedTotal, InvoiceReturnStatus returnStatus,
-                                        LocalDateTime cancelledAt, String cancelledReason,
-                                        List<InvoiceLine> lines, LocalDateTime createdAt,
-                                        LocalDateTime updatedAt) {
-        return new Invoice(id, invoiceNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, orderId, orderNumber,
-                orderIds, quoteIds,
-                status, paymentType, notes,
-                returnedTotal, returnStatus,
-                cancelledAt, cancelledReason,
-                lines, createdAt, updatedAt);
+    public static Invoice reconstitute(InvoiceId id,
+            InvoiceNumber invoiceNumber, UUID customerId, String customerName,
+            String customerRif, UUID createdBy, String createdByName,
+            UUID orderId, String orderNumber, List<UUID> orderIds,
+            List<UUID> quoteIds, InvoiceStatus status, PaymentType paymentType,
+            String notes, BigDecimal returnedTotal,
+            InvoiceReturnStatus returnStatus, LocalDateTime cancelledAt,
+            String cancelledReason, List<InvoiceLine> lines,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new Invoice(id, invoiceNumber, customerId, customerName,
+                customerRif, createdBy, createdByName, orderId, orderNumber,
+                orderIds, quoteIds, status, paymentType, notes, returnedTotal,
+                returnStatus, cancelledAt, cancelledReason, lines, createdAt,
+                updatedAt);
     }
 
-    public void update(PaymentType paymentType, String notes, List<InvoiceLine> newLines) {
+    public void update(PaymentType paymentType, String notes,
+            List<InvoiceLine> newLines) {
         if (this.status != InvoiceStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT invoices can be updated");
+            throw new IllegalStateException(
+                    "Only DRAFT invoices can be updated");
         }
         Objects.requireNonNull(paymentType, "Payment type cannot be null");
         if (newLines == null || newLines.isEmpty()) {
-            throw new IllegalArgumentException("Invoice must have at least one line");
+            throw new IllegalArgumentException(
+                    "Invoice must have at least one line");
         }
         this.paymentType = paymentType;
         this.notes = notes;
@@ -209,7 +221,8 @@ public class Invoice {
 
     public void confirm() {
         if (this.status != InvoiceStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT invoices can be confirmed");
+            throw new IllegalStateException(
+                    "Only DRAFT invoices can be confirmed");
         }
         if (this.paymentType == PaymentType.CASH) {
             this.status = InvoiceStatus.PAID;
@@ -221,7 +234,8 @@ public class Invoice {
 
     public void delete() {
         if (this.status != InvoiceStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT invoices can be deleted");
+            throw new IllegalStateException(
+                    "Only DRAFT invoices can be deleted");
         }
     }
 
@@ -230,11 +244,13 @@ public class Invoice {
             throw new IllegalStateException("Invoice is already cancelled");
         }
         if (this.status == InvoiceStatus.FULLY_RETURNED) {
-            throw new IllegalStateException("Cannot cancel an invoice that is FULLY_RETURNED");
+            throw new IllegalStateException(
+                    "Cannot cancel an invoice that is FULLY_RETURNED");
         }
         Objects.requireNonNull(reason, "Cancellation reason cannot be null");
         if (reason.isBlank()) {
-            throw new IllegalArgumentException("Cancellation reason cannot be blank");
+            throw new IllegalArgumentException(
+                    "Cancellation reason cannot be blank");
         }
         this.status = InvoiceStatus.CANCELLED;
         this.cancelledAt = LocalDateTime.now();
@@ -242,7 +258,8 @@ public class Invoice {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void recalculatePaymentStatus(BigDecimal totalPaid, BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
+    public void recalculatePaymentStatus(BigDecimal totalPaid,
+            BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
         if (this.status == InvoiceStatus.DRAFT
                 || this.status == InvoiceStatus.CANCELLED
                 || this.status == InvoiceStatus.FULLY_RETURNED) {
@@ -251,8 +268,7 @@ public class Invoice {
 
         BigDecimal effectiveTotal = this.calculateTotal(
                 totalCreditNotes != null ? totalCreditNotes : BigDecimal.ZERO,
-                totalDebitNotes != null ? totalDebitNotes : BigDecimal.ZERO
-        );
+                totalDebitNotes != null ? totalDebitNotes : BigDecimal.ZERO);
         BigDecimal balance = effectiveTotal
                 .subtract(totalPaid != null ? totalPaid : BigDecimal.ZERO);
 
@@ -270,12 +286,14 @@ public class Invoice {
     public void applyReturn(InvoiceReturnAdjustment return_) {
         Objects.requireNonNull(return_, "Return cannot be null");
 
-        if (this.status == InvoiceStatus.FULLY_RETURNED || this.status == InvoiceStatus.CANCELLED) {
+        if (this.status == InvoiceStatus.FULLY_RETURNED
+                || this.status == InvoiceStatus.CANCELLED) {
             throw new InvoiceNotReturnableException(this.id, this.status);
         }
 
         if (!return_.invoiceId().equals(this.id.value())) {
-            throw new IllegalArgumentException("La devolución no pertenece a esta factura");
+            throw new IllegalArgumentException(
+                    "La devolución no pertenece a esta factura");
         }
 
         validateReturnLineOwnership(return_);
@@ -283,16 +301,18 @@ public class Invoice {
         this.returnedTotal = this.returnedTotal.add(return_.total());
 
         for (InvoiceReturnAdjustment.Line returnLine : return_.lines()) {
-            this.lines.stream()
-                    .filter(l -> l.getId().value().equals(returnLine.invoiceLineId()))
-                    .findFirst()
-                    .ifPresent(line -> line.accumulateReturnedQuantity(returnLine.quantity()));
+            this.lines.stream().filter(
+                    l -> l.getId().value().equals(returnLine.invoiceLineId()))
+                    .findFirst().ifPresent(line -> line
+                            .accumulateReturnedQuantity(returnLine.quantity()));
         }
 
-        boolean allFullyReturned = this.lines.stream()
-                .allMatch(line -> line.getReturnedQuantity().compareTo(line.getQuantity()) >= 0);
+        boolean allFullyReturned = this.lines.stream().allMatch(line -> line
+                .getReturnedQuantity().compareTo(line.getQuantity()) >= 0);
 
-        this.returnStatus = allFullyReturned ? InvoiceReturnStatus.FULL : InvoiceReturnStatus.PARTIAL;
+        this.returnStatus = allFullyReturned
+                ? InvoiceReturnStatus.FULL
+                : InvoiceReturnStatus.PARTIAL;
 
         if (return_.closeInvoice() || allFullyReturned) {
             this.status = InvoiceStatus.FULLY_RETURNED;
@@ -305,7 +325,8 @@ public class Invoice {
         Objects.requireNonNull(return_, "Return cannot be null");
 
         if (!return_.invoiceId().equals(this.id.value())) {
-            throw new IllegalArgumentException("La devolución no pertenece a esta factura");
+            throw new IllegalArgumentException(
+                    "La devolución no pertenece a esta factura");
         }
 
         validateReturnLineOwnership(return_);
@@ -313,16 +334,16 @@ public class Invoice {
         this.returnedTotal = this.returnedTotal.subtract(return_.total());
 
         for (InvoiceReturnAdjustment.Line returnLine : return_.lines()) {
-            this.lines.stream()
-                    .filter(l -> l.getId().value().equals(returnLine.invoiceLineId()))
-                    .findFirst()
-                    .ifPresent(line -> line.decreaseReturnedQuantity(returnLine.quantity()));
+            this.lines.stream().filter(
+                    l -> l.getId().value().equals(returnLine.invoiceLineId()))
+                    .findFirst().ifPresent(line -> line
+                            .decreaseReturnedQuantity(returnLine.quantity()));
         }
 
-        boolean anyReturned = this.lines.stream()
-                .anyMatch(line -> line.getReturnedQuantity().compareTo(BigDecimal.ZERO) > 0);
-        boolean allFullyReturned = this.lines.stream()
-                .allMatch(line -> line.getReturnedQuantity().compareTo(line.getQuantity()) >= 0);
+        boolean anyReturned = this.lines.stream().anyMatch(line -> line
+                .getReturnedQuantity().compareTo(BigDecimal.ZERO) > 0);
+        boolean allFullyReturned = this.lines.stream().allMatch(line -> line
+                .getReturnedQuantity().compareTo(line.getQuantity()) >= 0);
 
         if (!anyReturned) {
             this.returnStatus = null;
@@ -335,27 +356,29 @@ public class Invoice {
         this.updatedAt = LocalDateTime.now();
     }
 
-    private void validateReturnLineOwnership(InvoiceReturnAdjustment adjustment) {
+    private void validateReturnLineOwnership(
+            InvoiceReturnAdjustment adjustment) {
         for (InvoiceReturnAdjustment.Line returnLine : adjustment.lines()) {
-            boolean belongsToInvoice = this.lines.stream()
-                    .anyMatch(line -> line.getId().value().equals(returnLine.invoiceLineId()));
+            boolean belongsToInvoice = this.lines.stream().anyMatch(line -> line
+                    .getId().value().equals(returnLine.invoiceLineId()));
             if (!belongsToInvoice) {
-                throw new IllegalArgumentException("Return line does not belong to this invoice");
+                throw new IllegalArgumentException(
+                        "Return line does not belong to this invoice");
             }
         }
     }
+
     private BigDecimal calculateSubtotal() {
-        return lines.stream()
-                .map(InvoiceLine::getLineTotal)
+        return lines.stream().map(InvoiceLine::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public BigDecimal calculateTotal(BigDecimal creditApplied, BigDecimal debitApplied) {
+    public BigDecimal calculateTotal(BigDecimal creditApplied,
+            BigDecimal debitApplied) {
         if (subtotal == null) {
             return BigDecimal.ZERO;
         }
-        return subtotal.subtract(returnedTotal)
-                .subtract(creditApplied)
+        return subtotal.subtract(returnedTotal).subtract(creditApplied)
                 .add(debitApplied);
     }
 
@@ -363,28 +386,99 @@ public class Invoice {
         return calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    public InvoiceId getId() { return id; }
-    public InvoiceNumber getInvoiceNumber() { return invoiceNumber; }
-    public UUID getCustomerId() { return customerId; }
-    public String getCustomerName() { return customerName; }
-    public String getCustomerRif() { return customerRif; }
-    public UUID getCreatedBy() { return createdBy; }
-    public String getCreatedByName() { return createdByName; }
-    public UUID getOrderId() { return orderId; }
-    public String getOrderNumber() { return orderNumber; }
-    public List<UUID> getOrderIds() { return Collections.unmodifiableList(orderIds); }
-    public List<UUID> getQuoteIds() { return Collections.unmodifiableList(quoteIds); }
-    public InvoiceStatus getStatus() { return status; }
-    public PaymentType getPaymentType() { return paymentType; }
-    public String getNotes() { return notes; }
-    public BigDecimal getSubtotal() { return subtotal; }
-    public BigDecimal getReturnedTotal() { return returnedTotal; }
-    public InvoiceReturnStatus getReturnStatus() { return returnStatus; }
-    public LocalDateTime getCancelledAt() { return cancelledAt; }
-    public String getCancelledReason() { return cancelledReason; }
-    public List<InvoiceLine> getLines() { return Collections.unmodifiableList(lines); }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public LocalDate getIssueDate() { return issueDate; }
-    public LocalDate getDueDate() { return dueDate; }
+    public InvoiceId getId() {
+        return id;
+    }
+
+    public InvoiceNumber getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
+    public UUID getCustomerId() {
+        return customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public String getCustomerRif() {
+        return customerRif;
+    }
+
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public UUID getOrderId() {
+        return orderId;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public List<UUID> getOrderIds() {
+        return Collections.unmodifiableList(orderIds);
+    }
+
+    public List<UUID> getQuoteIds() {
+        return Collections.unmodifiableList(quoteIds);
+    }
+
+    public InvoiceStatus getStatus() {
+        return status;
+    }
+
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public BigDecimal getReturnedTotal() {
+        return returnedTotal;
+    }
+
+    public InvoiceReturnStatus getReturnStatus() {
+        return returnStatus;
+    }
+
+    public LocalDateTime getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public String getCancelledReason() {
+        return cancelledReason;
+    }
+
+    public List<InvoiceLine> getLines() {
+        return Collections.unmodifiableList(lines);
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
 }

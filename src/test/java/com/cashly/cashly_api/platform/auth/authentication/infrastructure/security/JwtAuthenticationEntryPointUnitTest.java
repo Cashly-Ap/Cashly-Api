@@ -52,27 +52,32 @@ class JwtAuthenticationEntryPointUnitTest {
 
     @Test
     @DisplayName("should_SetUnauthorizedStatus_When_AuthenticationFails")
-    void should_SetUnauthorizedStatus_When_AuthenticationFails() throws IOException {
+    void should_SetUnauthorizedStatus_When_AuthenticationFails()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
 
-        verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response, times(1))
+                .setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     @Test
     @DisplayName("should_SetJsonContentType_When_AuthenticationFails")
-    void should_SetJsonContentType_When_AuthenticationFails() throws IOException {
+    void should_SetJsonContentType_When_AuthenticationFails()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
 
-        verify(response, times(1)).setContentType(MediaType.APPLICATION_JSON_VALUE);
+        verify(response, times(1))
+                .setContentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
     @Test
     @DisplayName("should_WriteErrorResponse_When_AuthenticationFails")
-    void should_WriteErrorResponse_When_AuthenticationFails() throws IOException {
+    void should_WriteErrorResponse_When_AuthenticationFails()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
@@ -87,7 +92,8 @@ class JwtAuthenticationEntryPointUnitTest {
 
     @Test
     @DisplayName("should_IncludeTimestamp_When_WritingErrorResponse")
-    void should_IncludeTimestamp_When_WritingErrorResponse() throws IOException {
+    void should_IncludeTimestamp_When_WritingErrorResponse()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
@@ -101,7 +107,8 @@ class JwtAuthenticationEntryPointUnitTest {
 
     @Test
     @DisplayName("should_IncludeStatusCode_When_WritingErrorResponse")
-    void should_IncludeStatusCode_When_WritingErrorResponse() throws IOException {
+    void should_IncludeStatusCode_When_WritingErrorResponse()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
@@ -115,7 +122,8 @@ class JwtAuthenticationEntryPointUnitTest {
 
     @Test
     @DisplayName("should_IncludeErrorMessage_When_WritingErrorResponse")
-    void should_IncludeErrorMessage_When_WritingErrorResponse() throws IOException {
+    void should_IncludeErrorMessage_When_WritingErrorResponse()
+            throws IOException {
         when(request.getHeader("Accept-Language")).thenReturn("en");
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
@@ -131,7 +139,8 @@ class JwtAuthenticationEntryPointUnitTest {
 
     @Test
     @DisplayName("should_IncludeRequestPath_When_WritingErrorResponse")
-    void should_IncludeRequestPath_When_WritingErrorResponse() throws IOException {
+    void should_IncludeRequestPath_When_WritingErrorResponse()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/protected");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
@@ -145,7 +154,8 @@ class JwtAuthenticationEntryPointUnitTest {
 
     @Test
     @DisplayName("should_HandleDifferentPaths_When_AuthenticationFails")
-    void should_HandleDifferentPaths_When_AuthenticationFails() throws IOException {
+    void should_HandleDifferentPaths_When_AuthenticationFails()
+            throws IOException {
         when(request.getServletPath()).thenReturn("/api/v1/another-endpoint");
 
         jwtAuthenticationEntryPoint.commence(request, response, authException);
@@ -182,7 +192,8 @@ class JwtAuthenticationEntryPointUnitTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
-        Map<String, Object> errorResponse = mapper.readValue(writtenBytes, Map.class);
+        Map<String, Object> errorResponse = mapper.readValue(writtenBytes,
+                Map.class);
 
         assertNotNull(errorResponse);
         assertTrue(errorResponse.containsKey("timestamp"));
@@ -196,7 +207,8 @@ class JwtAuthenticationEntryPointUnitTest {
         jwtAuthenticationEntryPoint.commence(request, response, authException);
         ArgumentCaptor<byte[]> payload = ArgumentCaptor.forClass(byte[].class);
         verify(outputStream).write(payload.capture());
-        String json = new String(payload.getValue(), java.nio.charset.StandardCharsets.UTF_8);
+        String json = new String(payload.getValue(),
+                java.nio.charset.StandardCharsets.UTF_8);
         assertTrue(json.contains("Debes iniciar sesión para continuar"));
         assertTrue(json.contains("AUTHENTICATION_REQUIRED"));
         verify(response).setHeader("Content-Language", "es");

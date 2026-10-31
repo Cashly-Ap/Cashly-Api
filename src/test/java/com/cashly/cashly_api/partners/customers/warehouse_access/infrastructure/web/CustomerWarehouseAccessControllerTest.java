@@ -40,13 +40,15 @@ class CustomerWarehouseAccessControllerTest {
     @DisplayName("should list warehouses and return 200")
     void should_list_warehouses_and_return_200() {
         UUID customerId = UUID.randomUUID();
-        List<CustomerWarehouseAccessResponse> responses = List.of(
-                new CustomerWarehouseAccessResponse(UUID.randomUUID(), customerId, UUID.randomUUID(), "Main Warehouse"));
+        List<CustomerWarehouseAccessResponse> responses = List
+                .of(new CustomerWarehouseAccessResponse(UUID.randomUUID(),
+                        customerId, UUID.randomUUID(), "Main Warehouse"));
 
-        when(listCustomerWarehousesUseCase.execute(customerId)).thenReturn(responses);
+        when(listCustomerWarehousesUseCase.execute(customerId))
+                .thenReturn(responses);
 
-        ResponseEntity<List<CustomerWarehouseAccessResponse>> result =
-                customerWarehouseAccessController.listWarehouses(customerId);
+        ResponseEntity<List<CustomerWarehouseAccessResponse>> result = customerWarehouseAccessController
+                .listWarehouses(customerId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
@@ -58,10 +60,11 @@ class CustomerWarehouseAccessControllerTest {
     void should_list_empty_warehouses_when_customer_has_no_access() {
         UUID customerId = UUID.randomUUID();
 
-        when(listCustomerWarehousesUseCase.execute(customerId)).thenReturn(List.of());
+        when(listCustomerWarehousesUseCase.execute(customerId))
+                .thenReturn(List.of());
 
-        ResponseEntity<List<CustomerWarehouseAccessResponse>> result =
-                customerWarehouseAccessController.listWarehouses(customerId);
+        ResponseEntity<List<CustomerWarehouseAccessResponse>> result = customerWarehouseAccessController
+                .listWarehouses(customerId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
@@ -81,15 +84,17 @@ class CustomerWarehouseAccessControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(grantedBy.toString());
 
-        when(grantWarehouseAccessUseCase.execute(customerId, warehouseId, grantedBy)).thenReturn(response);
+        when(grantWarehouseAccessUseCase.execute(customerId, warehouseId,
+                grantedBy)).thenReturn(response);
 
-        ResponseEntity<CustomerWarehouseAccessResponse> result =
-                customerWarehouseAccessController.grantAccess(customerId, warehouseId, authentication);
+        ResponseEntity<CustomerWarehouseAccessResponse> result = customerWarehouseAccessController
+                .grantAccess(customerId, warehouseId, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
         assertEquals(warehouseId, result.getBody().warehouseId());
-        verify(grantWarehouseAccessUseCase).execute(customerId, warehouseId, grantedBy);
+        verify(grantWarehouseAccessUseCase).execute(customerId, warehouseId,
+                grantedBy);
     }
 
     @Test
@@ -98,10 +103,11 @@ class CustomerWarehouseAccessControllerTest {
         UUID customerId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
 
-        doNothing().when(revokeWarehouseAccessUseCase).execute(customerId, warehouseId);
+        doNothing().when(revokeWarehouseAccessUseCase).execute(customerId,
+                warehouseId);
 
-        ResponseEntity<Void> result =
-                customerWarehouseAccessController.revokeAccess(customerId, warehouseId);
+        ResponseEntity<Void> result = customerWarehouseAccessController
+                .revokeAccess(customerId, warehouseId);
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         assertNull(result.getBody());

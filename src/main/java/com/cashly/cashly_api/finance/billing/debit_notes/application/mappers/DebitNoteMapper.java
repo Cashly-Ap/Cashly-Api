@@ -5,26 +5,16 @@ import com.cashly.cashly_api.finance.billing.debit_notes.domain.entity.DebitNote
 
 public class DebitNoteMapper {
 
-    private DebitNoteMapper() {}
+    private DebitNoteMapper() {
+    }
 
     public static DebitNoteResponse toDebitNoteResponse(DebitNote debitNote,
-                                                         String customerName,
-                                                         String customerRif,
-                                                         String invoiceNumber) {
-        return new DebitNoteResponse(
-                debitNote.getId().value(),
-                debitNote.getNoteNumber().value(),
-                debitNote.getCustomerId(),
-                customerName,
-                customerRif,
-                debitNote.getInvoiceId(),
-                invoiceNumber,
-                debitNote.getAmount(),
-                debitNote.getReason(),
-                debitNote.getCreatedBy(),
-                debitNote.getCreatedByName(),
-                debitNote.getCreatedAt(),
-                debitNote.getUpdatedAt()
-        );
+            String customerName, String customerRif, String invoiceNumber) {
+        return new DebitNoteResponse(debitNote.getId().value(),
+                debitNote.getNoteNumber().value(), debitNote.getCustomerId(),
+                customerName, customerRif, debitNote.getInvoiceId(),
+                invoiceNumber, debitNote.getAmount(), debitNote.getReason(),
+                debitNote.getCreatedBy(), debitNote.getCreatedByName(),
+                debitNote.getCreatedAt(), debitNote.getUpdatedAt());
     }
 }

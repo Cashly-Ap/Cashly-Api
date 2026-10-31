@@ -30,9 +30,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CancelOrderUseCaseUnitTest {
-    @Mock private OrderRepository orders;
-    @Mock private OrderInventoryGateway inventory;
-    @Mock private OrderNotificationGateway notifications;
+    @Mock
+    private OrderRepository orders;
+    @Mock
+    private OrderInventoryGateway inventory;
+    @Mock
+    private OrderNotificationGateway notifications;
     private CancelOrderUseCase useCase;
 
     @BeforeEach
@@ -43,27 +46,35 @@ class CancelOrderUseCaseUnitTest {
     @Test
     void releasesReservationForDraftOrder() {
         Order order = order(OrderStatus.DRAFT);
-        when(orders.findById(OrderId.of(order.getId().value()))).thenReturn(Optional.of(order));
-        when(orders.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orders.findById(OrderId.of(order.getId().value())))
+                .thenReturn(Optional.of(order));
+        when(orders.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        var response = useCase.execute(order.getId().value(), new CancelOrderRequest("Requested"));
+        var response = useCase.execute(order.getId().value(),
+                new CancelOrderRequest("Requested"));
 
         assertEquals("CANCELLED", response.status());
         verify(inventory).release(allocations(order));
-        verify(notifications).notifyCustomerOrderRejected(order.getCustomerId(), order.getId().value(), "Requested");
+        verify(notifications).notifyCustomerOrderRejected(order.getCustomerId(),
+                order.getId().value(), "Requested");
         verify(inventory, never()).restore(anyList(), any());
     }
 
     @Test
     void restoresStockForConfirmedOrder() {
         Order order = order(OrderStatus.CONFIRMED);
-        when(orders.findById(OrderId.of(order.getId().value()))).thenReturn(Optional.of(order));
-        when(orders.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orders.findById(OrderId.of(order.getId().value())))
+                .thenReturn(Optional.of(order));
+        when(orders.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        useCase.execute(order.getId().value(), new CancelOrderRequest("Rejected"));
+        useCase.execute(order.getId().value(),
+                new CancelOrderRequest("Rejected"));
 
-        verify(inventory).restore(allocations(order), new OrderInventoryGateway.Reference(order.getId().value(),
-                order.getOrderNumber().value(), "Order cancelled"));
+        verify(inventory).restore(allocations(order),
+                new OrderInventoryGateway.Reference(order.getId().value(),
+                        order.getOrderNumber().value(), "Order cancelled"));
         verify(inventory, never()).release(anyList());
     }
 
@@ -72,25 +83,32 @@ class CancelOrderUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         when(orders.findById(OrderId.of(id))).thenReturn(Optional.empty());
 
-        assertThrows(OrderNotFoundException.class, () -> useCase.execute(id, new CancelOrderRequest("Reason")));
+        assertThrows(OrderNotFoundException.class,
+                () -> useCase.execute(id, new CancelOrderRequest("Reason")));
 
         verifyNoInteractions(inventory, notifications);
     }
 
     private List<OrderInventoryGateway.Allocation> allocations(Order order) {
-        return order.getLines().stream().flatMap(line -> line.getAllocations().stream()
-                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
-                        line.getProductId(), allocation.getAllocated().intValue()))).toList();
+        return order.getLines().stream().flatMap(line -> line.getAllocations()
+                .stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(
+                        allocation.getWarehouseId(), line.getProductId(),
+                        allocation.getAllocated().intValue())))
+                .toList();
     }
 
     private Order order(OrderStatus status) {
         UUID id = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
-        var line = OrderLine.create(productId, "Product", "SKU", BigDecimal.valueOf(3), BigDecimal.TEN,
-                List.of(OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(3))));
-        return Order.reconstitute(OrderId.of(id), OrderNumber.of(2026, 2), UUID.randomUUID(), "Customer", "RIF",
-                UUID.randomUUID(), "Actor", status, null, null, null, null, null, List.of(line),
+        var line = OrderLine.create(productId, "Product", "SKU",
+                BigDecimal.valueOf(3), BigDecimal.TEN,
+                List.of(OrderLineAllocation.create(warehouseId,
+                        BigDecimal.valueOf(3))));
+        return Order.reconstitute(OrderId.of(id), OrderNumber.of(2026, 2),
+                UUID.randomUUID(), "Customer", "RIF", UUID.randomUUID(),
+                "Actor", status, null, null, null, null, null, List.of(line),
                 LocalDateTime.now(), LocalDateTime.now());
     }
 }

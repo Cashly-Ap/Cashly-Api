@@ -19,8 +19,7 @@ public class DeleteInvoiceUseCase {
     private final InventoryGateway inventoryGateway;
 
     public DeleteInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                 InvoiceOrderGateway orders,
-                                 InventoryGateway inventoryGateway) {
+            InvoiceOrderGateway orders, InventoryGateway inventoryGateway) {
         this.invoiceRepository = invoiceRepository;
         this.orders = orders;
         this.inventoryGateway = inventoryGateway;
@@ -45,6 +44,7 @@ public class DeleteInvoiceUseCase {
     }
 
     private void revertStockAllocations(Invoice invoice) {
-        inventoryGateway.releaseInvoiceReservations(InventoryGateway.InvoiceInventoryCommand.from(invoice));
+        inventoryGateway.releaseInvoiceReservations(
+                InventoryGateway.InvoiceInventoryCommand.from(invoice));
     }
 }

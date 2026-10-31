@@ -21,18 +21,23 @@ public class LocalInventoryGatewayAdapter implements InventoryGateway {
     }
 
     @Override
-    public void cancelInvoice(InvoiceInventoryCommand command, boolean previouslyConfirmed) {
+    public void cancelInvoice(InvoiceInventoryCommand command,
+            boolean previouslyConfirmed) {
         InvoiceStockCommand warehouseCommand = toWarehouseCommand(command);
-        if (previouslyConfirmed) inventoryApi.restoreStock(warehouseCommand);
-        else inventoryApi.releaseReservations(warehouseCommand);
+        if (previouslyConfirmed)
+            inventoryApi.restoreStock(warehouseCommand);
+        else
+            inventoryApi.releaseReservations(warehouseCommand);
     }
 
     @Override
     public void reserveAllocations(List<Allocation> allocations) {
         try {
-            inventoryApi.reserveAllocations(toWarehouseAllocations(allocations));
+            inventoryApi
+                    .reserveAllocations(toWarehouseAllocations(allocations));
         } catch (ProductNotInWarehouseException exception) {
-            throw new IllegalArgumentException(exception.getMessage(), exception);
+            throw new IllegalArgumentException(exception.getMessage(),
+                    exception);
         }
     }
 
@@ -41,14 +46,18 @@ public class LocalInventoryGatewayAdapter implements InventoryGateway {
         inventoryApi.releaseReservations(toWarehouseCommand(command));
     }
 
-    private InvoiceStockCommand toWarehouseCommand(InvoiceInventoryCommand command) {
-        return new InvoiceStockCommand(command.invoiceId(), command.invoiceNumber(),
+    private InvoiceStockCommand toWarehouseCommand(
+            InvoiceInventoryCommand command) {
+        return new InvoiceStockCommand(command.invoiceId(),
+                command.invoiceNumber(),
                 toWarehouseAllocations(command.allocations()));
     }
 
-    private List<InvoiceStockCommand.Allocation> toWarehouseAllocations(List<Allocation> allocations) {
+    private List<InvoiceStockCommand.Allocation> toWarehouseAllocations(
+            List<Allocation> allocations) {
         return allocations.stream()
-                .map(a -> new InvoiceStockCommand.Allocation(a.warehouseId(), a.productId(), a.quantity()))
+                .map(a -> new InvoiceStockCommand.Allocation(a.warehouseId(),
+                        a.productId(), a.quantity()))
                 .toList();
     }
 }

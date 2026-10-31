@@ -14,8 +14,7 @@ class DashboardArchitectureTest {
     @Test
     void should_depend_on_application_ports_instead_of_jdbc() {
         assertThat(Arrays.stream(GetDashboardUseCase.class.getDeclaredFields())
-                .map(Field::getType)
-                .map(Class::getPackageName))
+                .map(Field::getType).map(Class::getPackageName))
                 .allMatch(packageName -> packageName.startsWith(
                         "com.cashly.cashly_api.analytics.dashboard.application.ports.out"));
     }

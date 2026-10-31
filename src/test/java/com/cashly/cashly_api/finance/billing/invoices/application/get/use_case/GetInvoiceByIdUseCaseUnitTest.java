@@ -50,12 +50,16 @@ class GetInvoiceByIdUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        getInvoiceByIdUseCase = new GetInvoiceByIdUseCase(
-                invoiceRepository, stockEnrichmentService, noteDetails, returnDetails);
-        lenient().when(noteDetails.findCreditNotes(any())).thenReturn(List.of());
+        getInvoiceByIdUseCase = new GetInvoiceByIdUseCase(invoiceRepository,
+                stockEnrichmentService, noteDetails, returnDetails);
+        lenient().when(noteDetails.findCreditNotes(any()))
+                .thenReturn(List.of());
         lenient().when(noteDetails.findDebitNotes(any())).thenReturn(List.of());
-        lenient().when(returnDetails.findByInvoiceId(any())).thenReturn(List.of());
-        lenient().when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
+        lenient().when(returnDetails.findByInvoiceId(any()))
+                .thenReturn(List.of());
+        lenient().when(
+                stockEnrichmentService.getAllStockByProducts(any(), any()))
+                .thenReturn(java.util.Map.of());
     }
 
     @Test
@@ -63,15 +67,14 @@ class GetInvoiceByIdUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Invoice invoice = buildInvoiceWithAllocations(id, warehouseId, productId);
+        Invoice invoice = buildInvoiceWithAllocations(id, warehouseId,
+                productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(stockEnrichmentService.enrich(any())).thenReturn(List.of(
-                new StockAvailabilityGateway.EnrichedStock(
-                        warehouseId, productId,
-                        "WH1", "Warehouse 1", 15
-                )
-        ));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(stockEnrichmentService.enrich(any())).thenReturn(
+                List.of(new StockAvailabilityGateway.EnrichedStock(warehouseId,
+                        productId, "WH1", "Warehouse 1", 15)));
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
@@ -79,7 +82,8 @@ class GetInvoiceByIdUseCaseUnitTest {
         assertEquals(id, response.id());
         assertThat(response.lines()).hasSize(1);
         assertThat(response.lines().get(0).warehouseAllocations()).hasSize(1);
-        assertThat(response.lines().get(0).warehouseAllocations().get(0).available()).isEqualTo(15);
+        assertThat(response.lines().get(0).warehouseAllocations().get(0)
+                .available()).isEqualTo(15);
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verify(stockEnrichmentService).enrich(any());
     }
@@ -88,14 +92,15 @@ class GetInvoiceByIdUseCaseUnitTest {
     void should_ThrowInvoiceNotFoundException_When_InvoiceDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.empty());
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.empty());
 
         InvoiceNotFoundException exception = assertThrows(
                 InvoiceNotFoundException.class,
-                () -> getInvoiceByIdUseCase.execute(id)
-        );
+                () -> getInvoiceByIdUseCase.execute(id));
 
-        assertEquals("Invoice not found with id: " + id, exception.getMessage());
+        assertEquals("Invoice not found with id: " + id,
+                exception.getMessage());
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verifyNoInteractions(stockEnrichmentService);
     }
@@ -105,7 +110,8 @@ class GetInvoiceByIdUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoiceWithAllocations(id);
 
-        when(invoiceRepository.findById(any())).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(any()))
+                .thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
 
         getInvoiceByIdUseCase.execute(id);
@@ -118,21 +124,21 @@ class GetInvoiceByIdUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Invoice invoice = buildInvoiceWithAllocations(id, warehouseId, productId);
+        Invoice invoice = buildInvoiceWithAllocations(id, warehouseId,
+                productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(stockEnrichmentService.enrich(any())).thenReturn(List.of(
-                new StockAvailabilityGateway.EnrichedStock(
-                        warehouseId, productId,
-                        "WH-MAIN", "Deposito Principal", 25
-                )
-        ));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(stockEnrichmentService.enrich(any())).thenReturn(
+                List.of(new StockAvailabilityGateway.EnrichedStock(warehouseId,
+                        productId, "WH-MAIN", "Deposito Principal", 25)));
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
         assertThat(response.lines()).hasSize(1);
         assertThat(response.lines().get(0).warehouseAllocations()).hasSize(1);
-        InvoiceDetailResponse.WarehouseAllocationResponse allocation = response.lines().get(0).warehouseAllocations().get(0);
+        InvoiceDetailResponse.WarehouseAllocationResponse allocation = response
+                .lines().get(0).warehouseAllocations().get(0);
         assertThat(allocation.warehouseId()).isEqualTo(warehouseId);
         assertThat(allocation.warehouseCode()).isEqualTo("WH-MAIN");
         assertThat(allocation.warehouseName()).isEqualTo("Deposito Principal");
@@ -144,14 +150,16 @@ class GetInvoiceByIdUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoiceWithAllocations(id);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
         assertThat(response.lines()).hasSize(1);
         assertThat(response.lines().get(0).warehouseAllocations()).hasSize(1);
-        assertThat(response.lines().get(0).warehouseAllocations().get(0).available()).isZero();
+        assertThat(response.lines().get(0).warehouseAllocations().get(0)
+                .available()).isZero();
     }
 
     private Invoice buildInvoiceWithAllocations(UUID id) {
@@ -160,30 +168,17 @@ class GetInvoiceByIdUseCaseUnitTest {
         return buildInvoiceWithAllocations(id, warehouseId, productId);
     }
 
-    private Invoice buildInvoiceWithAllocations(UUID id, UUID warehouseId, UUID productId) {
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, BigDecimal.valueOf(3));
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        return Invoice.reconstitute(
-                InvoiceId.of(id),
-                InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                null,
-                null,
-                InvoiceStatus.DRAFT,
-                PaymentType.CASH,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+    private Invoice buildInvoiceWithAllocations(UUID id, UUID warehouseId,
+            UUID productId) {
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(warehouseId, BigDecimal.valueOf(3));
+        InvoiceLine line = InvoiceLine.create(productId, "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN,
+                List.of(allocation));
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+                UUID.randomUUID(), "Customer Name", "J-12345678-9",
+                UUID.randomUUID(), "User Name", null, null, InvoiceStatus.DRAFT,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 }

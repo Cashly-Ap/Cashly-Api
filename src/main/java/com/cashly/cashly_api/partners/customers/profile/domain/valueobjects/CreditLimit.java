@@ -11,7 +11,8 @@ public class CreditLimit {
             throw new IllegalArgumentException("Credit limit cannot be null");
         }
         if (value.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Credit limit must be non-negative");
+            throw new IllegalArgumentException(
+                    "Credit limit must be non-negative");
         }
         this.value = value;
     }
@@ -22,8 +23,10 @@ public class CreditLimit {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         CreditLimit that = (CreditLimit) obj;
         return Objects.equals(value, that.value);
     }

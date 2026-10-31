@@ -19,7 +19,9 @@ class RepositoryWarehouseDirectoryQueryTest {
         when(warehouse.getName()).thenReturn("Warehouse");
         when(warehouse.getAddress()).thenReturn("Address");
         when(repository.findById(id)).thenReturn(Optional.of(warehouse));
-        assertEquals(Optional.of(new WarehouseDirectoryEntry(id, "Warehouse", "Address")),
+        assertEquals(
+                Optional.of(new WarehouseDirectoryEntry(id, "Warehouse",
+                        "Address")),
                 new RepositoryWarehouseDirectoryQuery(repository).findById(id));
         verify(repository).findById(id);
     }
@@ -29,6 +31,7 @@ class RepositoryWarehouseDirectoryQueryTest {
         UUID id = UUID.randomUUID();
         WarehouseRepository repository = mock(WarehouseRepository.class);
         when(repository.findById(id)).thenReturn(Optional.empty());
-        assertTrue(new RepositoryWarehouseDirectoryQuery(repository).findById(id).isEmpty());
+        assertTrue(new RepositoryWarehouseDirectoryQuery(repository)
+                .findById(id).isEmpty());
     }
 }

@@ -19,35 +19,50 @@ import java.util.UUID;
 @Order(Ordered.LOWEST_PRECEDENCE - 10)
 public class RequestLanguageFilter extends OncePerRequestFilter {
     private final UserPreferencesRepository preferences;
-    public RequestLanguageFilter(UserPreferencesRepository preferences) { this.preferences = preferences; }
-    @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    public RequestLanguageFilter(UserPreferencesRepository preferences) {
+        this.preferences = preferences;
+    }
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         var previous = LocaleContextHolder.getLocaleContext();
         var language = requestedLanguage(request.getHeader("Accept-Language"));
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             try {
                 var id = UUID.fromString(authentication.getName());
                 String saved = preferences.languageFor(id);
-                if ("es".equals(saved) || "en".equals(saved)) language = saved;
-            } catch (IllegalArgumentException ignored) { }
+                if ("es".equals(saved) || "en".equals(saved))
+                    language = saved;
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         var locale = Locale.forLanguageTag(language);
         LocaleContextHolder.setLocale(locale);
         request.setAttribute("cashly.locale", locale);
         response.setHeader("Content-Language", language);
-        try { chain.doFilter(request, response); }
-        finally { LocaleContextHolder.setLocaleContext(previous); }
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            LocaleContextHolder.setLocaleContext(previous);
+        }
     }
     public static String requestedLanguage(String header) {
-        if (header == null || header.isBlank()) return "es";
+        if (header == null || header.isBlank())
+            return "es";
         try {
             for (var range : Locale.LanguageRange.parse(header)) {
-                if (range.getWeight() == 0) continue;
-                var language = Locale.forLanguageTag(range.getRange()).getLanguage();
-                if (language.equals("en") || language.equals("es")) return language;
+                if (range.getWeight() == 0)
+                    continue;
+                var language = Locale.forLanguageTag(range.getRange())
+                        .getLanguage();
+                if (language.equals("en") || language.equals("es"))
+                    return language;
             }
-        } catch (IllegalArgumentException ignored) { }
+        } catch (IllegalArgumentException ignored) {
+        }
         return "es";
     }
 }

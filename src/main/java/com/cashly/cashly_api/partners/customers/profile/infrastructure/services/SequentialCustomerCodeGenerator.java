@@ -8,7 +8,8 @@ public class SequentialCustomerCodeGenerator implements CustomerCodeGenerator {
 
     private final CustomerRepository customerRepository;
 
-    public SequentialCustomerCodeGenerator(CustomerRepository customerRepository) {
+    public SequentialCustomerCodeGenerator(
+            CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 

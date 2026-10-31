@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record RejectPaymentRequest(
 
-        @NotNull
-        @NotBlank
-        String reason
+        @NotNull @NotBlank String reason
 
-) {}
+) {
+}

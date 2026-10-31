@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InvoiceCustomerQueryConfig {
     @Bean
-    public InvoiceCustomerQuery invoiceCustomerQuery(CustomerRepository customers) {
+    public InvoiceCustomerQuery invoiceCustomerQuery(
+            CustomerRepository customers) {
         return new RepositoryInvoiceCustomerQuery(customers);
     }
 }

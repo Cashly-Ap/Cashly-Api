@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public interface ProductStockQuery {
     List<Stock> findByProductId(UUID productId);
-    record Stock(UUID warehouseId, String warehouseCode, String warehouseName, boolean warehouseExists,
-                 int quantity, int reserved, int available, LocalDateTime lastMovementAt) {}
+    record Stock(UUID warehouseId, String warehouseCode, String warehouseName,
+            boolean warehouseExists, int quantity, int reserved, int available,
+            LocalDateTime lastMovementAt) {
+    }
 }

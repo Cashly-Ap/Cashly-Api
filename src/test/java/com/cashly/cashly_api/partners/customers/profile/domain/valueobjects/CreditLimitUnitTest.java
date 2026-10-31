@@ -30,12 +30,14 @@ class CreditLimitUnitTest {
 
     @Test
     void should_throw_on_null() {
-        assertThrows(IllegalArgumentException.class, () -> new CreditLimit(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CreditLimit(null));
     }
 
     @Test
     void should_throw_on_negative() {
-        assertThrows(IllegalArgumentException.class, () -> new CreditLimit(new BigDecimal("-0.01")));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CreditLimit(new BigDecimal("-0.01")));
     }
 
     @Test

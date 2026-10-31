@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ActorIdentityQueryConfig {
     @Bean
-    public ActorIdentityQuery actorIdentityQuery(UserRepository users, PasswordEncoder passwords) {
+    public ActorIdentityQuery actorIdentityQuery(UserRepository users,
+            PasswordEncoder passwords) {
         return new RepositoryActorIdentityQuery(users, passwords);
     }
 }

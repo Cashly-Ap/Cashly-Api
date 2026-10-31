@@ -52,21 +52,25 @@ class PriceTypeControllerTest {
     @DisplayName("should create price type and return 201")
     void should_create_price_type_and_return_201() {
         String id = UUID.randomUUID().toString();
-        PriceTypeResponse response = new PriceTypeResponse(
-                id, "Retail", "Retail price", true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PriceTypeResponse response = new PriceTypeResponse(id, "Retail",
+                "Retail price", true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(createPriceTypeUseCase.execute(any(CreatePriceTypeRequest.class))).thenReturn(response);
+        when(createPriceTypeUseCase.execute(any(CreatePriceTypeRequest.class)))
+                .thenReturn(response);
 
-        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Retail", "Retail price");
+        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Retail",
+                "Retail price");
 
-        ResponseEntity<PriceTypeResponse> result = priceTypeController.create(request);
+        ResponseEntity<PriceTypeResponse> result = priceTypeController
+                .create(request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(id, result.getBody().id());
         assertEquals("Retail", result.getBody().name());
-        verify(createPriceTypeUseCase).execute(any(CreatePriceTypeRequest.class));
+        verify(createPriceTypeUseCase)
+                .execute(any(CreatePriceTypeRequest.class));
     }
 
     @Test
@@ -74,21 +78,25 @@ class PriceTypeControllerTest {
     void should_update_price_type_and_return_updated_response() {
         UUID uuid = UUID.randomUUID();
         String id = uuid.toString();
-        PriceTypeResponse response = new PriceTypeResponse(
-                id, "Wholesale", "Wholesale price", true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PriceTypeResponse response = new PriceTypeResponse(id, "Wholesale",
+                "Wholesale price", true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(updatePriceTypeUseCase.execute(eq(uuid), any(UpdatePriceTypeRequest.class))).thenReturn(response);
+        when(updatePriceTypeUseCase.execute(eq(uuid),
+                any(UpdatePriceTypeRequest.class))).thenReturn(response);
 
-        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Wholesale", "Wholesale price", true);
+        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Wholesale",
+                "Wholesale price", true);
 
-        ResponseEntity<PriceTypeResponse> result = priceTypeController.update(uuid, request);
+        ResponseEntity<PriceTypeResponse> result = priceTypeController
+                .update(uuid, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(id, result.getBody().id());
         assertEquals("Wholesale", result.getBody().name());
-        verify(updatePriceTypeUseCase).execute(eq(uuid), any(UpdatePriceTypeRequest.class));
+        verify(updatePriceTypeUseCase).execute(eq(uuid),
+                any(UpdatePriceTypeRequest.class));
     }
 
     @Test
@@ -107,13 +115,15 @@ class PriceTypeControllerTest {
     @DisplayName("should get price type by id")
     void should_get_price_type_by_id() {
         String id = UUID.randomUUID().toString();
-        PriceTypeResponse response = new PriceTypeResponse(
-                id, "Retail", "Retail price", true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PriceTypeResponse response = new PriceTypeResponse(id, "Retail",
+                "Retail price", true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(getPriceTypeUseCase.execute(UUID.fromString(id))).thenReturn(response);
+        when(getPriceTypeUseCase.execute(UUID.fromString(id)))
+                .thenReturn(response);
 
-        ResponseEntity<PriceTypeResponse> result = priceTypeController.getById(UUID.fromString(id));
+        ResponseEntity<PriceTypeResponse> result = priceTypeController
+                .getById(UUID.fromString(id));
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -133,33 +143,35 @@ class PriceTypeControllerTest {
         PageResponse<PriceTypeResponse> page = new PageResponse<>(
                 List.of(pt1, pt2), 2, 1, 10, 0, true, true, false);
 
-        when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
-                .thenReturn(page);
+        when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10),
+                eq("createdAt"), eq("desc"))).thenReturn(page);
 
-        ResponseEntity<PageResponse<PriceTypeResponse>> result =
-                priceTypeController.listAll(null, null, 0, 10, "createdAt", "desc");
+        ResponseEntity<PageResponse<PriceTypeResponse>> result = priceTypeController
+                .listAll(null, null, 0, 10, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(2, result.getBody().content().size());
-        verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc"));
+        verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10),
+                eq("createdAt"), eq("desc"));
     }
 
     @Test
     @DisplayName("should return empty list when no price types")
     void should_return_empty_list_when_no_price_types() {
-        PageResponse<PriceTypeResponse> page = new PageResponse<>(
-                List.of(), 0, 0, 10, 0, true, true, true);
+        PageResponse<PriceTypeResponse> page = new PageResponse<>(List.of(), 0,
+                0, 10, 0, true, true, true);
 
-        when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
-                .thenReturn(page);
+        when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10),
+                eq("createdAt"), eq("desc"))).thenReturn(page);
 
-        ResponseEntity<PageResponse<PriceTypeResponse>> result =
-                priceTypeController.listAll(null, null, 0, 10, "createdAt", "desc");
+        ResponseEntity<PageResponse<PriceTypeResponse>> result = priceTypeController
+                .listAll(null, null, 0, 10, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc"));
+        verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10),
+                eq("createdAt"), eq("desc"));
     }
 }

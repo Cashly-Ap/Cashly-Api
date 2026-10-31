@@ -10,10 +10,13 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class InvoiceReturnAdjustmentAdapter implements ReturnInvoiceAdjustmentGateway {
+public class InvoiceReturnAdjustmentAdapter
+        implements
+            ReturnInvoiceAdjustmentGateway {
     private final InvoiceReturnAdjustments adjustments;
 
-    public InvoiceReturnAdjustmentAdapter(InvoiceReturnAdjustments adjustments) {
+    public InvoiceReturnAdjustmentAdapter(
+            InvoiceReturnAdjustments adjustments) {
         this.adjustments = adjustments;
     }
 
@@ -23,13 +26,19 @@ public class InvoiceReturnAdjustmentAdapter implements ReturnInvoiceAdjustmentGa
     }
 
     @Override
-    public void reverse(Return returned, BigDecimal totalPaid, BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
-        adjustments.reverse(command(returned), totalPaid, totalDebitNotes, totalCreditNotes);
+    public void reverse(Return returned, BigDecimal totalPaid,
+            BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
+        adjustments.reverse(command(returned), totalPaid, totalDebitNotes,
+                totalCreditNotes);
     }
 
     private InvoiceReturnCommand command(Return returned) {
-        return new InvoiceReturnCommand(returned.getInvoiceId(), returned.getTotal(), returned.getLines().stream()
-                .map(line -> new InvoiceReturnCommand.Line(line.getInvoiceLineId(), line.getQuantity())).toList(),
+        return new InvoiceReturnCommand(returned.getInvoiceId(),
+                returned.getTotal(),
+                returned.getLines().stream()
+                        .map(line -> new InvoiceReturnCommand.Line(
+                                line.getInvoiceLineId(), line.getQuantity()))
+                        .toList(),
                 returned.getReturnType() == ReturnType.AUTOMATIC);
     }
 }

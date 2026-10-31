@@ -5,8 +5,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocalCustomerBalanceGateway implements CustomerBalanceGateway {
     private final InvoiceBalanceConsumption consumption;
-    public LocalCustomerBalanceGateway(InvoiceBalanceConsumption consumption) { this.consumption = consumption; }
+    public LocalCustomerBalanceGateway(InvoiceBalanceConsumption consumption) {
+        this.consumption = consumption;
+    }
     public void consumeInvoiceBalance(Consumption command) {
-        consumption.consume(new InvoiceBalanceConsumption.Command(command.customerId(), command.amount(), command.invoiceId(), command.invoiceNumber(), command.actorId()));
+        consumption.consume(new InvoiceBalanceConsumption.Command(
+                command.customerId(), command.amount(), command.invoiceId(),
+                command.invoiceNumber(), command.actorId()));
     }
 }

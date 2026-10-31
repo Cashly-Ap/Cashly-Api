@@ -14,9 +14,12 @@ class CommercialCatalogReportingConfigTest {
     @Test
     void should_create_commercial_catalog_beans() {
         var config = new CommercialCatalogReportingConfig();
-        assertNotNull(config.commercialCatalogRepositoryPort(mock(CommercialCatalogJpaRepository.class)));
-        assertNotNull(config.commercialCatalogPdfPort(mock(MediaGateway.class), new PdfBranding()));
+        assertNotNull(config.commercialCatalogRepositoryPort(
+                mock(CommercialCatalogJpaRepository.class)));
+        assertNotNull(config.commercialCatalogPdfPort(mock(MediaGateway.class),
+                new PdfBranding()));
         assertNotNull(config.generateCommercialCatalogPdfUseCase(
-                mock(CommercialCatalogRepositoryPort.class), mock(CommercialCatalogPdfPort.class)));
+                mock(CommercialCatalogRepositoryPort.class),
+                mock(CommercialCatalogPdfPort.class)));
     }
 }

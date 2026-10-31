@@ -13,12 +13,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface QuoteJpaRepository extends JpaRepository<QuoteJpaEntity, UUID> {
+public interface QuoteJpaRepository
+        extends
+            JpaRepository<QuoteJpaEntity, UUID> {
 
-    default List<QuoteJpaEntity> findAllWithFilters(LocalDateTime dateFrom, LocalDateTime dateTo,
-                                                    UUID customerId, String status, UUID productId, UUID categoryId) {
-        return findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId,
-                java.util.Set.of(new UUID(0, 0)));
+    default List<QuoteJpaEntity> findAllWithFilters(LocalDateTime dateFrom,
+            LocalDateTime dateTo, UUID customerId, String status,
+            UUID productId, UUID categoryId) {
+        return findAllWithFilters(dateFrom, dateTo, customerId, status,
+                productId, categoryId, java.util.Set.of(new UUID(0, 0)));
     }
 
     boolean existsByQuoteNumber(String quoteNumber);
@@ -52,9 +55,7 @@ public interface QuoteJpaRepository extends JpaRepository<QuoteJpaEntity, UUID> 
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status,
-            @Param("productId") UUID productId,
+            @Param("status") String status, @Param("productId") UUID productId,
             @Param("categoryId") UUID categoryId,
-            @Param("currentCategoryProductIds") java.util.Set<UUID> currentCategoryProductIds
-    );
+            @Param("currentCategoryProductIds") java.util.Set<UUID> currentCategoryProductIds);
 }

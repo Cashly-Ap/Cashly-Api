@@ -8,10 +8,13 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Component
-public class RepositoryInvoicePaymentTotalQuery implements InvoicePaymentTotalQuery {
+public class RepositoryInvoicePaymentTotalQuery
+        implements
+            InvoicePaymentTotalQuery {
     private final PaymentAllocationRepository allocations;
 
-    public RepositoryInvoicePaymentTotalQuery(PaymentAllocationRepository allocations) {
+    public RepositoryInvoicePaymentTotalQuery(
+            PaymentAllocationRepository allocations) {
         this.allocations = allocations;
     }
 
@@ -19,7 +22,8 @@ public class RepositoryInvoicePaymentTotalQuery implements InvoicePaymentTotalQu
     public BigDecimal totalAllocatedByInvoiceId(UUID invoiceId) {
         return allocations.findByInvoiceId(invoiceId).stream()
                 .map(allocation -> allocation.getAllocatedAmount() == null
-                        ? BigDecimal.ZERO : allocation.getAllocatedAmount())
+                        ? BigDecimal.ZERO
+                        : allocation.getAllocatedAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

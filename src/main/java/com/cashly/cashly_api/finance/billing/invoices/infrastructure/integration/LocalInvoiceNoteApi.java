@@ -19,7 +19,8 @@ public class LocalInvoiceNoteApi implements InvoiceNoteApi {
     private final InvoiceRepository invoices;
     private final InvoiceStatusService statuses;
 
-    public LocalInvoiceNoteApi(InvoiceRepository invoices, InvoiceStatusService statuses) {
+    public LocalInvoiceNoteApi(InvoiceRepository invoices,
+            InvoiceStatusService statuses) {
         this.invoices = invoices;
         this.statuses = statuses;
     }
@@ -27,8 +28,10 @@ public class LocalInvoiceNoteApi implements InvoiceNoteApi {
     @Override
     public Context find(UUID invoiceId) {
         Invoice invoice = invoices.findById(InvoiceId.of(invoiceId))
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + invoiceId));
-        BigDecimal totalBeforeNotes = invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO);
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Invoice not found: " + invoiceId));
+        BigDecimal totalBeforeNotes = invoice.calculateTotal(BigDecimal.ZERO,
+                BigDecimal.ZERO);
         return toContext(invoice, totalBeforeNotes);
     }
 
@@ -40,7 +43,8 @@ public class LocalInvoiceNoteApi implements InvoiceNoteApi {
         List<InvoiceId> ids = invoiceIds.stream().map(InvoiceId::of).toList();
         return invoices.findAllById(ids).stream().collect(Collectors.toMap(
                 invoice -> invoice.getId().value(),
-                invoice -> toContext(invoice, invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))));
+                invoice -> toContext(invoice, invoice
+                        .calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))));
     }
 
     @Override
@@ -49,8 +53,9 @@ public class LocalInvoiceNoteApi implements InvoiceNoteApi {
     }
 
     private Context toContext(Invoice invoice, BigDecimal totalBeforeNotes) {
-        return new Context(invoice.getId().value(), invoice.getInvoiceNumber().value(),
-                invoice.getStatus().name(), invoice.getStatus().label(), invoice.getCustomerName(),
+        return new Context(invoice.getId().value(),
+                invoice.getInvoiceNumber().value(), invoice.getStatus().name(),
+                invoice.getStatus().label(), invoice.getCustomerName(),
                 invoice.getCustomerRif(), totalBeforeNotes);
     }
 }

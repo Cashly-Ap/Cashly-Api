@@ -6,8 +6,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record ConvertToInvoiceRequest(
-        @NotNull(message = "Payment type is required")
-        String paymentType,
+        @NotNull(message = "Payment type is required") String paymentType,
 
         String confirmationPassword,
 
@@ -17,11 +16,11 @@ public record ConvertToInvoiceRequest(
 
         UUID paymentMethodId,
 
-        LocalDate issueDate
-) {
-    public ConvertToInvoiceRequest(String paymentType, String confirmationPassword,
-                                   Boolean useBalance, BigDecimal balanceAmount,
-                                   UUID paymentMethodId) {
-        this(paymentType, confirmationPassword, useBalance, balanceAmount, paymentMethodId, null);
+        LocalDate issueDate) {
+    public ConvertToInvoiceRequest(String paymentType,
+            String confirmationPassword, Boolean useBalance,
+            BigDecimal balanceAmount, UUID paymentMethodId) {
+        this(paymentType, confirmationPassword, useBalance, balanceAmount,
+                paymentMethodId, null);
     }
 }

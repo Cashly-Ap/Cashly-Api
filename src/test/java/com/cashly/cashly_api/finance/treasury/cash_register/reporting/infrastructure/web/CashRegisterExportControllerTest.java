@@ -46,21 +46,25 @@ class CashRegisterExportControllerTest {
         LocalDate dateTo = LocalDate.of(2025, 6, 15);
         byte[] expectedBytes = new byte[]{1, 2, 3};
 
-        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, ReportType.DETAILED)).thenReturn(expectedBytes);
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo,
+                ReportType.DETAILED)).thenReturn(expectedBytes);
 
-        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo, ReportType.DETAILED);
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom,
+                dateTo, ReportType.DETAILED);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(
-                MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-                response.getHeaders().getContentType()
-        );
-        String contentDisposition = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
+        assertEquals(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+                response.getHeaders().getContentType());
+        String contentDisposition = response.getHeaders()
+                .getFirst(HttpHeaders.CONTENT_DISPOSITION);
         assertNotNull(contentDisposition);
-        assertTrue(contentDisposition.contains("cierre-caja-detallado-2025-06-15_2025-06-15.xlsx"));
+        assertTrue(contentDisposition
+                .contains("cierre-caja-detallado-2025-06-15_2025-06-15.xlsx"));
         assertTrue(contentDisposition.startsWith("attachment"));
         assertArrayEquals(expectedBytes, response.getBody());
-        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo, ReportType.DETAILED);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo,
+                ReportType.DETAILED);
     }
 
     @Test
@@ -70,14 +74,19 @@ class CashRegisterExportControllerTest {
         LocalDate dateTo = LocalDate.of(2025, 12, 31);
         byte[] expectedBytes = new byte[]{4, 5, 6};
 
-        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, ReportType.DETAILED)).thenReturn(expectedBytes);
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo,
+                ReportType.DETAILED)).thenReturn(expectedBytes);
 
-        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo, ReportType.DETAILED);
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom,
+                dateTo, ReportType.DETAILED);
 
-        String contentDisposition = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
-        assertTrue(contentDisposition.contains("cierre-caja-detallado-2025-12-01_2025-12-31.xlsx"));
+        String contentDisposition = response.getHeaders()
+                .getFirst(HttpHeaders.CONTENT_DISPOSITION);
+        assertTrue(contentDisposition
+                .contains("cierre-caja-detallado-2025-12-01_2025-12-31.xlsx"));
         assertArrayEquals(expectedBytes, response.getBody());
-        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo, ReportType.DETAILED);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo,
+                ReportType.DETAILED);
     }
 
     @Test
@@ -86,29 +95,35 @@ class CashRegisterExportControllerTest {
         LocalDate dateFrom = LocalDate.of(2025, 6, 15);
         LocalDate dateTo = LocalDate.of(2025, 6, 15);
 
-        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, ReportType.DETAILED)).thenReturn(new byte[0]);
+        when(generateCashRegisterExcelUseCase.execute(dateFrom, dateTo,
+                ReportType.DETAILED)).thenReturn(new byte[0]);
 
-        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom, dateTo, ReportType.DETAILED);
+        ResponseEntity<byte[]> response = controller.exportExcel(dateFrom,
+                dateTo, ReportType.DETAILED);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+        assertNotNull(response.getHeaders()
+                .getFirst(HttpHeaders.CONTENT_DISPOSITION));
         assertEquals(0, response.getBody().length);
-        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo, ReportType.DETAILED);
+        verify(generateCashRegisterExcelUseCase).execute(dateFrom, dateTo,
+                ReportType.DETAILED);
     }
 
     @Test
     void shouldReturnDetailedPdfForSelectedSession() {
         UUID id = UUID.randomUUID();
         byte[] expected = new byte[]{9, 8, 7};
-        when(generateCashRegisterReportUseCase.execute(id, ReportFormat.PDF, ReportType.DETAILED))
-                .thenReturn(expected);
+        when(generateCashRegisterReportUseCase.execute(id, ReportFormat.PDF,
+                ReportType.DETAILED)).thenReturn(expected);
 
-        ResponseEntity<byte[]> response = controller.exportSession(
-                id, ReportFormat.PDF, ReportType.DETAILED);
+        ResponseEntity<byte[]> response = controller.exportSession(id,
+                ReportFormat.PDF, ReportType.DETAILED);
 
-        assertEquals(MediaType.APPLICATION_PDF, response.getHeaders().getContentType());
-        assertTrue(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)
-                .contains("caja-" + id + "-detailed.pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                response.getHeaders().getContentType());
+        assertTrue(
+                response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)
+                        .contains("caja-" + id + "-detailed.pdf"));
         assertArrayEquals(expected, response.getBody());
     }
 
@@ -120,18 +135,20 @@ class CashRegisterExportControllerTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         byte[] expected = new byte[]{7, 8, 9};
-        var filter = new CashRegisterReportFilter(
-                dateFrom, dateTo, customerId, productId, categoryId);
-        when(generateCashRegisterRangeReportUseCase.execute(filter, ReportFormat.PDF, ReportType.GROUPED))
-                .thenReturn(expected);
+        var filter = new CashRegisterReportFilter(dateFrom, dateTo, customerId,
+                productId, categoryId);
+        when(generateCashRegisterRangeReportUseCase.execute(filter,
+                ReportFormat.PDF, ReportType.GROUPED)).thenReturn(expected);
 
-        ResponseEntity<byte[]> response = controller.exportRangeReport(
-                dateFrom, dateTo, ReportFormat.PDF, ReportType.GROUPED,
-                customerId, productId, categoryId);
+        ResponseEntity<byte[]> response = controller.exportRangeReport(dateFrom,
+                dateTo, ReportFormat.PDF, ReportType.GROUPED, customerId,
+                productId, categoryId);
 
-        assertEquals(MediaType.APPLICATION_PDF, response.getHeaders().getContentType());
-        assertTrue(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)
-                .contains("caja-2026-08-01_2026-08-31-grouped.pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                response.getHeaders().getContentType());
+        assertTrue(
+                response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)
+                        .contains("caja-2026-08-01_2026-08-31-grouped.pdf"));
         assertArrayEquals(expected, response.getBody());
     }
 }

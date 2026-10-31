@@ -73,13 +73,14 @@ class ProductControllerTest {
         ProductDetailResponse response = mock(ProductDetailResponse.class);
         when(response.id()).thenReturn(id);
 
-        when(createProductUseCase.execute(any(CreateProductRequest.class))).thenReturn(response);
+        when(createProductUseCase.execute(any(CreateProductRequest.class)))
+                .thenReturn(response);
 
-        var request = new CreateProductRequest(
-                null, "Test Product", "Desc", UUID.randomUUID(), false,
-                BigDecimal.TEN, null, null);
+        var request = new CreateProductRequest(null, "Test Product", "Desc",
+                UUID.randomUUID(), false, BigDecimal.TEN, null, null);
 
-        ResponseEntity<ProductDetailResponse> result = productController.create(request);
+        ResponseEntity<ProductDetailResponse> result = productController
+                .create(request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -93,15 +94,16 @@ class ProductControllerTest {
         PageResponse<ProductListResponse> pageResponse = new PageResponse<>(
                 List.of(product), 1L, 1, 10, 0, true, true, false);
 
-        when(listProductsUseCase.execute(any(), any(), any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(pageResponse);
+        when(listProductsUseCase.execute(any(), any(), any(), any(), anyInt(),
+                anyInt(), anyString(), anyString())).thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<ProductListResponse>> result = productController.getAll(
-                null, null, null, null, 0, 10, "name", "asc");
+        ResponseEntity<PageResponse<ProductListResponse>> result = productController
+                .getAll(null, null, null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(listProductsUseCase).execute(null, null, null, null, 0, 10, "name", "asc");
+        verify(listProductsUseCase).execute(null, null, null, null, 0, 10,
+                "name", "asc");
     }
 
     @Test
@@ -110,15 +112,16 @@ class ProductControllerTest {
         PageResponse<ProductListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(listProductsUseCase.execute(any(), any(), any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(emptyPage);
+        when(listProductsUseCase.execute(any(), any(), any(), any(), anyInt(),
+                anyInt(), anyString(), anyString())).thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<ProductListResponse>> result = productController.getAll(
-                null, null, null, null, 0, 10, "name", "asc");
+        ResponseEntity<PageResponse<ProductListResponse>> result = productController
+                .getAll(null, null, null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listProductsUseCase).execute(null, null, null, null, 0, 10, "name", "asc");
+        verify(listProductsUseCase).execute(null, null, null, null, 0, 10,
+                "name", "asc");
     }
 
     @Test
@@ -128,9 +131,11 @@ class ProductControllerTest {
         ProductDetailResponse response = mock(ProductDetailResponse.class);
         when(response.id()).thenReturn(id);
 
-        when(getProductUseCase.execute(UUID.fromString(id))).thenReturn(response);
+        when(getProductUseCase.execute(UUID.fromString(id)))
+                .thenReturn(response);
 
-        ResponseEntity<ProductDetailResponse> result = productController.getById(UUID.fromString(id));
+        ResponseEntity<ProductDetailResponse> result = productController
+                .getById(UUID.fromString(id));
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -145,18 +150,19 @@ class ProductControllerTest {
         ProductDetailResponse response = mock(ProductDetailResponse.class);
         when(response.id()).thenReturn(idStr);
 
-        when(updateProductUseCase.execute(eq(id), any(UpdateProductRequest.class))).thenReturn(response);
+        when(updateProductUseCase.execute(eq(id),
+                any(UpdateProductRequest.class))).thenReturn(response);
 
-        var request = new UpdateProductRequest(
-                "Updated", "Desc", UUID.randomUUID(),
-                BigDecimal.TEN,
-                false, null, null, null);
+        var request = new UpdateProductRequest("Updated", "Desc",
+                UUID.randomUUID(), BigDecimal.TEN, false, null, null, null);
 
-        ResponseEntity<ProductDetailResponse> result = productController.update(id, request);
+        ResponseEntity<ProductDetailResponse> result = productController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(idStr, result.getBody().id());
-        verify(updateProductUseCase).execute(eq(id), any(UpdateProductRequest.class));
+        verify(updateProductUseCase).execute(eq(id),
+                any(UpdateProductRequest.class));
     }
 
     @Test
@@ -177,11 +183,13 @@ class ProductControllerTest {
     void should_get_product_stock_and_return_200() {
         UUID id = UUID.randomUUID();
         ProductStockByWarehouseResponse stock = new ProductStockByWarehouseResponse(
-                UUID.randomUUID().toString(), "Main Warehouse", 100, LocalDateTime.now());
+                UUID.randomUUID().toString(), "Main Warehouse", 100,
+                LocalDateTime.now());
 
         when(getProductStockUseCase.execute(id)).thenReturn(List.of(stock));
 
-        ResponseEntity<List<ProductStockByWarehouseResponse>> result = productController.getStock(id);
+        ResponseEntity<List<ProductStockByWarehouseResponse>> result = productController
+                .getStock(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
@@ -198,17 +206,20 @@ class ProductControllerTest {
 
         MultipartFile file = mock(MultipartFile.class);
         when(file.getOriginalFilename()).thenReturn("photo.jpg");
-        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        when(file.getInputStream())
+                .thenReturn(new ByteArrayInputStream(new byte[0]));
         when(file.getContentType()).thenReturn("image/jpeg");
 
-        when(uploadProductPhotoUseCase.execute(eq(id), anyString(), any(), anyString()))
-                .thenReturn(response);
+        when(uploadProductPhotoUseCase.execute(eq(id), anyString(), any(),
+                anyString())).thenReturn(response);
 
-        ResponseEntity<ProductDetailResponse> result = productController.uploadPhoto(id, file);
+        ResponseEntity<ProductDetailResponse> result = productController
+                .uploadPhoto(id, file);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(idStr, result.getBody().id());
-        verify(uploadProductPhotoUseCase).execute(eq(id), eq("photo.jpg"), any(), eq("image/jpeg"));
+        verify(uploadProductPhotoUseCase).execute(eq(id), eq("photo.jpg"),
+                any(), eq("image/jpeg"));
     }
 
     @Test
@@ -220,11 +231,13 @@ class ProductControllerTest {
         when(file.getOriginalFilename()).thenReturn("photo.jpg");
         when(file.getInputStream()).thenThrow(new IOException("IO error"));
 
-        ResponseEntity<ProductDetailResponse> result = productController.uploadPhoto(id, file);
+        ResponseEntity<ProductDetailResponse> result = productController
+                .uploadPhoto(id, file);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertNull(result.getBody());
-        verify(uploadProductPhotoUseCase, never()).execute(any(), any(), any(), any());
+        verify(uploadProductPhotoUseCase, never()).execute(any(), any(), any(),
+                any());
     }
 
     @Test

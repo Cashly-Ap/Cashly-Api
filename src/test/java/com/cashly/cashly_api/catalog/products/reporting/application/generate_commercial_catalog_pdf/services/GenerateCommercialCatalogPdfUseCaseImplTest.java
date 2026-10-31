@@ -27,15 +27,14 @@ class GenerateCommercialCatalogPdfUseCaseImplTest {
     @Mock
     private CommercialCatalogPdfPort pdfPort;
 
-
-
     @InjectMocks
     private GenerateCommercialCatalogPdfUseCaseImpl useCase;
 
     @Test
     @DisplayName("should generate commercial catalog PDF from query")
     void should_generate_commercial_catalog_pdf() {
-        CommercialCatalogQuery query = new CommercialCatalogQuery("test", UUID.randomUUID(), UUID.randomUUID(), true);
+        CommercialCatalogQuery query = new CommercialCatalogQuery("test",
+                UUID.randomUUID(), UUID.randomUUID(), true);
         CommercialCatalogResponse item = new CommercialCatalogResponse(
                 UUID.randomUUID(), "Product", "SKU", "Desc", "photo.jpg",
                 UUID.randomUUID(), "Category", null, null);
@@ -55,7 +54,8 @@ class GenerateCommercialCatalogPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate commercial catalog PDF with empty result")
     void should_generate_commercial_catalog_pdf_with_empty_result() {
-        CommercialCatalogQuery query = new CommercialCatalogQuery(null, null, null, null);
+        CommercialCatalogQuery query = new CommercialCatalogQuery(null, null,
+                null, null);
         List<CommercialCatalogResponse> items = List.of();
         byte[] expectedPdf = "Empty PDF".getBytes();
 

@@ -20,7 +20,8 @@ public class RoleController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLES:READ')")
-    public List<Role> list(@RequestParam(required = false) ManageRolesUseCase.ListAction action) {
+    public List<Role> list(
+            @RequestParam(required = false) ManageRolesUseCase.ListAction action) {
         return useCase.list(action);
     }
 
@@ -45,7 +46,8 @@ public class RoleController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLES:UPDATE')")
-    public Role update(@PathVariable UUID id, @RequestBody ManageRolesUseCase.Request request) {
+    public Role update(@PathVariable UUID id,
+            @RequestBody ManageRolesUseCase.Request request) {
         return useCase.save(id, request);
     }
 
@@ -58,12 +60,16 @@ public class RoleController {
 
     public record RegistryEntry(
             com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule module,
-            java.util.Set<com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction> actions) {}
+            java.util.Set<com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction> actions) {
+    }
 
     @GetMapping("/registry")
     @PreAuthorize("hasAuthority('ROLES:READ')")
     public List<RegistryEntry> registry() {
-        return com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry.modules()
-                .entrySet().stream().map(entry -> new RegistryEntry(entry.getKey(), entry.getValue())).toList();
+        return com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry
+                .modules().entrySet().stream()
+                .map(entry -> new RegistryEntry(entry.getKey(),
+                        entry.getValue()))
+                .toList();
     }
 }

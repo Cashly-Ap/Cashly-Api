@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public interface CustomerProductPricingQuery {
     Optional<Context> findById(UUID customerId);
-    record Context(UUID customerId, UUID priceTypeId) {}
+    record Context(UUID customerId, UUID priceTypeId) {
+    }
 }

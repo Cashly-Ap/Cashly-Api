@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InvoiceCreditQueryConfig {
     @Bean
-    public InvoiceCreditLedgerQuery invoiceCreditLedgerQuery(InvoiceRepository invoices) {
+    public InvoiceCreditLedgerQuery invoiceCreditLedgerQuery(
+            InvoiceRepository invoices) {
         return new RepositoryInvoiceCreditLedgerQuery(invoices);
     }
 }

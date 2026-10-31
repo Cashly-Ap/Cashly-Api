@@ -45,19 +45,22 @@ class WarehouseStockConcurrencyIT {
     private final WarehouseStockRepository stocks;
     private final SpringDataWarehouseStockRepository persistedStocks;
     private final PlatformTransactionManager transactionManager;
-    private final WarehouseRepository warehouses = mock(WarehouseRepository.class);
-    private final StockMovementRepository movements = mock(StockMovementRepository.class);
+    private final WarehouseRepository warehouses = mock(
+            WarehouseRepository.class);
+    private final StockMovementRepository movements = mock(
+            StockMovementRepository.class);
     private UUID productId;
 
     @org.springframework.test.context.DynamicPropertySource
-    static void properties(org.springframework.test.context.DynamicPropertyRegistry registry) {
+    static void properties(
+            org.springframework.test.context.DynamicPropertyRegistry registry) {
         InvoiceInventoryConcurrencyIT.properties(registry);
     }
 
     @Autowired
     WarehouseStockConcurrencyIT(WarehouseStockRepository stocks,
-                                SpringDataWarehouseStockRepository persistedStocks,
-                                PlatformTransactionManager transactionManager) {
+            SpringDataWarehouseStockRepository persistedStocks,
+            PlatformTransactionManager transactionManager) {
         this.stocks = stocks;
         this.persistedStocks = persistedStocks;
         this.transactionManager = transactionManager;
@@ -66,26 +69,31 @@ class WarehouseStockConcurrencyIT {
     @BeforeEach
     void initializeProduct() {
         productId = UUID.randomUUID();
-        when(movements.save(any(StockMovement.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(movements.save(any(StockMovement.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
-    void should_preserve_both_concurrent_entries_when_stock_row_is_missing() throws Exception {
+    void should_preserve_both_concurrent_entries_when_stock_row_is_missing()
+            throws Exception {
         UUID warehouseId = UUID.randomUUID();
         Warehouse warehouse = activeWarehouse();
-        when(warehouses.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(warehouses.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
         var catalogRead = new CountDownLatch(2);
         StockCatalogGateway catalog = new StockCatalogGateway() {
             @Override
             public CatalogProduct getProduct(UUID id) {
                 catalogRead.countDown();
                 try {
-                    assertTrue(catalogRead.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+                    assertTrue(catalogRead.await(TIMEOUT_SECONDS,
+                            TimeUnit.SECONDS));
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
                     throw new IllegalStateException(interrupted);
                 }
-                return new CatalogProduct(id, "SKU", "Product", false, List.of());
+                return new CatalogProduct(id, "SKU", "Product", false,
+                        List.of());
             }
 
             @Override
@@ -93,7 +101,8 @@ class WarehouseStockConcurrencyIT {
                 return Optional.of(getProduct(id));
             }
         };
-        StockEntryUseCase entry = new StockEntryUseCase(warehouses, stocks, movements, catalog);
+        StockEntryUseCase entry = new StockEntryUseCase(warehouses, stocks,
+                movements, catalog);
         var ready = new CountDownLatch(2);
         var start = new CountDownLatch(1);
         try (var executor = Executors.newFixedThreadPool(2)) {
@@ -112,34 +121,46 @@ class WarehouseStockConcurrencyIT {
         } finally {
             start.countDown();
         }
-        assertEquals(2, persistedStocks.findByWarehouseIdAndProductId(warehouseId, productId)
-                .orElseThrow().getQuantity());
+        assertEquals(2,
+                persistedStocks
+                        .findByWarehouseIdAndProductId(warehouseId, productId)
+                        .orElseThrow().getQuantity());
     }
 
     @Test
-    void should_complete_opposite_transfers_without_deadlock_or_lost_stock() throws Exception {
+    void should_complete_opposite_transfers_without_deadlock_or_lost_stock()
+            throws Exception {
         UUID firstWarehouse = UUID.randomUUID();
         UUID secondWarehouse = UUID.randomUUID();
-        UUID lowerWarehouse = firstWarehouse.compareTo(secondWarehouse) < 0 ? firstWarehouse : secondWarehouse;
-        UUID higherWarehouse = firstWarehouse.compareTo(secondWarehouse) < 0 ? secondWarehouse : firstWarehouse;
+        UUID lowerWarehouse = firstWarehouse.compareTo(secondWarehouse) < 0
+                ? firstWarehouse
+                : secondWarehouse;
+        UUID higherWarehouse = firstWarehouse.compareTo(secondWarehouse) < 0
+                ? secondWarehouse
+                : firstWarehouse;
         persistStock(firstWarehouse, 100);
         persistStock(secondWarehouse, 100);
         Warehouse first = activeWarehouse();
         Warehouse second = activeWarehouse();
-        when(warehouses.findById(firstWarehouse)).thenReturn(Optional.of(first));
-        when(warehouses.findById(secondWarehouse)).thenReturn(Optional.of(second));
+        when(warehouses.findById(firstWarehouse))
+                .thenReturn(Optional.of(first));
+        when(warehouses.findById(secondWarehouse))
+                .thenReturn(Optional.of(second));
         var catalogReady = new CountDownLatch(2);
         var catalog = catalog(catalogReady);
-        TransferStockUseCase transfer = new TransferStockUseCase(warehouses, stocks, movements, catalog);
+        TransferStockUseCase transfer = new TransferStockUseCase(warehouses,
+                stocks, movements, catalog);
         var ready = new CountDownLatch(2);
         var start = new CountDownLatch(1);
         try (var executor = Executors.newFixedThreadPool(2)) {
             var lowerToHigher = executor.submit((Callable<Void>) () -> {
-                transferAfterSignal(transfer, lowerWarehouse, higherWarehouse, ready, start);
+                transferAfterSignal(transfer, lowerWarehouse, higherWarehouse,
+                        ready, start);
                 return null;
             });
             var higherToLower = executor.submit((Callable<Void>) () -> {
-                transferAfterSignal(transfer, higherWarehouse, lowerWarehouse, ready, start);
+                transferAfterSignal(transfer, higherWarehouse, lowerWarehouse,
+                        ready, start);
                 return null;
             });
             assertTrue(ready.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
@@ -149,32 +170,41 @@ class WarehouseStockConcurrencyIT {
         } finally {
             start.countDown();
         }
-        assertEquals(100, persistedStocks.findByWarehouseIdAndProductId(firstWarehouse, productId)
+        assertEquals(100, persistedStocks
+                .findByWarehouseIdAndProductId(firstWarehouse, productId)
                 .orElseThrow().getQuantity());
-        assertEquals(100, persistedStocks.findByWarehouseIdAndProductId(secondWarehouse, productId)
+        assertEquals(100, persistedStocks
+                .findByWarehouseIdAndProductId(secondWarehouse, productId)
                 .orElseThrow().getQuantity());
     }
 
-    private void addStock(StockEntryUseCase entry, UUID warehouseId, CountDownLatch ready, CountDownLatch start)
+    private void addStock(StockEntryUseCase entry, UUID warehouseId,
+            CountDownLatch ready, CountDownLatch start) throws Exception {
+        ready.countDown();
+        assertTrue(start.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        new TransactionTemplate(transactionManager)
+                .executeWithoutResult(
+                        status -> entry.execute(warehouseId,
+                                new StockEntryRequest(
+                                        List.of(new StockBatchItem(productId, 1,
+                                                "Concurrent entry")))));
+    }
+
+    private void transferAfterSignal(TransferStockUseCase transfer, UUID source,
+            UUID destination, CountDownLatch ready, CountDownLatch start)
             throws Exception {
         ready.countDown();
         assertTrue(start.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
-        new TransactionTemplate(transactionManager).executeWithoutResult(status -> entry.execute(warehouseId,
-                new StockEntryRequest(List.of(new StockBatchItem(productId, 1, "Concurrent entry")))));
-    }
-
-    private void transferAfterSignal(TransferStockUseCase transfer, UUID source, UUID destination,
-                                    CountDownLatch ready, CountDownLatch start) throws Exception {
-        ready.countDown();
-        assertTrue(start.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
-        new TransactionTemplate(transactionManager).executeWithoutResult(status -> transfer.execute(source,
-                new TransferStockRequest(productId, destination, 1, "Opposite transfer")));
+        new TransactionTemplate(transactionManager).executeWithoutResult(
+                status -> transfer.execute(source, new TransferStockRequest(
+                        productId, destination, 1, "Opposite transfer")));
     }
 
     private void persistStock(UUID warehouseId, int quantity) {
         var now = LocalDateTime.now();
-        persistedStocks.saveAndFlush(WarehouseStockEntity.fromDomain(new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, quantity, 0, now, now)));
+        persistedStocks.saveAndFlush(WarehouseStockEntity
+                .fromDomain(new WarehouseStock(UUID.randomUUID(), warehouseId,
+                        productId, quantity, 0, now, now)));
     }
 
     private Warehouse activeWarehouse() {
@@ -189,12 +219,14 @@ class WarehouseStockConcurrencyIT {
             public CatalogProduct getProduct(UUID id) {
                 catalogReady.countDown();
                 try {
-                    assertTrue(catalogReady.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+                    assertTrue(catalogReady.await(TIMEOUT_SECONDS,
+                            TimeUnit.SECONDS));
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
                     throw new IllegalStateException(interrupted);
                 }
-                return new CatalogProduct(id, "SKU", "Product", false, List.of());
+                return new CatalogProduct(id, "SKU", "Product", false,
+                        List.of());
             }
 
             @Override

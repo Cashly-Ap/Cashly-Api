@@ -7,9 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class PaymentReportsBoundaryTest {
     @Test
     void applicationUsesOwnContractsAndDtos() {
-        for (var type : new Class<?>[]{PaymentPdfPort.class, GeneratePaymentPdfUseCaseImpl.class}) {
-            Arrays.stream(type.getDeclaredFields()).forEach(field -> assertFalse(field.getType().getName().matches(".*cashly_api.finance.treasury.payments.(?!reporting\\.).*"), field.toString()));
-            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter -> assertFalse(parameter.getTypeName().matches(".*cashly_api.finance.treasury.payments.(?!reporting\\.).*"), parameter.toString())));
+        for (var type : new Class<?>[]{PaymentPdfPort.class,
+                GeneratePaymentPdfUseCaseImpl.class}) {
+            Arrays.stream(type.getDeclaredFields()).forEach(
+                    field -> assertFalse(field.getType().getName().matches(
+                            ".*cashly_api.finance.treasury.payments.(?!reporting\\.).*"),
+                            field.toString()));
+            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays
+                    .stream(method.getGenericParameterTypes())
+                    .forEach(parameter -> assertFalse(
+                            parameter.getTypeName().matches(
+                                    ".*cashly_api.finance.treasury.payments.(?!reporting\\.).*"),
+                            parameter.toString())));
         }
     }
 }

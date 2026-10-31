@@ -8,7 +8,8 @@ public class SequentialSupplierCodeGenerator implements SupplierCodeGenerator {
 
     private final SupplierRepository supplierRepository;
 
-    public SequentialSupplierCodeGenerator(SupplierRepository supplierRepository) {
+    public SequentialSupplierCodeGenerator(
+            SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
     }
 

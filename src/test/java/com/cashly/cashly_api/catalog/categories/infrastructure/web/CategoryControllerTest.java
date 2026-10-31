@@ -53,15 +53,18 @@ class CategoryControllerTest {
     @DisplayName("should create category and return 201")
     void should_create_category_and_return_201() {
         String categoryId = UUID.randomUUID().toString();
-        CategoryDetailResponse response = new CategoryDetailResponse(
-                categoryId, "Test Category", "Description", true, 0L,
-                LocalDateTime.now(), LocalDateTime.now());
+        CategoryDetailResponse response = new CategoryDetailResponse(categoryId,
+                "Test Category", "Description", true, 0L, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(createCategoryUseCase.execute(any(CreateCategoryRequest.class))).thenReturn(response);
+        when(createCategoryUseCase.execute(any(CreateCategoryRequest.class)))
+                .thenReturn(response);
 
-        CreateCategoryRequest request = new CreateCategoryRequest("Test Category", "Description");
+        CreateCategoryRequest request = new CreateCategoryRequest(
+                "Test Category", "Description");
 
-        ResponseEntity<CategoryDetailResponse> result = categoryController.create(request);
+        ResponseEntity<CategoryDetailResponse> result = categoryController
+                .create(request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -73,15 +76,16 @@ class CategoryControllerTest {
     @DisplayName("should get all categories and return 200")
     void should_get_all_categories_and_return_200() {
         CategoryListResponse cat = new CategoryListResponse(
-                UUID.randomUUID().toString(), "Category 1", "Desc", true, false);
+                UUID.randomUUID().toString(), "Category 1", "Desc", true,
+                false);
         PageResponse<CategoryListResponse> pageResponse = new PageResponse<>(
                 List.of(cat), 1L, 1, 10, 0, true, true, false);
 
-        when(listCategoriesUseCase.execute(any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(pageResponse);
+        when(listCategoriesUseCase.execute(any(), any(), anyInt(), anyInt(),
+                anyString(), anyString())).thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<CategoryListResponse>> result = categoryController.getAll(
-                null, null, 0, 10, "name", "asc");
+        ResponseEntity<PageResponse<CategoryListResponse>> result = categoryController
+                .getAll(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
@@ -94,11 +98,11 @@ class CategoryControllerTest {
         PageResponse<CategoryListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(listCategoriesUseCase.execute(any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(emptyPage);
+        when(listCategoriesUseCase.execute(any(), any(), anyInt(), anyInt(),
+                anyString(), anyString())).thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<CategoryListResponse>> result = categoryController.getAll(
-                null, null, 0, 10, "name", "asc");
+        ResponseEntity<PageResponse<CategoryListResponse>> result = categoryController
+                .getAll(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
@@ -110,13 +114,14 @@ class CategoryControllerTest {
     void should_get_category_by_id_and_return_200() {
         UUID id = UUID.randomUUID();
         String idStr = id.toString();
-        CategoryDetailResponse response = new CategoryDetailResponse(
-                idStr, "Category", "Desc", true, 5L,
-                LocalDateTime.now(), LocalDateTime.now());
+        CategoryDetailResponse response = new CategoryDetailResponse(idStr,
+                "Category", "Desc", true, 5L, LocalDateTime.now(),
+                LocalDateTime.now());
 
         when(getCategoryUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<CategoryDetailResponse> result = categoryController.getById(id);
+        ResponseEntity<CategoryDetailResponse> result = categoryController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(idStr, result.getBody().id());
@@ -128,19 +133,23 @@ class CategoryControllerTest {
     void should_update_category_and_return_200() {
         UUID id = UUID.randomUUID();
         String idStr = id.toString();
-        CategoryDetailResponse response = new CategoryDetailResponse(
-                idStr, "Updated", "Updated desc", true, 0L,
-                LocalDateTime.now(), LocalDateTime.now());
+        CategoryDetailResponse response = new CategoryDetailResponse(idStr,
+                "Updated", "Updated desc", true, 0L, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(updateCategoryUseCase.execute(eq(id), any(UpdateCategoryRequest.class))).thenReturn(response);
+        when(updateCategoryUseCase.execute(eq(id),
+                any(UpdateCategoryRequest.class))).thenReturn(response);
 
-        UpdateCategoryRequest request = new UpdateCategoryRequest("Updated", "Updated desc", true);
+        UpdateCategoryRequest request = new UpdateCategoryRequest("Updated",
+                "Updated desc", true);
 
-        ResponseEntity<CategoryDetailResponse> result = categoryController.update(id, request);
+        ResponseEntity<CategoryDetailResponse> result = categoryController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(idStr, result.getBody().id());
-        verify(updateCategoryUseCase).execute(eq(id), any(UpdateCategoryRequest.class));
+        verify(updateCategoryUseCase).execute(eq(id),
+                any(UpdateCategoryRequest.class));
     }
 
     @Test

@@ -6,5 +6,6 @@ import java.util.UUID;
 public interface InvoiceQuoteGateway {
     Optional<Quote> findQuote(UUID quoteId);
 
-    record Quote(UUID id, UUID customerId, String status) {}
+    record Quote(UUID id, UUID customerId, String status) {
+    }
 }

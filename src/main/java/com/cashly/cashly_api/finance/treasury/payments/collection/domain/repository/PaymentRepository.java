@@ -13,7 +13,7 @@ public interface PaymentRepository {
     Payment save(Payment payment);
     Optional<Payment> findById(PaymentId id);
     List<Payment> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                      UUID customerId, String status);
+            UUID customerId, String status);
     BigDecimal getRefundableAmountByCustomerId(UUID customerId);
     void deleteById(PaymentId id);
     int getNextSequenceForYear(int year);

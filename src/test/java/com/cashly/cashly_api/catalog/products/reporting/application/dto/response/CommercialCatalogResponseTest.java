@@ -18,9 +18,9 @@ class CommercialCatalogResponseTest {
         UUID categoryId = UUID.randomUUID();
         BigDecimal price = new BigDecimal("1500.50");
 
-        var response = new CommercialCatalogResponse(
-                productId, "Product Name", "SKU-001", "A description",
-                "products/photo.jpg", categoryId, "Audio", price, "Minorista");
+        var response = new CommercialCatalogResponse(productId, "Product Name",
+                "SKU-001", "A description", "products/photo.jpg", categoryId,
+                "Audio", price, "Minorista");
 
         assertEquals(productId, response.productId());
         assertEquals("Product Name", response.productName());
@@ -39,9 +39,8 @@ class CommercialCatalogResponseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        var response = new CommercialCatalogResponse(
-                productId, "Product", "SKU", "Desc",
-                null, categoryId, "Category", null, null);
+        var response = new CommercialCatalogResponse(productId, "Product",
+                "SKU", "Desc", null, categoryId, "Category", null, null);
 
         assertNull(response.photo());
         assertNull(response.price());

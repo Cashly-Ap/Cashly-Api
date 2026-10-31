@@ -14,24 +14,24 @@ class DuplicateProductComponentExceptionTest {
     void should_CreateException_WithComponentIdInMessage() {
         UUID componentId = UUID.randomUUID();
 
-        DuplicateProductComponentException exception =
-                new DuplicateProductComponentException(componentId);
+        DuplicateProductComponentException exception = new DuplicateProductComponentException(
+                componentId);
 
         assertTrue(exception.getMessage().contains(componentId.toString()));
     }
 
     @Test
     void should_BeRuntimeException() {
-        DuplicateProductComponentException exception =
-                new DuplicateProductComponentException(UUID.randomUUID());
+        DuplicateProductComponentException exception = new DuplicateProductComponentException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
     void should_NotBeNull() {
-        DuplicateProductComponentException exception =
-                new DuplicateProductComponentException(UUID.randomUUID());
+        DuplicateProductComponentException exception = new DuplicateProductComponentException(
+                UUID.randomUUID());
 
         assertNotNull(exception);
     }

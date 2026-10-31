@@ -22,18 +22,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DisplayName("PaymentConfig Unit Tests")
 class PaymentConfigTest {
 
-    @Mock private PaymentRepository paymentRepository;
-    @Mock private PaymentAllocationRepository paymentAllocationRepository;
-    @Mock private PaymentCustomerGateway customerGateway;
-    @Mock private PaymentActorGateway actorGateway;
-    @Mock private CashRegisterGateway cashRegisterGateway;
+    @Mock
+    private PaymentRepository paymentRepository;
+    @Mock
+    private PaymentAllocationRepository paymentAllocationRepository;
+    @Mock
+    private PaymentCustomerGateway customerGateway;
+    @Mock
+    private PaymentActorGateway actorGateway;
+    @Mock
+    private CashRegisterGateway cashRegisterGateway;
 
     @Test
     void should_CreateCreatePaymentUseCase() {
         PaymentConfig config = new PaymentConfig();
 
         CreatePaymentUseCase useCase = config.createPaymentUseCase(
-                paymentRepository, customerGateway, actorGateway, cashRegisterGateway);
+                paymentRepository, customerGateway, actorGateway,
+                cashRegisterGateway);
 
         assertNotNull(useCase);
     }
@@ -42,7 +48,8 @@ class PaymentConfigTest {
     void should_CreateGetAllPaymentsUseCase() {
         PaymentConfig config = new PaymentConfig();
 
-        GetAllPaymentsUseCase useCase = config.getAllPaymentsUseCase(paymentRepository);
+        GetAllPaymentsUseCase useCase = config
+                .getAllPaymentsUseCase(paymentRepository);
 
         assertNotNull(useCase);
     }
@@ -51,7 +58,8 @@ class PaymentConfigTest {
     void should_CreateGetPaymentByIdUseCase() {
         PaymentConfig config = new PaymentConfig();
 
-        GetPaymentByIdUseCase useCase = config.getPaymentByIdUseCase(paymentRepository);
+        GetPaymentByIdUseCase useCase = config
+                .getPaymentByIdUseCase(paymentRepository);
 
         assertNotNull(useCase);
     }
@@ -60,7 +68,8 @@ class PaymentConfigTest {
     void should_CreateUpdatePaymentUseCase() {
         PaymentConfig config = new PaymentConfig();
 
-        UpdatePaymentUseCase useCase = config.updatePaymentUseCase(paymentRepository);
+        UpdatePaymentUseCase useCase = config
+                .updatePaymentUseCase(paymentRepository);
 
         assertNotNull(useCase);
     }
@@ -69,7 +78,8 @@ class PaymentConfigTest {
     void should_CreateDeletePaymentUseCase() {
         PaymentConfig config = new PaymentConfig();
 
-        DeletePaymentUseCase useCase = config.deletePaymentUseCase(paymentRepository);
+        DeletePaymentUseCase useCase = config
+                .deletePaymentUseCase(paymentRepository);
 
         assertNotNull(useCase);
     }

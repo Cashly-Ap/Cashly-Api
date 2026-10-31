@@ -33,6 +33,7 @@ class PaymentTypeUnitTest {
     @Test
     void should_contain_credit_in_values() {
         PaymentType[] values = PaymentType.values();
-        assertTrue(java.util.Arrays.asList(values).contains(PaymentType.CREDIT));
+        assertTrue(
+                java.util.Arrays.asList(values).contains(PaymentType.CREDIT));
     }
 }

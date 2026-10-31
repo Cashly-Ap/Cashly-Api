@@ -35,22 +35,27 @@ class CatalogReportRepositoryAdapterTest {
     @Test
     @DisplayName("should find catalog and map to response")
     void should_find_catalog() {
-        CatalogReportQuery query = new CatalogReportQuery(
-                "search", UUID.randomUUID(), UUID.randomUUID(), true, true, false, 0, 20);
+        CatalogReportQuery query = new CatalogReportQuery("search",
+                UUID.randomUUID(), UUID.randomUUID(), true, true, false, 0, 20);
 
-        CatalogReportProjection projection = mock(CatalogReportProjection.class);
-        when(projection.getProductId()).thenReturn(UUID.randomUUID().toString());
+        CatalogReportProjection projection = mock(
+                CatalogReportProjection.class);
+        when(projection.getProductId())
+                .thenReturn(UUID.randomUUID().toString());
         when(projection.getProductName()).thenReturn("Product A");
         when(projection.getSku()).thenReturn("SKU001");
-        when(projection.getCategoryId()).thenReturn(UUID.randomUUID().toString());
+        when(projection.getCategoryId())
+                .thenReturn(UUID.randomUUID().toString());
         when(projection.getCategoryName()).thenReturn("Category");
         when(projection.getComposite()).thenReturn(false);
-        when(projection.getWarehouseId()).thenReturn(UUID.randomUUID().toString());
+        when(projection.getWarehouseId())
+                .thenReturn(UUID.randomUUID().toString());
         when(projection.getWarehouseName()).thenReturn("Warehouse");
         when(projection.getQuantity()).thenReturn(BigDecimal.TEN);
         when(projection.getActive()).thenReturn(true);
 
-        when(jpaRepository.findCatalog(any(), any(), any(), any(), any(), any(PageRequest.class)))
+        when(jpaRepository.findCatalog(any(), any(), any(), any(), any(),
+                any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(List.of(projection)));
 
         PageResponse<CatalogReportResponse> result = adapter.findCatalog(query);
@@ -60,21 +65,23 @@ class CatalogReportRepositoryAdapterTest {
         assertEquals("Product A", result.content().get(0).productName());
         assertEquals("SKU001", result.content().get(0).sku());
         assertTrue(result.content().get(0).active());
-        verify(jpaRepository).findCatalog(any(), any(), any(), any(), any(), any(PageRequest.class));
+        verify(jpaRepository).findCatalog(any(), any(), any(), any(), any(),
+                any(PageRequest.class));
     }
 
     @Test
     @DisplayName("should find catalog with null filters")
     void should_find_catalog_with_null_filters() {
-        CatalogReportQuery query = new CatalogReportQuery(
-                null, null, null, null, null, null, 0, 20);
+        CatalogReportQuery query = new CatalogReportQuery(null, null, null,
+                null, null, null, 0, 20);
 
-        when(jpaRepository.findCatalog(any(), any(), any(), any(), any(), any(PageRequest.class)))
-                .thenReturn(new PageImpl<>(List.of()));
+        when(jpaRepository.findCatalog(any(), any(), any(), any(), any(),
+                any(PageRequest.class))).thenReturn(new PageImpl<>(List.of()));
 
         PageResponse<CatalogReportResponse> result = adapter.findCatalog(query);
 
         assertTrue(result.content().isEmpty());
-        verify(jpaRepository).findCatalog(any(), any(), any(), any(), any(), any(PageRequest.class));
+        verify(jpaRepository).findCatalog(any(), any(), any(), any(), any(),
+                any(PageRequest.class));
     }
 }

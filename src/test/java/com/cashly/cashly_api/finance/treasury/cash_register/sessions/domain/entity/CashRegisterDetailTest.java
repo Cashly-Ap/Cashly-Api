@@ -26,7 +26,8 @@ class CashRegisterDetailTest {
         @Test
         void should_CreateDetail_When_ValidPositiveAmount() {
             CashRegisterDetail detail = CashRegisterDetail.create(
-                    paymentMethodId, paymentMethodName, transactionCount, expectedAmount);
+                    paymentMethodId, paymentMethodName, transactionCount,
+                    expectedAmount);
 
             assertNotNull(detail.getId());
             assertEquals(paymentMethodId, detail.getPaymentMethodId());
@@ -46,23 +47,28 @@ class CashRegisterDetailTest {
 
         @Test
         void should_Throw_When_AmountIsNegative() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    CashRegisterDetail.create(paymentMethodId, paymentMethodName, transactionCount,
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> CashRegisterDetail.create(paymentMethodId,
+                            paymentMethodName, transactionCount,
                             new BigDecimal("-100.00")));
 
-            assertEquals("Expected amount must not be negative", exception.getMessage());
+            assertEquals("Expected amount must not be negative",
+                    exception.getMessage());
         }
 
         @Test
         void should_Throw_When_PaymentMethodNameIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CashRegisterDetail.create(paymentMethodId, null, transactionCount, expectedAmount));
+            assertThrows(NullPointerException.class,
+                    () -> CashRegisterDetail.create(paymentMethodId, null,
+                            transactionCount, expectedAmount));
         }
 
         @Test
         void should_Throw_When_ExpectedAmountIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CashRegisterDetail.create(paymentMethodId, paymentMethodName, transactionCount, null));
+            assertThrows(NullPointerException.class,
+                    () -> CashRegisterDetail.create(paymentMethodId,
+                            paymentMethodName, transactionCount, null));
         }
     }
 
@@ -74,8 +80,9 @@ class CashRegisterDetailTest {
         void should_Reconstitute_When_AllFieldsProvided() {
             UUID id = UUID.randomUUID();
 
-            CashRegisterDetail detail = CashRegisterDetail.reconstitute(
-                    id, paymentMethodId, paymentMethodName, transactionCount, expectedAmount);
+            CashRegisterDetail detail = CashRegisterDetail.reconstitute(id,
+                    paymentMethodId, paymentMethodName, transactionCount,
+                    expectedAmount);
 
             assertEquals(id, detail.getId());
             assertEquals(paymentMethodId, detail.getPaymentMethodId());
@@ -87,7 +94,8 @@ class CashRegisterDetailTest {
         @Test
         void should_ReconstituteWithNegativeAmount_When_AmountIsNegative() {
             CashRegisterDetail detail = CashRegisterDetail.reconstitute(
-                    UUID.randomUUID(), paymentMethodId, paymentMethodName, 0, new BigDecimal("-50.00"));
+                    UUID.randomUUID(), paymentMethodId, paymentMethodName, 0,
+                    new BigDecimal("-50.00"));
 
             assertEquals(new BigDecimal("-50.00"), detail.getExpectedAmount());
         }
@@ -100,7 +108,8 @@ class CashRegisterDetailTest {
         @Test
         void should_ReturnAllFields_ThroughGetters() {
             CashRegisterDetail detail = CashRegisterDetail.create(
-                    paymentMethodId, paymentMethodName, transactionCount, expectedAmount);
+                    paymentMethodId, paymentMethodName, transactionCount,
+                    expectedAmount);
 
             assertNotNull(detail.getId());
             assertNotNull(detail.getPaymentMethodId());

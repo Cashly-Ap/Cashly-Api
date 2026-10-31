@@ -11,7 +11,8 @@ import java.util.UUID;
 public class SecurityContextCurrentActor implements CurrentActor {
     @Override
     public UUID requireId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()
                 || "anonymousUser".equals(authentication.getName())) {
             throw new AccessDeniedException("Authentication required");

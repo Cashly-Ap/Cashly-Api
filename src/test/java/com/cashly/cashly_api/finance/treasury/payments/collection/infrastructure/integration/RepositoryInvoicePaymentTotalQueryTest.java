@@ -14,13 +14,15 @@ import static org.mockito.Mockito.*;
 class RepositoryInvoicePaymentTotalQueryTest {
     @Test
     void givenAllocations_whenQueryingTotal_thenSumsNullAmountsAsZero() {
-        PaymentAllocationRepository allocations = mock(PaymentAllocationRepository.class);
+        PaymentAllocationRepository allocations = mock(
+                PaymentAllocationRepository.class);
         PaymentAllocation first = mock(PaymentAllocation.class);
         PaymentAllocation second = mock(PaymentAllocation.class);
         UUID invoiceId = UUID.randomUUID();
         when(first.getAllocatedAmount()).thenReturn(new BigDecimal("12.00"));
         when(second.getAllocatedAmount()).thenReturn(null);
-        when(allocations.findByInvoiceId(invoiceId)).thenReturn(List.of(first, second));
+        when(allocations.findByInvoiceId(invoiceId))
+                .thenReturn(List.of(first, second));
 
         BigDecimal total = new RepositoryInvoicePaymentTotalQuery(allocations)
                 .totalAllocatedByInvoiceId(invoiceId);

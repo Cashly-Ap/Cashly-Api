@@ -26,7 +26,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_CreateRefreshToken_When_ValidParametersProvided() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         assertNotNull(refreshToken);
         assertEquals(tokenId, refreshToken.getId());
@@ -40,44 +41,39 @@ class RefreshTokenUnitTest {
     @Test
     void should_ThrowException_When_NullTokenIdProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshToken(null, userId, token, futureExpiration)
-        );
+                IllegalArgumentException.class,
+                () -> new RefreshToken(null, userId, token, futureExpiration));
         assertEquals("RefreshToken ID cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_NullUserIdProvided() {
         NullPointerException exception = assertThrows(
-            NullPointerException.class,
-            () -> new RefreshToken(tokenId, null, token, futureExpiration)
-        );
+                NullPointerException.class,
+                () -> new RefreshToken(tokenId, null, token, futureExpiration));
     }
 
     @Test
     void should_ThrowException_When_NullTokenProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshToken(tokenId, userId, null, futureExpiration)
-        );
+                IllegalArgumentException.class, () -> new RefreshToken(tokenId,
+                        userId, null, futureExpiration));
         assertEquals("Token cannot be null or empty", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_EmptyTokenProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshToken(tokenId, userId, "   ", futureExpiration)
-        );
+                IllegalArgumentException.class, () -> new RefreshToken(tokenId,
+                        userId, "   ", futureExpiration));
         assertEquals("Token cannot be null or empty", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_NullExpirationProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshToken(tokenId, userId, token, null)
-        );
+                IllegalArgumentException.class,
+                () -> new RefreshToken(tokenId, userId, token, null));
         assertEquals("Expiration date cannot be null", exception.getMessage());
     }
 
@@ -86,15 +82,16 @@ class RefreshTokenUnitTest {
         LocalDateTime pastExpiration = LocalDateTime.now().minusDays(1);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshToken(tokenId, userId, token, pastExpiration)
-        );
-        assertEquals("Expiration date cannot be in the past", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> new RefreshToken(tokenId, userId, token, pastExpiration));
+        assertEquals("Expiration date cannot be in the past",
+                exception.getMessage());
     }
 
     @Test
     void should_ReturnFalse_When_TokenIsNotExpired() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         boolean isExpired = refreshToken.isExpired();
 
@@ -104,10 +101,11 @@ class RefreshTokenUnitTest {
     @Test
     void should_ReturnTrue_When_TokenIsExpired() {
         LocalDateTime nearExpiration = LocalDateTime.now().plusSeconds(1);
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, nearExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                nearExpiration);
 
         try {
-            Thread.sleep(1100); 
+            Thread.sleep(1100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -118,7 +116,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_ReturnTrue_When_TokenIsValid() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         boolean isValid = refreshToken.isValid();
 
@@ -127,7 +126,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_ReturnFalse_When_TokenIsRevoked() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
         refreshToken.revoke();
 
         boolean isValid = refreshToken.isValid();
@@ -137,7 +137,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_RevokeToken_When_RevokeMethodCalled() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         refreshToken.revoke();
 
@@ -146,7 +147,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_ReturnTrue_When_TokenBelongsToUser() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         boolean belongsToUser = refreshToken.belongsToUser(userId);
 
@@ -155,7 +157,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_ReturnFalse_When_TokenDoesNotBelongToUser() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
         UserId differentUserId = UserId.generate();
 
         boolean belongsToUser = refreshToken.belongsToUser(differentUserId);
@@ -165,7 +168,8 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_ReturnFalse_When_NullUserIdProvidedForBelongsToUser() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         boolean belongsToUser = refreshToken.belongsToUser(null);
 
@@ -174,8 +178,10 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_BeEqual_When_SameTokenIdProvided() {
-        RefreshToken token1 = new RefreshToken(tokenId, userId, token, futureExpiration);
-        RefreshToken token2 = new RefreshToken(tokenId, UserId.generate(), "different", futureExpiration);
+        RefreshToken token1 = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
+        RefreshToken token2 = new RefreshToken(tokenId, UserId.generate(),
+                "different", futureExpiration);
 
         assertEquals(token1, token2);
         assertEquals(token1.hashCode(), token2.hashCode());
@@ -183,15 +189,18 @@ class RefreshTokenUnitTest {
 
     @Test
     void should_NotBeEqual_When_DifferentTokenIdProvided() {
-        RefreshToken token1 = new RefreshToken(RefreshTokenId.generate(), userId, token, futureExpiration);
-        RefreshToken token2 = new RefreshToken(RefreshTokenId.generate(), userId, token, futureExpiration);
+        RefreshToken token1 = new RefreshToken(RefreshTokenId.generate(),
+                userId, token, futureExpiration);
+        RefreshToken token2 = new RefreshToken(RefreshTokenId.generate(),
+                userId, token, futureExpiration);
 
         assertNotEquals(token1, token2);
     }
 
     @Test
     void should_HideTokenInToString_When_RefreshTokenCreated() {
-        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token, futureExpiration);
+        RefreshToken refreshToken = new RefreshToken(tokenId, userId, token,
+                futureExpiration);
 
         String result = refreshToken.toString();
 

@@ -36,13 +36,13 @@ public class Quote {
     private final Instant createdAt;
     private Instant updatedAt;
 
-    
-    private Quote(UUID id, QuoteNumber quoteNumber, UUID customerId, String customerName,
-                  String customerRif, UUID createdBy, String createdByName, QuoteStatus status,
-                  LocalDate expiryDate, String notes, BigDecimal subtotal,
-                  UUID orderId, String orderNumber, UUID invoiceId, String invoiceNumber,
-                  Instant cancelledAt, String cancelledReason,
-                  List<QuoteLine> lines, Instant createdAt, Instant updatedAt) {
+    private Quote(UUID id, QuoteNumber quoteNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, QuoteStatus status, LocalDate expiryDate,
+            String notes, BigDecimal subtotal, UUID orderId, String orderNumber,
+            UUID invoiceId, String invoiceNumber, Instant cancelledAt,
+            String cancelledReason, List<QuoteLine> lines, Instant createdAt,
+            Instant updatedAt) {
         this.id = id;
         this.quoteNumber = quoteNumber;
         this.customerId = customerId;
@@ -65,19 +65,19 @@ public class Quote {
         this.updatedAt = updatedAt;
     }
 
-    
-    public static Quote create(QuoteNumber quoteNumber, UUID customerId, String customerName,
-                               String customerRif, UUID createdBy, String createdByName,
-                               LocalDate expiryDate, String notes, List<QuoteLine> lines) {
+    public static Quote create(QuoteNumber quoteNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, LocalDate expiryDate, String notes,
+            List<QuoteLine> lines) {
         return create(quoteNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, QuoteStatus.DRAFT,
-                expiryDate, notes, lines);
+                createdBy, createdByName, QuoteStatus.DRAFT, expiryDate, notes,
+                lines);
     }
 
-    private static Quote create(QuoteNumber quoteNumber, UUID customerId, String customerName,
-                                String customerRif, UUID createdBy, String createdByName,
-                                QuoteStatus status, LocalDate expiryDate, String notes,
-                                List<QuoteLine> lines) {
+    private static Quote create(QuoteNumber quoteNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, QuoteStatus status, LocalDate expiryDate,
+            String notes, List<QuoteLine> lines) {
         if (quoteNumber == null) {
             throw new IllegalArgumentException("quoteNumber must not be null");
         }
@@ -91,44 +91,36 @@ public class Quote {
             throw new IllegalArgumentException("customerRif must not be null");
         }
         if (lines == null || lines.isEmpty()) {
-            throw new IllegalArgumentException("Quote must have at least one line");
+            throw new IllegalArgumentException(
+                    "Quote must have at least one line");
         }
 
         Instant now = Instant.now();
         BigDecimal calculatedSubtotal = calculateSubtotal(lines);
 
-        return new Quote(
-                UUID.randomUUID(), quoteNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, status,
-                expiryDate, notes, calculatedSubtotal,
-                null, null, null, null,
-                null, null,
-                lines, now, now
-        );
+        return new Quote(UUID.randomUUID(), quoteNumber, customerId,
+                customerName, customerRif, createdBy, createdByName, status,
+                expiryDate, notes, calculatedSubtotal, null, null, null, null,
+                null, null, lines, now, now);
     }
 
-    
-    public static Quote reconstitute(UUID id, QuoteNumber quoteNumber, UUID customerId,
-                                     String customerName, String customerRif,
-                                     UUID createdBy, String createdByName, QuoteStatus status,
-                                     LocalDate expiryDate, String notes, BigDecimal subtotal,
-                                     UUID orderId, String orderNumber, UUID invoiceId,
-                                     String invoiceNumber, Instant cancelledAt,
-                                     String cancelledReason, List<QuoteLine> lines,
-                                     Instant createdAt, Instant updatedAt) {
+    public static Quote reconstitute(UUID id, QuoteNumber quoteNumber,
+            UUID customerId, String customerName, String customerRif,
+            UUID createdBy, String createdByName, QuoteStatus status,
+            LocalDate expiryDate, String notes, BigDecimal subtotal,
+            UUID orderId, String orderNumber, UUID invoiceId,
+            String invoiceNumber, Instant cancelledAt, String cancelledReason,
+            List<QuoteLine> lines, Instant createdAt, Instant updatedAt) {
         return new Quote(id, quoteNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, status,
-                expiryDate, notes, subtotal,
-                orderId, orderNumber, invoiceId, invoiceNumber,
-                cancelledAt, cancelledReason,
-                lines, createdAt, updatedAt);
+                createdBy, createdByName, status, expiryDate, notes, subtotal,
+                orderId, orderNumber, invoiceId, invoiceNumber, cancelledAt,
+                cancelledReason, lines, createdAt, updatedAt);
     }
-
-    
 
     public void cancel(String reason) {
         if (reason == null || reason.isBlank()) {
-            throw new IllegalArgumentException("Cancellation reason must not be null or blank");
+            throw new IllegalArgumentException(
+                    "Cancellation reason must not be null or blank");
         }
         assertCanTransition(QuoteStatus.CANCELLED);
         this.status = QuoteStatus.CANCELLED;
@@ -160,8 +152,6 @@ public class Quote {
         }
     }
 
-    
-
     public void addLine(QuoteLine line) {
         assertDraft();
         lines.add(line);
@@ -176,7 +166,8 @@ public class Quote {
         touch();
     }
 
-    public void updateLine(QuoteLineId lineId, BigDecimal quantity, BigDecimal unitPrice) {
+    public void updateLine(QuoteLineId lineId, BigDecimal quantity,
+            BigDecimal unitPrice) {
         assertDraft();
         for (QuoteLine line : lines) {
             if (line.getId().equals(lineId)) {
@@ -191,27 +182,23 @@ public class Quote {
 
     private void assertDraft() {
         if (this.status != QuoteStatus.DRAFT) {
-            throw new QuoteStateException("Quote can only be modified in DRAFT status");
+            throw new QuoteStateException(
+                    "Quote can only be modified in DRAFT status");
         }
     }
-
-    
 
     private void recalculateSubtotal() {
         this.subtotal = calculateSubtotal(lines);
     }
 
     private static BigDecimal calculateSubtotal(List<QuoteLine> lines) {
-        return lines.stream()
-                .map(QuoteLine::getLineTotal)
+        return lines.stream().map(QuoteLine::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private void touch() {
         this.updatedAt = Instant.now();
     }
-
-    
 
     public boolean canBeModified() {
         return this.status == QuoteStatus.DRAFT;
@@ -225,26 +212,64 @@ public class Quote {
         return this.status != QuoteStatus.CANCELLED;
     }
 
-    
-
-    public UUID getId() { return id; }
-    public QuoteNumber getQuoteNumber() { return quoteNumber; }
-    public UUID getCustomerId() { return customerId; }
-    public String getCustomerName() { return customerName; }
-    public String getCustomerRif() { return customerRif; }
-    public UUID getCreatedBy() { return createdBy; }
-    public String getCreatedByName() { return createdByName; }
-    public QuoteStatus getStatus() { return status; }
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public String getNotes() { return notes; }
-    public BigDecimal getSubtotal() { return subtotal; }
-    public UUID getOrderId() { return orderId; }
-    public String getOrderNumber() { return orderNumber; }
-    public UUID getInvoiceId() { return invoiceId; }
-    public String getInvoiceNumber() { return invoiceNumber; }
-    public Instant getCancelledAt() { return cancelledAt; }
-    public String getCancelledReason() { return cancelledReason; }
-    public List<QuoteLine> getLines() { return Collections.unmodifiableList(lines); }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    public UUID getId() {
+        return id;
+    }
+    public QuoteNumber getQuoteNumber() {
+        return quoteNumber;
+    }
+    public UUID getCustomerId() {
+        return customerId;
+    }
+    public String getCustomerName() {
+        return customerName;
+    }
+    public String getCustomerRif() {
+        return customerRif;
+    }
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+    public String getCreatedByName() {
+        return createdByName;
+    }
+    public QuoteStatus getStatus() {
+        return status;
+    }
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+    public String getNotes() {
+        return notes;
+    }
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+    public UUID getOrderId() {
+        return orderId;
+    }
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+    public UUID getInvoiceId() {
+        return invoiceId;
+    }
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+    public Instant getCancelledAt() {
+        return cancelledAt;
+    }
+    public String getCancelledReason() {
+        return cancelledReason;
+    }
+    public List<QuoteLine> getLines() {
+        return Collections.unmodifiableList(lines);
+    }
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 }

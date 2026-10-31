@@ -22,11 +22,14 @@ import java.util.stream.Collectors;
 @Service
 public class CashRegisterExcelExportService {
 
-
-    private static final String MODULE_VENTAS = ReportMessages.text("finance.treasury.cash_register.reports.sales");
-    private static final String MODULE_CXC = ReportMessages.text("finance.treasury.cash_register.reports.accountsReceivable");
-    private static final String MODULE_CAJA = ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterOperations");
-    private static final String[] MODULE_ORDER = {MODULE_VENTAS, MODULE_CXC, MODULE_CAJA};
+    private static final String MODULE_VENTAS = ReportMessages
+            .text("finance.treasury.cash_register.reports.sales");
+    private static final String MODULE_CXC = ReportMessages
+            .text("finance.treasury.cash_register.reports.accountsReceivable");
+    private static final String MODULE_CAJA = ReportMessages.text(
+            "finance.treasury.cash_register.reports.cashRegisterOperations");
+    private static final String[] MODULE_ORDER = {MODULE_VENTAS, MODULE_CXC,
+            MODULE_CAJA};
 
     private static final int COL_EMISSION_DATE = 0;
     private static final int COL_DOC_TYPE = 1;
@@ -41,11 +44,15 @@ public class CashRegisterExcelExportService {
     private static final int COL_CUSTOMER = 10;
     private static final int COLUMN_COUNT = 11;
 
-    private static final String SHEET_NAME = ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterClosureDetails");
-    private static final String TITLE_TEXT = ReportMessages.text("finance.treasury.cash_register.reports.detailedCashRegisterClosureByCurrency");
+    private static final String SHEET_NAME = ReportMessages.text(
+            "finance.treasury.cash_register.reports.cashRegisterClosureDetails");
+    private static final String TITLE_TEXT = ReportMessages.text(
+            "finance.treasury.cash_register.reports.detailedCashRegisterClosureByCurrency");
 
-    private static final String MSG_NO_DATA = ReportMessages.text("finance.treasury.cash_register.reports.noTransactionsFoundForTheSpecifiedDate");
-    private static final String ERROR_EXCEL = ReportMessages.text("finance.treasury.cash_register.reports.unableToGenerateTheExcelFile");
+    private static final String MSG_NO_DATA = ReportMessages.text(
+            "finance.treasury.cash_register.reports.noTransactionsFoundForTheSpecifiedDate");
+    private static final String ERROR_EXCEL = ReportMessages.text(
+            "finance.treasury.cash_register.reports.unableToGenerateTheExcelFile");
 
     private final CashRegisterQueryGateway repository;
 
@@ -54,7 +61,8 @@ public class CashRegisterExcelExportService {
     }
 
     public byte[] exportToExcel(LocalDate dateFrom, LocalDate dateTo) {
-        List<CashRegisterExportRow> rows = repository.findExportRows(dateFrom, dateTo);
+        List<CashRegisterExportRow> rows = repository.findExportRows(dateFrom,
+                dateTo);
 
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet(SHEET_NAME);
@@ -65,7 +73,8 @@ public class CashRegisterExcelExportService {
             CellStyle dataDateStyle = createDataDateStyle(workbook);
             CellStyle subtotalStyle = createSubtotalStyle(workbook);
             CellStyle currencyStyle = createCurrencyStyle(workbook);
-            CellStyle currencySubtotalStyle = createCurrencySubtotalStyle(workbook);
+            CellStyle currencySubtotalStyle = createCurrencySubtotalStyle(
+                    workbook);
 
             configureColumnWidths(sheet);
 
@@ -82,7 +91,8 @@ public class CashRegisterExcelExportService {
             rowNum = writeHeader(sheet, headerStyle, rowNum);
 
             Map<String, List<CashRegisterExportRow>> grouped = rows.stream()
-                    .collect(Collectors.groupingBy(CashRegisterExportRow::module));
+                    .collect(Collectors
+                            .groupingBy(CashRegisterExportRow::module));
 
             BigDecimal grandTotal = BigDecimal.ZERO;
             BigDecimal grandEfectivo = BigDecimal.ZERO;
@@ -98,10 +108,12 @@ public class CashRegisterExcelExportService {
                     continue;
                 }
 
-                moduleRows.sort(Comparator.comparingInt(CashRegisterExportRow::sortOrder));
+                moduleRows.sort(Comparator
+                        .comparingInt(CashRegisterExportRow::sortOrder));
 
                 for (CashRegisterExportRow row : moduleRows) {
-                    writeDataRow(sheet, dataStyle, dataDateStyle, currencyStyle, rowNum, row);
+                    writeDataRow(sheet, dataStyle, dataDateStyle, currencyStyle,
+                            rowNum, row);
                     rowNum++;
                 }
 
@@ -127,10 +139,13 @@ public class CashRegisterExcelExportService {
                         .map(CashRegisterExportRow::notaCreditoAplicado)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
-                        ReportMessages.text("finance.treasury.cash_register.reports.subtotal") + module, moduleTotal,
-                        moduleEfectivo, moduleDolar, moduleTransf, moduleZelle,
-                        moduleAnticipo, moduleNC);
+                writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle,
+                        rowNum,
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.subtotal")
+                                + module,
+                        moduleTotal, moduleEfectivo, moduleDolar, moduleTransf,
+                        moduleZelle, moduleAnticipo, moduleNC);
                 rowNum++;
 
                 grandTotal = grandTotal.add(moduleTotal);
@@ -144,10 +159,12 @@ public class CashRegisterExcelExportService {
                 rowNum++;
             }
 
-            writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle, rowNum,
-                    ReportMessages.text("finance.treasury.cash_register.reports.grandTotal"), grandTotal,
-                    grandEfectivo, grandDolar, grandTransf, grandZelle,
-                    grandAnticipo, grandNC);
+            writeSubtotalRow(sheet, subtotalStyle, currencySubtotalStyle,
+                    rowNum,
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.grandTotal"),
+                    grandTotal, grandEfectivo, grandDolar, grandTransf,
+                    grandZelle, grandAnticipo, grandNC);
 
             return toBytes(workbook);
 
@@ -161,7 +178,8 @@ public class CashRegisterExcelExportService {
         Cell titleCell = titleRow.createCell(COL_EMISSION_DATE);
         titleCell.setCellValue(TITLE_TEXT);
         titleCell.setCellStyle(titleStyle);
-        sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, COL_EMISSION_DATE, COL_CUSTOMER));
+        sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum,
+                COL_EMISSION_DATE, COL_CUSTOMER));
         titleRow.setHeightInPoints(30);
         return rowNum + 1;
     }
@@ -169,10 +187,28 @@ public class CashRegisterExcelExportService {
     private int writeHeader(Sheet sheet, CellStyle headerStyle, int rowNum) {
         Row headerRow = sheet.createRow(rowNum);
         String[] headers = {
-                ReportMessages.text("finance.treasury.cash_register.reports.issueDate"), ReportMessages.text("finance.treasury.cash_register.reports.documentType"), ReportMessages.text("finance.treasury.cash_register.reports.document"), ReportMessages.text("finance.treasury.cash_register.reports.transactionTotal"),
-                ReportMessages.text("finance.treasury.cash_register.reports.cashInBs"), ReportMessages.text("finance.treasury.cash_register.reports.usDollar"), ReportMessages.text("finance.treasury.cash_register.reports.usdTransfer"), ReportMessages.text("finance.treasury.cash_register.reports.zelle"),
-                ReportMessages.text("finance.treasury.cash_register.reports.advanceApplied"), ReportMessages.text("finance.treasury.cash_register.reports.creditNoteApplied"), ReportMessages.text("finance.treasury.cash_register.reports.customer")
-        };
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.issueDate"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.documentType"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.document"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.transactionTotal"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.cashInBs"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.usDollar"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.usdTransfer"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.zelle"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.advanceApplied"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.creditNoteApplied"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.customer")};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
@@ -182,13 +218,15 @@ public class CashRegisterExcelExportService {
         return rowNum + 1;
     }
 
-    private void writeDataRow(Sheet sheet, CellStyle dataStyle, CellStyle dateStyle,
-                              CellStyle currencyStyle, int rowNum, CashRegisterExportRow row) {
+    private void writeDataRow(Sheet sheet, CellStyle dataStyle,
+            CellStyle dateStyle, CellStyle currencyStyle, int rowNum,
+            CashRegisterExportRow row) {
         Row dataRow = sheet.createRow(rowNum);
 
         Cell dateCell = dataRow.createCell(COL_EMISSION_DATE);
         dateCell.setCellValue(row.emissionDate() != null
-                ? row.emissionDate().format(ReportMessages.dateFormatter()) : "");
+                ? row.emissionDate().format(ReportMessages.dateFormatter())
+                : "");
         dateCell.setCellStyle(dateStyle);
 
         Cell docTypeCell = dataRow.createCell(COL_DOC_TYPE);
@@ -228,16 +266,17 @@ public class CashRegisterExcelExportService {
         ncCell.setCellStyle(currencyStyle);
 
         Cell customerCell = dataRow.createCell(COL_CUSTOMER);
-        customerCell.setCellValue(row.customerName() != null ? row.customerName() : "");
+        customerCell.setCellValue(
+                row.customerName() != null ? row.customerName() : "");
         customerCell.setCellStyle(dataStyle);
 
         dataRow.setHeightInPoints(18);
     }
 
-    private void writeSubtotalRow(Sheet sheet, CellStyle subtotalStyle, CellStyle currencyStyle,
-                                  int rowNum, String label, BigDecimal total,
-                                  BigDecimal efectivo, BigDecimal dolar, BigDecimal transf,
-                                  BigDecimal zelle, BigDecimal anticipo, BigDecimal nc) {
+    private void writeSubtotalRow(Sheet sheet, CellStyle subtotalStyle,
+            CellStyle currencyStyle, int rowNum, String label, BigDecimal total,
+            BigDecimal efectivo, BigDecimal dolar, BigDecimal transf,
+            BigDecimal zelle, BigDecimal anticipo, BigDecimal nc) {
         Row subtotalRow = sheet.createRow(rowNum);
 
         Cell labelCell = subtotalRow.createCell(COL_EMISSION_DATE);
@@ -285,7 +324,8 @@ public class CashRegisterExcelExportService {
         Cell cell = row.createCell(COL_EMISSION_DATE);
         cell.setCellValue(MSG_NO_DATA);
         cell.setCellStyle(dataStyle);
-        sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, COL_EMISSION_DATE, COL_CUSTOMER));
+        sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum,
+                COL_EMISSION_DATE, COL_CUSTOMER));
     }
 
     private void configureColumnWidths(Sheet sheet) {

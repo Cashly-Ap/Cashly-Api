@@ -38,7 +38,8 @@ class LegalNameUnitTest {
 
     @Test
     void should_throw_on_blank() {
-        assertThrows(IllegalArgumentException.class, () -> new LegalName("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new LegalName("   "));
     }
 
     @Test
@@ -54,7 +55,8 @@ class LegalNameUnitTest {
     @Test
     void should_throw_on_too_long() {
         String tooLong = "A".repeat(201);
-        assertThrows(IllegalArgumentException.class, () -> new LegalName(tooLong));
+        assertThrows(IllegalArgumentException.class,
+                () -> new LegalName(tooLong));
     }
 
     @Test

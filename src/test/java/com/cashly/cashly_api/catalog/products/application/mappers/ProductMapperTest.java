@@ -41,43 +41,34 @@ class ProductMapperTest {
     }
 
     private Product simpleProduct() {
-        return Product.reconstitute(
-                productId, code, name, description, categoryId,
-                false, true, null,
-                purchasePrice,
-                List.of(), List.of(),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, code, name, description,
+                categoryId, false, true, null, purchasePrice, List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Product compositeProductWithComponents() {
         UUID componentProductId = UUID.randomUUID();
-        ProductComponent component = new ProductComponent(
-                UUID.randomUUID(), productId, componentProductId, 2
-        );
-        Product componentProduct = Product.reconstitute(
-                componentProductId, "C001", "Component 1", "Component desc", categoryId,
-                false, true, null,
-                new BigDecimal("20.00"),
-                List.of(), List.of(),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        ProductComponent component = new ProductComponent(UUID.randomUUID(),
+                productId, componentProductId, 2);
+        Product componentProduct = Product.reconstitute(componentProductId,
+                "C001", "Component 1", "Component desc", categoryId, false,
+                true, null, new BigDecimal("20.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        return Product.reconstitute(
-                productId, code, name, description, categoryId,
-                true, true, null,
-                purchasePrice,
-                List.of(component),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("120.00"), new BigDecimal("30.00"))),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, code, name, description,
+                categoryId, true, true, null, purchasePrice, List.of(component),
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(),
+                        UUID.randomUUID(), new BigDecimal("120.00"),
+                        new BigDecimal("30.00"))),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
     void should_MapProductToListResponse_When_SimpleProduct() {
         Product product = simpleProduct();
 
-        ProductListResponse response = mapper.toListResponse(product, categoryName, true);
+        ProductListResponse response = mapper.toListResponse(product,
+                categoryName, true);
 
         assertNotNull(response);
         assertEquals(productId.toString(), response.id());
@@ -95,27 +86,29 @@ class ProductMapperTest {
     @Test
     void should_MapProductToListResponse_When_ProductHasPrices() {
         UUID priceTypeId = UUID.randomUUID();
-        Product product = Product.reconstitute(
-                productId, code, name, description, categoryId,
-                false, true, null,
-                purchasePrice,
+        Product product = Product.reconstitute(productId, code, name,
+                description, categoryId, false, true, null, purchasePrice,
                 List.of(),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"), null)),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(),
+                        priceTypeId, new BigDecimal("120.00"), null)),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        ProductListResponse response = mapper.toListResponse(product, categoryName, true);
+        ProductListResponse response = mapper.toListResponse(product,
+                categoryName, true);
 
         assertEquals(1, response.productPrices().size());
-        assertEquals(priceTypeId.toString(), response.productPrices().get(0).priceTypeId());
-        assertEquals(new BigDecimal("120.00"), response.productPrices().get(0).price());
+        assertEquals(priceTypeId.toString(),
+                response.productPrices().get(0).priceTypeId());
+        assertEquals(new BigDecimal("120.00"),
+                response.productPrices().get(0).price());
     }
 
     @Test
     void should_MapProductToDetailResponse_When_CompositeProductWithComponents() {
         Product product = compositeProductWithComponents();
 
-        ProductDetailResponse response = mapper.toDetailResponse(product, categoryName, Map.of(), Map.of());
+        ProductDetailResponse response = mapper.toDetailResponse(product,
+                categoryName, Map.of(), Map.of());
 
         assertNotNull(response);
         assertEquals(productId.toString(), response.id());
@@ -132,20 +125,16 @@ class ProductMapperTest {
     @Test
     void should_MapProductToDetailResponse_When_ComponentLookupProvided() {
         Product product = compositeProductWithComponents();
-        UUID componentProductId = product.getComponents().get(0).getComponentProductId();
-        Product componentProduct = Product.reconstitute(
-                componentProductId, "C001", "Component 1", "Component desc", categoryId,
-                false, true, null,
-                new BigDecimal("20.00"),
-                List.of(), List.of(),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        UUID componentProductId = product.getComponents().get(0)
+                .getComponentProductId();
+        Product componentProduct = Product.reconstitute(componentProductId,
+                "C001", "Component 1", "Component desc", categoryId, false,
+                true, null, new BigDecimal("20.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        ProductDetailResponse response = mapper.toDetailResponse(
-                product, categoryName,
-                Map.of(componentProductId, componentProduct),
-                Map.of()
-        );
+        ProductDetailResponse response = mapper.toDetailResponse(product,
+                categoryName, Map.of(componentProductId, componentProduct),
+                Map.of());
 
         ComponentResponse component = response.components().get(0);
         assertEquals("C001", component.componentProductCode());
@@ -155,21 +144,18 @@ class ProductMapperTest {
     @Test
     void should_MapProductToDetailResponse_When_PriceTypeNamesProvided() {
         UUID priceTypeId = UUID.randomUUID();
-        Product product = Product.reconstitute(
-                productId, code, name, description, categoryId,
-                false, true, null,
-                purchasePrice,
+        Product product = Product.reconstitute(productId, code, name,
+                description, categoryId, false, true, null, purchasePrice,
                 List.of(),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"), null)),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(),
+                        priceTypeId, new BigDecimal("120.00"), null)),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        ProductDetailResponse response = mapper.toDetailResponse(
-                product, categoryName, Map.of(),
-                Map.of(priceTypeId, "Majorista")
-        );
+        ProductDetailResponse response = mapper.toDetailResponse(product,
+                categoryName, Map.of(), Map.of(priceTypeId, "Majorista"));
 
-        ProductPriceDetailResponse priceResponse = response.productPrices().get(0);
+        ProductPriceDetailResponse priceResponse = response.productPrices()
+                .get(0);
         assertEquals("Majorista", priceResponse.priceTypeName());
     }
 
@@ -177,7 +163,8 @@ class ProductMapperTest {
     void should_MapProductToDetailResponse_When_AllFieldsPresent() {
         Product product = simpleProduct();
 
-        ProductDetailResponse response = mapper.toDetailResponse(product, categoryName, Map.of(), Map.of());
+        ProductDetailResponse response = mapper.toDetailResponse(product,
+                categoryName, Map.of(), Map.of());
 
         assertEquals(productId.toString(), response.id());
         assertEquals(code, response.code());
@@ -197,13 +184,10 @@ class ProductMapperTest {
 
     private Product productWithPrices() {
         UUID priceTypeId = UUID.randomUUID();
-        return Product.reconstitute(
-                productId, code, name, description, categoryId,
-                false, true, null,
-                purchasePrice,
-                List.of(),
-                List.of(ProductPrice.reconstitute(UUID.randomUUID(), priceTypeId, new BigDecimal("120.00"), null)),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, code, name, description,
+                categoryId, false, true, null, purchasePrice, List.of(),
+                List.of(ProductPrice.reconstitute(UUID.randomUUID(),
+                        priceTypeId, new BigDecimal("120.00"), null)),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

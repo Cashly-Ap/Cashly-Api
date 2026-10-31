@@ -23,9 +23,7 @@ class LogoutRequestUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenIsNull")
     void should_ThrowException_When_RefreshTokenIsNull() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new LogoutRequest(null)
-        );
+                IllegalArgumentException.class, () -> new LogoutRequest(null));
 
         assertEquals("Refresh token is required", exception.getMessage());
     }
@@ -34,9 +32,7 @@ class LogoutRequestUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenIsEmpty")
     void should_ThrowException_When_RefreshTokenIsEmpty() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new LogoutRequest("")
-        );
+                IllegalArgumentException.class, () -> new LogoutRequest(""));
 
         assertEquals("Refresh token is required", exception.getMessage());
     }
@@ -45,9 +41,7 @@ class LogoutRequestUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenIsBlank")
     void should_ThrowException_When_RefreshTokenIsBlank() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new LogoutRequest("   ")
-        );
+                IllegalArgumentException.class, () -> new LogoutRequest("   "));
 
         assertEquals("Refresh token is required", exception.getMessage());
     }

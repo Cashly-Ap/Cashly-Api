@@ -52,38 +52,49 @@ class CreatePaymentUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CreatePaymentUseCase(paymentRepository, customerRepository, userRepository,
-                cashMovementService);
+        useCase = new CreatePaymentUseCase(paymentRepository,
+                customerRepository, userRepository, cashMovementService);
 
         when(customerRepository.exists(customerId)).thenReturn(true);
-        when(userRepository.findName(userId)).thenReturn(Optional.of("Test User"));
+        when(userRepository.findName(userId))
+                .thenReturn(Optional.of("Test User"));
     }
 
     @Test
     void should_CreateRefund_When_CustomerHasRefundableBalance() {
         CreatePaymentRequest request = refundRequest(new BigDecimal("50.00"));
-        when(paymentRepository.getRefundableAmountByCustomerId(customerId)).thenReturn(new BigDecimal("100.00"));
-        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentRepository.getRefundableAmountByCustomerId(customerId))
+                .thenReturn(new BigDecimal("100.00"));
+        when(paymentRepository
+                .getNextSequenceForYear(LocalDate.now().getYear()))
+                .thenReturn(1);
+        when(paymentRepository.save(any(Payment.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = useCase.execute(request, userId);
 
         assertEquals(PaymentStatus.REFUND.name(), response.status());
         assertEquals(new BigDecimal("50.00"), response.amount());
         verify(paymentRepository).getRefundableAmountByCustomerId(customerId);
-        verify(cashMovementService).recordMovement(new CashRegisterGateway.Movement(
-                CashRegisterGateway.Direction.OUT, CashRegisterGateway.Type.REFUND,
-                new CashRegisterGateway.PaymentEntry(new BigDecimal("50.00"), paymentMethodId,
-                        "Devolucion por cualquier concepto", response.id(), userId, "Test User")));
+        verify(cashMovementService)
+                .recordMovement(new CashRegisterGateway.Movement(
+                        CashRegisterGateway.Direction.OUT,
+                        CashRegisterGateway.Type.REFUND,
+                        new CashRegisterGateway.PaymentEntry(
+                                new BigDecimal("50.00"), paymentMethodId,
+                                "Devolucion por cualquier concepto",
+                                response.id(), userId, "Test User")));
     }
 
     @Test
     void should_RejectAppliedPaymentBeforeSaving_When_RegisterIsClosed() {
         CreatePaymentRequest request = paymentRequest(PaymentStatus.APPLIED);
-        doThrow(new IllegalStateException("Debe abrir una caja antes de registrar una operación monetaria"))
+        doThrow(new IllegalStateException(
+                "Debe abrir una caja antes de registrar una operación monetaria"))
                 .when(cashMovementService).requireOpenRegister();
 
-        assertThrows(IllegalStateException.class, () -> useCase.execute(request, userId));
+        assertThrows(IllegalStateException.class,
+                () -> useCase.execute(request, userId));
 
         verify(paymentRepository, never()).save(any(Payment.class));
     }
@@ -91,8 +102,11 @@ class CreatePaymentUseCaseUnitTest {
     @Test
     void should_AllowPendingPaymentWithoutOpenRegister() {
         CreatePaymentRequest request = paymentRequest(PaymentStatus.PENDING);
-        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentRepository
+                .getNextSequenceForYear(LocalDate.now().getYear()))
+                .thenReturn(1);
+        when(paymentRepository.save(any(Payment.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(request, userId);
 
@@ -103,65 +117,64 @@ class CreatePaymentUseCaseUnitTest {
     @Test
     void should_RecordIncomeAfterSavingAppliedPayment() {
         CreatePaymentRequest request = paymentRequest(PaymentStatus.APPLIED);
-        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentRepository
+                .getNextSequenceForYear(LocalDate.now().getYear()))
+                .thenReturn(1);
+        when(paymentRepository.save(any(Payment.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = useCase.execute(request, userId);
 
         verify(cashMovementService).requireOpenRegister();
-        verify(cashMovementService).recordMovement(new CashRegisterGateway.Movement(
-                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
-                new CashRegisterGateway.PaymentEntry(new BigDecimal("50.00"), paymentMethodId,
-                        "Pago de prueba", response.id(), userId, "Test User")));
+        verify(cashMovementService)
+                .recordMovement(new CashRegisterGateway.Movement(
+                        CashRegisterGateway.Direction.IN,
+                        CashRegisterGateway.Type.PAYMENT,
+                        new CashRegisterGateway.PaymentEntry(
+                                new BigDecimal("50.00"), paymentMethodId,
+                                "Pago de prueba", response.id(), userId,
+                                "Test User")));
     }
 
     @Test
     void should_Throw_When_RefundCustomerHasNoAppliedPayments() {
         CreatePaymentRequest request = refundRequest(new BigDecimal("50.00"));
-        when(paymentRepository.getRefundableAmountByCustomerId(customerId)).thenReturn(BigDecimal.ZERO);
+        when(paymentRepository.getRefundableAmountByCustomerId(customerId))
+                .thenReturn(BigDecimal.ZERO);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(request, userId)
-        );
+                () -> useCase.execute(request, userId));
 
-        assertEquals("Cannot create a refund because the customer has no applied payments", exception.getMessage());
+        assertEquals(
+                "Cannot create a refund because the customer has no applied payments",
+                exception.getMessage());
     }
 
     @Test
     void should_Throw_When_RefundExceedsRefundableBalance() {
         CreatePaymentRequest request = refundRequest(new BigDecimal("150.00"));
-        when(paymentRepository.getRefundableAmountByCustomerId(customerId)).thenReturn(new BigDecimal("100.00"));
+        when(paymentRepository.getRefundableAmountByCustomerId(customerId))
+                .thenReturn(new BigDecimal("100.00"));
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(request, userId)
-        );
+                () -> useCase.execute(request, userId));
 
-        assertEquals("Refund amount cannot exceed customer's refundable balance", exception.getMessage());
+        assertEquals(
+                "Refund amount cannot exceed customer's refundable balance",
+                exception.getMessage());
     }
 
     private CreatePaymentRequest refundRequest(BigDecimal amount) {
-        return new CreatePaymentRequest(
-                customerId,
-                PaymentStatus.REFUND.name(),
-                amount,
-                paymentMethodId,
-                "REFUND-001",
-                LocalDate.now(),
-                "Devolucion por cualquier concepto"
-        );
+        return new CreatePaymentRequest(customerId, PaymentStatus.REFUND.name(),
+                amount, paymentMethodId, "REFUND-001", LocalDate.now(),
+                "Devolucion por cualquier concepto");
     }
 
     private CreatePaymentRequest paymentRequest(PaymentStatus status) {
-        return new CreatePaymentRequest(
-                customerId,
-                status.name(),
-                new BigDecimal("50.00"),
-                paymentMethodId,
-                "PAYMENT-001",
-                LocalDate.now(),
-                "Pago de prueba"
-        );
+        return new CreatePaymentRequest(customerId, status.name(),
+                new BigDecimal("50.00"), paymentMethodId, "PAYMENT-001",
+                LocalDate.now(), "Pago de prueba");
     }
 }

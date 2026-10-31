@@ -29,12 +29,13 @@ public class PaymentMethodController {
     private final TogglePaymentMethodUseCase togglePaymentMethodUseCase;
     private final DeletePaymentMethodUseCase deletePaymentMethodUseCase;
 
-    public PaymentMethodController(CreatePaymentMethodUseCase createPaymentMethodUseCase,
-                                    UpdatePaymentMethodUseCase updatePaymentMethodUseCase,
-                                    ListPaymentMethodsUseCase listPaymentMethodsUseCase,
-                                    GetPaymentMethodByIdUseCase getPaymentMethodByIdUseCase,
-                                    TogglePaymentMethodUseCase togglePaymentMethodUseCase,
-                                    DeletePaymentMethodUseCase deletePaymentMethodUseCase) {
+    public PaymentMethodController(
+            CreatePaymentMethodUseCase createPaymentMethodUseCase,
+            UpdatePaymentMethodUseCase updatePaymentMethodUseCase,
+            ListPaymentMethodsUseCase listPaymentMethodsUseCase,
+            GetPaymentMethodByIdUseCase getPaymentMethodByIdUseCase,
+            TogglePaymentMethodUseCase togglePaymentMethodUseCase,
+            DeletePaymentMethodUseCase deletePaymentMethodUseCase) {
         this.createPaymentMethodUseCase = createPaymentMethodUseCase;
         this.updatePaymentMethodUseCase = updatePaymentMethodUseCase;
         this.listPaymentMethodsUseCase = listPaymentMethodsUseCase;
@@ -47,7 +48,8 @@ public class PaymentMethodController {
     @PreAuthorize("hasAuthority('FINANCES:CREATE')")
     public ResponseEntity<PaymentMethodResponse> create(
             @Valid @RequestBody CreatePaymentMethodRequest request) {
-        PaymentMethodResponse response = createPaymentMethodUseCase.execute(request);
+        PaymentMethodResponse response = createPaymentMethodUseCase
+                .execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -60,22 +62,25 @@ public class PaymentMethodController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        return ResponseEntity.ok(listPaymentMethodsUseCase.execute(search, active, page, size, orderBy, orderDir));
+        return ResponseEntity.ok(listPaymentMethodsUseCase.execute(search,
+                active, page, size, orderBy, orderDir));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('FINANCES:READ')")
-    public ResponseEntity<PaymentMethodResponse> getById(@PathVariable UUID id) {
-        PaymentMethodResponse response = getPaymentMethodByIdUseCase.execute(id);
+    public ResponseEntity<PaymentMethodResponse> getById(
+            @PathVariable UUID id) {
+        PaymentMethodResponse response = getPaymentMethodByIdUseCase
+                .execute(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('FINANCES:UPDATE')")
-    public ResponseEntity<PaymentMethodResponse> update(
-            @PathVariable UUID id,
+    public ResponseEntity<PaymentMethodResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdatePaymentMethodRequest request) {
-        PaymentMethodResponse response = updatePaymentMethodUseCase.execute(id, request);
+        PaymentMethodResponse response = updatePaymentMethodUseCase.execute(id,
+                request);
         return ResponseEntity.ok(response);
     }
 

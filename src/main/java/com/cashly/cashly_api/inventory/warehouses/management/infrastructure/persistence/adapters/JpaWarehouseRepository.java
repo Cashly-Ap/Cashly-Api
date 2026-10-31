@@ -22,11 +22,13 @@ import static java.util.stream.Collectors.toSet;
 @Component
 public class JpaWarehouseRepository implements WarehouseRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of("code", "name", "state", "createdAt");
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("code", "name",
+            "state", "createdAt");
 
     private final SpringDataWarehouseRepository springDataRepository;
 
-    public JpaWarehouseRepository(SpringDataWarehouseRepository springDataRepository) {
+    public JpaWarehouseRepository(
+            SpringDataWarehouseRepository springDataRepository) {
         this.springDataRepository = springDataRepository;
     }
 
@@ -38,9 +40,12 @@ public class JpaWarehouseRepository implements WarehouseRepository {
                         entity.updateFromDomain(warehouse);
                         return springDataRepository.save(entity).toDomain();
                     })
-                    .orElseGet(() -> springDataRepository.save(WarehouseEntity.fromDomain(warehouse)).toDomain());
+                    .orElseGet(() -> springDataRepository
+                            .save(WarehouseEntity.fromDomain(warehouse))
+                            .toDomain());
         }
-        return springDataRepository.save(WarehouseEntity.fromDomain(warehouse)).toDomain();
+        return springDataRepository.save(WarehouseEntity.fromDomain(warehouse))
+                .toDomain();
     }
 
     @Override
@@ -59,14 +64,17 @@ public class JpaWarehouseRepository implements WarehouseRepository {
     }
 
     @Override
-    public PageResponse<Warehouse> findAllWithFilters(String search, Boolean active,
-                                                       int page, int size,
-                                                       String orderBy, String orderDir) {
+    public PageResponse<Warehouse> findAllWithFilters(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "name";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        Sort sort = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.by(field).descending()
+                : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
-        Page<WarehouseEntity> result = springDataRepository.findAllWithFilters(search, active, pageable);
+        Page<WarehouseEntity> result = springDataRepository
+                .findAllWithFilters(search, active, pageable);
         return PageResponseMapper.from(result.map(WarehouseEntity::toDomain));
     }
 

@@ -48,15 +48,15 @@ public class PaymentController {
     private final RejectPaymentUseCase rejectPaymentUseCase;
 
     public PaymentController(CreatePaymentUseCase createPaymentUseCase,
-                              GetAllPaymentsUseCase getAllPaymentsUseCase,
-                              GetPaymentByIdUseCase getPaymentByIdUseCase,
-                              UpdatePaymentUseCase updatePaymentUseCase,
-                              DeletePaymentUseCase deletePaymentUseCase,
-                              PayInvoiceUseCase payInvoiceUseCase,
-                              PayAllCustomerDebtUseCase payAllCustomerDebtUseCase,
-                              PayPartialDebtUseCase payPartialDebtUseCase,
-                              ApprovePaymentUseCase approvePaymentUseCase,
-                              RejectPaymentUseCase rejectPaymentUseCase) {
+            GetAllPaymentsUseCase getAllPaymentsUseCase,
+            GetPaymentByIdUseCase getPaymentByIdUseCase,
+            UpdatePaymentUseCase updatePaymentUseCase,
+            DeletePaymentUseCase deletePaymentUseCase,
+            PayInvoiceUseCase payInvoiceUseCase,
+            PayAllCustomerDebtUseCase payAllCustomerDebtUseCase,
+            PayPartialDebtUseCase payPartialDebtUseCase,
+            ApprovePaymentUseCase approvePaymentUseCase,
+            RejectPaymentUseCase rejectPaymentUseCase) {
         this.createPaymentUseCase = createPaymentUseCase;
         this.getAllPaymentsUseCase = getAllPaymentsUseCase;
         this.getPaymentByIdUseCase = getPaymentByIdUseCase;
@@ -75,7 +75,8 @@ public class PaymentController {
             @Valid @RequestBody CreatePaymentRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        PaymentResponse response = createPaymentUseCase.execute(request, userId);
+        PaymentResponse response = createPaymentUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -88,13 +89,16 @@ public class PaymentController {
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) GetAllPaymentsUseCase.ListAction action) {
-        List<PaymentListResponse> payments = action == null ? getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId, type, status)
-                : getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId, type, status, action);
+        List<PaymentListResponse> payments = action == null
+                ? getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId,
+                        type, status)
+                : getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId,
+                        type, status, action);
         return ResponseEntity.ok(payments);
     }
 
-    public ResponseEntity<List<PaymentListResponse>> getAll(LocalDate dateFrom, LocalDate dateTo,
-                                                           UUID customerId, String type, String status) {
+    public ResponseEntity<List<PaymentListResponse>> getAll(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, String type, String status) {
         return getAll(dateFrom, dateTo, customerId, type, status, null);
     }
 
@@ -107,25 +111,25 @@ public class PaymentController {
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
-    public ResponseEntity<PaymentResponse> approve(
-            @PathVariable UUID id,
+    public ResponseEntity<PaymentResponse> approve(@PathVariable UUID id,
             @Valid @RequestBody ApprovePaymentRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
-        PaymentResponse response = approvePaymentUseCase.execute(id, request, userId, userName);
+        PaymentResponse response = approvePaymentUseCase.execute(id, request,
+                userId, userName);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/reject")
     @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
-    public ResponseEntity<PaymentResponse> reject(
-            @PathVariable UUID id,
+    public ResponseEntity<PaymentResponse> reject(@PathVariable UUID id,
             @Valid @RequestBody RejectPaymentRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
-        PaymentResponse response = rejectPaymentUseCase.execute(id, request, userId, userName);
+        PaymentResponse response = rejectPaymentUseCase.execute(id, request,
+                userId, userName);
         return ResponseEntity.ok(response);
     }
 
@@ -137,7 +141,8 @@ public class PaymentController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
-        PaymentResultResponse response = payInvoiceUseCase.execute(invoiceId, request, userId, userName);
+        PaymentResultResponse response = payInvoiceUseCase.execute(invoiceId,
+                request, userId, userName);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -149,7 +154,8 @@ public class PaymentController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
-        PaymentResultResponse response = payAllCustomerDebtUseCase.execute(customerId, request, userId, userName);
+        PaymentResultResponse response = payAllCustomerDebtUseCase
+                .execute(customerId, request, userId, userName);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -161,14 +167,15 @@ public class PaymentController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
-        PaymentResultResponse response = payPartialDebtUseCase.execute(customerId, request, userId, userName);
+        PaymentResultResponse response = payPartialDebtUseCase
+                .execute(customerId, request, userId, userName);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('FINANCES:UPDATE')")
     public ResponseEntity<PaymentResponse> update(@PathVariable UUID id,
-                                                   @Valid @RequestBody UpdatePaymentRequest request) {
+            @Valid @RequestBody UpdatePaymentRequest request) {
         PaymentResponse response = updatePaymentUseCase.execute(id, request);
         return ResponseEntity.ok(response);
     }

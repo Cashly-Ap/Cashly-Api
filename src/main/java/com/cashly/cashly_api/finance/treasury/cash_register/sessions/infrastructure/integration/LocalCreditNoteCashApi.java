@@ -18,10 +18,11 @@ public class LocalCreditNoteCashApi implements CreditNoteCashApi {
     }
 
     @Override
-    public void recordCreditNoteOut(BigDecimal amount, String noteNumber, UUID noteId,
-                                    UUID authenticatedUserId, String createdByName) {
-        movements.record(CashMovementDirection.OUT, CashMovementType.CREDIT_NOTE, amount,
-                null, "Nota de crédito " + noteNumber, "CREDIT_NOTE", noteId,
+    public void recordCreditNoteOut(BigDecimal amount, String noteNumber,
+            UUID noteId, UUID authenticatedUserId, String createdByName) {
+        movements.record(CashMovementDirection.OUT,
+                CashMovementType.CREDIT_NOTE, amount, null,
+                "Nota de crédito " + noteNumber, "CREDIT_NOTE", noteId,
                 authenticatedUserId, createdByName);
     }
 }

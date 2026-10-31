@@ -21,10 +21,9 @@ public class CreateWarehouseUseCase {
         if (warehouseRepository.existsByCode(code)) {
             throw new DuplicateWarehouseCodeException(code);
         }
-        Warehouse warehouse = Warehouse.create(
-                code, request.name(), request.address(),
-                request.state(), request.municipality(), request.postalCode()
-        );
+        Warehouse warehouse = Warehouse.create(code, request.name(),
+                request.address(), request.state(), request.municipality(),
+                request.postalCode());
         Warehouse saved = warehouseRepository.save(warehouse);
         return WarehouseDetailResponse.from(saved);
     }

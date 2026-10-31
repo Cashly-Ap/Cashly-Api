@@ -15,17 +15,23 @@ import static org.mockito.Mockito.*;
 class RepositoryActorIdentityQueryTest {
     private final UserRepository users = mock(UserRepository.class);
     private final PasswordEncoder passwords = mock(PasswordEncoder.class);
-    private final RepositoryActorIdentityQuery query = new RepositoryActorIdentityQuery(users, passwords);
+    private final RepositoryActorIdentityQuery query = new RepositoryActorIdentityQuery(
+            users, passwords);
     private final UUID id = UUID.randomUUID();
     @Test
     void should_expose_identity_and_match_password_inside_auth_without_exporting_hash() {
-        var user = new User(new UserId(id), new Email("operator@example.com"), new UserName("Operator"), Password.fromHash("stored-hash"), UserRole.ADMIN);
+        var user = new User(new UserId(id), new Email("operator@example.com"),
+                new UserName("Operator"), Password.fromHash("stored-hash"),
+                UserRole.ADMIN);
         when(users.findById(new UserId(id))).thenReturn(Optional.of(user));
-        when(passwords.matches("provided-password", "stored-hash")).thenReturn(true);
+        when(passwords.matches("provided-password", "stored-hash"))
+                .thenReturn(true);
         var actor = query.findById(id).orElseThrow();
         assertThat(actor.id()).isEqualTo(id);
         assertThat(actor.name()).isEqualTo("Operator");
-        assertThat(actor.getClass().getRecordComponents()).extracting(component -> component.getName()).containsExactly("id", "name");
+        assertThat(actor.getClass().getRecordComponents())
+                .extracting(component -> component.getName())
+                .containsExactly("id", "name");
         assertThat(query.matchesPassword(id, "provided-password")).isTrue();
         assertThat(query.matchesPassword(id, "wrong-password")).isFalse();
         verify(passwords).matches("provided-password", "stored-hash");
@@ -33,7 +39,9 @@ class RepositoryActorIdentityQueryTest {
     @Test
     void should_preserve_missing_actor_result_and_password_lookup_error() {
         assertThat(query.findById(id)).isEmpty();
-        assertThatThrownBy(() -> query.matchesPassword(id, "password")).isInstanceOf(IllegalArgumentException.class).hasMessage("Usuario no encontrado");
+        assertThatThrownBy(() -> query.matchesPassword(id, "password"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Usuario no encontrado");
         verifyNoInteractions(passwords);
     }
 }

@@ -13,27 +13,32 @@ import org.springframework.context.annotation.Configuration;
 public class ReceivablesConfig {
 
     @Bean
-    public GetReceivablesSummaryUseCase getReceivablesSummaryUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetReceivablesSummaryUseCase getReceivablesSummaryUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         return new GetReceivablesSummaryUseCase(receivablesRepository);
     }
 
     @Bean
-    public SearchCustomerDebtUseCase searchCustomerDebtUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public SearchCustomerDebtUseCase searchCustomerDebtUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         return new SearchCustomerDebtUseCase(receivablesRepository);
     }
 
     @Bean
-    public GetCustomerDebtUseCase getCustomerDebtUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetCustomerDebtUseCase getCustomerDebtUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         return new GetCustomerDebtUseCase(receivablesRepository);
     }
 
     @Bean
-    public GetCustomerInvoicesUseCase getCustomerInvoicesUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetCustomerInvoicesUseCase getCustomerInvoicesUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         return new GetCustomerInvoicesUseCase(receivablesRepository);
     }
 
     @Bean
-    public GetPaymentHistoryUseCase getPaymentHistoryUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetPaymentHistoryUseCase getPaymentHistoryUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         return new GetPaymentHistoryUseCase(receivablesRepository);
     }
 }

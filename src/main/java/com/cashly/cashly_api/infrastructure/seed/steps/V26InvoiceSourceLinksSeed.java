@@ -10,14 +10,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class V26InvoiceSourceLinksSeed implements SeedStep {
     private final EntityManager entityManager;
-    public V26InvoiceSourceLinksSeed(EntityManager entityManager) { this.entityManager = entityManager; }
-    @Override public int version() { return 26; }
-    @Override public void seed() {
-        link(INVOICE_ONE, ORDER_ONE, QUOTE_ONE); link(INVOICE_TWO, ORDER_TWO, QUOTE_TWO);
+    public V26InvoiceSourceLinksSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
-    private void link(java.util.UUID invoiceId, java.util.UUID orderId, java.util.UUID quoteId) {
+    @Override
+    public int version() {
+        return 26;
+    }
+    @Override
+    public void seed() {
+        link(INVOICE_ONE, ORDER_ONE, QUOTE_ONE);
+        link(INVOICE_TWO, ORDER_TWO, QUOTE_TWO);
+    }
+    private void link(java.util.UUID invoiceId, java.util.UUID orderId,
+            java.util.UUID quoteId) {
         var invoice = entityManager.find(InvoiceEntity.class, invoiceId);
-        if (!invoice.getOrderIds().contains(orderId)) invoice.getOrderIds().add(orderId);
-        if (!invoice.getQuoteIds().contains(quoteId)) invoice.getQuoteIds().add(quoteId);
+        if (!invoice.getOrderIds().contains(orderId))
+            invoice.getOrderIds().add(orderId);
+        if (!invoice.getQuoteIds().contains(quoteId))
+            invoice.getQuoteIds().add(quoteId);
     }
 }

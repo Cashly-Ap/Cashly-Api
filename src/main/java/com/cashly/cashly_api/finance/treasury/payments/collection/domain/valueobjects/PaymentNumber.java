@@ -16,7 +16,8 @@ public record PaymentNumber(String value) {
 
     public static PaymentNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
         return new PaymentNumber(String.format(FORMAT, PREFIX, year, sequence));
     }

@@ -4,5 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 public interface ReturnInvoiceQuery {
     Optional<Projection> findById(UUID invoiceId);
-    record Projection(String number, String customerName, String customerRif, boolean cancelled, BigDecimal baseTotal, boolean hasSubtotal) {}
+    record Projection(String number, String customerName, String customerRif,
+            boolean cancelled, BigDecimal baseTotal, boolean hasSubtotal) {
+    }
 }

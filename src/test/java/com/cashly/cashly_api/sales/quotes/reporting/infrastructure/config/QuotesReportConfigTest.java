@@ -32,10 +32,12 @@ class QuotesReportConfigTest {
     void should_create_use_case_beans() {
         var config = new QuotesReportConfig();
 
-        var quotePdfUseCase = config.generateQuotePdfUseCase(query, quotePdfPort);
+        var quotePdfUseCase = config.generateQuotePdfUseCase(query,
+                quotePdfPort);
         assertNotNull(quotePdfUseCase);
 
-        var reportPdfUseCase = config.generateQuotesReportPdfUseCase(query, quotesReportPdfPort);
+        var reportPdfUseCase = config.generateQuotesReportPdfUseCase(query,
+                quotesReportPdfPort);
         assertNotNull(reportPdfUseCase);
     }
 

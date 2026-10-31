@@ -43,23 +43,26 @@ class CashRegisterExcelExportServiceUnitTest {
     @DisplayName("Should generate Excel with data rows grouped by module")
     void shouldGenerateExcelWithDataRows() {
         List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(500), BigDecimal.valueOf(300), BigDecimal.valueOf(200),
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente A", MODULE_VENTAS, 1),
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-002", BigDecimal.valueOf(2000),
-                        BigDecimal.valueOf(2000), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente B", MODULE_VENTAS, 2),
-                CashRegisterExportRow.of(TEST_DATE, "PAG", "PAY-001", BigDecimal.valueOf(500),
-                        BigDecimal.valueOf(500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente C", MODULE_CXC, 1001),
-                CashRegisterExportRow.of(TEST_DATE, "NC", "NC-001", BigDecimal.valueOf(150),
+                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001",
+                        BigDecimal.valueOf(1000), BigDecimal.valueOf(500),
+                        BigDecimal.valueOf(300), BigDecimal.valueOf(200),
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.valueOf(150), BigDecimal.ZERO,
-                        "Cliente D", MODULE_CAJA, 2001)
-        );
+                        BigDecimal.ZERO, "Cliente A", MODULE_VENTAS, 1),
+                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-002",
+                        BigDecimal.valueOf(2000), BigDecimal.valueOf(2000),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente B", MODULE_VENTAS, 2),
+                CashRegisterExportRow.of(TEST_DATE, "PAG", "PAY-001",
+                        BigDecimal.valueOf(500), BigDecimal.valueOf(500),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        "Cliente C", MODULE_CXC, 1001),
+                CashRegisterExportRow.of(TEST_DATE, "NC", "NC-001",
+                        BigDecimal.valueOf(150), BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.valueOf(150),
+                        BigDecimal.ZERO, "Cliente D", MODULE_CAJA, 2001));
 
         when(repository.findExportRows(TEST_DATE, TEST_DATE)).thenReturn(rows);
 
@@ -74,7 +77,8 @@ class CashRegisterExcelExportServiceUnitTest {
     @Test
     @DisplayName("Should generate Excel with no data message when no rows")
     void shouldGenerateExcelWithNoDataMessage() {
-        when(repository.findExportRows(TEST_DATE, TEST_DATE)).thenReturn(List.of());
+        when(repository.findExportRows(TEST_DATE, TEST_DATE))
+                .thenReturn(List.of());
 
         byte[] excelBytes = service.exportToExcel(TEST_DATE, TEST_DATE);
 
@@ -87,12 +91,11 @@ class CashRegisterExcelExportServiceUnitTest {
     @Test
     @DisplayName("Should handle single module data correctly")
     void shouldHandleSingleModule() {
-        List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1500),
-                        BigDecimal.valueOf(1500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Test", MODULE_VENTAS, 1)
-        );
+        List<CashRegisterExportRow> rows = List.of(CashRegisterExportRow.of(
+                TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(1500),
+                BigDecimal.valueOf(1500), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, "Test", MODULE_VENTAS, 1));
 
         when(repository.findExportRows(TEST_DATE, TEST_DATE)).thenReturn(rows);
 
@@ -105,13 +108,12 @@ class CashRegisterExcelExportServiceUnitTest {
     @Test
     @DisplayName("Should handle all payment method distributions")
     void shouldHandleAllPaymentMethods() {
-        List<CashRegisterExportRow> rows = List.of(
-                CashRegisterExportRow.of(TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(5000),
-                        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(500), BigDecimal.valueOf(500), BigDecimal.ZERO,
-                        "Multi Pago", MODULE_VENTAS, 1)
-        );
+        List<CashRegisterExportRow> rows = List.of(CashRegisterExportRow.of(
+                TEST_DATE, "FAC", "INV-001", BigDecimal.valueOf(5000),
+                BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(1000), BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(500), BigDecimal.valueOf(500),
+                BigDecimal.ZERO, "Multi Pago", MODULE_VENTAS, 1));
 
         when(repository.findExportRows(TEST_DATE, TEST_DATE)).thenReturn(rows);
 
@@ -122,7 +124,8 @@ class CashRegisterExcelExportServiceUnitTest {
     }
 
     private void verifyExcelContent(byte[] excelBytes, int expectedDataRows) {
-        try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(excelBytes))) {
+        try (Workbook workbook = new XSSFWorkbook(
+                new ByteArrayInputStream(excelBytes))) {
             Sheet sheet = workbook.getSheetAt(0);
             assertNotNull(sheet);
 

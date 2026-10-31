@@ -31,29 +31,34 @@ class CreditNoteNumberUnitTest {
 
     @Test
     void should_CreateCreditNoteNumber_When_DirectValueProvided() {
-        CreditNoteNumber creditNoteNumber = new CreditNoteNumber("CN-2026-0001");
+        CreditNoteNumber creditNoteNumber = new CreditNoteNumber(
+                "CN-2026-0001");
 
         assertEquals("CN-2026-0001", creditNoteNumber.value());
     }
 
     @Test
     void should_ThrowException_When_NullValueProvided() {
-        assertThrows(NullPointerException.class, () -> new CreditNoteNumber(null));
+        assertThrows(NullPointerException.class,
+                () -> new CreditNoteNumber(null));
     }
 
     @Test
     void should_ThrowException_When_BlankValueProvided() {
-        assertThrows(IllegalArgumentException.class, () -> new CreditNoteNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CreditNoteNumber("   "));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> CreditNoteNumber.of(2026, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> CreditNoteNumber.of(2026, 0));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> CreditNoteNumber.of(2026, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> CreditNoteNumber.of(2026, -1));
     }
 
     @Test

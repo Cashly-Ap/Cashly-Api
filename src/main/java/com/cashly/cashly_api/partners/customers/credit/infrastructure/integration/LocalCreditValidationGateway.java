@@ -10,15 +10,26 @@ import java.util.UUID;
 @Component
 public class LocalCreditValidationGateway implements CreditValidationGateway {
     private final CustomerCreditQuery query;
-    public LocalCreditValidationGateway(CustomerCreditQuery query) { this.query = query; }
+    public LocalCreditValidationGateway(CustomerCreditQuery query) {
+        this.query = query;
+    }
     public CreditStatusResponse getCreditStatus(UUID customerId) {
         var snapshot = query.getCreditStatus(customerId);
-        return new CreditStatusResponse(snapshot.customerId(), snapshot.customerName(), snapshot.customerRif(),
-                snapshot.creditLimit(), snapshot.pendingBalance(), snapshot.customerBalance(), snapshot.availableCredit(),
-                map(snapshot.overdueInvoices()), snapshot.hasOverdue(), snapshot.canCreateCreditInvoice());
+        return new CreditStatusResponse(snapshot.customerId(),
+                snapshot.customerName(), snapshot.customerRif(),
+                snapshot.creditLimit(), snapshot.pendingBalance(),
+                snapshot.customerBalance(), snapshot.availableCredit(),
+                map(snapshot.overdueInvoices()), snapshot.hasOverdue(),
+                snapshot.canCreateCreditInvoice());
     }
-    public List<OverdueInvoiceResponse> findAllOverdueInvoices() { return map(query.findAllOverdueInvoices()); }
-    private List<OverdueInvoiceResponse> map(List<OverdueInvoiceSnapshot> snapshots) {
-        return snapshots.stream().map(entry -> new OverdueInvoiceResponse(entry.invoiceNumber(), entry.amount(), entry.dueDate(), entry.daysOverdue())).toList();
+    public List<OverdueInvoiceResponse> findAllOverdueInvoices() {
+        return map(query.findAllOverdueInvoices());
+    }
+    private List<OverdueInvoiceResponse> map(
+            List<OverdueInvoiceSnapshot> snapshots) {
+        return snapshots.stream()
+                .map(entry -> new OverdueInvoiceResponse(entry.invoiceNumber(),
+                        entry.amount(), entry.dueDate(), entry.daysOverdue()))
+                .toList();
     }
 }

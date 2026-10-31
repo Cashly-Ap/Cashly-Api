@@ -19,7 +19,8 @@ public class SupplierPurchaseDirectoryAdapter implements PurchaseSupplierQuery {
 
     @Override
     public Optional<Entry> findById(UUID id) {
-        return suppliers.findById(new SupplierId(id)).map(SupplierPurchaseDirectoryAdapter::toEntry);
+        return suppliers.findById(new SupplierId(id))
+                .map(SupplierPurchaseDirectoryAdapter::toEntry);
     }
 
     @Override
@@ -27,13 +28,15 @@ public class SupplierPurchaseDirectoryAdapter implements PurchaseSupplierQuery {
         if (ids.isEmpty()) {
             return List.of();
         }
-        List<SupplierId> supplierIds = ids.stream().map(SupplierId::new).toList();
-        return suppliers.findAllById(supplierIds).stream()
-                .map(SupplierPurchaseDirectoryAdapter::toEntry)
+        List<SupplierId> supplierIds = ids.stream().map(SupplierId::new)
                 .toList();
+        return suppliers.findAllById(supplierIds).stream()
+                .map(SupplierPurchaseDirectoryAdapter::toEntry).toList();
     }
 
     private static Entry toEntry(Supplier supplier) {
-        return new Entry(supplier.getId().getValue(), supplier.getLegalName().getValue(), supplier.getRif().getValue());
+        return new Entry(supplier.getId().getValue(),
+                supplier.getLegalName().getValue(),
+                supplier.getRif().getValue());
     }
 }

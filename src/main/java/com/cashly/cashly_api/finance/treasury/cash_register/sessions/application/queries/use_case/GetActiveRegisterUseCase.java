@@ -12,7 +12,8 @@ public class GetActiveRegisterUseCase {
 
     private final CashRegisterRepository closureRepository;
     private final CashRegisterQueryGateway queries;
-    public GetActiveRegisterUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+    public GetActiveRegisterUseCase(CashRegisterRepository closureRepository,
+            CashRegisterQueryGateway queries) {
         this.closureRepository = closureRepository;
         this.queries = queries;
     }
@@ -21,15 +22,16 @@ public class GetActiveRegisterUseCase {
         return closureRepository.findActiveClosure().map(closure -> {
             var sessionTotals = queries.findSessionTotals(closure.getId());
 
-            closure.applyTotals(
-                    sessionTotals.totalPayments(), sessionTotals.paymentCount(),
-                    sessionTotals.totalAdvances(), sessionTotals.advanceCount(),
-                    sessionTotals.totalReturns(), sessionTotals.returnCount(),
-                    sessionTotals.totalCreditNotes(), sessionTotals.totalDebitNotes(),
+            closure.applyTotals(sessionTotals.totalPayments(),
+                    sessionTotals.paymentCount(), sessionTotals.totalAdvances(),
+                    sessionTotals.advanceCount(), sessionTotals.totalReturns(),
+                    sessionTotals.returnCount(),
+                    sessionTotals.totalCreditNotes(),
+                    sessionTotals.totalDebitNotes(),
                     sessionTotals.totalInvoices(), sessionTotals.invoiceCount(),
-                    sessionTotals.paymentDetails()
-            );
-            closure.applyMovementTotals(sessionTotals.totalRevenue(), sessionTotals.totalExpenses());
+                    sessionTotals.paymentDetails());
+            closure.applyMovementTotals(sessionTotals.totalRevenue(),
+                    sessionTotals.totalExpenses());
 
             var saved = closureRepository.save(closure);
             return CashRegisterMapper.toResponse(saved, sessionTotals,

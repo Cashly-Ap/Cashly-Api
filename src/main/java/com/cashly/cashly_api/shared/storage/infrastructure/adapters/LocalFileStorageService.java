@@ -25,32 +25,39 @@ public class LocalFileStorageService implements FileStorageService {
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
-            throw new StorageException("Could not initialize storage location", e);
+            throw new StorageException("Could not initialize storage location",
+                    e);
         }
     }
 
     @Override
-    public String store(String originalFilename, InputStream inputStream, String contentType) {
+    public String store(String originalFilename, InputStream inputStream,
+            String contentType) {
         try {
             if (inputStream.available() == 0) {
-                throw new StorageException("Failed to store empty file: " + originalFilename);
+                throw new StorageException(
+                        "Failed to store empty file: " + originalFilename);
             }
 
             String extension = getFileExtension(originalFilename);
             String newFilename = buildStoragePath(originalFilename, extension);
 
-            Path destinationFile = rootLocation.resolve(Paths.get(newFilename)).normalize().toAbsolutePath();
+            Path destinationFile = rootLocation.resolve(Paths.get(newFilename))
+                    .normalize().toAbsolutePath();
 
             if (!isWithinRootLocation(destinationFile)) {
-                throw new StorageException("Cannot store file outside storage directory");
+                throw new StorageException(
+                        "Cannot store file outside storage directory");
             }
 
             Files.createDirectories(destinationFile.getParent());
-            Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(inputStream, destinationFile,
+                    StandardCopyOption.REPLACE_EXISTING);
 
             return newFilename;
         } catch (IOException e) {
-            throw new StorageException("Failed to store file: " + originalFilename, e);
+            throw new StorageException(
+                    "Failed to store file: " + originalFilename, e);
         }
     }
 
@@ -78,10 +85,12 @@ public class LocalFileStorageService implements FileStorageService {
     @Override
     public void delete(String filename) {
         try {
-            Path file = rootLocation.resolve(filename).normalize().toAbsolutePath();
+            Path file = rootLocation.resolve(filename).normalize()
+                    .toAbsolutePath();
 
             if (!isWithinRootLocation(file)) {
-                throw new StorageException("Cannot delete file outside storage directory");
+                throw new StorageException(
+                        "Cannot delete file outside storage directory");
             }
 
             Files.deleteIfExists(file);
@@ -93,10 +102,12 @@ public class LocalFileStorageService implements FileStorageService {
     @Override
     public byte[] load(String filename) {
         try {
-            Path file = rootLocation.resolve(filename).normalize().toAbsolutePath();
+            Path file = rootLocation.resolve(filename).normalize()
+                    .toAbsolutePath();
 
             if (!isWithinRootLocation(file)) {
-                throw new StorageException("Cannot read file outside storage directory");
+                throw new StorageException(
+                        "Cannot read file outside storage directory");
             }
 
             if (!Files.exists(file)) {

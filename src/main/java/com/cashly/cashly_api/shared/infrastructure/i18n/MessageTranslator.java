@@ -17,22 +17,33 @@ public final class MessageTranslator {
         return SOURCE.getMessage(key, arguments, supported(locale));
     }
     public static Locale currentLocale() {
-        return LocaleContextHolder.getLocaleContext() == null ? Locale.forLanguageTag("es")
+        return LocaleContextHolder.getLocaleContext() == null
+                ? Locale.forLanguageTag("es")
                 : supported(LocaleContextHolder.getLocale());
     }
     public static Locale supported(Locale locale) {
-        return Locale.forLanguageTag(locale != null && "en".equals(locale.getLanguage()) ? "en" : "es");
+        return Locale.forLanguageTag(
+                locale != null && "en".equals(locale.getLanguage())
+                        ? "en"
+                        : "es");
     }
-    public static MessageSource messageSource() { return SOURCE; }
+    public static MessageSource messageSource() {
+        return SOURCE;
+    }
     private static MessageSource loadSource() {
         var basenames = new TreeSet<String>();
         try {
-            for (var resource : new PathMatchingResourcePatternResolver().getResources("classpath*:modules/**/i18n/*_es.properties")) {
+            for (var resource : new PathMatchingResourcePatternResolver()
+                    .getResources(
+                            "classpath*:modules/**/i18n/*_es.properties")) {
                 String path = resource.getURL().toExternalForm();
-                basenames.add("classpath:" + path.substring(path.indexOf("modules/")).replace("_es.properties", ""));
+                basenames.add(
+                        "classpath:" + path.substring(path.indexOf("modules/"))
+                                .replace("_es.properties", ""));
             }
         } catch (IOException exception) {
-            throw new IllegalStateException("Cannot load translation resources", exception);
+            throw new IllegalStateException("Cannot load translation resources",
+                    exception);
         }
         var source = new ReloadableResourceBundleMessageSource();
         source.setBasenames(basenames.toArray(String[]::new));

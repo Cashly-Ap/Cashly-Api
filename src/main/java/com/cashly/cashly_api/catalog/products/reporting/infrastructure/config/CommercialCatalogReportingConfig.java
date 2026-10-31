@@ -18,11 +18,13 @@ public class CommercialCatalogReportingConfig {
     @Bean
     public CommercialCatalogRepositoryPort commercialCatalogRepositoryPort(
             CommercialCatalogJpaRepository commercialCatalogJpaRepository) {
-        return new CommercialCatalogRepositoryAdapter(commercialCatalogJpaRepository);
+        return new CommercialCatalogRepositoryAdapter(
+                commercialCatalogJpaRepository);
     }
 
     @Bean
-    public CommercialCatalogPdfPort commercialCatalogPdfPort(MediaGateway media, PdfBranding branding) {
+    public CommercialCatalogPdfPort commercialCatalogPdfPort(MediaGateway media,
+            PdfBranding branding) {
         return new CommercialCatalogPdfGenerator(media, branding);
     }
 

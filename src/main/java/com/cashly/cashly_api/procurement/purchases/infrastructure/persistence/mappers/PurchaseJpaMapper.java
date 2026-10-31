@@ -16,7 +16,8 @@ import java.util.List;
 
 public class PurchaseJpaMapper {
 
-    private PurchaseJpaMapper() {}
+    private PurchaseJpaMapper() {
+    }
 
     public static PurchaseEntity toEntity(Purchase purchase) {
         PurchaseEntity entity = new PurchaseEntity();
@@ -37,8 +38,7 @@ public class PurchaseJpaMapper {
         entity.setUpdatedAt(purchase.getUpdatedAt());
 
         List<PurchaseLineEntity> lineEntities = purchase.getLines().stream()
-                .map(line -> toLineEntity(line, entity))
-                .toList();
+                .map(line -> toLineEntity(line, entity)).toList();
         entity.getLines().clear();
         entity.getLines().addAll(lineEntities);
 
@@ -47,30 +47,21 @@ public class PurchaseJpaMapper {
 
     public static Purchase toDomain(PurchaseEntity entity) {
         List<PurchaseLine> lines = entity.getLines().stream()
-                .map(PurchaseJpaMapper::toLineDomain)
-                .toList();
+                .map(PurchaseJpaMapper::toLineDomain).toList();
 
-        return Purchase.reconstitute(
-                PurchaseId.of(entity.getId()),
+        return Purchase.reconstitute(PurchaseId.of(entity.getId()),
                 new PurchaseNumber(entity.getPurchaseNumber()),
-                entity.getSupplierId(),
-                entity.getSupplierName(),
-                entity.getSupplierRif(),
-                entity.getCreatedBy(),
+                entity.getSupplierId(), entity.getSupplierName(),
+                entity.getSupplierRif(), entity.getCreatedBy(),
                 entity.getCreatedByName(),
-                PurchaseStatus.valueOf(entity.getStatus()),
-                entity.getNotes(),
-                entity.getSubtotal(),
-                entity.getConfirmedAt(),
-                entity.getCancelledAt(),
-                entity.getCancelledReason(),
-                lines,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+                PurchaseStatus.valueOf(entity.getStatus()), entity.getNotes(),
+                entity.getSubtotal(), entity.getConfirmedAt(),
+                entity.getCancelledAt(), entity.getCancelledReason(), lines,
+                entity.getCreatedAt(), entity.getUpdatedAt());
     }
 
-    private static PurchaseLineEntity toLineEntity(PurchaseLine line, PurchaseEntity purchaseEntity) {
+    private static PurchaseLineEntity toLineEntity(PurchaseLine line,
+            PurchaseEntity purchaseEntity) {
         PurchaseLineEntity entity = new PurchaseLineEntity();
         entity.setId(line.getId().value());
         entity.setPurchase(purchaseEntity);
@@ -81,17 +72,17 @@ public class PurchaseJpaMapper {
         entity.setUnitCost(line.getUnitCost());
         entity.setLineTotal(line.getLineTotal());
 
-        List<PurchaseLineAllocationEntity> allocationEntities = line.getAllocations().stream()
-                .map(a -> toAllocationEntity(a, entity))
-                .toList();
+        List<PurchaseLineAllocationEntity> allocationEntities = line
+                .getAllocations().stream()
+                .map(a -> toAllocationEntity(a, entity)).toList();
         entity.getAllocations().clear();
         entity.getAllocations().addAll(allocationEntities);
 
         return entity;
     }
 
-    private static PurchaseLineAllocationEntity toAllocationEntity(PurchaseLineAllocation allocation,
-                                                                    PurchaseLineEntity lineEntity) {
+    private static PurchaseLineAllocationEntity toAllocationEntity(
+            PurchaseLineAllocation allocation, PurchaseLineEntity lineEntity) {
         PurchaseLineAllocationEntity entity = new PurchaseLineAllocationEntity();
         entity.setId(allocation.getId().value());
         entity.setPurchaseLine(lineEntity);
@@ -101,23 +92,16 @@ public class PurchaseJpaMapper {
     }
 
     private static PurchaseLine toLineDomain(PurchaseLineEntity entity) {
-        List<PurchaseLineAllocation> allocations = entity.getAllocations().stream()
+        List<PurchaseLineAllocation> allocations = entity.getAllocations()
+                .stream()
                 .map(a -> PurchaseLineAllocation.reconstitute(
                         PurchaseLineAllocationId.of(a.getId()),
-                        a.getWarehouseId(),
-                        a.getQuantity()
-                ))
+                        a.getWarehouseId(), a.getQuantity()))
                 .toList();
 
-        return PurchaseLine.reconstitute(
-                PurchaseLineId.of(entity.getId()),
-                entity.getProductId(),
-                entity.getProductName(),
-                entity.getProductCode(),
-                entity.getQuantity(),
-                entity.getUnitCost(),
-                entity.getLineTotal(),
-                allocations
-        );
+        return PurchaseLine.reconstitute(PurchaseLineId.of(entity.getId()),
+                entity.getProductId(), entity.getProductName(),
+                entity.getProductCode(), entity.getQuantity(),
+                entity.getUnitCost(), entity.getLineTotal(), allocations);
     }
 }

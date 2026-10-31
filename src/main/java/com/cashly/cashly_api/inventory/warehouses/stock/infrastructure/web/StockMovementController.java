@@ -15,7 +15,8 @@ public class StockMovementController {
 
     private final GetStockMovementsUseCase getStockMovementsUseCase;
 
-    public StockMovementController(GetStockMovementsUseCase getStockMovementsUseCase) {
+    public StockMovementController(
+            GetStockMovementsUseCase getStockMovementsUseCase) {
         this.getStockMovementsUseCase = getStockMovementsUseCase;
     }
 
@@ -27,6 +28,7 @@ public class StockMovementController {
             @RequestParam(required = false) MovementType movementType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return getStockMovementsUseCase.execute(warehouseId, productId, movementType, page, size);
+        return getStockMovementsUseCase.execute(warehouseId, productId,
+                movementType, page, size);
     }
 }

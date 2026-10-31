@@ -10,11 +10,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class LocalCustomerProductContextGatewayAdapter implements CustomerProductContextGateway {
+public class LocalCustomerProductContextGatewayAdapter
+        implements
+            CustomerProductContextGateway {
     private final CustomerProductPricingQuery pricing;
     private final CustomerWarehouseAccessQuery access;
 
-    public LocalCustomerProductContextGatewayAdapter(CustomerProductPricingQuery pricing, CustomerWarehouseAccessQuery access) {
+    public LocalCustomerProductContextGatewayAdapter(
+            CustomerProductPricingQuery pricing,
+            CustomerWarehouseAccessQuery access) {
         this.pricing = pricing;
         this.access = access;
     }
@@ -22,11 +26,14 @@ public class LocalCustomerProductContextGatewayAdapter implements CustomerProduc
     @Override
     public UUID requirePriceType(List<UUID> customerIds) {
         if (customerIds == null || customerIds.isEmpty()) {
-            throw new CustomerNotFoundException("Debe indicar al menos un cliente");
+            throw new CustomerNotFoundException(
+                    "Debe indicar al menos un cliente");
         }
         UUID customerId = customerIds.getFirst();
-        return pricing.findById(customerId).orElseThrow(() ->
-                new CustomerNotFoundException("Cliente no encontrado: " + customerId)).priceTypeId();
+        return pricing.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        "Cliente no encontrado: " + customerId))
+                .priceTypeId();
     }
 
     @Override

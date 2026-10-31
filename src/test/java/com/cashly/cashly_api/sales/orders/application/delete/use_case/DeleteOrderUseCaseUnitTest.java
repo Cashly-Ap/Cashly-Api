@@ -41,7 +41,8 @@ class DeleteOrderUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        deleteOrderUseCase = new DeleteOrderUseCase(orderRepository, warehouseStockRepository);
+        deleteOrderUseCase = new DeleteOrderUseCase(orderRepository,
+                warehouseStockRepository);
     }
 
     @Test
@@ -50,29 +51,24 @@ class DeleteOrderUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(5));
+        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId,
+                BigDecimal.valueOf(5));
         OrderLine line = OrderLine.create(productId, "Product A", "PROD-001",
                 BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Order order = Order.reconstitute(
-                OrderId.of(id),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator Name",
-                OrderStatus.DRAFT,
-                null, null, null, null, null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        Order order = Order.reconstitute(OrderId.of(id),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
+                OrderStatus.DRAFT, null, null, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.of(order));
 
         deleteOrderUseCase.execute(id);
 
-        verify(warehouseStockRepository).release(List.of(new OrderInventoryGateway.Allocation(warehouseId, productId, 5)));
+        verify(warehouseStockRepository).release(
+                List.of(new OrderInventoryGateway.Allocation(warehouseId,
+                        productId, 5)));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 
@@ -80,12 +76,11 @@ class DeleteOrderUseCaseUnitTest {
     void should_ThrowOrderNotFoundException_When_OrderDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.empty());
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                OrderNotFoundException.class,
-                () -> deleteOrderUseCase.execute(id)
-        );
+        assertThrows(OrderNotFoundException.class,
+                () -> deleteOrderUseCase.execute(id));
 
         verify(orderRepository, never()).deleteById(any());
         verifyNoInteractions(warehouseStockRepository);
@@ -94,28 +89,19 @@ class DeleteOrderUseCaseUnitTest {
     @Test
     void should_ThrowOrderCannotBeDeletedException_When_OrderIsNotDraft() {
         UUID id = UUID.randomUUID();
-        Order order = Order.reconstitute(
-                OrderId.of(id),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator Name",
-                OrderStatus.CONFIRMED,
-                null, null, null, null, null,
-                List.of(OrderLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                        BigDecimal.ONE, BigDecimal.TEN, List.of())),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        Order order = Order.reconstitute(OrderId.of(id),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
+                OrderStatus.CONFIRMED, null, null, null, null, null,
+                List.of(OrderLine.create(UUID.randomUUID(), "Product A",
+                        "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of())),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.of(order));
 
-        assertThrows(
-                OrderCannotBeDeletedException.class,
-                () -> deleteOrderUseCase.execute(id)
-        );
+        assertThrows(OrderCannotBeDeletedException.class,
+                () -> deleteOrderUseCase.execute(id));
 
         verify(orderRepository, never()).deleteById(any());
         verifyNoInteractions(warehouseStockRepository);
@@ -128,32 +114,28 @@ class DeleteOrderUseCaseUnitTest {
         UUID warehouseId2 = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        OrderLineAllocation alloc1 = OrderLineAllocation.create(warehouseId1, BigDecimal.valueOf(3));
-        OrderLineAllocation alloc2 = OrderLineAllocation.create(warehouseId2, BigDecimal.valueOf(7));
+        OrderLineAllocation alloc1 = OrderLineAllocation.create(warehouseId1,
+                BigDecimal.valueOf(3));
+        OrderLineAllocation alloc2 = OrderLineAllocation.create(warehouseId2,
+                BigDecimal.valueOf(7));
         OrderLine line = OrderLine.create(productId, "Product A", "PROD-001",
                 BigDecimal.TEN, BigDecimal.TEN, List.of(alloc1, alloc2));
-        Order order = Order.reconstitute(
-                OrderId.of(id),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator Name",
-                OrderStatus.DRAFT,
-                null, null, null, null, null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        Order order = Order.reconstitute(OrderId.of(id),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
+                OrderStatus.DRAFT, null, null, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.of(order));
 
         deleteOrderUseCase.execute(id);
 
         verify(warehouseStockRepository).release(List.of(
-                new OrderInventoryGateway.Allocation(warehouseId1, productId, 3),
-                new OrderInventoryGateway.Allocation(warehouseId2, productId, 7)));
+                new OrderInventoryGateway.Allocation(warehouseId1, productId,
+                        3),
+                new OrderInventoryGateway.Allocation(warehouseId2, productId,
+                        7)));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 
@@ -163,28 +145,23 @@ class DeleteOrderUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(5));
+        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId,
+                BigDecimal.valueOf(5));
         OrderLine line = OrderLine.create(productId, "Product A", "PROD-001",
                 BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Order order = Order.reconstitute(
-                OrderId.of(id),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator Name",
-                OrderStatus.DRAFT,
-                null, null, null, null, null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        Order order = Order.reconstitute(OrderId.of(id),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
+                OrderStatus.DRAFT, null, null, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.of(order));
         deleteOrderUseCase.execute(id);
 
-        verify(warehouseStockRepository).release(List.of(new OrderInventoryGateway.Allocation(warehouseId, productId, 5)));
+        verify(warehouseStockRepository).release(
+                List.of(new OrderInventoryGateway.Allocation(warehouseId,
+                        productId, 5)));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 }

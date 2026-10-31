@@ -5,9 +5,14 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.application.qu
 import java.util.UUID;
 public class PaymentDocumentQueryService implements PaymentDocumentQuery {
     private final GetPaymentByIdUseCase query;
-    public PaymentDocumentQueryService(GetPaymentByIdUseCase query) { this.query = query; }
+    public PaymentDocumentQueryService(GetPaymentByIdUseCase query) {
+        this.query = query;
+    }
     public PaymentDocumentSnapshot find(UUID id) {
         var payment = query.execute(id);
-        return new PaymentDocumentSnapshot(payment.id(), payment.paymentNumber(), payment.amount(), payment.referenceNumber(), payment.notes(), payment.status(), payment.createdAt());
+        return new PaymentDocumentSnapshot(payment.id(),
+                payment.paymentNumber(), payment.amount(),
+                payment.referenceNumber(), payment.notes(), payment.status(),
+                payment.createdAt());
     }
 }

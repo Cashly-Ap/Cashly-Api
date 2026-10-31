@@ -15,8 +15,9 @@ public class PaymentMethod {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private PaymentMethod(PaymentMethodId id, String code, String name, String description,
-                          boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private PaymentMethod(PaymentMethodId id, String code, String name,
+            String description, boolean isActive, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -26,18 +27,21 @@ public class PaymentMethod {
         this.updatedAt = updatedAt;
     }
 
-    public static PaymentMethod create(String code, String name, String description) {
+    public static PaymentMethod create(String code, String name,
+            String description) {
         Objects.requireNonNull(code, "Code cannot be null");
         Objects.requireNonNull(name, "Name cannot be null");
 
         LocalDateTime now = LocalDateTime.now();
-        return new PaymentMethod(PaymentMethodId.generate(), code, name, description, true, now, now);
+        return new PaymentMethod(PaymentMethodId.generate(), code, name,
+                description, true, now, now);
     }
 
-    public static PaymentMethod reconstitute(PaymentMethodId id, String code, String name,
-                                              String description, boolean isActive,
-                                              LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new PaymentMethod(id, code, name, description, isActive, createdAt, updatedAt);
+    public static PaymentMethod reconstitute(PaymentMethodId id, String code,
+            String name, String description, boolean isActive,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new PaymentMethod(id, code, name, description, isActive,
+                createdAt, updatedAt);
     }
 
     public void update(String name, String description, Boolean isActive) {
@@ -60,18 +64,34 @@ public class PaymentMethod {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public PaymentMethodId getId() { return id; }
-    public String getCode() { return code; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public boolean isActive() { return isActive; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public PaymentMethodId getId() {
+        return id;
+    }
+    public String getCode() {
+        return code;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public boolean isActive() {
+        return isActive;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         PaymentMethod that = (PaymentMethod) o;
         return Objects.equals(id, that.id);
     }
@@ -83,6 +103,7 @@ public class PaymentMethod {
 
     @Override
     public String toString() {
-        return "PaymentMethod{id=" + id + ", code='" + code + "', name='" + name + "', active=" + isActive + "}";
+        return "PaymentMethod{id=" + id + ", code='" + code + "', name='" + name
+                + "', active=" + isActive + "}";
     }
 }

@@ -45,7 +45,8 @@ class GetOrderByIdUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository, stockEnrichmentService, creditGuard);
+        getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository,
+                stockEnrichmentService, creditGuard);
     }
 
     @Test
@@ -53,9 +54,11 @@ class GetOrderByIdUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         Order order = buildOrder(id);
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.of(order));
         when(stockEnrichmentService.enrich(anyList())).thenReturn(List.of());
-        when(stockEnrichmentService.getAllStockByProducts(any(), anyList())).thenReturn(java.util.Map.of());
+        when(stockEnrichmentService.getAllStockByProducts(any(), anyList()))
+                .thenReturn(java.util.Map.of());
 
         OrderDetailResponse response = getOrderByIdUseCase.execute(id);
 
@@ -69,12 +72,12 @@ class GetOrderByIdUseCaseUnitTest {
     void should_ThrowOrderNotFoundException_When_OrderDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.empty());
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.empty());
 
         OrderNotFoundException exception = assertThrows(
                 OrderNotFoundException.class,
-                () -> getOrderByIdUseCase.execute(id)
-        );
+                () -> getOrderByIdUseCase.execute(id));
 
         assertEquals("Order not found with id: " + id, exception.getMessage());
     }
@@ -85,27 +88,21 @@ class GetOrderByIdUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(5));
+        OrderLineAllocation allocation = OrderLineAllocation.create(warehouseId,
+                BigDecimal.valueOf(5));
         OrderLine line = OrderLine.create(productId, "Product A", "PROD-001",
                 BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Order order = Order.reconstitute(
-                OrderId.of(id),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator Name",
-                OrderStatus.DRAFT,
-                null, null, null, null, null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        Order order = Order.reconstitute(OrderId.of(id),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
+                OrderStatus.DRAFT, null, null, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(orderRepository.findById(OrderId.of(id))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(id)))
+                .thenReturn(Optional.of(order));
         when(stockEnrichmentService.enrich(anyList())).thenReturn(List.of());
-        when(stockEnrichmentService.getAllStockByProducts(any(), anyList())).thenReturn(java.util.Map.of());
+        when(stockEnrichmentService.getAllStockByProducts(any(), anyList()))
+                .thenReturn(java.util.Map.of());
 
         OrderDetailResponse response = getOrderByIdUseCase.execute(id);
 
@@ -116,27 +113,12 @@ class GetOrderByIdUseCaseUnitTest {
     }
 
     private Order buildOrder(UUID orderId) {
-        OrderLine line = OrderLine.create(
-                UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        return Order.reconstitute(
-                OrderId.of(orderId),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator Name",
-                OrderStatus.DRAFT,
-                null,
-                null,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Order.reconstitute(OrderId.of(orderId), OrderNumber.of(2026, 1),
+                UUID.randomUUID(), "Customer Name", "J-12345678-9",
+                UUID.randomUUID(), "Creator Name", OrderStatus.DRAFT, null,
+                null, null, null, null, List.of(line), LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

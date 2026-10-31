@@ -10,14 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class QuoteNumberTest {
 
     @ParameterizedTest
-    @CsvSource({
-            "2024, 1, PRE-2024-0001",
-            "2024, 100, PRE-2024-0100",
-            "2024, 9999, PRE-2024-9999",
-            "2025, 1, PRE-2025-0001",
-            "2030, 500, PRE-2030-0500"
-    })
-    void should_create_valid_quote_number(int year, int sequence, String expected) {
+    @CsvSource({"2024, 1, PRE-2024-0001", "2024, 100, PRE-2024-0100",
+            "2024, 9999, PRE-2024-9999", "2025, 1, PRE-2025-0001",
+            "2030, 500, PRE-2030-0500"})
+    void should_create_valid_quote_number(int year, int sequence,
+            String expected) {
         QuoteNumber quoteNumber = QuoteNumber.of(year, sequence);
         assertEquals(expected, quoteNumber.value());
     }
@@ -78,8 +75,7 @@ class QuoteNumberTest {
 
     @Test
     void should_throw_on_empty() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new QuoteNumber(""));
+        assertThrows(IllegalArgumentException.class, () -> new QuoteNumber(""));
     }
 
     @Test

@@ -30,37 +30,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthController.class)
 @Import({SecurityConfig.class, JwtAuthenticationEntryPoint.class})
 class OwnProfileControllerTest {
-    @Autowired MockMvc mvc;
-    @Autowired org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping mappings;
-    @MockitoBean RegisterUserUseCase register;
-    @MockitoBean LoginUserUseCase login;
-    @MockitoBean RefreshTokenUseCase refresh;
-    @MockitoBean LogoutUserUseCase logout;
-    @MockitoBean UpdateUserPasswordUseCase password;
-    @MockitoBean GetUserByIdUseCase query;
-    @MockitoBean com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
-    @MockitoBean com.cashly.cashly_api.platform.auth.user.application.update.use_case.UpdateOwnProfileUseCase update;
-    @MockitoBean JwtAuthenticationFilter jwtFilter;
-    @MockitoBean(name = "corsConfigurationSource") CorsConfigurationSource cors;
+    @Autowired
+    MockMvc mvc;
+    @Autowired
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping mappings;
+    @MockitoBean
+    RegisterUserUseCase register;
+    @MockitoBean
+    LoginUserUseCase login;
+    @MockitoBean
+    RefreshTokenUseCase refresh;
+    @MockitoBean
+    LogoutUserUseCase logout;
+    @MockitoBean
+    UpdateUserPasswordUseCase password;
+    @MockitoBean
+    GetUserByIdUseCase query;
+    @MockitoBean
+    com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    @MockitoBean
+    com.cashly.cashly_api.platform.auth.user.application.update.use_case.UpdateOwnProfileUseCase update;
+    @MockitoBean
+    JwtAuthenticationFilter jwtFilter;
+    @MockitoBean(name = "corsConfigurationSource")
+    CorsConfigurationSource cors;
 
     @BeforeEach
     void passThroughJwtFilter() throws Exception {
         doAnswer(invocation -> {
             jakarta.servlet.FilterChain chain = invocation.getArgument(2);
-            chain.doFilter(invocation.getArgument(0), invocation.getArgument(1));
+            chain.doFilter(invocation.getArgument(0),
+                    invocation.getArgument(1));
             return null;
         }).when(jwtFilter).doFilter(any(), any(), any());
     }
 
     @Test
-    void ownProfileUsesAuthenticatedIdentityWithoutUserReadPermissionOrCredentials() throws Exception {
-        when(query.execute("own-user")).thenReturn(new UserResponse("own-user", "own@example.com",
-                "Own User", UserRole.OPERATOR, true, true, false, Set.of(), "Own", "User",
-                null, "+34600000000", null, null, "Sales", "Operations", null, null));
+    void ownProfileUsesAuthenticatedIdentityWithoutUserReadPermissionOrCredentials()
+            throws Exception {
+        when(query.execute("own-user")).thenReturn(new UserResponse("own-user",
+                "own@example.com", "Own User", UserRole.OPERATOR, true, true,
+                false, Set.of(), "Own", "User", null, "+34600000000", null,
+                null, "Sales", "Operations", null, null));
 
-        mvc.perform(get("/api/auth/profile").with(user("own-user").authorities())
-                        .param("id", "other-user").param("userId", "other-user"))
-                .andExpect(status().isOk())
+        mvc.perform(get("/api/auth/profile")
+                .with(user("own-user").authorities()).param("id", "other-user")
+                .param("userId", "other-user")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("own-user"))
                 .andExpect(jsonPath("$.phone").value("+34600000000"))
                 .andExpect(jsonPath("$.roleName").value("Sales"))
@@ -75,37 +90,49 @@ class OwnProfileControllerTest {
 
     @Test
     void anonymousProfileAccessIsDeniedBeforeReadingUser() throws Exception {
-        mvc.perform(get("/api/auth/profile")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/auth/profile"))
+                .andExpect(status().isUnauthorized());
         verifyNoInteractions(query);
     }
 
     @Test
-    void ownProfileUpdateDoesNotRequireAdministrativeAuthorities() throws Exception {
-        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/auth/profile")
-                        .with(user("own-user").authorities()).param("id", "other-user")
-                        .contentType("application/json")
-                        .content("{\"userName\":\"New Name\",\"firstName\":\"First\",\"lastName\":\"Last\",\"phone\":\"+34600000000\",\"address\":null}"))
+    void ownProfileUpdateDoesNotRequireAdministrativeAuthorities()
+            throws Exception {
+        mvc.perform(
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .put("/api/auth/profile")
+                        .with(user("own-user").authorities())
+                        .param("id", "other-user")
+                        .contentType("application/json").content(
+                                "{\"userName\":\"New Name\",\"firstName\":\"First\",\"lastName\":\"Last\",\"phone\":\"+34600000000\",\"address\":null}"))
                 .andExpect(status().isOk());
         verify(update).execute(eq("own-user"), any());
         verifyNoMoreInteractions(update);
     }
 
     @org.junit.jupiter.params.ParameterizedTest
-    @org.junit.jupiter.params.provider.ValueSource(strings = {"roleId", "departmentId", "permissions", "modulePermissions",
-            "role", "systemKey", "active", "emailVerified", "email", "password", "id"})
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"roleId",
+            "departmentId", "permissions", "modulePermissions", "role",
+            "systemKey", "active", "emailVerified", "email", "password", "id"})
     void protectedFieldsAreRejectedEvenWhenNull(String field) throws Exception {
-        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/auth/profile")
-                        .with(user("own-user").authorities()).contentType("application/json")
-                        .content("{\"userName\":\"New Name\",\"firstName\":\"First\",\"lastName\":\"Last\",\"" + field + "\":null}"))
+        mvc.perform(
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .put("/api/auth/profile")
+                        .with(user("own-user").authorities())
+                        .contentType("application/json").content(
+                                "{\"userName\":\"New Name\",\"firstName\":\"First\",\"lastName\":\"Last\",\""
+                                        + field + "\":null}"))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(update);
     }
 
     @Test
     void anonymousProfileUpdateIsDenied() throws Exception {
-        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/auth/profile")
-                        .contentType("application/json")
-                        .content("{\"userName\":\"New Name\",\"firstName\":\"First\",\"lastName\":\"Last\"}"))
+        mvc.perform(
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .put("/api/auth/profile")
+                        .contentType("application/json").content(
+                                "{\"userName\":\"New Name\",\"firstName\":\"First\",\"lastName\":\"Last\"}"))
                 .andExpect(status().isUnauthorized());
         verifyNoInteractions(update);
     }
@@ -113,10 +140,14 @@ class OwnProfileControllerTest {
     @Test
     void profileHasNoRouteToSelectAnotherUser() throws Exception {
         var profileRoutes = mappings.getHandlerMethods().entrySet().stream()
-                .filter(entry -> entry.getValue().getBeanType().equals(AuthController.class)
-                        && entry.getValue().getMethod().getName().equals("profile"))
-                .flatMap(entry -> entry.getKey().getPatternValues().stream()).toList();
-        org.assertj.core.api.Assertions.assertThat(profileRoutes).containsExactly("/api/auth/profile");
+                .filter(entry -> entry.getValue().getBeanType()
+                        .equals(AuthController.class)
+                        && entry.getValue().getMethod().getName()
+                                .equals("profile"))
+                .flatMap(entry -> entry.getKey().getPatternValues().stream())
+                .toList();
+        org.assertj.core.api.Assertions.assertThat(profileRoutes)
+                .containsExactly("/api/auth/profile");
         verifyNoInteractions(query);
     }
 }

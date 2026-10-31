@@ -24,7 +24,8 @@ class GenerateInvoicesReportPdfUseCaseImplTest {
     @Mock
     private InvoicesReportPdfPort invoicesReportPdfPort;
 
-    @Mock private InvoiceReportQueryGateway query;
+    @Mock
+    private InvoiceReportQueryGateway query;
     @InjectMocks
     private GenerateInvoicesReportPdfUseCaseImpl useCase;
 
@@ -32,11 +33,13 @@ class GenerateInvoicesReportPdfUseCaseImplTest {
     @DisplayName("should generate invoices report PDF with SIMPLE mode")
     void should_generate_invoices_report_pdf() {
         List<InvoiceReportRow> invoices = List.of(mock(InvoiceReportRow.class));
-        InvoiceReportFilter filter = new InvoiceReportFilter(null, null, null, null, null, null);
+        InvoiceReportFilter filter = new InvoiceReportFilter(null, null, null,
+                null, null, null);
         when(query.findAll(filter)).thenReturn(invoices);
         byte[] expectedPdf = "Report PDF".getBytes();
 
-        when(invoicesReportPdfPort.generatePdf(invoices, "SIMPLE")).thenReturn(expectedPdf);
+        when(invoicesReportPdfPort.generatePdf(invoices, "SIMPLE"))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(filter, "SIMPLE");
 
@@ -48,11 +51,13 @@ class GenerateInvoicesReportPdfUseCaseImplTest {
     @DisplayName("should generate invoices report PDF with null mode defaulting to simple")
     void should_generate_invoices_report_pdf_with_null_mode() {
         List<InvoiceReportRow> invoices = List.of();
-        InvoiceReportFilter filter = new InvoiceReportFilter(null, null, null, null, null, null);
+        InvoiceReportFilter filter = new InvoiceReportFilter(null, null, null,
+                null, null, null);
         when(query.findAll(filter)).thenReturn(invoices);
         byte[] expectedPdf = "Default PDF".getBytes();
 
-        when(invoicesReportPdfPort.generatePdf(invoices, "simple")).thenReturn(expectedPdf);
+        when(invoicesReportPdfPort.generatePdf(invoices, "simple"))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(filter, null);
 

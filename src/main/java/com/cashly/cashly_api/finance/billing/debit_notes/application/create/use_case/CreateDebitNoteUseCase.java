@@ -21,29 +21,34 @@ public class CreateDebitNoteUseCase {
     private final DebitNoteCashGateway cash;
 
     public CreateDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
-                                  DebitNoteInvoiceGateway invoices,
-                                  DebitNoteCashGateway cash) {
+            DebitNoteInvoiceGateway invoices, DebitNoteCashGateway cash) {
         this.debitNoteRepository = debitNoteRepository;
         this.invoices = invoices;
         this.cash = cash;
     }
 
     @Transactional
-    public DebitNoteResponse execute(CreateDebitNoteRequest request, UUID authenticatedUserId) {
-        DebitNoteInvoiceGateway.InvoiceContext invoice = invoices.find(request.invoiceId());
-        if ("CANCELLED".equals(invoice.status()) || "FULLY_RETURNED".equals(invoice.status())) {
-            throw new IllegalStateException("Cannot create debit note for invoice " + invoice.number()
-                    + ". Current status: " + invoice.statusLabel());
+    public DebitNoteResponse execute(CreateDebitNoteRequest request,
+            UUID authenticatedUserId) {
+        DebitNoteInvoiceGateway.InvoiceContext invoice = invoices
+                .find(request.invoiceId());
+        if ("CANCELLED".equals(invoice.status())
+                || "FULLY_RETURNED".equals(invoice.status())) {
+            throw new IllegalStateException(
+                    "Cannot create debit note for invoice " + invoice.number()
+                            + ". Current status: " + invoice.statusLabel());
         }
 
         int year = LocalDate.now().getYear();
         DebitNoteNumber noteNumber = DebitNoteNumber.of(year,
                 debitNoteRepository.getNextSequenceForYear(year));
-        DebitNote note = DebitNote.create(noteNumber, request.customerId(), request.invoiceId(),
-                request.amount(), request.reason(), authenticatedUserId, "User");
+        DebitNote note = DebitNote.create(noteNumber, request.customerId(),
+                request.invoiceId(), request.amount(), request.reason(),
+                authenticatedUserId, "User");
         DebitNote saved = debitNoteRepository.save(note);
-        cash.recordCashIn(saved.getAmount(), saved.getNoteNumber().value(), saved.getId().value(),
-                authenticatedUserId, saved.getCreatedByName());
+        cash.recordCashIn(saved.getAmount(), saved.getNoteNumber().value(),
+                saved.getId().value(), authenticatedUserId,
+                saved.getCreatedByName());
         invoices.recalculate(saved.getInvoiceId());
         return DebitNoteMapper.toDebitNoteResponse(saved, null, null, null);
     }

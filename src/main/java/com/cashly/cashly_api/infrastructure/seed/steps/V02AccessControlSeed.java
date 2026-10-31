@@ -30,12 +30,15 @@ public class V02AccessControlSeed implements SeedStep {
 
     @Override
     public void seed() {
-        saveRole(new Role(SYSTEM_ADMIN_ROLE, "System administrator", "Full installation access", true, 0,
-                "SYSTEM_ADMIN", administratorPermissions()));
-        saveRole(new Role(OPERATOR_ROLE, "Operator", "Daily sales operations", true, 0,
-                "OPERATOR", operatorPermissions()));
-        saveDepartment(new Department(ADMINISTRATION_DEPARTMENT, "Administration", "Back office", true, 0));
-        saveDepartment(new Department(SALES_DEPARTMENT, "Sales", "Commercial operations", true, 0));
+        saveRole(new Role(SYSTEM_ADMIN_ROLE, "System administrator",
+                "Full installation access", true, 0, "SYSTEM_ADMIN",
+                administratorPermissions()));
+        saveRole(new Role(OPERATOR_ROLE, "Operator", "Daily sales operations",
+                true, 0, "OPERATOR", operatorPermissions()));
+        saveDepartment(new Department(ADMINISTRATION_DEPARTMENT,
+                "Administration", "Back office", true, 0));
+        saveDepartment(new Department(SALES_DEPARTMENT, "Sales",
+                "Commercial operations", true, 0));
         access.createAdministrationLockIfAbsent();
     }
 
@@ -52,13 +55,16 @@ public class V02AccessControlSeed implements SeedStep {
     }
 
     private static Map<BusinessModule, Set<PermissionAction>> administratorPermissions() {
-        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(BusinessModule.class);
-        result.put(BusinessModule.USERS, EnumSet.of(PermissionAction.READ, PermissionAction.UPDATE));
+        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
+                BusinessModule.class);
+        result.put(BusinessModule.USERS,
+                EnumSet.of(PermissionAction.READ, PermissionAction.UPDATE));
         return result;
     }
 
     private static Map<BusinessModule, Set<PermissionAction>> operatorPermissions() {
-        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(BusinessModule.class);
+        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
+                BusinessModule.class);
         result.put(BusinessModule.SALES, EnumSet.of(PermissionAction.READ));
         return result;
     }

@@ -45,55 +45,63 @@ class SearchCustomerDebtUseCaseTest {
                 UUID.randomUUID(), "Cliente Test", "J-12345678-9",
                 new BigDecimal("5000.00"), new BigDecimal("1000.00"), 3L,
                 LocalDate.now().minusMonths(2), new BigDecimal("10000.00"),
-                new BigDecimal("5000.00"), BigDecimal.ZERO
-        );
-        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(new PageImpl<>(List.of(customer)));
+                new BigDecimal("5000.00"), BigDecimal.ZERO);
+        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(
+                new PageImpl<>(List.of(customer)));
 
-        when(receivablesRepository.findCustomersWithDebt(search, page, size, sort))
-                .thenReturn(customerPage);
+        when(receivablesRepository.findCustomersWithDebt(search, page, size,
+                sort)).thenReturn(customerPage);
 
-        PageResponse<CustomerDebtListResponse> result = useCase.execute(search, page, size, sort);
+        PageResponse<CustomerDebtListResponse> result = useCase.execute(search,
+                page, size, sort);
 
         assertNotNull(result);
         assertFalse(result.empty());
         assertEquals(1, result.content().size());
         assertEquals("Cliente Test", result.content().get(0).customerName());
-        assertEquals(new BigDecimal("5000.00"), result.content().get(0).totalDebt());
-        verify(receivablesRepository).findCustomersWithDebt(search, page, size, sort);
+        assertEquals(new BigDecimal("5000.00"),
+                result.content().get(0).totalDebt());
+        verify(receivablesRepository).findCustomersWithDebt(search, page, size,
+                sort);
     }
 
     @Test
     void should_ReturnEmptyResults_When_NoCustomersMatch() {
-        PageResponse<CustomerDebtListResponse> emptyPage = toPageResponse(org.springframework.data.domain.Page.empty());
+        PageResponse<CustomerDebtListResponse> emptyPage = toPageResponse(
+                org.springframework.data.domain.Page.empty());
 
-        when(receivablesRepository.findCustomersWithDebt("nonexistent", 0, 20, null))
-                .thenReturn(emptyPage);
+        when(receivablesRepository.findCustomersWithDebt("nonexistent", 0, 20,
+                null)).thenReturn(emptyPage);
 
-        PageResponse<CustomerDebtListResponse> result = useCase.execute("nonexistent", 0, 20, null);
+        PageResponse<CustomerDebtListResponse> result = useCase
+                .execute("nonexistent", 0, 20, null);
 
         assertTrue(result.empty());
         assertEquals(0, result.totalElements());
-        verify(receivablesRepository).findCustomersWithDebt("nonexistent", 0, 20, null);
+        verify(receivablesRepository).findCustomersWithDebt("nonexistent", 0,
+                20, null);
     }
 
     @Test
     void should_ReturnAllCustomers_When_SearchIsNull() {
         CustomerDebtListResponse customer1 = new CustomerDebtListResponse(
-                UUID.randomUUID(), "Cliente A", "J-11111111-1",
-                BigDecimal.TEN, BigDecimal.ZERO, 1L,
-                LocalDate.now().minusMonths(1), BigDecimal.valueOf(100), BigDecimal.valueOf(90), BigDecimal.ZERO
-        );
+                UUID.randomUUID(), "Cliente A", "J-11111111-1", BigDecimal.TEN,
+                BigDecimal.ZERO, 1L, LocalDate.now().minusMonths(1),
+                BigDecimal.valueOf(100), BigDecimal.valueOf(90),
+                BigDecimal.ZERO);
         CustomerDebtListResponse customer2 = new CustomerDebtListResponse(
                 UUID.randomUUID(), "Cliente B", "J-22222222-2",
                 BigDecimal.valueOf(20), BigDecimal.ZERO, 2L,
-                LocalDate.now().minusWeeks(3), BigDecimal.valueOf(200), BigDecimal.valueOf(180), BigDecimal.ZERO
-        );
-        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(new PageImpl<>(List.of(customer1, customer2)));
+                LocalDate.now().minusWeeks(3), BigDecimal.valueOf(200),
+                BigDecimal.valueOf(180), BigDecimal.ZERO);
+        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(
+                new PageImpl<>(List.of(customer1, customer2)));
 
         when(receivablesRepository.findCustomersWithDebt(null, 0, 20, null))
                 .thenReturn(customerPage);
 
-        PageResponse<CustomerDebtListResponse> result = useCase.execute(null, 0, 20, null);
+        PageResponse<CustomerDebtListResponse> result = useCase.execute(null, 0,
+                20, null);
 
         assertEquals(2, result.content().size());
         assertEquals("Cliente A", result.content().get(0).customerName());
@@ -107,16 +115,17 @@ class SearchCustomerDebtUseCaseTest {
                 UUID.randomUUID(), "Cliente Test", "J-12345678-9",
                 new BigDecimal("5000.00"), new BigDecimal("1000.00"), 3L,
                 LocalDate.now().minusMonths(2), new BigDecimal("10000.00"),
-                new BigDecimal("5000.00"), BigDecimal.ZERO
-        );
-        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(new PageImpl<>(
-                List.of(customer), org.springframework.data.domain.PageRequest.of(1, 10), 25
-        ));
+                new BigDecimal("5000.00"), BigDecimal.ZERO);
+        PageResponse<CustomerDebtListResponse> customerPage = toPageResponse(
+                new PageImpl<>(List.of(customer),
+                        org.springframework.data.domain.PageRequest.of(1, 10),
+                        25));
 
         when(receivablesRepository.findCustomersWithDebt(null, 1, 10, null))
                 .thenReturn(customerPage);
 
-        PageResponse<CustomerDebtListResponse> result = useCase.execute(null, 1, 10, null);
+        PageResponse<CustomerDebtListResponse> result = useCase.execute(null, 1,
+                10, null);
 
         assertEquals(1, result.content().size());
         assertEquals(25, result.totalElements());
@@ -126,8 +135,10 @@ class SearchCustomerDebtUseCaseTest {
         assertFalse(result.first());
         assertFalse(result.last());
     }
-    private static <T> PageResponse<T> toPageResponse(org.springframework.data.domain.Page<T> page) {
-        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
-                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
+    private static <T> PageResponse<T> toPageResponse(
+            org.springframework.data.domain.Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(),
+                page.getTotalPages(), page.getSize(), page.getNumber(),
+                page.isFirst(), page.isLast(), page.isEmpty());
     }
 }

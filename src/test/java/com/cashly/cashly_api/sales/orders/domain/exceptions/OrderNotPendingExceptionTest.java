@@ -10,7 +10,8 @@ class OrderNotPendingExceptionTest {
 
     @Test
     void should_CreateException_WithActionInMessage() {
-        OrderNotPendingException exception = new OrderNotPendingException("cancel");
+        OrderNotPendingException exception = new OrderNotPendingException(
+                "cancel");
 
         assertTrue(exception.getMessage().contains("cancel"));
         assertTrue(exception.getMessage().contains("PENDING"));
@@ -18,16 +19,20 @@ class OrderNotPendingExceptionTest {
 
     @Test
     void should_BeRuntimeException() {
-        OrderNotPendingException exception = new OrderNotPendingException("confirm");
+        OrderNotPendingException exception = new OrderNotPendingException(
+                "confirm");
 
         assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
     void should_HandleDifferentActions() {
-        OrderNotPendingException cancelEx = new OrderNotPendingException("cancel");
-        OrderNotPendingException confirmEx = new OrderNotPendingException("confirm");
-        OrderNotPendingException deleteEx = new OrderNotPendingException("delete");
+        OrderNotPendingException cancelEx = new OrderNotPendingException(
+                "cancel");
+        OrderNotPendingException confirmEx = new OrderNotPendingException(
+                "confirm");
+        OrderNotPendingException deleteEx = new OrderNotPendingException(
+                "delete");
 
         assertTrue(cancelEx.getMessage().contains("cancel"));
         assertTrue(confirmEx.getMessage().contains("confirm"));

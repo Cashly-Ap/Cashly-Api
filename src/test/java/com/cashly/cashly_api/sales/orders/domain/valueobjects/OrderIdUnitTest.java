@@ -41,7 +41,8 @@ class OrderIdUnitTest {
 
     @Test
     void should_ThrowException_When_InvalidStringProvided() {
-        assertThrows(IllegalArgumentException.class, () -> OrderId.of("not-a-uuid"));
+        assertThrows(IllegalArgumentException.class,
+                () -> OrderId.of("not-a-uuid"));
     }
 
     @Test

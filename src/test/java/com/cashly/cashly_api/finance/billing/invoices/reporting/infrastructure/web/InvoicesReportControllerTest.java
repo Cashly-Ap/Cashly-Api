@@ -31,8 +31,6 @@ class InvoicesReportControllerTest {
     @Mock
     private GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase;
 
-
-
     @InjectMocks
     private InvoicesReportController controller;
 
@@ -42,13 +40,15 @@ class InvoicesReportControllerTest {
         UUID invoiceId = UUID.randomUUID();
         byte[] pdfContent = "Invoice PDF".getBytes();
 
-        when(generateInvoicePdfUseCase.execute(invoiceId)).thenReturn(pdfContent);
+        when(generateInvoicePdfUseCase.execute(invoiceId))
+                .thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getInvoicePdf(invoiceId);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("nota-" + invoiceId + ".pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("nota-" + invoiceId + ".pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generateInvoicePdfUseCase).execute(invoiceId);
@@ -66,15 +66,19 @@ class InvoicesReportControllerTest {
         byte[] pdfContent = "Invoices report PDF".getBytes();
         List<InvoiceReportRow> invoices = List.of();
 
-        InvoiceReportFilter filter = new InvoiceReportFilter(dateFrom, dateTo, customerId, status, productId, categoryId);
-        when(generateInvoicesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        InvoiceReportFilter filter = new InvoiceReportFilter(dateFrom, dateTo,
+                customerId, status, productId, categoryId);
+        when(generateInvoicesReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getInvoicesReportPdf(
-                dateFrom, dateTo, customerId, status, productId, categoryId, "SIMPLE");
+                dateFrom, dateTo, customerId, status, productId, categoryId,
+                "SIMPLE");
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("reporte-facturas-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("reporte-facturas-"));
         assertArrayEquals(pdfContent, result.getBody());
 
         verify(generateInvoicesReportPdfUseCase).execute(filter, "SIMPLE");
@@ -86,11 +90,13 @@ class InvoicesReportControllerTest {
         byte[] pdfContent = "PDF no filters".getBytes();
         List<InvoiceReportRow> invoices = List.of();
 
-        InvoiceReportFilter filter = new InvoiceReportFilter(null, null, null, null, null, null);
-        when(generateInvoicesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        InvoiceReportFilter filter = new InvoiceReportFilter(null, null, null,
+                null, null, null);
+        when(generateInvoicesReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getInvoicesReportPdf(
-                null, null, null, null, null, null, "SIMPLE");
+        ResponseEntity<byte[]> result = controller.getInvoicesReportPdf(null,
+                null, null, null, null, null, "SIMPLE");
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateInvoicesReportPdfUseCase).execute(filter, "SIMPLE");

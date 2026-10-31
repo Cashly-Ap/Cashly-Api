@@ -32,10 +32,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CreateCustomerCashBalanceOperationUseCaseTest {
 
-    @Mock private AddToCustomerBalanceUseCase addToBalance;
-    @Mock private ConsumeCustomerBalanceUseCase consumeBalance;
-    @Mock private CustomerCashGateway cashGateway;
-    @Mock private CustomerActorGateway actorGateway;
+    @Mock
+    private AddToCustomerBalanceUseCase addToBalance;
+    @Mock
+    private ConsumeCustomerBalanceUseCase consumeBalance;
+    @Mock
+    private CustomerCashGateway cashGateway;
+    @Mock
+    private CustomerActorGateway actorGateway;
 
     private CreateCustomerAdvanceUseCase advanceUseCase;
     private RefundCustomerBalanceUseCase refundUseCase;
@@ -46,52 +50,69 @@ class CreateCustomerCashBalanceOperationUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        advanceUseCase = new CreateCustomerAdvanceUseCase(addToBalance, cashGateway, actorGateway);
-        refundUseCase = new RefundCustomerBalanceUseCase(consumeBalance, cashGateway, actorGateway);
+        advanceUseCase = new CreateCustomerAdvanceUseCase(addToBalance,
+                cashGateway, actorGateway);
+        refundUseCase = new RefundCustomerBalanceUseCase(consumeBalance,
+                cashGateway, actorGateway);
     }
 
     @Test
     void should_RejectAdvanceBeforeChangingBalance_When_RegisterIsClosed() {
-        doThrow(new IllegalStateException("Debe abrir una caja antes de registrar una operación monetaria"))
+        doThrow(new IllegalStateException(
+                "Debe abrir una caja antes de registrar una operación monetaria"))
                 .when(cashGateway).requireOpenRegister();
 
-        assertThrows(IllegalStateException.class, () -> advanceUseCase.execute(
-                customerId, new BigDecimal("100.00"), paymentMethodId, "Anticipo", userId));
+        assertThrows(IllegalStateException.class,
+                () -> advanceUseCase.execute(customerId,
+                        new BigDecimal("100.00"), paymentMethodId, "Anticipo",
+                        userId));
 
-        verify(addToBalance, never()).executeWithTransaction(any(), any(), any(), any(), any(), any(), any(), any());
+        verify(addToBalance, never()).executeWithTransaction(any(), any(),
+                any(), any(), any(), any(), any(), any());
     }
 
     @Test
     void should_RecordAdvanceIncomeLinkedToBalanceTransaction() {
-        CustomerBalanceResponse balance = new CustomerBalanceResponse(customerId, new BigDecimal("100.00"), null, null);
-        when(addToBalance.executeWithTransaction(customerId, BalanceType.ADVANCED, new BigDecimal("100.00"),
+        CustomerBalanceResponse balance = new CustomerBalanceResponse(
+                customerId, new BigDecimal("100.00"), null, null);
+        when(addToBalance.executeWithTransaction(customerId,
+                BalanceType.ADVANCED, new BigDecimal("100.00"),
                 BalanceType.ADVANCED, null, "Anticipo", null, userId))
-                .thenReturn(new CustomerBalanceMutationResponse(balance, transactionId));
+                .thenReturn(new CustomerBalanceMutationResponse(balance,
+                        transactionId));
         mockUser();
 
-        var result = advanceUseCase.execute(customerId, new BigDecimal("100.00"), paymentMethodId, "Anticipo", userId);
+        var result = advanceUseCase.execute(customerId,
+                new BigDecimal("100.00"), paymentMethodId, "Anticipo", userId);
 
         assertSame(balance, result);
-        verify(cashGateway).record(new CustomerCashMovement("IN", "ADVANCE", new BigDecimal("100.00"),
-                paymentMethodId, "Anticipo", "CUSTOMER_BALANCE", transactionId, userId, "Operator"));
+        verify(cashGateway).record(new CustomerCashMovement("IN", "ADVANCE",
+                new BigDecimal("100.00"), paymentMethodId, "Anticipo",
+                "CUSTOMER_BALANCE", transactionId, userId, "Operator"));
     }
 
     @Test
     void should_RecordRefundOutputLinkedToBalanceTransaction() {
-        CustomerBalanceResponse balance = new CustomerBalanceResponse(customerId, BigDecimal.ZERO, null, null);
-        when(consumeBalance.executeWithTransaction(customerId, BalanceType.REFUND, new BigDecimal("75.00"),
-                BalanceType.REFUND, null, "Devolución", null, userId))
-                .thenReturn(new CustomerBalanceMutationResponse(balance, transactionId));
+        CustomerBalanceResponse balance = new CustomerBalanceResponse(
+                customerId, BigDecimal.ZERO, null, null);
+        when(consumeBalance.executeWithTransaction(customerId,
+                BalanceType.REFUND, new BigDecimal("75.00"), BalanceType.REFUND,
+                null, "Devolución", null, userId))
+                .thenReturn(new CustomerBalanceMutationResponse(balance,
+                        transactionId));
         mockUser();
 
-        var result = refundUseCase.execute(customerId, new BigDecimal("75.00"), paymentMethodId, "Devolución", userId);
+        var result = refundUseCase.execute(customerId, new BigDecimal("75.00"),
+                paymentMethodId, "Devolución", userId);
 
         assertSame(balance, result);
-        verify(cashGateway).record(new CustomerCashMovement("OUT", "REFUND", new BigDecimal("75.00"),
-                paymentMethodId, "Devolución", "CUSTOMER_BALANCE", transactionId, userId, "Operator"));
+        verify(cashGateway).record(new CustomerCashMovement("OUT", "REFUND",
+                new BigDecimal("75.00"), paymentMethodId, "Devolución",
+                "CUSTOMER_BALANCE", transactionId, userId, "Operator"));
     }
 
     private void mockUser() {
-        when(actorGateway.findById(userId)).thenReturn(java.util.Optional.of(new CustomerActor(userId, "Operator")));
+        when(actorGateway.findById(userId)).thenReturn(
+                java.util.Optional.of(new CustomerActor(userId, "Operator")));
     }
 }

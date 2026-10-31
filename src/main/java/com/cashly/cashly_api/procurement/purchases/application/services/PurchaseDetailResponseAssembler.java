@@ -14,18 +14,19 @@ import java.util.stream.Collectors;
 public class PurchaseDetailResponseAssembler {
     private final PurchaseWarehouseGateway warehouses;
 
-    public PurchaseDetailResponseAssembler(PurchaseWarehouseGateway warehouses) {
+    public PurchaseDetailResponseAssembler(
+            PurchaseWarehouseGateway warehouses) {
         this.warehouses = warehouses;
     }
 
     public PurchaseDetailResponse toDetailResponse(Purchase purchase) {
         Map<UUID, Warehouse> warehouseDetails = purchase.getLines().stream()
                 .flatMap(line -> line.getAllocations().stream())
-                .map(PurchaseLineAllocation::getWarehouseId)
-                .distinct()
-                .map(warehouses::findById)
-                .flatMap(java.util.Optional::stream)
-                .collect(Collectors.toMap(Warehouse::id, warehouse -> warehouse));
-        return PurchaseMapper.toDetailResponse(purchase, warehouseDetails, Map.of());
+                .map(PurchaseLineAllocation::getWarehouseId).distinct()
+                .map(warehouses::findById).flatMap(java.util.Optional::stream)
+                .collect(Collectors.toMap(Warehouse::id,
+                        warehouse -> warehouse));
+        return PurchaseMapper.toDetailResponse(purchase, warehouseDetails,
+                Map.of());
     }
 }

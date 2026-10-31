@@ -38,19 +38,20 @@ class ListPaymentMethodsUseCaseTest {
     void should_ReturnAllPaymentMethods_When_ActiveFilterIsNull() {
         LocalDateTime now = LocalDateTime.now();
         PaymentMethod pm1 = PaymentMethod.reconstitute(
-                PaymentMethodId.of(UUID.randomUUID()), "PM-0001", "Cash", "Cash payment",
-                true, now, now);
+                PaymentMethodId.of(UUID.randomUUID()), "PM-0001", "Cash",
+                "Cash payment", true, now, now);
         PaymentMethod pm2 = PaymentMethod.reconstitute(
-                PaymentMethodId.of(UUID.randomUUID()), "PM-0002", "Credit Card", "Credit card payment",
-                true, now, now);
+                PaymentMethodId.of(UUID.randomUUID()), "PM-0002", "Credit Card",
+                "Credit card payment", true, now, now);
 
         PageResponse<PaymentMethod> pageResult = new PageResponse<>(
                 List.of(pm1, pm2), 2, 1, 10, 0, true, true, false);
-        when(repository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
-                .thenReturn(pageResult);
+        when(repository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10),
+                eq("name"), eq("asc"))).thenReturn(pageResult);
         when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
-        PageResponse<PaymentMethodResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
+        PageResponse<PaymentMethodResponse> result = useCase.execute(null, null,
+                0, 10, "name", "asc");
 
         assertNotNull(result);
         assertEquals(2, result.content().size());
@@ -63,16 +64,17 @@ class ListPaymentMethodsUseCaseTest {
     void should_ReturnActivePaymentMethods_When_ActiveFilterIsTrue() {
         LocalDateTime now = LocalDateTime.now();
         PaymentMethod pm = PaymentMethod.reconstitute(
-                PaymentMethodId.of(UUID.randomUUID()), "PM-0001", "Cash", "Cash payment",
-                true, now, now);
+                PaymentMethodId.of(UUID.randomUUID()), "PM-0001", "Cash",
+                "Cash payment", true, now, now);
 
-        PageResponse<PaymentMethod> pageResult = new PageResponse<>(
-                List.of(pm), 1, 1, 10, 0, true, true, false);
-        when(repository.findAllWithFilters(isNull(), eq(true), eq(0), eq(10), eq("name"), eq("asc")))
-                .thenReturn(pageResult);
+        PageResponse<PaymentMethod> pageResult = new PageResponse<>(List.of(pm),
+                1, 1, 10, 0, true, true, false);
+        when(repository.findAllWithFilters(isNull(), eq(true), eq(0), eq(10),
+                eq("name"), eq("asc"))).thenReturn(pageResult);
         when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
-        PageResponse<PaymentMethodResponse> result = useCase.execute(null, true, 0, 10, "name", "asc");
+        PageResponse<PaymentMethodResponse> result = useCase.execute(null, true,
+                0, 10, "name", "asc");
 
         assertNotNull(result);
         assertEquals(1, result.content().size());
@@ -81,12 +83,13 @@ class ListPaymentMethodsUseCaseTest {
 
     @Test
     void should_ReturnEmptyPage_When_NoPaymentMethods() {
-        PageResponse<PaymentMethod> pageResult = new PageResponse<>(
-                List.of(), 0, 0, 10, 0, true, true, true);
-        when(repository.findAllWithFilters(any(), any(), anyInt(), anyInt(), any(), any()))
-                .thenReturn(pageResult);
+        PageResponse<PaymentMethod> pageResult = new PageResponse<>(List.of(),
+                0, 0, 10, 0, true, true, true);
+        when(repository.findAllWithFilters(any(), any(), anyInt(), anyInt(),
+                any(), any())).thenReturn(pageResult);
 
-        PageResponse<PaymentMethodResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
+        PageResponse<PaymentMethodResponse> result = useCase.execute(null, null,
+                0, 10, "name", "asc");
 
         assertNotNull(result);
         assertTrue(result.content().isEmpty());

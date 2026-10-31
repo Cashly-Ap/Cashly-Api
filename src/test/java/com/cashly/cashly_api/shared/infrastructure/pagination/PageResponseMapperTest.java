@@ -2,8 +2,6 @@ package com.cashly.cashly_api.shared.infrastructure.pagination;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
 
-
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -36,7 +34,8 @@ class PageResponseMapperTest {
 
     @Test
     void should_CreateEmptyPageResponse_When_PageIsEmpty() {
-        Page<String> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 20), 0);
+        Page<String> emptyPage = new PageImpl<>(List.of(),
+                PageRequest.of(0, 20), 0);
 
         PageResponse<String> response = PageResponseMapper.from(emptyPage);
 

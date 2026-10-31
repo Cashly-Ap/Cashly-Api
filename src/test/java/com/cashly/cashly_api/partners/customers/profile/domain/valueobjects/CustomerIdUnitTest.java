@@ -26,7 +26,8 @@ class CustomerIdUnitTest {
 
     @Test
     void should_throw_on_null_string() {
-        assertThrows(IllegalArgumentException.class, () -> CustomerId.from(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> CustomerId.from(null));
     }
 
     @Test
@@ -36,12 +37,14 @@ class CustomerIdUnitTest {
 
     @Test
     void should_throw_on_blank_string() {
-        assertThrows(IllegalArgumentException.class, () -> CustomerId.from("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> CustomerId.from("   "));
     }
 
     @Test
     void should_throw_on_invalid_uuid_format() {
-        assertThrows(IllegalArgumentException.class, () -> CustomerId.from("not-a-uuid"));
+        assertThrows(IllegalArgumentException.class,
+                () -> CustomerId.from("not-a-uuid"));
     }
 
     @Test
@@ -53,7 +56,8 @@ class CustomerIdUnitTest {
 
     @Test
     void should_throw_on_null_uuid() {
-        assertThrows(IllegalArgumentException.class, () -> new CustomerId(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerId(null));
     }
 
     @Test

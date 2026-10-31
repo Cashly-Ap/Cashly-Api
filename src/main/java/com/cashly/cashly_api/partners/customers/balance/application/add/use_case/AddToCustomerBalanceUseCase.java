@@ -17,42 +17,38 @@ public class AddToCustomerBalanceUseCase {
 
     private final CustomerBalanceRepository customerBalanceRepository;
 
-    public AddToCustomerBalanceUseCase(CustomerBalanceRepository customerBalanceRepository) {
+    public AddToCustomerBalanceUseCase(
+            CustomerBalanceRepository customerBalanceRepository) {
         this.customerBalanceRepository = customerBalanceRepository;
     }
 
     @Transactional
-    public CustomerBalanceResponse execute(UUID customerId, BalanceType type, BigDecimal amount,
-                                            BalanceType referenceType, UUID referenceId,
-                                            String number, String referenceNumber, UUID createdBy) {
-        return executeWithTransaction(customerId, type, amount, referenceType, referenceId,
-                number, referenceNumber, createdBy).balance();
+    public CustomerBalanceResponse execute(UUID customerId, BalanceType type,
+            BigDecimal amount, BalanceType referenceType, UUID referenceId,
+            String number, String referenceNumber, UUID createdBy) {
+        return executeWithTransaction(customerId, type, amount, referenceType,
+                referenceId, number, referenceNumber, createdBy).balance();
     }
 
     @Transactional
     public CustomerBalanceMutationResponse executeWithTransaction(
             UUID customerId, BalanceType type, BigDecimal amount,
-            BalanceType referenceType, UUID referenceId,
-            String number, String referenceNumber, UUID createdBy) {
-        CustomerBalance balance = customerBalanceRepository.findByCustomerId(customerId)
-            .orElseGet(() -> CustomerBalance.create(customerId));
+            BalanceType referenceType, UUID referenceId, String number,
+            String referenceNumber, UUID createdBy) {
+        CustomerBalance balance = customerBalanceRepository
+                .findByCustomerId(customerId)
+                .orElseGet(() -> CustomerBalance.create(customerId));
 
         balance.addToBalance(amount);
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-            customerId,
-            type,
-            amount,
-            referenceType,
-            referenceId,
-            number,
-            referenceNumber,
-            createdBy
-        );
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                type, amount, referenceType, referenceId, number,
+                referenceNumber, createdBy);
 
         customerBalanceRepository.save(balance);
         customerBalanceRepository.saveTransaction(transaction);
 
-        return new CustomerBalanceMutationResponse(BalanceMapper.toResponse(balance), transaction.getId());
+        return new CustomerBalanceMutationResponse(
+                BalanceMapper.toResponse(balance), transaction.getId());
     }
 }

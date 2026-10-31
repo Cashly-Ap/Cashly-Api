@@ -23,15 +23,16 @@ public class CancelInvoiceUseCase {
     private final InvoiceNotificationGateway notifications;
 
     public CancelInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                 InventoryGateway inventoryGateway,
-                                 InvoiceNotificationGateway notifications) {
+            InventoryGateway inventoryGateway,
+            InvoiceNotificationGateway notifications) {
         this.invoiceRepository = invoiceRepository;
         this.inventoryGateway = inventoryGateway;
         this.notifications = notifications;
     }
 
     @Transactional
-    public InvoiceDetailResponse execute(UUID id, CancelInvoiceRequest request) {
+    public InvoiceDetailResponse execute(UUID id,
+            CancelInvoiceRequest request) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
 
@@ -40,13 +41,16 @@ public class CancelInvoiceUseCase {
         revertStockAllocations(invoice, previousStatus);
 
         Invoice saved = invoiceRepository.save(invoice);
-        notifications.notifyCustomerInvoiceCancelled(
-                saved.getCustomerId(), saved.getId().value(), saved.getInvoiceNumber().value(), request.reason());
+        notifications.notifyCustomerInvoiceCancelled(saved.getCustomerId(),
+                saved.getId().value(), saved.getInvoiceNumber().value(),
+                request.reason());
         return InvoiceMapper.toDetailResponse(saved);
     }
 
-    private void revertStockAllocations(Invoice invoice, InvoiceStatus previousStatus) {
-        inventoryGateway.cancelInvoice(InventoryGateway.InvoiceInventoryCommand.from(invoice),
+    private void revertStockAllocations(Invoice invoice,
+            InvoiceStatus previousStatus) {
+        inventoryGateway.cancelInvoice(
+                InventoryGateway.InvoiceInventoryCommand.from(invoice),
                 previousStatus != InvoiceStatus.DRAFT);
     }
 }

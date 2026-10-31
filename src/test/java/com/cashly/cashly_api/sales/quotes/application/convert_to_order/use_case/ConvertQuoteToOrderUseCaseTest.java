@@ -66,17 +66,20 @@ class ConvertQuoteToOrderUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new ConvertQuoteToOrderUseCase(
-                quoteRepository,
+        useCase = new ConvertQuoteToOrderUseCase(quoteRepository,
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.LocalOrderCreationGateway(
-                    new com.cashly.cashly_api.sales.orders.application.create.from_quote.services.QuoteOrderCreationService(orderRepository,
-                        new com.cashly.cashly_api.sales.orders.infrastructure.integration.LocalOrderInventoryGateway(
-                            new com.cashly.cashly_api.inventory.warehouses.stock.application.deduction.services.StockDeductionService(warehouseStockRepository)))),
+                        new com.cashly.cashly_api.sales.orders.application.create.from_quote.services.QuoteOrderCreationService(
+                                orderRepository,
+                                new com.cashly.cashly_api.sales.orders.infrastructure.integration.LocalOrderInventoryGateway(
+                                        new com.cashly.cashly_api.inventory.warehouses.stock.application.deduction.services.StockDeductionService(
+                                                warehouseStockRepository)))),
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.QuoteActorIdentityAdapter(
-                    new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository,
-                        mock(com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder.class))),
+                        new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(
+                                userRepository,
+                                mock(com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder.class))),
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
-                    new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteConversionNotificationService(notificationService)));
+                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteConversionNotificationService(
+                                notificationService)));
     }
 
     @Test
@@ -87,17 +90,23 @@ class ConvertQuoteToOrderUseCaseTest {
 
         Quote quote = buildDraftQuote(quoteId, warehouseId, productId);
         User user = buildUser(authenticatedUserId);
-        WarehouseStock stock = new WarehouseStock(null, warehouseId, productId, 100, 0, null, null);
+        WarehouseStock stock = new WarehouseStock(null, warehouseId, productId,
+                100, 0, null, null);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(5);
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
-        when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(quoteRepository.save(any(Quote.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        QuoteConvertedToOrderResponse result = useCase.execute(quoteId, authenticatedUserId);
+        QuoteConvertedToOrderResponse result = useCase.execute(quoteId,
+                authenticatedUserId);
 
         assertNotNull(result);
         assertEquals(quoteId, result.quoteId());
@@ -105,43 +114,45 @@ class ConvertQuoteToOrderUseCaseTest {
         assertNotNull(result.orderId());
         assertNotNull(result.orderNumber());
 
-        
         assertEquals(97, stock.getQuantity());
 
-        
         assertEquals(result.orderId(), quote.getOrderId());
         assertEquals(result.orderNumber(), quote.getOrderNumber());
 
-        
-        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor
+                .forClass(Order.class);
         verify(orderRepository).save(orderCaptor.capture());
         Order savedOrder = orderCaptor.getValue();
         assertEquals(OrderStatus.CONFIRMED, savedOrder.getStatus());
         assertEquals(quote.getCustomerId(), savedOrder.getCustomerId());
         assertEquals(quote.getCustomerName(), savedOrder.getCustomerName());
 
-        
         verify(quoteRepository).save(quote);
     }
 
     @Test
     @DisplayName("should throw when quote is not in DRAFT status")
     void shouldThrowWhenQuoteNotDraft() {
-        QuoteLine line = new QuoteLine(UUID.randomUUID(), "Prod", "P-001", BigDecimal.ONE, BigDecimal.TEN);
-        Quote quote = Quote.reconstitute(quoteId, new QuoteNumber("PRE-2026-0001"),
-                UUID.randomUUID(), "Customer", "J-123",
-                authenticatedUserId, "Creator", QuoteStatus.CANCELLED,
-                null, null, BigDecimal.TEN, null, null, null, null,
-                null, null, List.of(line), java.time.Instant.now(), java.time.Instant.now());
+        QuoteLine line = new QuoteLine(UUID.randomUUID(), "Prod", "P-001",
+                BigDecimal.ONE, BigDecimal.TEN);
+        Quote quote = Quote.reconstitute(quoteId,
+                new QuoteNumber("PRE-2026-0001"), UUID.randomUUID(), "Customer",
+                "J-123", authenticatedUserId, "Creator", QuoteStatus.CANCELLED,
+                null, null, BigDecimal.TEN, null, null, null, null, null, null,
+                List.of(line), java.time.Instant.now(),
+                java.time.Instant.now());
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                useCase.execute(quoteId, authenticatedUserId));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> useCase.execute(quoteId, authenticatedUserId));
 
-        assertEquals("Only DRAFT quotes can be converted to orders", exception.getMessage());
+        assertEquals("Only DRAFT quotes can be converted to orders",
+                exception.getMessage());
         verify(orderRepository, never()).save(any());
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(any(), any());
+        verify(warehouseStockRepository, never())
+                .findByWarehouseIdAndProductIdForUpdate(any(), any());
     }
 
     @Test
@@ -149,8 +160,8 @@ class ConvertQuoteToOrderUseCaseTest {
     void shouldThrowWhenQuoteNotFound() {
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
 
-        assertThrows(QuoteNotFoundException.class, () ->
-                useCase.execute(quoteId, authenticatedUserId));
+        assertThrows(QuoteNotFoundException.class,
+                () -> useCase.execute(quoteId, authenticatedUserId));
 
         verify(orderRepository, never()).save(any());
     }
@@ -158,18 +169,18 @@ class ConvertQuoteToOrderUseCaseTest {
     @Test
     @DisplayName("should throw when user is not found")
     void shouldThrowWhenUserNotFound() {
-        Quote quote = buildDraftQuote(quoteId, UUID.randomUUID(), UUID.randomUUID());
+        Quote quote = buildDraftQuote(quoteId, UUID.randomUUID(),
+                UUID.randomUUID());
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.empty());
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(quoteId, authenticatedUserId));
+        assertThrows(IllegalArgumentException.class,
+                () -> useCase.execute(quoteId, authenticatedUserId));
 
         verify(orderRepository, never()).save(any());
     }
-
-    
 
     @Test
     void shouldDeductTheProductReferenceStoredInTheAllocation() {
@@ -179,44 +190,50 @@ class ConvertQuoteToOrderUseCaseTest {
         Quote quote = buildDraftQuote(quoteId, warehouseId, lineProductId);
         QuoteLine line = quote.getLines().getFirst();
         line.removeAllocation(line.getAllocations().getFirst().getId());
-        line.addAllocation(new QuoteAllocation(allocationProductId, warehouseId, "Warehouse", BigDecimal.valueOf(3)));
-        WarehouseStock stock = new WarehouseStock(null, warehouseId, allocationProductId, 100, 0, null, null);
+        line.addAllocation(new QuoteAllocation(allocationProductId, warehouseId,
+                "Warehouse", BigDecimal.valueOf(3)));
+        WarehouseStock stock = new WarehouseStock(null, warehouseId,
+                allocationProductId, 100, 0, null, null);
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(5);
-        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, allocationProductId))
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(
+                warehouseId, allocationProductId))
                 .thenReturn(Optional.of(stock));
 
         useCase.execute(quoteId, null);
 
         assertEquals(97, stock.getQuantity());
         verify(userRepository, never()).findById(any());
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(warehouseId, lineProductId);
+        verify(warehouseStockRepository, never())
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId,
+                        lineProductId);
         ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
         verify(orderRepository).save(captor.capture());
-        assertEquals(lineProductId, captor.getValue().getLines().getFirst().getProductId());
+        assertEquals(lineProductId,
+                captor.getValue().getLines().getFirst().getProductId());
     }
 
-    private Quote buildDraftQuote(UUID quoteId, UUID warehouseId, UUID productId) {
-        QuoteLine line = new QuoteLine(productId, "Product A", "PROD-001", BigDecimal.valueOf(3), new BigDecimal("100.0000"));
-        QuoteAllocation allocation = new QuoteAllocation(productId, warehouseId, "Main WH", BigDecimal.valueOf(3));
+    private Quote buildDraftQuote(UUID quoteId, UUID warehouseId,
+            UUID productId) {
+        QuoteLine line = new QuoteLine(productId, "Product A", "PROD-001",
+                BigDecimal.valueOf(3), new BigDecimal("100.0000"));
+        QuoteAllocation allocation = new QuoteAllocation(productId, warehouseId,
+                "Main WH", BigDecimal.valueOf(3));
         line.addAllocation(allocation);
 
         return Quote.reconstitute(quoteId, new QuoteNumber("PRE-2026-0001"),
                 UUID.randomUUID(), "Empresa Test C.A.", "J-12345678-9",
                 authenticatedUserId, "Creator", QuoteStatus.DRAFT,
                 LocalDate.of(2026, 6, 30), null, new BigDecimal("300.0000"),
-                null, null, null, null,
-                null, null,
-                List.of(line), java.time.Instant.now(), java.time.Instant.now());
+                null, null, null, null, null, null, List.of(line),
+                java.time.Instant.now(), java.time.Instant.now());
     }
 
     private User buildUser(UUID userId) {
-        return new User(
-                new UserId(userId),
-                new Email("user@cashly.com"),
+        return new User(new UserId(userId), new Email("user@cashly.com"),
                 new UserName("Test User"),
-                Password.fromHash("hashed-password")
-        );
+                Password.fromHash("hashed-password"));
     }
 }

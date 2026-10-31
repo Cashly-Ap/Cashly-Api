@@ -7,7 +7,8 @@ public class PhoneNumber {
 
     public PhoneNumber(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Phone number cannot be null or blank");
+            throw new IllegalArgumentException(
+                    "Phone number cannot be null or blank");
         }
         this.value = value.trim();
     }
@@ -18,8 +19,10 @@ public class PhoneNumber {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         PhoneNumber that = (PhoneNumber) obj;
         return Objects.equals(value, that.value);
     }

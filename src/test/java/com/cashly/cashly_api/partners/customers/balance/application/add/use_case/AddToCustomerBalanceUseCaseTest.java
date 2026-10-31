@@ -55,14 +55,17 @@ class AddToCustomerBalanceUseCaseTest {
                 UUID.randomUUID(), customerId, initialBalance,
                 LocalDateTime.now(), LocalDateTime.now());
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.of(balance));
-        when(customerBalanceRepository.save(any(CustomerBalance.class))).thenReturn(balance);
-        when(customerBalanceRepository.saveTransaction(any(BalanceTransaction.class)))
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.of(balance));
+        when(customerBalanceRepository.save(any(CustomerBalance.class)))
+                .thenReturn(balance);
+        when(customerBalanceRepository
+                .saveTransaction(any(BalanceTransaction.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
-        CustomerBalanceResponse response = useCase.execute(
-                customerId, BalanceType.ADVANCED, addAmount,
-                BalanceType.ADVANCED, null, null, null, createdBy);
+        CustomerBalanceResponse response = useCase.execute(customerId,
+                BalanceType.ADVANCED, addAmount, BalanceType.ADVANCED, null,
+                null, null, createdBy);
 
         assertNotNull(response);
         assertEquals(new BigDecimal("500.00"), response.totalBalance());
@@ -72,7 +75,8 @@ class AddToCustomerBalanceUseCaseTest {
         CustomerBalance savedBalance = balanceCaptor.getValue();
         assertEquals(new BigDecimal("500.00"), savedBalance.getTotalBalance());
 
-        verify(customerBalanceRepository).saveTransaction(transactionCaptor.capture());
+        verify(customerBalanceRepository)
+                .saveTransaction(transactionCaptor.capture());
         BalanceTransaction savedTx = transactionCaptor.getValue();
         assertEquals(BalanceType.ADVANCED, savedTx.getType());
         assertEquals(addAmount, savedTx.getAmount());
@@ -86,15 +90,17 @@ class AddToCustomerBalanceUseCaseTest {
         UUID createdBy = UUID.randomUUID();
         BigDecimal amount = new BigDecimal("500.00");
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.empty());
         when(customerBalanceRepository.save(any(CustomerBalance.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
-        when(customerBalanceRepository.saveTransaction(any(BalanceTransaction.class)))
+        when(customerBalanceRepository
+                .saveTransaction(any(BalanceTransaction.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
-        CustomerBalanceResponse response = useCase.execute(
-                customerId, BalanceType.ADVANCED, amount,
-                BalanceType.ADVANCED, null, null, null, createdBy);
+        CustomerBalanceResponse response = useCase.execute(customerId,
+                BalanceType.ADVANCED, amount, BalanceType.ADVANCED, null, null,
+                null, createdBy);
 
         assertNotNull(response);
         assertEquals(customerId, response.customerId());
@@ -106,7 +112,8 @@ class AddToCustomerBalanceUseCaseTest {
         assertEquals(customerId, savedBalance.getCustomerId());
         assertEquals(amount, savedBalance.getTotalBalance());
 
-        verify(customerBalanceRepository).saveTransaction(transactionCaptor.capture());
+        verify(customerBalanceRepository)
+                .saveTransaction(transactionCaptor.capture());
         BalanceTransaction savedTx = transactionCaptor.getValue();
         assertEquals(BalanceType.ADVANCED, savedTx.getType());
         assertEquals(amount, savedTx.getAmount());
@@ -123,11 +130,13 @@ class AddToCustomerBalanceUseCaseTest {
                 UUID.randomUUID(), customerId, BigDecimal.ZERO,
                 LocalDateTime.now(), LocalDateTime.now());
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.of(balance));
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.of(balance));
 
         assertThrows(IllegalArgumentException.class,
                 () -> useCase.execute(customerId, BalanceType.ADVANCED, amount,
-                        BalanceType.ADVANCED, null, null, null, UUID.randomUUID()));
+                        BalanceType.ADVANCED, null, null, null,
+                        UUID.randomUUID()));
 
         verify(customerBalanceRepository).findByCustomerId(customerId);
         verify(customerBalanceRepository, never()).save(any());

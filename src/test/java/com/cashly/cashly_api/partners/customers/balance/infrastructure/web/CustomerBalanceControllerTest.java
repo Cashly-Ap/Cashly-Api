@@ -48,11 +48,14 @@ class CustomerBalanceControllerTest {
     void should_get_balance_and_return_200() {
         UUID customerId = UUID.randomUUID();
         CustomerBalanceResponse response = new CustomerBalanceResponse(
-                customerId, BigDecimal.TEN, LocalDateTime.now(), LocalDateTime.now());
+                customerId, BigDecimal.TEN, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(getCustomerBalanceUseCase.execute(customerId)).thenReturn(response);
+        when(getCustomerBalanceUseCase.execute(customerId))
+                .thenReturn(response);
 
-        ResponseEntity<CustomerBalanceResponse> result = customerBalanceController.getBalance(customerId);
+        ResponseEntity<CustomerBalanceResponse> result = customerBalanceController
+                .getBalance(customerId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
@@ -67,9 +70,11 @@ class CustomerBalanceControllerTest {
         CustomerBalanceResponse response = new CustomerBalanceResponse(
                 customerId, BigDecimal.ZERO, null, null);
 
-        when(getCustomerBalanceUseCase.execute(customerId)).thenReturn(response);
+        when(getCustomerBalanceUseCase.execute(customerId))
+                .thenReturn(response);
 
-        ResponseEntity<CustomerBalanceResponse> result = customerBalanceController.getBalance(customerId);
+        ResponseEntity<CustomerBalanceResponse> result = customerBalanceController
+                .getBalance(customerId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(BigDecimal.ZERO, result.getBody().totalBalance());
@@ -82,15 +87,17 @@ class CustomerBalanceControllerTest {
         UUID customerId = UUID.randomUUID();
         BalanceTransactionResponse tx = new BalanceTransactionResponse(
                 UUID.randomUUID(), customerId, "ADVANCED", BigDecimal.TEN,
-                "ADVANCED", null, null, null, UUID.randomUUID(), LocalDateTime.now());
+                "ADVANCED", null, null, null, UUID.randomUUID(),
+                LocalDateTime.now());
 
         PageResponse<BalanceTransactionResponse> pageResponse = new PageResponse<>(
                 List.of(tx), 1L, 1, 10, 0, true, true, false);
 
-        when(getCustomerBalanceUseCase.getTransactions(customerId, 0, 10)).thenReturn(pageResponse);
+        when(getCustomerBalanceUseCase.getTransactions(customerId, 0, 10))
+                .thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<BalanceTransactionResponse>> result =
-                customerBalanceController.getTransactions(customerId, 0, 10);
+        ResponseEntity<PageResponse<BalanceTransactionResponse>> result = customerBalanceController
+                .getTransactions(customerId, 0, 10);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
@@ -105,10 +112,11 @@ class CustomerBalanceControllerTest {
         PageResponse<BalanceTransactionResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(getCustomerBalanceUseCase.getTransactions(customerId, 0, 10)).thenReturn(emptyPage);
+        when(getCustomerBalanceUseCase.getTransactions(customerId, 0, 10))
+                .thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<BalanceTransactionResponse>> result =
-                customerBalanceController.getTransactions(customerId, 0, 10);
+        ResponseEntity<PageResponse<BalanceTransactionResponse>> result = customerBalanceController
+                .getTransactions(customerId, 0, 10);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
@@ -129,20 +137,20 @@ class CustomerBalanceControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userId.toString());
 
-        when(createCustomerAdvanceUseCase.execute(
-                customerId, amount, paymentMethodId, "Anticipo", userId))
-                .thenReturn(response);
+        when(createCustomerAdvanceUseCase.execute(customerId, amount,
+                paymentMethodId, "Anticipo", userId)).thenReturn(response);
 
-        CreateAdvanceRequest request = new CreateAdvanceRequest(amount, paymentMethodId, "Anticipo");
+        CreateAdvanceRequest request = new CreateAdvanceRequest(amount,
+                paymentMethodId, "Anticipo");
 
-        ResponseEntity<CustomerBalanceResponse> result =
-                customerBalanceController.createAdvance(customerId, request, authentication);
+        ResponseEntity<CustomerBalanceResponse> result = customerBalanceController
+                .createAdvance(customerId, request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
         assertEquals(amount, result.getBody().totalBalance());
-        verify(createCustomerAdvanceUseCase).execute(
-                customerId, amount, paymentMethodId, "Anticipo", userId);
+        verify(createCustomerAdvanceUseCase).execute(customerId, amount,
+                paymentMethodId, "Anticipo", userId);
     }
 
     @Test
@@ -154,24 +162,25 @@ class CustomerBalanceControllerTest {
         BigDecimal amount = new BigDecimal("200.00");
 
         CustomerBalanceResponse response = new CustomerBalanceResponse(
-                customerId, new BigDecimal("300.00"), LocalDateTime.now(), LocalDateTime.now());
+                customerId, new BigDecimal("300.00"), LocalDateTime.now(),
+                LocalDateTime.now());
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userId.toString());
 
-        when(refundCustomerBalanceUseCase.execute(
-                customerId, amount, paymentMethodId, "Devolución", userId))
-                .thenReturn(response);
+        when(refundCustomerBalanceUseCase.execute(customerId, amount,
+                paymentMethodId, "Devolución", userId)).thenReturn(response);
 
-        CreateRefundRequest request = new CreateRefundRequest(amount, paymentMethodId, "Devolución");
+        CreateRefundRequest request = new CreateRefundRequest(amount,
+                paymentMethodId, "Devolución");
 
-        ResponseEntity<CustomerBalanceResponse> result =
-                customerBalanceController.createRefund(customerId, request, authentication);
+        ResponseEntity<CustomerBalanceResponse> result = customerBalanceController
+                .createRefund(customerId, request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
         assertEquals(new BigDecimal("300.00"), result.getBody().totalBalance());
-        verify(refundCustomerBalanceUseCase).execute(
-                customerId, amount, paymentMethodId, "Devolución", userId);
+        verify(refundCustomerBalanceUseCase).execute(customerId, amount,
+                paymentMethodId, "Devolución", userId);
     }
 }

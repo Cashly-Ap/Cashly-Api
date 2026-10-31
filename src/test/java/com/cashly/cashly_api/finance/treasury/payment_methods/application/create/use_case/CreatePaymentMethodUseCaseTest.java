@@ -37,14 +37,17 @@ class CreatePaymentMethodUseCaseTest {
 
     @Test
     void should_CreatePaymentMethod_When_ValidRequest() {
-        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", "Cash payment method");
+        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest(
+                "Cash", "Cash payment method");
 
         when(repository.findMaxCodeNumber()).thenReturn(Optional.of(5));
 
         PaymentMethod savedPaymentMethod = PaymentMethod.reconstitute(
-                PaymentMethodIdHelper.create(), "PM-0006", "Cash", "Cash payment method",
-                true, LocalDateTime.now(), LocalDateTime.now());
-        when(repository.save(any(PaymentMethod.class))).thenReturn(savedPaymentMethod);
+                PaymentMethodIdHelper.create(), "PM-0006", "Cash",
+                "Cash payment method", true, LocalDateTime.now(),
+                LocalDateTime.now());
+        when(repository.save(any(PaymentMethod.class)))
+                .thenReturn(savedPaymentMethod);
 
         PaymentMethodResponse result = useCase.execute(request);
 
@@ -65,14 +68,17 @@ class CreatePaymentMethodUseCaseTest {
 
     @Test
     void should_CreateWithFirstCode_When_NoExistingCodes() {
-        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Bank Transfer", "Bank transfer payment");
+        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest(
+                "Bank Transfer", "Bank transfer payment");
 
         when(repository.findMaxCodeNumber()).thenReturn(Optional.empty());
 
         PaymentMethod savedPaymentMethod = PaymentMethod.reconstitute(
-                PaymentMethodIdHelper.create(), "PM-0001", "Bank Transfer", "Bank transfer payment",
-                true, LocalDateTime.now(), LocalDateTime.now());
-        when(repository.save(any(PaymentMethod.class))).thenReturn(savedPaymentMethod);
+                PaymentMethodIdHelper.create(), "PM-0001", "Bank Transfer",
+                "Bank transfer payment", true, LocalDateTime.now(),
+                LocalDateTime.now());
+        when(repository.save(any(PaymentMethod.class)))
+                .thenReturn(savedPaymentMethod);
 
         PaymentMethodResponse result = useCase.execute(request);
 
@@ -85,14 +91,16 @@ class CreatePaymentMethodUseCaseTest {
 
     @Test
     void should_CreateWithNullDescription_When_RequestDescriptionIsNull() {
-        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", null);
+        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest(
+                "Cash", null);
 
         when(repository.findMaxCodeNumber()).thenReturn(Optional.of(0));
 
         PaymentMethod savedPaymentMethod = PaymentMethod.reconstitute(
-                PaymentMethodIdHelper.create(), "PM-0001", "Cash", null,
-                true, LocalDateTime.now(), LocalDateTime.now());
-        when(repository.save(any(PaymentMethod.class))).thenReturn(savedPaymentMethod);
+                PaymentMethodIdHelper.create(), "PM-0001", "Cash", null, true,
+                LocalDateTime.now(), LocalDateTime.now());
+        when(repository.save(any(PaymentMethod.class)))
+                .thenReturn(savedPaymentMethod);
 
         PaymentMethodResponse result = useCase.execute(request);
 
@@ -102,7 +110,8 @@ class CreatePaymentMethodUseCaseTest {
 
     @Test
     void should_ThrowException_When_RepositoryFails() {
-        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", "Cash payment");
+        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest(
+                "Cash", "Cash payment");
 
         when(repository.findMaxCodeNumber()).thenReturn(Optional.of(0));
         when(repository.save(any(PaymentMethod.class)))
@@ -115,11 +124,10 @@ class CreatePaymentMethodUseCaseTest {
         verify(repository).save(any(PaymentMethod.class));
     }
 
-    
     private static final class PaymentMethodIdHelper {
         static com.cashly.cashly_api.finance.treasury.payment_methods.domain.valueobjects.PaymentMethodId create() {
-            return com.cashly.cashly_api.finance.treasury.payment_methods.domain.valueobjects.PaymentMethodId.of(
-                    UUID.randomUUID());
+            return com.cashly.cashly_api.finance.treasury.payment_methods.domain.valueobjects.PaymentMethodId
+                    .of(UUID.randomUUID());
         }
     }
 }

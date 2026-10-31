@@ -43,17 +43,20 @@ class OrderNumberUnitTest {
 
     @Test
     void should_ThrowException_When_BlankValueProvided() {
-        assertThrows(IllegalArgumentException.class, () -> new OrderNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new OrderNumber("   "));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> OrderNumber.of(2026, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> OrderNumber.of(2026, 0));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> OrderNumber.of(2026, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> OrderNumber.of(2026, -1));
     }
 
     @Test

@@ -23,71 +23,73 @@ public class GetProductsForTransactionUseCase {
     private final ProductCategoryGateway categoryRepository;
     private final ProductWarehouseStockGateway stocks;
 
-    public GetProductsForTransactionUseCase(CustomerProductContextGateway customers,
-                                            ProductRepository productRepository,
-                                            ProductCategoryGateway categoryRepository,
-                                            ProductWarehouseStockGateway stocks) {
+    public GetProductsForTransactionUseCase(
+            CustomerProductContextGateway customers,
+            ProductRepository productRepository,
+            ProductCategoryGateway categoryRepository,
+            ProductWarehouseStockGateway stocks) {
         this.customers = customers;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.stocks = stocks;
     }
     @Transactional(readOnly = true)
-    public PageResponse<ProductWithStockResponse> execute(UUID customerId, String search,
-                                                       UUID categoryId, Boolean composite,
-                                                       Boolean withStock, int page, int size) {
-        return execute(List.of(customerId), search, categoryId, composite, withStock, page, size);
+    public PageResponse<ProductWithStockResponse> execute(UUID customerId,
+            String search, UUID categoryId, Boolean composite,
+            Boolean withStock, int page, int size) {
+        return execute(List.of(customerId), search, categoryId, composite,
+                withStock, page, size);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductWithStockResponse> execute(List<UUID> customerIds, String search,
-                                                       UUID categoryId, Boolean composite,
-                                                       Boolean withStock, int page, int size) {
+    public PageResponse<ProductWithStockResponse> execute(
+            List<UUID> customerIds, String search, UUID categoryId,
+            Boolean composite, Boolean withStock, int page, int size) {
         UUID priceTypeId = customers.requirePriceType(customerIds);
         Set<UUID> allowedWarehouseIds = customerIds.stream()
-                .flatMap(customerId -> customers.accessibleWarehouseIds(customerId).stream())
+                .flatMap(customerId -> customers
+                        .accessibleWarehouseIds(customerId).stream())
                 .collect(Collectors.toSet());
         PageResponse<Product> productsPage = productRepository.findAllForOrder(
-                search, categoryId, composite, withStock, allowedWarehouseIds, page, size);
+                search, categoryId, composite, withStock, allowedWarehouseIds,
+                page, size);
 
         List<ProductWithStockResponse> content = productsPage.content().stream()
-                .map(product -> toResponse(product, priceTypeId, allowedWarehouseIds))
+                .map(product -> toResponse(product, priceTypeId,
+                        allowedWarehouseIds))
                 .toList();
 
-        return new PageResponse<>(content, productsPage.totalElements(), productsPage.totalPages(),
-                productsPage.size(), productsPage.number(), productsPage.first(),
+        return new PageResponse<>(content, productsPage.totalElements(),
+                productsPage.totalPages(), productsPage.size(),
+                productsPage.number(), productsPage.first(),
                 productsPage.last(), productsPage.empty());
     }
 
-    private ProductWithStockResponse toResponse(Product product, UUID priceTypeId, Set<UUID> allowedWarehouseIds) {
-        String categoryName = categoryRepository.findById(product.getCategoryId())
-                .map(c -> c.name())
+    private ProductWithStockResponse toResponse(Product product,
+            UUID priceTypeId, Set<UUID> allowedWarehouseIds) {
+        String categoryName = categoryRepository
+                .findById(product.getCategoryId()).map(c -> c.name())
                 .orElse("");
 
         BigDecimal customerPrice = resolveCustomerPrice(product, priceTypeId);
 
-        List<WarehouseStockItem> stockItems = stocks.findByProductId(product.getId()).stream()
-                .filter(stock -> stock.warehouseExists() && allowedWarehouseIds.contains(stock.warehouseId()))
-                .map(stock -> new WarehouseStockItem(stock.warehouseId().toString(), stock.warehouseCode(),
-                        stock.warehouseName(), stock.quantity(), stock.reserved(), stock.available()))
+        List<WarehouseStockItem> stockItems = stocks
+                .findByProductId(product.getId()).stream()
+                .filter(stock -> stock.warehouseExists()
+                        && allowedWarehouseIds.contains(stock.warehouseId()))
+                .map(stock -> new WarehouseStockItem(
+                        stock.warehouseId().toString(), stock.warehouseCode(),
+                        stock.warehouseName(), stock.quantity(),
+                        stock.reserved(), stock.available()))
                 .toList();
         int totalStock = stockItems.stream()
-                .mapToInt(WarehouseStockItem::quantity)
-                .sum();
+                .mapToInt(WarehouseStockItem::quantity).sum();
 
-        return new ProductWithStockResponse(
-                product.getId().toString(),
-                product.getCode(),
-                product.getName(),
-                product.getCategoryId().toString(),
-                categoryName,
-                product.isComposite(),
-                product.isActive(),
-                product.getPhoto(),
-                customerPrice,
-                totalStock,
-                stockItems
-        );
+        return new ProductWithStockResponse(product.getId().toString(),
+                product.getCode(), product.getName(),
+                product.getCategoryId().toString(), categoryName,
+                product.isComposite(), product.isActive(), product.getPhoto(),
+                customerPrice, totalStock, stockItems);
     }
 
     private BigDecimal resolveCustomerPrice(Product product, UUID priceTypeId) {
@@ -96,8 +98,7 @@ public class GetProductsForTransactionUseCase {
         }
         return product.getProductPrices().stream()
                 .filter(pp -> priceTypeId.equals(pp.getPriceTypeId()))
-                .map(pp -> pp.getPrice())
-                .findFirst()
+                .map(pp -> pp.getPrice()).findFirst()
                 .orElse(product.getPurchasePrice());
     }
 }

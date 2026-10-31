@@ -17,7 +17,8 @@ import java.util.List;
 
 public class InvoiceJpaMapper {
 
-    private InvoiceJpaMapper() {}
+    private InvoiceJpaMapper() {
+    }
 
     public static InvoiceEntity toEntity(Invoice invoice) {
         InvoiceEntity entity = new InvoiceEntity();
@@ -37,7 +38,9 @@ public class InvoiceJpaMapper {
         entity.setNotes(invoice.getNotes());
         entity.setSubtotal(invoice.getSubtotal());
         entity.setReturnedTotal(invoice.getReturnedTotal());
-        entity.setReturnStatus(invoice.getReturnStatus() != null ? invoice.getReturnStatus().name() : null);
+        entity.setReturnStatus(invoice.getReturnStatus() != null
+                ? invoice.getReturnStatus().name()
+                : null);
         entity.setCancelledAt(invoice.getCancelledAt());
         entity.setCancelledReason(invoice.getCancelledReason());
         entity.setCreatedAt(invoice.getCreatedAt());
@@ -46,8 +49,7 @@ public class InvoiceJpaMapper {
         entity.setDueDate(invoice.getDueDate());
 
         List<InvoiceLineEntity> lineEntities = invoice.getLines().stream()
-                .map(line -> toLineEntity(line, entity))
-                .toList();
+                .map(line -> toLineEntity(line, entity)).toList();
         entity.getLines().clear();
         entity.getLines().addAll(lineEntities);
 
@@ -56,41 +58,28 @@ public class InvoiceJpaMapper {
 
     public static Invoice toDomain(InvoiceEntity entity) {
         List<InvoiceLine> lines = entity.getLines().stream()
-                .map(InvoiceJpaMapper::toLineDomain)
-                .toList();
+                .map(InvoiceJpaMapper::toLineDomain).toList();
 
         InvoiceReturnStatus returnStatus = entity.getReturnStatus() != null
                 ? InvoiceReturnStatus.valueOf(entity.getReturnStatus())
                 : null;
 
-        return Invoice.reconstitute(
-                InvoiceId.of(entity.getId()),
+        return Invoice.reconstitute(InvoiceId.of(entity.getId()),
                 new InvoiceNumber(entity.getInvoiceNumber()),
-                entity.getCustomerId(),
-                entity.getCustomerName(),
-                entity.getCustomerRif(),
-                entity.getCreatedBy(),
-                entity.getCreatedByName(),
-                entity.getOrderId(),
-                entity.getOrderNumber(),
-                entity.getOrderIds(),
-                entity.getQuoteIds(),
-                InvoiceStatus.valueOf(entity.getStatus()),
-                PaymentType.valueOf(entity.getPaymentType()),
-                entity.getNotes(),
-                entity.getReturnedTotal(),
-                returnStatus,
-                entity.getCancelledAt(),
-                entity.getCancelledReason(),
-                lines,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getIssueDate(),
-                entity.getDueDate()
-        );
+                entity.getCustomerId(), entity.getCustomerName(),
+                entity.getCustomerRif(), entity.getCreatedBy(),
+                entity.getCreatedByName(), entity.getOrderId(),
+                entity.getOrderNumber(), entity.getOrderIds(),
+                entity.getQuoteIds(), InvoiceStatus.valueOf(entity.getStatus()),
+                PaymentType.valueOf(entity.getPaymentType()), entity.getNotes(),
+                entity.getReturnedTotal(), returnStatus,
+                entity.getCancelledAt(), entity.getCancelledReason(), lines,
+                entity.getCreatedAt(), entity.getUpdatedAt(),
+                entity.getIssueDate(), entity.getDueDate());
     }
 
-    private static InvoiceLineEntity toLineEntity(InvoiceLine line, InvoiceEntity invoiceEntity) {
+    private static InvoiceLineEntity toLineEntity(InvoiceLine line,
+            InvoiceEntity invoiceEntity) {
         InvoiceLineEntity entity = new InvoiceLineEntity();
         entity.setId(line.getId().value());
         entity.setInvoice(invoiceEntity);
@@ -102,17 +91,17 @@ public class InvoiceJpaMapper {
         entity.setLineTotal(line.getLineTotal());
         entity.setReturnedQuantity(line.getReturnedQuantity());
 
-        List<InvoiceLineAllocationEntity> allocationEntities = line.getAllocations().stream()
-                .map(a -> toAllocationEntity(a, entity))
-                .toList();
+        List<InvoiceLineAllocationEntity> allocationEntities = line
+                .getAllocations().stream()
+                .map(a -> toAllocationEntity(a, entity)).toList();
         entity.getAllocations().clear();
         entity.getAllocations().addAll(allocationEntities);
 
         return entity;
     }
 
-    private static InvoiceLineAllocationEntity toAllocationEntity(InvoiceLineAllocation allocation,
-                                                                    InvoiceLineEntity lineEntity) {
+    private static InvoiceLineAllocationEntity toAllocationEntity(
+            InvoiceLineAllocation allocation, InvoiceLineEntity lineEntity) {
         InvoiceLineAllocationEntity entity = new InvoiceLineAllocationEntity();
         entity.setId(allocation.getId());
         entity.setInvoiceLine(lineEntity);
@@ -122,19 +111,15 @@ public class InvoiceJpaMapper {
     }
 
     private static InvoiceLine toLineDomain(InvoiceLineEntity entity) {
-        List<InvoiceLineAllocation> allocations = entity.getAllocations().stream()
-                .map(a -> InvoiceLineAllocation.reconstitute(a.getId(), a.getWarehouseId(), a.getAllocated()))
+        List<InvoiceLineAllocation> allocations = entity.getAllocations()
+                .stream().map(a -> InvoiceLineAllocation.reconstitute(a.getId(),
+                        a.getWarehouseId(), a.getAllocated()))
                 .toList();
 
-        return InvoiceLine.reconstitute(
-                InvoiceLineId.of(entity.getId()),
-                entity.getProductId(),
-                entity.getProductName(),
-                entity.getProductCode(),
-                entity.getQuantity(),
-                entity.getUnitPrice(),
-                entity.getReturnedQuantity(),
-                allocations
-        );
+        return InvoiceLine.reconstitute(InvoiceLineId.of(entity.getId()),
+                entity.getProductId(), entity.getProductName(),
+                entity.getProductCode(), entity.getQuantity(),
+                entity.getUnitPrice(), entity.getReturnedQuantity(),
+                allocations);
     }
 }

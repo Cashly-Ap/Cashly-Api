@@ -2,7 +2,5 @@ package com.cashly.cashly_api.finance.treasury.cash_register.sessions.applicatio
 
 import java.math.BigDecimal;
 
-public record ExpenseSummaryItem(
-        String concept,
-        BigDecimal total
-) {}
+public record ExpenseSummaryItem(String concept, BigDecimal total) {
+}

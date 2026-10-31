@@ -15,7 +15,7 @@ public class DeleteSupplierUseCase {
     private final PurchaseUsageGateway purchaseUsage;
 
     public DeleteSupplierUseCase(SupplierRepository supplierRepository,
-                                  PurchaseUsageGateway purchaseUsage) {
+            PurchaseUsageGateway purchaseUsage) {
         this.supplierRepository = supplierRepository;
         this.purchaseUsage = purchaseUsage;
     }
@@ -24,9 +24,11 @@ public class DeleteSupplierUseCase {
     public void execute(String id) {
         SupplierId supplierId = SupplierId.from(id);
         if (!supplierRepository.existsById(supplierId)) {
-            throw new SupplierNotFoundException("Supplier not found with id: " + id);
+            throw new SupplierNotFoundException(
+                    "Supplier not found with id: " + id);
         }
-        if (purchaseUsage.hasPurchases(UUID.fromString(supplierId.toString()))) {
+        if (purchaseUsage
+                .hasPurchases(UUID.fromString(supplierId.toString()))) {
             throw new SupplierHasAssociatedRecordsException(id);
         }
         supplierRepository.delete(supplierId);

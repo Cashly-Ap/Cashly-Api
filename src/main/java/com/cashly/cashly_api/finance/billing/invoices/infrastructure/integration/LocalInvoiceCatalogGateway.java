@@ -7,8 +7,11 @@ import java.util.UUID;
 @Component
 public class LocalInvoiceCatalogGateway implements InvoiceCatalogGateway {
     private final StockCatalogQuery products;
-    public LocalInvoiceCatalogGateway(StockCatalogQuery products) { this.products = products; }
+    public LocalInvoiceCatalogGateway(StockCatalogQuery products) {
+        this.products = products;
+    }
     public Optional<Product> findProduct(UUID id) {
-        return products.findProduct(id).map(product -> new Product(product.id(), product.name(), product.code()));
+        return products.findProduct(id).map(product -> new Product(product.id(),
+                product.name(), product.code()));
     }
 }

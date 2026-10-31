@@ -36,13 +36,15 @@ public class DashboardController {
 
     @GetMapping("/top-products")
     @PreAuthorize("hasAuthority('DASHBOARD:READ')")
-    public ResponseEntity<List<TopItemResponse>> getTopProducts(@RequestParam(defaultValue = "5") int limit) {
+    public ResponseEntity<List<TopItemResponse>> getTopProducts(
+            @RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(getDashboardUseCase.getTopProducts(limit));
     }
 
     @GetMapping("/top-customers")
     @PreAuthorize("hasAuthority('DASHBOARD:READ')")
-    public ResponseEntity<List<TopItemResponse>> getTopCustomers(@RequestParam(defaultValue = "5") int limit) {
+    public ResponseEntity<List<TopItemResponse>> getTopCustomers(
+            @RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(getDashboardUseCase.getTopCustomers(limit));
     }
 

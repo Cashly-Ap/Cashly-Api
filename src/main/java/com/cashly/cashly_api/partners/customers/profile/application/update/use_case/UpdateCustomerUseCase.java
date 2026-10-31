@@ -25,17 +25,20 @@ public class UpdateCustomerUseCase {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public UpdateCustomerUseCase(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    public UpdateCustomerUseCase(CustomerRepository customerRepository,
+            CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
     }
 
     @Transactional
-    public CustomerDetailResponse execute(String id, UpdateCustomerRequest request) {
+    public CustomerDetailResponse execute(String id,
+            UpdateCustomerRequest request) {
         CustomerId customerId = CustomerId.from(id);
 
         Customer customer = customerRepository.findById(customerId)
-            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        "Customer not found with id: " + id));
 
         Rif rif = new Rif(request.rif());
         if (customerRepository.existsByRifAndIdNot(rif, customerId)) {
@@ -61,14 +64,17 @@ public class UpdateCustomerUseCase {
         customer.clearPhones();
         customer.clearAddresses();
 
-        request.emails().forEach(e -> customer.addEmail(new EmailAddress(e.email())));
-        request.phones().forEach(p -> customer.addPhone(new PhoneNumber(p.phone())));
-        request.addresses().forEach(a -> customer.addAddress(
-            a.address(), a.billing(), a.active(),
-            a.state(), a.municipality(), a.postalCode()
-        ));
+        request.emails()
+                .forEach(e -> customer.addEmail(new EmailAddress(e.email())));
+        request.phones()
+                .forEach(p -> customer.addPhone(new PhoneNumber(p.phone())));
+        request.addresses()
+                .forEach(a -> customer.addAddress(a.address(), a.billing(),
+                        a.active(), a.state(), a.municipality(),
+                        a.postalCode()));
 
         Customer saved = customerRepository.save(customer);
-        return customerMapper.toDetailResponse(saved, !customerRepository.hasAssociatedRecords(customer.getId()));
+        return customerMapper.toDetailResponse(saved,
+                !customerRepository.hasAssociatedRecords(customer.getId()));
     }
 }

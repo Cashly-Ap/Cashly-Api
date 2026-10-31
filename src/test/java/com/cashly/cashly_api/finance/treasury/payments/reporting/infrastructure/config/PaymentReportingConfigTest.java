@@ -28,11 +28,12 @@ class PaymentReportingConfigTest {
     void should_create_use_case_beans() {
         var config = new PaymentReportingConfig();
 
-        var paymentPdfUseCase = config.generatePaymentPdfUseCase(getPaymentByIdUseCase, paymentPdfPort);
+        var paymentPdfUseCase = config.generatePaymentPdfUseCase(
+                getPaymentByIdUseCase, paymentPdfPort);
         assertNotNull(paymentPdfUseCase);
 
-
-        var phUseCase = config.generatePaymentHistoryReportPdfUseCase(paymentHistoryReportPdfPort);
+        var phUseCase = config.generatePaymentHistoryReportPdfUseCase(
+                paymentHistoryReportPdfPort);
         assertNotNull(phUseCase);
 
     }

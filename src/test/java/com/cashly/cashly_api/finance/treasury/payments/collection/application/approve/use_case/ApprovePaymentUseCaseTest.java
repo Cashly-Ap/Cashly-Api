@@ -43,11 +43,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ApprovePaymentUseCaseTest {
 
-    @Mock private PaymentRepository paymentRepository;
-    @Mock private PaymentAllocationRepository allocationRepository;
-    @Mock private PaymentInvoiceGateway invoiceGateway;
-    @Mock private PaymentNotificationGateway notificationGateway;
-    @Mock private CashRegisterGateway cashRegisterGateway;
+    @Mock
+    private PaymentRepository paymentRepository;
+    @Mock
+    private PaymentAllocationRepository allocationRepository;
+    @Mock
+    private PaymentInvoiceGateway invoiceGateway;
+    @Mock
+    private PaymentNotificationGateway notificationGateway;
+    @Mock
+    private CashRegisterGateway cashRegisterGateway;
 
     private ApprovePaymentUseCase useCase;
     private final UUID userId = UUID.randomUUID();
@@ -56,61 +61,59 @@ class ApprovePaymentUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        PaymentAllocationService paymentAllocationService =
-                new PaymentAllocationService(paymentRepository, allocationRepository);
-        useCase = new ApprovePaymentUseCase(paymentRepository, allocationRepository,
-                invoiceGateway, notificationGateway, cashRegisterGateway, paymentAllocationService);
+        PaymentAllocationService paymentAllocationService = new PaymentAllocationService(
+                paymentRepository, allocationRepository);
+        useCase = new ApprovePaymentUseCase(paymentRepository,
+                allocationRepository, invoiceGateway, notificationGateway,
+                cashRegisterGateway, paymentAllocationService);
     }
 
     private Payment pendingPayment(BigDecimal amount) {
-        return Payment.create(
-                PaymentNumber.of(2026, 1), customerId, amount, paymentMethodId,
-                "REF-001", LocalDate.now(), null, userId, "Admin",
-                PaymentStatus.PENDING
-        );
+        return Payment.create(PaymentNumber.of(2026, 1), customerId, amount,
+                paymentMethodId, "REF-001", LocalDate.now(), null, userId,
+                "Admin", PaymentStatus.PENDING);
     }
 
-    private Invoice unpaidInvoice(UUID id, BigDecimal lineQty, BigDecimal unitPrice) {
-        return Invoice.reconstitute(
-                InvoiceId.of(id),
-                InvoiceNumber.of(2026, 1),
-                customerId,
-                "Test Customer",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator",
-                null, null,
-                InvoiceStatus.PENDING_PAYMENT,
-                PaymentType.CREDIT,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null, null,
-                List.of(InvoiceLine.create(UUID.randomUUID(), "Product", "P001", lineQty, unitPrice, List.of())),
-                LocalDate.now().atStartOfDay(),
-                LocalDate.now().atStartOfDay()
-        );
+    private Invoice unpaidInvoice(UUID id, BigDecimal lineQty,
+            BigDecimal unitPrice) {
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+                customerId, "Test Customer", "J-12345678-9", UUID.randomUUID(),
+                "Creator", null, null, InvoiceStatus.PENDING_PAYMENT,
+                PaymentType.CREDIT, null, BigDecimal.ZERO, null, null, null,
+                List.of(InvoiceLine.create(UUID.randomUUID(), "Product", "P001",
+                        lineQty, unitPrice, List.of())),
+                LocalDate.now().atStartOfDay(), LocalDate.now().atStartOfDay());
     }
 
-    private List<PaymentInvoiceGateway.InvoiceSnapshot> snapshots(Invoice... invoices) {
-        return java.util.Arrays.stream(invoices).map(invoice -> new PaymentInvoiceGateway.InvoiceSnapshot(
-                invoice.getId().value(), invoice.getCustomerId(), invoice.getInvoiceNumber().value(),
-                invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))).toList();
+    private List<PaymentInvoiceGateway.InvoiceSnapshot> snapshots(
+            Invoice... invoices) {
+        return java.util.Arrays.stream(invoices)
+                .map(invoice -> new PaymentInvoiceGateway.InvoiceSnapshot(
+                        invoice.getId().value(), invoice.getCustomerId(),
+                        invoice.getInvoiceNumber().value(),
+                        invoice.calculateTotal(BigDecimal.ZERO,
+                                BigDecimal.ZERO)))
+                .toList();
     }
 
     private void stubSave() {
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentRepository.save(any(Payment.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
     void should_NotApprovePendingPayment_When_RegisterIsClosed() {
         Payment payment = pendingPayment(new BigDecimal("125.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        doThrow(new IllegalStateException("Debe abrir una caja antes de registrar una operación monetaria"))
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        doThrow(new IllegalStateException(
+                "Debe abrir una caja antes de registrar una operación monetaria"))
                 .when(cashRegisterGateway).requireOpenRegister();
 
         assertThrows(IllegalStateException.class,
-                () -> useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin"));
+                () -> useCase.execute(payment.getId().value(),
+                        new ApprovePaymentRequest("Verificado"), userId,
+                        "Admin"));
 
         assertEquals(PaymentStatus.PENDING, payment.getStatus());
         verify(paymentRepository, never()).save(any(Payment.class));
@@ -120,11 +123,15 @@ class ApprovePaymentUseCaseTest {
     void should_AllocateFullAmountToOldestInvoice_When_PaymentMatchesDebt() {
         UUID invoiceId = UUID.randomUUID();
         Payment payment = pendingPayment(new BigDecimal("500.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(unpaidInvoice(invoiceId, BigDecimal.ONE, new BigDecimal("500.00"))));
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots(unpaidInvoice(invoiceId, BigDecimal.ONE,
+                        new BigDecimal("500.00"))));
         stubSave();
 
-        PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
+        PaymentResponse response = useCase.execute(payment.getId().value(),
+                new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("500.00"), response.appliedAmount());
         verify(invoiceGateway).recalculateStatus(invoiceId);
@@ -135,14 +142,18 @@ class ApprovePaymentUseCaseTest {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
         Payment payment = pendingPayment(new BigDecimal("500.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(
-                        unpaidInvoice(invoice1Id, BigDecimal.ONE, new BigDecimal("300.00")),
-                        unpaidInvoice(invoice2Id, BigDecimal.ONE, new BigDecimal("200.00"))
-                ));
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots(
+                        unpaidInvoice(invoice1Id, BigDecimal.ONE,
+                                new BigDecimal("300.00")),
+                        unpaidInvoice(invoice2Id, BigDecimal.ONE,
+                                new BigDecimal("200.00"))));
         stubSave();
 
-        PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
+        PaymentResponse response = useCase.execute(payment.getId().value(),
+                new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("500.00"), response.appliedAmount());
         verify(invoiceGateway).recalculateStatus(invoice1Id);
@@ -154,14 +165,18 @@ class ApprovePaymentUseCaseTest {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
         Payment payment = pendingPayment(new BigDecimal("250.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(
-                        unpaidInvoice(invoice1Id, BigDecimal.ONE, new BigDecimal("300.00")),
-                        unpaidInvoice(invoice2Id, BigDecimal.ONE, new BigDecimal("200.00"))
-                ));
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots(
+                        unpaidInvoice(invoice1Id, BigDecimal.ONE,
+                                new BigDecimal("300.00")),
+                        unpaidInvoice(invoice2Id, BigDecimal.ONE,
+                                new BigDecimal("200.00"))));
         stubSave();
 
-        PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
+        PaymentResponse response = useCase.execute(payment.getId().value(),
+                new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("250.00"), response.appliedAmount());
         verify(invoiceGateway, times(1)).recalculateStatus(invoice1Id);
@@ -173,14 +188,18 @@ class ApprovePaymentUseCaseTest {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
         Payment payment = pendingPayment(new BigDecimal("700.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(
-                        unpaidInvoice(invoice1Id, BigDecimal.ONE, new BigDecimal("300.00")),
-                        unpaidInvoice(invoice2Id, BigDecimal.ONE, new BigDecimal("200.00"))
-                ));
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots(
+                        unpaidInvoice(invoice1Id, BigDecimal.ONE,
+                                new BigDecimal("300.00")),
+                        unpaidInvoice(invoice2Id, BigDecimal.ONE,
+                                new BigDecimal("200.00"))));
         stubSave();
 
-        PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
+        PaymentResponse response = useCase.execute(payment.getId().value(),
+                new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(new BigDecimal("500.00"), response.appliedAmount());
     }
@@ -188,30 +207,41 @@ class ApprovePaymentUseCaseTest {
     @Test
     void should_SucceedWithZeroAppliedAmount_When_CustomerHasNoUnpaidInvoices() {
         Payment payment = pendingPayment(new BigDecimal("500.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots());
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots());
         stubSave();
 
-        PaymentResponse response = useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
+        PaymentResponse response = useCase.execute(payment.getId().value(),
+                new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
         assertEquals(BigDecimal.ZERO, response.appliedAmount());
         assertEquals(PaymentStatus.APPLIED.name(), response.status());
-        verify(allocationRepository, never()).save(any(PaymentAllocation.class));
+        verify(allocationRepository, never())
+                .save(any(PaymentAllocation.class));
     }
 
     @Test
     void should_RecordIncome_When_PendingPaymentIsApproved() {
         Payment payment = pendingPayment(new BigDecimal("125.00"));
-        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots());
+        when(paymentRepository.findById(payment.getId()))
+                .thenReturn(Optional.of(payment));
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots());
         stubSave();
 
-        useCase.execute(payment.getId().value(), new ApprovePaymentRequest("Verificado"), userId, "Admin");
+        useCase.execute(payment.getId().value(),
+                new ApprovePaymentRequest("Verificado"), userId, "Admin");
 
-        verify(cashRegisterGateway).recordMovement(new CashRegisterGateway.Movement(
-                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
-                new CashRegisterGateway.PaymentEntry(new BigDecimal("125.00"), paymentMethodId,
-                        null, payment.getId().value(), userId, "Admin")));
-        verify(notificationGateway).approved(customerId, payment.getId().value());
+        verify(cashRegisterGateway)
+                .recordMovement(new CashRegisterGateway.Movement(
+                        CashRegisterGateway.Direction.IN,
+                        CashRegisterGateway.Type.PAYMENT,
+                        new CashRegisterGateway.PaymentEntry(
+                                new BigDecimal("125.00"), paymentMethodId, null,
+                                payment.getId().value(), userId, "Admin")));
+        verify(notificationGateway).approved(customerId,
+                payment.getId().value());
     }
 }

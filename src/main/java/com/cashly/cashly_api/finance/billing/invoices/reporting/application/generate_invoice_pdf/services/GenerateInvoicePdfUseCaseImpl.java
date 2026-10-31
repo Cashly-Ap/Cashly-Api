@@ -8,13 +8,15 @@ import com.cashly.cashly_api.finance.billing.invoices.reporting.application.port
 
 import java.util.UUID;
 
-public class GenerateInvoicePdfUseCaseImpl implements GenerateInvoicePdfUseCase {
+public class GenerateInvoicePdfUseCaseImpl
+        implements
+            GenerateInvoicePdfUseCase {
 
     private final InvoiceReportQueryGateway query;
     private final InvoicePdfPort invoicePdfPort;
 
     public GenerateInvoicePdfUseCaseImpl(InvoiceReportQueryGateway query,
-                                          InvoicePdfPort invoicePdfPort) {
+            InvoicePdfPort invoicePdfPort) {
         this.query = query;
         this.invoicePdfPort = invoicePdfPort;
     }

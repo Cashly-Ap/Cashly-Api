@@ -38,27 +38,30 @@ class RevokeWarehouseAccessUseCaseTest {
     @Test
     @DisplayName("should revoke warehouse access successfully")
     void shouldRevokeWarehouseAccessSuccessfully() {
-        CustomerWarehouseAccess access = CustomerTestHelper.buildAccess(customerId, warehouseId);
+        CustomerWarehouseAccess access = CustomerTestHelper
+                .buildAccess(customerId, warehouseId);
 
-        when(accessRepository.findByCustomerIdAndWarehouseId(customerId, warehouseId))
-                .thenReturn(Optional.of(access));
+        when(accessRepository.findByCustomerIdAndWarehouseId(customerId,
+                warehouseId)).thenReturn(Optional.of(access));
 
         useCase.execute(customerId, warehouseId);
 
-        verify(accessRepository).findByCustomerIdAndWarehouseId(customerId, warehouseId);
+        verify(accessRepository).findByCustomerIdAndWarehouseId(customerId,
+                warehouseId);
         verify(accessRepository).delete(access);
     }
 
     @Test
     @DisplayName("should throw CustomerWarehouseAccessNotFoundException when access not found")
     void shouldThrowWhenAccessNotFound() {
-        when(accessRepository.findByCustomerIdAndWarehouseId(customerId, warehouseId))
-                .thenReturn(Optional.empty());
+        when(accessRepository.findByCustomerIdAndWarehouseId(customerId,
+                warehouseId)).thenReturn(Optional.empty());
 
         assertThrows(CustomerWarehouseAccessNotFoundException.class,
                 () -> useCase.execute(customerId, warehouseId));
 
-        verify(accessRepository).findByCustomerIdAndWarehouseId(customerId, warehouseId);
+        verify(accessRepository).findByCustomerIdAndWarehouseId(customerId,
+                warehouseId);
         verify(accessRepository, never()).delete(any());
     }
 }

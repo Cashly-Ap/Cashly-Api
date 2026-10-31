@@ -23,8 +23,10 @@ public class AddressId {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         AddressId that = (AddressId) obj;
         return Objects.equals(value, that.value);
     }

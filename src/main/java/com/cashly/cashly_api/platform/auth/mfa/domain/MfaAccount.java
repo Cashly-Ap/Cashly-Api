@@ -18,9 +18,10 @@ public class MfaAccount {
     private int failures;
     private Instant lockedUntil;
 
-    public MfaAccount(String subjectId, boolean enabled, String secret, Instant setupExpiresAt,
-            long lastStep, List<String> recoveryHashes, String challengeHash, Instant challengeExpiresAt,
-            int failures, Instant lockedUntil) {
+    public MfaAccount(String subjectId, boolean enabled, String secret,
+            Instant setupExpiresAt, long lastStep, List<String> recoveryHashes,
+            String challengeHash, Instant challengeExpiresAt, int failures,
+            Instant lockedUntil) {
         this.subjectId = subjectId;
         this.enabled = enabled;
         this.secret = secret;
@@ -33,16 +34,36 @@ public class MfaAccount {
         this.lockedUntil = lockedUntil;
     }
 
-    public String subjectId() { return subjectId; }
-    public boolean enabled() { return enabled; }
-    public String secret() { return secret; }
-    public Instant setupExpiresAt() { return setupExpiresAt; }
-    public long lastStep() { return lastStep; }
-    public List<String> recoveryHashes() { return List.copyOf(recoveryHashes); }
-    public String challengeHash() { return challengeHash; }
-    public Instant challengeExpiresAt() { return challengeExpiresAt; }
-    public int failures() { return failures; }
-    public Instant lockedUntil() { return lockedUntil; }
+    public String subjectId() {
+        return subjectId;
+    }
+    public boolean enabled() {
+        return enabled;
+    }
+    public String secret() {
+        return secret;
+    }
+    public Instant setupExpiresAt() {
+        return setupExpiresAt;
+    }
+    public long lastStep() {
+        return lastStep;
+    }
+    public List<String> recoveryHashes() {
+        return List.copyOf(recoveryHashes);
+    }
+    public String challengeHash() {
+        return challengeHash;
+    }
+    public Instant challengeExpiresAt() {
+        return challengeExpiresAt;
+    }
+    public int failures() {
+        return failures;
+    }
+    public Instant lockedUntil() {
+        return lockedUntil;
+    }
 
     public void beginSetup(String encryptedSecret, Instant expiresAt) {
         secret = encryptedSecret;
@@ -77,12 +98,22 @@ public class MfaAccount {
         challengeExpiresAt = null;
     }
 
-    public void acceptStep(long step) { lastStep = step; }
-    public boolean consumeRecoveryHash(String hash) { return recoveryHashes.remove(hash); }
-    public boolean lockedAt(Instant now) { return lockedUntil != null && lockedUntil.isAfter(now); }
-    public void resetFailures() { failures = 0; lockedUntil = null; }
+    public void acceptStep(long step) {
+        lastStep = step;
+    }
+    public boolean consumeRecoveryHash(String hash) {
+        return recoveryHashes.remove(hash);
+    }
+    public boolean lockedAt(Instant now) {
+        return lockedUntil != null && lockedUntil.isAfter(now);
+    }
+    public void resetFailures() {
+        failures = 0;
+        lockedUntil = null;
+    }
     public void registerFailure(Instant now) {
         failures++;
-        if (failures >= MAX_FAILURES) lockedUntil = now.plusSeconds(LOCKOUT_SECONDS);
+        if (failures >= MAX_FAILURES)
+            lockedUntil = now.plusSeconds(LOCKOUT_SECONDS);
     }
 }

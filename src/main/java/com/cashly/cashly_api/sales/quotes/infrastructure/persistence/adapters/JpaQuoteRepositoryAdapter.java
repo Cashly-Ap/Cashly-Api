@@ -25,8 +25,8 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
     private final QuoteJpaMapper mapper;
 
     public JpaQuoteRepositoryAdapter(QuoteJpaRepository jpaRepository,
-                                      QuoteNumberSequenceJpaRepository sequenceJpaRepository,
-                                      QuoteJpaMapper mapper) {
+            QuoteNumberSequenceJpaRepository sequenceJpaRepository,
+            QuoteJpaMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.sequenceJpaRepository = sequenceJpaRepository;
         this.mapper = mapper;
@@ -40,10 +40,13 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
         jpaRepository.findByIdWithLines(quote.getId()).ifPresent(existing -> {
             var snapshotIds = existing.getLines().stream()
                     .filter(line -> line.getCategorySnapshot() != null)
-                    .collect(java.util.stream.Collectors.toMap(line -> line.getId(), line -> line.getCategorySnapshot().getId()));
+                    .collect(java.util.stream.Collectors.toMap(
+                            line -> line.getId(),
+                            line -> line.getCategorySnapshot().getId()));
             entity.getLines().forEach(line -> {
                 if (line.getCategorySnapshot() != null) {
-                    line.getCategorySnapshot().setId(snapshotIds.get(line.getId()));
+                    line.getCategorySnapshot()
+                            .setId(snapshotIds.get(line.getId()));
                 }
             });
         });
@@ -60,31 +63,34 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
     @Override
     @Transactional(readOnly = true)
     public List<Quote> findAll() {
-        return jpaRepository.findAllWithLines().stream()
-                .map(mapper::toDomain)
+        return jpaRepository.findAllWithLines().stream().map(mapper::toDomain)
                 .toList();
     }
 
     @Override
     public List<Quote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                           UUID customerId, String status,
-                                           UUID productId, UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
-                                           String orderBy, String orderDir) {
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            java.util.Set<UUID> currentCategoryProductIds, String orderBy,
+            String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
         List<QuoteJpaEntity> entities = currentCategoryProductIds.isEmpty()
-                ? jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId)
-                : jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId,
-                        currentCategoryProductIds);
+                ? jpaRepository.findAllWithFilters(from, to, customerId, status,
+                        productId, categoryId)
+                : jpaRepository.findAllWithFilters(from, to, customerId, status,
+                        productId, categoryId, currentCategoryProductIds);
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<QuoteJpaEntity> comparator = switch (orderBy) {
             case null -> Comparator.comparing(QuoteJpaEntity::getCreatedAt);
-            case "quoteNumber" -> Comparator.comparing(QuoteJpaEntity::getQuoteNumber);
-            case "customerName" -> Comparator.comparing(QuoteJpaEntity::getCustomerName);
+            case "quoteNumber" ->
+                Comparator.comparing(QuoteJpaEntity::getQuoteNumber);
+            case "customerName" ->
+                Comparator.comparing(QuoteJpaEntity::getCustomerName);
             case "status" -> Comparator.comparing(QuoteJpaEntity::getStatus);
-            case "subtotal" -> Comparator.comparing(QuoteJpaEntity::getSubtotal);
+            case "subtotal" ->
+                Comparator.comparing(QuoteJpaEntity::getSubtotal);
             default -> Comparator.comparing(QuoteJpaEntity::getCreatedAt);
         };
 
@@ -92,9 +98,7 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
             comparator = comparator.reversed();
         }
 
-        return entities.stream()
-                .sorted(comparator)
-                .map(mapper::toDomain)
+        return entities.stream().sorted(comparator).map(mapper::toDomain)
                 .toList();
     }
 
@@ -106,8 +110,8 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
     @Override
     @Transactional
     public int getNextSequenceForYear(int year) {
-        QuoteNumberSequenceJpaEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
-                .orElseGet(() -> {
+        QuoteNumberSequenceJpaEntity sequence = sequenceJpaRepository
+                .findByYearForUpdate(year).orElseGet(() -> {
                     QuoteNumberSequenceJpaEntity newSeq = new QuoteNumberSequenceJpaEntity();
                     newSeq.setYear(year);
                     newSeq.setNextValue(0);

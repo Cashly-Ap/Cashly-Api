@@ -33,12 +33,14 @@ class MovementsReportRepositoryAdapterTest {
     @Test
     @DisplayName("should find movements and map to response with type labels")
     void should_find_movements() {
-        MovementsPdfQuery query = new MovementsPdfQuery(
-                UUID.randomUUID(), UUID.randomUUID(), "ENTRY",
-                LocalDate.of(2026, 1, 1), LocalDate.of(2026, 12, 31));
+        MovementsPdfQuery query = new MovementsPdfQuery(UUID.randomUUID(),
+                UUID.randomUUID(), "ENTRY", LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 12, 31));
 
-        MovementsReportProjection projection = mock(MovementsReportProjection.class);
-        when(projection.getMovementId()).thenReturn(UUID.randomUUID().toString());
+        MovementsReportProjection projection = mock(
+                MovementsReportProjection.class);
+        when(projection.getMovementId())
+                .thenReturn(UUID.randomUUID().toString());
         when(projection.getWarehouseName()).thenReturn("Main Warehouse");
         when(projection.getProductName()).thenReturn("Product A");
         when(projection.getSku()).thenReturn("SKU001");
@@ -67,8 +69,8 @@ class MovementsReportRepositoryAdapterTest {
     @Test
     @DisplayName("should map different movement types to labels")
     void should_map_movement_types() {
-        MovementsPdfQuery query = new MovementsPdfQuery(
-                null, null, null, null, null);
+        MovementsPdfQuery query = new MovementsPdfQuery(null, null, null, null,
+                null);
 
         MovementsReportProjection entry = mock(MovementsReportProjection.class);
         when(entry.getMovementId()).thenReturn(UUID.randomUUID().toString());
@@ -86,8 +88,10 @@ class MovementsReportRepositoryAdapterTest {
         when(exit.getProductName()).thenReturn("P");
         when(exit.getSku()).thenReturn("SKU");
 
-        MovementsReportProjection transferIn = mock(MovementsReportProjection.class);
-        when(transferIn.getMovementId()).thenReturn(UUID.randomUUID().toString());
+        MovementsReportProjection transferIn = mock(
+                MovementsReportProjection.class);
+        when(transferIn.getMovementId())
+                .thenReturn(UUID.randomUUID().toString());
         when(transferIn.getMovementType()).thenReturn("TRANSFER_IN");
         when(transferIn.getCreatedAt()).thenReturn(LocalDateTime.now());
         when(transferIn.getWarehouseName()).thenReturn("WH");

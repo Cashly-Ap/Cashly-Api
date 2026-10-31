@@ -11,8 +11,8 @@ class CustomerCreditPolicyTest {
 
     @Test
     void should_add_customer_balance_and_subtract_pending_debt() {
-        var decision = policy.evaluate(new BigDecimal("1000"), new BigDecimal("250"),
-                new BigDecimal("700"), false);
+        var decision = policy.evaluate(new BigDecimal("1000"),
+                new BigDecimal("250"), new BigDecimal("700"), false);
 
         assertThat(decision.availableCredit()).isEqualByComparingTo("550");
         assertThat(decision.canCreateCreditInvoice()).isTrue();
@@ -23,19 +23,22 @@ class CustomerCreditPolicyTest {
         var decision = policy.evaluate(new BigDecimal("100"), BigDecimal.ZERO,
                 new BigDecimal("200"), false);
 
-        assertThat(decision.availableCredit()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(decision.availableCredit())
+                .isEqualByComparingTo(BigDecimal.ZERO);
     }
 
     @Test
     void should_preserve_zero_credit_eligibility_without_overdue_invoices() {
-        var decision = policy.evaluate(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, false);
+        var decision = policy.evaluate(BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, false);
 
         assertThat(decision.canCreateCreditInvoice()).isTrue();
     }
 
     @Test
     void should_block_credit_invoices_when_overdue_even_with_available_credit() {
-        var decision = policy.evaluate(new BigDecimal("1000"), BigDecimal.ZERO, BigDecimal.ZERO, true);
+        var decision = policy.evaluate(new BigDecimal("1000"), BigDecimal.ZERO,
+                BigDecimal.ZERO, true);
 
         assertThat(decision.availableCredit()).isEqualByComparingTo("1000");
         assertThat(decision.canCreateCreditInvoice()).isFalse();

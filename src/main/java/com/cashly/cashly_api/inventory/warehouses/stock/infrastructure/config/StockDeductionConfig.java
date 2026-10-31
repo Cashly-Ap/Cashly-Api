@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StockDeductionConfig {
     @Bean
-    public StockDeductionApi stockDeductionApi(WarehouseStockRepository stocks) {
+    public StockDeductionApi stockDeductionApi(
+            WarehouseStockRepository stocks) {
         return new StockDeductionService(stocks);
     }
 }

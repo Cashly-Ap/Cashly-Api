@@ -10,8 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "user_module_permissions", indexes = {
-    @Index(name = "idx_ump_user_id", columnList = "user_id")
-})
+        @Index(name = "idx_ump_user_id", columnList = "user_id")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,7 +31,8 @@ public class UserModulePermissionEntity {
     @Column(name = "module", length = 30, nullable = false)
     private BusinessModule module;
 
-    public static UserModulePermissionEntity of(UserEntity user, BusinessModule module) {
+    public static UserModulePermissionEntity of(UserEntity user,
+            BusinessModule module) {
         UserModulePermissionEntity entity = new UserModulePermissionEntity();
         entity.id = UUID.randomUUID();
         entity.user = user;

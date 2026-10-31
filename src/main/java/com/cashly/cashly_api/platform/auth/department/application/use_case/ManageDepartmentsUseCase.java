@@ -21,13 +21,17 @@ public class ManageDepartmentsUseCase {
     private final AccessRepository repository;
     private final AccessService access;
 
-    public ManageDepartmentsUseCase(AccessRepository repository, AccessService access) {
+    public ManageDepartmentsUseCase(AccessRepository repository,
+            AccessService access) {
         this.repository = repository;
         this.access = access;
     }
 
-    public record Request(String name, String description, Boolean active, Long version) {}
-    public record Option(UUID id, String name) {}
+    public record Request(String name, String description, Boolean active,
+            Long version) {
+    }
+    public record Option(UUID id, String name) {
+    }
 
     public List<Department> list() {
         access.require(BusinessModule.DEPARTMENTS, PermissionAction.READ);
@@ -40,34 +44,43 @@ public class ManageDepartmentsUseCase {
     }
 
     public List<Option> options() {
-        var permissions = access.current().permissions().getOrDefault(BusinessModule.USERS, Set.of());
+        var permissions = access.current().permissions()
+                .getOrDefault(BusinessModule.USERS, Set.of());
         if (!permissions.contains(PermissionAction.READ)
-                || (!permissions.contains(PermissionAction.CREATE) && !permissions.contains(PermissionAction.UPDATE))) {
+                || (!permissions.contains(PermissionAction.CREATE)
+                        && !permissions.contains(PermissionAction.UPDATE))) {
             throw new AccessDeniedException("User administration required");
         }
-        return repository.departments().stream().filter(Department::active)
-                .map(department -> new Option(department.id(), department.name())).toList();
+        return repository.departments().stream().filter(Department::active).map(
+                department -> new Option(department.id(), department.name()))
+                .toList();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Department save(UUID id, Request request) {
         repository.lockAdministration();
         boolean create = id == null;
-        access.require(BusinessModule.DEPARTMENTS, create ? PermissionAction.CREATE : PermissionAction.UPDATE);
+        access.require(BusinessModule.DEPARTMENTS,
+                create ? PermissionAction.CREATE : PermissionAction.UPDATE);
         if (!create) {
             existing(id);
         }
         if (!create && request.version() == null) {
             throw new IllegalArgumentException("Version is required");
         }
-        var department = new Department(create ? UUID.randomUUID() : id, request.name(), request.description(),
-                request.active() == null || request.active(), create ? 0 : request.version());
-        if (repository.departments().stream().anyMatch(other -> !other.id().equals(department.id())
-                && other.name().equalsIgnoreCase(department.name()))) {
+        var department = new Department(create ? UUID.randomUUID() : id,
+                request.name(), request.description(),
+                request.active() == null || request.active(),
+                create ? 0 : request.version());
+        if (repository.departments().stream()
+                .anyMatch(other -> !other.id().equals(department.id())
+                        && other.name().equalsIgnoreCase(department.name()))) {
             throw new AccessConflictException("Department name already exists");
         }
-        if (!department.active() && repository.departmentReferenced(department.id())) {
-            throw new AccessConflictException("Reassign users before deactivating department");
+        if (!department.active()
+                && repository.departmentReferenced(department.id())) {
+            throw new AccessConflictException(
+                    "Reassign users before deactivating department");
         }
         repository.saveDepartment(department, create);
         return existing(department.id());
@@ -79,13 +92,15 @@ public class ManageDepartmentsUseCase {
         access.require(BusinessModule.DEPARTMENTS, PermissionAction.DELETE);
         existing(id);
         if (repository.departmentReferenced(id)) {
-            throw new AccessConflictException("Reassign users before deleting department");
+            throw new AccessConflictException(
+                    "Reassign users before deleting department");
         }
         repository.deleteDepartment(id);
     }
 
     private Department existing(UUID id) {
         return repository.department(id)
-                .orElseThrow(() -> new AccessReferenceNotFoundException("Department not found"));
+                .orElseThrow(() -> new AccessReferenceNotFoundException(
+                        "Department not found"));
     }
 }

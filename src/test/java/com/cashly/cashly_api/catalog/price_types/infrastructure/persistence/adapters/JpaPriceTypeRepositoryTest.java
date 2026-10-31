@@ -53,13 +53,16 @@ class JpaPriceTypeRepositoryTest {
 
         @Test
         void should_CreateNewEntity_When_IdIsNull() {
-            PriceType priceType = PriceType.create("Standard", "Standard pricing");
+            PriceType priceType = PriceType.create("Standard",
+                    "Standard pricing");
             UUID generatedId = UUID.randomUUID();
 
-            PriceTypeEntity entityWithoutId = PriceTypeEntity.fromDomain(priceType);
+            PriceTypeEntity entityWithoutId = PriceTypeEntity
+                    .fromDomain(priceType);
             entityWithoutId.setId(generatedId);
 
-            when(springDataRepository.save(any(PriceTypeEntity.class))).thenReturn(entityWithoutId);
+            when(springDataRepository.save(any(PriceTypeEntity.class)))
+                    .thenReturn(entityWithoutId);
 
             PriceType saved = repository.save(priceType);
 
@@ -79,15 +82,17 @@ class JpaPriceTypeRepositoryTest {
         @Test
         void should_UpdateExistingEntity_When_IdIsNotNullAndFound() {
             UUID id = UUID.randomUUID();
-            PriceType existing = PriceType.reconstitute(
-                    id, "Old Name", "Old Description", true,
-                    LocalDateTime.now().minusDays(1), LocalDateTime.now().minusDays(1)
-            );
+            PriceType existing = PriceType.reconstitute(id, "Old Name",
+                    "Old Description", true, LocalDateTime.now().minusDays(1),
+                    LocalDateTime.now().minusDays(1));
             existing.update("Updated Name", "Updated Description", true);
 
-            PriceTypeEntity existingEntity = PriceTypeEntity.fromDomain(existing);
-            when(springDataRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-            when(springDataRepository.save(any(PriceTypeEntity.class))).thenReturn(existingEntity);
+            PriceTypeEntity existingEntity = PriceTypeEntity
+                    .fromDomain(existing);
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.of(existingEntity));
+            when(springDataRepository.save(any(PriceTypeEntity.class)))
+                    .thenReturn(existingEntity);
 
             PriceType saved = repository.save(existing);
 
@@ -101,14 +106,15 @@ class JpaPriceTypeRepositoryTest {
         @Test
         void should_CreateNewEntity_When_IdIsNotNullButNotFound() {
             UUID id = UUID.randomUUID();
-            PriceType priceType = PriceType.reconstitute(
-                    id, "New Name", "New Description", true,
-                    LocalDateTime.now(), LocalDateTime.now()
-            );
+            PriceType priceType = PriceType.reconstitute(id, "New Name",
+                    "New Description", true, LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            when(springDataRepository.findById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.empty());
             PriceTypeEntity newEntity = PriceTypeEntity.fromDomain(priceType);
-            when(springDataRepository.save(any(PriceTypeEntity.class))).thenReturn(newEntity);
+            when(springDataRepository.save(any(PriceTypeEntity.class)))
+                    .thenReturn(newEntity);
 
             PriceType saved = repository.save(priceType);
 
@@ -128,11 +134,11 @@ class JpaPriceTypeRepositoryTest {
         void should_ReturnDomainObject_When_EntityFound() {
             UUID id = UUID.randomUUID();
             PriceTypeEntity entity = PriceTypeEntity.fromDomain(
-                    PriceType.reconstitute(id, "Standard", "Standard pricing", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    PriceType.reconstitute(id, "Standard", "Standard pricing",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
-            when(springDataRepository.findById(id)).thenReturn(Optional.of(entity));
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.of(entity));
 
             Optional<PriceType> result = repository.findById(id);
 
@@ -145,7 +151,8 @@ class JpaPriceTypeRepositoryTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.findById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.empty());
 
             Optional<PriceType> result = repository.findById(id);
 
@@ -160,62 +167,69 @@ class JpaPriceTypeRepositoryTest {
 
         @Test
         void should_ReturnPageResponse_When_EntitiesFound() {
-            PriceTypeEntity entity = PriceTypeEntity.fromDomain(
-                    PriceType.reconstitute(UUID.randomUUID(), "Standard", "Standard pricing", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+            PriceTypeEntity entity = PriceTypeEntity
+                    .fromDomain(PriceType.reconstitute(UUID.randomUUID(),
+                            "Standard", "Standard pricing", true,
+                            LocalDateTime.now(), LocalDateTime.now()));
             Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of(entity));
-            when(springDataRepository.findAllWithFilters(anyString(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(anyString(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<PriceType> result = repository.findAllWithFilters(
-                    "Stand", true, 0, 10, "name", "asc");
+            PageResponse<PriceType> result = repository
+                    .findAllWithFilters("Stand", true, 0, 10, "name", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
             assertEquals("Standard", result.content().get(0).getName());
-            verify(springDataRepository).findAllWithFilters(eq("Stand"), eq(true), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(eq("Stand"),
+                    eq(true), any(PageRequest.class));
         }
 
         @Test
         void should_ReturnEmptyPageResponse_When_NoEntities() {
             Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of());
-            when(springDataRepository.findAllWithFilters(any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<PriceType> result = repository.findAllWithFilters(
-                    null, null, 0, 10, "name", "asc");
+            PageResponse<PriceType> result = repository.findAllWithFilters(null,
+                    null, 0, 10, "name", "asc");
 
             assertNotNull(result);
             assertTrue(result.empty());
             assertEquals(0, result.totalElements());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllWithFilters(isNull(), isNull(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(),
+                    any(PageRequest.class));
         }
 
         @Test
         void should_DefaultToCreatedAtSort_When_OrderByNotAllowed() {
             Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of());
-            when(springDataRepository.findAllWithFilters(any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            repository.findAllWithFilters(null, null, 0, 10, "invalid_field", "asc");
+            repository.findAllWithFilters(null, null, 0, 10, "invalid_field",
+                    "asc");
 
-            verify(springDataRepository).findAllWithFilters(isNull(), isNull(), pageRequestCaptor.capture());
-            assertEquals(Sort.by("createdAt").ascending(), pageRequestCaptor.getValue().getSort());
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(),
+                    pageRequestCaptor.capture());
+            assertEquals(Sort.by("createdAt").ascending(),
+                    pageRequestCaptor.getValue().getSort());
         }
 
         @Test
         void should_UseDescendingSort_When_OrderDirIsDesc() {
             Page<PriceTypeEntity> entityPage = new PageImpl<>(List.of());
-            when(springDataRepository.findAllWithFilters(any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
             repository.findAllWithFilters(null, null, 0, 10, "name", "desc");
 
-            verify(springDataRepository).findAllWithFilters(isNull(), isNull(), pageRequestCaptor.capture());
-            assertEquals(Sort.by("name").descending(), pageRequestCaptor.getValue().getSort());
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(),
+                    pageRequestCaptor.capture());
+            assertEquals(Sort.by("name").descending(),
+                    pageRequestCaptor.getValue().getSort());
         }
     }
 
@@ -252,7 +266,8 @@ class JpaPriceTypeRepositoryTest {
 
         @Test
         void should_ReturnTrue_When_NameExists() {
-            when(springDataRepository.existsByName("Standard")).thenReturn(true);
+            when(springDataRepository.existsByName("Standard"))
+                    .thenReturn(true);
 
             boolean result = repository.existsByName("Standard");
 
@@ -262,7 +277,8 @@ class JpaPriceTypeRepositoryTest {
 
         @Test
         void should_ReturnFalse_When_NameDoesNotExist() {
-            when(springDataRepository.existsByName("NonExistent")).thenReturn(false);
+            when(springDataRepository.existsByName("NonExistent"))
+                    .thenReturn(false);
 
             boolean result = repository.existsByName("NonExistent");
 
@@ -278,7 +294,8 @@ class JpaPriceTypeRepositoryTest {
         @Test
         void should_ReturnTrue_When_NameExistsForDifferentId() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.existsByNameAndIdNot("Standard", id)).thenReturn(true);
+            when(springDataRepository.existsByNameAndIdNot("Standard", id))
+                    .thenReturn(true);
 
             boolean result = repository.existsByNameAndIdNot("Standard", id);
 
@@ -289,7 +306,8 @@ class JpaPriceTypeRepositoryTest {
         @Test
         void should_ReturnFalse_When_NameDoesNotExistForDifferentId() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.existsByNameAndIdNot("Standard", id)).thenReturn(false);
+            when(springDataRepository.existsByNameAndIdNot("Standard", id))
+                    .thenReturn(false);
 
             boolean result = repository.existsByNameAndIdNot("Standard", id);
 

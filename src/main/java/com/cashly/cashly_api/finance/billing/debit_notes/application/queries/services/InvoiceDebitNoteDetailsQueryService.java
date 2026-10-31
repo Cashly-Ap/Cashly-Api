@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-public class InvoiceDebitNoteDetailsQueryService implements InvoiceDebitNoteDetailsQuery {
+public class InvoiceDebitNoteDetailsQueryService
+        implements
+            InvoiceDebitNoteDetailsQuery {
     private final DebitNoteRepository notes;
 
     public InvoiceDebitNoteDetailsQueryService(DebitNoteRepository notes) {
@@ -18,12 +20,18 @@ public class InvoiceDebitNoteDetailsQueryService implements InvoiceDebitNoteDeta
 
     @Override
     public List<Note> findByInvoiceId(UUID invoiceId) {
-        return notes.findByInvoiceId(invoiceId).stream().map(note -> new Note(note.getId().value(),
-                note.getNoteNumber().value(), note.getAmount(), note.getReason(), note.getCreatedAt())).toList();
+        return notes.findByInvoiceId(invoiceId).stream()
+                .map(note -> new Note(note.getId().value(),
+                        note.getNoteNumber().value(), note.getAmount(),
+                        note.getReason(), note.getCreatedAt()))
+                .toList();
     }
 
     @Override
-    public Map<UUID, java.math.BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds) {
-        return invoiceIds.isEmpty() ? Map.of() : notes.sumByInvoiceIds(invoiceIds);
+    public Map<UUID, java.math.BigDecimal> sumByInvoiceIds(
+            List<UUID> invoiceIds) {
+        return invoiceIds.isEmpty()
+                ? Map.of()
+                : notes.sumByInvoiceIds(invoiceIds);
     }
 }

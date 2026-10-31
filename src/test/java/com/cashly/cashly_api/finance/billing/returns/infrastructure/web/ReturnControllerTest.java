@@ -59,52 +59,50 @@ class ReturnControllerTest {
     @Test
     @DisplayName("should create return and return 201")
     void shouldCreateReturn() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
-        ReturnResponse response = new ReturnResponse(
-                UUID.randomUUID(), "RET-2026-0001", UUID.randomUUID(), "INV-2026-00001",
-                UUID.randomUUID(), "Cliente Test", "J-12345678-9",
-                "AUTOMATIC", "Producto defectuoso",
-                BigDecimal.TEN, UUID.randomUUID(), "Test User",
-                LocalDateTime.now(), LocalDateTime.now(), List.of()
-        );
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
+        ReturnResponse response = new ReturnResponse(UUID.randomUUID(),
+                "RET-2026-0001", UUID.randomUUID(), "INV-2026-00001",
+                UUID.randomUUID(), "Cliente Test", "J-12345678-9", "AUTOMATIC",
+                "Producto defectuoso", BigDecimal.TEN, UUID.randomUUID(),
+                "Test User", LocalDateTime.now(), LocalDateTime.now(),
+                List.of());
 
-        when(createReturnUseCase.execute(any(CreateReturnRequest.class), any(UUID.class), anyString()))
-                .thenReturn(response);
+        when(createReturnUseCase.execute(any(CreateReturnRequest.class),
+                any(UUID.class), anyString())).thenReturn(response);
 
-        CreateReturnRequest request = new CreateReturnRequest(
-                UUID.randomUUID(), UUID.randomUUID(), "AUTOMATIC", "Producto defectuoso",
+        CreateReturnRequest request = new CreateReturnRequest(UUID.randomUUID(),
+                UUID.randomUUID(), "AUTOMATIC", "Producto defectuoso",
                 List.of(new CreateReturnRequest.ReturnLineRequest(
-                        UUID.randomUUID(), UUID.randomUUID(),
-                        BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, null,
+                        UUID.randomUUID(), UUID.randomUUID(), BigDecimal.ONE,
+                        BigDecimal.TEN, BigDecimal.TEN, null,
                         List.of(new CreateReturnRequest.ReturnLineRequest.AllocationRequest(
-                                UUID.randomUUID(), BigDecimal.ONE
-                        ))
-                ))
-        );
+                                UUID.randomUUID(), BigDecimal.ONE)))));
 
-        ResponseEntity<ReturnResponse> result = returnController.create(request, authentication);
+        ResponseEntity<ReturnResponse> result = returnController.create(request,
+                authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals("RET-2026-0001", result.getBody().returnNumber());
-        verify(createReturnUseCase).execute(any(CreateReturnRequest.class), any(UUID.class), anyString());
+        verify(createReturnUseCase).execute(any(CreateReturnRequest.class),
+                any(UUID.class), anyString());
     }
 
     @Test
     @DisplayName("should list returns and return 200")
     void shouldListReturns() {
         ReturnListResponse returnItem = new ReturnListResponse(
-                UUID.randomUUID(), "RET-2026-0001", UUID.randomUUID(), "INV-2026-00001",
-                UUID.randomUUID(), "Cliente Test", "AUTOMATIC", "Producto defectuoso",
-                BigDecimal.TEN, 1, LocalDateTime.now()
-        );
+                UUID.randomUUID(), "RET-2026-0001", UUID.randomUUID(),
+                "INV-2026-00001", UUID.randomUUID(), "Cliente Test",
+                "AUTOMATIC", "Producto defectuoso", BigDecimal.TEN, 1,
+                LocalDateTime.now());
 
         when(getAllReturnsUseCase.execute(null, null, null, null))
                 .thenReturn(List.of(returnItem));
 
-        ResponseEntity<List<ReturnListResponse>> result = returnController.getAll(
-                null, null, null, null
-        );
+        ResponseEntity<List<ReturnListResponse>> result = returnController
+                .getAll(null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
@@ -120,29 +118,28 @@ class ReturnControllerTest {
         UUID customerId = UUID.randomUUID();
         UUID invoiceId = UUID.randomUUID();
 
-        when(getAllReturnsUseCase.execute(dateFrom, dateTo, customerId, invoiceId))
-                .thenReturn(List.of());
+        when(getAllReturnsUseCase.execute(dateFrom, dateTo, customerId,
+                invoiceId)).thenReturn(List.of());
 
-        ResponseEntity<List<ReturnListResponse>> result = returnController.getAll(
-                dateFrom, dateTo, customerId, invoiceId
-        );
+        ResponseEntity<List<ReturnListResponse>> result = returnController
+                .getAll(dateFrom, dateTo, customerId, invoiceId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
-        verify(getAllReturnsUseCase).execute(dateFrom, dateTo, customerId, invoiceId);
+        verify(getAllReturnsUseCase).execute(dateFrom, dateTo, customerId,
+                invoiceId);
     }
 
     @Test
     @DisplayName("should get return by id and return 200")
     void shouldGetReturnById() {
         UUID id = UUID.randomUUID();
-        ReturnResponse response = new ReturnResponse(
-                id, "RET-2026-0001", UUID.randomUUID(), "INV-2026-00001",
-                UUID.randomUUID(), "Cliente Test", "J-12345678-9",
-                "AUTOMATIC", "Producto defectuoso",
-                BigDecimal.TEN, UUID.randomUUID(), "Test User",
-                LocalDateTime.now(), LocalDateTime.now(), List.of()
-        );
+        ReturnResponse response = new ReturnResponse(id, "RET-2026-0001",
+                UUID.randomUUID(), "INV-2026-00001", UUID.randomUUID(),
+                "Cliente Test", "J-12345678-9", "AUTOMATIC",
+                "Producto defectuoso", BigDecimal.TEN, UUID.randomUUID(),
+                "Test User", LocalDateTime.now(), LocalDateTime.now(),
+                List.of());
 
         when(getReturnByIdUseCase.execute(id)).thenReturn(response);
 
@@ -158,8 +155,8 @@ class ReturnControllerTest {
     void shouldThrowWhenReturnNotFound() {
         UUID id = UUID.randomUUID();
 
-        when(getReturnByIdUseCase.execute(id))
-                .thenThrow(new GetReturnByIdUseCase.ReturnNotFoundException(id));
+        when(getReturnByIdUseCase.execute(id)).thenThrow(
+                new GetReturnByIdUseCase.ReturnNotFoundException(id));
 
         assertThrows(GetReturnByIdUseCase.ReturnNotFoundException.class,
                 () -> returnController.getById(id));
@@ -170,28 +167,35 @@ class ReturnControllerTest {
     @DisplayName("should delete return and return 204")
     void shouldDeleteReturn() {
         UUID id = UUID.randomUUID();
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
-        doNothing().when(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
+        doNothing().when(deleteReturnUseCase).execute(any(UUID.class),
+                any(UUID.class), anyString());
 
-        ResponseEntity<Void> result = returnController.delete(id, authentication);
+        ResponseEntity<Void> result = returnController.delete(id,
+                authentication);
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         assertNull(result.getBody());
-        verify(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
+        verify(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class),
+                anyString());
     }
 
     @Test
     @DisplayName("should throw exception when deleting non-existent return")
     void shouldThrowWhenDeletingNonExistentReturn() {
         UUID id = UUID.randomUUID();
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         doThrow(new GetReturnByIdUseCase.ReturnNotFoundException(id))
-                .when(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
+                .when(deleteReturnUseCase)
+                .execute(any(UUID.class), any(UUID.class), anyString());
 
         assertThrows(GetReturnByIdUseCase.ReturnNotFoundException.class,
                 () -> returnController.delete(id, authentication));
-        verify(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class), anyString());
+        verify(deleteReturnUseCase).execute(any(UUID.class), any(UUID.class),
+                anyString());
     }
 
     @Test
@@ -200,9 +204,8 @@ class ReturnControllerTest {
         when(getAllReturnsUseCase.execute(null, null, null, null))
                 .thenReturn(List.of());
 
-        ResponseEntity<List<ReturnListResponse>> result = returnController.getAll(
-                null, null, null, null
-        );
+        ResponseEntity<List<ReturnListResponse>> result = returnController
+                .getAll(null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());

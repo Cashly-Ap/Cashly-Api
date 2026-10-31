@@ -14,7 +14,8 @@ public class DeleteCategoryUseCase {
     private final CategoryUsageGateway usageGateway;
     private final CategoryRepository categoryRepository;
 
-    public DeleteCategoryUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository) {
+    public DeleteCategoryUseCase(CategoryUsageGateway usageGateway,
+            CategoryRepository categoryRepository) {
         this.usageGateway = usageGateway;
         this.categoryRepository = categoryRepository;
     }
@@ -24,7 +25,8 @@ public class DeleteCategoryUseCase {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
-        long activeProductCount = usageGateway.countActiveProductsByCategory(id);
+        long activeProductCount = usageGateway
+                .countActiveProductsByCategory(id);
         if (activeProductCount > 0) {
             throw new CategoryHasActiveProductsException(id);
         }

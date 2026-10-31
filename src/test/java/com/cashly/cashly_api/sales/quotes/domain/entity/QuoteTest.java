@@ -28,20 +28,24 @@ class QuoteTest {
     private static final UUID CREATED_BY = UUID.randomUUID();
     private static final String CREATED_BY_NAME = "John Doe";
 
-    private QuoteLine createLine(String name, BigDecimal qty, BigDecimal price) {
-        return new QuoteLine(UUID.randomUUID(), name, "CODE-" + name, qty, price);
+    private QuoteLine createLine(String name, BigDecimal qty,
+            BigDecimal price) {
+        return new QuoteLine(UUID.randomUUID(), name, "CODE-" + name, qty,
+                price);
     }
 
     private List<QuoteLine> validLines() {
         return List.of(
-                createLine("Product A", new BigDecimal("2"), new BigDecimal("10.00")),
-                createLine("Product B", new BigDecimal("3"), new BigDecimal("5.00"))
-        );
+                createLine("Product A", new BigDecimal("2"),
+                        new BigDecimal("10.00")),
+                createLine("Product B", new BigDecimal("3"),
+                        new BigDecimal("5.00")));
     }
 
     private Quote createDraftQuote() {
-        return Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, null, validLines());
+        return Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                validLines());
     }
 
     @Nested
@@ -51,8 +55,9 @@ class QuoteTest {
         @Test
         @DisplayName("should create quote in DRAFT status")
         void should_create_quote_in_draft_status() {
-            Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                    CREATED_BY, CREATED_BY_NAME, null, null, validLines());
+            Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                    CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                    validLines());
 
             assertNotNull(quote.getId());
             assertEquals(QUOTE_NUMBER, quote.getQuoteNumber());
@@ -69,29 +74,37 @@ class QuoteTest {
         @Test
         @DisplayName("should throw when lines is null")
         void should_throw_when_lines_null() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                            CREATED_BY, CREATED_BY_NAME, null, null, null));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                            CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                            null, null));
 
-            assertTrue(exception.getMessage().contains("must have at least one line"));
+            assertTrue(exception.getMessage()
+                    .contains("must have at least one line"));
         }
 
         @Test
         @DisplayName("should throw when lines is empty")
         void should_throw_when_lines_empty() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                            CREATED_BY, CREATED_BY_NAME, null, null, Collections.emptyList()));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                            CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                            null, Collections.emptyList()));
 
-            assertTrue(exception.getMessage().contains("must have at least one line"));
+            assertTrue(exception.getMessage()
+                    .contains("must have at least one line"));
         }
 
         @Test
         @DisplayName("should throw when customer id is null")
         void should_throw_when_customer_id_null() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    Quote.create(QUOTE_NUMBER, null, CUSTOMER_NAME, CUSTOMER_RIF,
-                            CREATED_BY, CREATED_BY_NAME, null, null, validLines()));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Quote.create(QUOTE_NUMBER, null, CUSTOMER_NAME,
+                            CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                            null, validLines()));
 
             assertTrue(exception.getMessage().contains("customerId"));
         }
@@ -99,9 +112,11 @@ class QuoteTest {
         @Test
         @DisplayName("should throw when customer name is null")
         void should_throw_when_customer_name_null() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    Quote.create(QUOTE_NUMBER, CUSTOMER_ID, null, CUSTOMER_RIF,
-                            CREATED_BY, CREATED_BY_NAME, null, null, validLines()));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Quote.create(QUOTE_NUMBER, CUSTOMER_ID, null,
+                            CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                            null, validLines()));
 
             assertTrue(exception.getMessage().contains("customerName"));
         }
@@ -109,9 +124,11 @@ class QuoteTest {
         @Test
         @DisplayName("should throw when quote number is null")
         void should_throw_when_quote_number_null() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    Quote.create(null, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                            CREATED_BY, CREATED_BY_NAME, null, null, validLines()));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Quote.create(null, CUSTOMER_ID, CUSTOMER_NAME,
+                            CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                            null, validLines()));
 
             assertTrue(exception.getMessage().contains("quoteNumber"));
         }
@@ -119,10 +136,10 @@ class QuoteTest {
         @Test
         @DisplayName("should calculate subtotal on creation")
         void should_calculate_subtotal_on_creation() {
-            Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                    CREATED_BY, CREATED_BY_NAME, null, null, validLines());
+            Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                    CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                    validLines());
 
-            
             assertEquals(new BigDecimal("35.00"), quote.getSubtotal());
         }
 
@@ -130,8 +147,9 @@ class QuoteTest {
         @DisplayName("should set created_at and updated_at")
         void should_set_created_at_and_updated_at() {
             Instant before = Instant.now();
-            Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                    CREATED_BY, CREATED_BY_NAME, null, null, validLines());
+            Quote quote = Quote.create(QUOTE_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                    CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null,
+                    validLines());
             Instant after = Instant.now();
 
             assertNotNull(quote.getCreatedAt());
@@ -173,8 +191,8 @@ class QuoteTest {
         void should_throw_when_cancelling_with_null_reason() {
             Quote quote = createDraftQuote();
 
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    quote.cancel(null));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class, () -> quote.cancel(null));
 
             assertTrue(exception.getMessage().contains("reason"));
         }
@@ -184,8 +202,8 @@ class QuoteTest {
         void should_throw_when_cancelling_with_blank_reason() {
             Quote quote = createDraftQuote();
 
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    quote.cancel("   "));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class, () -> quote.cancel("   "));
 
             assertTrue(exception.getMessage().contains("reason"));
         }
@@ -196,7 +214,8 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             quote.cancel("First cancel");
 
-            assertThrows(QuoteStateException.class, () -> quote.cancel("Second cancel"));
+            assertThrows(QuoteStateException.class,
+                    () -> quote.cancel("Second cancel"));
         }
 
         @Test
@@ -219,8 +238,8 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             quote.cancel("reason");
 
-            assertThrows(QuoteStateException.class,
-                    () -> quote.markConvertedToOrder(UUID.randomUUID(), "ORD-001"));
+            assertThrows(QuoteStateException.class, () -> quote
+                    .markConvertedToOrder(UUID.randomUUID(), "ORD-001"));
         }
 
         @Test
@@ -243,8 +262,8 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             quote.cancel("reason");
 
-            assertThrows(QuoteStateException.class,
-                    () -> quote.markConvertedToInvoice(UUID.randomUUID(), "INV-001"));
+            assertThrows(QuoteStateException.class, () -> quote
+                    .markConvertedToInvoice(UUID.randomUUID(), "INV-001"));
         }
     }
 
@@ -257,7 +276,8 @@ class QuoteTest {
         void should_add_line_in_draft() {
             Quote quote = createDraftQuote();
             int initialSize = quote.getLines().size();
-            QuoteLine newLine = createLine("Product C", new BigDecimal("1"), new BigDecimal("50.00"));
+            QuoteLine newLine = createLine("Product C", new BigDecimal("1"),
+                    new BigDecimal("50.00"));
 
             quote.addLine(newLine);
 
@@ -271,8 +291,10 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             quote.cancel("reason");
 
-            QuoteLine newLine = createLine("Product C", new BigDecimal("1"), new BigDecimal("50.00"));
-            assertThrows(QuoteStateException.class, () -> quote.addLine(newLine));
+            QuoteLine newLine = createLine("Product C", new BigDecimal("1"),
+                    new BigDecimal("50.00"));
+            assertThrows(QuoteStateException.class,
+                    () -> quote.addLine(newLine));
         }
 
         @Test
@@ -293,7 +315,8 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             QuoteLine firstLine = quote.getLines().get(0);
 
-            quote.updateLine(firstLine.getId(), new BigDecimal("10"), new BigDecimal("3.00"));
+            quote.updateLine(firstLine.getId(), new BigDecimal("10"),
+                    new BigDecimal("3.00"));
 
             QuoteLine updated = quote.getLines().get(0);
             assertEquals(new BigDecimal("10"), updated.getQuantity());
@@ -306,17 +329,16 @@ class QuoteTest {
             Quote quote = createDraftQuote();
             BigDecimal initialSubtotal = quote.getSubtotal();
 
-            
-            QuoteLine newLine = createLine("Product C", new BigDecimal("1"), new BigDecimal("50.00"));
+            QuoteLine newLine = createLine("Product C", new BigDecimal("1"),
+                    new BigDecimal("50.00"));
             quote.addLine(newLine);
             assertTrue(quote.getSubtotal().compareTo(initialSubtotal) > 0);
 
-            
             QuoteLine firstLine = quote.getLines().get(0);
-            quote.updateLine(firstLine.getId(), new BigDecimal("100"), new BigDecimal("1000.00"));
+            quote.updateLine(firstLine.getId(), new BigDecimal("100"),
+                    new BigDecimal("1000.00"));
             assertTrue(quote.getSubtotal().compareTo(initialSubtotal) > 0);
 
-            
             BigDecimal afterUpdate = quote.getSubtotal();
             quote.removeLine(newLine.getId());
             assertTrue(quote.getSubtotal().compareTo(afterUpdate) < 0);
@@ -332,9 +354,10 @@ class QuoteTest {
         void should_return_unmodifiable_lines_list() {
             Quote quote = createDraftQuote();
 
-            QuoteLine newLine = createLine("Product C", new BigDecimal("1"), new BigDecimal("50.00"));
-            assertThrows(UnsupportedOperationException.class, () ->
-                    quote.getLines().add(newLine));
+            QuoteLine newLine = createLine("Product C", new BigDecimal("1"),
+                    new BigDecimal("50.00"));
+            assertThrows(UnsupportedOperationException.class,
+                    () -> quote.getLines().add(newLine));
         }
 
         @Test
@@ -400,7 +423,8 @@ class QuoteTest {
             assertTrue(convertedToOrder.isActive());
 
             Quote convertedToInvoice = createDraftQuote();
-            convertedToInvoice.markConvertedToInvoice(UUID.randomUUID(), "INV-001");
+            convertedToInvoice.markConvertedToInvoice(UUID.randomUUID(),
+                    "INV-001");
             assertTrue(convertedToInvoice.isActive());
 
             Quote cancelled = createDraftQuote();
@@ -425,13 +449,12 @@ class QuoteTest {
             Instant updatedAt = Instant.now().minusSeconds(3600);
             List<QuoteLine> lines = validLines();
 
-            Quote quote = Quote.reconstitute(id, qn, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                    CREATED_BY, CREATED_BY_NAME,
-                    QuoteStatus.CANCELLED,
-                    LocalDate.of(2025, 12, 31), "Test notes", new BigDecimal("100.00"),
-                    orderId, "ORD-2025-0042", invoiceId, "INV-2025-0042",
-                    cancelledAt, "No longer needed",
-                    lines, createdAt, updatedAt);
+            Quote quote = Quote.reconstitute(id, qn, CUSTOMER_ID, CUSTOMER_NAME,
+                    CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME,
+                    QuoteStatus.CANCELLED, LocalDate.of(2025, 12, 31),
+                    "Test notes", new BigDecimal("100.00"), orderId,
+                    "ORD-2025-0042", invoiceId, "INV-2025-0042", cancelledAt,
+                    "No longer needed", lines, createdAt, updatedAt);
 
             assertEquals(id, quote.getId());
             assertEquals(qn, quote.getQuoteNumber());

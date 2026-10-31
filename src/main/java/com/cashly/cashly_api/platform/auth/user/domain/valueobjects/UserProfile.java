@@ -1,13 +1,14 @@
 package com.cashly.cashly_api.platform.auth.user.domain.valueobjects;
 
-
-public record UserProfile(String firstName, String lastName, Address address, String phone) {
+public record UserProfile(String firstName, String lastName, Address address,
+        String phone) {
     public UserProfile {
         firstName = text(firstName, 100, true);
         lastName = text(lastName, 100, true);
         if (phone != null) {
             phone = phone.replaceAll("[\\s().-]", "");
-            if (phone.isEmpty()) phone = null;
+            if (phone.isEmpty())
+                phone = null;
             else if (!phone.matches("\\+?[0-9]{7,15}")) {
                 throw new IllegalArgumentException("Invalid phone number");
             }
@@ -22,13 +23,16 @@ public record UserProfile(String firstName, String lastName, Address address, St
             return null;
         }
         value = value.strip();
-        if ((required && value.isEmpty()) || value.codePointCount(0, value.length()) > max) {
-            throw new IllegalArgumentException("Invalid text length (maximum " + max + ")");
+        if ((required && value.isEmpty())
+                || value.codePointCount(0, value.length()) > max) {
+            throw new IllegalArgumentException(
+                    "Invalid text length (maximum " + max + ")");
         }
         return value;
     }
 
-    public record Address(String street, String city, String region, String country, String postalCode) {
+    public record Address(String street, String city, String region,
+            String country, String postalCode) {
         public Address {
             street = text(street, 200, false);
             city = text(city, 100, false);

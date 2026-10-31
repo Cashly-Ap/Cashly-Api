@@ -16,7 +16,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GetWarehousesForQuoteUseCaseTest {
-    @Mock QuoteWarehouseGateway warehouses;
+    @Mock
+    QuoteWarehouseGateway warehouses;
     private GetWarehousesForQuoteUseCase useCase;
 
     @BeforeEach
@@ -28,9 +29,11 @@ class GetWarehousesForQuoteUseCaseTest {
     void shouldReturnAccessibleWarehousesUsingTheirPublicDirectoryData() {
         UUID customerId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
-        when(warehouses.accessibleWarehouseIds(customerId)).thenReturn(Set.of(warehouseId));
-        when(warehouses.findById(warehouseId)).thenReturn(Optional.of(
-                new QuoteWarehouseGateway.Warehouse(warehouseId, "Main", "Street 1")));
+        when(warehouses.accessibleWarehouseIds(customerId))
+                .thenReturn(Set.of(warehouseId));
+        when(warehouses.findById(warehouseId)).thenReturn(
+                Optional.of(new QuoteWarehouseGateway.Warehouse(warehouseId,
+                        "Main", "Street 1")));
 
         var result = useCase.execute(customerId);
 
@@ -44,7 +47,8 @@ class GetWarehousesForQuoteUseCaseTest {
     @Test
     void shouldSkipDirectoryEntriesThatNoLongerExist() {
         UUID customerId = UUID.randomUUID();
-        when(warehouses.accessibleWarehouseIds(customerId)).thenReturn(Set.of(UUID.randomUUID()));
+        when(warehouses.accessibleWarehouseIds(customerId))
+                .thenReturn(Set.of(UUID.randomUUID()));
 
         assertThat(useCase.execute(customerId)).isEmpty();
     }

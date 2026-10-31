@@ -55,7 +55,8 @@ class PurchaseRepositoryIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new PurchaseRepositoryAdapter(jpaRepository, sequenceJpaRepository);
+        adapter = new PurchaseRepositoryAdapter(jpaRepository,
+                sequenceJpaRepository);
     }
 
     @Nested
@@ -67,18 +68,21 @@ class PurchaseRepositoryIntegrationTest {
             Purchase purchase = buildDomainPurchase(PurchaseStatus.DRAFT);
             PurchaseEntity savedEntity = PurchaseJpaMapper.toEntity(purchase);
 
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Purchase result = adapter.save(purchase);
 
             assertNotNull(result);
             assertEquals(purchase.getId(), result.getId());
-            assertEquals(purchase.getPurchaseNumber(), result.getPurchaseNumber());
+            assertEquals(purchase.getPurchaseNumber(),
+                    result.getPurchaseNumber());
             assertEquals(purchase.getSupplierName(), result.getSupplierName());
 
             PurchaseEntity captured = entityCaptor.getValue();
             assertEquals(purchase.getId().value(), captured.getId());
-            assertEquals(purchase.getPurchaseNumber().value(), captured.getPurchaseNumber());
+            assertEquals(purchase.getPurchaseNumber().value(),
+                    captured.getPurchaseNumber());
             assertEquals(purchase.getStatus().name(), captured.getStatus());
 
             verify(jpaRepository).save(any(PurchaseEntity.class));
@@ -89,7 +93,8 @@ class PurchaseRepositoryIntegrationTest {
             Purchase purchase = buildDomainPurchaseWithAllocations();
             PurchaseEntity savedEntity = PurchaseJpaMapper.toEntity(purchase);
 
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             adapter.save(purchase);
 
@@ -102,7 +107,8 @@ class PurchaseRepositoryIntegrationTest {
             assertNotNull(lineEntity.getAllocations());
             assertEquals(1, lineEntity.getAllocations().size());
 
-            PurchaseLineAllocationEntity allocEntity = lineEntity.getAllocations().get(0);
+            PurchaseLineAllocationEntity allocEntity = lineEntity
+                    .getAllocations().get(0);
             assertNotNull(allocEntity.getWarehouseId());
             assertEquals(new BigDecimal("10"), allocEntity.getQuantity());
         }
@@ -119,7 +125,8 @@ class PurchaseRepositoryIntegrationTest {
             PurchaseEntity entity = PurchaseJpaMapper.toEntity(purchase);
             entity.setId(id);
 
-            when(jpaRepository.findWithLinesById(id)).thenReturn(Optional.of(entity));
+            when(jpaRepository.findWithLinesById(id))
+                    .thenReturn(Optional.of(entity));
 
             Optional<Purchase> result = adapter.findById(PurchaseId.of(id));
 
@@ -132,7 +139,8 @@ class PurchaseRepositoryIntegrationTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             UUID id = UUID.randomUUID();
-            when(jpaRepository.findWithLinesById(id)).thenReturn(Optional.empty());
+            when(jpaRepository.findWithLinesById(id))
+                    .thenReturn(Optional.empty());
 
             Optional<Purchase> result = adapter.findById(PurchaseId.of(id));
 
@@ -147,31 +155,30 @@ class PurchaseRepositoryIntegrationTest {
 
         @Test
         void should_ReturnFilteredResults_When_EntitiesFound() {
-            PurchaseEntity entity = PurchaseJpaMapper.toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
+            PurchaseEntity entity = PurchaseJpaMapper
+                    .toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
 
-            when(jpaRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity));
 
             List<Purchase> result = adapter.findAllWithFilters(
-                    LocalDate.now().minusDays(30), LocalDate.now(),
-                    null, "DRAFT", null, null, "createdAt", "desc");
+                    LocalDate.now().minusDays(30), LocalDate.now(), null,
+                    "DRAFT", null, null, "createdAt", "desc");
 
             assertNotNull(result);
             assertFalse(result.isEmpty());
             assertEquals(1, result.size());
-            verify(jpaRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any());
+            verify(jpaRepository).findAllWithFilters(any(), any(), any(), any(),
+                    any(), any());
         }
 
         @Test
         void should_ReturnEmpty_When_NoEntitiesFound() {
-            when(jpaRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of());
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of());
 
-            List<Purchase> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "createdAt", "asc");
+            List<Purchase> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "createdAt", "asc");
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
@@ -179,15 +186,16 @@ class PurchaseRepositoryIntegrationTest {
 
         @Test
         void should_SortByCreatedAtDesc_When_DefaultOrder() {
-            PurchaseEntity entity1 = PurchaseJpaMapper.toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
-            PurchaseEntity entity2 = PurchaseJpaMapper.toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
+            PurchaseEntity entity1 = PurchaseJpaMapper
+                    .toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
+            PurchaseEntity entity2 = PurchaseJpaMapper
+                    .toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
 
-            when(jpaRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity1, entity2));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity1, entity2));
 
-            List<Purchase> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "createdAt", "desc");
+            List<Purchase> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "createdAt", "desc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -195,14 +203,14 @@ class PurchaseRepositoryIntegrationTest {
 
         @Test
         void should_SortBySupplierNameAsc_When_Specified() {
-            PurchaseEntity entity = PurchaseJpaMapper.toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
+            PurchaseEntity entity = PurchaseJpaMapper
+                    .toEntity(buildDomainPurchase(PurchaseStatus.DRAFT));
 
-            when(jpaRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity));
 
-            List<Purchase> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "supplierName", "asc");
+            List<Purchase> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "supplierName", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.size());
@@ -229,17 +237,21 @@ class PurchaseRepositoryIntegrationTest {
 
         @Test
         void shouldQueryAllUsedSupplierIdsInOneBatch() {
-            Set<UUID> supplierIds = Set.of(UUID.randomUUID(), UUID.randomUUID());
+            Set<UUID> supplierIds = Set.of(UUID.randomUUID(),
+                    UUID.randomUUID());
             Set<UUID> usedSupplierIds = Set.of(supplierIds.iterator().next());
-            when(jpaRepository.findSupplierIdsWithPurchases(supplierIds)).thenReturn(usedSupplierIds);
+            when(jpaRepository.findSupplierIdsWithPurchases(supplierIds))
+                    .thenReturn(usedSupplierIds);
 
-            assertEquals(usedSupplierIds, adapter.findSupplierIdsWithPurchases(supplierIds));
+            assertEquals(usedSupplierIds,
+                    adapter.findSupplierIdsWithPurchases(supplierIds));
             verify(jpaRepository).findSupplierIdsWithPurchases(supplierIds);
         }
 
         @Test
         void shouldSkipQueryWhenSupplierIdBatchIsEmpty() {
-            assertEquals(Set.of(), adapter.findSupplierIdsWithPurchases(Set.of()));
+            assertEquals(Set.of(),
+                    adapter.findSupplierIdsWithPurchases(Set.of()));
             verifyNoInteractions(jpaRepository);
         }
     }
@@ -254,21 +266,26 @@ class PurchaseRepositoryIntegrationTest {
             seq.setYear(2026);
             seq.setNextValue(5);
 
-            when(sequenceJpaRepository.findByYearForUpdate(2026)).thenReturn(Optional.of(seq));
-            when(sequenceJpaRepository.save(any(PurchaseNumberSequenceEntity.class)))
+            when(sequenceJpaRepository.findByYearForUpdate(2026))
+                    .thenReturn(Optional.of(seq));
+            when(sequenceJpaRepository
+                    .save(any(PurchaseNumberSequenceEntity.class)))
                     .thenAnswer(inv -> inv.getArgument(0));
 
             int result = adapter.getNextSequenceForYear(2026);
 
             assertEquals(6, result);
             verify(sequenceJpaRepository).findByYearForUpdate(2026);
-            verify(sequenceJpaRepository).save(argThat(s -> s.getNextValue() == 6));
+            verify(sequenceJpaRepository)
+                    .save(argThat(s -> s.getNextValue() == 6));
         }
 
         @Test
         void should_InitializeSequence_When_YearDoesNotExist() {
-            when(sequenceJpaRepository.findByYearForUpdate(2026)).thenReturn(Optional.empty());
-            when(sequenceJpaRepository.save(any(PurchaseNumberSequenceEntity.class)))
+            when(sequenceJpaRepository.findByYearForUpdate(2026))
+                    .thenReturn(Optional.empty());
+            when(sequenceJpaRepository
+                    .save(any(PurchaseNumberSequenceEntity.class)))
                     .thenAnswer(inv -> {
                         PurchaseNumberSequenceEntity s = inv.getArgument(0);
                         s.setNextValue(1);
@@ -279,16 +296,19 @@ class PurchaseRepositoryIntegrationTest {
 
             assertEquals(1, result);
             verify(sequenceJpaRepository).findByYearForUpdate(2026);
-            verify(sequenceJpaRepository).save(any(PurchaseNumberSequenceEntity.class));
+            verify(sequenceJpaRepository)
+                    .save(any(PurchaseNumberSequenceEntity.class));
         }
 
         @Test
         void should_CreateNewSequence_When_NotFound() {
-            when(sequenceJpaRepository.findByYearForUpdate(2026)).thenReturn(Optional.empty());
+            when(sequenceJpaRepository.findByYearForUpdate(2026))
+                    .thenReturn(Optional.empty());
 
-            ArgumentCaptor<PurchaseNumberSequenceEntity> seqCaptor =
-                    ArgumentCaptor.forClass(PurchaseNumberSequenceEntity.class);
-            when(sequenceJpaRepository.save(seqCaptor.capture())).thenAnswer(inv -> inv.getArgument(0));
+            ArgumentCaptor<PurchaseNumberSequenceEntity> seqCaptor = ArgumentCaptor
+                    .forClass(PurchaseNumberSequenceEntity.class);
+            when(sequenceJpaRepository.save(seqCaptor.capture()))
+                    .thenAnswer(inv -> inv.getArgument(0));
 
             int result = adapter.getNextSequenceForYear(2026);
 
@@ -300,48 +320,28 @@ class PurchaseRepositoryIntegrationTest {
     }
 
     private Purchase buildDomainPurchase(PurchaseStatus status) {
-        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Purchase.reconstitute(
-                PurchaseId.of(UUID.randomUUID()),
-                PurchaseNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                status,
-                "Notes",
+        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Purchase.reconstitute(PurchaseId.of(UUID.randomUUID()),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name", status, "Notes",
                 BigDecimal.TEN,
                 status == PurchaseStatus.CONFIRMED ? LocalDateTime.now() : null,
                 status == PurchaseStatus.CANCELLED ? LocalDateTime.now() : null,
                 status == PurchaseStatus.CANCELLED ? "Reason" : null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Purchase buildDomainPurchaseWithAllocations() {
-        PurchaseLineAllocation allocation = PurchaseLineAllocation.create(
-                UUID.randomUUID(), new BigDecimal("10"));
-        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.TEN, BigDecimal.valueOf(10), List.of(allocation));
-        return Purchase.reconstitute(
-                PurchaseId.of(UUID.randomUUID()),
-                PurchaseNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                PurchaseStatus.DRAFT,
-                null,
-                BigDecimal.valueOf(100),
-                null, null, null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        PurchaseLineAllocation allocation = PurchaseLineAllocation
+                .create(UUID.randomUUID(), new BigDecimal("10"));
+        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.TEN, BigDecimal.valueOf(10),
+                List.of(allocation));
+        return Purchase.reconstitute(PurchaseId.of(UUID.randomUUID()),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name",
+                PurchaseStatus.DRAFT, null, BigDecimal.valueOf(100), null, null,
+                null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 }

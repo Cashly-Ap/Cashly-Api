@@ -17,16 +17,23 @@ public class LocalStockCatalogGatewayAdapter implements StockCatalogGateway {
 
     @Override
     public CatalogProduct getProduct(UUID productId) {
-        return findProduct(productId).orElseThrow(() -> new ProductNotFoundException(productId));
+        return findProduct(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     @Override
     public Optional<CatalogProduct> findProduct(UUID productId) {
-        return catalog.findProduct(productId).map(product -> toCatalogProduct(product));
+        return catalog.findProduct(productId)
+                .map(product -> toCatalogProduct(product));
     }
 
-    private CatalogProduct toCatalogProduct(com.cashly.cashly_api.catalog.products.application.ports.in.StockCatalogEntry product) {
-        return new CatalogProduct(product.id(), product.code(), product.name(), product.composite(),
-                product.components().stream().map(component -> new Component(component.productId(), component.quantity())).toList());
+    private CatalogProduct toCatalogProduct(
+            com.cashly.cashly_api.catalog.products.application.ports.in.StockCatalogEntry product) {
+        return new CatalogProduct(product.id(), product.code(), product.name(),
+                product.composite(),
+                product.components().stream()
+                        .map(component -> new Component(component.productId(),
+                                component.quantity()))
+                        .toList());
     }
 }

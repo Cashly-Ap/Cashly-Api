@@ -19,26 +19,27 @@ public class GetPurchaseByIdUseCase {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseWarehouseGateway warehouseRepository;
-public GetPurchaseByIdUseCase(PurchaseRepository purchaseRepository,
-                                   PurchaseWarehouseGateway warehouseRepository) {
+    public GetPurchaseByIdUseCase(PurchaseRepository purchaseRepository,
+            PurchaseWarehouseGateway warehouseRepository) {
         this.purchaseRepository = purchaseRepository;
         this.warehouseRepository = warehouseRepository;
-}
+    }
 
     public PurchaseDetailResponse execute(UUID id) {
         Purchase purchase = purchaseRepository.findById(PurchaseId.of(id))
                 .orElseThrow(() -> new PurchaseNotFoundException(id));
 
-        Map<UUID, Warehouse> allWarehouses = warehouseRepository.activeWarehouses().stream()
+        Map<UUID, Warehouse> allWarehouses = warehouseRepository
+                .activeWarehouses().stream()
                 .collect(Collectors.toMap(Warehouse::id, w -> w));
 
         Map<UUID, List<Stock>> stockByProductId = purchase.getLines().stream()
-                .collect(Collectors.toMap(
-                        line -> line.getProductId(),
-                        line -> warehouseRepository.findByProductId(line.getProductId()),
-                        (a, b) -> a
-                ));
+                .collect(Collectors.toMap(line -> line.getProductId(),
+                        line -> warehouseRepository
+                                .findByProductId(line.getProductId()),
+                        (a, b) -> a));
 
-        return PurchaseMapper.toDetailResponse(purchase, allWarehouses, stockByProductId);
+        return PurchaseMapper.toDetailResponse(purchase, allWarehouses,
+                stockByProductId);
     }
 }

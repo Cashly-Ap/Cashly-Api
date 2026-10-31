@@ -19,7 +19,8 @@ public class CommercialCatalogController {
 
     private final GenerateCommercialCatalogPdfUseCase generateCommercialCatalogPdfUseCase;
 
-    public CommercialCatalogController(GenerateCommercialCatalogPdfUseCase generateCommercialCatalogPdfUseCase) {
+    public CommercialCatalogController(
+            GenerateCommercialCatalogPdfUseCase generateCommercialCatalogPdfUseCase) {
         this.generateCommercialCatalogPdfUseCase = generateCommercialCatalogPdfUseCase;
     }
 
@@ -30,11 +31,12 @@ public class CommercialCatalogController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) UUID priceTypeId,
             @RequestParam(required = false) Boolean active) {
-        CommercialCatalogQuery query = new CommercialCatalogQuery(search, categoryId, priceTypeId, active);
+        CommercialCatalogQuery query = new CommercialCatalogQuery(search,
+                categoryId, priceTypeId, active);
         byte[] pdf = generateCommercialCatalogPdfUseCase.execute(query);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"catalogo-comercial.pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"catalogo-comercial.pdf\"")
                 .body(pdf);
     }
 }

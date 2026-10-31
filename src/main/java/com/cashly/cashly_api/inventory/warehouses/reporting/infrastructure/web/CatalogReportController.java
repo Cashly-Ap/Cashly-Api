@@ -42,8 +42,8 @@ public class CatalogReportController {
             @RequestParam(required = false) Boolean lowStock,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        CatalogReportQuery query = new CatalogReportQuery(
-                search, categoryId, warehouseId, composite, withStock, lowStock, page, size);
+        CatalogReportQuery query = new CatalogReportQuery(search, categoryId,
+                warehouseId, composite, withStock, lowStock, page, size);
         return getCatalogReportUseCase.execute(query);
     }
 
@@ -56,12 +56,12 @@ public class CatalogReportController {
             @RequestParam(required = false) Boolean composite,
             @RequestParam(required = false) Boolean withStock,
             @RequestParam(required = false) Boolean lowStock) {
-        CatalogPdfQuery query = new CatalogPdfQuery(
-                search, categoryId, warehouseId, composite, withStock, lowStock);
+        CatalogPdfQuery query = new CatalogPdfQuery(search, categoryId,
+                warehouseId, composite, withStock, lowStock);
         byte[] pdf = generateCatalogPdfUseCase.execute(query);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"reporte-productos.pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"reporte-productos.pdf\"")
                 .body(pdf);
     }
 }

@@ -25,36 +25,46 @@ import org.springframework.context.annotation.Configuration;
 public class CashRegisterConfig {
 
     @Bean
-    OpenRegisterUseCase openClosureUseCase(CashRegisterRepository closureRepository) {
+    OpenRegisterUseCase openClosureUseCase(
+            CashRegisterRepository closureRepository) {
         return new OpenRegisterUseCase(closureRepository);
     }
 
     @Bean
-    GetActiveRegisterUseCase getActiveClosureUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+    GetActiveRegisterUseCase getActiveClosureUseCase(
+            CashRegisterRepository closureRepository,
+            CashRegisterQueryGateway queries) {
         return new GetActiveRegisterUseCase(closureRepository, queries);
     }
 
     @Bean
-    CloseRegisterUseCase closeClosureUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+    CloseRegisterUseCase closeClosureUseCase(
+            CashRegisterRepository closureRepository,
+            CashRegisterQueryGateway queries) {
         return new CloseRegisterUseCase(closureRepository, queries);
     }
 
     @Bean
-    GetRegisterHistoryUseCase getClosureHistoryUseCase(CashRegisterRepository closureRepository, CashRegisterQueryGateway queries) {
+    GetRegisterHistoryUseCase getClosureHistoryUseCase(
+            CashRegisterRepository closureRepository,
+            CashRegisterQueryGateway queries) {
         return new GetRegisterHistoryUseCase(closureRepository, queries);
     }
 
     @Bean
-    CashMovementService cashMovementService(CashRegisterRepository registerRepository,
-                                            CashRegisterPaymentMethodGateway paymentMethods) {
+    CashMovementService cashMovementService(
+            CashRegisterRepository registerRepository,
+            CashRegisterPaymentMethodGateway paymentMethods) {
         return new CashMovementService(registerRepository, paymentMethods);
     }
 
     @Bean
-    RecordCashMovementUseCase recordCashMovementUseCase(CashRegisterRepository registerRepository,
-                                                        CashRegisterActorGateway actors,
-                                                        CashMovementService movementService) {
-        return new RecordCashMovementUseCase(registerRepository, actors, movementService);
+    RecordCashMovementUseCase recordCashMovementUseCase(
+            CashRegisterRepository registerRepository,
+            CashRegisterActorGateway actors,
+            CashMovementService movementService) {
+        return new RecordCashMovementUseCase(registerRepository, actors,
+                movementService);
     }
 
     @Bean
@@ -73,13 +83,15 @@ public class CashRegisterConfig {
     GenerateCashRegisterReportUseCase generateCashRegisterReportUseCase(
             CashRegisterRepository repository, CashRegisterQueryGateway queries,
             CashRegisterReportPort reportPort) {
-        return new GenerateCashRegisterReportUseCase(repository, queries, reportPort);
+        return new GenerateCashRegisterReportUseCase(repository, queries,
+                reportPort);
     }
 
     @Bean
     GenerateCashRegisterRangeReportUseCase generateCashRegisterRangeReportUseCase(
             CashRegisterQueryGateway repository,
             CashRegisterRangeReportPort reportPort) {
-        return new GenerateCashRegisterRangeReportUseCase(repository, reportPort);
+        return new GenerateCashRegisterRangeReportUseCase(repository,
+                reportPort);
     }
 }

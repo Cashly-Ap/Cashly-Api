@@ -38,7 +38,8 @@ class LocalStockCatalogGatewayAdapterTest {
         assertTrue(result.composite());
         assertEquals(componentId, result.components().getFirst().productId());
         assertEquals(3, result.components().getFirst().quantity());
-        assertThrows(UnsupportedOperationException.class, () -> result.components().clear());
+        assertThrows(UnsupportedOperationException.class,
+                () -> result.components().clear());
     }
 
     @Test
@@ -48,14 +49,17 @@ class LocalStockCatalogGatewayAdapterTest {
     }
     @Test
     void shouldPreserveMissingProductException() {
-        assertThrows(ProductNotFoundException.class, () -> adapter.getProduct(productId));
+        assertThrows(ProductNotFoundException.class,
+                () -> adapter.getProduct(productId));
         verify(products).findById(productId);
     }
 
     @Test
     void shouldPropagateCatalogFailures() {
-        IllegalStateException failure = new IllegalStateException("Catalog failed");
+        IllegalStateException failure = new IllegalStateException(
+                "Catalog failed");
         when(products.findById(productId)).thenThrow(failure);
-        assertSame(failure, assertThrows(IllegalStateException.class, () -> adapter.getProduct(productId)));
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> adapter.getProduct(productId)));
     }
 }

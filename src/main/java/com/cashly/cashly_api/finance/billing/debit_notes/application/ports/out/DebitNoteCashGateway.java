@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public interface DebitNoteCashGateway {
     void recordCashIn(BigDecimal amount, String noteNumber, UUID noteId,
-                      UUID authenticatedUserId, String createdByName);
+            UUID authenticatedUserId, String createdByName);
 }

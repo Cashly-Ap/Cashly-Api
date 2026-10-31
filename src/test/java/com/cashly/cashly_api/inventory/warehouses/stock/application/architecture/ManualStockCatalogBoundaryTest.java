@@ -14,15 +14,23 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class ManualStockCatalogBoundaryTest {
     @Test
     void shouldRejectForeignProductTypesInManualStockCore() {
-        for (Class<?> type : List.of(StockEntryUseCase.class, StockExitUseCase.class,
-                StockAdjustmentUseCase.class, TransferStockUseCase.class, GetWarehouseStockUseCase.class, GetStockMovementsUseCase.class)) {
+        for (Class<?> type : List.of(StockEntryUseCase.class,
+                StockExitUseCase.class, StockAdjustmentUseCase.class,
+                TransferStockUseCase.class, GetWarehouseStockUseCase.class,
+                GetStockMovementsUseCase.class)) {
             for (var constructor : type.getConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.catalog.products"), parameter.getName());
+                    assertFalse(
+                            parameter.getPackageName().startsWith(
+                                    "com.cashly.cashly_api.catalog.products"),
+                            parameter.getName());
                 }
             }
             for (var field : type.getDeclaredFields()) {
-                assertFalse(field.getType().getPackageName().startsWith("com.cashly.cashly_api.catalog.products"), field.toString());
+                assertFalse(
+                        field.getType().getPackageName().startsWith(
+                                "com.cashly.cashly_api.catalog.products"),
+                        field.toString());
             }
         }
     }

@@ -12,9 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QuoteInvoiceCreationConfig {
     @Bean
-    public QuoteInvoiceCreationApi quoteInvoiceCreationApi(InvoiceRepository invoices, ActorIdentityGateway actors,
-                                                          CustomerCreditTermsGateway creditTerms,
-                                                          IssueInvoiceService issuance) {
-        return new QuoteInvoiceCreationService(invoices, actors, creditTerms, issuance);
+    public QuoteInvoiceCreationApi quoteInvoiceCreationApi(
+            InvoiceRepository invoices, ActorIdentityGateway actors,
+            CustomerCreditTermsGateway creditTerms,
+            IssueInvoiceService issuance) {
+        return new QuoteInvoiceCreationService(invoices, actors, creditTerms,
+                issuance);
     }
 }

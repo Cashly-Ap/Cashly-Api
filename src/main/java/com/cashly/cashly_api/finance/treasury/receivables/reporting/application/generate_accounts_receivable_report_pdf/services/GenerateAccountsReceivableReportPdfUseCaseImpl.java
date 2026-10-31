@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-public class GenerateAccountsReceivableReportPdfUseCaseImpl implements GenerateAccountsReceivableReportPdfUseCase {
+public class GenerateAccountsReceivableReportPdfUseCaseImpl
+        implements
+            GenerateAccountsReceivableReportPdfUseCase {
 
     private final AccountsReceivableQueryGateway receivablesRepository;
     private final AccountsReceivableReportPdfPort pdfPort;
@@ -25,12 +27,15 @@ public class GenerateAccountsReceivableReportPdfUseCaseImpl implements GenerateA
 
     @Override
     public byte[] execute(UUID customerId, boolean overdueOnly) {
-        AccountsReceivableReportData data = buildReportData(customerId, overdueOnly);
+        AccountsReceivableReportData data = buildReportData(customerId,
+                overdueOnly);
         return pdfPort.generateReport(data);
     }
 
-    private AccountsReceivableReportData buildReportData(UUID customerId, boolean overdueOnly) {
-        List<AccountReceivableRow> reportRows = receivablesRepository.findAccountsReceivableForReport(customerId, overdueOnly);
+    private AccountsReceivableReportData buildReportData(UUID customerId,
+            boolean overdueOnly) {
+        List<AccountReceivableRow> reportRows = receivablesRepository
+                .findAccountsReceivableForReport(customerId, overdueOnly);
 
         BigDecimal totalReceivable = BigDecimal.ZERO;
         BigDecimal notYetDue = BigDecimal.ZERO;
@@ -44,10 +49,8 @@ public class GenerateAccountsReceivableReportPdfUseCaseImpl implements GenerateA
             BigDecimal rowAge0_30 = row.age0_30();
             notYetDue = notYetDue.add(rowAge0_30);
 
-            BigDecimal rowOverdue = row.age31_60()
-                    .add(row.age61_90())
-                    .add(row.age91_120())
-                    .add(row.age120Plus());
+            BigDecimal rowOverdue = row.age31_60().add(row.age61_90())
+                    .add(row.age91_120()).add(row.age120Plus());
             overdue = overdue.add(rowOverdue);
 
             if (row.pendingBalance().compareTo(row.creditLimit()) > 0) {
@@ -55,16 +58,9 @@ public class GenerateAccountsReceivableReportPdfUseCaseImpl implements GenerateA
             }
         }
 
-        return new AccountsReceivableReportData(
-                java.time.LocalDate.now(),
-                overdueOnly,
-                reportRows,
-                new AccountsReceivableReportData.Summary(
-                        totalReceivable,
-                        notYetDue,
-                        overdue,
-                        customersExceededCredit
-                )
-        );
+        return new AccountsReceivableReportData(java.time.LocalDate.now(),
+                overdueOnly, reportRows,
+                new AccountsReceivableReportData.Summary(totalReceivable,
+                        notYetDue, overdue, customersExceededCredit));
     }
 }

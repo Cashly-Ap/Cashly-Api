@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-public class CustomerWarehouseAccessAdapter implements CustomerWarehouseAccessGateway {
+public class CustomerWarehouseAccessAdapter
+        implements
+            CustomerWarehouseAccessGateway {
     private final CustomerWarehouseAccessQuery query;
 
     public CustomerWarehouseAccessAdapter(CustomerWarehouseAccessQuery query) {

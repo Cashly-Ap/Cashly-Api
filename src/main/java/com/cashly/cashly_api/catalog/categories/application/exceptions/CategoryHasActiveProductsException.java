@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class CategoryHasActiveProductsException extends RuntimeException {
     public CategoryHasActiveProductsException(UUID categoryId) {
-        super("Cannot deactivate category with id " + categoryId + " because it has active products");
+        super("Cannot deactivate category with id " + categoryId
+                + " because it has active products");
     }
 }

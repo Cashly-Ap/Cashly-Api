@@ -10,7 +10,8 @@ public interface CustomerWarehouseAccessRepository {
 
     CustomerWarehouseAccess save(CustomerWarehouseAccess access);
 
-    Optional<CustomerWarehouseAccess> findByCustomerIdAndWarehouseId(UUID customerId, UUID warehouseId);
+    Optional<CustomerWarehouseAccess> findByCustomerIdAndWarehouseId(
+            UUID customerId, UUID warehouseId);
 
     List<CustomerWarehouseAccess> findByCustomerId(UUID customerId);
 

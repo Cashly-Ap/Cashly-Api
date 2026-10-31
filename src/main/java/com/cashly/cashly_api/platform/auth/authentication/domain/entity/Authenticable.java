@@ -12,7 +12,9 @@ public interface Authenticable {
 
     String getSubjectId();
 
-    default String getPhotoPath() { return null; }
+    default String getPhotoPath() {
+        return null;
+    }
 
     String getEmail();
 

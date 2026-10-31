@@ -17,12 +17,14 @@ import static org.mockito.Mockito.*;
 
 class LocalReturnInventoryGatewayAdapterTest {
     private final ReturnInventoryApi provider = mock(ReturnInventoryApi.class);
-    private final LocalReturnInventoryGatewayAdapter adapter = new LocalReturnInventoryGatewayAdapter(provider);
+    private final LocalReturnInventoryGatewayAdapter adapter = new LocalReturnInventoryGatewayAdapter(
+            provider);
     private final UUID warehouseId = UUID.randomUUID();
     private final UUID productId = UUID.randomUUID();
     private final ReturnInventoryGateway.Command command = new ReturnInventoryGateway.Command(
             UUID.randomUUID(), "RET-2026-0001", "User",
-            List.of(new ReturnInventoryGateway.Allocation(warehouseId, productId, 2)));
+            List.of(new ReturnInventoryGateway.Allocation(warehouseId,
+                    productId, 2)));
 
     @Test
     void shouldForwardRestoreMetadataToPublicWarehouseContract() {
@@ -38,9 +40,11 @@ class LocalReturnInventoryGatewayAdapterTest {
 
     @Test
     void shouldPropagateProviderFailure() {
-        IllegalStateException failure = new IllegalStateException("Missing stock");
+        IllegalStateException failure = new IllegalStateException(
+                "Missing stock");
         doThrow(failure).when(provider).restoreStock(expected());
-        assertSame(failure, assertThrows(IllegalStateException.class, () -> adapter.restoreStock(command)));
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> adapter.restoreStock(command)));
     }
 
     @Test
@@ -54,9 +58,11 @@ class LocalReturnInventoryGatewayAdapterTest {
         ReturnLineAllocation fractional = allocation(new BigDecimal("2.9"));
         ReturnLineAllocation zero = allocation(BigDecimal.ZERO);
         ReturnLineAllocation negative = allocation(BigDecimal.ONE.negate());
-        when(line.getAllocations()).thenReturn(List.of(fractional, zero, negative));
+        when(line.getAllocations())
+                .thenReturn(List.of(fractional, zero, negative));
         var mapped = ReturnInventoryGateway.Command.from(returned, "User");
-        assertEquals(List.of(new ReturnInventoryGateway.Allocation(warehouseId, productId, 2)), mapped.allocations());
+        assertEquals(List.of(new ReturnInventoryGateway.Allocation(warehouseId,
+                productId, 2)), mapped.allocations());
         assertEquals(command.returnId(), mapped.returnId());
         assertEquals("User", mapped.userName());
     }
@@ -69,7 +75,9 @@ class LocalReturnInventoryGatewayAdapterTest {
     }
 
     private ReturnStockCommand expected() {
-        return new ReturnStockCommand(command.returnId(), command.returnNumber(), command.userName(),
-                List.of(new ReturnStockCommand.Allocation(warehouseId, productId, 2)));
+        return new ReturnStockCommand(command.returnId(),
+                command.returnNumber(), command.userName(),
+                List.of(new ReturnStockCommand.Allocation(warehouseId,
+                        productId, 2)));
     }
 }

@@ -42,13 +42,13 @@ public class OrderController {
     private final DeleteOrderUseCase deleteOrderUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase,
-                            GetOrderByIdUseCase getOrderByIdUseCase,
-                            GetOrdersUseCase getOrdersUseCase,
-                            UpdateOrderUseCase updateOrderUseCase,
-                            ConfirmOrderUseCase confirmOrderUseCase,
-                            CancelOrderUseCase cancelOrderUseCase,
-                            ConvertToInvoiceUseCase convertToInvoiceUseCase,
-                            DeleteOrderUseCase deleteOrderUseCase) {
+            GetOrderByIdUseCase getOrderByIdUseCase,
+            GetOrdersUseCase getOrdersUseCase,
+            UpdateOrderUseCase updateOrderUseCase,
+            ConfirmOrderUseCase confirmOrderUseCase,
+            CancelOrderUseCase cancelOrderUseCase,
+            ConvertToInvoiceUseCase convertToInvoiceUseCase,
+            DeleteOrderUseCase deleteOrderUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.getOrderByIdUseCase = getOrderByIdUseCase;
         this.getOrdersUseCase = getOrdersUseCase;
@@ -65,7 +65,8 @@ public class OrderController {
             @Valid @RequestBody CreateOrderRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        OrderDetailResponse response = createOrderUseCase.execute(request, userId);
+        OrderDetailResponse response = createOrderUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -82,24 +83,32 @@ public class OrderController {
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
-        List<OrderListResponse> orders = action == null ? getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir) : getOrdersUseCase.execute(fromDate, toDate, customerId, status, productId, categoryId, orderBy, orderDir, action);
-        return ResponseEntity.ok(orders.stream()
-                .filter(order -> matchesSearch(search, order.orderNumber(), order.customerName()))
-                .toList());
+        List<OrderListResponse> orders = action == null
+                ? getOrdersUseCase.execute(fromDate, toDate, customerId, status,
+                        productId, categoryId, orderBy, orderDir)
+                : getOrdersUseCase.execute(fromDate, toDate, customerId, status,
+                        productId, categoryId, orderBy, orderDir, action);
+        return ResponseEntity
+                .ok(orders.stream()
+                        .filter(order -> matchesSearch(search,
+                                order.orderNumber(), order.customerName()))
+                        .toList());
     }
 
     private boolean matchesSearch(String search, String... values) {
-        if (search == null || search.isBlank()) return true;
+        if (search == null || search.isBlank())
+            return true;
         String term = search.trim().toLowerCase();
         return java.util.Arrays.stream(values)
                 .filter(java.util.Objects::nonNull)
                 .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
-    public ResponseEntity<List<OrderListResponse>> getAll(
-            LocalDate fromDate, LocalDate toDate, UUID customerId, String status,
-            UUID productId, UUID categoryId, String orderBy, String orderDir) {
-        return getAll(fromDate, toDate, customerId, status, productId, categoryId, null, orderBy, orderDir, null);
+    public ResponseEntity<List<OrderListResponse>> getAll(LocalDate fromDate,
+            LocalDate toDate, UUID customerId, String status, UUID productId,
+            UUID categoryId, String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, customerId, status, productId,
+                categoryId, null, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")
@@ -112,7 +121,7 @@ public class OrderController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> update(@PathVariable UUID id,
-                                                       @Valid @RequestBody UpdateOrderRequest request) {
+            @Valid @RequestBody UpdateOrderRequest request) {
         OrderDetailResponse order = updateOrderUseCase.execute(id, request);
         return ResponseEntity.ok(order);
     }
@@ -127,18 +136,20 @@ public class OrderController {
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> cancel(@PathVariable UUID id,
-                                                       @Valid @RequestBody CancelOrderRequest request) {
+            @Valid @RequestBody CancelOrderRequest request) {
         OrderDetailResponse order = cancelOrderUseCase.execute(id, request);
         return ResponseEntity.ok(order);
     }
 
     @PostMapping("/{id}/convert-to-invoice")
     @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(@PathVariable UUID id,
-                                                                      @Valid @RequestBody ConvertToInvoiceRequest request,
-                                                                      Authentication authentication) {
+    public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(
+            @PathVariable UUID id,
+            @Valid @RequestBody ConvertToInvoiceRequest request,
+            Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id, request, userId);
+        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(id,
+                request, userId);
         return ResponseEntity.ok(response);
     }
 

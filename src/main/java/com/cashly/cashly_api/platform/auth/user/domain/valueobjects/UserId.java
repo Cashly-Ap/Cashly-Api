@@ -19,12 +19,14 @@ public class UserId {
 
     public static UserId from(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("User ID string cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "User ID string cannot be null or empty");
         }
         try {
             return new UserId(UUID.fromString(value));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid User ID format: " + value, e);
+            throw new IllegalArgumentException(
+                    "Invalid User ID format: " + value, e);
         }
     }
 
@@ -34,8 +36,10 @@ public class UserId {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         UserId userId = (UserId) obj;
         return Objects.equals(value, userId.value);
     }

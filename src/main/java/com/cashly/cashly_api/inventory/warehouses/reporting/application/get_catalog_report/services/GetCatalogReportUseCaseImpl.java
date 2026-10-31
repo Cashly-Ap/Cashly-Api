@@ -11,12 +11,14 @@ public class GetCatalogReportUseCaseImpl implements GetCatalogReportUseCase {
 
     private final CatalogReportRepositoryPort catalogReportRepositoryPort;
 
-    public GetCatalogReportUseCaseImpl(CatalogReportRepositoryPort catalogReportRepositoryPort) {
+    public GetCatalogReportUseCaseImpl(
+            CatalogReportRepositoryPort catalogReportRepositoryPort) {
         this.catalogReportRepositoryPort = catalogReportRepositoryPort;
     }
 
     @Override
-    public PageResponse<CatalogReportResponse> execute(CatalogReportQuery query) {
+    public PageResponse<CatalogReportResponse> execute(
+            CatalogReportQuery query) {
         return catalogReportRepositoryPort.findCatalog(query);
     }
 }

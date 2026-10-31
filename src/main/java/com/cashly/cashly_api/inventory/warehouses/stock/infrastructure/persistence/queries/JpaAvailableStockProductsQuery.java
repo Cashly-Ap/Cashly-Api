@@ -8,13 +8,18 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-public class JpaAvailableStockProductsQuery implements AvailableStockProductsQuery {
+public class JpaAvailableStockProductsQuery
+        implements
+            AvailableStockProductsQuery {
     private final SpringDataAvailableStockProductsRepository stocks;
-    public JpaAvailableStockProductsQuery(SpringDataAvailableStockProductsRepository stocks) {
+    public JpaAvailableStockProductsQuery(
+            SpringDataAvailableStockProductsRepository stocks) {
         this.stocks = stocks;
     }
     @Override
     public Set<UUID> availableProductIds(Set<UUID> warehouseIds) {
-        return warehouseIds.isEmpty() ? Set.of() : Set.copyOf(stocks.findAvailableProductIds(warehouseIds));
+        return warehouseIds.isEmpty()
+                ? Set.of()
+                : Set.copyOf(stocks.findAvailableProductIds(warehouseIds));
     }
 }

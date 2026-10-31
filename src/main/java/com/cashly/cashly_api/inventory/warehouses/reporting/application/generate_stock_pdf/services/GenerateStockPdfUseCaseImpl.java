@@ -14,7 +14,8 @@ public class GenerateStockPdfUseCaseImpl implements GenerateStockPdfUseCase {
     private final StockReportRepositoryPort repository;
     private final StockPdfPort pdfPort;
 
-    public GenerateStockPdfUseCaseImpl(StockReportRepositoryPort repository, StockPdfPort pdfPort) {
+    public GenerateStockPdfUseCaseImpl(StockReportRepositoryPort repository,
+            StockPdfPort pdfPort) {
         this.repository = repository;
         this.pdfPort = pdfPort;
     }

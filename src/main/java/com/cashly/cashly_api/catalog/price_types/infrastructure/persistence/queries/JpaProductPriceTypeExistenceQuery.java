@@ -10,15 +10,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class JpaProductPriceTypeExistenceQuery implements ProductPriceTypeExistenceQuery {
+public class JpaProductPriceTypeExistenceQuery
+        implements
+            ProductPriceTypeExistenceQuery {
     private final SpringDataPriceTypeRepository priceTypes;
 
-    public JpaProductPriceTypeExistenceQuery(SpringDataPriceTypeRepository priceTypes) {
+    public JpaProductPriceTypeExistenceQuery(
+            SpringDataPriceTypeRepository priceTypes) {
         this.priceTypes = priceTypes;
     }
 
     @Override
     public Set<UUID> existingIds(List<UUID> ids) {
-        return priceTypes.findAllById(ids).stream().map(PriceTypeEntity::getId).collect(Collectors.toSet());
+        return priceTypes.findAllById(ids).stream().map(PriceTypeEntity::getId)
+                .collect(Collectors.toSet());
     }
 }

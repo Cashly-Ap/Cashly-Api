@@ -34,12 +34,12 @@ class GenerateMovementsExcelUseCaseImplTest {
     @Test
     @DisplayName("should generate movements Excel from query")
     void should_generate_movements_excel() {
-        MovementsPdfQuery query = new MovementsPdfQuery(
-                UUID.randomUUID(), UUID.randomUUID(), "ENTRY",
-                java.time.LocalDate.of(2026, 1, 1), java.time.LocalDate.of(2026, 12, 31));
-        List<MovementReportResponse> items = List.of(
-                new MovementReportResponse(UUID.randomUUID(), "Warehouse", "Product",
-                        "SKU001", "Entrada", 10, 5, 15, "notes", LocalDateTime.now()));
+        MovementsPdfQuery query = new MovementsPdfQuery(UUID.randomUUID(),
+                UUID.randomUUID(), "ENTRY", java.time.LocalDate.of(2026, 1, 1),
+                java.time.LocalDate.of(2026, 12, 31));
+        List<MovementReportResponse> items = List.of(new MovementReportResponse(
+                UUID.randomUUID(), "Warehouse", "Product", "SKU001", "Entrada",
+                10, 5, 15, "notes", LocalDateTime.now()));
         byte[] expectedExcel = "Excel content".getBytes();
 
         when(repository.findAllForPdf(query)).thenReturn(items);
@@ -55,8 +55,8 @@ class GenerateMovementsExcelUseCaseImplTest {
     @Test
     @DisplayName("should generate movements Excel with empty result")
     void should_generate_movements_excel_with_empty_result() {
-        MovementsPdfQuery query = new MovementsPdfQuery(
-                null, null, null, null, null);
+        MovementsPdfQuery query = new MovementsPdfQuery(null, null, null, null,
+                null);
         List<MovementReportResponse> items = List.of();
         byte[] expectedExcel = "Empty Excel".getBytes();
 

@@ -54,7 +54,17 @@ class UpdateInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         updateInvoiceUseCase = new UpdateInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), stockEnrichmentService, new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerCreditTermsGateway(new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery(mock(com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository.class))));
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(
+                        new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(
+                                productRepository)),
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
+                        new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
+                                warehouseStockRepository,
+                                mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))),
+                stockEnrichmentService,
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerCreditTermsGateway(
+                        new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery(
+                                mock(com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository.class))));
     }
 
     @Test
@@ -65,16 +75,21 @@ class UpdateInvoiceUseCaseTest {
         Product product = buildProduct(productId);
 
         UpdateInvoiceRequest.InvoiceLineRequest lineRequest = new UpdateInvoiceRequest.InvoiceLineRequest(
-                productId, BigDecimal.TWO, BigDecimal.valueOf(15.00), List.of()
-        );
-        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Updated notes", List.of(lineRequest));
+                productId, BigDecimal.TWO, BigDecimal.valueOf(15.00),
+                List.of());
+        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH",
+                "Updated notes", List.of(lineRequest));
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
 
-        InvoiceDetailResponse response = updateInvoiceUseCase.execute(id, request);
+        InvoiceDetailResponse response = updateInvoiceUseCase.execute(id,
+                request);
 
         assertNotNull(response);
         verify(invoiceRepository).save(any(Invoice.class));
@@ -84,14 +99,14 @@ class UpdateInvoiceUseCaseTest {
     void should_ThrowInvoiceNotFoundException_When_InvoiceNotFound() {
         UUID id = UUID.randomUUID();
 
-        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes", List.of());
+        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes",
+                List.of());
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.empty());
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                InvoiceNotFoundException.class,
-                () -> updateInvoiceUseCase.execute(id, request)
-        );
+        assertThrows(InvoiceNotFoundException.class,
+                () -> updateInvoiceUseCase.execute(id, request));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -104,17 +119,17 @@ class UpdateInvoiceUseCaseTest {
         Product product = buildProduct(productId);
 
         UpdateInvoiceRequest.InvoiceLineRequest lineRequest = new UpdateInvoiceRequest.InvoiceLineRequest(
-                productId, BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes", List.of(lineRequest));
+                productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes",
+                List.of(lineRequest));
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> updateInvoiceUseCase.execute(id, request)
-        );
+        assertThrows(IllegalStateException.class,
+                () -> updateInvoiceUseCase.execute(id, request));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -125,31 +140,37 @@ class UpdateInvoiceUseCaseTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, BigDecimal.valueOf(3));
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Invoice invoice = Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "User", null, null,
-                InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(warehouseId, BigDecimal.valueOf(3));
+        InvoiceLine line = InvoiceLine.create(productId, "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN,
+                List.of(allocation));
+        Invoice invoice = Invoice.reconstitute(InvoiceId.of(id),
+                InvoiceNumber.of(2026, 1), UUID.randomUUID(), "Customer",
+                "J-12345678-9", UUID.randomUUID(), "User", null, null,
+                InvoiceStatus.DRAFT, PaymentType.CASH, null, BigDecimal.ZERO,
+                null, null, null, List.of(line), LocalDateTime.now(),
+                LocalDateTime.now());
 
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 3,
-                LocalDateTime.now(), LocalDateTime.now());
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 50, 3, LocalDateTime.now(),
+                LocalDateTime.now());
 
         Product product = buildProduct(productId);
         UpdateInvoiceRequest.InvoiceLineRequest lineRequest = new UpdateInvoiceRequest.InvoiceLineRequest(
-                productId, BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes", List.of(lineRequest));
+                productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+        UpdateInvoiceRequest request = new UpdateInvoiceRequest("CASH", "Notes",
+                List.of(lineRequest));
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
 
         updateInvoiceUseCase.execute(id, request);
@@ -158,23 +179,18 @@ class UpdateInvoiceUseCaseTest {
     }
 
     private Invoice buildInvoice(UUID id, InvoiceStatus status) {
-        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name", null, null,
-                status, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+                UUID.randomUUID(), "User Name", null, null, status,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Product buildProduct(UUID productId) {
-        return Product.reconstitute(
-                productId, "PROD-001", "Product A",
-                null, null, false, true, null,
-                BigDecimal.valueOf(8),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, "PROD-001", "Product A", null,
+                null, false, true, null, BigDecimal.valueOf(8), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
     }
 }

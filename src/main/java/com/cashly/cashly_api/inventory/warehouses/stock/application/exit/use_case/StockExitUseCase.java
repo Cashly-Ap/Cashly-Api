@@ -31,9 +31,9 @@ public class StockExitUseCase {
     private final StockCatalogGateway catalog;
 
     public StockExitUseCase(WarehouseRepository warehouseRepository,
-                             WarehouseStockRepository warehouseStockRepository,
-                             StockMovementRepository stockMovementRepository,
-                             StockCatalogGateway catalog) {
+            WarehouseStockRepository warehouseStockRepository,
+            StockMovementRepository stockMovementRepository,
+            StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
@@ -41,7 +41,8 @@ public class StockExitUseCase {
     }
 
     @Transactional
-    public List<StockMovementResponse> execute(UUID warehouseId, StockExitRequest request) {
+    public List<StockMovementResponse> execute(UUID warehouseId,
+            StockExitRequest request) {
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
         if (!warehouse.isActive()) {
@@ -52,8 +53,10 @@ public class StockExitUseCase {
             CatalogProduct product = catalog.getProduct(item.productId());
 
             WarehouseStock stock = warehouseStockRepository
-                    .findByWarehouseIdAndProductIdForUpdate(warehouseId, product.id())
-                    .orElseThrow(() -> new ProductNotInWarehouseException(product.id(), warehouseId));
+                    .findByWarehouseIdAndProductIdForUpdate(warehouseId,
+                            product.id())
+                    .orElseThrow(() -> new ProductNotInWarehouseException(
+                            product.id(), warehouseId));
 
             if (stock.getQuantity() < item.quantity()) {
                 throw new InsufficientStockException(product.id(), warehouseId,
@@ -67,8 +70,10 @@ public class StockExitUseCase {
             CatalogProduct product = catalog.getProduct(item.productId());
 
             WarehouseStock stock = warehouseStockRepository
-                    .findByWarehouseIdAndProductIdForUpdate(warehouseId, product.id())
-                    .orElseThrow(() -> new ProductNotInWarehouseException(product.id(), warehouseId));
+                    .findByWarehouseIdAndProductIdForUpdate(warehouseId,
+                            product.id())
+                    .orElseThrow(() -> new ProductNotInWarehouseException(
+                            product.id(), warehouseId));
 
             int prevQty = stock.getQuantity();
             stock.removeStock(item.quantity());
@@ -76,11 +81,11 @@ public class StockExitUseCase {
 
             StockMovement movement = StockMovement.createWithReference(
                     warehouseId, product.id(), MovementType.EXIT,
-                    item.quantity(), prevQty, savedStock.getQuantity(),
-                    null, null, ReferenceType.MANUAL, null, null, item.notes()
-            );
+                    item.quantity(), prevQty, savedStock.getQuantity(), null,
+                    null, ReferenceType.MANUAL, null, null, item.notes());
             StockMovement saved = stockMovementRepository.save(movement);
-            movements.add(StockMovementResponse.from(saved, product.code(), product.name()));
+            movements.add(StockMovementResponse.from(saved, product.code(),
+                    product.name()));
         }
 
         return movements;

@@ -29,11 +29,11 @@ public class ApprovePaymentUseCase {
     private final PaymentAllocationService paymentAllocationService;
 
     public ApprovePaymentUseCase(PaymentRepository paymentRepository,
-                                   PaymentAllocationRepository allocationRepository,
-                                   PaymentInvoiceGateway invoices,
-                                   PaymentNotificationGateway notifications,
-                                   CashRegisterGateway cashRegister,
-                                   PaymentAllocationService paymentAllocationService) {
+            PaymentAllocationRepository allocationRepository,
+            PaymentInvoiceGateway invoices,
+            PaymentNotificationGateway notifications,
+            CashRegisterGateway cashRegister,
+            PaymentAllocationService paymentAllocationService) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoices = invoices;
@@ -43,9 +43,11 @@ public class ApprovePaymentUseCase {
     }
 
     @Transactional
-    public PaymentResponse execute(UUID id, ApprovePaymentRequest request, UUID userId, String userName) {
+    public PaymentResponse execute(UUID id, ApprovePaymentRequest request,
+            UUID userId, String userName) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + id));
 
         cashRegister.requireOpenRegister();
         payment.approve(request.reason(), userId, userName);
@@ -53,28 +55,35 @@ public class ApprovePaymentUseCase {
         applyToUnpaidInvoicesOldestFirst(payment);
 
         Payment saved = paymentRepository.save(payment);
-        cashRegister.recordMovement(new CashRegisterGateway.Movement(CashRegisterGateway.Direction.IN,
-                CashRegisterGateway.Type.PAYMENT, new CashRegisterGateway.PaymentEntry(saved.getAmount(),
-                saved.getPaymentMethodId(), saved.getNotes(), id, userId, userName)));
+        cashRegister.recordMovement(new CashRegisterGateway.Movement(
+                CashRegisterGateway.Direction.IN,
+                CashRegisterGateway.Type.PAYMENT,
+                new CashRegisterGateway.PaymentEntry(saved.getAmount(),
+                        saved.getPaymentMethodId(), saved.getNotes(), id,
+                        userId, userName)));
         notifications.approved(payment.getCustomerId(), id);
         return PaymentMapper.toResponse(saved);
     }
 
     private void applyToUnpaidInvoicesOldestFirst(Payment payment) {
-        List<PaymentInvoiceGateway.InvoiceSnapshot> unpaidInvoices = invoices.findUnpaidByCustomerId(payment.getCustomerId());
+        List<PaymentInvoiceGateway.InvoiceSnapshot> unpaidInvoices = invoices
+                .findUnpaidByCustomerId(payment.getCustomerId());
 
         List<InvoiceRemainingBalance> balances = unpaidInvoices.stream()
-                .map(invoice -> new InvoiceRemainingBalance(invoice.id(), invoiceRemainingBalance(invoice)))
+                .map(invoice -> new InvoiceRemainingBalance(invoice.id(),
+                        invoiceRemainingBalance(invoice)))
                 .toList();
 
-        List<PaymentAllocation> allocations = paymentAllocationService.allocateOldestFirst(
-                payment.getId().value(), balances, payment.getAmount());
+        List<PaymentAllocation> allocations = paymentAllocationService
+                .allocateOldestFirst(payment.getId().value(), balances,
+                        payment.getAmount());
 
         BigDecimal allocatedTotal = BigDecimal.ZERO;
         for (PaymentAllocation allocation : allocations) {
             allocationRepository.save(allocation);
             invoices.recalculateStatus(allocation.getInvoiceId());
-            allocatedTotal = allocatedTotal.add(allocation.getAllocatedAmount());
+            allocatedTotal = allocatedTotal
+                    .add(allocation.getAllocatedAmount());
         }
 
         if (allocatedTotal.compareTo(BigDecimal.ZERO) > 0) {
@@ -82,8 +91,10 @@ public class ApprovePaymentUseCase {
         }
     }
 
-    private BigDecimal invoiceRemainingBalance(PaymentInvoiceGateway.InvoiceSnapshot invoice) {
-        BigDecimal alreadyAllocated = allocationRepository.findByInvoiceId(invoice.id()).stream()
+    private BigDecimal invoiceRemainingBalance(
+            PaymentInvoiceGateway.InvoiceSnapshot invoice) {
+        BigDecimal alreadyAllocated = allocationRepository
+                .findByInvoiceId(invoice.id()).stream()
                 .map(PaymentAllocation::getAllocatedAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return invoice.total().subtract(alreadyAllocated);

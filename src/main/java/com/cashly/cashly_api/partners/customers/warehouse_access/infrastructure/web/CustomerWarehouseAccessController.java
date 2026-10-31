@@ -34,25 +34,24 @@ public class CustomerWarehouseAccessController {
     @PreAuthorize("hasAuthority('INVENTORY:READ')")
     public ResponseEntity<List<CustomerWarehouseAccessResponse>> listWarehouses(
             @PathVariable UUID customerId) {
-        return ResponseEntity.ok(listCustomerWarehousesUseCase.execute(customerId));
+        return ResponseEntity
+                .ok(listCustomerWarehousesUseCase.execute(customerId));
     }
 
     @PostMapping("/{warehouseId}")
     @PreAuthorize("hasAuthority('INVENTORY:CREATE')")
     public ResponseEntity<CustomerWarehouseAccessResponse> grantAccess(
-            @PathVariable UUID customerId,
-            @PathVariable UUID warehouseId,
+            @PathVariable UUID customerId, @PathVariable UUID warehouseId,
             Authentication authentication) {
         UUID grantedBy = UUID.fromString(authentication.getName());
-        CustomerWarehouseAccessResponse response =
-                grantWarehouseAccessUseCase.execute(customerId, warehouseId, grantedBy);
+        CustomerWarehouseAccessResponse response = grantWarehouseAccessUseCase
+                .execute(customerId, warehouseId, grantedBy);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{warehouseId}")
     @PreAuthorize("hasAuthority('INVENTORY:DELETE')")
-    public ResponseEntity<Void> revokeAccess(
-            @PathVariable UUID customerId,
+    public ResponseEntity<Void> revokeAccess(@PathVariable UUID customerId,
             @PathVariable UUID warehouseId) {
         revokeWarehouseAccessUseCase.execute(customerId, warehouseId);
         return ResponseEntity.noContent().build();

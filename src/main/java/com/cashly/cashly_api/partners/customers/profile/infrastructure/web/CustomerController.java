@@ -31,10 +31,10 @@ public class CustomerController {
     private final DeleteCustomerUseCase deleteCustomerUseCase;
 
     public CustomerController(RegisterCustomerUseCase registerCustomerUseCase,
-                               GetCustomerUseCase getCustomerUseCase,
-                               ListCustomersUseCase listCustomersUseCase,
-                               UpdateCustomerUseCase updateCustomerUseCase,
-                               DeleteCustomerUseCase deleteCustomerUseCase) {
+            GetCustomerUseCase getCustomerUseCase,
+            ListCustomersUseCase listCustomersUseCase,
+            UpdateCustomerUseCase updateCustomerUseCase,
+            DeleteCustomerUseCase deleteCustomerUseCase) {
         this.registerCustomerUseCase = registerCustomerUseCase;
         this.getCustomerUseCase = getCustomerUseCase;
         this.listCustomersUseCase = listCustomersUseCase;
@@ -44,10 +44,12 @@ public class CustomerController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('SALES:CREATE')")
-    public ResponseEntity<CustomerCreateResponse> create(@Valid @RequestBody CreateCustomerRequest request,
-                                                          Authentication authentication) {
+    public ResponseEntity<CustomerCreateResponse> create(
+            @Valid @RequestBody CreateCustomerRequest request,
+            Authentication authentication) {
         UUID grantedBy = UUID.fromString(authentication.getName());
-        CustomerCreateResponse response = registerCustomerUseCase.execute(request, grantedBy);
+        CustomerCreateResponse response = registerCustomerUseCase
+                .execute(request, grantedBy);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -65,9 +67,9 @@ public class CustomerController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "legalName") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
-            search, rif, type, active, state, municipality, postalCode,
-            null, page, size, orderBy, orderDir);
+        PageResponse<CustomerListResponse> customers = listCustomersUseCase
+                .execute(search, rif, type, active, state, municipality,
+                        postalCode, null, page, size, orderBy, orderDir);
         return ResponseEntity.ok(customers);
     }
 
@@ -78,24 +80,27 @@ public class CustomerController {
             @RequestParam(required = false) String type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        PageResponse<CustomerListResponse> customers = listCustomersUseCase.execute(
-            search, null, type, true, null, null, null,
-            true, page, size, "legalName", "asc");
+        PageResponse<CustomerListResponse> customers = listCustomersUseCase
+                .execute(search, null, type, true, null, null, null, true, page,
+                        size, "legalName", "asc");
         return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('SALES:READ')")
-    public ResponseEntity<CustomerDetailResponse> getById(@PathVariable String id) {
+    public ResponseEntity<CustomerDetailResponse> getById(
+            @PathVariable String id) {
         CustomerDetailResponse customer = getCustomerUseCase.execute(id);
         return ResponseEntity.ok(customer);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('SALES:UPDATE')")
-    public ResponseEntity<CustomerDetailResponse> update(@PathVariable String id,
-                                                          @Valid @RequestBody UpdateCustomerRequest request) {
-        CustomerDetailResponse customer = updateCustomerUseCase.execute(id, request);
+    public ResponseEntity<CustomerDetailResponse> update(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateCustomerRequest request) {
+        CustomerDetailResponse customer = updateCustomerUseCase.execute(id,
+                request);
         return ResponseEntity.ok(customer);
     }
 

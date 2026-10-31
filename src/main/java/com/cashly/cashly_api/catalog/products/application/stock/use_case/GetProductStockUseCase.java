@@ -14,7 +14,7 @@ public class GetProductStockUseCase {
     private final ProductWarehouseStockGateway stocks;
 
     public GetProductStockUseCase(ProductRepository productRepository,
-                                   ProductWarehouseStockGateway stocks) {
+            ProductWarehouseStockGateway stocks) {
         this.productRepository = productRepository;
         this.stocks = stocks;
     }
@@ -23,6 +23,7 @@ public class GetProductStockUseCase {
         productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        return stocks.findByProductId(productId).stream().map(ProductStockByWarehouseResponse::from).toList();
+        return stocks.findByProductId(productId).stream()
+                .map(ProductStockByWarehouseResponse::from).toList();
     }
 }

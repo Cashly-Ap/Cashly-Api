@@ -16,7 +16,8 @@ import java.util.UUID;
 
 public class OrderJpaMapper {
 
-    private OrderJpaMapper() {}
+    private OrderJpaMapper() {
+    }
 
     public static OrderEntity toEntity(Order order) {
         OrderEntity entity = new OrderEntity();
@@ -38,8 +39,7 @@ public class OrderJpaMapper {
         entity.setUpdatedAt(order.getUpdatedAt());
 
         List<OrderLineEntity> lineEntities = order.getLines().stream()
-                .map(line -> toLineEntity(line, entity))
-                .toList();
+                .map(line -> toLineEntity(line, entity)).toList();
         entity.getLines().clear();
         entity.getLines().addAll(lineEntities);
 
@@ -48,30 +48,21 @@ public class OrderJpaMapper {
 
     public static Order toDomain(OrderEntity entity) {
         List<OrderLine> lines = entity.getLines().stream()
-                .map(OrderJpaMapper::toLineDomain)
-                .toList();
+                .map(OrderJpaMapper::toLineDomain).toList();
 
-        return Order.reconstitute(
-                OrderId.of(entity.getId()),
+        return Order.reconstitute(OrderId.of(entity.getId()),
                 new OrderNumber(entity.getOrderNumber()),
-                entity.getCustomerId(),
-                entity.getCustomerName(),
-                entity.getCustomerRif(),
-                entity.getCreatedBy(),
+                entity.getCustomerId(), entity.getCustomerName(),
+                entity.getCustomerRif(), entity.getCreatedBy(),
                 entity.getCreatedByName(),
-                OrderStatus.valueOf(entity.getStatus()),
-                entity.getNotes(),
-                entity.getInvoiceId(),
-                entity.getInvoiceNumber(),
-                entity.getCancelledAt(),
-                entity.getCancelledReason(),
-                lines,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+                OrderStatus.valueOf(entity.getStatus()), entity.getNotes(),
+                entity.getInvoiceId(), entity.getInvoiceNumber(),
+                entity.getCancelledAt(), entity.getCancelledReason(), lines,
+                entity.getCreatedAt(), entity.getUpdatedAt());
     }
 
-    private static OrderLineEntity toLineEntity(OrderLine line, OrderEntity orderEntity) {
+    private static OrderLineEntity toLineEntity(OrderLine line,
+            OrderEntity orderEntity) {
         OrderLineEntity entity = new OrderLineEntity();
         entity.setId(line.getId().value());
         entity.setOrder(orderEntity);
@@ -83,17 +74,17 @@ public class OrderJpaMapper {
         entity.setLineTotal(line.getLineTotal());
         entity.setCategorySnapshot(line.getCategoryId());
 
-        List<OrderLineAllocationEntity> allocationEntities = line.getAllocations().stream()
-                .map(a -> toAllocationEntity(a, entity))
-                .toList();
+        List<OrderLineAllocationEntity> allocationEntities = line
+                .getAllocations().stream()
+                .map(a -> toAllocationEntity(a, entity)).toList();
         entity.getAllocations().clear();
         entity.getAllocations().addAll(allocationEntities);
 
         return entity;
     }
 
-    private static OrderLineAllocationEntity toAllocationEntity(OrderLineAllocation allocation,
-                                                                 OrderLineEntity lineEntity) {
+    private static OrderLineAllocationEntity toAllocationEntity(
+            OrderLineAllocation allocation, OrderLineEntity lineEntity) {
         OrderLineAllocationEntity entity = new OrderLineAllocationEntity();
         entity.setId(allocation.getId());
         entity.setOrderLine(lineEntity);
@@ -104,18 +95,13 @@ public class OrderJpaMapper {
 
     private static OrderLine toLineDomain(OrderLineEntity entity) {
         List<OrderLineAllocation> allocations = entity.getAllocations().stream()
-                .map(a -> OrderLineAllocation.reconstitute(a.getId(), a.getWarehouseId(), a.getAllocated()))
+                .map(a -> OrderLineAllocation.reconstitute(a.getId(),
+                        a.getWarehouseId(), a.getAllocated()))
                 .toList();
 
-        return OrderLine.reconstitute(
-                OrderLineId.of(entity.getId()),
-                entity.getProductId(),
-                entity.getProductName(),
-                entity.getProductCode(),
-                entity.getCategoryIdSnapshot(),
-                entity.getQuantity(),
-                entity.getUnitPrice(),
-                allocations
-        );
+        return OrderLine.reconstitute(OrderLineId.of(entity.getId()),
+                entity.getProductId(), entity.getProductName(),
+                entity.getProductCode(), entity.getCategoryIdSnapshot(),
+                entity.getQuantity(), entity.getUnitPrice(), allocations);
     }
 }

@@ -22,7 +22,8 @@ public class PaymentReportingConfig {
     }
 
     @Bean
-    public PaymentHistoryReportPdfPort paymentHistoryReportPdfPort(PdfBranding branding) {
+    public PaymentHistoryReportPdfPort paymentHistoryReportPdfPort(
+            PdfBranding branding) {
         return new PaymentHistoryReportPdfGenerator(branding);
     }
 
@@ -30,10 +31,7 @@ public class PaymentReportingConfig {
     public GeneratePaymentPdfUseCase generatePaymentPdfUseCase(
             PaymentReportQueryGateway paymentQuery,
             PaymentPdfPort paymentPdfPort) {
-        return new GeneratePaymentPdfUseCaseImpl(
-                paymentQuery,
-                paymentPdfPort
-        );
+        return new GeneratePaymentPdfUseCaseImpl(paymentQuery, paymentPdfPort);
     }
 
     @Bean

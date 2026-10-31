@@ -5,10 +5,12 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure
 
 public final class PaymentAllocationJpaMapper {
 
-    private PaymentAllocationJpaMapper() {}
+    private PaymentAllocationJpaMapper() {
+    }
 
     public static PaymentAllocationEntity toEntity(PaymentAllocation domain) {
-        if (domain == null) return null;
+        if (domain == null)
+            return null;
         PaymentAllocationEntity entity = new PaymentAllocationEntity();
         entity.setId(domain.getId());
         entity.setPaymentId(domain.getPaymentId());
@@ -19,13 +21,10 @@ public final class PaymentAllocationJpaMapper {
     }
 
     public static PaymentAllocation toDomain(PaymentAllocationEntity entity) {
-        if (entity == null) return null;
-        return PaymentAllocation.reconstitute(
-                entity.getId(),
-                entity.getPaymentId(),
-                entity.getInvoiceId(),
-                entity.getAllocatedAmount(),
-                entity.getCreatedAt()
-        );
+        if (entity == null)
+            return null;
+        return PaymentAllocation.reconstitute(entity.getId(),
+                entity.getPaymentId(), entity.getInvoiceId(),
+                entity.getAllocatedAmount(), entity.getCreatedAt());
     }
 }

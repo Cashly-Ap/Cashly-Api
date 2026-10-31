@@ -11,7 +11,8 @@ import java.util.Set;
 public class LocalPurchaseUsageGatewayAdapter implements PurchaseUsageGateway {
     private final SupplierPurchaseUsageQuery purchases;
 
-    public LocalPurchaseUsageGatewayAdapter(SupplierPurchaseUsageQuery purchases) {
+    public LocalPurchaseUsageGatewayAdapter(
+            SupplierPurchaseUsageQuery purchases) {
         this.purchases = purchases;
     }
 
@@ -21,7 +22,8 @@ public class LocalPurchaseUsageGatewayAdapter implements PurchaseUsageGateway {
     }
 
     @Override
-    public Set<UUID> findSupplierIdsWithPurchases(Collection<UUID> supplierIds) {
+    public Set<UUID> findSupplierIdsWithPurchases(
+            Collection<UUID> supplierIds) {
         if (supplierIds.isEmpty()) {
             return Set.of();
         }

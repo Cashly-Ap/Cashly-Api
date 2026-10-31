@@ -34,7 +34,8 @@ class DeleteCustomerUseCaseTest {
     @Test
     @DisplayName("should delete customer when exists")
     void shouldDeleteCustomerWhenExists() {
-        when(customerRepository.existsById(new CustomerId(customerId))).thenReturn(true);
+        when(customerRepository.existsById(new CustomerId(customerId)))
+                .thenReturn(true);
 
         useCase.execute(customerId.toString());
 
@@ -45,7 +46,8 @@ class DeleteCustomerUseCaseTest {
     @Test
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
-        when(customerRepository.existsById(new CustomerId(customerId))).thenReturn(false);
+        when(customerRepository.existsById(new CustomerId(customerId)))
+                .thenReturn(false);
 
         assertThrows(CustomerNotFoundException.class,
                 () -> useCase.execute(customerId.toString()));

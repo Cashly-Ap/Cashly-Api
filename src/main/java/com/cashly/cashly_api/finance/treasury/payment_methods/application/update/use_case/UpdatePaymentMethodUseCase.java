@@ -18,19 +18,25 @@ public class UpdatePaymentMethodUseCase {
     private final PaymentMethodRepository repository;
     private final PaymentMethodUsageGateway usageGateway;
 
-    public UpdatePaymentMethodUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
+    public UpdatePaymentMethodUseCase(PaymentMethodRepository repository,
+            PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
         this.usageGateway = usageGateway;
     }
 
     @Transactional
-    public PaymentMethodResponse execute(UUID id, UpdatePaymentMethodRequest request) {
-        PaymentMethod paymentMethod = repository.findById(PaymentMethodId.of(id))
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + id));
+    public PaymentMethodResponse execute(UUID id,
+            UpdatePaymentMethodRequest request) {
+        PaymentMethod paymentMethod = repository
+                .findById(PaymentMethodId.of(id))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment method not found: " + id));
 
-        paymentMethod.update(request.name(), request.description(), request.isActive());
+        paymentMethod.update(request.name(), request.description(),
+                request.isActive());
         PaymentMethod saved = repository.save(paymentMethod);
 
-        return PaymentMethodMapper.toResponse(saved, usageGateway.hasAssociatedRecords(saved.getId().value()));
+        return PaymentMethodMapper.toResponse(saved,
+                usageGateway.hasAssociatedRecords(saved.getId().value()));
     }
 }

@@ -17,12 +17,14 @@ class LocalDebitNoteInvoiceGatewayTest {
     void givenProviderBatch_whenQueryingInvoices_thenMapsNeutralContextAndRecalculation() {
         InvoiceNoteApi invoices = mock(InvoiceNoteApi.class);
         UUID invoiceId = UUID.randomUUID();
-        when(invoices.find(invoiceId)).thenReturn(new InvoiceNoteApi.Context(invoiceId, "FAC-1",
-                "PAID", "Pagada", "Acme", "RIF", new BigDecimal("100.00")));
+        when(invoices.find(invoiceId)).thenReturn(
+                new InvoiceNoteApi.Context(invoiceId, "FAC-1", "PAID", "Pagada",
+                        "Acme", "RIF", new BigDecimal("100.00")));
         when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of(invoiceId,
-                new InvoiceNoteApi.Context(invoiceId, "FAC-1", "PAID", "Pagada", "Acme", "RIF",
-                        new BigDecimal("100.00"))));
-        LocalDebitNoteInvoiceGateway gateway = new LocalDebitNoteInvoiceGateway(invoices);
+                new InvoiceNoteApi.Context(invoiceId, "FAC-1", "PAID", "Pagada",
+                        "Acme", "RIF", new BigDecimal("100.00"))));
+        LocalDebitNoteInvoiceGateway gateway = new LocalDebitNoteInvoiceGateway(
+                invoices);
 
         var single = gateway.find(invoiceId);
         var batch = gateway.findAll(Set.of(invoiceId)).get(invoiceId);

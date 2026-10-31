@@ -23,7 +23,8 @@ class QuoteLineTest {
 
     @Test
     void should_create_valid_line() {
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
 
         assertNotNull(line.getId());
         assertEquals(PRODUCT_ID, line.getProductId());
@@ -44,51 +45,65 @@ class QuoteLineTest {
 
     @Test
     void should_throw_when_quantity_zero() {
-        InvalidQuoteLineException exception = assertThrows(InvalidQuoteLineException.class, () ->
-                new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, BigDecimal.ZERO, UNIT_PRICE));
+        InvalidQuoteLineException exception = assertThrows(
+                InvalidQuoteLineException.class,
+                () -> new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                        BigDecimal.ZERO, UNIT_PRICE));
 
-        assertTrue(exception.getMessage().contains("Quantity must be greater than zero"));
+        assertTrue(exception.getMessage()
+                .contains("Quantity must be greater than zero"));
     }
 
     @Test
     void should_throw_when_quantity_negative() {
-        InvalidQuoteLineException exception = assertThrows(InvalidQuoteLineException.class, () ->
-                new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("-1"), UNIT_PRICE));
+        InvalidQuoteLineException exception = assertThrows(
+                InvalidQuoteLineException.class,
+                () -> new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                        new BigDecimal("-1"), UNIT_PRICE));
 
-        assertTrue(exception.getMessage().contains("Quantity must be greater than zero"));
+        assertTrue(exception.getMessage()
+                .contains("Quantity must be greater than zero"));
     }
 
     @Test
     void should_throw_when_unit_price_zero() {
-        InvalidQuoteLineException exception = assertThrows(InvalidQuoteLineException.class, () ->
-                new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, BigDecimal.ZERO));
+        InvalidQuoteLineException exception = assertThrows(
+                InvalidQuoteLineException.class, () -> new QuoteLine(PRODUCT_ID,
+                        PRODUCT_NAME, PRODUCT_CODE, QUANTITY, BigDecimal.ZERO));
 
-        assertTrue(exception.getMessage().contains("Unit price must be greater than zero"));
+        assertTrue(exception.getMessage()
+                .contains("Unit price must be greater than zero"));
     }
 
     @Test
     void should_throw_when_unit_price_negative() {
-        InvalidQuoteLineException exception = assertThrows(InvalidQuoteLineException.class, () ->
-                new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, new BigDecimal("-0.01")));
+        InvalidQuoteLineException exception = assertThrows(
+                InvalidQuoteLineException.class,
+                () -> new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                        QUANTITY, new BigDecimal("-0.01")));
 
-        assertTrue(exception.getMessage().contains("Unit price must be greater than zero"));
+        assertTrue(exception.getMessage()
+                .contains("Unit price must be greater than zero"));
     }
 
     @Test
     void should_throw_when_null_product_name() {
-        assertThrows(InvalidQuoteLineException.class, () ->
-                new QuoteLine(PRODUCT_ID, null, PRODUCT_CODE, QUANTITY, UNIT_PRICE));
+        assertThrows(InvalidQuoteLineException.class,
+                () -> new QuoteLine(PRODUCT_ID, null, PRODUCT_CODE, QUANTITY,
+                        UNIT_PRICE));
     }
 
     @Test
     void should_throw_when_null_product_code() {
-        assertThrows(InvalidQuoteLineException.class, () ->
-                new QuoteLine(PRODUCT_ID, PRODUCT_NAME, null, QUANTITY, UNIT_PRICE));
+        assertThrows(InvalidQuoteLineException.class,
+                () -> new QuoteLine(PRODUCT_ID, PRODUCT_NAME, null, QUANTITY,
+                        UNIT_PRICE));
     }
 
     @Test
     void should_update_quantity_and_recalculate() {
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
 
         line.updateQuantity(new BigDecimal("10"));
 
@@ -98,7 +113,8 @@ class QuoteLineTest {
 
     @Test
     void should_update_unit_price_and_recalculate() {
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
 
         line.updateUnitPrice(new BigDecimal("30.00"));
 
@@ -108,8 +124,10 @@ class QuoteLineTest {
 
     @Test
     void should_add_allocation() {
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
-        QuoteAllocation allocation = new QuoteAllocation(PRODUCT_ID, UUID.randomUUID(), "Warehouse B", new BigDecimal("5"));
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
+        QuoteAllocation allocation = new QuoteAllocation(PRODUCT_ID,
+                UUID.randomUUID(), "Warehouse B", new BigDecimal("5"));
 
         line.addAllocation(allocation);
 
@@ -119,8 +137,10 @@ class QuoteLineTest {
 
     @Test
     void should_remove_allocation() {
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
-        QuoteAllocation allocation = new QuoteAllocation(PRODUCT_ID, UUID.randomUUID(), "Warehouse B", new BigDecimal("5"));
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
+        QuoteAllocation allocation = new QuoteAllocation(PRODUCT_ID,
+                UUID.randomUUID(), "Warehouse B", new BigDecimal("5"));
         line.addAllocation(allocation);
 
         line.removeAllocation(allocation.getId());
@@ -130,22 +150,26 @@ class QuoteLineTest {
 
     @Test
     void should_return_unmodifiable_allocations_list() {
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                line.getAllocations().add(
-                        new QuoteAllocation(PRODUCT_ID, UUID.randomUUID(), "Warehouse B", new BigDecimal("5"))));
+        assertThrows(UnsupportedOperationException.class,
+                () -> line.getAllocations()
+                        .add(new QuoteAllocation(PRODUCT_ID, UUID.randomUUID(),
+                                "Warehouse B", new BigDecimal("5"))));
     }
 
     @Test
     void should_reconstitute_without_validation() {
         QuoteLineId id = QuoteLineId.generate();
         QuoteAllocationId allocId = QuoteAllocationId.generate();
-        QuoteAllocation allocation = QuoteAllocation.reconstitute(allocId, PRODUCT_ID, UUID.randomUUID(), "Warehouse B", BigDecimal.ZERO);
+        QuoteAllocation allocation = QuoteAllocation.reconstitute(allocId,
+                PRODUCT_ID, UUID.randomUUID(), "Warehouse B", BigDecimal.ZERO);
         List<QuoteAllocation> allocations = List.of(allocation);
 
-        QuoteLine line = QuoteLine.reconstitute(id, PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, allocations);
+        QuoteLine line = QuoteLine.reconstitute(id, PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                allocations);
 
         assertEquals(id, line.getId());
         assertEquals(BigDecimal.ZERO, line.getQuantity());
@@ -156,8 +180,10 @@ class QuoteLineTest {
 
     @Test
     void should_generate_unique_id_per_line() {
-        QuoteLine first = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
-        QuoteLine second = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE);
+        QuoteLine first = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
+        QuoteLine second = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                QUANTITY, UNIT_PRICE);
 
         assertNotEquals(first.getId(), second.getId());
     }
@@ -166,15 +192,17 @@ class QuoteLineTest {
     void should_keep_category_snapshot_from_product_at_creation() {
         UUID categoryId = UUID.randomUUID();
 
-        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, categoryId, QUANTITY, UNIT_PRICE);
+        QuoteLine line = new QuoteLine(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+                categoryId, QUANTITY, UNIT_PRICE);
 
         assertEquals(categoryId, line.getCategoryId());
     }
 
     @Test
     void should_allow_missing_category_snapshot_for_legacy_line() {
-        QuoteLine line = QuoteLine.reconstitute(QuoteLineId.generate(), PRODUCT_ID, PRODUCT_NAME,
-                PRODUCT_CODE, QUANTITY, UNIT_PRICE, BigDecimal.ZERO, List.of());
+        QuoteLine line = QuoteLine.reconstitute(QuoteLineId.generate(),
+                PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, QUANTITY, UNIT_PRICE,
+                BigDecimal.ZERO, List.of());
 
         assertNull(line.getCategoryId());
     }

@@ -6,7 +6,9 @@ import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.Cust
 import java.util.Optional;
 import java.util.UUID;
 
-public class RepositoryCustomerProductPricingQuery implements CustomerProductPricingQuery {
+public class RepositoryCustomerProductPricingQuery
+        implements
+            CustomerProductPricingQuery {
     private final CustomerRepository customers;
 
     public RepositoryCustomerProductPricingQuery(CustomerRepository customers) {
@@ -15,7 +17,7 @@ public class RepositoryCustomerProductPricingQuery implements CustomerProductPri
 
     @Override
     public Optional<Context> findById(UUID customerId) {
-        return customers.findById(new CustomerId(customerId)).map(customer ->
-                new Context(customerId, customer.getPriceTypeId()));
+        return customers.findById(new CustomerId(customerId)).map(
+                customer -> new Context(customerId, customer.getPriceTypeId()));
     }
 }

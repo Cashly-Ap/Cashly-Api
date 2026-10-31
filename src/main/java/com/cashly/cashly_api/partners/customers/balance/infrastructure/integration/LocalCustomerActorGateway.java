@@ -16,6 +16,7 @@ public class LocalCustomerActorGateway implements CustomerActorGateway {
 
     @Override
     public java.util.Optional<CustomerActor> findById(UUID actorId) {
-        return actors.findById(actorId).map(actor -> new CustomerActor(actor.id(), actor.name()));
+        return actors.findById(actorId)
+                .map(actor -> new CustomerActor(actor.id(), actor.name()));
     }
 }

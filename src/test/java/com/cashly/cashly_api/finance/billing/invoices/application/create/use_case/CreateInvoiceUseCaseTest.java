@@ -96,25 +96,34 @@ class CreateInvoiceUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        lenient().when(authorizationService.validate(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(new InvoiceIssueValidator.CashPaymentPlan(java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO));
+        lenient()
+                .when(authorizationService.validate(any(), any(), any(), any(),
+                        any(), any(), any()))
+                .thenReturn(new InvoiceIssueValidator.CashPaymentPlan(
+                        java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO));
         notificationService = mock(InvoiceNotificationGateway.class);
         InvoiceCustomerGateway customers = customerId -> customerRepository
                 .findById(new CustomerId(customerId))
-                .map(customer -> new InvoiceCustomerGateway.Customer(customer.getId().getValue(),
-                        customer.getLegalName().getValue(), customer.getRif().getValue()));
+                .map(customer -> new InvoiceCustomerGateway.Customer(
+                        customer.getId().getValue(),
+                        customer.getLegalName().getValue(),
+                        customer.getRif().getValue()));
         CustomerCreditTermsGateway creditTerms = customerId -> customerRepository
-                .findById(new CustomerId(customerId)).orElseThrow().getCreditDays().getValue();
+                .findById(new CustomerId(customerId)).orElseThrow()
+                .getCreditDays().getValue();
         ActorIdentityGateway actors = new ActorIdentityGateway() {
             @Override
             public Actor requireActor(UUID id) {
-                return findActor(id).orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+                return findActor(id)
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "User not found: " + id));
             }
 
             @Override
             public Optional<Actor> findActor(UUID id) {
                 return userRepository.findById(new UserId(id))
-                        .map(user -> new Actor(user.getId().getValue(), user.getUserName().getValue()));
+                        .map(user -> new Actor(user.getId().getValue(),
+                                user.getUserName().getValue()));
             }
 
             @Override
@@ -122,17 +131,28 @@ class CreateInvoiceUseCaseTest {
                 return false;
             }
         };
-        InvoiceCatalogGateway catalog = productId -> productRepository.findById(productId)
-                .map(product -> new InvoiceCatalogGateway.Product(product.getId(), product.getName(), product.getCode()));
-        InvoiceOrderGateway orderGateway = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceOrderGateway(orderRepository);
-        InvoiceQuoteGateway quoteGateway = quoteId -> quoteRepository.findById(quoteId)
-                .map(quote -> new InvoiceQuoteGateway.Quote(quote.getId(), quote.getCustomerId(), quote.getStatus().name()));
-        createInvoiceUseCase = new CreateInvoiceUseCase(
-                invoiceRepository, orderGateway, customers, creditTerms, actors, catalog,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), new IssueInvoiceService(invoiceRepository, actors, authorizationService,
-                    mock(InvoicePaymentService.class), mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
-                    mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class), notificationService,
-                    mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway.class)),
+        InvoiceCatalogGateway catalog = productId -> productRepository
+                .findById(productId)
+                .map(product -> new InvoiceCatalogGateway.Product(
+                        product.getId(), product.getName(), product.getCode()));
+        InvoiceOrderGateway orderGateway = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceOrderGateway(
+                orderRepository);
+        InvoiceQuoteGateway quoteGateway = quoteId -> quoteRepository
+                .findById(quoteId)
+                .map(quote -> new InvoiceQuoteGateway.Quote(quote.getId(),
+                        quote.getCustomerId(), quote.getStatus().name()));
+        createInvoiceUseCase = new CreateInvoiceUseCase(invoiceRepository,
+                orderGateway, customers, creditTerms, actors, catalog,
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
+                        new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
+                                warehouseStockRepository,
+                                mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))),
+                new IssueInvoiceService(invoiceRepository, actors,
+                        authorizationService, mock(InvoicePaymentService.class),
+                        mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
+                        mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class),
+                        notificationService,
+                        mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway.class)),
                 notificationService, quoteGateway);
     }
 
@@ -145,24 +165,28 @@ class CreateInvoiceUseCaseTest {
         Order order = buildOrder(orderId, customerId);
         User user = buildUser(authenticatedUserId);
 
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                orderId, null, null, "CASH", null,
-                null, null, null, null, List.of()
-        );
+        CreateInvoiceRequest request = new CreateInvoiceRequest(orderId, null,
+                null, "CASH", null, null, null, null, null, List.of());
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
         when(customerRepository.findById(new CustomerId(customerId)))
                 .thenReturn(Optional.of(buildCustomer(customerId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
+        InvoiceDetailResponse response = createInvoiceUseCase.execute(request,
+                authenticatedUserId);
 
         assertNotNull(response);
         verify(invoiceRepository, times(2)).save(any(Invoice.class));
-        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(), any());
-        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(), any());
+        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(),
+                any());
+        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(),
+                any());
     }
 
     @Test
@@ -176,41 +200,43 @@ class CreateInvoiceUseCaseTest {
         Product product = buildProduct(productId);
 
         CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
-                productId, BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", "Notes",
-                null, null, null, null, List.of(lineRequest)
-        );
+                productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+        CreateInvoiceRequest request = new CreateInvoiceRequest(null,
+                customerId, null, "CASH", "Notes", null, null, null, null,
+                List.of(lineRequest));
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        InvoiceDetailResponse response = createInvoiceUseCase.execute(request, authenticatedUserId);
+        InvoiceDetailResponse response = createInvoiceUseCase.execute(request,
+                authenticatedUserId);
 
         assertNotNull(response);
         verify(invoiceRepository).save(any(Invoice.class));
-        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(), any());
+        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(),
+                any());
     }
 
     @Test
     void should_ThrowOrderNotFoundException_When_OrderNotFound() {
         UUID orderId = UUID.randomUUID();
 
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                orderId, null, null, "CASH", null,
-                null, null, null, null, List.of()
-        );
+        CreateInvoiceRequest request = new CreateInvoiceRequest(orderId, null,
+                null, "CASH", null, null, null, null, null, List.of());
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.empty());
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.empty());
 
         assertThrows(
                 com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotFoundException.class,
-                () -> createInvoiceUseCase.execute(request, UUID.randomUUID())
-        );
+                () -> createInvoiceUseCase.execute(request, UUID.randomUUID()));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -220,19 +246,16 @@ class CreateInvoiceUseCaseTest {
         UUID customerId = UUID.randomUUID();
 
         CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
-                UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null,
-                null, null, null, null, List.of(lineRequest)
-        );
+                UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN, List.of());
+        CreateInvoiceRequest request = new CreateInvoiceRequest(null,
+                customerId, null, "CASH", null, null, null, null, null,
+                List.of(lineRequest));
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> createInvoiceUseCase.execute(request, UUID.randomUUID())
-        );
+        assertThrows(IllegalArgumentException.class,
+                () -> createInvoiceUseCase.execute(request, UUID.randomUUID()));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -245,20 +268,18 @@ class CreateInvoiceUseCaseTest {
         Customer customer = buildCustomer(customerId);
 
         CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
-                UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null,
-                null, null, null, null, List.of(lineRequest)
-        );
+                UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN, List.of());
+        CreateInvoiceRequest request = new CreateInvoiceRequest(null,
+                customerId, null, "CASH", null, null, null, null, null,
+                List.of(lineRequest));
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> createInvoiceUseCase.execute(request, authenticatedUserId)
-        );
+        assertThrows(IllegalArgumentException.class, () -> createInvoiceUseCase
+                .execute(request, authenticatedUserId));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -273,21 +294,20 @@ class CreateInvoiceUseCaseTest {
         User user = buildUser(authenticatedUserId);
 
         CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
-                productId, BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null,
-                null, null, null, null, List.of(lineRequest)
-        );
+                productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+        CreateInvoiceRequest request = new CreateInvoiceRequest(null,
+                customerId, null, "CASH", null, null, null, null, null,
+                List.of(lineRequest));
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> createInvoiceUseCase.execute(request, authenticatedUserId)
-        );
+        assertThrows(IllegalArgumentException.class, () -> createInvoiceUseCase
+                .execute(request, authenticatedUserId));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -302,69 +322,64 @@ class CreateInvoiceUseCaseTest {
         Customer customer = buildCustomer(customerId);
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
-        WarehouseStock stock = new WarehouseStock(
-                UUID.randomUUID(), warehouseId, productId, 2, 0,
-                LocalDateTime.now(), LocalDateTime.now());
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 2, 0, LocalDateTime.now(),
+                LocalDateTime.now());
         CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
                 productId, BigDecimal.valueOf(3), BigDecimal.TEN,
-                List.of(new CreateInvoiceRequest.WarehouseAllocationRequest(warehouseId, 3))
-        );
-        CreateInvoiceRequest request = new CreateInvoiceRequest(
-                null, customerId, null, "CASH", null,
-                null, null, null, null, List.of(lineRequest)
-        );
+                List.of(new CreateInvoiceRequest.WarehouseAllocationRequest(
+                        warehouseId, 3)));
+        CreateInvoiceRequest request = new CreateInvoiceRequest(null,
+                customerId, null, "CASH", null, null, null, null, null,
+                List.of(lineRequest));
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
         IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> createInvoiceUseCase.execute(request, authenticatedUserId)
-        );
+                IllegalStateException.class, () -> createInvoiceUseCase
+                        .execute(request, authenticatedUserId));
 
-        assertTrue(exception.getMessage().contains("Insufficient available stock"));
+        assertTrue(exception.getMessage()
+                .contains("Insufficient available stock"));
         verify(invoiceRepository, never()).save(any());
     }
 
     private Order buildOrder(UUID orderId, UUID customerId) {
-        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Order.reconstitute(
-                OrderId.of(orderId), OrderNumber.of(2026, 1),
-                customerId, "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                OrderStatus.CONFIRMED, null, null, null, null, null,
-                List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Order.reconstitute(OrderId.of(orderId), OrderNumber.of(2026, 1),
+                customerId, "Customer Name", "J-12345678-9", UUID.randomUUID(),
+                "User Name", OrderStatus.CONFIRMED, null, null, null, null,
+                null, List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Customer buildCustomer(UUID customerId) {
-        return Customer.reconstitute(
-                new CustomerId(customerId), new CustomerCode(1001L),
-                new LegalName("Empresa Test C.A."), CustomerType.BUSINESS,
-                new Rif("J-12345678-9"), new CustomerAlias("Test"),
-                new CreditDays(30), new CreditLimit(BigDecimal.ZERO),
-                true, LocalDateTime.now(), LocalDateTime.now(),
-                List.of(), List.of(), List.of(), null, null
-        );
+        return Customer.reconstitute(new CustomerId(customerId),
+                new CustomerCode(1001L), new LegalName("Empresa Test C.A."),
+                CustomerType.BUSINESS, new Rif("J-12345678-9"),
+                new CustomerAlias("Test"), new CreditDays(30),
+                new CreditLimit(BigDecimal.ZERO), true, LocalDateTime.now(),
+                LocalDateTime.now(), List.of(), List.of(), List.of(), null,
+                null);
     }
 
     private User buildUser(UUID userId) {
-        return new User(
-                new UserId(userId), new Email("user@cashly.com"),
-                new UserName("Test User"), Password.fromHash("hashed-password")
-        );
+        return new User(new UserId(userId), new Email("user@cashly.com"),
+                new UserName("Test User"),
+                Password.fromHash("hashed-password"));
     }
 
     private Product buildProduct(UUID productId) {
-        return Product.reconstitute(
-                productId, "PROD-001", "Product A",
-                null, null, false, true, null,
-                BigDecimal.valueOf(8),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, "PROD-001", "Product A", null,
+                null, false, true, null, BigDecimal.valueOf(8), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
     }
 }

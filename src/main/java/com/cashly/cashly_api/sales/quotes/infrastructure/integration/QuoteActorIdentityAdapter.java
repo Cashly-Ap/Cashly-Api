@@ -16,11 +16,13 @@ public class QuoteActorIdentityAdapter implements ActorIdentityGateway {
 
     @Override
     public Actor requireActor(UUID id) {
-        return findActor(id).orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+        return findActor(id).orElseThrow(
+                () -> new IllegalArgumentException("User not found: " + id));
     }
 
     @Override
     public Optional<Actor> findActor(UUID id) {
-        return query.findById(id).map(actor -> new Actor(actor.id(), actor.name()));
+        return query.findById(id)
+                .map(actor -> new Actor(actor.id(), actor.name()));
     }
 }

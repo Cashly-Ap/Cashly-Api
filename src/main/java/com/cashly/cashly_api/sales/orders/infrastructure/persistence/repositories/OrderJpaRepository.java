@@ -13,10 +13,11 @@ import java.util.UUID;
 
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
-    default List<OrderEntity> findAllWithFilters(LocalDateTime dateFrom, LocalDateTime dateTo,
-                                                 UUID customerId, String status, UUID productId, UUID categoryId) {
-        return findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId,
-                java.util.Set.of(new UUID(0, 0)));
+    default List<OrderEntity> findAllWithFilters(LocalDateTime dateFrom,
+            LocalDateTime dateTo, UUID customerId, String status,
+            UUID productId, UUID categoryId) {
+        return findAllWithFilters(dateFrom, dateTo, customerId, status,
+                productId, categoryId, java.util.Set.of(new UUID(0, 0)));
     }
 
     @Query("""
@@ -31,7 +32,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
             LEFT JOIN FETCH l.allocations
             WHERE l.order.id = :orderId
             """)
-    List<OrderLineEntity> findWithAllocationsForOrder(@Param("orderId") UUID orderId);
+    List<OrderLineEntity> findWithAllocationsForOrder(
+            @Param("orderId") UUID orderId);
 
     @Query("""
             SELECT DISTINCT o FROM OrderEntity o
@@ -53,10 +55,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status,
-            @Param("productId") UUID productId,
+            @Param("status") String status, @Param("productId") UUID productId,
             @Param("categoryId") UUID categoryId,
-            @Param("currentCategoryProductIds") java.util.Set<UUID> currentCategoryProductIds
-    );
+            @Param("currentCategoryProductIds") java.util.Set<UUID> currentCategoryProductIds);
 
 }

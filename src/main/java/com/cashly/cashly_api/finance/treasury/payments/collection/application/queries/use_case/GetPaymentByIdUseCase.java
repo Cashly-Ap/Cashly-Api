@@ -18,6 +18,7 @@ public class GetPaymentByIdUseCase {
     public PaymentResponse execute(UUID id) {
         return paymentRepository.findById(PaymentId.of(id))
                 .map(PaymentMapper::toResponse)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + id));
     }
 }

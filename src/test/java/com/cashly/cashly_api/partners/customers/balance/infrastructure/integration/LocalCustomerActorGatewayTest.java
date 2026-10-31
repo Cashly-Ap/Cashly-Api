@@ -16,7 +16,8 @@ class LocalCustomerActorGatewayTest {
     void maps_actor_identity_to_customer_owned_contract() {
         ActorIdentityQuery actors = mock(ActorIdentityQuery.class);
         UUID id = UUID.randomUUID();
-        when(actors.findById(id)).thenReturn(Optional.of(new ActorIdentityQuery.Actor(id, "Operator")));
+        when(actors.findById(id)).thenReturn(
+                Optional.of(new ActorIdentityQuery.Actor(id, "Operator")));
 
         var actor = new LocalCustomerActorGateway(actors).findById(id);
 

@@ -22,24 +22,23 @@ class RefreshTokenEntityUnitTest {
     @BeforeEach
     void setUp() {
         testSubjectId = UUID.randomUUID().toString();
-        testRefreshToken = new RefreshToken(
-            RefreshTokenId.generate(),
-            testSubjectId,
-            AuthenticableType.USER,
-            UUID.randomUUID().toString(),
-            LocalDateTime.now().plusDays(7)
-        );
+        testRefreshToken = new RefreshToken(RefreshTokenId.generate(),
+                testSubjectId, AuthenticableType.USER,
+                UUID.randomUUID().toString(), LocalDateTime.now().plusDays(7));
     }
 
     @Test
     @DisplayName("should_ConvertFromDomain_When_ValidRefreshTokenProvided")
     void should_ConvertFromDomain_When_ValidRefreshTokenProvided() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         assertNotNull(entity);
         assertEquals(testRefreshToken.getId().getValue(), entity.getId());
-        assertEquals(UUID.fromString(testRefreshToken.getSubjectId()), entity.getSubjectId());
-        assertEquals(testRefreshToken.getSubjectType(), entity.getSubjectType());
+        assertEquals(UUID.fromString(testRefreshToken.getSubjectId()),
+                entity.getSubjectId());
+        assertEquals(testRefreshToken.getSubjectType(),
+                entity.getSubjectType());
         assertEquals(testRefreshToken.getToken(), entity.getToken());
         assertEquals(testRefreshToken.getExpiresAt(), entity.getExpiresAt());
         assertEquals(testRefreshToken.isRevoked(), entity.isRevoked());
@@ -50,9 +49,8 @@ class RefreshTokenEntityUnitTest {
     @DisplayName("should_ThrowException_When_ConvertingNullRefreshToken")
     void should_ThrowException_When_ConvertingNullRefreshToken() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> RefreshTokenEntity.fromDomain(null)
-        );
+                IllegalArgumentException.class,
+                () -> RefreshTokenEntity.fromDomain(null));
 
         assertEquals("RefreshToken cannot be null", exception.getMessage());
     }
@@ -60,23 +58,28 @@ class RefreshTokenEntityUnitTest {
     @Test
     @DisplayName("should_ConvertToDomain_When_ValidEntityProvided")
     void should_ConvertToDomain_When_ValidEntityProvided() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         RefreshToken domainToken = entity.toDomain();
 
         assertNotNull(domainToken);
         assertEquals(testRefreshToken.getId(), domainToken.getId());
-        assertEquals(testRefreshToken.getSubjectId(), domainToken.getSubjectId());
-        assertEquals(testRefreshToken.getSubjectType(), domainToken.getSubjectType());
+        assertEquals(testRefreshToken.getSubjectId(),
+                domainToken.getSubjectId());
+        assertEquals(testRefreshToken.getSubjectType(),
+                domainToken.getSubjectType());
         assertEquals(testRefreshToken.getToken(), domainToken.getToken());
-        assertEquals(testRefreshToken.getExpiresAt(), domainToken.getExpiresAt());
+        assertEquals(testRefreshToken.getExpiresAt(),
+                domainToken.getExpiresAt());
         assertEquals(testRefreshToken.isRevoked(), domainToken.isRevoked());
     }
 
     @Test
     @DisplayName("should_UpdateFromDomain_When_ValidRefreshTokenProvided")
     void should_UpdateFromDomain_When_ValidRefreshTokenProvided() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         testRefreshToken.revoke();
 
@@ -88,12 +91,12 @@ class RefreshTokenEntityUnitTest {
     @Test
     @DisplayName("should_ThrowException_When_UpdatingWithNullRefreshToken")
     void should_ThrowException_When_UpdatingWithNullRefreshToken() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> entity.updateFromDomain(null)
-        );
+                IllegalArgumentException.class,
+                () -> entity.updateFromDomain(null));
 
         assertEquals("RefreshToken cannot be null", exception.getMessage());
     }
@@ -101,7 +104,8 @@ class RefreshTokenEntityUnitTest {
     @Test
     @DisplayName("should_PreserveImmutableFields_When_UpdateFromDomain")
     void should_PreserveImmutableFields_When_UpdateFromDomain() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
         UUID originalId = entity.getId();
         UUID originalSubjectId = entity.getSubjectId();
         AuthenticableType originalSubjectType = entity.getSubjectType();
@@ -109,12 +113,9 @@ class RefreshTokenEntityUnitTest {
         LocalDateTime originalExpiresAt = entity.getExpiresAt();
 
         RefreshToken differentToken = new RefreshToken(
-            RefreshTokenId.generate(),
-            UUID.randomUUID().toString(),
-            AuthenticableType.USER,
-            UUID.randomUUID().toString(),
-            LocalDateTime.now().plusDays(14)
-        );
+                RefreshTokenId.generate(), UUID.randomUUID().toString(),
+                AuthenticableType.USER, UUID.randomUUID().toString(),
+                LocalDateTime.now().plusDays(14));
         differentToken.revoke();
 
         entity.updateFromDomain(differentToken);
@@ -131,7 +132,8 @@ class RefreshTokenEntityUnitTest {
     @DisplayName("should_HandleRevokedToken_When_Converting")
     void should_HandleRevokedToken_When_Converting() {
         testRefreshToken.revoke();
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         RefreshToken domainToken = entity.toDomain();
 
@@ -146,7 +148,7 @@ class RefreshTokenEntityUnitTest {
         entity.setSubjectId(UUID.randomUUID());
         entity.setSubjectType(AuthenticableType.USER);
         entity.setToken(UUID.randomUUID().toString());
-        entity.setExpiresAt(LocalDateTime.now().minusDays(1)); 
+        entity.setExpiresAt(LocalDateTime.now().minusDays(1));
         entity.setRevoked(false);
         entity.setCreatedAt(LocalDateTime.now().minusDays(2));
 
@@ -159,10 +161,12 @@ class RefreshTokenEntityUnitTest {
     @Test
     @DisplayName("should_RoundTripConversion_When_ConvertingBothWays")
     void should_RoundTripConversion_When_ConvertingBothWays() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         RefreshToken domainToken = entity.toDomain();
-        RefreshTokenEntity newEntity = RefreshTokenEntity.fromDomain(domainToken);
+        RefreshTokenEntity newEntity = RefreshTokenEntity
+                .fromDomain(domainToken);
 
         assertEquals(entity.getId(), newEntity.getId());
         assertEquals(entity.getSubjectId(), newEntity.getSubjectId());
@@ -175,7 +179,8 @@ class RefreshTokenEntityUnitTest {
     @Test
     @DisplayName("should_HandleActiveToken_When_Converting")
     void should_HandleActiveToken_When_Converting() {
-        RefreshTokenEntity entity = RefreshTokenEntity.fromDomain(testRefreshToken);
+        RefreshTokenEntity entity = RefreshTokenEntity
+                .fromDomain(testRefreshToken);
 
         RefreshToken domainToken = entity.toDomain();
 

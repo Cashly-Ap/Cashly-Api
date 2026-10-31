@@ -28,17 +28,15 @@ public class InvoicesReportConfig {
 
     @Bean
     public GenerateInvoicePdfUseCase generateInvoicePdfUseCase(
-            InvoiceReportQueryGateway query,
-            InvoicePdfPort invoicePdfPort) {
-        return new GenerateInvoicePdfUseCaseImpl(
-                query,
-                invoicePdfPort
-        );
+            InvoiceReportQueryGateway query, InvoicePdfPort invoicePdfPort) {
+        return new GenerateInvoicePdfUseCaseImpl(query, invoicePdfPort);
     }
 
     @Bean
     public GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase(
-            InvoiceReportQueryGateway query, InvoicesReportPdfPort invoicesReportPdfPort) {
-        return new GenerateInvoicesReportPdfUseCaseImpl(query, invoicesReportPdfPort);
+            InvoiceReportQueryGateway query,
+            InvoicesReportPdfPort invoicesReportPdfPort) {
+        return new GenerateInvoicesReportPdfUseCaseImpl(query,
+                invoicesReportPdfPort);
     }
 }

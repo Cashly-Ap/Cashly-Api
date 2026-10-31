@@ -19,25 +19,20 @@ import com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder;
 public class AuthenticationConfig {
 
     @Bean
-    public AuthenticableResolver authenticableResolver(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
-        return new ChainedAuthenticableResolver(userRepository,access);
+    public AuthenticableResolver authenticableResolver(
+            UserRepository userRepository,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+        return new ChainedAuthenticableResolver(userRepository, access);
     }
 
     @Bean
     public LoginUserUseCase loginUserUseCase(
-        AuthenticableResolver authenticableResolver,
-        RefreshTokenRepository refreshTokenRepository,
-        TokenService tokenService,
-        PasswordEncoder passwordEncoder,
-        com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa
-    ) {
-        return new LoginUserUseCase(
-            authenticableResolver,
-            refreshTokenRepository,
-            tokenService,
-            passwordEncoder,
-            mfa
-        );
+            AuthenticableResolver authenticableResolver,
+            RefreshTokenRepository refreshTokenRepository,
+            TokenService tokenService, PasswordEncoder passwordEncoder,
+            com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa) {
+        return new LoginUserUseCase(authenticableResolver,
+                refreshTokenRepository, tokenService, passwordEncoder, mfa);
     }
 
     @Bean
@@ -46,15 +41,19 @@ public class AuthenticationConfig {
     }
 
     @Bean
-    public AuthenticableSubjectGateway authenticableSubjectGateway(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
-        return new LocalAuthenticableSubjectGateway(userRepository,access);
+    public AuthenticableSubjectGateway authenticableSubjectGateway(
+            UserRepository userRepository,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+        return new LocalAuthenticableSubjectGateway(userRepository, access);
     }
 
     @Bean
-    public RefreshTokenUseCase refreshTokenUseCase(RefreshTokenRepository refreshTokenRepository,
-                                                  AuthenticableSubjectGateway subjectGateway,
-                                                  TokenService tokenService,
-                                                  com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore) {
-        return new RefreshTokenUseCase(refreshTokenRepository, subjectGateway, tokenService, mfaStore);
+    public RefreshTokenUseCase refreshTokenUseCase(
+            RefreshTokenRepository refreshTokenRepository,
+            AuthenticableSubjectGateway subjectGateway,
+            TokenService tokenService,
+            com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore) {
+        return new RefreshTokenUseCase(refreshTokenRepository, subjectGateway,
+                tokenService, mfaStore);
     }
 }

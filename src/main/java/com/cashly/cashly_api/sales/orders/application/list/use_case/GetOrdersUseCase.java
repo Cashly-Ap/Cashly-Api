@@ -17,37 +17,42 @@ public class GetOrdersUseCase {
     private final OrderRepository orderRepository;
     private final OrderProductCatalogGateway products;
 
-    public GetOrdersUseCase(OrderRepository orderRepository, OrderProductCatalogGateway products) {
+    public GetOrdersUseCase(OrderRepository orderRepository,
+            OrderProductCatalogGateway products) {
         this.orderRepository = orderRepository;
         this.products = products;
     }
 
     public List<OrderListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                           UUID customerId, String status,
-                                           UUID productId, UUID categoryId,
-                                           String orderBy, String orderDir) {
-        var currentCategoryProductIds = categoryId == null ? java.util.Set.<UUID>of()
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            String orderBy, String orderDir) {
+        var currentCategoryProductIds = categoryId == null
+                ? java.util.Set.<UUID>of()
                 : products.findProductIdsByCurrentCategory(categoryId);
-        return orderRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId,
-                        currentCategoryProductIds, orderBy, orderDir)
-                .stream()
-                .map(OrderMapper::toListResponse)
-                .toList();
+        return orderRepository
+                .findAllWithFilters(dateFrom, dateTo, customerId, status,
+                        productId, categoryId, currentCategoryProductIds,
+                        orderBy, orderDir)
+                .stream().map(OrderMapper::toListResponse).toList();
     }
     public List<OrderListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId, String status,
-                                              UUID productId, UUID categoryId,
-                                              String orderBy, String orderDir, DocumentAction action) {
-        if (action == null) return execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir);
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            String orderBy, String orderDir, DocumentAction action) {
+        if (action == null)
+            return execute(dateFrom, dateTo, customerId, status, productId,
+                    categoryId, orderBy, orderDir);
         String eligibleStatus = switch (action) {
             case EDIT, CONFIRM -> "DRAFT";
             case CANCEL, CONVERT_TO_INVOICE -> "CONFIRMED";
-            default -> throw new IllegalArgumentException("Unsupported order action: " + action);
+            default -> throw new IllegalArgumentException(
+                    "Unsupported order action: " + action);
         };
-        if (status != null && !status.isBlank() && !"ALL".equals(status) && !eligibleStatus.equals(status)) {
+        if (status != null && !status.isBlank() && !"ALL".equals(status)
+                && !eligibleStatus.equals(status)) {
             return List.of();
         }
-        return execute(dateFrom, dateTo, customerId, eligibleStatus, productId, categoryId, orderBy, orderDir);
+        return execute(dateFrom, dateTo, customerId, eligibleStatus, productId,
+                categoryId, orderBy, orderDir);
     }
 
 }

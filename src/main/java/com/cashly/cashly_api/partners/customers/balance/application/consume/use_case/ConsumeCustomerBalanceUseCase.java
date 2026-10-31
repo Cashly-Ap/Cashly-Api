@@ -17,43 +17,40 @@ public class ConsumeCustomerBalanceUseCase {
 
     private final CustomerBalanceRepository customerBalanceRepository;
 
-    public ConsumeCustomerBalanceUseCase(CustomerBalanceRepository customerBalanceRepository) {
+    public ConsumeCustomerBalanceUseCase(
+            CustomerBalanceRepository customerBalanceRepository) {
         this.customerBalanceRepository = customerBalanceRepository;
     }
 
     @Transactional
-    public CustomerBalanceResponse execute(UUID customerId, BalanceType type, BigDecimal amount,
-                                            BalanceType referenceType, UUID referenceId,
-                                            String number, String referenceNumber, UUID createdBy) {
-        return executeWithTransaction(customerId, type, amount, referenceType, referenceId,
-                number, referenceNumber, createdBy).balance();
+    public CustomerBalanceResponse execute(UUID customerId, BalanceType type,
+            BigDecimal amount, BalanceType referenceType, UUID referenceId,
+            String number, String referenceNumber, UUID createdBy) {
+        return executeWithTransaction(customerId, type, amount, referenceType,
+                referenceId, number, referenceNumber, createdBy).balance();
     }
 
     @Transactional
     public CustomerBalanceMutationResponse executeWithTransaction(
             UUID customerId, BalanceType type, BigDecimal amount,
-            BalanceType referenceType, UUID referenceId,
-            String number, String referenceNumber, UUID createdBy) {
-        CustomerBalance balance = customerBalanceRepository.findByCustomerId(customerId)
-            .orElseThrow(() -> new IllegalStateException(
-                "Customer balance not found for customer id: " + customerId));
+            BalanceType referenceType, UUID referenceId, String number,
+            String referenceNumber, UUID createdBy) {
+        CustomerBalance balance = customerBalanceRepository
+                .findByCustomerId(customerId)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Customer balance not found for customer id: "
+                                + customerId));
 
         balance.consumeFromBalance(amount);
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-            customerId,
-            type,
-            amount.negate(),
-            referenceType,
-            referenceId,
-            number,
-            referenceNumber,
-            createdBy
-        );
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                type, amount.negate(), referenceType, referenceId, number,
+                referenceNumber, createdBy);
 
         customerBalanceRepository.save(balance);
         customerBalanceRepository.saveTransaction(transaction);
 
-        return new CustomerBalanceMutationResponse(BalanceMapper.toResponse(balance), transaction.getId());
+        return new CustomerBalanceMutationResponse(
+                BalanceMapper.toResponse(balance), transaction.getId());
     }
 }

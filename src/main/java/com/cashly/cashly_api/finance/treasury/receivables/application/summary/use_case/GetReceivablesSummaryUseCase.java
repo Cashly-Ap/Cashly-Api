@@ -8,7 +8,8 @@ public class GetReceivablesSummaryUseCase {
 
     private final ReceivablesQueryGateway receivablesRepository;
 
-    public GetReceivablesSummaryUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetReceivablesSummaryUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         this.receivablesRepository = receivablesRepository;
     }
 

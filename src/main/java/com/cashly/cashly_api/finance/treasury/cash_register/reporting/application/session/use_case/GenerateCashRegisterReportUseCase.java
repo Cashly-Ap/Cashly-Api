@@ -16,22 +16,27 @@ public class GenerateCashRegisterReportUseCase {
     private final CashRegisterQueryGateway queries;
     private final CashRegisterReportPort reportPort;
 
-    public GenerateCashRegisterReportUseCase(CashRegisterRepository repository, CashRegisterQueryGateway queries,
-                                             CashRegisterReportPort reportPort) {
+    public GenerateCashRegisterReportUseCase(CashRegisterRepository repository,
+            CashRegisterQueryGateway queries,
+            CashRegisterReportPort reportPort) {
         this.repository = repository;
         this.queries = queries;
         this.reportPort = reportPort;
     }
 
-    public byte[] execute(UUID registerId, ReportFormat format, ReportType type) {
+    public byte[] execute(UUID registerId, ReportFormat format,
+            ReportType type) {
         var register = repository.findById(RegisterId.of(registerId))
-                .orElseThrow(() -> new IllegalArgumentException("Cash register not found: " + registerId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Cash register not found: " + registerId));
         var movements = repository.findMovements(register.getId());
         var response = CashRegisterMapper.toResponse(register);
         if (!movements.isEmpty()) {
             var totals = queries.findSessionTotals(register.getId());
-            register.applyMovementTotals(totals.totalRevenue(), totals.totalExpenses());
-            response = CashRegisterMapper.toResponse(register, totals, movements);
+            register.applyMovementTotals(totals.totalRevenue(),
+                    totals.totalExpenses());
+            response = CashRegisterMapper.toResponse(register, totals,
+                    movements);
         }
         return format == ReportFormat.PDF
                 ? reportPort.generatePdf(response, type)

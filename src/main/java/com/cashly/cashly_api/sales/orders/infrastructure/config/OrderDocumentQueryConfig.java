@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OrderDocumentQueryConfig {
     @Bean
-    public OrderDocumentQuery orderDocumentQuery(OrderRepository repository, GetOrdersUseCase listQuery) {
+    public OrderDocumentQuery orderDocumentQuery(OrderRepository repository,
+            GetOrdersUseCase listQuery) {
         return new OrderDocumentQueryService(repository, listQuery);
     }
 }

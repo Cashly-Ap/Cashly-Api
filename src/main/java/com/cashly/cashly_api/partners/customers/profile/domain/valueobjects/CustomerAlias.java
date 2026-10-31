@@ -7,10 +7,12 @@ public class CustomerAlias {
 
     public CustomerAlias(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Customer alias cannot be null or blank");
+            throw new IllegalArgumentException(
+                    "Customer alias cannot be null or blank");
         }
         if (value.trim().length() < 2 || value.trim().length() > 100) {
-            throw new IllegalArgumentException("Customer alias must be between 2 and 100 characters");
+            throw new IllegalArgumentException(
+                    "Customer alias must be between 2 and 100 characters");
         }
         this.value = value.trim();
     }
@@ -21,8 +23,10 @@ public class CustomerAlias {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         CustomerAlias that = (CustomerAlias) obj;
         return Objects.equals(value, that.value);
     }

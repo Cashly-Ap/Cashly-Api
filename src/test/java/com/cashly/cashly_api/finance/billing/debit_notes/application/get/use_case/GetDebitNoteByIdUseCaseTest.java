@@ -24,9 +24,11 @@ class GetDebitNoteByIdUseCaseTest {
         DebitNoteInvoiceGateway invoices = mock(DebitNoteInvoiceGateway.class);
         UUID id = UUID.randomUUID();
         UUID invoiceId = UUID.randomUUID();
-        when(notes.findById(DebitNoteId.of(id))).thenReturn(Optional.of(note(id, invoiceId)));
-        when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of(invoiceId,
-                new DebitNoteInvoiceGateway.InvoiceContext(invoiceId, "FAC-1", "PAID", "Pagada", "Acme", "RIF")));
+        when(notes.findById(DebitNoteId.of(id)))
+                .thenReturn(Optional.of(note(id, invoiceId)));
+        when(invoices.findAll(Set.of(invoiceId))).thenReturn(
+                Map.of(invoiceId, new DebitNoteInvoiceGateway.InvoiceContext(
+                        invoiceId, "FAC-1", "PAID", "Pagada", "Acme", "RIF")));
 
         var response = new GetDebitNoteByIdUseCase(notes, invoices).execute(id);
 
@@ -42,7 +44,8 @@ class GetDebitNoteByIdUseCaseTest {
         DebitNoteInvoiceGateway invoices = mock(DebitNoteInvoiceGateway.class);
         UUID id = UUID.randomUUID();
         UUID invoiceId = UUID.randomUUID();
-        when(notes.findById(DebitNoteId.of(id))).thenReturn(Optional.of(note(id, invoiceId)));
+        when(notes.findById(DebitNoteId.of(id)))
+                .thenReturn(Optional.of(note(id, invoiceId)));
         when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of());
 
         var response = new GetDebitNoteByIdUseCase(notes, invoices).execute(id);
@@ -67,8 +70,9 @@ class GetDebitNoteByIdUseCaseTest {
     }
 
     private DebitNote note(UUID id, UUID invoiceId) {
-        return DebitNote.reconstitute(DebitNoteId.of(id), DebitNoteNumber.of(2026, 1), UUID.randomUUID(),
-                invoiceId, new BigDecimal("15.00"), "Reason", UUID.randomUUID(), "User",
+        return DebitNote.reconstitute(DebitNoteId.of(id),
+                DebitNoteNumber.of(2026, 1), UUID.randomUUID(), invoiceId,
+                new BigDecimal("15.00"), "Reason", UUID.randomUUID(), "User",
                 LocalDateTime.now(), LocalDateTime.now());
     }
 }

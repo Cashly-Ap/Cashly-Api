@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CreditNoteLedgerQueryConfig {
     @Bean
-    public CreditNoteLedgerQuery creditNoteLedgerQuery(CreditNoteRepository notes) {
+    public CreditNoteLedgerQuery creditNoteLedgerQuery(
+            CreditNoteRepository notes) {
         return new RepositoryCreditNoteLedgerQuery(notes);
     }
 }

@@ -19,25 +19,28 @@ import java.util.stream.Collectors;
 
 public final class CashRegisterMapper {
 
-    private CashRegisterMapper() {}
+    private CashRegisterMapper() {
+    }
 
     public static CashRegisterResponse toResponse(CashRegister closure) {
         return toResponse(closure, null);
     }
 
-    public static CashRegisterResponse toResponse(CashRegister closure, DailyTotals dailyTotals) {
+    public static CashRegisterResponse toResponse(CashRegister closure,
+            DailyTotals dailyTotals) {
         return toResponse(closure, dailyTotals, List.of());
     }
 
-    public static CashRegisterResponse toResponse(CashRegister closure, DailyTotals dailyTotals,
-                                                  List<CashMovement> movements) {
+    public static CashRegisterResponse toResponse(CashRegister closure,
+            DailyTotals dailyTotals, List<CashMovement> movements) {
         List<CashRegisterDetailResponse> details = closure.getDetails().stream()
                 .map(CashRegisterMapper::toDetailResponse)
                 .collect(Collectors.toList());
 
         BigDecimal totalInvoiced = closure.getTotalInvoices();
         BigDecimal totalRevenue = closure.getTotalPayments();
-        BigDecimal totalExpenses = closure.getTotalReturns().add(closure.getTotalCreditNotes());
+        BigDecimal totalExpenses = closure.getTotalReturns()
+                .add(closure.getTotalCreditNotes());
         BigDecimal balance = totalRevenue.subtract(totalExpenses);
         List<RevenueSummaryItem> revenueSummary = List.of();
         List<ExpenseSummaryItem> expenseSummary = List.of();
@@ -52,61 +55,59 @@ public final class CashRegisterMapper {
             expenseSummary = buildExpenseSummary(dailyTotals);
         }
 
-        return new CashRegisterResponse(
-                closure.getId().value(),
-                closure.getClosureDate(),
-                closure.getStatus(),
-                closure.getOpenedBy(),
-                closure.getOpenedByName(),
-                closure.getOpenedAt(),
-                closure.getClosedBy(),
-                closure.getClosedByName(),
-                closure.getClosedAt(),
-                closure.getClosingNotes(),
-                details,
-                totalInvoiced, totalRevenue, totalExpenses, balance,
-                revenueSummary, expenseSummary,
-                closure.getOpeningBalance(), closure.getTotalIncome(), closure.getTotalExpense(),
-                closure.getExpectedClosingBalance(), closure.getActualClosingBalance(),
-                closure.getDifference(), movements.stream().map(CashRegisterMapper::toMovementResponse).toList()
-        );
+        return new CashRegisterResponse(closure.getId().value(),
+                closure.getClosureDate(), closure.getStatus(),
+                closure.getOpenedBy(), closure.getOpenedByName(),
+                closure.getOpenedAt(), closure.getClosedBy(),
+                closure.getClosedByName(), closure.getClosedAt(),
+                closure.getClosingNotes(), details, totalInvoiced, totalRevenue,
+                totalExpenses, balance, revenueSummary, expenseSummary,
+                closure.getOpeningBalance(), closure.getTotalIncome(),
+                closure.getTotalExpense(), closure.getExpectedClosingBalance(),
+                closure.getActualClosingBalance(), closure.getDifference(),
+                movements.stream().map(CashRegisterMapper::toMovementResponse)
+                        .toList());
     }
 
-    private static CashMovementResponse toMovementResponse(CashMovement movement) {
-        return new CashMovementResponse(
-                movement.getId(), movement.getDirection(), movement.getType(), movement.getAmount(),
-                movement.getPaymentMethodId(), movement.getPaymentMethodName(), movement.getDescription(),
-                movement.getSourceType(), movement.getSourceId(), movement.getCreatedBy(),
-                movement.getCreatedByName(), movement.getOccurredAt());
+    private static CashMovementResponse toMovementResponse(
+            CashMovement movement) {
+        return new CashMovementResponse(movement.getId(),
+                movement.getDirection(), movement.getType(),
+                movement.getAmount(), movement.getPaymentMethodId(),
+                movement.getPaymentMethodName(), movement.getDescription(),
+                movement.getSourceType(), movement.getSourceId(),
+                movement.getCreatedBy(), movement.getCreatedByName(),
+                movement.getOccurredAt());
     }
 
-    private static List<RevenueSummaryItem> buildRevenueSummary(DailyTotals dailyTotals) {
-        if (dailyTotals.paymentDetails() == null) return List.of();
+    private static List<RevenueSummaryItem> buildRevenueSummary(
+            DailyTotals dailyTotals) {
+        if (dailyTotals.paymentDetails() == null)
+            return List.of();
         return dailyTotals.paymentDetails().stream()
-                .map(d -> new RevenueSummaryItem(
-                        d.getPaymentMethodName(),
+                .map(d -> new RevenueSummaryItem(d.getPaymentMethodName(),
                         d.getExpectedAmount()))
                 .collect(Collectors.toList());
     }
 
-    private static List<ExpenseSummaryItem> buildExpenseSummary(DailyTotals dailyTotals) {
+    private static List<ExpenseSummaryItem> buildExpenseSummary(
+            DailyTotals dailyTotals) {
         List<ExpenseSummaryItem> items = new ArrayList<>();
         if (dailyTotals.totalReturns().compareTo(BigDecimal.ZERO) > 0) {
-            items.add(new ExpenseSummaryItem("Devoluciones", dailyTotals.totalReturns()));
+            items.add(new ExpenseSummaryItem("Devoluciones",
+                    dailyTotals.totalReturns()));
         }
         if (dailyTotals.totalCreditNotes().compareTo(BigDecimal.ZERO) > 0) {
-            items.add(new ExpenseSummaryItem("Notas de Crédito", dailyTotals.totalCreditNotes()));
+            items.add(new ExpenseSummaryItem("Notas de Crédito",
+                    dailyTotals.totalCreditNotes()));
         }
         return items;
     }
 
-    private static CashRegisterDetailResponse toDetailResponse(CashRegisterDetail detail) {
-        return new CashRegisterDetailResponse(
-                detail.getId(),
-                detail.getPaymentMethodId(),
-                detail.getPaymentMethodName(),
-                detail.getTransactionCount(),
-                detail.getExpectedAmount()
-        );
+    private static CashRegisterDetailResponse toDetailResponse(
+            CashRegisterDetail detail) {
+        return new CashRegisterDetailResponse(detail.getId(),
+                detail.getPaymentMethodId(), detail.getPaymentMethodName(),
+                detail.getTransactionCount(), detail.getExpectedAmount());
     }
 }

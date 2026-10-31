@@ -44,7 +44,8 @@ class DeletePaymentMethodUseCaseTest {
     @Test
     void should_DeletePaymentMethod_When_Exists() {
         when(repository.findById(PaymentMethodId.of(paymentMethodId)))
-                .thenReturn(Optional.of(mock(com.cashly.cashly_api.finance.treasury.payment_methods.domain.entity.PaymentMethod.class)));
+                .thenReturn(Optional.of(mock(
+                        com.cashly.cashly_api.finance.treasury.payment_methods.domain.entity.PaymentMethod.class)));
         when(usageGateway.hasAssociatedRecords(paymentMethodId))
                 .thenReturn(false);
 
@@ -55,16 +56,17 @@ class DeletePaymentMethodUseCaseTest {
     @Test
     void should_Throw_When_HasAssociatedRecords() {
         when(repository.findById(PaymentMethodId.of(paymentMethodId)))
-                .thenReturn(Optional.of(mock(com.cashly.cashly_api.finance.treasury.payment_methods.domain.entity.PaymentMethod.class)));
+                .thenReturn(Optional.of(mock(
+                        com.cashly.cashly_api.finance.treasury.payment_methods.domain.entity.PaymentMethod.class)));
         when(usageGateway.hasAssociatedRecords(paymentMethodId))
                 .thenReturn(true);
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> useCase.execute(paymentMethodId)
-        );
+                () -> useCase.execute(paymentMethodId));
 
-        assertEquals("No se puede eliminar el método de pago porque tiene pagos o cierres de caja asociados.",
+        assertEquals(
+                "No se puede eliminar el método de pago porque tiene pagos o cierres de caja asociados.",
                 exception.getMessage());
         verify(repository, never()).delete(any());
     }
@@ -76,9 +78,9 @@ class DeletePaymentMethodUseCaseTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(paymentMethodId)
-        );
+                () -> useCase.execute(paymentMethodId));
 
-        assertEquals("Payment method not found: " + paymentMethodId, exception.getMessage());
+        assertEquals("Payment method not found: " + paymentMethodId,
+                exception.getMessage());
     }
 }

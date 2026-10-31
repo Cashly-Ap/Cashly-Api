@@ -25,17 +25,15 @@ public final class BalanceTransactionJpaMapper {
 
     @SuppressWarnings("unused")
     public static BalanceTransaction toDomain(BalanceTransactionEntity entity) {
-        return BalanceTransaction.reconstitute(
-            entity.getId(),
-            entity.getCustomerId(),
-            com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType.valueOf(entity.getType()),
-            entity.getAmount(),
-            com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType.valueOf(entity.getReferenceType()),
-            entity.getReferenceId(),
-            entity.getNumber(),
-            entity.getReferenceNumber(),
-            entity.getCreatedBy(),
-            entity.getCreatedAt()
-        );
+        return BalanceTransaction.reconstitute(entity.getId(),
+                entity.getCustomerId(),
+                com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType
+                        .valueOf(entity.getType()),
+                entity.getAmount(),
+                com.cashly.cashly_api.partners.customers.balance.domain.valueobjects.BalanceType
+                        .valueOf(entity.getReferenceType()),
+                entity.getReferenceId(), entity.getNumber(),
+                entity.getReferenceNumber(), entity.getCreatedBy(),
+                entity.getCreatedAt());
     }
 }

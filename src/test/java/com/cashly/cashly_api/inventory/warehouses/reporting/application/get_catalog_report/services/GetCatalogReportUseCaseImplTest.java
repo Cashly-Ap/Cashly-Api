@@ -34,12 +34,11 @@ class GetCatalogReportUseCaseImplTest {
     @Test
     @DisplayName("should return catalog report page")
     void should_get_catalog_report() {
-        CatalogReportQuery query = new CatalogReportQuery(
-                "search", UUID.randomUUID(), UUID.randomUUID(),
-                true, true, false, 0, 20);
-        List<CatalogReportResponse> items = List.of(
-                new CatalogReportResponse(UUID.randomUUID(), "Product A", "SKU001",
-                        UUID.randomUUID(), "Category", false,
+        CatalogReportQuery query = new CatalogReportQuery("search",
+                UUID.randomUUID(), UUID.randomUUID(), true, true, false, 0, 20);
+        List<CatalogReportResponse> items = List
+                .of(new CatalogReportResponse(UUID.randomUUID(), "Product A",
+                        "SKU001", UUID.randomUUID(), "Category", false,
                         UUID.randomUUID(), "Warehouse", BigDecimal.TEN, true));
 
         when(catalogReportRepositoryPort.findCatalog(query))
@@ -55,8 +54,8 @@ class GetCatalogReportUseCaseImplTest {
     @Test
     @DisplayName("should return empty catalog report")
     void should_get_empty_catalog_report() {
-        CatalogReportQuery query = new CatalogReportQuery(
-                null, null, null, null, null, null, 0, 20);
+        CatalogReportQuery query = new CatalogReportQuery(null, null, null,
+                null, null, null, 0, 20);
         List<CatalogReportResponse> items = List.of();
 
         when(catalogReportRepositoryPort.findCatalog(query))

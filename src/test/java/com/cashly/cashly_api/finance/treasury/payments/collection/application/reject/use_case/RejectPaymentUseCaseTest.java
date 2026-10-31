@@ -24,21 +24,27 @@ class RejectPaymentUseCaseTest {
     @Test
     void rejection_is_saved_before_customer_notification_is_sent() {
         PaymentRepository payments = mock(PaymentRepository.class);
-        PaymentNotificationGateway notifications = mock(PaymentNotificationGateway.class);
-        RejectPaymentUseCase useCase = new RejectPaymentUseCase(payments, notifications);
+        PaymentNotificationGateway notifications = mock(
+                PaymentNotificationGateway.class);
+        RejectPaymentUseCase useCase = new RejectPaymentUseCase(payments,
+                notifications);
         UUID customerId = UUID.randomUUID();
         UUID actorId = UUID.randomUUID();
         Payment payment = Payment.create(PaymentNumber.of(2026, 1), customerId,
-                new BigDecimal("75.00"), UUID.randomUUID(), "REF-1", LocalDate.now(),
-                null, null, null, PaymentStatus.PENDING);
+                new BigDecimal("75.00"), UUID.randomUUID(), "REF-1",
+                LocalDate.now(), null, null, null, PaymentStatus.PENDING);
         String reason = "Comprobante no válido";
-        when(payments.findById(PaymentId.of(payment.getId().value()))).thenReturn(Optional.of(payment));
-        when(payments.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(payments.findById(PaymentId.of(payment.getId().value())))
+                .thenReturn(Optional.of(payment));
+        when(payments.save(any(Payment.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        var response = useCase.execute(payment.getId().value(), new RejectPaymentRequest(reason), actorId, "Admin");
+        var response = useCase.execute(payment.getId().value(),
+                new RejectPaymentRequest(reason), actorId, "Admin");
 
         assertEquals(PaymentStatus.REJECTED.name(), response.status());
         verify(payments).save(payment);
-        verify(notifications).rejected(customerId, payment.getId().value(), reason);
+        verify(notifications).rejected(customerId, payment.getId().value(),
+                reason);
     }
 }

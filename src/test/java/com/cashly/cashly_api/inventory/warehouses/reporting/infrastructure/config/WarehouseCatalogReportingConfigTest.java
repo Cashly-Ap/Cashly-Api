@@ -32,10 +32,12 @@ class WarehouseCatalogReportingConfigTest {
     void should_create_use_case_beans() {
         var config = new WarehouseCatalogReportingConfig();
 
-        var getCatalogUseCase = config.getCatalogReportUseCase(catalogReportRepositoryPort);
+        var getCatalogUseCase = config
+                .getCatalogReportUseCase(catalogReportRepositoryPort);
         assertNotNull(getCatalogUseCase);
 
-        var generatePdfUseCase = config.generateCatalogPdfUseCase(catalogReportRepositoryPort, catalogPdfPort);
+        var generatePdfUseCase = config.generateCatalogPdfUseCase(
+                catalogReportRepositoryPort, catalogPdfPort);
         assertNotNull(generatePdfUseCase);
     }
 
@@ -44,7 +46,8 @@ class WarehouseCatalogReportingConfigTest {
     void should_create_port_and_adapter_beans() {
         var config = new WarehouseCatalogReportingConfig();
 
-        assertNotNull(config.catalogReportRepositoryPort(catalogReportJpaRepository));
+        assertNotNull(
+                config.catalogReportRepositoryPort(catalogReportJpaRepository));
         assertNotNull(config.catalogPdfPort(new PdfBranding()));
     }
 }

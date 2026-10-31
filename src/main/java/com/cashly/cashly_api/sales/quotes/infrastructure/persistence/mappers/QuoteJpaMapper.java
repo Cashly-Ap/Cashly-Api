@@ -16,7 +16,8 @@ import java.util.List;
 
 public class QuoteJpaMapper {
 
-    public QuoteJpaMapper() {}
+    public QuoteJpaMapper() {
+    }
 
     public QuoteJpaEntity toJpa(Quote domain) {
         QuoteJpaEntity entity = new QuoteJpaEntity();
@@ -41,8 +42,7 @@ public class QuoteJpaMapper {
         entity.setUpdatedAt(domain.getUpdatedAt());
 
         List<QuoteLineJpaEntity> lineEntities = domain.getLines().stream()
-                .map(line -> toLineJpa(line, entity))
-                .toList();
+                .map(line -> toLineJpa(line, entity)).toList();
         entity.getLines().clear();
         entity.getLines().addAll(lineEntities);
 
@@ -51,34 +51,23 @@ public class QuoteJpaMapper {
 
     public Quote toDomain(QuoteJpaEntity entity) {
         List<QuoteLine> lines = entity.getLines().stream()
-                .map(this::toLineDomain)
-                .toList();
+                .map(this::toLineDomain).toList();
 
-        return Quote.reconstitute(
-                entity.getId(),
+        return Quote.reconstitute(entity.getId(),
                 new QuoteNumber(entity.getQuoteNumber()),
-                entity.getCustomerId(),
-                entity.getCustomerName(),
-                entity.getCustomerRif(),
-                entity.getCreatedBy(),
+                entity.getCustomerId(), entity.getCustomerName(),
+                entity.getCustomerRif(), entity.getCreatedBy(),
                 entity.getCreatedByName(),
-                QuoteStatus.valueOf(entity.getStatus()),
-                entity.getExpiryDate(),
-                entity.getNotes(),
-                entity.getSubtotal(),
-                entity.getOrderId(),
-                entity.getOrderNumber(),
-                entity.getInvoiceId(),
-                entity.getInvoiceNumber(),
-                entity.getCancelledAt(),
-                entity.getCancelledReason(),
-                lines,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+                QuoteStatus.valueOf(entity.getStatus()), entity.getExpiryDate(),
+                entity.getNotes(), entity.getSubtotal(), entity.getOrderId(),
+                entity.getOrderNumber(), entity.getInvoiceId(),
+                entity.getInvoiceNumber(), entity.getCancelledAt(),
+                entity.getCancelledReason(), lines, entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 
-    private QuoteLineJpaEntity toLineJpa(QuoteLine line, QuoteJpaEntity quoteEntity) {
+    private QuoteLineJpaEntity toLineJpa(QuoteLine line,
+            QuoteJpaEntity quoteEntity) {
         QuoteLineJpaEntity entity = new QuoteLineJpaEntity();
         entity.setId(line.getId().value());
         entity.setQuote(quoteEntity);
@@ -90,7 +79,8 @@ public class QuoteJpaMapper {
         entity.setLineTotal(line.getLineTotal());
         entity.setCategorySnapshot(line.getCategoryId());
 
-        List<QuoteAllocationJpaEntity> allocationEntities = line.getAllocations().stream()
+        List<QuoteAllocationJpaEntity> allocationEntities = line
+                .getAllocations().stream()
                 .map(a -> toAllocationJpa(a, entity, quoteEntity.getId()))
                 .toList();
         entity.getAllocations().clear();
@@ -100,8 +90,7 @@ public class QuoteJpaMapper {
     }
 
     private QuoteAllocationJpaEntity toAllocationJpa(QuoteAllocation allocation,
-                                                             QuoteLineJpaEntity lineEntity,
-                                                             java.util.UUID quoteId) {
+            QuoteLineJpaEntity lineEntity, java.util.UUID quoteId) {
         QuoteAllocationJpaEntity entity = new QuoteAllocationJpaEntity();
         entity.setId(allocation.getId().value());
         entity.setQuoteLine(lineEntity);
@@ -116,23 +105,15 @@ public class QuoteJpaMapper {
     private QuoteLine toLineDomain(QuoteLineJpaEntity entity) {
         List<QuoteAllocation> allocations = entity.getAllocations().stream()
                 .map(a -> QuoteAllocation.reconstitute(
-                        QuoteAllocationId.of(a.getId()),
-                        a.getProductId(),
-                        a.getWarehouseId(),
-                        a.getWarehouseName(),
+                        QuoteAllocationId.of(a.getId()), a.getProductId(),
+                        a.getWarehouseId(), a.getWarehouseName(),
                         a.getAllocatedQuantity()))
                 .toList();
 
-        return QuoteLine.reconstitute(
-                QuoteLineId.of(entity.getId()),
-                entity.getProductId(),
-                entity.getProductName(),
-                entity.getProductCode(),
-                entity.getCategoryIdSnapshot(),
-                entity.getQuantity(),
-                entity.getUnitPrice(),
-                entity.getLineTotal(),
-                allocations
-        );
+        return QuoteLine.reconstitute(QuoteLineId.of(entity.getId()),
+                entity.getProductId(), entity.getProductName(),
+                entity.getProductCode(), entity.getCategoryIdSnapshot(),
+                entity.getQuantity(), entity.getUnitPrice(),
+                entity.getLineTotal(), allocations);
     }
 }

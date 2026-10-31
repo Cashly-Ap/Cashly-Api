@@ -14,7 +14,8 @@ public class CancelQuoteUseCase {
     private final QuoteRepository quoteRepository;
     private final QuoteRejectionNotificationGateway notificationService;
 
-    public CancelQuoteUseCase(QuoteRepository quoteRepository, QuoteRejectionNotificationGateway notificationService) {
+    public CancelQuoteUseCase(QuoteRepository quoteRepository,
+            QuoteRejectionNotificationGateway notificationService) {
         this.quoteRepository = quoteRepository;
         this.notificationService = notificationService;
     }
@@ -26,6 +27,7 @@ public class CancelQuoteUseCase {
 
         quote.cancel(request.reason());
         quoteRepository.save(quote);
-        notificationService.rejected(quote.getCustomerId(), id, request.reason());
+        notificationService.rejected(quote.getCustomerId(), id,
+                request.reason());
     }
 }

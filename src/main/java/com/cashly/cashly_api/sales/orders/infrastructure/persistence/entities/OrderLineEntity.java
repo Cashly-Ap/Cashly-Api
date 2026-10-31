@@ -54,10 +54,14 @@ public class OrderLineEntity {
     private List<OrderLineAllocationEntity> allocations = new ArrayList<>();
 
     public void setCategorySnapshot(UUID categoryId) {
-        categorySnapshot = categoryId == null ? null : new OrderLineCategorySnapshotEntity(this, categoryId);
+        categorySnapshot = categoryId == null
+                ? null
+                : new OrderLineCategorySnapshotEntity(this, categoryId);
     }
 
     public UUID getCategoryIdSnapshot() {
-        return categorySnapshot == null ? null : categorySnapshot.getCategoryId();
+        return categorySnapshot == null
+                ? null
+                : categorySnapshot.getCategoryId();
     }
 }

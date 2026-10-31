@@ -26,7 +26,8 @@ class SupplierIdUnitTest {
 
     @Test
     void should_throw_on_null_string() {
-        assertThrows(IllegalArgumentException.class, () -> SupplierId.from(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> SupplierId.from(null));
     }
 
     @Test
@@ -36,12 +37,14 @@ class SupplierIdUnitTest {
 
     @Test
     void should_throw_on_blank_string() {
-        assertThrows(IllegalArgumentException.class, () -> SupplierId.from("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> SupplierId.from("   "));
     }
 
     @Test
     void should_throw_on_invalid_uuid_format() {
-        assertThrows(IllegalArgumentException.class, () -> SupplierId.from("not-a-uuid"));
+        assertThrows(IllegalArgumentException.class,
+                () -> SupplierId.from("not-a-uuid"));
     }
 
     @Test
@@ -53,7 +56,8 @@ class SupplierIdUnitTest {
 
     @Test
     void should_throw_on_null_uuid() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierId(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierId(null));
     }
 
     @Test

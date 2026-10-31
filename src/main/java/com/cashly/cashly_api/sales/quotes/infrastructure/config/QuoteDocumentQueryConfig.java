@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QuoteDocumentQueryConfig {
     @Bean
-    public QuoteDocumentQuery quoteDocumentQuery(QuoteRepository repository, GetQuotesUseCase listQuery) {
+    public QuoteDocumentQuery quoteDocumentQuery(QuoteRepository repository,
+            GetQuotesUseCase listQuery) {
         return new QuoteDocumentQueryService(repository, listQuery);
     }
 }

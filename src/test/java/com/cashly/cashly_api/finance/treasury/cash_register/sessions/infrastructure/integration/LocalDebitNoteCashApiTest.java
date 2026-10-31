@@ -19,10 +19,12 @@ class LocalDebitNoteCashApiTest {
         UUID noteId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        api.recordDebitNoteIn(new BigDecimal("40.00"), "DN-1", noteId, userId, "User");
+        api.recordDebitNoteIn(new BigDecimal("40.00"), "DN-1", noteId, userId,
+                "User");
 
-        verify(movements).record(eq(CashMovementDirection.IN), eq(CashMovementType.DEBIT_NOTE),
-                eq(new BigDecimal("40.00")), isNull(), eq("Nota de débito DN-1"),
-                eq("DEBIT_NOTE"), eq(noteId), eq(userId), eq("User"));
+        verify(movements).record(eq(CashMovementDirection.IN),
+                eq(CashMovementType.DEBIT_NOTE), eq(new BigDecimal("40.00")),
+                isNull(), eq("Nota de débito DN-1"), eq("DEBIT_NOTE"),
+                eq(noteId), eq(userId), eq("User"));
     }
 }

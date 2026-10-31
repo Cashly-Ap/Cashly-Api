@@ -34,16 +34,19 @@ class ReceivablesReportsControllerTest {
         UUID customerId = UUID.randomUUID();
         byte[] pdfContent = "AR PDF".getBytes();
 
-        when(generateAccountsReceivableReportPdfUseCase.execute(customerId, false))
-                .thenReturn(pdfContent);
+        when(generateAccountsReceivableReportPdfUseCase.execute(customerId,
+                false)).thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getAccountsReceivablePdf(customerId, false);
+        ResponseEntity<byte[]> result = controller
+                .getAccountsReceivablePdf(customerId, false);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("cuentas-por-cobrar-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("cuentas-por-cobrar-"));
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateAccountsReceivableReportPdfUseCase).execute(customerId, false);
+        verify(generateAccountsReceivableReportPdfUseCase).execute(customerId,
+                false);
     }
 
     @Test
@@ -54,7 +57,8 @@ class ReceivablesReportsControllerTest {
         when(generateAccountsReceivableReportPdfUseCase.execute(null, true))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getAccountsReceivablePdf(null, true);
+        ResponseEntity<byte[]> result = controller
+                .getAccountsReceivablePdf(null, true);
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateAccountsReceivableReportPdfUseCase).execute(null, true);
@@ -70,13 +74,16 @@ class ReceivablesReportsControllerTest {
         when(generateCollectionsReportPdfUseCase.execute(customerId, agingFrom))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getCollectionsPdf(customerId, agingFrom);
+        ResponseEntity<byte[]> result = controller.getCollectionsPdf(customerId,
+                agingFrom);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("cobranzas-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("cobranzas-"));
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateCollectionsReportPdfUseCase).execute(customerId, agingFrom);
+        verify(generateCollectionsReportPdfUseCase).execute(customerId,
+                agingFrom);
     }
 
     @Test
@@ -87,7 +94,8 @@ class ReceivablesReportsControllerTest {
         when(generateCollectionsReportPdfUseCase.execute(null, null))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getCollectionsPdf(null, null);
+        ResponseEntity<byte[]> result = controller.getCollectionsPdf(null,
+                null);
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateCollectionsReportPdfUseCase).execute(null, null);

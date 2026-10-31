@@ -59,10 +59,13 @@ class JpaProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
-                adapter = new JpaProductRepository(springDataRepository, codeSequenceRepository,
+        adapter = new JpaProductRepository(springDataRepository,
+                codeSequenceRepository,
                 new com.cashly.cashly_api.catalog.products.infrastructure.integration.LocalProductPriceTypeExistenceGatewayAdapter(
                         new com.cashly.cashly_api.catalog.price_types.infrastructure.persistence.queries.JpaProductPriceTypeExistenceQuery(
-                                springDataPriceTypeRepository)), stockFilter, mock(com.cashly.cashly_api.catalog.products.application.ports.out.ProductReferenceGateway.class));
+                                springDataPriceTypeRepository)),
+                stockFilter,
+                mock(com.cashly.cashly_api.catalog.products.application.ports.out.ProductReferenceGateway.class));
     }
 
     @Nested
@@ -71,12 +74,14 @@ class JpaProductRepositoryTest {
 
         @Test
         void should_CreateNewProduct_When_IdIsNull() {
-            Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"));
+            Product product = Product.create("PRD-00001", "Test Product",
+                    "A test product", UUID.randomUUID(), false,
+                    new BigDecimal("100.00"));
 
             ProductEntity savedEntity = ProductEntity.fromDomain(product);
             savedEntity.setId(UUID.randomUUID());
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Product result = adapter.save(product);
 
@@ -96,18 +101,19 @@ class JpaProductRepositoryTest {
         @Test
         void should_UpdateExistingProduct_When_IdIsNotNullAndEntityFound() {
             UUID id = UUID.randomUUID();
-            Product product = Product.reconstitute(
-                    id, "PRD-00001", "Updated Product", "Updated description",
-                    UUID.randomUUID(), false, true, null,
-                    new BigDecimal("120.00"),
-                    List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+            Product product = Product.reconstitute(id, "PRD-00001",
+                    "Updated Product", "Updated description", UUID.randomUUID(),
+                    false, true, null, new BigDecimal("120.00"), List.of(),
+                    List.of(), LocalDateTime.now(), LocalDateTime.now());
 
             ProductEntity existingEntity = ProductEntity.fromDomain(product);
 
-            when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.of(existingEntity));
+            when(springDataRepository.findWithComponentsById(id))
+                    .thenReturn(Optional.of(existingEntity));
 
             ProductEntity updatedEntity = ProductEntity.fromDomain(product);
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(updatedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(updatedEntity);
 
             Product result = adapter.save(product);
 
@@ -124,17 +130,19 @@ class JpaProductRepositoryTest {
         @Test
         void should_CreateNewProduct_When_IdIsNotNullButEntityNotFound() {
             UUID id = UUID.randomUUID();
-            Product product = Product.reconstitute(
-                    id, "PRD-00002", "Fallback Product", "Fallback description",
+            Product product = Product.reconstitute(id, "PRD-00002",
+                    "Fallback Product", "Fallback description",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("150.00"),
-                    List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+                    new BigDecimal("150.00"), List.of(), List.of(),
+                    LocalDateTime.now(), LocalDateTime.now());
 
-            when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findWithComponentsById(id))
+                    .thenReturn(Optional.empty());
 
             ProductEntity savedEntity = ProductEntity.fromDomain(product);
             savedEntity.setId(UUID.randomUUID());
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Product result = adapter.save(product);
 
@@ -149,23 +157,25 @@ class JpaProductRepositoryTest {
         @Test
         void should_CreateNewProduct_When_IdIsNull_WithPrices() {
             UUID priceTypeId = UUID.randomUUID();
-            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"), null);
+            ProductPrice price = ProductPrice.create(priceTypeId,
+                    new BigDecimal("50.00"), null);
             List<ProductPrice> prices = List.of(price);
 
-            Product product = Product.reconstitute(
-                    null, "PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, true, null,
-                    new BigDecimal("80.00"),
-                    List.of(), prices, LocalDateTime.now(), LocalDateTime.now());
+            Product product = Product.reconstitute(null, "PRD-00001",
+                    "Test Product", "A test product", UUID.randomUUID(), false,
+                    true, null, new BigDecimal("80.00"), List.of(), prices,
+                    LocalDateTime.now(), LocalDateTime.now());
 
             PriceTypeEntity priceTypeEntity = new PriceTypeEntity();
             priceTypeEntity.setId(priceTypeId);
-            when(springDataPriceTypeRepository.findAllById(List.of(priceTypeId)))
+            when(springDataPriceTypeRepository
+                    .findAllById(List.of(priceTypeId)))
                     .thenReturn(List.of(priceTypeEntity));
 
             ProductEntity savedEntity = ProductEntity.fromDomain(product);
             savedEntity.setId(UUID.randomUUID());
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Product result = adapter.save(product);
 
@@ -173,32 +183,36 @@ class JpaProductRepositoryTest {
             assertEquals(product.getName(), result.getName());
 
             verify(springDataRepository).save(any(ProductEntity.class));
-            verify(springDataPriceTypeRepository).findAllById(List.of(priceTypeId));
+            verify(springDataPriceTypeRepository)
+                    .findAllById(List.of(priceTypeId));
         }
 
         @Test
         void should_UpdateExistingProduct_When_IdIsNotNullAndEntityFound_WithPrices() {
             UUID id = UUID.randomUUID();
             UUID priceTypeId = UUID.randomUUID();
-            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"), null);
+            ProductPrice price = ProductPrice.create(priceTypeId,
+                    new BigDecimal("50.00"), null);
             List<ProductPrice> prices = List.of(price);
 
-            Product product = Product.reconstitute(
-                    id, "PRD-00001", "Updated Product", "Updated description",
-                    UUID.randomUUID(), false, true, null,
-                    new BigDecimal("120.00"),
-                    List.of(), prices, LocalDateTime.now(), LocalDateTime.now());
+            Product product = Product.reconstitute(id, "PRD-00001",
+                    "Updated Product", "Updated description", UUID.randomUUID(),
+                    false, true, null, new BigDecimal("120.00"), List.of(),
+                    prices, LocalDateTime.now(), LocalDateTime.now());
 
             ProductEntity existingEntity = ProductEntity.fromDomain(product);
-            when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.of(existingEntity));
+            when(springDataRepository.findWithComponentsById(id))
+                    .thenReturn(Optional.of(existingEntity));
 
             PriceTypeEntity priceTypeEntity = new PriceTypeEntity();
             priceTypeEntity.setId(priceTypeId);
-            when(springDataPriceTypeRepository.findAllById(List.of(priceTypeId)))
+            when(springDataPriceTypeRepository
+                    .findAllById(List.of(priceTypeId)))
                     .thenReturn(List.of(priceTypeEntity));
 
             ProductEntity updatedEntity = ProductEntity.fromDomain(product);
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(updatedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(updatedEntity);
 
             Product result = adapter.save(product);
 
@@ -209,32 +223,37 @@ class JpaProductRepositoryTest {
             verify(springDataRepository).findWithComponentsById(id);
             verify(springDataRepository).saveAndFlush(any(ProductEntity.class));
             verify(springDataRepository).save(any(ProductEntity.class));
-            verify(springDataPriceTypeRepository).findAllById(List.of(priceTypeId));
+            verify(springDataPriceTypeRepository)
+                    .findAllById(List.of(priceTypeId));
         }
 
         @Test
         void should_CreateNewProduct_When_IdIsNotNullButEntityNotFound_WithPrices() {
             UUID id = UUID.randomUUID();
             UUID priceTypeId = UUID.randomUUID();
-            ProductPrice price = ProductPrice.create(priceTypeId, new BigDecimal("50.00"), null);
+            ProductPrice price = ProductPrice.create(priceTypeId,
+                    new BigDecimal("50.00"), null);
             List<ProductPrice> prices = List.of(price);
 
-            Product product = Product.reconstitute(
-                    id, "PRD-00002", "Fallback Product", "Fallback description",
+            Product product = Product.reconstitute(id, "PRD-00002",
+                    "Fallback Product", "Fallback description",
                     UUID.randomUUID(), false, true, null,
-                    new BigDecimal("150.00"),
-                    List.of(), prices, LocalDateTime.now(), LocalDateTime.now());
+                    new BigDecimal("150.00"), List.of(), prices,
+                    LocalDateTime.now(), LocalDateTime.now());
 
-            when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findWithComponentsById(id))
+                    .thenReturn(Optional.empty());
 
             PriceTypeEntity priceTypeEntity = new PriceTypeEntity();
             priceTypeEntity.setId(priceTypeId);
-            when(springDataPriceTypeRepository.findAllById(List.of(priceTypeId)))
+            when(springDataPriceTypeRepository
+                    .findAllById(List.of(priceTypeId)))
                     .thenReturn(List.of(priceTypeEntity));
 
             ProductEntity savedEntity = ProductEntity.fromDomain(product);
             savedEntity.setId(UUID.randomUUID());
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Product result = adapter.save(product);
 
@@ -243,7 +262,8 @@ class JpaProductRepositoryTest {
 
             verify(springDataRepository).findWithComponentsById(id);
             verify(springDataRepository).save(any(ProductEntity.class));
-            verify(springDataPriceTypeRepository).findAllById(List.of(priceTypeId));
+            verify(springDataPriceTypeRepository)
+                    .findAllById(List.of(priceTypeId));
         }
     }
 
@@ -254,12 +274,14 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnDomainObject_When_EntityFound() {
             UUID id = UUID.randomUUID();
-            Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"));
+            Product product = Product.create("PRD-00001", "Test Product",
+                    "A test product", UUID.randomUUID(), false,
+                    new BigDecimal("100.00"));
             ProductEntity entity = ProductEntity.fromDomain(product);
             entity.setId(id);
 
-            when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.of(entity));
+            when(springDataRepository.findWithComponentsById(id))
+                    .thenReturn(Optional.of(entity));
 
             Optional<Product> result = adapter.findById(id);
 
@@ -271,7 +293,8 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.findWithComponentsById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findWithComponentsById(id))
+                    .thenReturn(Optional.empty());
 
             Optional<Product> result = adapter.findById(id);
 
@@ -286,7 +309,8 @@ class JpaProductRepositoryTest {
 
         @Test
         void should_ReturnTrue_When_CodeExists() {
-            when(springDataRepository.existsByCode("PRD-00001")).thenReturn(true);
+            when(springDataRepository.existsByCode("PRD-00001"))
+                    .thenReturn(true);
 
             boolean result = adapter.existsByCode("PRD-00001");
 
@@ -296,7 +320,8 @@ class JpaProductRepositoryTest {
 
         @Test
         void should_ReturnFalse_When_CodeDoesNotExist() {
-            when(springDataRepository.existsByCode("PRD-99999")).thenReturn(false);
+            when(springDataRepository.existsByCode("PRD-99999"))
+                    .thenReturn(false);
 
             boolean result = adapter.existsByCode("PRD-99999");
 
@@ -312,7 +337,8 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnTrue_When_CodeExistsForDifferentId() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.existsByCodeAndIdNot("PRD-00001", id)).thenReturn(true);
+            when(springDataRepository.existsByCodeAndIdNot("PRD-00001", id))
+                    .thenReturn(true);
 
             boolean result = adapter.existsByCodeAndIdNot("PRD-00001", id);
 
@@ -323,7 +349,8 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnFalse_When_CodeOnlyMatchesSameId() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.existsByCodeAndIdNot("PRD-00001", id)).thenReturn(false);
+            when(springDataRepository.existsByCodeAndIdNot("PRD-00001", id))
+                    .thenReturn(false);
 
             boolean result = adapter.existsByCodeAndIdNot("PRD-00001", id);
 
@@ -339,7 +366,8 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnTrue_When_CategoryHasProducts() {
             UUID categoryId = UUID.randomUUID();
-            when(springDataRepository.existsByCategoryId(categoryId)).thenReturn(true);
+            when(springDataRepository.existsByCategoryId(categoryId))
+                    .thenReturn(true);
 
             boolean result = adapter.existsByCategoryId(categoryId);
 
@@ -350,7 +378,8 @@ class JpaProductRepositoryTest {
         @Test
         void should_ReturnFalse_When_CategoryHasNoProducts() {
             UUID categoryId = UUID.randomUUID();
-            when(springDataRepository.existsByCategoryId(categoryId)).thenReturn(false);
+            when(springDataRepository.existsByCategoryId(categoryId))
+                    .thenReturn(false);
 
             boolean result = adapter.existsByCategoryId(categoryId);
 
@@ -366,8 +395,9 @@ class JpaProductRepositoryTest {
         @SuppressWarnings("unchecked")
         @Test
         void should_ReturnPagedResults_When_EntitiesFound() {
-            Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"));
+            Product product = Product.create("PRD-00001", "Test Product",
+                    "A test product", UUID.randomUUID(), false,
+                    new BigDecimal("100.00"));
 
             Page<ProductEntity> entityPage = mock(Page.class);
             Page<Product> mappedPage = mock(Page.class);
@@ -382,18 +412,17 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Product> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "name", "asc");
+            PageResponse<Product> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "name", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -412,9 +441,8 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class))).thenReturn(entityPage);
 
             PageResponse<Product> result = adapter.findAllWithFilters(
                     "NonExistent", null, true, false, 0, 20, "name", "asc");
@@ -422,8 +450,8 @@ class JpaProductRepositoryTest {
             assertNotNull(result);
             assertTrue(result.empty());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class));
         }
 
         @Test
@@ -441,13 +469,13 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            ArgumentCaptor<PageRequest> pageCaptor = ArgumentCaptor.forClass(PageRequest.class);
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), pageCaptor.capture()))
-                    .thenReturn(entityPage);
+            ArgumentCaptor<PageRequest> pageCaptor = ArgumentCaptor
+                    .forClass(PageRequest.class);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), pageCaptor.capture())).thenReturn(entityPage);
 
-            PageResponse<Product> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "invalid", "asc");
+            PageResponse<Product> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "invalid", "asc");
 
             PageRequest captured = pageCaptor.getValue();
             Sort.Order sortOrder = captured.getSort().iterator().next();
@@ -470,13 +498,13 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            ArgumentCaptor<PageRequest> pageCaptor = ArgumentCaptor.forClass(PageRequest.class);
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), pageCaptor.capture()))
-                    .thenReturn(entityPage);
+            ArgumentCaptor<PageRequest> pageCaptor = ArgumentCaptor
+                    .forClass(PageRequest.class);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), pageCaptor.capture())).thenReturn(entityPage);
 
-            PageResponse<Product> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "name", "desc");
+            PageResponse<Product> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "name", "desc");
 
             PageRequest captured = pageCaptor.getValue();
             Sort.Order sortOrder = captured.getSort().iterator().next();
@@ -492,8 +520,9 @@ class JpaProductRepositoryTest {
         @SuppressWarnings("unchecked")
         @Test
         void should_ReturnPagedResults_When_EntitiesFound() {
-            Product product = Product.create("PRD-00001", "Test Product", "A test product",
-                    UUID.randomUUID(), false, new BigDecimal("100.00"));
+            Product product = Product.create("PRD-00001", "Test Product",
+                    "A test product", UUID.randomUUID(), false,
+                    new BigDecimal("100.00"));
 
             Page<ProductEntity> entityPage = mock(Page.class);
             Page<Product> mappedPage = mock(Page.class);
@@ -508,18 +537,21 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllForOrderWithStock(any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllForOrderWithStock(any(), any(),
+                    any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
             Set<UUID> warehouseIds = Set.of(UUID.randomUUID());
-            when(stockFilter.availableProductIds(warehouseIds)).thenReturn(Set.of(UUID.randomUUID()));
-            PageResponse<Product> result = adapter.findAllForOrder(
-                    null, null, null, true, warehouseIds, 0, 20);
+            when(stockFilter.availableProductIds(warehouseIds))
+                    .thenReturn(Set.of(UUID.randomUUID()));
+            PageResponse<Product> result = adapter.findAllForOrder(null, null,
+                    null, true, warehouseIds, 0, 20);
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
-            verify(springDataRepository).findAllForOrderWithStock(any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllForOrderWithStock(any(), any(),
+                    any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -538,16 +570,17 @@ class JpaProductRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            when(springDataRepository.findAllForOrder(any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllForOrder(any(), any(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Product> result = adapter.findAllForOrder(
-                    null, null, null, false, Set.of(), 0, 20);
+            PageResponse<Product> result = adapter.findAllForOrder(null, null,
+                    null, false, Set.of(), 0, 20);
 
             assertNotNull(result);
             assertTrue(result.empty());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllForOrder(any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllForOrder(any(), any(), any(),
+                    any(PageRequest.class));
         }
     }
 
@@ -585,26 +618,34 @@ class JpaProductRepositoryTest {
 
         @Test
         void should_SaveSequenceAndReturnFormattedCode() {
-            ProductCodeSequenceEntity savedSeq = mock(ProductCodeSequenceEntity.class);
+            ProductCodeSequenceEntity savedSeq = mock(
+                    ProductCodeSequenceEntity.class);
             when(savedSeq.getId()).thenReturn(1L);
-            when(codeSequenceRepository.save(any(ProductCodeSequenceEntity.class))).thenReturn(savedSeq);
+            when(codeSequenceRepository
+                    .save(any(ProductCodeSequenceEntity.class)))
+                    .thenReturn(savedSeq);
 
             String code = adapter.generateNextCode();
 
             assertEquals("PRD-00001", code);
-            verify(codeSequenceRepository).save(any(ProductCodeSequenceEntity.class));
+            verify(codeSequenceRepository)
+                    .save(any(ProductCodeSequenceEntity.class));
         }
 
         @Test
         void should_FormatCodeWithLeadingZeros() {
-            ProductCodeSequenceEntity savedSeq = mock(ProductCodeSequenceEntity.class);
+            ProductCodeSequenceEntity savedSeq = mock(
+                    ProductCodeSequenceEntity.class);
             when(savedSeq.getId()).thenReturn(42L);
-            when(codeSequenceRepository.save(any(ProductCodeSequenceEntity.class))).thenReturn(savedSeq);
+            when(codeSequenceRepository
+                    .save(any(ProductCodeSequenceEntity.class)))
+                    .thenReturn(savedSeq);
 
             String code = adapter.generateNextCode();
 
             assertEquals("PRD-00042", code);
-            verify(codeSequenceRepository).save(any(ProductCodeSequenceEntity.class));
+            verify(codeSequenceRepository)
+                    .save(any(ProductCodeSequenceEntity.class));
         }
     }
 }

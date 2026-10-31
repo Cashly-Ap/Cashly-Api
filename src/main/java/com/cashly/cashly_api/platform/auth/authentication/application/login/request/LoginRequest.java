@@ -1,9 +1,6 @@
 package com.cashly.cashly_api.platform.auth.authentication.application.login.request;
 
-public record LoginRequest(
-    String email,
-    String password
-) {
+public record LoginRequest(String email, String password) {
     public LoginRequest {
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Email is required");

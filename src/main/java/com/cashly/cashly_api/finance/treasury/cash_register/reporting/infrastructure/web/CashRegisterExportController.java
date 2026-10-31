@@ -28,9 +28,10 @@ public class CashRegisterExportController {
     private final GenerateCashRegisterReportUseCase generateCashRegisterReportUseCase;
     private final GenerateCashRegisterRangeReportUseCase generateCashRegisterRangeReportUseCase;
 
-    public CashRegisterExportController(GenerateCashRegisterExcelUseCase generateCashRegisterExcelUseCase,
-                                        GenerateCashRegisterReportUseCase generateCashRegisterReportUseCase,
-                                        GenerateCashRegisterRangeReportUseCase generateCashRegisterRangeReportUseCase) {
+    public CashRegisterExportController(
+            GenerateCashRegisterExcelUseCase generateCashRegisterExcelUseCase,
+            GenerateCashRegisterReportUseCase generateCashRegisterReportUseCase,
+            GenerateCashRegisterRangeReportUseCase generateCashRegisterRangeReportUseCase) {
         this.generateCashRegisterExcelUseCase = generateCashRegisterExcelUseCase;
         this.generateCashRegisterReportUseCase = generateCashRegisterReportUseCase;
         this.generateCashRegisterRangeReportUseCase = generateCashRegisterRangeReportUseCase;
@@ -39,42 +40,45 @@ public class CashRegisterExportController {
     @GetMapping("/reports")
     @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> exportRangeReport(
-            @RequestParam LocalDate dateFrom,
-            @RequestParam LocalDate dateTo,
+            @RequestParam LocalDate dateFrom, @RequestParam LocalDate dateTo,
             @RequestParam(defaultValue = "PDF") ReportFormat format,
             @RequestParam(defaultValue = "DETAILED") ReportType type,
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId) {
-        var filter = new CashRegisterReportFilter(
-                dateFrom, dateTo, customerId, productId, categoryId);
-        byte[] bytes = generateCashRegisterRangeReportUseCase.execute(filter, format, type);
+        var filter = new CashRegisterReportFilter(dateFrom, dateTo, customerId,
+                productId, categoryId);
+        byte[] bytes = generateCashRegisterRangeReportUseCase.execute(filter,
+                format, type);
         boolean pdf = format == ReportFormat.PDF;
         String extension = pdf ? "pdf" : "xlsx";
         String fileName = "caja-" + dateFrom + "_" + dateTo + "-"
                 + type.name().toLowerCase() + "." + extension;
         MediaType contentType = pdf
                 ? MediaType.APPLICATION_PDF
-                : MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                : MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, String.format(ATTACHMENT_HEADER, fileName))
-                .contentType(contentType)
-                .body(bytes);
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        String.format(ATTACHMENT_HEADER, fileName))
+                .contentType(contentType).body(bytes);
     }
 
     @GetMapping("/export")
     @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> exportExcel(@RequestParam LocalDate dateFrom,
-                                              @RequestParam LocalDate dateTo,
-                                              @RequestParam(defaultValue = "DETAILED") ReportType type) {
-        byte[] excelBytes = generateCashRegisterExcelUseCase.execute(dateFrom, dateTo, type);
+            @RequestParam LocalDate dateTo,
+            @RequestParam(defaultValue = "DETAILED") ReportType type) {
+        byte[] excelBytes = generateCashRegisterExcelUseCase.execute(dateFrom,
+                dateTo, type);
 
         String prefix = switch (type) {
             case SIMPLE -> "cierre-caja-resumen";
             case DETAILED -> "cierre-caja-detallado";
             case GROUPED -> "cierre-caja-por-cliente";
         };
-        String fileName = String.format("%s-%s.xlsx", prefix, dateFrom + "_" + dateTo);
+        String fileName = String.format("%s-%s.xlsx", prefix,
+                dateFrom + "_" + dateTo);
         String contentDisposition = String.format(ATTACHMENT_HEADER, fileName);
 
         return ResponseEntity.ok()
@@ -90,16 +94,19 @@ public class CashRegisterExportController {
             @org.springframework.web.bind.annotation.PathVariable UUID id,
             @RequestParam(defaultValue = "PDF") ReportFormat format,
             @RequestParam(defaultValue = "DETAILED") ReportType type) {
-        byte[] bytes = generateCashRegisterReportUseCase.execute(id, format, type);
+        byte[] bytes = generateCashRegisterReportUseCase.execute(id, format,
+                type);
         boolean pdf = format == ReportFormat.PDF;
         String extension = pdf ? "pdf" : "xlsx";
-        String fileName = "caja-" + id + "-" + type.name().toLowerCase() + "." + extension;
+        String fileName = "caja-" + id + "-" + type.name().toLowerCase() + "."
+                + extension;
         MediaType contentType = pdf
                 ? MediaType.APPLICATION_PDF
-                : MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                : MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, String.format(ATTACHMENT_HEADER, fileName))
-                .contentType(contentType)
-                .body(bytes);
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        String.format(ATTACHMENT_HEADER, fileName))
+                .contentType(contentType).body(bytes);
     }
 }

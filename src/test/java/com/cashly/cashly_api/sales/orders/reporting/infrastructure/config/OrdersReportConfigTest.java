@@ -40,11 +40,12 @@ class OrdersReportConfigTest {
     void should_create_use_case_beans() {
         var config = new OrdersReportConfig();
 
-        var orderPdfUseCase = config.generateOrderPdfUseCase(
-                query, orderPdfPort);
+        var orderPdfUseCase = config.generateOrderPdfUseCase(query,
+                orderPdfPort);
         assertNotNull(orderPdfUseCase);
 
-        var reportPdfUseCase = config.generateOrdersReportPdfUseCase(query, ordersReportPdfPort);
+        var reportPdfUseCase = config.generateOrdersReportPdfUseCase(query,
+                ordersReportPdfPort);
         assertNotNull(reportPdfUseCase);
     }
 

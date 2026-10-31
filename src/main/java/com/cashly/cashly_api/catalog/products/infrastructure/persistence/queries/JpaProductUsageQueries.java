@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 
 @Component
 @Transactional(readOnly = true)
-public class JpaProductUsageQueries implements CategoryProductUsageApi, PriceTypeProductUsageApi {
+public class JpaProductUsageQueries
+        implements
+            CategoryProductUsageApi,
+            PriceTypeProductUsageApi {
     private final SpringDataProductUsageRepository repository;
 
     public JpaProductUsageQueries(SpringDataProductUsageRepository repository) {
@@ -26,12 +29,14 @@ public class JpaProductUsageQueries implements CategoryProductUsageApi, PriceTyp
     }
 
     @Override
-    public Map<UUID, Long> countActiveProductsByCategoryIds(Set<UUID> categoryIds) {
+    public Map<UUID, Long> countActiveProductsByCategoryIds(
+            Set<UUID> categoryIds) {
         if (categoryIds.isEmpty()) {
             return Map.of();
         }
         return repository.countActiveProductsByCategoryIds(categoryIds).stream()
-                .collect(Collectors.toMap(row -> (UUID) row[0], row -> ((Number) row[1]).longValue()));
+                .collect(Collectors.toMap(row -> (UUID) row[0],
+                        row -> ((Number) row[1]).longValue()));
     }
 
     @Override
@@ -41,6 +46,8 @@ public class JpaProductUsageQueries implements CategoryProductUsageApi, PriceTyp
 
     @Override
     public Set<UUID> findIdsInUseByProducts(Set<UUID> priceTypeIds) {
-        return priceTypeIds.isEmpty() ? Set.of() : repository.findIdsInUseByProducts(priceTypeIds);
+        return priceTypeIds.isEmpty()
+                ? Set.of()
+                : repository.findIdsInUseByProducts(priceTypeIds);
     }
 }

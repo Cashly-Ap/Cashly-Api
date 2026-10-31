@@ -44,30 +44,30 @@ class RegisterUserUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        validRequest = new RegisterUserRequest("test@example.com",
-            "Test User",
-            "SecurePass123!",
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
+        validRequest = new RegisterUserRequest("test@example.com", "Test User",
+                "SecurePass123!", "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"));
     }
 
     @Test
     @DisplayName("should_RegisterUser_When_ValidRequestProvided")
     void should_RegisterUser_When_ValidRequestProvided() {
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(anyString()))
+                .thenReturn("$2a$10$hashedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = registerUserUseCase.execute(validRequest);
 
         assertNotNull(response);
         assertEquals("test@example.com", response.email());
         assertEquals("es", response.language());
-        verify(preferences).updateLanguage(java.util.UUID.fromString(response.id()), "es");
+        verify(preferences)
+                .updateLanguage(java.util.UUID.fromString(response.id()), "es");
         assertTrue(response.active());
         assertFalse(response.emailVerified());
 
@@ -82,11 +82,11 @@ class RegisterUserUseCaseUnitTest {
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(true);
 
         DuplicateEmailException exception = assertThrows(
-            DuplicateEmailException.class,
-            () -> registerUserUseCase.execute(validRequest)
-        );
+                DuplicateEmailException.class,
+                () -> registerUserUseCase.execute(validRequest));
 
-        assertEquals("Email already registered: test@example.com", exception.getMessage());
+        assertEquals("Email already registered: test@example.com",
+                exception.getMessage());
         verify(userRepository, times(1)).existsByEmail(any(Email.class));
         verify(passwordEncoder, never()).encode(anyString());
         verify(userRepository, never()).save(any(User.class));
@@ -95,20 +95,16 @@ class RegisterUserUseCaseUnitTest {
     @Test
     @DisplayName("should_ThrowException_When_InvalidEmailProvided")
     void should_ThrowException_When_InvalidEmailProvided() {
-        RegisterUserRequest invalidRequest = new RegisterUserRequest("invalid-email",
-            "Test User",
-            "SecurePass123!",
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
+        RegisterUserRequest invalidRequest = new RegisterUserRequest(
+                "invalid-email", "Test User", "SecurePass123!", "John", "Doe",
+                null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"));
 
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> registerUserUseCase.execute(invalidRequest)
-        );
+        assertThrows(IllegalArgumentException.class,
+                () -> registerUserUseCase.execute(invalidRequest));
 
         verify(userRepository, never()).existsByEmail(any(Email.class));
         verify(passwordEncoder, never()).encode(anyString());
@@ -118,22 +114,18 @@ class RegisterUserUseCaseUnitTest {
     @Test
     @DisplayName("should_ThrowException_When_WeakPasswordProvided")
     void should_ThrowException_When_WeakPasswordProvided() {
-        RegisterUserRequest weakPasswordRequest = new RegisterUserRequest("test@example.com",
-            "Test User",
-            "weak",
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
+        RegisterUserRequest weakPasswordRequest = new RegisterUserRequest(
+                "test@example.com", "Test User", "weak", "John", "Doe", null,
+                null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"));
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
 
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> registerUserUseCase.execute(weakPasswordRequest)
-        );
+        assertThrows(IllegalArgumentException.class,
+                () -> registerUserUseCase.execute(weakPasswordRequest));
 
         verify(userRepository, times(1)).existsByEmail(any(Email.class));
         verify(passwordEncoder, never()).encode(anyString());
@@ -144,8 +136,10 @@ class RegisterUserUseCaseUnitTest {
     @DisplayName("should_HashPassword_When_RegisteringUser")
     void should_HashPassword_When_RegisteringUser() {
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
-        when(passwordEncoder.encode("SecurePass123!")).thenReturn("$2a$10$hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode("SecurePass123!"))
+                .thenReturn("$2a$10$hashedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         registerUserUseCase.execute(validRequest);
 
@@ -156,8 +150,10 @@ class RegisterUserUseCaseUnitTest {
     @DisplayName("should_CreateActiveUser_When_Registering")
     void should_CreateActiveUser_When_Registering() {
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(anyString()))
+                .thenReturn("$2a$10$hashedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = registerUserUseCase.execute(validRequest);
 
@@ -168,8 +164,10 @@ class RegisterUserUseCaseUnitTest {
     @DisplayName("should_CreateUnverifiedEmail_When_Registering")
     void should_CreateUnverifiedEmail_When_Registering() {
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(anyString()))
+                .thenReturn("$2a$10$hashedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = registerUserUseCase.execute(validRequest);
 
@@ -179,21 +177,22 @@ class RegisterUserUseCaseUnitTest {
     @Test
     @DisplayName("should_NormalizeEmail_When_Registering")
     void should_NormalizeEmail_When_Registering() {
-        RegisterUserRequest upperCaseEmailRequest = new RegisterUserRequest("TEST@EXAMPLE.COM",
-            "Test User",
-            "SecurePass123!",
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
+        RegisterUserRequest upperCaseEmailRequest = new RegisterUserRequest(
+                "TEST@EXAMPLE.COM", "Test User", "SecurePass123!", "John",
+                "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"));
 
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(anyString()))
+                .thenReturn("$2a$10$hashedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserResponse response = registerUserUseCase.execute(upperCaseEmailRequest);
+        UserResponse response = registerUserUseCase
+                .execute(upperCaseEmailRequest);
 
         assertEquals("test@example.com", response.email());
     }

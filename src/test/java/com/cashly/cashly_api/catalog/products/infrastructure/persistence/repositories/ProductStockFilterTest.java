@@ -20,8 +20,10 @@ class ProductStockFilterTest {
     void shouldReturnEmptyStockPageWithoutInvalidEmptyInQuery() {
         var repository = mock(SpringDataProductRepository.class);
         var stocks = mock(ProductStockFilterGateway.class);
-        var adapter = new JpaProductRepository(repository, null, null, stocks, null);
-        var result = adapter.findAllForOrder("tea", UUID.randomUUID(), false, true, Set.of(), 2, 10);
+        var adapter = new JpaProductRepository(repository, null, null, stocks,
+                null);
+        var result = adapter.findAllForOrder("tea", UUID.randomUUID(), false,
+                true, Set.of(), 2, 10);
         assertTrue(result.empty());
         assertEquals(2, result.number());
         assertEquals(10, result.size());
@@ -37,14 +39,18 @@ class ProductStockFilterTest {
         var productIds = Set.of(UUID.randomUUID());
         var categoryId = UUID.randomUUID();
         when(stocks.availableProductIds(warehouseIds)).thenReturn(productIds);
-        when(repository.findAllForOrderWithoutStock(eq("tea"), eq(categoryId), eq(true), eq(productIds), any()))
-                .thenAnswer(invocation -> Page.empty(invocation.getArgument(4, Pageable.class)));
-        var result = new JpaProductRepository(repository, null, null, stocks, null)
-                .findAllForOrder("tea", categoryId, true, false, warehouseIds, 1, 15);
+        when(repository.findAllForOrderWithoutStock(eq("tea"), eq(categoryId),
+                eq(true), eq(productIds), any()))
+                .thenAnswer(invocation -> Page
+                        .empty(invocation.getArgument(4, Pageable.class)));
+        var result = new JpaProductRepository(repository, null, null, stocks,
+                null).findAllForOrder("tea", categoryId, true, false,
+                        warehouseIds, 1, 15);
         assertTrue(result.empty());
         assertEquals(1, result.number());
         assertEquals(15, result.size());
-        verify(repository).findAllForOrderWithoutStock(eq("tea"), eq(categoryId), eq(true), eq(productIds), any());
+        verify(repository).findAllForOrderWithoutStock(eq("tea"),
+                eq(categoryId), eq(true), eq(productIds), any());
     }
 
     @Test
@@ -52,9 +58,10 @@ class ProductStockFilterTest {
         var repository = mock(SpringDataProductRepository.class);
         var stocks = mock(ProductStockFilterGateway.class);
         when(repository.findAllForOrder(isNull(), isNull(), isNull(), any()))
-                .thenAnswer(invocation -> Page.empty(invocation.getArgument(3, Pageable.class)));
-        var result = new JpaProductRepository(repository, null, null, stocks, null)
-                .findAllForOrder(null, null, null, null, Set.of(), 0, 20);
+                .thenAnswer(invocation -> Page
+                        .empty(invocation.getArgument(3, Pageable.class)));
+        var result = new JpaProductRepository(repository, null, null, stocks,
+                null).findAllForOrder(null, null, null, null, Set.of(), 0, 20);
         assertTrue(result.empty());
         verifyNoInteractions(stocks);
     }
@@ -62,14 +69,15 @@ class ProductStockFilterTest {
     @Test
     void shouldDelegateScopedProductsAndSkipEmptyWarehouseQuery() {
         var repository = mock(SpringDataAvailableStockProductsRepository.class);
-        var adapter = new LocalProductStockFilterGatewayAdapter(new JpaAvailableStockProductsQuery(repository));
+        var adapter = new LocalProductStockFilterGatewayAdapter(
+                new JpaAvailableStockProductsQuery(repository));
         assertTrue(adapter.availableProductIds(Set.of()).isEmpty());
         verifyNoInteractions(repository);
         var warehouses = Set.of(UUID.randomUUID());
         var products = Set.of(UUID.randomUUID());
-        when(repository.findAvailableProductIds(warehouses)).thenReturn(products);
+        when(repository.findAvailableProductIds(warehouses))
+                .thenReturn(products);
         assertEquals(products, adapter.availableProductIds(warehouses));
         verify(repository).findAvailableProductIds(warehouses);
     }
 }
-

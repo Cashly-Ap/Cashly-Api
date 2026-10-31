@@ -14,24 +14,14 @@ class UserResponseUnitTest {
     void should_CreateUserResponse_When_ValidDataProvided() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserResponse response = new UserResponse("1",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response = new UserResponse("1", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo("1");
@@ -48,43 +38,23 @@ class UserResponseUnitTest {
     void should_BeEqual_When_SameValues() {
         LocalDateTime now = LocalDateTime.of(2025, 12, 17, 12, 0);
 
-        UserResponse response1 = new UserResponse("1",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response1 = new UserResponse("1", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
-        UserResponse response2 = new UserResponse("1",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response2 = new UserResponse("1", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
         assertThat(response1).isEqualTo(response2);
         assertThat(response1.hashCode()).isEqualTo(response2.hashCode());
@@ -94,43 +64,23 @@ class UserResponseUnitTest {
     void should_NotBeEqual_When_DifferentIds() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserResponse response1 = new UserResponse("1",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response1 = new UserResponse("1", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
-        UserResponse response2 = new UserResponse("2",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response2 = new UserResponse("2", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
         assertThat(response1).isNotEqualTo(response2);
     }
@@ -139,43 +89,23 @@ class UserResponseUnitTest {
     void should_NotBeEqual_When_DifferentEmails() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserResponse response1 = new UserResponse("1",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response1 = new UserResponse("1", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
-        UserResponse response2 = new UserResponse("1",
-            "jane@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response2 = new UserResponse("1", "jane@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
         assertThat(response1).isNotEqualTo(response2);
     }
@@ -184,24 +114,14 @@ class UserResponseUnitTest {
     void should_HaveCorrectStringRepresentation() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserResponse response = new UserResponse("1",
-            "john@example.com",
-            "John Doe",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        UserResponse response = new UserResponse("1", "john@example.com",
+                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
         assertThat(response.toString()).contains("1");
         assertThat(response.toString()).contains("john@example.com");

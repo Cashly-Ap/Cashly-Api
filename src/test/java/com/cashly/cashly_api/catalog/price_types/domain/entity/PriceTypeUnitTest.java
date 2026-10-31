@@ -15,7 +15,8 @@ class PriceTypeUnitTest {
 
     @Test
     void should_CreatePriceType_When_ValidNameProvided() {
-        PriceType priceType = PriceType.create("Mayorista", "Precio para mayoristas");
+        PriceType priceType = PriceType.create("Mayorista",
+                "Precio para mayoristas");
 
         assertNull(priceType.getId());
         assertEquals("Mayorista", priceType.getName());
@@ -42,19 +43,19 @@ class PriceTypeUnitTest {
     @Test
     void should_ThrowException_When_NameIsNull() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> PriceType.create(null, "desc")
-        );
-        assertEquals("Price type name cannot be null or blank", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> PriceType.create(null, "desc"));
+        assertEquals("Price type name cannot be null or blank",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_NameIsBlank() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> PriceType.create("   ", "desc")
-        );
-        assertEquals("Price type name cannot be null or blank", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> PriceType.create("   ", "desc"));
+        assertEquals("Price type name cannot be null or blank",
+                exception.getMessage());
     }
 
     @Test
@@ -62,10 +63,10 @@ class PriceTypeUnitTest {
         String longName = "A".repeat(101);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> PriceType.create(longName, "desc")
-        );
-        assertEquals("Price type name cannot exceed 100 characters", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> PriceType.create(longName, "desc"));
+        assertEquals("Price type name cannot exceed 100 characters",
+                exception.getMessage());
     }
 
     @Test
@@ -80,7 +81,8 @@ class PriceTypeUnitTest {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        PriceType priceType = PriceType.reconstitute(id, "Mayorista", "desc", false, now, now);
+        PriceType priceType = PriceType.reconstitute(id, "Mayorista", "desc",
+                false, now, now);
 
         assertEquals(id, priceType.getId());
         assertEquals("Mayorista", priceType.getName());
@@ -121,7 +123,8 @@ class PriceTypeUnitTest {
     }
 
     @Test
-    void should_UpdateUpdatedAt_When_UpdateCalled() throws InterruptedException {
+    void should_UpdateUpdatedAt_When_UpdateCalled()
+            throws InterruptedException {
         PriceType priceType = PriceType.create("Mayorista", null);
         LocalDateTime before = priceType.getUpdatedAt();
 
@@ -136,18 +139,20 @@ class PriceTypeUnitTest {
         PriceType priceType = PriceType.create("Mayorista", null);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> priceType.update(null, null, null)
-        );
-        assertEquals("Price type name cannot be null or blank", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> priceType.update(null, null, null));
+        assertEquals("Price type name cannot be null or blank",
+                exception.getMessage());
     }
 
     @Test
     void should_BeEqual_When_SameIdProvided() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType pt1 = PriceType.reconstitute(id, "Mayorista", null, true, now, now);
-        PriceType pt2 = PriceType.reconstitute(id, "Minorista", "desc", false, now, now);
+        PriceType pt1 = PriceType.reconstitute(id, "Mayorista", null, true, now,
+                now);
+        PriceType pt2 = PriceType.reconstitute(id, "Minorista", "desc", false,
+                now, now);
 
         assertEquals(pt1, pt2);
         assertEquals(pt1.hashCode(), pt2.hashCode());
@@ -156,8 +161,10 @@ class PriceTypeUnitTest {
     @Test
     void should_NotBeEqual_When_DifferentIdsProvided() {
         LocalDateTime now = LocalDateTime.now();
-        PriceType pt1 = PriceType.reconstitute(UUID.randomUUID(), "Mayorista", null, true, now, now);
-        PriceType pt2 = PriceType.reconstitute(UUID.randomUUID(), "Mayorista", null, true, now, now);
+        PriceType pt1 = PriceType.reconstitute(UUID.randomUUID(), "Mayorista",
+                null, true, now, now);
+        PriceType pt2 = PriceType.reconstitute(UUID.randomUUID(), "Mayorista",
+                null, true, now, now);
 
         assertNotEquals(pt1, pt2);
     }

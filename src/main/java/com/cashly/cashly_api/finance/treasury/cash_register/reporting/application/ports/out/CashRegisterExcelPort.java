@@ -10,7 +10,8 @@ import java.util.List;
 public interface CashRegisterExcelPort {
     byte[] generateExcel(List<CashRegisterExportRow> items);
 
-    byte[] generateSimpleExcel(List<CashRegisterDetail> paymentSummary, DailyTotals totals);
+    byte[] generateSimpleExcel(List<CashRegisterDetail> paymentSummary,
+            DailyTotals totals);
 
     byte[] generateGroupedExcel(List<CustomerSummary> customerSummaries);
 }

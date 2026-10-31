@@ -33,47 +33,51 @@ public class QuoteConfig {
 
     @Bean
     public QuoteRepository quoteRepository(QuoteJpaRepository jpaRepository,
-                                            QuoteNumberSequenceJpaRepository sequenceJpaRepository,
-                                            QuoteJpaMapper mapper) {
-        return new JpaQuoteRepositoryAdapter(jpaRepository, sequenceJpaRepository, mapper);
+            QuoteNumberSequenceJpaRepository sequenceJpaRepository,
+            QuoteJpaMapper mapper) {
+        return new JpaQuoteRepositoryAdapter(jpaRepository,
+                sequenceJpaRepository, mapper);
     }
 
     @Bean
-    public CreateQuoteUseCase createQuoteUseCase(QuoteRepository quoteRepository,
-                                                   QuoteCustomerGateway customers,
-                                                   ActorIdentityGateway actors,
-                                                   QuoteProductCatalogGateway products,
-                                                   QuoteWarehouseGateway warehouses) {
-        return new CreateQuoteUseCase(quoteRepository, customers, actors, products, warehouses);
+    public CreateQuoteUseCase createQuoteUseCase(
+            QuoteRepository quoteRepository, QuoteCustomerGateway customers,
+            ActorIdentityGateway actors, QuoteProductCatalogGateway products,
+            QuoteWarehouseGateway warehouses) {
+        return new CreateQuoteUseCase(quoteRepository, customers, actors,
+                products, warehouses);
     }
 
     @Bean
     public GetQuotesUseCase getQuotesUseCase(QuoteRepository quoteRepository,
-                                              com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteProductCatalogGateway products) {
+            com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteProductCatalogGateway products) {
         return new GetQuotesUseCase(quoteRepository, products);
     }
 
     @Bean
-    public GetQuoteByIdUseCase getQuoteByIdUseCase(QuoteRepository quoteRepository,
-                                                    QuoteWarehouseGateway warehouses) {
+    public GetQuoteByIdUseCase getQuoteByIdUseCase(
+            QuoteRepository quoteRepository, QuoteWarehouseGateway warehouses) {
         return new GetQuoteByIdUseCase(quoteRepository, warehouses);
     }
 
     @Bean
-    public UpdateQuoteUseCase updateQuoteUseCase(QuoteRepository quoteRepository,
-                                                   QuoteProductCatalogGateway products,
-                                                   QuoteWarehouseGateway warehouses) {
+    public UpdateQuoteUseCase updateQuoteUseCase(
+            QuoteRepository quoteRepository,
+            QuoteProductCatalogGateway products,
+            QuoteWarehouseGateway warehouses) {
         return new UpdateQuoteUseCase(quoteRepository, products, warehouses);
     }
 
     @Bean
-    public DeleteQuoteUseCase deleteQuoteUseCase(QuoteRepository quoteRepository) {
+    public DeleteQuoteUseCase deleteQuoteUseCase(
+            QuoteRepository quoteRepository) {
         return new DeleteQuoteUseCase(quoteRepository);
     }
 
     @Bean
-    public CancelQuoteUseCase cancelQuoteUseCase(QuoteRepository quoteRepository,
-                                                  com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteRejectionNotificationGateway notificationService) {
+    public CancelQuoteUseCase cancelQuoteUseCase(
+            QuoteRepository quoteRepository,
+            com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteRejectionNotificationGateway notificationService) {
         return new CancelQuoteUseCase(quoteRepository, notificationService);
     }
 
@@ -96,7 +100,8 @@ public class QuoteConfig {
             com.cashly.cashly_api.sales.quotes.application.ports.out.OrderCreationGateway orders,
             com.cashly.cashly_api.sales.quotes.application.ports.out.ActorIdentityGateway actors,
             com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway notifications) {
-        return new ConvertQuoteToOrderUseCase(quoteRepository, orders, actors, notifications);
+        return new ConvertQuoteToOrderUseCase(quoteRepository, orders, actors,
+                notifications);
     }
 
     @Bean
@@ -104,23 +109,24 @@ public class QuoteConfig {
             QuoteRepository quoteRepository,
             com.cashly.cashly_api.sales.quotes.application.ports.out.InvoiceCreationGateway invoices,
             com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway notifications) {
-        return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoices, notifications);
+        return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoices,
+                notifications);
     }
 
     @Bean
-    public QuoteController quoteController(CreateQuoteUseCase createQuoteUseCase,
-                                            GetQuotesUseCase getQuotesUseCase,
-                                            GetQuoteByIdUseCase getQuoteByIdUseCase,
-                                            UpdateQuoteUseCase updateQuoteUseCase,
-                                            DeleteQuoteUseCase deleteQuoteUseCase,
-                                            CancelQuoteUseCase cancelQuoteUseCase,
-                                            GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
-                                            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
-                                            ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
-        return new QuoteController(createQuoteUseCase, getQuotesUseCase, getQuoteByIdUseCase,
-                updateQuoteUseCase, deleteQuoteUseCase,
-                cancelQuoteUseCase,
-                getWarehousesForQuoteUseCase,
+    public QuoteController quoteController(
+            CreateQuoteUseCase createQuoteUseCase,
+            GetQuotesUseCase getQuotesUseCase,
+            GetQuoteByIdUseCase getQuoteByIdUseCase,
+            UpdateQuoteUseCase updateQuoteUseCase,
+            DeleteQuoteUseCase deleteQuoteUseCase,
+            CancelQuoteUseCase cancelQuoteUseCase,
+            GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
+            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
+            ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
+        return new QuoteController(createQuoteUseCase, getQuotesUseCase,
+                getQuoteByIdUseCase, updateQuoteUseCase, deleteQuoteUseCase,
+                cancelQuoteUseCase, getWarehousesForQuoteUseCase,
                 convertQuoteToOrderUseCase, convertQuoteToInvoiceUseCase);
     }
 }

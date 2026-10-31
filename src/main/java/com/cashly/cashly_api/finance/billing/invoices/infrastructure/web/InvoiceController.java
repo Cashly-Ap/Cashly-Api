@@ -42,13 +42,13 @@ public class InvoiceController {
     private final DeleteInvoiceUseCase deleteInvoiceUseCase;
 
     public InvoiceController(CreateInvoiceUseCase createInvoiceUseCase,
-                              GetInvoiceByIdUseCase getInvoiceByIdUseCase,
-                              GetInvoicesUseCase getInvoicesUseCase,
-                               CancelInvoiceUseCase cancelInvoiceUseCase,
-                               DuplicateInvoiceUseCase duplicateInvoiceUseCase,
-                               UpdateInvoiceUseCase updateInvoiceUseCase,
-                               ConfirmInvoiceUseCase confirmInvoiceUseCase,
-                               DeleteInvoiceUseCase deleteInvoiceUseCase) {
+            GetInvoiceByIdUseCase getInvoiceByIdUseCase,
+            GetInvoicesUseCase getInvoicesUseCase,
+            CancelInvoiceUseCase cancelInvoiceUseCase,
+            DuplicateInvoiceUseCase duplicateInvoiceUseCase,
+            UpdateInvoiceUseCase updateInvoiceUseCase,
+            ConfirmInvoiceUseCase confirmInvoiceUseCase,
+            DeleteInvoiceUseCase deleteInvoiceUseCase) {
         this.createInvoiceUseCase = createInvoiceUseCase;
         this.getInvoiceByIdUseCase = getInvoiceByIdUseCase;
         this.getInvoicesUseCase = getInvoicesUseCase;
@@ -65,7 +65,8 @@ public class InvoiceController {
             @Valid @RequestBody CreateInvoiceRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        InvoiceDetailResponse response = createInvoiceUseCase.execute(request, userId);
+        InvoiceDetailResponse response = createInvoiceUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -85,30 +86,36 @@ public class InvoiceController {
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
         List<InvoiceListResponse> invoices = action == null
-                ? getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir)
-                : getInvoicesUseCase.execute(fromDate, toDate, customerId, status, search, returnStatus, dueStatus, productId, categoryId, orderBy, orderDir, action);
+                ? getInvoicesUseCase.execute(fromDate, toDate, customerId,
+                        status, search, returnStatus, dueStatus, productId,
+                        categoryId, orderBy, orderDir)
+                : getInvoicesUseCase.execute(fromDate, toDate, customerId,
+                        status, search, returnStatus, dueStatus, productId,
+                        categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(invoices);
     }
 
-    public ResponseEntity<List<InvoiceListResponse>> getAll(
-            LocalDate fromDate, LocalDate toDate, UUID customerId, String search, List<String> status,
-            UUID productId, UUID categoryId, List<String> returnStatus, String dueStatus,
-            String orderBy, String orderDir) {
-        return getAll(fromDate, toDate, customerId, search, status, productId, categoryId,
-                returnStatus, dueStatus, orderBy, orderDir, null);
+    public ResponseEntity<List<InvoiceListResponse>> getAll(LocalDate fromDate,
+            LocalDate toDate, UUID customerId, String search,
+            List<String> status, UUID productId, UUID categoryId,
+            List<String> returnStatus, String dueStatus, String orderBy,
+            String orderDir) {
+        return getAll(fromDate, toDate, customerId, search, status, productId,
+                categoryId, returnStatus, dueStatus, orderBy, orderDir, null);
     }
 
-    public ResponseEntity<List<InvoiceListResponse>> getAll(
-            LocalDate fromDate, LocalDate toDate, UUID customerId, List<String> status,
+    public ResponseEntity<List<InvoiceListResponse>> getAll(LocalDate fromDate,
+            LocalDate toDate, UUID customerId, List<String> status,
             UUID productId, UUID categoryId, List<String> returnStatus,
             String orderBy, String orderDir) {
-        return getAll(fromDate, toDate, customerId, null, status, productId, categoryId,
-                returnStatus, null, orderBy, orderDir);
+        return getAll(fromDate, toDate, customerId, null, status, productId,
+                categoryId, returnStatus, null, orderBy, orderDir);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('FINANCES:READ') and hasAuthority('INVENTORY:READ')")
-    public ResponseEntity<InvoiceDetailResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<InvoiceDetailResponse> getById(
+            @PathVariable UUID id) {
         InvoiceDetailResponse invoice = getInvoiceByIdUseCase.execute(id);
         return ResponseEntity.ok(invoice);
     }
@@ -116,35 +123,40 @@ public class InvoiceController {
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('FINANCES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> cancel(@PathVariable UUID id,
-                                                         @Valid @RequestBody CancelInvoiceRequest request) {
-        InvoiceDetailResponse invoice = cancelInvoiceUseCase.execute(id, request);
+            @Valid @RequestBody CancelInvoiceRequest request) {
+        InvoiceDetailResponse invoice = cancelInvoiceUseCase.execute(id,
+                request);
         return ResponseEntity.ok(invoice);
     }
 
     @PostMapping("/{id}/duplicate")
     @PreAuthorize("hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<InvoiceDetailResponse> duplicate(@PathVariable UUID id,
-                                                            @RequestBody(required = false) DuplicateInvoiceRequest request) {
+    public ResponseEntity<InvoiceDetailResponse> duplicate(
+            @PathVariable UUID id,
+            @RequestBody(required = false) DuplicateInvoiceRequest request) {
         UUID customerId = request != null ? request.customerId() : null;
-        InvoiceDetailResponse invoice = duplicateInvoiceUseCase.execute(id, customerId);
+        InvoiceDetailResponse invoice = duplicateInvoiceUseCase.execute(id,
+                customerId);
         return ResponseEntity.status(HttpStatus.CREATED).body(invoice);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('FINANCES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> update(@PathVariable UUID id,
-                                                         @Valid @RequestBody UpdateInvoiceRequest request) {
-        InvoiceDetailResponse response = updateInvoiceUseCase.execute(id, request);
+            @Valid @RequestBody UpdateInvoiceRequest request) {
+        InvoiceDetailResponse response = updateInvoiceUseCase.execute(id,
+                request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('FINANCES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> confirm(@PathVariable UUID id,
-                                                          @Valid @RequestBody ConfirmInvoiceRequest request,
-                                                          Authentication authentication) {
+            @Valid @RequestBody ConfirmInvoiceRequest request,
+            Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id, request, userId);
+        InvoiceDetailResponse response = confirmInvoiceUseCase.execute(id,
+                request, userId);
         return ResponseEntity.ok(response);
     }
 

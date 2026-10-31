@@ -74,56 +74,65 @@ class InvoiceControllerTest {
     @Test
     @DisplayName("should create invoice and return 201")
     void should_create_invoice_and_return_201() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         InvoiceDetailResponse response = mock(InvoiceDetailResponse.class);
 
-        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), any(UUID.class)))
-                .thenReturn(response);
+        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class),
+                any(UUID.class))).thenReturn(response);
 
-        var request = new CreateInvoiceRequest(
-                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                "CREDIT", null, null, null, null, null, List.of());
+        var request = new CreateInvoiceRequest(UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), "CREDIT", null, null,
+                null, null, null, List.of());
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.create(request, authentication);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .create(request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(createInvoiceUseCase).execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId));
+        verify(createInvoiceUseCase).execute(any(CreateInvoiceRequest.class),
+                eq(authenticatedUserId));
     }
 
     @Test
     @DisplayName("should get all invoices and return 200")
     void should_get_all_invoices_and_return_200() {
-        InvoiceListResponse invoice = new InvoiceListResponse(
-                UUID.randomUUID(), "FAC-00001", UUID.randomUUID(), "Customer",
-                "CONFIRMED", "Confirmed", "CREDIT", BigDecimal.TEN, BigDecimal.TEN,
+        InvoiceListResponse invoice = new InvoiceListResponse(UUID.randomUUID(),
+                "FAC-00001", UUID.randomUUID(), "Customer", "CONFIRMED",
+                "Confirmed", "CREDIT", BigDecimal.TEN, BigDecimal.TEN,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 2,
                 UUID.randomUUID(), "ORD-00001", LocalDateTime.now(), null);
 
-        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of(invoice));
 
-        ResponseEntity<List<InvoiceListResponse>> result = invoiceController.getAll(
-                null, null, null, null, null, null, null, "createdAt", "desc");
+        ResponseEntity<List<InvoiceListResponse>> result = invoiceController
+                .getAll(null, null, null, null, null, null, null, "createdAt",
+                        "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, null, null, "createdAt", "desc");
+        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
+                null, null, null, "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no invoices")
     void should_return_empty_list_when_no_invoices() {
-        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of());
 
-        ResponseEntity<List<InvoiceListResponse>> result = invoiceController.getAll(
-                null, null, null, null, null, null, null, "createdAt", "desc");
+        ResponseEntity<List<InvoiceListResponse>> result = invoiceController
+                .getAll(null, null, null, null, null, null, null, "createdAt",
+                        "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, null, null, "createdAt", "desc");
+        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
+                null, null, null, "createdAt", "desc");
     }
 
     @Test
@@ -135,7 +144,8 @@ class InvoiceControllerTest {
 
         when(getInvoiceByIdUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.getById(id);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -148,15 +158,18 @@ class InvoiceControllerTest {
         UUID id = UUID.randomUUID();
         InvoiceDetailResponse response = mock(InvoiceDetailResponse.class);
 
-        when(cancelInvoiceUseCase.execute(eq(id), any(CancelInvoiceRequest.class))).thenReturn(response);
+        when(cancelInvoiceUseCase.execute(eq(id),
+                any(CancelInvoiceRequest.class))).thenReturn(response);
 
         CancelInvoiceRequest request = new CancelInvoiceRequest("Test reason");
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.cancel(id, request);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .cancel(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(cancelInvoiceUseCase).execute(eq(id), any(CancelInvoiceRequest.class));
+        verify(cancelInvoiceUseCase).execute(eq(id),
+                any(CancelInvoiceRequest.class));
     }
 
     @Test
@@ -165,9 +178,11 @@ class InvoiceControllerTest {
         UUID id = UUID.randomUUID();
         InvoiceDetailResponse response = mock(InvoiceDetailResponse.class);
 
-        when(duplicateInvoiceUseCase.execute(eq(id), isNull())).thenReturn(response);
+        when(duplicateInvoiceUseCase.execute(eq(id), isNull()))
+                .thenReturn(response);
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.duplicate(id, null);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .duplicate(id, null);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -181,11 +196,14 @@ class InvoiceControllerTest {
         UUID customerId = UUID.randomUUID();
         InvoiceDetailResponse response = mock(InvoiceDetailResponse.class);
 
-        when(duplicateInvoiceUseCase.execute(eq(id), eq(customerId))).thenReturn(response);
+        when(duplicateInvoiceUseCase.execute(eq(id), eq(customerId)))
+                .thenReturn(response);
 
-        DuplicateInvoiceRequest request = new DuplicateInvoiceRequest(customerId);
+        DuplicateInvoiceRequest request = new DuplicateInvoiceRequest(
+                customerId);
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.duplicate(id, request);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .duplicate(id, request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -198,35 +216,43 @@ class InvoiceControllerTest {
         UUID id = UUID.randomUUID();
         InvoiceDetailResponse response = mock(InvoiceDetailResponse.class);
 
-        when(updateInvoiceUseCase.execute(eq(id), any(UpdateInvoiceRequest.class))).thenReturn(response);
+        when(updateInvoiceUseCase.execute(eq(id),
+                any(UpdateInvoiceRequest.class))).thenReturn(response);
 
         var request = new UpdateInvoiceRequest("CREDIT", null, List.of());
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.update(id, request);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(updateInvoiceUseCase).execute(eq(id), any(UpdateInvoiceRequest.class));
+        verify(updateInvoiceUseCase).execute(eq(id),
+                any(UpdateInvoiceRequest.class));
     }
 
     @Test
     @DisplayName("should confirm invoice and return 200")
     void should_confirm_invoice_and_return_200() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         UUID id = UUID.randomUUID();
         InvoiceDetailResponse response = mock(InvoiceDetailResponse.class);
 
-        when(confirmInvoiceUseCase.execute(eq(id), any(ConfirmInvoiceRequest.class), eq(authenticatedUserId)))
+        when(confirmInvoiceUseCase.execute(eq(id),
+                any(ConfirmInvoiceRequest.class), eq(authenticatedUserId)))
                 .thenReturn(response);
 
-        ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, null, null, null);
+        ConfirmInvoiceRequest request = new ConfirmInvoiceRequest(null, null,
+                null, null);
 
-        ResponseEntity<InvoiceDetailResponse> result = invoiceController.confirm(id, request, authentication);
+        ResponseEntity<InvoiceDetailResponse> result = invoiceController
+                .confirm(id, request, authentication);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(confirmInvoiceUseCase).execute(eq(id), any(ConfirmInvoiceRequest.class), eq(authenticatedUserId));
+        verify(confirmInvoiceUseCase).execute(eq(id),
+                any(ConfirmInvoiceRequest.class), eq(authenticatedUserId));
     }
 
     @Test
@@ -243,19 +269,30 @@ class InvoiceControllerTest {
     }
     @Test
     void shouldRejectUnknownActionFilter() throws Exception {
-        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(invoiceController).build()
-                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/invoices")
-                        .param("action", "UNKNOWN"))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(invoiceController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/invoices")
+                                .param("action", "UNKNOWN"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isBadRequest());
     }
 
     @Test
     void shouldPassActionFilterToListQuery() throws Exception {
-        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(invoiceController).build()
-                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/invoices")
-                        .param("action", "EDIT"))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null, null, null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(invoiceController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/invoices").param("action", "EDIT"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isOk());
+        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
+                null, null, null, "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
     }
 
 }

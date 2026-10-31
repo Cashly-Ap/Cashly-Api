@@ -18,7 +18,9 @@ public class LocalQuoteCustomerAdapter implements QuoteCustomerGateway {
     @Override
     public Optional<Customer> findById(UUID customerId) {
         var profile = customers.find(customerId);
-        return profile == null ? Optional.empty()
-                : Optional.of(new Customer(profile.id(), profile.legalName(), profile.rif(), profile.priceTypeId()));
+        return profile == null
+                ? Optional.empty()
+                : Optional.of(new Customer(profile.id(), profile.legalName(),
+                        profile.rif(), profile.priceTypeId()));
     }
 }

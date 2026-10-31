@@ -27,8 +27,8 @@ class CustomerEmailUnitTest {
         CustomerId customerId = CustomerId.generate();
         EmailAddress email = new EmailAddress("test@example.com");
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new CustomerEmail(null, customerId, email));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerEmail(null, customerId, email));
     }
 
     @Test
@@ -36,8 +36,8 @@ class CustomerEmailUnitTest {
         EmailId id = EmailId.generate();
         EmailAddress email = new EmailAddress("test@example.com");
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new CustomerEmail(id, null, email));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerEmail(id, null, email));
     }
 
     @Test
@@ -45,8 +45,8 @@ class CustomerEmailUnitTest {
         EmailId id = EmailId.generate();
         CustomerId customerId = CustomerId.generate();
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new CustomerEmail(id, customerId, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerEmail(id, customerId, null));
     }
 
     @Test
@@ -54,8 +54,10 @@ class CustomerEmailUnitTest {
         EmailId id = EmailId.generate();
         CustomerId customerId = CustomerId.generate();
 
-        CustomerEmail email1 = new CustomerEmail(id, customerId, new EmailAddress("test@example.com"));
-        CustomerEmail email2 = new CustomerEmail(id, customerId, new EmailAddress("other@example.com"));
+        CustomerEmail email1 = new CustomerEmail(id, customerId,
+                new EmailAddress("test@example.com"));
+        CustomerEmail email2 = new CustomerEmail(id, customerId,
+                new EmailAddress("other@example.com"));
 
         assertEquals(email1, email2);
         assertEquals(email1.hashCode(), email2.hashCode());

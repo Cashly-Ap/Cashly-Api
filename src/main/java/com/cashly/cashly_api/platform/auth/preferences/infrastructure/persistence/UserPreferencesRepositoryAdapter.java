@@ -9,27 +9,37 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class UserPreferencesRepositoryAdapter implements UserPreferencesRepository {
+public class UserPreferencesRepositoryAdapter
+        implements
+            UserPreferencesRepository {
     private final UserPreferencesJpaRepository repository;
-    public UserPreferencesRepositoryAdapter(UserPreferencesJpaRepository repository) {
+    public UserPreferencesRepositoryAdapter(
+            UserPreferencesJpaRepository repository) {
         this.repository = repository;
     }
     @Override
     @Transactional(readOnly = true)
     public Optional<UserPreferences> findByUserId(UUID userId) {
-        return repository.findById(userId).map(UserPreferencesJpaEntity::toDomain);
+        return repository.findById(userId)
+                .map(UserPreferencesJpaEntity::toDomain);
     }
     @Override
     @Transactional(readOnly = true)
-    public java.util.Map<UUID, String> languagesFor(java.util.Set<UUID> userIds) {
-        return repository.findAllById(userIds).stream().collect(java.util.stream.Collectors.toMap(
-                UserPreferencesJpaEntity::userId, entity -> entity.toDomain().language()));
+    public java.util.Map<UUID, String> languagesFor(
+            java.util.Set<UUID> userIds) {
+        return repository.findAllById(userIds).stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        UserPreferencesJpaEntity::userId,
+                        entity -> entity.toDomain().language()));
     }
     @Override
     @Transactional
     public void save(UUID userId, UserPreferences preferences) {
-        byte[] binaryId = ByteBuffer.allocate(16).putLong(userId.getMostSignificantBits())
+        byte[] binaryId = ByteBuffer.allocate(16)
+                .putLong(userId.getMostSignificantBits())
                 .putLong(userId.getLeastSignificantBits()).array();
-        repository.upsert(binaryId, preferences.themeMode(), preferences.colorMode(), preferences.shortcutsEnabled(), preferences.showShortcutHints(), preferences.language());
+        repository.upsert(binaryId, preferences.themeMode(),
+                preferences.colorMode(), preferences.shortcutsEnabled(),
+                preferences.showShortcutHints(), preferences.language());
     }
 }

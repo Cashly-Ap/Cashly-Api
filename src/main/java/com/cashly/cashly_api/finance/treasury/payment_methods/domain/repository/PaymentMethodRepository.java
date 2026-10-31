@@ -14,7 +14,7 @@ public interface PaymentMethodRepository {
     Optional<PaymentMethod> findByCode(String code);
     Optional<Integer> findMaxCodeNumber();
     void delete(PaymentMethodId id);
-    PageResponse<PaymentMethod> findAllWithFilters(String search, Boolean active,
-                                                    int page, int size,
-                                                    String orderBy, String orderDir);
+    PageResponse<PaymentMethod> findAllWithFilters(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir);
 }

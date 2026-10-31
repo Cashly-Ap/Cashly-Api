@@ -15,7 +15,7 @@ public class DeleteOrderUseCase {
     private final OrderInventoryGateway inventory;
 
     public DeleteOrderUseCase(OrderRepository orderRepository,
-                               OrderInventoryGateway inventory) {
+            OrderInventoryGateway inventory) {
         this.orderRepository = orderRepository;
         this.inventory = inventory;
     }
@@ -32,8 +32,11 @@ public class DeleteOrderUseCase {
     }
 
     private void revertStockAllocations(Order order) {
-        inventory.release(order.getLines().stream().flatMap(line -> line.getAllocations().stream()
-                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
-                        line.getProductId(), allocation.getAllocated().intValue()))).toList());
+        inventory.release(order.getLines().stream().flatMap(line -> line
+                .getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(
+                        allocation.getWarehouseId(), line.getProductId(),
+                        allocation.getAllocated().intValue())))
+                .toList());
     }
 }

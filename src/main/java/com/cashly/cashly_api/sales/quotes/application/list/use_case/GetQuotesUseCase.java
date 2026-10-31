@@ -16,36 +16,41 @@ public class GetQuotesUseCase {
     private final QuoteRepository quoteRepository;
     private final QuoteProductCatalogGateway products;
 
-    public GetQuotesUseCase(QuoteRepository quoteRepository, QuoteProductCatalogGateway products) {
+    public GetQuotesUseCase(QuoteRepository quoteRepository,
+            QuoteProductCatalogGateway products) {
         this.quoteRepository = quoteRepository;
         this.products = products;
     }
 
     public List<QuoteListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                            UUID customerId, String status,
-                                            UUID productId, UUID categoryId,
-                                            String orderBy, String orderDir) {
-        var currentCategoryProductIds = categoryId == null ? java.util.Set.<UUID>of()
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            String orderBy, String orderDir) {
+        var currentCategoryProductIds = categoryId == null
+                ? java.util.Set.<UUID>of()
                 : products.findProductIdsByCurrentCategory(categoryId);
-        return quoteRepository.findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId,
-                        currentCategoryProductIds, orderBy, orderDir)
-                .stream()
-                .map(QuoteMapper::toListResponse)
-                .toList();
+        return quoteRepository
+                .findAllWithFilters(dateFrom, dateTo, customerId, status,
+                        productId, categoryId, currentCategoryProductIds,
+                        orderBy, orderDir)
+                .stream().map(QuoteMapper::toListResponse).toList();
     }
     public List<QuoteListResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId, String status,
-                                              UUID productId, UUID categoryId,
-                                              String orderBy, String orderDir, DocumentAction action) {
-        if (action == null) return execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir);
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            String orderBy, String orderDir, DocumentAction action) {
+        if (action == null)
+            return execute(dateFrom, dateTo, customerId, status, productId,
+                    categoryId, orderBy, orderDir);
         String eligibleStatus = switch (action) {
             case EDIT, CONVERT_TO_ORDER, CONVERT_TO_INVOICE -> "DRAFT";
-            default -> throw new IllegalArgumentException("Unsupported quote action: " + action);
+            default -> throw new IllegalArgumentException(
+                    "Unsupported quote action: " + action);
         };
-        if (status != null && !status.isBlank() && !"ALL".equals(status) && !eligibleStatus.equals(status)) {
+        if (status != null && !status.isBlank() && !"ALL".equals(status)
+                && !eligibleStatus.equals(status)) {
             return List.of();
         }
-        return execute(dateFrom, dateTo, customerId, eligibleStatus, productId, categoryId, orderBy, orderDir);
+        return execute(dateFrom, dateTo, customerId, eligibleStatus, productId,
+                categoryId, orderBy, orderDir);
     }
 
 }

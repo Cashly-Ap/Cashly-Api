@@ -25,8 +25,8 @@ public class UpdateOrderUseCase {
     private final OrderInventoryGateway inventory;
 
     public UpdateOrderUseCase(OrderRepository orderRepository,
-                               OrderProductCatalogGateway products,
-                               OrderInventoryGateway inventory) {
+            OrderProductCatalogGateway products,
+            OrderInventoryGateway inventory) {
         this.orderRepository = orderRepository;
         this.products = products;
         this.inventory = inventory;
@@ -42,25 +42,19 @@ public class UpdateOrderUseCase {
 
         revertStockAllocations(order);
 
-        List<OrderLine> lines = request.lines().stream()
-                .map(lineRequest -> {
-                    var product = products.findProduct(lineRequest.productId())
-                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+        List<OrderLine> lines = request.lines().stream().map(lineRequest -> {
+            var product = products.findProduct(lineRequest.productId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Product not found: " + lineRequest.productId()));
 
-                    List<OrderLineAllocation> allocations = applyStockAllocations(
-                            lineRequest, product.id());
+            List<OrderLineAllocation> allocations = applyStockAllocations(
+                    lineRequest, product.id());
 
-                    return OrderLine.create(
-                            product.id(),
-                            product.name(),
-                            product.code(),
-                            product.categoryId(),
-                            lineRequest.quantity(),
-                            lineRequest.unitPrice(),
-                            allocations
-                    );
-                })
-                .toList();
+            return OrderLine.create(product.id(), product.name(),
+                    product.code(), product.categoryId(),
+                    lineRequest.quantity(), lineRequest.unitPrice(),
+                    allocations);
+        }).toList();
 
         order.update(request.notes(), lines);
 
@@ -69,20 +63,26 @@ public class UpdateOrderUseCase {
     }
 
     private void revertStockAllocations(Order order) {
-        inventory.release(order.getLines().stream().flatMap(line -> line.getAllocations().stream()
-                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
-                        line.getProductId(), allocation.getAllocated().intValue()))).toList());
+        inventory.release(order.getLines().stream().flatMap(line -> line
+                .getAllocations().stream()
+                .map(allocation -> new OrderInventoryGateway.Allocation(
+                        allocation.getWarehouseId(), line.getProductId(),
+                        allocation.getAllocated().intValue())))
+                .toList());
     }
 
     private List<OrderLineAllocation> applyStockAllocations(
             UpdateOrderRequest.OrderLineRequest lineRequest, UUID productId) {
 
         List<OrderLineAllocation> allocations = new java.util.ArrayList<>();
-        for (UpdateOrderRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
-            inventory.reserve(List.of(new OrderInventoryGateway.Allocation(allocation.warehouseId(), productId,
+        for (UpdateOrderRequest.WarehouseAllocationRequest allocation : lineRequest
+                .warehouseAllocations()) {
+            inventory.reserve(List.of(new OrderInventoryGateway.Allocation(
+                    allocation.warehouseId(), productId,
                     allocation.allocated().intValue())));
 
-            allocations.add(OrderLineAllocation.create(allocation.warehouseId(), allocation.allocated()));
+            allocations.add(OrderLineAllocation.create(allocation.warehouseId(),
+                    allocation.allocated()));
         }
         return allocations;
     }

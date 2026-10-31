@@ -31,10 +31,12 @@ class CreatePriceTypeUseCaseUnitTest {
 
     @Test
     void should_CreatePriceType_When_ValidRequestProvided() {
-        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Mayorista", "Precio para mayoristas");
+        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Mayorista",
+                "Precio para mayoristas");
         UUID savedId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType saved = PriceType.reconstitute(savedId, "Mayorista", "Precio para mayoristas", true, now, now);
+        PriceType saved = PriceType.reconstitute(savedId, "Mayorista",
+                "Precio para mayoristas", true, now, now);
 
         when(priceTypeRepository.existsByName("Mayorista")).thenReturn(false);
         when(priceTypeRepository.save(any(PriceType.class))).thenReturn(saved);
@@ -53,25 +55,28 @@ class CreatePriceTypeUseCaseUnitTest {
 
     @Test
     void should_ThrowException_When_NameAlreadyExists() {
-        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Mayorista", null);
+        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Mayorista",
+                null);
 
         when(priceTypeRepository.existsByName("Mayorista")).thenReturn(true);
 
         DuplicatePriceTypeNameException exception = assertThrows(
-            DuplicatePriceTypeNameException.class,
-            () -> createPriceTypeUseCase.execute(request)
-        );
+                DuplicatePriceTypeNameException.class,
+                () -> createPriceTypeUseCase.execute(request));
 
-        assertEquals("Price type with name already exists: Mayorista", exception.getMessage());
+        assertEquals("Price type with name already exists: Mayorista",
+                exception.getMessage());
         verify(priceTypeRepository).existsByName("Mayorista");
         verify(priceTypeRepository, never()).save(any());
     }
 
     @Test
     void should_CreateWithNullDescription_When_DescriptionNotProvided() {
-        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Minorista", null);
+        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Minorista",
+                null);
         LocalDateTime now = LocalDateTime.now();
-        PriceType saved = PriceType.reconstitute(UUID.randomUUID(), "Minorista", null, true, now, now);
+        PriceType saved = PriceType.reconstitute(UUID.randomUUID(), "Minorista",
+                null, true, now, now);
 
         when(priceTypeRepository.existsByName("Minorista")).thenReturn(false);
         when(priceTypeRepository.save(any(PriceType.class))).thenReturn(saved);
@@ -83,9 +88,11 @@ class CreatePriceTypeUseCaseUnitTest {
 
     @Test
     void should_SaveExactlyOnce_When_ValidRequest() {
-        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Especial", "desc");
+        CreatePriceTypeRequest request = new CreatePriceTypeRequest("Especial",
+                "desc");
         LocalDateTime now = LocalDateTime.now();
-        PriceType saved = PriceType.reconstitute(UUID.randomUUID(), "Especial", "desc", true, now, now);
+        PriceType saved = PriceType.reconstitute(UUID.randomUUID(), "Especial",
+                "desc", true, now, now);
 
         when(priceTypeRepository.existsByName("Especial")).thenReturn(false);
         when(priceTypeRepository.save(any(PriceType.class))).thenReturn(saved);

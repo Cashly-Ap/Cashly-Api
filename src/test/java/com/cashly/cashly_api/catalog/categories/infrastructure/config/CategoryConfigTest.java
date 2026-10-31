@@ -23,7 +23,8 @@ class CategoryConfigTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Mock private CategoryUsageGateway usageGateway;
+    @Mock
+    private CategoryUsageGateway usageGateway;
 
     @Mock
     private CategoryMapper categoryMapper;
@@ -32,7 +33,8 @@ class CategoryConfigTest {
     void should_CreateCreateCategoryUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        CreateCategoryUseCase useCase = config.createCategoryUseCase(categoryRepository, categoryMapper);
+        CreateCategoryUseCase useCase = config
+                .createCategoryUseCase(categoryRepository, categoryMapper);
 
         assertNotNull(useCase);
     }
@@ -41,7 +43,8 @@ class CategoryConfigTest {
     void should_CreateDeleteCategoryUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        DeleteCategoryUseCase useCase = config.deleteCategoryUseCase(usageGateway, categoryRepository);
+        DeleteCategoryUseCase useCase = config
+                .deleteCategoryUseCase(usageGateway, categoryRepository);
 
         assertNotNull(useCase);
     }
@@ -50,7 +53,8 @@ class CategoryConfigTest {
     void should_CreateGetCategoryUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        GetCategoryUseCase useCase = config.getCategoryUseCase(usageGateway, categoryRepository, categoryMapper);
+        GetCategoryUseCase useCase = config.getCategoryUseCase(usageGateway,
+                categoryRepository, categoryMapper);
 
         assertNotNull(useCase);
     }
@@ -59,7 +63,8 @@ class CategoryConfigTest {
     void should_CreateListCategoriesUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        ListCategoriesUseCase useCase = config.listCategoriesUseCase(usageGateway, categoryRepository, categoryMapper);
+        ListCategoriesUseCase useCase = config.listCategoriesUseCase(
+                usageGateway, categoryRepository, categoryMapper);
 
         assertNotNull(useCase);
     }
@@ -68,7 +73,8 @@ class CategoryConfigTest {
     void should_CreateUpdateCategoryUseCase() {
         CategoryConfig config = new CategoryConfig();
 
-        UpdateCategoryUseCase useCase = config.updateCategoryUseCase(categoryRepository, categoryMapper);
+        UpdateCategoryUseCase useCase = config
+                .updateCategoryUseCase(categoryRepository, categoryMapper);
 
         assertNotNull(useCase);
     }

@@ -14,7 +14,8 @@ public class ReturnInventoryService implements ReturnInventoryApi {
     private final WarehouseStockRepository stocks;
     private final StockMovementRepository movements;
 
-    public ReturnInventoryService(WarehouseStockRepository stocks, StockMovementRepository movements) {
+    public ReturnInventoryService(WarehouseStockRepository stocks,
+            StockMovementRepository movements) {
         this.stocks = stocks;
         this.movements = movements;
     }
@@ -33,9 +34,13 @@ public class ReturnInventoryService implements ReturnInventoryApi {
 
     private void mutateStock(ReturnStockCommand command, boolean reversing) {
         for (ReturnStockCommand.Allocation allocation : command.allocations()) {
-            WarehouseStock stock = stocks.findByWarehouseIdAndProductIdForUpdate(allocation.warehouseId(), allocation.productId())
-                    .orElseThrow(() -> new IllegalStateException("Stock not found for warehouse=" + allocation.warehouseId()
-                            + " product=" + allocation.productId()));
+            WarehouseStock stock = stocks
+                    .findByWarehouseIdAndProductIdForUpdate(
+                            allocation.warehouseId(), allocation.productId())
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Stock not found for warehouse="
+                                    + allocation.warehouseId() + " product="
+                                    + allocation.productId()));
             int previousStock = stock.getQuantity();
             if (reversing) {
                 stock.removeStock(allocation.quantity());
@@ -43,11 +48,17 @@ public class ReturnInventoryService implements ReturnInventoryApi {
                 stock.addStock(allocation.quantity());
             }
             stocks.save(stock);
-            movements.save(StockMovement.createWithReference(allocation.warehouseId(), allocation.productId(),
-                    reversing ? MovementType.CANCEL_ENTRY : MovementType.RETURN_ENTRY,
-                    allocation.quantity(), previousStock, stock.getQuantity(), null, null, ReferenceType.RETURN,
-                    command.returnId(), command.returnNumber(), reversing
-                            ? "Return deleted: " + command.returnNumber() + " by " + command.userName()
+            movements.save(StockMovement.createWithReference(
+                    allocation.warehouseId(), allocation.productId(),
+                    reversing
+                            ? MovementType.CANCEL_ENTRY
+                            : MovementType.RETURN_ENTRY,
+                    allocation.quantity(), previousStock, stock.getQuantity(),
+                    null, null, ReferenceType.RETURN, command.returnId(),
+                    command.returnNumber(),
+                    reversing
+                            ? "Return deleted: " + command.returnNumber()
+                                    + " by " + command.userName()
                             : "Return: " + command.returnNumber()));
         }
     }

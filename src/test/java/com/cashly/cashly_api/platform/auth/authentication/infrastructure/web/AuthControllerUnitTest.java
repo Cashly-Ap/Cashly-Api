@@ -60,71 +60,45 @@ class AuthControllerUnitTest {
     @BeforeEach
     void setUp() {
         registerRequest = new RegisterUserRequest("test@example.com",
-            "Test User",
-            "SecurePassword123!",
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"));
+                "Test User", "SecurePassword123!", "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"));
 
-        loginRequest = new LoginRequest(
-            "test@example.com",
-            "SecurePassword123!"
-        );
+        loginRequest = new LoginRequest("test@example.com",
+                "SecurePassword123!");
 
         refreshTokenRequest = new RefreshTokenRequest("refresh-token");
         logoutRequest = new LogoutRequest("refresh-token");
 
         LocalDateTime now = LocalDateTime.now();
-        userResponse = new UserResponse("user-id",
-            "test@example.com",
-            "Test User",
-            UserRole.OPERATOR,
-            true,
-            false,
-            false,
-            java.util.Set.of(),
-            "John",
-            "Doe",
-            null,
-            null,
-            java.util.UUID.fromString("10000000-0000-0000-0000-000000000001"),
-            java.util.UUID.fromString("20000000-0000-0000-0000-000000000001"),
-            "Custom role",
-            "Operations",
-            now,
-            now);
+        userResponse = new UserResponse("user-id", "test@example.com",
+                "Test User", UserRole.OPERATOR, true, false, false,
+                java.util.Set.of(), "John", "Doe", null, null,
+                java.util.UUID
+                        .fromString("10000000-0000-0000-0000-000000000001"),
+                java.util.UUID
+                        .fromString("20000000-0000-0000-0000-000000000001"),
+                "Custom role", "Operations", now, now);
 
         AuthenticatedEntityResponse entityResponse = new AuthenticatedEntityResponse(
-            "user-id",
-            "test@example.com",
-            "Test User",
-            AuthenticableType.USER,
-            UserRole.OPERATOR,
-            true,
-            java.util.Set.of(),
-            now,
-            now
-        );
+                "user-id", "test@example.com", "Test User",
+                AuthenticableType.USER, UserRole.OPERATOR, true,
+                java.util.Set.of(), now, now);
 
-        authenticationResponse = new AuthenticationResponse(
-            "access-token",
-            "refresh-token",
-            "Bearer",
-            900000L,
-            entityResponse
-        );
+        authenticationResponse = new AuthenticationResponse("access-token",
+                "refresh-token", "Bearer", 900000L, entityResponse);
     }
 
     @Test
     @DisplayName("should_RegisterUser_When_ValidRequestProvided")
     void should_RegisterUser_When_ValidRequestProvided() {
         when(registerUserUseCase.execute(any(RegisterUserRequest.class)))
-            .thenReturn(userResponse);
+                .thenReturn(userResponse);
 
-        ResponseEntity<UserResponse> response = authController.register(registerRequest);
+        ResponseEntity<UserResponse> response = authController
+                .register(registerRequest);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -136,9 +110,10 @@ class AuthControllerUnitTest {
     @DisplayName("should_ReturnCreatedStatus_When_RegisteringUser")
     void should_ReturnCreatedStatus_When_RegisteringUser() {
         when(registerUserUseCase.execute(any(RegisterUserRequest.class)))
-            .thenReturn(userResponse);
+                .thenReturn(userResponse);
 
-        ResponseEntity<UserResponse> response = authController.register(registerRequest);
+        ResponseEntity<UserResponse> response = authController
+                .register(registerRequest);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
@@ -147,9 +122,10 @@ class AuthControllerUnitTest {
     @DisplayName("should_LoginUser_When_ValidCredentialsProvided")
     void should_LoginUser_When_ValidCredentialsProvided() {
         when(loginUserUseCase.execute(any(LoginRequest.class)))
-            .thenReturn(authenticationResponse);
+                .thenReturn(authenticationResponse);
 
-        ResponseEntity<AuthenticationResponse> response = authController.login(loginRequest);
+        ResponseEntity<AuthenticationResponse> response = authController
+                .login(loginRequest);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -161,9 +137,10 @@ class AuthControllerUnitTest {
     @DisplayName("should_ReturnOkStatus_When_LoginSuccessful")
     void should_ReturnOkStatus_When_LoginSuccessful() {
         when(loginUserUseCase.execute(any(LoginRequest.class)))
-            .thenReturn(authenticationResponse);
+                .thenReturn(authenticationResponse);
 
-        ResponseEntity<AuthenticationResponse> response = authController.login(loginRequest);
+        ResponseEntity<AuthenticationResponse> response = authController
+                .login(loginRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -172,9 +149,10 @@ class AuthControllerUnitTest {
     @DisplayName("should_RefreshToken_When_ValidRefreshTokenProvided")
     void should_RefreshToken_When_ValidRefreshTokenProvided() {
         when(refreshTokenUseCase.execute(any(RefreshTokenRequest.class)))
-            .thenReturn(authenticationResponse);
+                .thenReturn(authenticationResponse);
 
-        ResponseEntity<AuthenticationResponse> response = authController.refresh(refreshTokenRequest);
+        ResponseEntity<AuthenticationResponse> response = authController
+                .refresh(refreshTokenRequest);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -186,9 +164,10 @@ class AuthControllerUnitTest {
     @DisplayName("should_ReturnOkStatus_When_RefreshSuccessful")
     void should_ReturnOkStatus_When_RefreshSuccessful() {
         when(refreshTokenUseCase.execute(any(RefreshTokenRequest.class)))
-            .thenReturn(authenticationResponse);
+                .thenReturn(authenticationResponse);
 
-        ResponseEntity<AuthenticationResponse> response = authController.refresh(refreshTokenRequest);
+        ResponseEntity<AuthenticationResponse> response = authController
+                .refresh(refreshTokenRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -220,7 +199,7 @@ class AuthControllerUnitTest {
     @DisplayName("should_CallRegisterUseCase_When_RegisterEndpointInvoked")
     void should_CallRegisterUseCase_When_RegisterEndpointInvoked() {
         when(registerUserUseCase.execute(any(RegisterUserRequest.class)))
-            .thenReturn(userResponse);
+                .thenReturn(userResponse);
 
         authController.register(registerRequest);
 
@@ -231,7 +210,7 @@ class AuthControllerUnitTest {
     @DisplayName("should_CallLoginUseCase_When_LoginEndpointInvoked")
     void should_CallLoginUseCase_When_LoginEndpointInvoked() {
         when(loginUserUseCase.execute(any(LoginRequest.class)))
-            .thenReturn(authenticationResponse);
+                .thenReturn(authenticationResponse);
 
         authController.login(loginRequest);
 
@@ -242,7 +221,7 @@ class AuthControllerUnitTest {
     @DisplayName("should_CallRefreshTokenUseCase_When_RefreshEndpointInvoked")
     void should_CallRefreshTokenUseCase_When_RefreshEndpointInvoked() {
         when(refreshTokenUseCase.execute(any(RefreshTokenRequest.class)))
-            .thenReturn(authenticationResponse);
+                .thenReturn(authenticationResponse);
 
         authController.refresh(refreshTokenRequest);
 

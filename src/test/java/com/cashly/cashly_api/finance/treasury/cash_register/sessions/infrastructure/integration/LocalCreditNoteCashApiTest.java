@@ -19,10 +19,12 @@ class LocalCreditNoteCashApiTest {
         UUID noteId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        api.recordCreditNoteOut(new BigDecimal("40.00"), "CN-1", noteId, userId, "User");
+        api.recordCreditNoteOut(new BigDecimal("40.00"), "CN-1", noteId, userId,
+                "User");
 
-        verify(movements).record(eq(CashMovementDirection.OUT), eq(CashMovementType.CREDIT_NOTE),
-                eq(new BigDecimal("40.00")), isNull(), eq("Nota de crédito CN-1"),
-                eq("CREDIT_NOTE"), eq(noteId), eq(userId), eq("User"));
+        verify(movements).record(eq(CashMovementDirection.OUT),
+                eq(CashMovementType.CREDIT_NOTE), eq(new BigDecimal("40.00")),
+                isNull(), eq("Nota de crédito CN-1"), eq("CREDIT_NOTE"),
+                eq(noteId), eq(userId), eq("User"));
     }
 }

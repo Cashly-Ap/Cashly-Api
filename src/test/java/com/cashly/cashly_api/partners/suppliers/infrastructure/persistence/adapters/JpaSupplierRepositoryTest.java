@@ -54,14 +54,18 @@ class JpaSupplierRepositoryTest {
     void shouldFindMultipleSuppliersUsingOneBatchRepositoryCall() {
         Supplier first = createTestSupplier();
         Supplier second = createTestSupplier();
-        List<UUID> ids = List.of(first.getId().getValue(), second.getId().getValue());
-        when(springDataRepository.findAllById(ids)).thenReturn(List.of(
-                SupplierEntity.fromDomain(first), SupplierEntity.fromDomain(second)));
+        List<UUID> ids = List.of(first.getId().getValue(),
+                second.getId().getValue());
+        when(springDataRepository.findAllById(ids))
+                .thenReturn(List.of(SupplierEntity.fromDomain(first),
+                        SupplierEntity.fromDomain(second)));
 
-        List<Supplier> result = adapter.findAllById(List.of(first.getId(), second.getId()));
+        List<Supplier> result = adapter
+                .findAllById(List.of(first.getId(), second.getId()));
 
         assertEquals(2, result.size());
-        assertEquals(List.of(first.getId(), second.getId()), result.stream().map(Supplier::getId).toList());
+        assertEquals(List.of(first.getId(), second.getId()),
+                result.stream().map(Supplier::getId).toList());
         verify(springDataRepository).findAllById(ids);
     }
 
@@ -73,10 +77,12 @@ class JpaSupplierRepositoryTest {
         void should_CreateNewSupplier_When_NotExisting() {
             Supplier supplier = createTestSupplier();
 
-            when(springDataRepository.findById(supplier.getId().getValue())).thenReturn(Optional.empty());
+            when(springDataRepository.findById(supplier.getId().getValue()))
+                    .thenReturn(Optional.empty());
 
             SupplierEntity savedEntity = SupplierEntity.fromDomain(supplier);
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Supplier result = adapter.save(supplier);
 
@@ -89,7 +95,8 @@ class JpaSupplierRepositoryTest {
             SupplierEntity captured = entityCaptor.getValue();
             assertEquals(supplier.getId().getValue(), captured.getId());
             assertEquals(supplier.getCode().getValue(), captured.getCode());
-            assertEquals(supplier.getLegalName().getValue(), captured.getLegalName());
+            assertEquals(supplier.getLegalName().getValue(),
+                    captured.getLegalName());
 
             verify(springDataRepository).findById(supplier.getId().getValue());
             verify(springDataRepository).save(any(SupplierEntity.class));
@@ -100,8 +107,10 @@ class JpaSupplierRepositoryTest {
             Supplier supplier = createTestSupplier();
             SupplierEntity existingEntity = SupplierEntity.fromDomain(supplier);
 
-            when(springDataRepository.findById(supplier.getId().getValue())).thenReturn(Optional.of(existingEntity));
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(existingEntity);
+            when(springDataRepository.findById(supplier.getId().getValue()))
+                    .thenReturn(Optional.of(existingEntity));
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(existingEntity);
 
             Supplier result = adapter.save(supplier);
 
@@ -109,7 +118,8 @@ class JpaSupplierRepositoryTest {
             assertEquals(supplier.getId(), result.getId());
 
             SupplierEntity captured = entityCaptor.getValue();
-            assertEquals(supplier.getLegalName().getValue(), captured.getLegalName());
+            assertEquals(supplier.getLegalName().getValue(),
+                    captured.getLegalName());
             assertEquals(supplier.getRif().getValue(), captured.getRif());
 
             verify(springDataRepository).findById(supplier.getId().getValue());
@@ -126,7 +136,8 @@ class JpaSupplierRepositoryTest {
             Supplier supplier = createTestSupplier();
             SupplierEntity entity = SupplierEntity.fromDomain(supplier);
 
-            when(springDataRepository.findById(supplier.getId().getValue())).thenReturn(Optional.of(entity));
+            when(springDataRepository.findById(supplier.getId().getValue()))
+                    .thenReturn(Optional.of(entity));
 
             Optional<Supplier> result = adapter.findById(supplier.getId());
 
@@ -139,7 +150,8 @@ class JpaSupplierRepositoryTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             SupplierId id = SupplierId.generate();
-            when(springDataRepository.findById(id.getValue())).thenReturn(Optional.empty());
+            when(springDataRepository.findById(id.getValue()))
+                    .thenReturn(Optional.empty());
 
             Optional<Supplier> result = adapter.findById(id);
 
@@ -189,19 +201,18 @@ class JpaSupplierRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Supplier> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "legalName", "asc");
+            PageResponse<Supplier> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "legalName", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
             assertEquals(supplier.getId(), result.content().get(0).getId());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -220,18 +231,17 @@ class JpaSupplierRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Supplier> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "legalName", "asc");
+            PageResponse<Supplier> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "legalName", "asc");
 
             assertNotNull(result);
             assertTrue(result.empty());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -251,17 +261,16 @@ class JpaSupplierRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Supplier> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "invalidField", "asc");
+            PageResponse<Supplier> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "invalidField", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -281,18 +290,17 @@ class JpaSupplierRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Supplier> result = adapter.findAllWithFilters(
-                    null, null, null, null, 0, 20, "legalName", "desc");
+            PageResponse<Supplier> result = adapter.findAllWithFilters(null,
+                    null, null, null, 0, 20, "legalName", "desc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(supplier.getId(), result.content().get(0).getId());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(PageRequest.class));
         }
     }
 
@@ -303,7 +311,8 @@ class JpaSupplierRepositoryTest {
         @Test
         void should_ReturnTrue_When_SupplierExists() {
             SupplierId id = SupplierId.generate();
-            when(springDataRepository.existsById(id.getValue())).thenReturn(true);
+            when(springDataRepository.existsById(id.getValue()))
+                    .thenReturn(true);
 
             boolean result = adapter.existsById(id);
 
@@ -314,7 +323,8 @@ class JpaSupplierRepositoryTest {
         @Test
         void should_ReturnFalse_When_SupplierDoesNotExist() {
             SupplierId id = SupplierId.generate();
-            when(springDataRepository.existsById(id.getValue())).thenReturn(false);
+            when(springDataRepository.existsById(id.getValue()))
+                    .thenReturn(false);
 
             boolean result = adapter.existsById(id);
 
@@ -343,7 +353,8 @@ class JpaSupplierRepositoryTest {
 
         @Test
         void should_ReturnMaxCodePlusOne_When_MaxCodeExists() {
-            when(springDataRepository.findMaxCode()).thenReturn(Optional.of(42L));
+            when(springDataRepository.findMaxCode())
+                    .thenReturn(Optional.of(42L));
 
             long next = adapter.getNextCode();
 
@@ -353,7 +364,8 @@ class JpaSupplierRepositoryTest {
 
         @Test
         void should_ReturnOne_When_NoMaxCode() {
-            when(springDataRepository.findMaxCode()).thenReturn(Optional.empty());
+            when(springDataRepository.findMaxCode())
+                    .thenReturn(Optional.empty());
 
             long next = adapter.getNextCode();
 
@@ -363,20 +375,11 @@ class JpaSupplierRepositoryTest {
     }
 
     private Supplier createTestSupplier() {
-        return Supplier.reconstitute(
-            SupplierId.generate(),
-            SupplierCode.from(1L),
-            new LegalName("Test Supplier S.A."),
-            SupplierType.JURIDICO,
-            new Rif("J-12345678-9"),
-            new SupplierAlias("TestSupplier"),
-            null,
-            true,
-            LocalDateTime.now(),
-            LocalDateTime.now(),
-            List.of(),
-            List.of(),
-            List.of()
-        );
+        return Supplier.reconstitute(SupplierId.generate(),
+                SupplierCode.from(1L), new LegalName("Test Supplier S.A."),
+                SupplierType.JURIDICO, new Rif("J-12345678-9"),
+                new SupplierAlias("TestSupplier"), null, true,
+                LocalDateTime.now(), LocalDateTime.now(), List.of(), List.of(),
+                List.of());
     }
 }

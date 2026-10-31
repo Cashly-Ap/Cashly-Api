@@ -19,14 +19,13 @@ public class UpdateWarehouseUseCase {
     }
 
     @Transactional
-    public WarehouseDetailResponse execute(UUID id, UpdateWarehouseRequest request) {
+    public WarehouseDetailResponse execute(UUID id,
+            UpdateWarehouseRequest request) {
         Warehouse warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new WarehouseNotFoundException(id));
 
-        warehouse.update(
-                request.name(), request.address(),
-                request.state(), request.municipality(), request.postalCode(), request.active()
-        );
+        warehouse.update(request.name(), request.address(), request.state(),
+                request.municipality(), request.postalCode(), request.active());
 
         Warehouse saved = warehouseRepository.save(warehouse);
         return WarehouseDetailResponse.from(saved);

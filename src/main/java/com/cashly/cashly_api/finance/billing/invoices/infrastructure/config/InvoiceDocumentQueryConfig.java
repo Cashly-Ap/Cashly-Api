@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InvoiceDocumentQueryConfig {
     @Bean
-    public InvoiceDocumentQuery invoiceDocumentQuery(GetInvoiceByIdUseCase invoiceQuery, GetInvoicesUseCase invoicesQuery) {
+    public InvoiceDocumentQuery invoiceDocumentQuery(
+            GetInvoiceByIdUseCase invoiceQuery,
+            GetInvoicesUseCase invoicesQuery) {
         return new InvoiceDocumentQueryService(invoiceQuery, invoicesQuery);
     }
 }

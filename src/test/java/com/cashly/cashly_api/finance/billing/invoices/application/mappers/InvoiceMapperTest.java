@@ -28,23 +28,19 @@ class InvoiceMapperTest {
         BigDecimal creditApplied = BigDecimal.valueOf(100);
         BigDecimal debitApplied = BigDecimal.valueOf(50);
         List<InvoiceDetailResponse.NoteInfo> notes = List.of(
-                new InvoiceDetailResponse.NoteInfo(
-                        UUID.randomUUID(), "NC-2026-00001", "CREDIT", BigDecimal.valueOf(100),
-                        "Test credit", LocalDateTime.now()
-                ),
-                new InvoiceDetailResponse.NoteInfo(
-                        UUID.randomUUID(), "ND-2026-00001", "DEBIT", BigDecimal.valueOf(50),
-                        "Test debit", LocalDateTime.now()
-                )
-        );
+                new InvoiceDetailResponse.NoteInfo(UUID.randomUUID(),
+                        "NC-2026-00001", "CREDIT", BigDecimal.valueOf(100),
+                        "Test credit", LocalDateTime.now()),
+                new InvoiceDetailResponse.NoteInfo(UUID.randomUUID(),
+                        "ND-2026-00001", "DEBIT", BigDecimal.valueOf(50),
+                        "Test debit", LocalDateTime.now()));
 
-        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(
-                invoice, creditApplied, debitApplied, notes
-        );
+        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(invoice,
+                creditApplied, debitApplied, notes);
 
         assertThat(response.creditApplied()).isEqualByComparingTo("100");
         assertThat(response.debitApplied()).isEqualByComparingTo("50");
-        assertThat(response.total()).isEqualByComparingTo("950"); 
+        assertThat(response.total()).isEqualByComparingTo("950");
         assertThat(response.notesList()).hasSize(2);
         assertThat(response.subtotal()).isEqualByComparingTo("1000");
     }
@@ -53,13 +49,12 @@ class InvoiceMapperTest {
     void toDetailResponse_ShouldHandleNoNotes() {
         Invoice invoice = buildInvoice(BigDecimal.valueOf(500));
 
-        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(
-                invoice, BigDecimal.ZERO, BigDecimal.ZERO, List.of()
-        );
+        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(invoice,
+                BigDecimal.ZERO, BigDecimal.ZERO, List.of());
 
         assertThat(response.creditApplied()).isEqualByComparingTo("0");
         assertThat(response.debitApplied()).isEqualByComparingTo("0");
-        assertThat(response.total()).isEqualByComparingTo("500"); 
+        assertThat(response.total()).isEqualByComparingTo("500");
         assertThat(response.notesList()).isEmpty();
         assertThat(response.subtotal()).isEqualByComparingTo("500");
     }
@@ -68,16 +63,13 @@ class InvoiceMapperTest {
     void toDetailResponse_ShouldHandleOnlyCreditNotes() {
         Invoice invoice = buildInvoice(BigDecimal.valueOf(2000));
 
-        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(
-                invoice, BigDecimal.valueOf(300), BigDecimal.ZERO, List.of(
-                        new InvoiceDetailResponse.NoteInfo(
-                                UUID.randomUUID(), "NC-2026-00002", "CREDIT", BigDecimal.valueOf(300),
-                                "Bulk discount", LocalDateTime.now()
-                        )
-                )
-        );
+        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(invoice,
+                BigDecimal.valueOf(300), BigDecimal.ZERO,
+                List.of(new InvoiceDetailResponse.NoteInfo(UUID.randomUUID(),
+                        "NC-2026-00002", "CREDIT", BigDecimal.valueOf(300),
+                        "Bulk discount", LocalDateTime.now())));
 
-        assertThat(response.total()).isEqualByComparingTo("1700"); 
+        assertThat(response.total()).isEqualByComparingTo("1700");
         assertThat(response.creditApplied()).isEqualByComparingTo("300");
         assertThat(response.debitApplied()).isEqualByComparingTo("0");
     }
@@ -86,45 +78,25 @@ class InvoiceMapperTest {
     void toDetailResponse_ShouldHandleOnlyDebitNotes() {
         Invoice invoice = buildInvoice(BigDecimal.valueOf(2000));
 
-        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(
-                invoice, BigDecimal.ZERO, BigDecimal.valueOf(200), List.of(
-                        new InvoiceDetailResponse.NoteInfo(
-                                UUID.randomUUID(), "ND-2026-00002", "DEBIT", BigDecimal.valueOf(200),
-                                "Additional charge", LocalDateTime.now()
-                        )
-                )
-        );
+        InvoiceDetailResponse response = InvoiceMapper.toDetailResponse(invoice,
+                BigDecimal.ZERO, BigDecimal.valueOf(200),
+                List.of(new InvoiceDetailResponse.NoteInfo(UUID.randomUUID(),
+                        "ND-2026-00002", "DEBIT", BigDecimal.valueOf(200),
+                        "Additional charge", LocalDateTime.now())));
 
-        assertThat(response.total()).isEqualByComparingTo("2200"); 
+        assertThat(response.total()).isEqualByComparingTo("2200");
         assertThat(response.creditApplied()).isEqualByComparingTo("0");
         assertThat(response.debitApplied()).isEqualByComparingTo("200");
     }
 
     private Invoice buildInvoice(BigDecimal lineTotal) {
-        InvoiceLine line = InvoiceLine.create(
-                UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, lineTotal, List.of()
-        );
-        return Invoice.reconstitute(
-                InvoiceId.of(UUID.randomUUID()),
-                InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Test Customer",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Test User",
-                null,
-                null,
-                InvoiceStatus.DRAFT,
-                PaymentType.CASH,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            );
+        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, lineTotal, List.of());
+        return Invoice.reconstitute(InvoiceId.of(UUID.randomUUID()),
+                InvoiceNumber.of(2026, 1), UUID.randomUUID(), "Test Customer",
+                "J-12345678-9", UUID.randomUUID(), "Test User", null, null,
+                InvoiceStatus.DRAFT, PaymentType.CASH, null, BigDecimal.ZERO,
+                null, null, null, List.of(line), LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

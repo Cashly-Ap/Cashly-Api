@@ -11,12 +11,15 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CustomerBalanceJpaRepository extends JpaRepository<CustomerBalanceEntity, UUID> {
+public interface CustomerBalanceJpaRepository
+        extends
+            JpaRepository<CustomerBalanceEntity, UUID> {
 
     Optional<CustomerBalanceEntity> findByCustomerId(UUID customerId);
 
     @Query("SELECT t FROM BalanceTransactionEntity t WHERE t.customerId = :customerId ORDER BY t.createdAt DESC")
-    Page<BalanceTransactionEntity> findTransactionsByCustomerId(@Param("customerId") UUID customerId, Pageable pageable);
+    Page<BalanceTransactionEntity> findTransactionsByCustomerId(
+            @Param("customerId") UUID customerId, Pageable pageable);
 
     @Query("SELECT COUNT(t) FROM BalanceTransactionEntity t WHERE t.customerId = :customerId")
     long countTransactionsByCustomerId(@Param("customerId") UUID customerId);

@@ -10,29 +10,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record CashRegisterResponse(
-        UUID id,
-        LocalDate closureDate,
-        RegisterStatus status,
-        UUID openedBy,
-        String openedByName,
-        LocalDateTime openedAt,
-        UUID closedBy,
-        String closedByName,
-        LocalDateTime closedAt,
-        String closingNotes,
-        List<CashRegisterDetailResponse> details,
-        BigDecimal totalInvoiced,
-        BigDecimal totalRevenue,
-        BigDecimal totalExpenses,
-        BigDecimal balance,
+public record CashRegisterResponse(UUID id, LocalDate closureDate,
+        RegisterStatus status, UUID openedBy, String openedByName,
+        LocalDateTime openedAt, UUID closedBy, String closedByName,
+        LocalDateTime closedAt, String closingNotes,
+        List<CashRegisterDetailResponse> details, BigDecimal totalInvoiced,
+        BigDecimal totalRevenue, BigDecimal totalExpenses, BigDecimal balance,
         List<RevenueSummaryItem> revenueSummary,
-        List<ExpenseSummaryItem> expenseSummary,
-        BigDecimal openingBalance,
-        BigDecimal totalIncome,
-        BigDecimal totalExpense,
-        BigDecimal expectedBalance,
-        BigDecimal declaredBalance,
-        BigDecimal difference,
-        List<CashMovementResponse> movements
-) {}
+        List<ExpenseSummaryItem> expenseSummary, BigDecimal openingBalance,
+        BigDecimal totalIncome, BigDecimal totalExpense,
+        BigDecimal expectedBalance, BigDecimal declaredBalance,
+        BigDecimal difference, List<CashMovementResponse> movements) {
+}

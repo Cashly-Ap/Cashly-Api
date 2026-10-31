@@ -23,9 +23,9 @@ public class OrdersReportController {
     private final GenerateOrderPdfUseCase generateOrderPdfUseCase;
     private final GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase;
 
-
-    public OrdersReportController(GenerateOrderPdfUseCase generateOrderPdfUseCase,
-                                   GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase) {
+    public OrdersReportController(
+            GenerateOrderPdfUseCase generateOrderPdfUseCase,
+            GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase) {
         this.generateOrderPdfUseCase = generateOrderPdfUseCase;
         this.generateOrdersReportPdfUseCase = generateOrdersReportPdfUseCase;
 
@@ -35,9 +35,9 @@ public class OrdersReportController {
     @PreAuthorize("hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getOrderPdf(@PathVariable UUID id) {
         byte[] pdf = generateOrderPdfUseCase.execute(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"pedido-" + id + ".pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"pedido-" + id + ".pdf\"")
                 .body(pdf);
     }
 
@@ -52,13 +52,15 @@ public class OrdersReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        OrderReportFilter filter = new OrderReportFilter(dateFrom, dateTo, customerId, status, productId, categoryId);
+        OrderReportFilter filter = new OrderReportFilter(dateFrom, dateTo,
+                customerId, status, productId, categoryId);
         byte[] pdf = generateOrdersReportPdfUseCase.execute(filter, mode);
 
-        String filename = "reporte-pedidos-" + LocalDate.now().toString() + ".pdf";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+        String filename = "reporte-pedidos-" + LocalDate.now().toString()
+                + ".pdf";
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .body(pdf);
     }
 }

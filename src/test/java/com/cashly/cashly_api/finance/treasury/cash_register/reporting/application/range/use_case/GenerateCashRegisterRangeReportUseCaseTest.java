@@ -21,21 +21,27 @@ class GenerateCashRegisterRangeReportUseCaseTest {
 
     @Test
     void should_generate_filtered_pdf_report() {
-        CashRegisterQueryGateway repository = mock(CashRegisterQueryGateway.class);
-        CashRegisterRangeReportPort reportPort = mock(CashRegisterRangeReportPort.class);
-        var useCase = new GenerateCashRegisterRangeReportUseCase(repository, reportPort);
-        var filter = new CashRegisterReportFilter(
-                LocalDate.of(2026, 8, 1), LocalDate.of(2026, 8, 31),
-                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+        CashRegisterQueryGateway repository = mock(
+                CashRegisterQueryGateway.class);
+        CashRegisterRangeReportPort reportPort = mock(
+                CashRegisterRangeReportPort.class);
+        var useCase = new GenerateCashRegisterRangeReportUseCase(repository,
+                reportPort);
+        var filter = new CashRegisterReportFilter(LocalDate.of(2026, 8, 1),
+                LocalDate.of(2026, 8, 31), UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID());
         List<CashRegisterExportRow> rows = List.of();
         byte[] expected = {1, 2, 3};
         when(repository.findExportRows(filter)).thenReturn(rows);
-        when(reportPort.generate(rows, filter, ReportFormat.PDF, ReportType.GROUPED)).thenReturn(expected);
+        when(reportPort.generate(rows, filter, ReportFormat.PDF,
+                ReportType.GROUPED)).thenReturn(expected);
 
-        byte[] result = useCase.execute(filter, ReportFormat.PDF, ReportType.GROUPED);
+        byte[] result = useCase.execute(filter, ReportFormat.PDF,
+                ReportType.GROUPED);
 
         assertArrayEquals(expected, result);
         verify(repository).findExportRows(filter);
-        verify(reportPort).generate(rows, filter, ReportFormat.PDF, ReportType.GROUPED);
+        verify(reportPort).generate(rows, filter, ReportFormat.PDF,
+                ReportType.GROUPED);
     }
 }

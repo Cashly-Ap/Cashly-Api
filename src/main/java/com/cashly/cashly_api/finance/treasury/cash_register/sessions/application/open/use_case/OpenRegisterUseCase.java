@@ -18,15 +18,16 @@ public class OpenRegisterUseCase {
         this.closureRepository = closureRepository;
     }
 
-    public CashRegisterResponse execute(UUID openedBy, String openedByName, BigDecimal openingBalance) {
+    public CashRegisterResponse execute(UUID openedBy, String openedByName,
+            BigDecimal openingBalance) {
         LocalDate today = LocalDate.now();
 
         if (closureRepository.findActiveClosure().isPresent()) {
             throw new IllegalStateException("A cash register is already open");
         }
 
-        CashRegister closure = CashRegister.open(RegisterId.generate(), today, openedBy,
-                openedByName, openingBalance);
+        CashRegister closure = CashRegister.open(RegisterId.generate(), today,
+                openedBy, openedByName, openingBalance);
         CashRegister saved = closureRepository.save(closure);
         return CashRegisterMapper.toResponse(saved);
     }

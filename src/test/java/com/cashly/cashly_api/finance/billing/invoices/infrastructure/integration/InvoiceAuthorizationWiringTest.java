@@ -31,28 +31,50 @@ class InvoiceAuthorizationWiringTest {
     @Test
     void should_wire_authorization_and_confirmation_through_all_public_providers() {
         try (var context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(UserRepository.class, () -> mock(UserRepository.class));
-            context.registerBean(PasswordEncoder.class, () -> mock(PasswordEncoder.class));
-            context.registerBean(ConsumeCustomerBalanceUseCase.class, () -> mock(ConsumeCustomerBalanceUseCase.class));
-            context.registerBean(PaymentRepository.class, () -> mock(PaymentRepository.class));
-            context.registerBean(PaymentAllocationRepository.class, () -> mock(PaymentAllocationRepository.class));
-            context.registerBean(CashMovementService.class, () -> mock(CashMovementService.class));
-            context.registerBean(InvoiceRepository.class, () -> mock(InvoiceRepository.class));
-            context.registerBean(CustomerCreditGateway.class, () -> mock(CustomerCreditGateway.class));
-            context.registerBean(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class, () -> mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class));
-            context.registerBean(InventoryGateway.class, () -> mock(InventoryGateway.class));
-            context.registerBean(NotificationService.class, () -> mock(NotificationService.class));
-            context.register(ActorIdentityQueryConfig.class, InvoiceBalanceConsumptionConfig.class,
-                    CashRegisterOperationsConfig.class, CashInvoiceSettlementConfig.class,
-                    LocalActorIdentityGateway.class, LocalCustomerBalanceGateway.class,
-                    LocalInvoicePaymentSettlementGateway.class, LocalInvoiceCashRegisterGateway.class,
-                    LocalInvoiceNotificationGateway.class, LocalPaymentCashRegisterGateway.class,
-                    InvoiceIssueValidator.class, InvoicePaymentService.class, IssueInvoiceService.class, ConfirmInvoiceUseCase.class);
+            context.registerBean(UserRepository.class,
+                    () -> mock(UserRepository.class));
+            context.registerBean(PasswordEncoder.class,
+                    () -> mock(PasswordEncoder.class));
+            context.registerBean(ConsumeCustomerBalanceUseCase.class,
+                    () -> mock(ConsumeCustomerBalanceUseCase.class));
+            context.registerBean(PaymentRepository.class,
+                    () -> mock(PaymentRepository.class));
+            context.registerBean(PaymentAllocationRepository.class,
+                    () -> mock(PaymentAllocationRepository.class));
+            context.registerBean(CashMovementService.class,
+                    () -> mock(CashMovementService.class));
+            context.registerBean(InvoiceRepository.class,
+                    () -> mock(InvoiceRepository.class));
+            context.registerBean(CustomerCreditGateway.class,
+                    () -> mock(CustomerCreditGateway.class));
+            context.registerBean(
+                    com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class,
+                    () -> mock(
+                            com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class));
+            context.registerBean(InventoryGateway.class,
+                    () -> mock(InventoryGateway.class));
+            context.registerBean(NotificationService.class,
+                    () -> mock(NotificationService.class));
+            context.register(ActorIdentityQueryConfig.class,
+                    InvoiceBalanceConsumptionConfig.class,
+                    CashRegisterOperationsConfig.class,
+                    CashInvoiceSettlementConfig.class,
+                    LocalActorIdentityGateway.class,
+                    LocalCustomerBalanceGateway.class,
+                    LocalInvoicePaymentSettlementGateway.class,
+                    LocalInvoiceCashRegisterGateway.class,
+                    LocalInvoiceNotificationGateway.class,
+                    LocalPaymentCashRegisterGateway.class,
+                    InvoiceIssueValidator.class, InvoicePaymentService.class,
+                    IssueInvoiceService.class, ConfirmInvoiceUseCase.class);
             context.refresh();
             assertThat(context.getBean(IssueInvoiceService.class)).isNotNull();
-            assertThat(context.getBean(ConfirmInvoiceUseCase.class)).isNotNull();
-            assertThatThrownBy(() -> context.getBean(ActorIdentityGateway.class).requireActor(UUID.randomUUID()))
-                    .isInstanceOf(IllegalArgumentException.class).hasMessage("Usuario no encontrado");
+            assertThat(context.getBean(ConfirmInvoiceUseCase.class))
+                    .isNotNull();
+            assertThatThrownBy(() -> context.getBean(ActorIdentityGateway.class)
+                    .requireActor(UUID.randomUUID()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Usuario no encontrado");
         }
     }
 }

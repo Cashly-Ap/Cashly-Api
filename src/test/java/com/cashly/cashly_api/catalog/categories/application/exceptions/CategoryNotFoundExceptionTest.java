@@ -17,13 +17,15 @@ class CategoryNotFoundExceptionTest {
 
         CategoryNotFoundException exception = new CategoryNotFoundException(id);
 
-        assertEquals("Category not found with id: " + id, exception.getMessage());
+        assertEquals("Category not found with id: " + id,
+                exception.getMessage());
     }
 
     @Test
     @DisplayName("should be runtime exception")
     void should_be_runtime_exception() {
-        CategoryNotFoundException exception = new CategoryNotFoundException(UUID.randomUUID());
+        CategoryNotFoundException exception = new CategoryNotFoundException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }
@@ -31,8 +33,10 @@ class CategoryNotFoundExceptionTest {
     @Test
     @DisplayName("should preserve id in message when null")
     void should_preserve_id_in_message_when_null() {
-        CategoryNotFoundException exception = new CategoryNotFoundException(null);
+        CategoryNotFoundException exception = new CategoryNotFoundException(
+                null);
 
-        assertEquals("Category not found with id: null", exception.getMessage());
+        assertEquals("Category not found with id: null",
+                exception.getMessage());
     }
 }

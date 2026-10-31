@@ -18,9 +18,10 @@ public class CreateCustomerAdvanceUseCase {
     private final CustomerCashGateway cashGateway;
     private final CustomerActorGateway actorGateway;
 
-    public CreateCustomerAdvanceUseCase(AddToCustomerBalanceUseCase addToBalance,
-                                        CustomerCashGateway cashGateway,
-                                        CustomerActorGateway actorGateway) {
+    public CreateCustomerAdvanceUseCase(
+            AddToCustomerBalanceUseCase addToBalance,
+            CustomerCashGateway cashGateway,
+            CustomerActorGateway actorGateway) {
         this.addToBalance = addToBalance;
         this.cashGateway = cashGateway;
         this.actorGateway = actorGateway;
@@ -28,22 +29,24 @@ public class CreateCustomerAdvanceUseCase {
 
     @Transactional
     public CustomerBalanceResponse execute(UUID customerId, BigDecimal amount,
-                                           UUID paymentMethodId, String notes, UUID userId) {
+            UUID paymentMethodId, String notes, UUID userId) {
         cashGateway.requireOpenRegister();
         String userName = userName(userId);
-        String description = notes == null || notes.isBlank() ? "Anticipo de cliente" : notes;
-        var mutation = addToBalance.executeWithTransaction(
-                customerId, BalanceType.ADVANCED, amount, BalanceType.ADVANCED,
-                null, description, null, userId);
-        cashGateway.record(new CustomerCashMovement(
-                "IN", "ADVANCE", amount, paymentMethodId, description,
-                "CUSTOMER_BALANCE", mutation.transactionId(), userId, userName));
+        String description = notes == null || notes.isBlank()
+                ? "Anticipo de cliente"
+                : notes;
+        var mutation = addToBalance.executeWithTransaction(customerId,
+                BalanceType.ADVANCED, amount, BalanceType.ADVANCED, null,
+                description, null, userId);
+        cashGateway.record(new CustomerCashMovement("IN", "ADVANCE", amount,
+                paymentMethodId, description, "CUSTOMER_BALANCE",
+                mutation.transactionId(), userId, userName));
         return mutation.balance();
     }
 
     private String userName(UUID userId) {
-        return actorGateway.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId))
+        return actorGateway.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("User not found: " + userId))
                 .name();
     }
 }

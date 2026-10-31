@@ -31,8 +31,6 @@ class PurchasesReportControllerTest {
     @Mock
     private GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase;
 
-
-
     @InjectMocks
     private PurchasesReportController controller;
 
@@ -42,13 +40,15 @@ class PurchasesReportControllerTest {
         UUID purchaseId = UUID.randomUUID();
         byte[] pdfContent = "Purchase PDF".getBytes();
 
-        when(generatePurchasePdfUseCase.execute(purchaseId)).thenReturn(pdfContent);
+        when(generatePurchasePdfUseCase.execute(purchaseId))
+                .thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getPurchasePdf(purchaseId);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("compra-" + purchaseId + ".pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("compra-" + purchaseId + ".pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generatePurchasePdfUseCase).execute(purchaseId);
@@ -65,15 +65,19 @@ class PurchasesReportControllerTest {
         byte[] pdfContent = "Purchases report PDF".getBytes();
         List<PurchaseReportRow> purchases = List.of();
 
-        var filter = new PurchaseReportFilter(dateFrom, dateTo, supplierId, "PENDING", productId, categoryId);
-        when(generatePurchasesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new PurchaseReportFilter(dateFrom, dateTo, supplierId,
+                "PENDING", productId, categoryId);
+        when(generatePurchasesReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller.getPurchasesReportPdf(
-                dateFrom, dateTo, supplierId, "PENDING", productId, categoryId, "SIMPLE");
+                dateFrom, dateTo, supplierId, "PENDING", productId, categoryId,
+                "SIMPLE");
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("reporte-compras-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("reporte-compras-"));
         assertArrayEquals(pdfContent, result.getBody());
 
         verify(generatePurchasesReportPdfUseCase).execute(filter, "SIMPLE");
@@ -85,11 +89,13 @@ class PurchasesReportControllerTest {
         byte[] pdfContent = "PDF no filters".getBytes();
         List<PurchaseReportRow> purchases = List.of();
 
-        var filter = new PurchaseReportFilter(null, null, null, null, null, null);
-        when(generatePurchasesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new PurchaseReportFilter(null, null, null, null, null,
+                null);
+        when(generatePurchasesReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getPurchasesReportPdf(
-                null, null, null, null, null, null, "SIMPLE");
+        ResponseEntity<byte[]> result = controller.getPurchasesReportPdf(null,
+                null, null, null, null, null, "SIMPLE");
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generatePurchasesReportPdfUseCase).execute(filter, "SIMPLE");

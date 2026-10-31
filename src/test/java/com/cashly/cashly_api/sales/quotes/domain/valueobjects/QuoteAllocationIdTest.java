@@ -48,6 +48,7 @@ class QuoteAllocationIdTest {
 
     @Test
     void generate_should_return_different_ids() {
-        assertNotEquals(QuoteAllocationId.generate(), QuoteAllocationId.generate());
+        assertNotEquals(QuoteAllocationId.generate(),
+                QuoteAllocationId.generate());
     }
 }

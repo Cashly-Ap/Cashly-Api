@@ -12,7 +12,9 @@ public interface QuoteWarehouseGateway {
 
     List<Stock> findStockByProductId(UUID productId);
 
-    record Warehouse(UUID id, String name, String address) {}
+    record Warehouse(UUID id, String name, String address) {
+    }
 
-    record Stock(UUID warehouseId, String warehouseName, int available) {}
+    record Stock(UUID warehouseId, String warehouseName, int available) {
+    }
 }

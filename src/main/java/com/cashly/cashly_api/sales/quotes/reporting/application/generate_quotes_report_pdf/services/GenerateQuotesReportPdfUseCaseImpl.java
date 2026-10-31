@@ -6,20 +6,22 @@ import com.cashly.cashly_api.sales.quotes.reporting.application.dto.model.QuoteR
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuoteReportQueryGateway;
 import com.cashly.cashly_api.sales.quotes.reporting.application.ports.out.QuotesReportPdfPort;
 
-
-
-public class GenerateQuotesReportPdfUseCaseImpl implements GenerateQuotesReportPdfUseCase {
+public class GenerateQuotesReportPdfUseCaseImpl
+        implements
+            GenerateQuotesReportPdfUseCase {
 
     private final QuoteReportQueryGateway query;
     private final QuotesReportPdfPort quotesReportPdfPort;
 
-    public GenerateQuotesReportPdfUseCaseImpl(QuoteReportQueryGateway query, QuotesReportPdfPort quotesReportPdfPort) {
+    public GenerateQuotesReportPdfUseCaseImpl(QuoteReportQueryGateway query,
+            QuotesReportPdfPort quotesReportPdfPort) {
         this.query = query;
         this.quotesReportPdfPort = quotesReportPdfPort;
     }
 
     @Override
     public byte[] execute(QuoteReportFilter filter, String mode) {
-        return quotesReportPdfPort.generatePdf(query.findAll(filter), mode != null ? mode : "simple");
+        return quotesReportPdfPort.generatePdf(query.findAll(filter),
+                mode != null ? mode : "simple");
     }
 }

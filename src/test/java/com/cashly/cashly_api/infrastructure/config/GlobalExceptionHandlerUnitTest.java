@@ -44,14 +44,17 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_HandleDuplicateEmailException_When_EmailAlreadyExists")
     void should_HandleDuplicateEmailException_When_EmailAlreadyExists() {
-        DuplicateEmailException exception = new DuplicateEmailException("test@example.com");
+        DuplicateEmailException exception = new DuplicateEmailException(
+                "test@example.com");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleDuplicateEmail(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleDuplicateEmail(exception);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(409, response.getBody().get("status"));
-        assertEquals("Email already registered", response.getBody().get("error"));
+        assertEquals("Email already registered",
+                response.getBody().get("error"));
         assertTrue(response.getBody().containsKey("timestamp"));
         assertTrue(response.getBody().containsKey("message"));
     }
@@ -59,10 +62,11 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should return conflict when customer RIF is already registered")
     void shouldReturnConflictWhenCustomerRifIsAlreadyRegistered() {
-        DuplicateCustomerRifException exception = new DuplicateCustomerRifException("J-12345678-9");
+        DuplicateCustomerRifException exception = new DuplicateCustomerRifException(
+                "J-12345678-9");
 
-        ResponseEntity<Map<String, Object>> response =
-                globalExceptionHandler.handleDuplicateCustomerRif(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleDuplicateCustomerRif(exception);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -76,12 +80,11 @@ class GlobalExceptionHandlerUnitTest {
     @DisplayName("should return duplicate RIF conflict when database constraint rejects a concurrent write")
     void shouldReturnDuplicateRifConflictWhenDatabaseConstraintRejectsWrite() {
         DataIntegrityViolationException exception = new DataIntegrityViolationException(
-                "Could not execute statement",
-                new RuntimeException("Duplicate entry for key 'uk_customers_rif'")
-        );
+                "Could not execute statement", new RuntimeException(
+                        "Duplicate entry for key 'uk_customers_rif'"));
 
-        ResponseEntity<Map<String, Object>> response =
-                globalExceptionHandler.handleDataIntegrityViolation(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleDataIntegrityViolation(exception);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -91,9 +94,11 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_HandleUserNotFoundException_When_UserNotFound")
     void should_HandleUserNotFoundException_When_UserNotFound() {
-        UserNotFoundException exception = new UserNotFoundException("User not found");
+        UserNotFoundException exception = new UserNotFoundException(
+                "User not found");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleUserNotFound(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleUserNotFound(exception);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -106,9 +111,11 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_HandleInvalidCredentialsException_When_CredentialsInvalid")
     void should_HandleInvalidCredentialsException_When_CredentialsInvalid() {
-        InvalidCredentialsException exception = new InvalidCredentialsException("Invalid email or password");
+        InvalidCredentialsException exception = new InvalidCredentialsException(
+                "Invalid email or password");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleInvalidCredentials(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleInvalidCredentials(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -121,9 +128,11 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_HandleInvalidTokenException_When_TokenInvalid")
     void should_HandleInvalidTokenException_When_TokenInvalid() {
-        InvalidTokenException exception = new InvalidTokenException("Invalid token");
+        InvalidTokenException exception = new InvalidTokenException(
+                "Invalid token");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleInvalidToken(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleInvalidToken(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -136,9 +145,11 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_HandleTokenExpiredException_When_TokenExpired")
     void should_HandleTokenExpiredException_When_TokenExpired() {
-        TokenExpiredException exception = new TokenExpiredException("Token has expired");
+        TokenExpiredException exception = new TokenExpiredException(
+                "Token has expired");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleTokenExpired(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleTokenExpired(exception);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -151,28 +162,35 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_HandleIllegalArgumentException_When_ArgumentInvalid")
     void should_HandleIllegalArgumentException_When_ArgumentInvalid() {
-        IllegalArgumentException exception = new IllegalArgumentException("Invalid argument provided");
+        IllegalArgumentException exception = new IllegalArgumentException(
+                "Invalid argument provided");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleIllegalArgument(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleIllegalArgument(exception);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(400, response.getBody().get("status"));
         assertEquals("Invalid request", response.getBody().get("error"));
-        assertEquals("Invalid argument provided", response.getBody().get("message"));
+        assertEquals("Invalid argument provided",
+                response.getBody().get("message"));
         assertTrue(response.getBody().containsKey("timestamp"));
     }
 
     @Test
     @DisplayName("should_HandleValidationException_When_ValidationFails")
     void should_HandleValidationException_When_ValidationFails() {
-        FieldError fieldError1 = new FieldError("object", "email", "must be a valid email");
-        FieldError fieldError2 = new FieldError("object", "password", "must not be blank");
+        FieldError fieldError1 = new FieldError("object", "email",
+                "must be a valid email");
+        FieldError fieldError2 = new FieldError("object", "password",
+                "must not be blank");
 
         when(validationException.getBindingResult()).thenReturn(bindingResult);
-        when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError1, fieldError2));
+        when(bindingResult.getFieldErrors())
+                .thenReturn(List.of(fieldError1, fieldError2));
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleValidationErrors(validationException);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleValidationErrors(validationException);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -189,9 +207,11 @@ class GlobalExceptionHandlerUnitTest {
     void should_HandleGenericException_When_UnexpectedErrorOccurs() {
         Exception exception = new Exception("Unexpected error");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleGenericException(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleGenericException(exception);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
+                response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(500, response.getBody().get("status"));
         assertEquals("Internal server error", response.getBody().get("error"));
@@ -202,9 +222,11 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_ReturnProperFormat_When_HandlingAnyException")
     void should_ReturnProperFormat_When_HandlingAnyException() {
-        DuplicateEmailException exception = new DuplicateEmailException("test@example.com");
+        DuplicateEmailException exception = new DuplicateEmailException(
+                "test@example.com");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleDuplicateEmail(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleDuplicateEmail(exception);
 
         assertNotNull(response.getBody());
         assertTrue(response.getBody().containsKey("timestamp"));
@@ -217,30 +239,39 @@ class GlobalExceptionHandlerUnitTest {
     @Test
     @DisplayName("should_ReturnConflictStatus_When_DuplicateEmailOccurs")
     void should_ReturnConflictStatus_When_DuplicateEmailOccurs() {
-        DuplicateEmailException exception = new DuplicateEmailException("test@example.com");
+        DuplicateEmailException exception = new DuplicateEmailException(
+                "test@example.com");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleDuplicateEmail(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleDuplicateEmail(exception);
 
-        assertEquals(HttpStatus.CONFLICT.value(), response.getBody().get("status"));
+        assertEquals(HttpStatus.CONFLICT.value(),
+                response.getBody().get("status"));
     }
 
     @Test
     @DisplayName("should_ReturnNotFoundStatus_When_UserNotFound")
     void should_ReturnNotFoundStatus_When_UserNotFound() {
-        UserNotFoundException exception = new UserNotFoundException("User not found");
+        UserNotFoundException exception = new UserNotFoundException(
+                "User not found");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleUserNotFound(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleUserNotFound(exception);
 
-        assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().get("status"));
+        assertEquals(HttpStatus.NOT_FOUND.value(),
+                response.getBody().get("status"));
     }
 
     @Test
     @DisplayName("should_ReturnUnauthorizedStatus_When_InvalidCredentials")
     void should_ReturnUnauthorizedStatus_When_InvalidCredentials() {
-        InvalidCredentialsException exception = new InvalidCredentialsException("Invalid credentials");
+        InvalidCredentialsException exception = new InvalidCredentialsException(
+                "Invalid credentials");
 
-        ResponseEntity<Map<String, Object>> response = globalExceptionHandler.handleInvalidCredentials(exception);
+        ResponseEntity<Map<String, Object>> response = globalExceptionHandler
+                .handleInvalidCredentials(exception);
 
-        assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getBody().get("status"));
+        assertEquals(HttpStatus.UNAUTHORIZED.value(),
+                response.getBody().get("status"));
     }
 }

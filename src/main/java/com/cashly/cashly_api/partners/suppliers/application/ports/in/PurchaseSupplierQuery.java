@@ -8,5 +8,6 @@ import java.util.UUID;
 public interface PurchaseSupplierQuery {
     Optional<Entry> findById(UUID id);
     List<Entry> findByIds(Collection<UUID> ids);
-    record Entry(UUID id, String name, String rif) {}
+    record Entry(UUID id, String name, String rif) {
+    }
 }

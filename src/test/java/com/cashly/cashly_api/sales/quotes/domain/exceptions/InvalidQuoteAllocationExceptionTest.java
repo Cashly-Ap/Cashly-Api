@@ -11,15 +11,16 @@ class InvalidQuoteAllocationExceptionTest {
     void should_throw_with_correct_message() {
         String message = "Allocation quantity exceeds line quantity";
         InvalidQuoteAllocationException exception = assertThrows(
-                InvalidQuoteAllocationException.class,
-                () -> { throw new InvalidQuoteAllocationException(message); }
-        );
+                InvalidQuoteAllocationException.class, () -> {
+                    throw new InvalidQuoteAllocationException(message);
+                });
         assertEquals(message, exception.getMessage());
     }
 
     @Test
     void should_extend_runtime_exception() {
-        InvalidQuoteAllocationException exception = new InvalidQuoteAllocationException("test");
+        InvalidQuoteAllocationException exception = new InvalidQuoteAllocationException(
+                "test");
         assertInstanceOf(RuntimeException.class, exception);
     }
 }

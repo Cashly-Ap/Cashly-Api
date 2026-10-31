@@ -6,20 +6,22 @@ import com.cashly.cashly_api.sales.orders.reporting.application.dto.model.OrderR
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrderReportQueryGateway;
 import com.cashly.cashly_api.sales.orders.reporting.application.ports.out.OrdersReportPdfPort;
 
-
-
-public class GenerateOrdersReportPdfUseCaseImpl implements GenerateOrdersReportPdfUseCase {
+public class GenerateOrdersReportPdfUseCaseImpl
+        implements
+            GenerateOrdersReportPdfUseCase {
 
     private final OrderReportQueryGateway query;
     private final OrdersReportPdfPort ordersReportPdfPort;
 
-    public GenerateOrdersReportPdfUseCaseImpl(OrderReportQueryGateway query, OrdersReportPdfPort ordersReportPdfPort) {
+    public GenerateOrdersReportPdfUseCaseImpl(OrderReportQueryGateway query,
+            OrdersReportPdfPort ordersReportPdfPort) {
         this.query = query;
         this.ordersReportPdfPort = ordersReportPdfPort;
     }
 
     @Override
     public byte[] execute(OrderReportFilter filter, String mode) {
-        return ordersReportPdfPort.generatePdf(query.findAll(filter), mode != null ? mode : "simple");
+        return ordersReportPdfPort.generatePdf(query.findAll(filter),
+                mode != null ? mode : "simple");
     }
 }

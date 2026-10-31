@@ -49,26 +49,26 @@ public class CorsConfig {
                 }
             }
         }
-        
+
         List<String> methods = Arrays.asList(allowedMethods.split(","));
         configuration.setAllowedMethods(methods);
         configuration.addAllowedMethod("PATCH");
         configuration.addAllowedMethod("OPTIONS");
-        
+
         if ("*".equals(allowedHeaders)) {
             configuration.addAllowedHeader("*");
         } else {
             List<String> headers = Arrays.asList(allowedHeaders.split(","));
             configuration.setAllowedHeaders(headers);
         }
-        
+
         configuration.setAllowCredentials(allowCredentials);
         configuration.setMaxAge(maxAge);
         configuration.addExposedHeader("Authorization");
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
+
         return source;
     }
 }

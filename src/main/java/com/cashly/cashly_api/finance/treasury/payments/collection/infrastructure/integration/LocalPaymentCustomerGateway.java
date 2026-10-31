@@ -11,7 +11,8 @@ public class LocalPaymentCustomerGateway implements PaymentCustomerGateway {
     private final InvoiceCustomerQuery customers;
     private final ConsumeCustomerBalanceUseCase balances;
 
-    public LocalPaymentCustomerGateway(InvoiceCustomerQuery customers, ConsumeCustomerBalanceUseCase balances) {
+    public LocalPaymentCustomerGateway(InvoiceCustomerQuery customers,
+            ConsumeCustomerBalanceUseCase balances) {
         this.customers = customers;
         this.balances = balances;
     }
@@ -23,8 +24,9 @@ public class LocalPaymentCustomerGateway implements PaymentCustomerGateway {
 
     @Override
     public void consumeInvoiceBalance(BalanceConsumption consumption) {
-        balances.execute(consumption.customerId(), BalanceType.INVOICES, consumption.amount(),
-                BalanceType.INVOICES, consumption.invoiceId(), consumption.reference(), null,
+        balances.execute(consumption.customerId(), BalanceType.INVOICES,
+                consumption.amount(), BalanceType.INVOICES,
+                consumption.invoiceId(), consumption.reference(), null,
                 consumption.actorId());
     }
 }

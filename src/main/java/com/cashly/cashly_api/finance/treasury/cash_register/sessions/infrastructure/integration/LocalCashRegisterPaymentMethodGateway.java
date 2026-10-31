@@ -8,10 +8,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class LocalCashRegisterPaymentMethodGateway implements CashRegisterPaymentMethodGateway {
+public class LocalCashRegisterPaymentMethodGateway
+        implements
+            CashRegisterPaymentMethodGateway {
     private final PaymentMethodDetailsQuery paymentMethods;
 
-    public LocalCashRegisterPaymentMethodGateway(PaymentMethodDetailsQuery paymentMethods) {
+    public LocalCashRegisterPaymentMethodGateway(
+            PaymentMethodDetailsQuery paymentMethods) {
         this.paymentMethods = paymentMethods;
     }
 

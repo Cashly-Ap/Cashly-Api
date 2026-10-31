@@ -9,7 +9,8 @@ public final class SeedIds {
     public static final UUID COMPANY = Company.INSTALLATION_ID;
     public static final UUID SYSTEM_ADMIN_ROLE = id("role.system-admin");
     public static final UUID OPERATOR_ROLE = id("role.operator");
-    public static final UUID ADMINISTRATION_DEPARTMENT = id("department.administration");
+    public static final UUID ADMINISTRATION_DEPARTMENT = id(
+            "department.administration");
     public static final UUID SALES_DEPARTMENT = id("department.sales");
     public static final UUID ADMIN_USER = id("user.admin");
     public static final UUID OPERATOR_USER = id("user.operator");
@@ -36,6 +37,7 @@ public final class SeedIds {
     }
 
     public static UUID id(String key) {
-        return UUID.nameUUIDFromBytes(("cashly-seed:" + key).getBytes(StandardCharsets.UTF_8));
+        return UUID.nameUUIDFromBytes(
+                ("cashly-seed:" + key).getBytes(StandardCharsets.UTF_8));
     }
 }

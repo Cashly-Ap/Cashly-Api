@@ -12,11 +12,15 @@ public interface QuoteProductCatalogGateway {
 
     Set<UUID> findProductIdsByCurrentCategory(UUID categoryId);
 
-    PageResponse<ProductEntry> findForCustomer(UUID customerId, String search, UUID categoryId,
-                                                Boolean composite, int page, int size);
+    PageResponse<ProductEntry> findForCustomer(UUID customerId, String search,
+            UUID categoryId, Boolean composite, int page, int size);
 
-    record ProductReference(UUID id, String code, String name, UUID categoryId) {}
+    record ProductReference(UUID id, String code, String name,
+            UUID categoryId) {
+    }
 
-    record ProductEntry(UUID id, String code, String name, UUID categoryId, String categoryName,
-                        boolean composite, boolean active, String photo, BigDecimal customerPrice) {}
+    record ProductEntry(UUID id, String code, String name, UUID categoryId,
+            String categoryName, boolean composite, boolean active,
+            String photo, BigDecimal customerPrice) {
+    }
 }

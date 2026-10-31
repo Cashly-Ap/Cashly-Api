@@ -34,9 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Component
-public class CashRegisterRangeReportGenerator implements CashRegisterRangeReportPort {
-
-
+public class CashRegisterRangeReportGenerator
+        implements
+            CashRegisterRangeReportPort {
 
     private final CashRegisterExcelPort excelPort;
     private final PdfBranding branding;
@@ -46,41 +46,55 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
     }
 
     @Autowired
-    public CashRegisterRangeReportGenerator(CashRegisterExcelPort excelPort, PdfBranding branding) {
+    public CashRegisterRangeReportGenerator(CashRegisterExcelPort excelPort,
+            PdfBranding branding) {
         this.excelPort = excelPort;
         this.branding = branding;
     }
 
     @Override
-    public byte[] generate(List<CashRegisterExportRow> rows, CashRegisterReportFilter filter,
-                           ReportFormat format, ReportType type) {
+    public byte[] generate(List<CashRegisterExportRow> rows,
+            CashRegisterReportFilter filter, ReportFormat format,
+            ReportType type) {
         if (format == ReportFormat.EXCEL) {
             return generateExcel(rows, type);
         }
         return generatePdf(rows, filter, type);
     }
 
-    private byte[] generateExcel(List<CashRegisterExportRow> rows, ReportType type) {
+    private byte[] generateExcel(List<CashRegisterExportRow> rows,
+            ReportType type) {
         return switch (type) {
             case SIMPLE -> {
                 DailyTotals totals = totals(rows);
-                yield excelPort.generateSimpleExcel(paymentDetails(rows), totals);
+                yield excelPort.generateSimpleExcel(paymentDetails(rows),
+                        totals);
             }
             case DETAILED -> excelPort.generateExcel(rows);
-            case GROUPED -> excelPort.generateGroupedExcel(customerSummaries(rows));
+            case GROUPED ->
+                excelPort.generateGroupedExcel(customerSummaries(rows));
         };
     }
 
-    private byte[] generatePdf(List<CashRegisterExportRow> rows, CashRegisterReportFilter filter,
-                               ReportType type) {
+    private byte[] generatePdf(List<CashRegisterExportRow> rows,
+            CashRegisterReportFilter filter, ReportType type) {
         try (var output = new ByteArrayOutputStream()) {
             PdfDocument pdf = new PdfDocument(new PdfWriter(output));
-            Document document = new Document(pdf, type == ReportType.DETAILED ? PageSize.A4.rotate() : PageSize.A4);
+            Document document = new Document(pdf,
+                    type == ReportType.DETAILED
+                            ? PageSize.A4.rotate()
+                            : PageSize.A4);
             var bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
             document.add(branding.logo().setMarginBottom(12));
-            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterReport")).setFont(bold).setFontSize(18));
-            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.from") + ReportMessages.dateFormatter().format(filter.dateFrom())
-                    + ReportMessages.text("finance.treasury.cash_register.reports.to") + ReportMessages.dateFormatter().format(filter.dateTo())));
+            document.add(new Paragraph(ReportMessages.text(
+                    "finance.treasury.cash_register.reports.cashRegisterReport"))
+                    .setFont(bold).setFontSize(18));
+            document.add(new Paragraph(ReportMessages
+                    .text("finance.treasury.cash_register.reports.from")
+                    + ReportMessages.dateFormatter().format(filter.dateFrom())
+                    + ReportMessages
+                            .text("finance.treasury.cash_register.reports.to")
+                    + ReportMessages.dateFormatter().format(filter.dateTo())));
             document.add(new Paragraph(reportTypeLabel(type)));
             if (type == ReportType.DETAILED) {
                 addDetailedPdf(document, rows, bold);
@@ -92,24 +106,58 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
             document.close();
             return output.toByteArray();
         } catch (IOException exception) {
-            throw new IllegalStateException("Could not generate cash register PDF report", exception);
+            throw new IllegalStateException(
+                    "Could not generate cash register PDF report", exception);
         }
     }
 
-    private void addSimplePdf(Document document, DailyTotals totals, com.itextpdf.kernel.font.PdfFont bold) {
-        Table table = new Table(UnitValue.createPercentArray(new float[]{2, 1})).useAllAvailableWidth();
-        addHeader(table, new String[]{ReportMessages.text("finance.treasury.cash_register.reports.description"), ReportMessages.text("finance.treasury.cash_register.reports.total")}, bold);
-        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.netInvoicing"), totals.totalInvoiced());
-        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.inflows"), totals.totalRevenue());
-        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.outflows"), totals.totalExpenses());
-        addMoneyRow(table, ReportMessages.text("finance.treasury.cash_register.reports.balance"), totals.totalRevenue().subtract(totals.totalExpenses()));
+    private void addSimplePdf(Document document, DailyTotals totals,
+            com.itextpdf.kernel.font.PdfFont bold) {
+        Table table = new Table(UnitValue.createPercentArray(new float[]{2, 1}))
+                .useAllAvailableWidth();
+        addHeader(table, new String[]{
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.description"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.total")},
+                bold);
+        addMoneyRow(table,
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.netInvoicing"),
+                totals.totalInvoiced());
+        addMoneyRow(table,
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.inflows"),
+                totals.totalRevenue());
+        addMoneyRow(table,
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.outflows"),
+                totals.totalExpenses());
+        addMoneyRow(table,
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.balance"),
+                totals.totalRevenue().subtract(totals.totalExpenses()));
         document.add(table);
     }
 
-    private void addGroupedPdf(Document document, List<CustomerSummary> summaries,
-                               com.itextpdf.kernel.font.PdfFont bold) {
-        Table table = new Table(UnitValue.createPercentArray(new float[]{2.4f, 1, 1, 1, 1})).useAllAvailableWidth();
-        addHeader(table, new String[]{ReportMessages.text("finance.treasury.cash_register.reports.customer"), ReportMessages.text("finance.treasury.cash_register.reports.invoicing"), ReportMessages.text("finance.treasury.cash_register.reports.paid"), ReportMessages.text("finance.treasury.cash_register.reports.refunded"), ReportMessages.text("finance.treasury.cash_register.reports.balance")}, bold);
+    private void addGroupedPdf(Document document,
+            List<CustomerSummary> summaries,
+            com.itextpdf.kernel.font.PdfFont bold) {
+        Table table = new Table(
+                UnitValue.createPercentArray(new float[]{2.4f, 1, 1, 1, 1}))
+                .useAllAvailableWidth();
+        addHeader(table, new String[]{
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.customer"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.invoicing"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.paid"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.refunded"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.balance")},
+                bold);
         summaries.forEach(summary -> {
             table.addCell(summary.customerName());
             table.addCell(money(summary.totalInvoiced()));
@@ -120,29 +168,50 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
         document.add(table);
     }
 
-    private void addDetailedPdf(Document document, List<CashRegisterExportRow> rows,
-                                com.itextpdf.kernel.font.PdfFont bold) {
-        Table table = new Table(UnitValue.createPercentArray(new float[]{12, 7, 15, 12, 25, 29}))
-                .useAllAvailableWidth()
-                .setFontSize(8);
-        addHeader(table, new String[]{ReportMessages.text("finance.treasury.cash_register.reports.date"), ReportMessages.text("finance.treasury.cash_register.reports.type"), ReportMessages.text("finance.treasury.cash_register.reports.document"), ReportMessages.text("finance.treasury.cash_register.reports.operation"), ReportMessages.text("finance.treasury.cash_register.reports.method"), ReportMessages.text("finance.treasury.cash_register.reports.customer")}, bold);
+    private void addDetailedPdf(Document document,
+            List<CashRegisterExportRow> rows,
+            com.itextpdf.kernel.font.PdfFont bold) {
+        Table table = new Table(UnitValue
+                .createPercentArray(new float[]{12, 7, 15, 12, 25, 29}))
+                .useAllAvailableWidth().setFontSize(8);
+        addHeader(table, new String[]{
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.date"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.type"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.document"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.operation"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.method"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.customer")},
+                bold);
         rows.stream()
-                .sorted(Comparator.comparing(CashRegisterExportRow::emissionDate)
+                .sorted(Comparator
+                        .comparing(CashRegisterExportRow::emissionDate)
                         .thenComparing(CashRegisterExportRow::documentType)
                         .thenComparingInt(CashRegisterExportRow::sortOrder))
                 .forEach(row -> {
-                    table.addCell(ReportMessages.dateFormatter().format(row.emissionDate()));
+                    table.addCell(ReportMessages.dateFormatter()
+                            .format(row.emissionDate()));
                     table.addCell(ReportMessages.code(row.documentType()));
                     table.addCell(row.documentNumber());
                     table.addCell(money(row.totalOperation()));
                     table.addCell(paymentSummary(row));
-                    table.addCell(row.customerName() == null ? "-" : row.customerName());
+                    table.addCell(row.customerName() == null
+                            ? "-"
+                            : row.customerName());
                 });
         document.add(table);
     }
 
-    private void addHeader(Table table, String[] headers, com.itextpdf.kernel.font.PdfFont bold) {
-        for (String header : headers) table.addHeaderCell(new Cell().add(new Paragraph(header).setFont(bold)));
+    private void addHeader(Table table, String[] headers,
+            com.itextpdf.kernel.font.PdfFont bold) {
+        for (String header : headers)
+            table.addHeaderCell(
+                    new Cell().add(new Paragraph(header).setFont(bold)));
     }
 
     private void addMoneyRow(Table table, String label, BigDecimal amount) {
@@ -158,75 +227,119 @@ public class CashRegisterRangeReportGenerator implements CashRegisterRangeReport
         BigDecimal creditNotes = sum(rows, "NC");
         BigDecimal debitNotes = sum(rows, "ND");
         BigDecimal invoices = sum(rows, "FAC");
-        BigDecimal netInvoiced = invoices.add(debitNotes).subtract(creditNotes).subtract(returns);
-        return new DailyTotals(
-                payments, count(rows, "PAG"), advances, count(rows, "ANT"),
-                returns, count(rows, "DEV"), creditNotes, debitNotes,
-                invoices, count(rows, "FAC"), netInvoiced,
+        BigDecimal netInvoiced = invoices.add(debitNotes).subtract(creditNotes)
+                .subtract(returns);
+        return new DailyTotals(payments, count(rows, "PAG"), advances,
+                count(rows, "ANT"), returns, count(rows, "DEV"), creditNotes,
+                debitNotes, invoices, count(rows, "FAC"), netInvoiced,
                 payments.add(advances), refunds, paymentDetails(rows));
     }
 
-    private List<CustomerSummary> customerSummaries(List<CashRegisterExportRow> rows) {
+    private List<CustomerSummary> customerSummaries(
+            List<CashRegisterExportRow> rows) {
         var grouped = new LinkedHashMap<String, List<CashRegisterExportRow>>();
         rows.forEach(row -> grouped.computeIfAbsent(
-                row.customerName() == null || row.customerName().isBlank() ? ReportMessages.text("finance.treasury.cash_register.reports.noCustomer") : row.customerName(),
+                row.customerName() == null || row.customerName().isBlank()
+                        ? ReportMessages.text(
+                                "finance.treasury.cash_register.reports.noCustomer")
+                        : row.customerName(),
                 ignored -> new ArrayList<>()).add(row));
         return grouped.entrySet().stream().map(entry -> {
             List<CashRegisterExportRow> customerRows = entry.getValue();
-            BigDecimal invoiced = sum(customerRows, "FAC").add(sum(customerRows, "ND"))
-                    .subtract(sum(customerRows, "NC")).subtract(sum(customerRows, "DEV"));
-            BigDecimal paid = sum(customerRows, "PAG").add(sum(customerRows, "ANT"));
+            BigDecimal invoiced = sum(customerRows, "FAC")
+                    .add(sum(customerRows, "ND"))
+                    .subtract(sum(customerRows, "NC"))
+                    .subtract(sum(customerRows, "DEV"));
+            BigDecimal paid = sum(customerRows, "PAG")
+                    .add(sum(customerRows, "ANT"));
             BigDecimal returned = sum(customerRows, "REI");
-            return new CustomerSummary(entry.getKey(), invoiced, paid, returned, paid.subtract(returned));
+            return new CustomerSummary(entry.getKey(), invoiced, paid, returned,
+                    paid.subtract(returned));
         }).toList();
     }
 
-    private List<CashRegisterDetail> paymentDetails(List<CashRegisterExportRow> rows) {
+    private List<CashRegisterDetail> paymentDetails(
+            List<CashRegisterExportRow> rows) {
         List<CashRegisterDetail> details = new ArrayList<>();
-        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.cashInBs"), CashRegisterExportRow::efectivoBs);
-        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.usDollar"), CashRegisterExportRow::dolar);
-        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.usdTransfer"), CashRegisterExportRow::transfDolar);
-        addPaymentDetail(details, rows, ReportMessages.text("finance.treasury.cash_register.reports.zelle"), CashRegisterExportRow::zelle);
+        addPaymentDetail(details, rows,
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.cashInBs"),
+                CashRegisterExportRow::efectivoBs);
+        addPaymentDetail(details, rows,
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.usDollar"),
+                CashRegisterExportRow::dolar);
+        addPaymentDetail(details, rows,
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.usdTransfer"),
+                CashRegisterExportRow::transfDolar);
+        addPaymentDetail(details, rows,
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.zelle"),
+                CashRegisterExportRow::zelle);
         return details;
     }
 
-    private void addPaymentDetail(List<CashRegisterDetail> details, List<CashRegisterExportRow> rows,
-                                  String name,
-                                  java.util.function.Function<CashRegisterExportRow, BigDecimal> extractor) {
-        BigDecimal amount = rows.stream().map(extractor).reduce(BigDecimal.ZERO, BigDecimal::add);
+    private void addPaymentDetail(List<CashRegisterDetail> details,
+            List<CashRegisterExportRow> rows, String name,
+            java.util.function.Function<CashRegisterExportRow, BigDecimal> extractor) {
+        BigDecimal amount = rows.stream().map(extractor).reduce(BigDecimal.ZERO,
+                BigDecimal::add);
         if (amount.signum() > 0) {
-            int transactions = Math.toIntExact(rows.stream().map(extractor).filter(value -> value.signum() > 0).count());
-            details.add(CashRegisterDetail.create(null, name, transactions, amount));
+            int transactions = Math.toIntExact(rows.stream().map(extractor)
+                    .filter(value -> value.signum() > 0).count());
+            details.add(CashRegisterDetail.create(null, name, transactions,
+                    amount));
         }
     }
 
     private BigDecimal sum(List<CashRegisterExportRow> rows, String type) {
-        return rows.stream().filter(row -> type.equals(ReportMessages.code(row.documentType())))
-                .map(CashRegisterExportRow::totalOperation).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return rows.stream().filter(
+                row -> type.equals(ReportMessages.code(row.documentType())))
+                .map(CashRegisterExportRow::totalOperation)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private int count(List<CashRegisterExportRow> rows, String type) {
-        return Math.toIntExact(rows.stream().filter(row -> type.equals(ReportMessages.code(row.documentType()))).count());
+        return Math.toIntExact(rows.stream().filter(
+                row -> type.equals(ReportMessages.code(row.documentType())))
+                .count());
     }
 
     private String paymentSummary(CashRegisterExportRow row) {
         List<String> parts = new ArrayList<>();
-        if (row.efectivoBs().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.cash") + money(row.efectivoBs()));
-        if (row.dolar().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.usDollar") + money(row.dolar()));
-        if (row.transfDolar().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.transfer") + money(row.transfDolar()));
-        if (row.zelle().signum() > 0) parts.add(ReportMessages.text("finance.treasury.cash_register.reports.zelle") + money(row.zelle()));
+        if (row.efectivoBs().signum() > 0)
+            parts.add(ReportMessages
+                    .text("finance.treasury.cash_register.reports.cash")
+                    + money(row.efectivoBs()));
+        if (row.dolar().signum() > 0)
+            parts.add(ReportMessages
+                    .text("finance.treasury.cash_register.reports.usDollar")
+                    + money(row.dolar()));
+        if (row.transfDolar().signum() > 0)
+            parts.add(ReportMessages
+                    .text("finance.treasury.cash_register.reports.transfer")
+                    + money(row.transfDolar()));
+        if (row.zelle().signum() > 0)
+            parts.add(ReportMessages
+                    .text("finance.treasury.cash_register.reports.zelle")
+                    + money(row.zelle()));
         return parts.isEmpty() ? "-" : String.join(", ", parts);
     }
 
     private String reportTypeLabel(ReportType type) {
         return switch (type) {
-            case SIMPLE -> ReportMessages.text("finance.treasury.cash_register.reports.simpleSummary");
-            case DETAILED -> ReportMessages.text("finance.treasury.cash_register.reports.operationDetails");
-            case GROUPED -> ReportMessages.text("finance.treasury.cash_register.reports.groupedByCustomer");
+            case SIMPLE -> ReportMessages.text(
+                    "finance.treasury.cash_register.reports.simpleSummary");
+            case DETAILED -> ReportMessages.text(
+                    "finance.treasury.cash_register.reports.operationDetails");
+            case GROUPED -> ReportMessages.text(
+                    "finance.treasury.cash_register.reports.groupedByCustomer");
         };
     }
 
     private String money(BigDecimal value) {
-        return value.setScale(2, java.math.RoundingMode.HALF_UP).toPlainString();
+        return value.setScale(2, java.math.RoundingMode.HALF_UP)
+                .toPlainString();
     }
 }

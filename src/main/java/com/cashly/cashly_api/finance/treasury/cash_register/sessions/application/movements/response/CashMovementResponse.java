@@ -7,17 +7,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record CashMovementResponse(
-        UUID id,
-        CashMovementDirection direction,
-        CashMovementType type,
-        BigDecimal amount,
-        UUID paymentMethodId,
-        String paymentMethodName,
-        String description,
-        String sourceType,
-        UUID sourceId,
-        UUID createdBy,
-        String createdByName,
-        LocalDateTime occurredAt
-) {}
+public record CashMovementResponse(UUID id, CashMovementDirection direction,
+        CashMovementType type, BigDecimal amount, UUID paymentMethodId,
+        String paymentMethodName, String description, String sourceType,
+        UUID sourceId, UUID createdBy, String createdByName,
+        LocalDateTime occurredAt) {
+}

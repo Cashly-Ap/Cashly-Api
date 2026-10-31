@@ -40,11 +40,13 @@ class GetPaymentMethodByIdUseCaseTest {
         LocalDateTime now = LocalDateTime.now();
 
         PaymentMethod paymentMethod = PaymentMethod.reconstitute(
-                paymentMethodId, "PM-0001", "Cash", "Cash payment",
-                true, now, now);
+                paymentMethodId, "PM-0001", "Cash", "Cash payment", true, now,
+                now);
 
-        when(repository.findById(paymentMethodId)).thenReturn(Optional.of(paymentMethod));
-        when(usageGateway.hasAssociatedRecords(paymentMethodId.value())).thenReturn(false);
+        when(repository.findById(paymentMethodId))
+                .thenReturn(Optional.of(paymentMethod));
+        when(usageGateway.hasAssociatedRecords(paymentMethodId.value()))
+                .thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
 
@@ -67,8 +69,8 @@ class GetPaymentMethodByIdUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> useCase.execute(id));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> useCase.execute(id));
 
         assertTrue(exception.getMessage().contains("Payment method not found"));
         assertTrue(exception.getMessage().contains(id.toString()));

@@ -7,10 +7,13 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class QuoteRejectionNotificationService implements QuoteRejectionNotifications {
+public class QuoteRejectionNotificationService
+        implements
+            QuoteRejectionNotifications {
     private final NotificationService notifications;
 
-    public QuoteRejectionNotificationService(NotificationService notifications) {
+    public QuoteRejectionNotificationService(
+            NotificationService notifications) {
         this.notifications = notifications;
     }
 

@@ -54,15 +54,19 @@ class CreatePurchaseUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        createPurchaseUseCase = new CreatePurchaseUseCase(
-                purchaseRepository,
+        createPurchaseUseCase = new CreatePurchaseUseCase(purchaseRepository,
                 supplierGateway,
                 new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseProductGatewayAdapter(
-                        new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)),
+                        new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(
+                                productRepository)),
                 new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseActorGatewayAdapter(
-                        new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(userRepository, null)),
+                        new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(
+                                userRepository, null)),
                 new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
-                        new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository.class)))));
+                        new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(
+                                new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(
+                                        warehouseRepository,
+                                        mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository.class)))));
     }
 
     @Test
@@ -75,21 +79,26 @@ class CreatePurchaseUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
-        CreatePurchaseRequest.AllocationRequest allocRequest =
-                new CreatePurchaseRequest.AllocationRequest(warehouseId, BigDecimal.TEN);
-        CreatePurchaseRequest.LineRequest lineRequest =
-                new CreatePurchaseRequest.LineRequest(productId, BigDecimal.TEN, BigDecimal.valueOf(10),
-                        List.of(allocRequest));
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, "Notas de compra", List.of(lineRequest));
+        CreatePurchaseRequest.AllocationRequest allocRequest = new CreatePurchaseRequest.AllocationRequest(
+                warehouseId, BigDecimal.TEN);
+        CreatePurchaseRequest.LineRequest lineRequest = new CreatePurchaseRequest.LineRequest(
+                productId, BigDecimal.TEN, BigDecimal.valueOf(10),
+                List.of(allocRequest));
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                "Notas de compra", List.of(lineRequest));
 
-        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(supplierGateway.findById(supplierId))
+                .thenReturn(Optional.of(supplier(supplierId)));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        PurchaseDetailResponse response = createPurchaseUseCase.execute(request, authenticatedUserId);
+        PurchaseDetailResponse response = createPurchaseUseCase.execute(request,
+                authenticatedUserId);
 
         assertNotNull(response);
         verify(purchaseRepository).save(any(Purchase.class));
@@ -100,17 +109,17 @@ class CreatePurchaseUseCaseUnitTest {
         UUID supplierId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, null, List.of());
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                null, List.of());
 
         when(supplierGateway.findById(supplierId)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> createPurchaseUseCase.execute(request, authenticatedUserId)
-        );
+                IllegalArgumentException.class, () -> createPurchaseUseCase
+                        .execute(request, authenticatedUserId));
 
-        assertEquals("Supplier not found: " + supplierId, exception.getMessage());
+        assertEquals("Supplier not found: " + supplierId,
+                exception.getMessage());
         verify(purchaseRepository, never()).save(any());
     }
 
@@ -119,18 +128,20 @@ class CreatePurchaseUseCaseUnitTest {
         UUID supplierId = UUID.randomUUID();
         UUID authenticatedUserId = UUID.randomUUID();
 
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, null, List.of());
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                null, List.of());
 
-        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.empty());
+        when(supplierGateway.findById(supplierId))
+                .thenReturn(Optional.of(supplier(supplierId)));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> createPurchaseUseCase.execute(request, authenticatedUserId)
-        );
+                IllegalArgumentException.class, () -> createPurchaseUseCase
+                        .execute(request, authenticatedUserId));
 
-        assertEquals("User not found: " + authenticatedUserId, exception.getMessage());
+        assertEquals("User not found: " + authenticatedUserId,
+                exception.getMessage());
         verify(purchaseRepository, never()).save(any());
     }
 
@@ -142,19 +153,21 @@ class CreatePurchaseUseCaseUnitTest {
 
         User user = buildUser(authenticatedUserId);
 
-        CreatePurchaseRequest.LineRequest lineRequest =
-                new CreatePurchaseRequest.LineRequest(productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, null, List.of(lineRequest));
+        CreatePurchaseRequest.LineRequest lineRequest = new CreatePurchaseRequest.LineRequest(
+                productId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                null, List.of(lineRequest));
 
-        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(supplierGateway.findById(supplierId))
+                .thenReturn(Optional.of(supplier(supplierId)));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> createPurchaseUseCase.execute(request, authenticatedUserId)
-        );
+                IllegalArgumentException.class, () -> createPurchaseUseCase
+                        .execute(request, authenticatedUserId));
 
         assertEquals("Product not found: " + productId, exception.getMessage());
         verify(purchaseRepository, never()).save(any());
@@ -170,19 +183,23 @@ class CreatePurchaseUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
-        CreatePurchaseRequest.AllocationRequest allocRequest =
-                new CreatePurchaseRequest.AllocationRequest(warehouseId, BigDecimal.TEN);
-        CreatePurchaseRequest.LineRequest lineRequest =
-                new CreatePurchaseRequest.LineRequest(productId, BigDecimal.TEN, BigDecimal.valueOf(10),
-                        List.of(allocRequest));
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, null, List.of(lineRequest));
+        CreatePurchaseRequest.AllocationRequest allocRequest = new CreatePurchaseRequest.AllocationRequest(
+                warehouseId, BigDecimal.TEN);
+        CreatePurchaseRequest.LineRequest lineRequest = new CreatePurchaseRequest.LineRequest(
+                productId, BigDecimal.TEN, BigDecimal.valueOf(10),
+                List.of(allocRequest));
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                null, List.of(lineRequest));
 
-        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(supplierGateway.findById(supplierId))
+                .thenReturn(Optional.of(supplier(supplierId)));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         createPurchaseUseCase.execute(request, authenticatedUserId);
 
@@ -199,21 +216,27 @@ class CreatePurchaseUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
-        CreatePurchaseRequest.AllocationRequest allocRequest =
-                new CreatePurchaseRequest.AllocationRequest(warehouseId, BigDecimal.TEN);
-        CreatePurchaseRequest.LineRequest lineRequest =
-                new CreatePurchaseRequest.LineRequest(productId, BigDecimal.TEN, BigDecimal.valueOf(10),
-                        List.of(allocRequest));
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, null, List.of(lineRequest));
+        CreatePurchaseRequest.AllocationRequest allocRequest = new CreatePurchaseRequest.AllocationRequest(
+                warehouseId, BigDecimal.TEN);
+        CreatePurchaseRequest.LineRequest lineRequest = new CreatePurchaseRequest.LineRequest(
+                productId, BigDecimal.TEN, BigDecimal.valueOf(10),
+                List.of(allocRequest));
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                null, List.of(lineRequest));
 
-        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(42);
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(supplierGateway.findById(supplierId))
+                .thenReturn(Optional.of(supplier(supplierId)));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(purchaseRepository.getNextSequenceForYear(anyInt()))
+                .thenReturn(42);
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        PurchaseDetailResponse response = createPurchaseUseCase.execute(request, authenticatedUserId);
+        PurchaseDetailResponse response = createPurchaseUseCase.execute(request,
+                authenticatedUserId);
 
         assertNotNull(response.purchaseNumber());
         assertTrue(response.purchaseNumber().startsWith("PUR-"));
@@ -231,21 +254,26 @@ class CreatePurchaseUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
 
-        CreatePurchaseRequest.AllocationRequest allocRequest =
-                new CreatePurchaseRequest.AllocationRequest(warehouseId, BigDecimal.TEN);
-        CreatePurchaseRequest.LineRequest lineRequest =
-                new CreatePurchaseRequest.LineRequest(productId, BigDecimal.TEN, BigDecimal.valueOf(10),
-                        List.of(allocRequest));
-        CreatePurchaseRequest request = new CreatePurchaseRequest(
-                supplierId, null, List.of(lineRequest));
+        CreatePurchaseRequest.AllocationRequest allocRequest = new CreatePurchaseRequest.AllocationRequest(
+                warehouseId, BigDecimal.TEN);
+        CreatePurchaseRequest.LineRequest lineRequest = new CreatePurchaseRequest.LineRequest(
+                productId, BigDecimal.TEN, BigDecimal.valueOf(10),
+                List.of(allocRequest));
+        CreatePurchaseRequest request = new CreatePurchaseRequest(supplierId,
+                null, List.of(lineRequest));
 
-        when(supplierGateway.findById(supplierId)).thenReturn(Optional.of(supplier(supplierId)));
-        when(userRepository.findById(new UserId(authenticatedUserId))).thenReturn(Optional.of(user));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(supplierGateway.findById(supplierId))
+                .thenReturn(Optional.of(supplier(supplierId)));
+        when(userRepository.findById(new UserId(authenticatedUserId)))
+                .thenReturn(Optional.of(user));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(purchaseRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        PurchaseDetailResponse response = createPurchaseUseCase.execute(request, authenticatedUserId);
+        PurchaseDetailResponse response = createPurchaseUseCase.execute(request,
+                authenticatedUserId);
 
         assertEquals(supplierId, response.supplierId());
         assertEquals("Proveedor Test C.A.", response.supplierName());
@@ -253,24 +281,20 @@ class CreatePurchaseUseCaseUnitTest {
     }
 
     private PurchaseSupplierGateway.Entry supplier(UUID id) {
-        return new PurchaseSupplierGateway.Entry(id, "Proveedor Test C.A.", "J-12345678-9");
+        return new PurchaseSupplierGateway.Entry(id, "Proveedor Test C.A.",
+                "J-12345678-9");
     }
 
     private User buildUser(UUID userId) {
-        return new User(
-                new UserId(userId),
-                new Email("user@cashly.com"),
+        return new User(new UserId(userId), new Email("user@cashly.com"),
                 new UserName("Test User"),
-                Password.fromHash("hashed-password")
-        );
+                Password.fromHash("hashed-password"));
     }
 
     private Product buildProduct(UUID productId) {
-        return Product.reconstitute(
-                productId, "PROD-001", "Product A",
-                null, null, false, true, null,
-                BigDecimal.valueOf(8),
-                List.of(), List.of(), java.time.LocalDateTime.now(), java.time.LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, "PROD-001", "Product A", null,
+                null, false, true, null, BigDecimal.valueOf(8), List.of(),
+                List.of(), java.time.LocalDateTime.now(),
+                java.time.LocalDateTime.now());
     }
 }

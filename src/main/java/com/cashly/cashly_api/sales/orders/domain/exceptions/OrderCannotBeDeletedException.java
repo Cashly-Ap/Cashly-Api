@@ -7,6 +7,7 @@ import java.util.UUID;
 public class OrderCannotBeDeletedException extends RuntimeException {
 
     public OrderCannotBeDeletedException(UUID id, OrderStatus status) {
-        super("Order " + id + " cannot be deleted because it is in status " + status.name());
+        super("Order " + id + " cannot be deleted because it is in status "
+                + status.name());
     }
 }

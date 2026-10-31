@@ -37,9 +37,13 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
 
     private final PdfBranding branding;
 
-    public InvoicesReportPdfGenerator() { this(new PdfBranding()); }
+    public InvoicesReportPdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public InvoicesReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public InvoicesReportPdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
@@ -57,28 +61,43 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.invoicesReport"))
-                    .setFont(bold)
-                    .setFontSize(18)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(4);
+            Paragraph title = new Paragraph(ReportMessages
+                    .text("finance.billing.invoices.reports.invoicesReport"))
+                    .setFont(bold).setFontSize(18)
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(4);
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
-            String modeLabel = detailed ? ReportMessages.text("finance.billing.invoices.reports.detailed") : ReportMessages.text("finance.billing.invoices.reports.simple");
-            Paragraph subtitle = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.generatedOn") + fecha + ReportMessages.text("finance.billing.invoices.reports.mode") + modeLabel + ReportMessages.text("finance.billing.invoices.reports.total") + invoices.size() + ReportMessages.text("finance.billing.invoices.reports.invoices"))
-                    .setFont(regular)
-                    .setFontSize(10)
+            String fecha = LocalDate.now()
+                    .format(ReportMessages.dateFormatter());
+            String modeLabel = detailed
+                    ? ReportMessages
+                            .text("finance.billing.invoices.reports.detailed")
+                    : ReportMessages
+                            .text("finance.billing.invoices.reports.simple");
+            Paragraph subtitle = new Paragraph(ReportMessages
+                    .text("finance.billing.invoices.reports.generatedOn")
+                    + fecha
+                    + ReportMessages
+                            .text("finance.billing.invoices.reports.mode")
+                    + modeLabel
+                    + ReportMessages
+                            .text("finance.billing.invoices.reports.total")
+                    + invoices.size()
+                    + ReportMessages
+                            .text("finance.billing.invoices.reports.invoices"))
+                    .setFont(regular).setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(16);
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(16);
 
             document.add(subtitle);
 
@@ -89,15 +108,35 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{ReportMessages.text("finance.billing.invoices.reports.invoiceNo"), ReportMessages.text("finance.billing.invoices.reports.customer"), ReportMessages.text("finance.billing.invoices.reports.paymentType"), ReportMessages.text("finance.billing.invoices.reports.lines"), ReportMessages.text("finance.billing.invoices.reports.status"), ReportMessages.text("finance.billing.invoices.reports.totalLabel"), ReportMessages.text("finance.billing.invoices.reports.date")}
-                    : new String[]{ReportMessages.text("finance.billing.invoices.reports.invoiceNo"), ReportMessages.text("finance.billing.invoices.reports.customer"), ReportMessages.text("finance.billing.invoices.reports.totalLabel"), ReportMessages.text("finance.billing.invoices.reports.date")};
+                    ? new String[]{ReportMessages
+                            .text("finance.billing.invoices.reports.invoiceNo"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.customer"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.paymentType"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.lines"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.status"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.totalLabel"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.date")}
+                    : new String[]{ReportMessages
+                            .text("finance.billing.invoices.reports.invoiceNo"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.customer"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.totalLabel"),
+                            ReportMessages.text(
+                                    "finance.billing.invoices.reports.date")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
-                        .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                        .add(new Paragraph(h).setFont(bold).setFontSize(9)
+                                .setFontColor(HEADER_TEXT))
                         .setBackgroundColor(HEADER_BG)
-                        .setTextAlignment(TextAlignment.CENTER)
-                        .setPadding(6);
+                        .setTextAlignment(TextAlignment.CENTER).setPadding(6);
                 table.addHeaderCell(headerCell);
             }
 
@@ -106,74 +145,99 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 
-                addCell(table, invoice.invoiceNumber(), regular, rowColor, TextAlignment.LEFT);
-                addCell(table, invoice.customerName(), regular, rowColor, TextAlignment.LEFT);
+                addCell(table, invoice.invoiceNumber(), regular, rowColor,
+                        TextAlignment.LEFT);
+                addCell(table, invoice.customerName(), regular, rowColor,
+                        TextAlignment.LEFT);
 
                 if (detailed) {
-                    addCell(table, invoice.paymentType() != null ? formatPaymentType(invoice.paymentType()) : "-", regular, rowColor, TextAlignment.CENTER);
-                    addCell(table, String.valueOf(invoice.lineCount()), regular, rowColor, TextAlignment.CENTER);
-                    addStatusCell(table, formatStatus(invoice.status()), regular, rowColor, TextAlignment.CENTER, invoice.status());
+                    addCell(table,
+                            invoice.paymentType() != null
+                                    ? formatPaymentType(invoice.paymentType())
+                                    : "-",
+                            regular, rowColor, TextAlignment.CENTER);
+                    addCell(table, String.valueOf(invoice.lineCount()), regular,
+                            rowColor, TextAlignment.CENTER);
+                    addStatusCell(table, formatStatus(invoice.status()),
+                            regular, rowColor, TextAlignment.CENTER,
+                            invoice.status());
                 }
 
-                addCell(table, "$" + formatDecimal(invoice.total()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, invoice.createdAt().format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, "$" + formatDecimal(invoice.total()), regular,
+                        rowColor, TextAlignment.RIGHT);
+                addCell(table,
+                        invoice.createdAt()
+                                .format(ReportMessages.dateTimeFormatter()),
+                        regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph totalLabel = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.totalInvoices") + invoices.size())
-                    .setFont(bold)
-                    .setFontSize(11)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setMarginTop(16);
+            Paragraph totalLabel = new Paragraph(ReportMessages
+                    .text("finance.billing.invoices.reports.totalInvoices")
+                    + invoices.size()).setFont(bold).setFontSize(11)
+                    .setTextAlignment(TextAlignment.RIGHT).setMarginTop(16);
             document.add(totalLabel);
 
-            long paid = invoices.stream().filter(o -> "PAID".equals(o.status())).count();
-            long pending = invoices.stream().filter(o -> "PENDING_PAYMENT".equals(o.status()) || "PARTIALLY_PAID".equals(o.status())).count();
-            long cancelled = invoices.stream().filter(o -> "CANCELLED".equals(o.status())).count();
-            long draft = invoices.stream().filter(o -> "DRAFT".equals(o.status())).count();
+            long paid = invoices.stream().filter(o -> "PAID".equals(o.status()))
+                    .count();
+            long pending = invoices.stream()
+                    .filter(o -> "PENDING_PAYMENT".equals(o.status())
+                            || "PARTIALLY_PAID".equals(o.status()))
+                    .count();
+            long cancelled = invoices.stream()
+                    .filter(o -> "CANCELLED".equals(o.status())).count();
+            long draft = invoices.stream()
+                    .filter(o -> "DRAFT".equals(o.status())).count();
 
-            Paragraph summary = new Paragraph(String.format(ReportMessages.text("finance.billing.invoices.reports.paidDPendingDCancelledDDraftD"),
-                    paid, pending, cancelled, draft))
-                    .setFont(regular)
-                    .setFontSize(9)
-                    .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setMarginTop(8);
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text(
+                    "finance.billing.invoices.reports.paidDPendingDCancelledDDraftD"),
+                    paid, pending, cancelled, draft)).setFont(regular)
+                    .setFontSize(9).setFontColor(ColorConstants.DARK_GRAY)
+                    .setTextAlignment(TextAlignment.RIGHT).setMarginTop(8);
             document.add(summary);
 
-            Paragraph footer = new Paragraph(ReportMessages.text("finance.billing.invoices.reports.documentAutomaticallyGeneratedByCashly"))
-                    .setFont(regular)
-                    .setFontSize(8)
+            Paragraph footer = new Paragraph(ReportMessages.text(
+                    "finance.billing.invoices.reports.documentAutomaticallyGeneratedByCashly"))
+                    .setFont(regular).setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginTop(30);
+                    .setTextAlignment(TextAlignment.CENTER).setMarginTop(30);
             document.add(footer);
 
             document.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error generating invoices report PDF", e);
+            throw new RuntimeException("Error generating invoices report PDF",
+                    e);
         }
         return baos.toByteArray();
     }
 
     private static String formatPaymentType(String paymentType) {
-        if (paymentType == null) return "-";
+        if (paymentType == null)
+            return "-";
         return switch (paymentType.toUpperCase()) {
-            case "CASH" -> ReportMessages.text("finance.billing.invoices.reports.cash");
-            case "CREDIT" -> ReportMessages.text("finance.billing.invoices.reports.credit");
+            case "CASH" ->
+                ReportMessages.text("finance.billing.invoices.reports.cash");
+            case "CREDIT" ->
+                ReportMessages.text("finance.billing.invoices.reports.credit");
             default -> paymentType;
         };
     }
 
     private static String formatStatus(String status) {
-        if (status == null) return "-";
+        if (status == null)
+            return "-";
         return switch (status) {
-            case "PAID" -> ReportMessages.text("finance.billing.invoices.reports.paid");
-            case "PENDING_PAYMENT" -> ReportMessages.text("finance.billing.invoices.reports.pendingPayment");
-            case "PARTIALLY_PAID" -> ReportMessages.text("finance.billing.invoices.reports.partiallyPaid");
-            case "CANCELLED" -> ReportMessages.text("finance.billing.invoices.reports.cancelled");
-            case "OVERDUE" -> ReportMessages.text("finance.billing.invoices.reports.overdue");
+            case "PAID" ->
+                ReportMessages.text("finance.billing.invoices.reports.paid");
+            case "PENDING_PAYMENT" -> ReportMessages
+                    .text("finance.billing.invoices.reports.pendingPayment");
+            case "PARTIALLY_PAID" -> ReportMessages
+                    .text("finance.billing.invoices.reports.partiallyPaid");
+            case "CANCELLED" -> ReportMessages
+                    .text("finance.billing.invoices.reports.cancelled");
+            case "OVERDUE" ->
+                ReportMessages.text("finance.billing.invoices.reports.overdue");
             default -> status;
         };
     }
@@ -182,31 +246,27 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
         return String.format(ReportMessages.locale(), "%.2f", value);
     }
 
-    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg,
+            TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "-").setFont(font).setFontSize(8))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(5)
-                .setPaddingRight(5);
+                .add(new Paragraph(text != null ? text : "-").setFont(font)
+                        .setFontSize(8))
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(5).setPaddingRight(5);
         if (bg != null) {
             cell.setBackgroundColor(bg);
         }
         table.addCell(cell);
     }
 
-    private void addStatusCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align, String status) {
+    private void addStatusCell(Table table, String text, PdfFont font,
+            DeviceRgb bg, TextAlignment align, String status) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "-")
-                        .setFont(font)
+                .add(new Paragraph(text != null ? text : "-").setFont(font)
                         .setFontSize(8)
                         .setFontColor(PdfStatusColors.forStatus(status)))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(5)
-                .setPaddingRight(5);
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(5).setPaddingRight(5);
         if (bg != null) {
             cell.setBackgroundColor(bg);
         }
@@ -229,19 +289,20 @@ public class InvoicesReportPdfGenerator implements InvoicesReportPdfPort {
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("finance.billing.invoices.reports.page") + pageNumber + ReportMessages.text("finance.billing.invoices.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
+                        new Paragraph(ReportMessages
+                                .text("finance.billing.invoices.reports.page")
+                                + pageNumber
+                                + ReportMessages.text(
+                                        "finance.billing.invoices.reports.of")
+                                + totalPages).setFont(font).setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

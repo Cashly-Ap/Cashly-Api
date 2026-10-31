@@ -14,7 +14,8 @@ class StorageServiceTest {
     @Test
     @DisplayName("should create storage exception with message")
     void should_create_storage_exception_with_message() {
-        StorageException exception = new StorageException("Storage error occurred");
+        StorageException exception = new StorageException(
+                "Storage error occurred");
 
         assertEquals("Storage error occurred", exception.getMessage());
     }
@@ -23,7 +24,8 @@ class StorageServiceTest {
     @DisplayName("should create storage exception with message and cause")
     void should_create_storage_exception_with_message_and_cause() {
         Throwable cause = new RuntimeException("Underlying error");
-        StorageException exception = new StorageException("Storage error occurred", cause);
+        StorageException exception = new StorageException(
+                "Storage error occurred", cause);
 
         assertEquals("Storage error occurred", exception.getMessage());
         assertEquals(cause, exception.getCause());
@@ -40,9 +42,11 @@ class StorageServiceTest {
     @Test
     @DisplayName("should create file not found exception with correct message")
     void should_create_file_not_found_exception_with_correct_message() {
-        FileNotFoundException exception = new FileNotFoundException("/path/to/file.txt");
+        FileNotFoundException exception = new FileNotFoundException(
+                "/path/to/file.txt");
 
-        assertEquals("File not found: /path/to/file.txt", exception.getMessage());
+        assertEquals("File not found: /path/to/file.txt",
+                exception.getMessage());
     }
 
     @Test

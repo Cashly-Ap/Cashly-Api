@@ -16,7 +16,8 @@ public class DeletePaymentUseCase {
 
     public void execute(UUID id) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + id));
 
         paymentRepository.deleteById(PaymentId.of(id));
     }

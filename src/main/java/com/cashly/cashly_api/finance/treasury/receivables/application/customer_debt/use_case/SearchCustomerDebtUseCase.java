@@ -10,18 +10,24 @@ public class SearchCustomerDebtUseCase {
 
     private final ReceivablesQueryGateway receivablesRepository;
 
-    public SearchCustomerDebtUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public SearchCustomerDebtUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         this.receivablesRepository = receivablesRepository;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<CustomerDebtListResponse> execute(String search, int page, int size, String sort) {
-        return receivablesRepository.findCustomersWithDebt(search, page, size, sort);
+    public PageResponse<CustomerDebtListResponse> execute(String search,
+            int page, int size, String sort) {
+        return receivablesRepository.findCustomersWithDebt(search, page, size,
+                sort);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<CustomerDebtListResponse> execute(String search, int page, int size, String sort, CustomerDebtAction action) {
-        return action == null ? execute(search, page, size, sort)
-                : receivablesRepository.findCustomersWithDebt(search, page, size, sort, action);
+    public PageResponse<CustomerDebtListResponse> execute(String search,
+            int page, int size, String sort, CustomerDebtAction action) {
+        return action == null
+                ? execute(search, page, size, sort)
+                : receivablesRepository.findCustomersWithDebt(search, page,
+                        size, sort, action);
     }
 }

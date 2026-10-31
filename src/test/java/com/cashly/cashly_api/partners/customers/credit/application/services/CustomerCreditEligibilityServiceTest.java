@@ -30,19 +30,19 @@ class CustomerCreditEligibilityServiceTest {
 
     @BeforeEach
     void setUp() {
-        creditGuard = new CustomerCreditEligibilityService(creditValidationGateway);
+        creditGuard = new CustomerCreditEligibilityService(
+                creditValidationGateway);
     }
 
     @Test
     void should_ReturnCreditStatus_When_GetCreditStatusCalled() {
-        CreditStatusResponse expected = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), false, true
-        );
+        CreditStatusResponse expected = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), false, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(expected);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(expected);
 
         CreditStatusResponse result = creditGuard.getCreditStatus(customerId);
 
@@ -52,16 +52,16 @@ class CustomerCreditEligibilityServiceTest {
 
     @Test
     void should_ReturnTrue_When_CreditIsAvailable() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), false, true
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), false, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
-        boolean result = creditGuard.isCreditAvailable(customerId, new BigDecimal("5000.00"));
+        boolean result = creditGuard.isCreditAvailable(customerId,
+                new BigDecimal("5000.00"));
 
         assertTrue(result);
         verify(creditValidationGateway).getCreditStatus(customerId);
@@ -69,67 +69,66 @@ class CustomerCreditEligibilityServiceTest {
 
     @Test
     void should_ReturnFalse_When_CustomerHasOverdueInvoices() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), true, true
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), true, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
-        boolean result = creditGuard.isCreditAvailable(customerId, new BigDecimal("5000.00"));
+        boolean result = creditGuard.isCreditAvailable(customerId,
+                new BigDecimal("5000.00"));
 
         assertFalse(result);
     }
 
     @Test
     void should_ReturnFalse_When_CannotCreateCreditInvoice() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), false, false
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), false, false);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
-        boolean result = creditGuard.isCreditAvailable(customerId, new BigDecimal("5000.00"));
+        boolean result = creditGuard.isCreditAvailable(customerId,
+                new BigDecimal("5000.00"));
 
         assertFalse(result);
     }
 
     @Test
     void should_ReturnFalse_When_InvoiceExceedsAvailableCredit() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), false, true
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), false, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
-        boolean result = creditGuard.isCreditAvailable(customerId, new BigDecimal("8000.00"));
+        boolean result = creditGuard.isCreditAvailable(customerId,
+                new BigDecimal("8000.00"));
 
         assertFalse(result);
     }
 
     @Test
     void should_ThrowException_When_HasOverdueInvoices() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), true, true
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), true, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
         CreditLimitExceededException exception = assertThrows(
                 CreditLimitExceededException.class,
-                () -> creditGuard.ensureCreditAvailable(customerId, new BigDecimal("5000.00"))
-        );
+                () -> creditGuard.ensureCreditAvailable(customerId,
+                        new BigDecimal("5000.00")));
 
         assertTrue(exception.getMessage().contains("tiene facturas vencidas"));
         verify(creditValidationGateway).getCreditStatus(customerId);
@@ -137,38 +136,37 @@ class CustomerCreditEligibilityServiceTest {
 
     @Test
     void should_ThrowException_When_CannotCreateCreditInvoice() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), false, false
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), false, false);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
         CreditLimitExceededException exception = assertThrows(
                 CreditLimitExceededException.class,
-                () -> creditGuard.ensureCreditAvailable(customerId, new BigDecimal("5000.00"))
-        );
+                () -> creditGuard.ensureCreditAvailable(customerId,
+                        new BigDecimal("5000.00")));
 
-        assertTrue(exception.getMessage().contains("no puede crear facturas a crédito"));
+        assertTrue(exception.getMessage()
+                .contains("no puede crear facturas a crédito"));
     }
 
     @Test
     void should_ThrowException_When_CreditInsufficient() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("8000.00"),
-                BigDecimal.ZERO, new BigDecimal("2000.00"),
-                List.of(), false, true
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("8000.00"), BigDecimal.ZERO,
+                new BigDecimal("2000.00"), List.of(), false, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
         CreditLimitExceededException exception = assertThrows(
                 CreditLimitExceededException.class,
-                () -> creditGuard.ensureCreditAvailable(customerId, new BigDecimal("5000.00"))
-        );
+                () -> creditGuard.ensureCreditAvailable(customerId,
+                        new BigDecimal("5000.00")));
 
         assertTrue(exception.getMessage().contains("Crédito insuficiente"));
         assertTrue(exception.getMessage().contains("2000"));
@@ -176,18 +174,16 @@ class CustomerCreditEligibilityServiceTest {
 
     @Test
     void should_NotThrow_When_CreditIsAvailable() {
-        CreditStatusResponse status = new CreditStatusResponse(
-                customerId, "Cliente Test", "J-12345678-9",
-                new BigDecimal("10000.00"), new BigDecimal("3000.00"),
-                BigDecimal.ZERO, new BigDecimal("7000.00"),
-                List.of(), false, true
-        );
+        CreditStatusResponse status = new CreditStatusResponse(customerId,
+                "Cliente Test", "J-12345678-9", new BigDecimal("10000.00"),
+                new BigDecimal("3000.00"), BigDecimal.ZERO,
+                new BigDecimal("7000.00"), List.of(), false, true);
 
-        when(creditValidationGateway.getCreditStatus(customerId)).thenReturn(status);
+        when(creditValidationGateway.getCreditStatus(customerId))
+                .thenReturn(status);
 
-        assertDoesNotThrow(() ->
-                creditGuard.ensureCreditAvailable(customerId, new BigDecimal("5000.00"))
-        );
+        assertDoesNotThrow(() -> creditGuard.ensureCreditAvailable(customerId,
+                new BigDecimal("5000.00")));
 
         verify(creditValidationGateway).getCreditStatus(customerId);
     }

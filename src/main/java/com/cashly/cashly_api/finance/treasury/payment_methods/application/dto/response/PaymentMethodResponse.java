@@ -3,13 +3,7 @@ package com.cashly.cashly_api.finance.treasury.payment_methods.application.dto.r
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record PaymentMethodResponse(
-        UUID id,
-        String code,
-        String name,
-        String description,
-        boolean isActive,
-        boolean hasAssociatedRecords,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {}
+public record PaymentMethodResponse(UUID id, String code, String name,
+        String description, boolean isActive, boolean hasAssociatedRecords,
+        LocalDateTime createdAt, LocalDateTime updatedAt) {
+}

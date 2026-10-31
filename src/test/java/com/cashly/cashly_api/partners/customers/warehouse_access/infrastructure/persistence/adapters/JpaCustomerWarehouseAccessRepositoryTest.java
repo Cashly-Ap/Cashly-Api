@@ -36,7 +36,8 @@ class JpaCustomerWarehouseAccessRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new JpaCustomerWarehouseAccessRepository(springDataRepository);
+        adapter = new JpaCustomerWarehouseAccessRepository(
+                springDataRepository);
     }
 
     @Nested
@@ -46,15 +47,13 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         @Test
         void should_CreateEntityFromDomainAndDelegateToSpringDataRepository() {
             CustomerWarehouseAccess access = new CustomerWarehouseAccess(
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    LocalDateTime.now(),
-                    UUID.randomUUID()
-            );
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    LocalDateTime.now(), UUID.randomUUID());
 
-            CustomerWarehouseAccessEntity expectedEntity = CustomerWarehouseAccessEntity.fromDomain(access);
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            CustomerWarehouseAccessEntity expectedEntity = CustomerWarehouseAccessEntity
+                    .fromDomain(access);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             CustomerWarehouseAccess saved = adapter.save(access);
 
@@ -72,19 +71,20 @@ class JpaCustomerWarehouseAccessRepositoryTest {
             assertEquals(access.getGrantedAt(), captured.getGrantedAt());
             assertEquals(access.getGrantedBy(), captured.getGrantedBy());
 
-            verify(springDataRepository).save(any(CustomerWarehouseAccessEntity.class));
+            verify(springDataRepository)
+                    .save(any(CustomerWarehouseAccessEntity.class));
         }
 
         @Test
         void should_SaveWithGeneratedId_When_DomainHasNullId() {
             CustomerWarehouseAccess access = CustomerWarehouseAccess.create(
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    UUID.randomUUID()
-            );
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
-            CustomerWarehouseAccessEntity expectedEntity = CustomerWarehouseAccessEntity.fromDomain(access);
-            when(springDataRepository.save(any(CustomerWarehouseAccessEntity.class))).thenReturn(expectedEntity);
+            CustomerWarehouseAccessEntity expectedEntity = CustomerWarehouseAccessEntity
+                    .fromDomain(access);
+            when(springDataRepository
+                    .save(any(CustomerWarehouseAccessEntity.class)))
+                    .thenReturn(expectedEntity);
 
             CustomerWarehouseAccess saved = adapter.save(access);
 
@@ -93,7 +93,8 @@ class JpaCustomerWarehouseAccessRepositoryTest {
             assertEquals(access.getCustomerId(), saved.getCustomerId());
             assertEquals(access.getWarehouseId(), saved.getWarehouseId());
 
-            verify(springDataRepository).save(any(CustomerWarehouseAccessEntity.class));
+            verify(springDataRepository)
+                    .save(any(CustomerWarehouseAccessEntity.class));
         }
     }
 
@@ -105,23 +106,22 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         void should_ReturnDomainObject_When_EntityFound() {
             UUID customerId = UUID.randomUUID();
             UUID warehouseId = UUID.randomUUID();
-            CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity.fromDomain(
-                    new CustomerWarehouseAccess(
-                            UUID.randomUUID(), customerId, warehouseId,
-                            LocalDateTime.now(), UUID.randomUUID()
-                    )
-            );
+            CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity
+                    .fromDomain(new CustomerWarehouseAccess(UUID.randomUUID(),
+                            customerId, warehouseId, LocalDateTime.now(),
+                            UUID.randomUUID()));
 
-            when(springDataRepository.findByCustomerIdAndWarehouseId(customerId, warehouseId))
-                    .thenReturn(Optional.of(entity));
+            when(springDataRepository.findByCustomerIdAndWarehouseId(customerId,
+                    warehouseId)).thenReturn(Optional.of(entity));
 
-            Optional<CustomerWarehouseAccess> result =
-                    adapter.findByCustomerIdAndWarehouseId(customerId, warehouseId);
+            Optional<CustomerWarehouseAccess> result = adapter
+                    .findByCustomerIdAndWarehouseId(customerId, warehouseId);
 
             assertTrue(result.isPresent());
             assertEquals(customerId, result.get().getCustomerId());
             assertEquals(warehouseId, result.get().getWarehouseId());
-            verify(springDataRepository).findByCustomerIdAndWarehouseId(customerId, warehouseId);
+            verify(springDataRepository)
+                    .findByCustomerIdAndWarehouseId(customerId, warehouseId);
         }
 
         @Test
@@ -129,14 +129,15 @@ class JpaCustomerWarehouseAccessRepositoryTest {
             UUID customerId = UUID.randomUUID();
             UUID warehouseId = UUID.randomUUID();
 
-            when(springDataRepository.findByCustomerIdAndWarehouseId(customerId, warehouseId))
-                    .thenReturn(Optional.empty());
+            when(springDataRepository.findByCustomerIdAndWarehouseId(customerId,
+                    warehouseId)).thenReturn(Optional.empty());
 
-            Optional<CustomerWarehouseAccess> result =
-                    adapter.findByCustomerIdAndWarehouseId(customerId, warehouseId);
+            Optional<CustomerWarehouseAccess> result = adapter
+                    .findByCustomerIdAndWarehouseId(customerId, warehouseId);
 
             assertTrue(result.isEmpty());
-            verify(springDataRepository).findByCustomerIdAndWarehouseId(customerId, warehouseId);
+            verify(springDataRepository)
+                    .findByCustomerIdAndWarehouseId(customerId, warehouseId);
         }
     }
 
@@ -147,16 +148,16 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         @Test
         void should_ReturnDomainObjects_When_EntitiesFound() {
             UUID customerId = UUID.randomUUID();
-            CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity.fromDomain(
-                    new CustomerWarehouseAccess(
-                            UUID.randomUUID(), customerId, UUID.randomUUID(),
-                            LocalDateTime.now(), UUID.randomUUID()
-                    )
-            );
+            CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity
+                    .fromDomain(new CustomerWarehouseAccess(UUID.randomUUID(),
+                            customerId, UUID.randomUUID(), LocalDateTime.now(),
+                            UUID.randomUUID()));
 
-            when(springDataRepository.findByCustomerId(customerId)).thenReturn(List.of(entity));
+            when(springDataRepository.findByCustomerId(customerId))
+                    .thenReturn(List.of(entity));
 
-            List<CustomerWarehouseAccess> result = adapter.findByCustomerId(customerId);
+            List<CustomerWarehouseAccess> result = adapter
+                    .findByCustomerId(customerId);
 
             assertNotNull(result);
             assertEquals(1, result.size());
@@ -167,9 +168,11 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
             UUID customerId = UUID.randomUUID();
-            when(springDataRepository.findByCustomerId(customerId)).thenReturn(List.of());
+            when(springDataRepository.findByCustomerId(customerId))
+                    .thenReturn(List.of());
 
-            List<CustomerWarehouseAccess> result = adapter.findByCustomerId(customerId);
+            List<CustomerWarehouseAccess> result = adapter
+                    .findByCustomerId(customerId);
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
@@ -184,16 +187,16 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         @Test
         void should_ReturnDomainObjects_When_EntitiesFound() {
             UUID warehouseId = UUID.randomUUID();
-            CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity.fromDomain(
-                    new CustomerWarehouseAccess(
-                            UUID.randomUUID(), UUID.randomUUID(), warehouseId,
-                            LocalDateTime.now(), UUID.randomUUID()
-                    )
-            );
+            CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity
+                    .fromDomain(new CustomerWarehouseAccess(UUID.randomUUID(),
+                            UUID.randomUUID(), warehouseId, LocalDateTime.now(),
+                            UUID.randomUUID()));
 
-            when(springDataRepository.findByWarehouseId(warehouseId)).thenReturn(List.of(entity));
+            when(springDataRepository.findByWarehouseId(warehouseId))
+                    .thenReturn(List.of(entity));
 
-            List<CustomerWarehouseAccess> result = adapter.findByWarehouseId(warehouseId);
+            List<CustomerWarehouseAccess> result = adapter
+                    .findByWarehouseId(warehouseId);
 
             assertNotNull(result);
             assertEquals(1, result.size());
@@ -204,9 +207,11 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
             UUID warehouseId = UUID.randomUUID();
-            when(springDataRepository.findByWarehouseId(warehouseId)).thenReturn(List.of());
+            when(springDataRepository.findByWarehouseId(warehouseId))
+                    .thenReturn(List.of());
 
-            List<CustomerWarehouseAccess> result = adapter.findByWarehouseId(warehouseId);
+            List<CustomerWarehouseAccess> result = adapter
+                    .findByWarehouseId(warehouseId);
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
@@ -221,12 +226,8 @@ class JpaCustomerWarehouseAccessRepositoryTest {
         @Test
         void should_DelegateToSpringDataRepository() {
             CustomerWarehouseAccess access = new CustomerWarehouseAccess(
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    LocalDateTime.now(),
-                    UUID.randomUUID()
-            );
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    LocalDateTime.now(), UUID.randomUUID());
 
             adapter.delete(access);
 
@@ -243,13 +244,16 @@ class JpaCustomerWarehouseAccessRepositoryTest {
             UUID customerId = UUID.randomUUID();
             UUID warehouseId = UUID.randomUUID();
 
-            when(springDataRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId))
+            when(springDataRepository
+                    .existsByCustomerIdAndWarehouseId(customerId, warehouseId))
                     .thenReturn(true);
 
-            boolean result = adapter.existsByCustomerIdAndWarehouseId(customerId, warehouseId);
+            boolean result = adapter
+                    .existsByCustomerIdAndWarehouseId(customerId, warehouseId);
 
             assertTrue(result);
-            verify(springDataRepository).existsByCustomerIdAndWarehouseId(customerId, warehouseId);
+            verify(springDataRepository)
+                    .existsByCustomerIdAndWarehouseId(customerId, warehouseId);
         }
 
         @Test
@@ -257,13 +261,16 @@ class JpaCustomerWarehouseAccessRepositoryTest {
             UUID customerId = UUID.randomUUID();
             UUID warehouseId = UUID.randomUUID();
 
-            when(springDataRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId))
+            when(springDataRepository
+                    .existsByCustomerIdAndWarehouseId(customerId, warehouseId))
                     .thenReturn(false);
 
-            boolean result = adapter.existsByCustomerIdAndWarehouseId(customerId, warehouseId);
+            boolean result = adapter
+                    .existsByCustomerIdAndWarehouseId(customerId, warehouseId);
 
             assertFalse(result);
-            verify(springDataRepository).existsByCustomerIdAndWarehouseId(customerId, warehouseId);
+            verify(springDataRepository)
+                    .existsByCustomerIdAndWarehouseId(customerId, warehouseId);
         }
     }
 }

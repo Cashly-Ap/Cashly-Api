@@ -15,7 +15,6 @@ public interface CategoryRepository {
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, UUID id);
     PageResponse<Category> findAllWithFilters(String search, Boolean active,
-                                                      int page, int size,
-                                                      String orderBy, String orderDir);
+            int page, int size, String orderBy, String orderDir);
 
 }

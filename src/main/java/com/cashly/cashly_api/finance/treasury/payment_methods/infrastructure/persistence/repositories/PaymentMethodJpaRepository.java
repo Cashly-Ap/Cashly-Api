@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PaymentMethodJpaRepository extends JpaRepository<PaymentMethodEntity, UUID> {
+public interface PaymentMethodJpaRepository
+        extends
+            JpaRepository<PaymentMethodEntity, UUID> {
 
     Optional<PaymentMethodEntity> findByCode(String code);
 
@@ -22,13 +24,11 @@ public interface PaymentMethodJpaRepository extends JpaRepository<PaymentMethodE
     Optional<Integer> findMaxCodeNumber();
 
     @Query("""
-        SELECT pm FROM PaymentMethodEntity pm
-        WHERE (:search IS NULL OR LOWER(pm.name) LIKE LOWER(CONCAT('%', :search, '%'))
-               OR LOWER(pm.description) LIKE LOWER(CONCAT('%', :search, '%')))
-        AND (:active IS NULL OR pm.isActive = :active)
-        """)
-    Page<PaymentMethodEntity> findAllWithFilters(
-            @Param("search") String search,
-            @Param("active") Boolean active,
-            Pageable pageable);
+            SELECT pm FROM PaymentMethodEntity pm
+            WHERE (:search IS NULL OR LOWER(pm.name) LIKE LOWER(CONCAT('%', :search, '%'))
+                   OR LOWER(pm.description) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (:active IS NULL OR pm.isActive = :active)
+            """)
+    Page<PaymentMethodEntity> findAllWithFilters(@Param("search") String search,
+            @Param("active") Boolean active, Pageable pageable);
 }

@@ -23,17 +23,20 @@ import java.util.UUID;
 @Component
 public class JpaCustomerRepository implements CustomerRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of("legalName", "code", "rif", "alias", "type");
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("legalName",
+            "code", "rif", "alias", "type");
 
     private final SpringDataCustomerRepository springDataRepository;
 
-    public JpaCustomerRepository(SpringDataCustomerRepository springDataRepository) {
+    public JpaCustomerRepository(
+            SpringDataCustomerRepository springDataRepository) {
         this.springDataRepository = springDataRepository;
     }
 
     @Override
     public Customer save(Customer customer) {
-        Optional<CustomerEntity> existing = springDataRepository.findById(customer.getId().getValue());
+        Optional<CustomerEntity> existing = springDataRepository
+                .findById(customer.getId().getValue());
 
         CustomerEntity entity;
         if (existing.isPresent()) {
@@ -50,13 +53,13 @@ public class JpaCustomerRepository implements CustomerRepository {
     @Override
     public Optional<Customer> findById(CustomerId id) {
         return springDataRepository.findById(id.getValue())
-            .map(CustomerEntity::toDomain);
+                .map(CustomerEntity::toDomain);
     }
 
     @Override
     public Optional<Customer> findByRif(Rif rif) {
         return springDataRepository.findByRif(rif.getValue())
-            .map(CustomerEntity::toDomain);
+                .map(CustomerEntity::toDomain);
     }
 
     @Override
@@ -66,27 +69,32 @@ public class JpaCustomerRepository implements CustomerRepository {
 
     @Override
     public boolean existsByRifAndIdNot(Rif rif, CustomerId id) {
-        return springDataRepository.existsByRifAndIdNot(rif.getValue(), id.getValue());
+        return springDataRepository.existsByRifAndIdNot(rif.getValue(),
+                id.getValue());
     }
 
     @Override
     public List<Customer> findAll() {
         return springDataRepository.findAll().stream()
-            .map(CustomerEntity::toDomain)
-            .toList();
+                .map(CustomerEntity::toDomain).toList();
     }
 
     @Override
-    public PageResponse<Customer> findAllWithFilters(String search, String rif, String type, Boolean active,
-                                                       String state, String municipality,
-                                                       String postalCode, Boolean hasActiveWarehouse, int page, int size,
-                                                       String orderBy, String orderDir) {
-        String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "legalName";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+    public PageResponse<Customer> findAllWithFilters(String search, String rif,
+            String type, Boolean active, String state, String municipality,
+            String postalCode, Boolean hasActiveWarehouse, int page, int size,
+            String orderBy, String orderDir) {
+        String field = ALLOWED_ORDER_BY.contains(orderBy)
+                ? orderBy
+                : "legalName";
+        Sort sort = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.by(field).descending()
+                : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         Page<CustomerEntity> result = springDataRepository.findAllWithFilters(
-            search, rif, type, active, state, municipality, postalCode, hasActiveWarehouse, pageable);
+                search, rif, type, active, state, municipality, postalCode,
+                hasActiveWarehouse, pageable);
 
         Page<Customer> mapped = result.map(CustomerEntity::toDomain);
         return PageResponseMapper.from(mapped);

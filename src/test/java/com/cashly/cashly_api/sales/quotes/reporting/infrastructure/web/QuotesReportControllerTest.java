@@ -31,8 +31,6 @@ class QuotesReportControllerTest {
     @Mock
     private GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase;
 
-
-
     @InjectMocks
     private QuotesReportController controller;
 
@@ -46,9 +44,10 @@ class QuotesReportControllerTest {
 
         ResponseEntity<byte[]> result = controller.getQuotePdf(quoteId);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("presupuesto-" + quoteId + ".pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("presupuesto-" + quoteId + ".pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generateQuotePdfUseCase).execute(quoteId);
@@ -65,15 +64,18 @@ class QuotesReportControllerTest {
         byte[] pdfContent = "Quotes report PDF".getBytes();
         List<QuoteReportRow> quotes = List.of();
 
-        var filter = new QuoteReportFilter(dateFrom, dateTo, customerId, "PENDING", productId, categoryId);
-        when(generateQuotesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        var filter = new QuoteReportFilter(dateFrom, dateTo, customerId,
+                "PENDING", productId, categoryId);
+        when(generateQuotesReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getQuotesReportPdf(
-                dateFrom, dateTo, customerId, "PENDING", productId, categoryId, "SIMPLE");
+        ResponseEntity<byte[]> result = controller.getQuotesReportPdf(dateFrom,
+                dateTo, customerId, "PENDING", productId, categoryId, "SIMPLE");
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("reporte-presupuestos-"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("reporte-presupuestos-"));
         assertArrayEquals(pdfContent, result.getBody());
 
         verify(generateQuotesReportPdfUseCase).execute(filter, "SIMPLE");
@@ -86,10 +88,11 @@ class QuotesReportControllerTest {
         List<QuoteReportRow> quotes = List.of();
 
         var filter = new QuoteReportFilter(null, null, null, null, null, null);
-        when(generateQuotesReportPdfUseCase.execute(filter, "SIMPLE")).thenReturn(pdfContent);
+        when(generateQuotesReportPdfUseCase.execute(filter, "SIMPLE"))
+                .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getQuotesReportPdf(
-                null, null, null, null, null, null, "SIMPLE");
+        ResponseEntity<byte[]> result = controller.getQuotesReportPdf(null,
+                null, null, null, null, null, "SIMPLE");
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateQuotesReportPdfUseCase).execute(filter, "SIMPLE");

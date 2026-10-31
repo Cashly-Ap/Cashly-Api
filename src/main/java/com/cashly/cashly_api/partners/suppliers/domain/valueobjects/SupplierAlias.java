@@ -7,10 +7,12 @@ public class SupplierAlias {
 
     public SupplierAlias(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Supplier alias cannot be null or blank");
+            throw new IllegalArgumentException(
+                    "Supplier alias cannot be null or blank");
         }
         if (value.trim().length() > 100) {
-            throw new IllegalArgumentException("Supplier alias must not exceed 100 characters");
+            throw new IllegalArgumentException(
+                    "Supplier alias must not exceed 100 characters");
         }
         this.value = value.trim();
     }
@@ -21,8 +23,10 @@ public class SupplierAlias {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         SupplierAlias that = (SupplierAlias) obj;
         return Objects.equals(value, that.value);
     }

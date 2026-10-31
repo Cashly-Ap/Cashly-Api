@@ -35,33 +35,59 @@ class ReturnFinancialWiringTest {
     @Test
     void should_wire_return_owned_gateways_to_neutral_public_providers() {
         try (var context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(ReturnRepository.class, () -> mock(ReturnRepository.class));
-            context.registerBean(ReturnInvoiceAdjustmentGateway.class, () -> mock(ReturnInvoiceAdjustmentGateway.class));
-            context.registerBean(ReturnInventoryGateway.class, () -> mock(ReturnInventoryGateway.class));
-            context.registerBean(InvoiceRepository.class, () -> mock(InvoiceRepository.class));
-            context.registerBean(CreditNoteRepository.class, () -> mock(CreditNoteRepository.class));
-            context.registerBean(DebitNoteRepository.class, () -> mock(DebitNoteRepository.class));
-            context.registerBean(PaymentRepository.class, () -> mock(PaymentRepository.class));
-            context.registerBean(PaymentAllocationRepository.class, () -> mock(PaymentAllocationRepository.class));
-            context.registerBean(PaymentAllocationService.class, () -> mock(PaymentAllocationService.class));
-            context.registerBean(AddToCustomerBalanceUseCase.class, () -> mock(AddToCustomerBalanceUseCase.class));
-            context.registerBean(ConsumeCustomerBalanceUseCase.class, () -> mock(ConsumeCustomerBalanceUseCase.class));
-            context.registerBean(CashMovementService.class, () -> mock(CashMovementService.class));
-            context.registerBean(WarehouseRepository.class, () -> mock(WarehouseRepository.class));
-            context.register(ReturnConfig.class, ReturnMapper.class, com.cashly.cashly_api.finance.billing.returns.application.services.ReturnResponseAssembler.class, ReturnInvoiceQueryConfig.class,
-                    CreditNoteLedgerQueryConfig.class, DebitNoteLedgerQueryConfig.class, ReturnPaymentOperationsConfig.class,
-                    ReturnBalanceMutationConfig.class, ReturnCashRecordingConfig.class, WarehouseDirectoryConfig.class,
-                    LocalReturnInvoiceQueryGateway.class, LocalReturnPaymentSettlementGateway.class,
-                    LocalReturnBalanceGateway.class, LocalReturnCashGateway.class, LocalReturnProjectionQueryGateway.class);
+            context.registerBean(ReturnRepository.class,
+                    () -> mock(ReturnRepository.class));
+            context.registerBean(ReturnInvoiceAdjustmentGateway.class,
+                    () -> mock(ReturnInvoiceAdjustmentGateway.class));
+            context.registerBean(ReturnInventoryGateway.class,
+                    () -> mock(ReturnInventoryGateway.class));
+            context.registerBean(InvoiceRepository.class,
+                    () -> mock(InvoiceRepository.class));
+            context.registerBean(CreditNoteRepository.class,
+                    () -> mock(CreditNoteRepository.class));
+            context.registerBean(DebitNoteRepository.class,
+                    () -> mock(DebitNoteRepository.class));
+            context.registerBean(PaymentRepository.class,
+                    () -> mock(PaymentRepository.class));
+            context.registerBean(PaymentAllocationRepository.class,
+                    () -> mock(PaymentAllocationRepository.class));
+            context.registerBean(PaymentAllocationService.class,
+                    () -> mock(PaymentAllocationService.class));
+            context.registerBean(AddToCustomerBalanceUseCase.class,
+                    () -> mock(AddToCustomerBalanceUseCase.class));
+            context.registerBean(ConsumeCustomerBalanceUseCase.class,
+                    () -> mock(ConsumeCustomerBalanceUseCase.class));
+            context.registerBean(CashMovementService.class,
+                    () -> mock(CashMovementService.class));
+            context.registerBean(WarehouseRepository.class,
+                    () -> mock(WarehouseRepository.class));
+            context.register(ReturnConfig.class, ReturnMapper.class,
+                    com.cashly.cashly_api.finance.billing.returns.application.services.ReturnResponseAssembler.class,
+                    ReturnInvoiceQueryConfig.class,
+                    CreditNoteLedgerQueryConfig.class,
+                    DebitNoteLedgerQueryConfig.class,
+                    ReturnPaymentOperationsConfig.class,
+                    ReturnBalanceMutationConfig.class,
+                    ReturnCashRecordingConfig.class,
+                    WarehouseDirectoryConfig.class,
+                    LocalReturnInvoiceQueryGateway.class,
+                    LocalReturnPaymentSettlementGateway.class,
+                    LocalReturnBalanceGateway.class,
+                    LocalReturnCashGateway.class,
+                    LocalReturnProjectionQueryGateway.class);
             context.refresh();
             assertThat(context.getBean(CreateReturnUseCase.class)).isNotNull();
             assertThat(context.getBean(DeleteReturnUseCase.class)).isNotNull();
             assertThat(context.getBean(ReturnMapper.class)).isNotNull();
             UUID id = UUID.randomUUID();
-            assertThat(context.getBean(ReturnProjectionQueryGateway.class).findInvoice(id)).isEmpty();
-            assertThat(context.getBean(ReturnProjectionQueryGateway.class).findWarehouseName(id)).isEmpty();
-            assertThatThrownBy(() -> context.getBean(ReturnInvoiceQueryGateway.class).requireById(id))
-                    .isInstanceOf(com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotFoundException.class);
+            assertThat(context.getBean(ReturnProjectionQueryGateway.class)
+                    .findInvoice(id)).isEmpty();
+            assertThat(context.getBean(ReturnProjectionQueryGateway.class)
+                    .findWarehouseName(id)).isEmpty();
+            assertThatThrownBy(() -> context
+                    .getBean(ReturnInvoiceQueryGateway.class).requireById(id))
+                    .isInstanceOf(
+                            com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotFoundException.class);
         }
     }
 }

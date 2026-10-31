@@ -26,15 +26,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "suppliers",
-    indexes = {
+@Table(name = "suppliers", indexes = {
         @Index(name = "idx_suppliers_code", columnList = "code"),
         @Index(name = "idx_suppliers_rif", columnList = "rif"),
         @Index(name = "idx_suppliers_active", columnList = "active"),
-        @Index(name = "idx_suppliers_type", columnList = "type")
-    }
-)
+        @Index(name = "idx_suppliers_type", columnList = "type")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -175,48 +171,29 @@ public class SupplierEntity {
 
     public Supplier toDomain() {
         List<SupplierEmail> domainEmails = this.emails.stream()
-            .map(e -> new SupplierEmail(
-                new EmailId(e.getId()),
-                new SupplierId(e.getSupplierId()),
-                new EmailAddress(e.getEmail())
-            ))
-            .toList();
+                .map(e -> new SupplierEmail(new EmailId(e.getId()),
+                        new SupplierId(e.getSupplierId()),
+                        new EmailAddress(e.getEmail())))
+                .toList();
 
         List<SupplierPhone> domainPhones = this.phones.stream()
-            .map(p -> new SupplierPhone(
-                new PhoneId(p.getId()),
-                new SupplierId(p.getSupplierId()),
-                new PhoneNumber(p.getPhone())
-            ))
-            .toList();
+                .map(p -> new SupplierPhone(new PhoneId(p.getId()),
+                        new SupplierId(p.getSupplierId()),
+                        new PhoneNumber(p.getPhone())))
+                .toList();
 
         List<SupplierAddress> domainAddresses = this.addresses.stream()
-            .map(a -> new SupplierAddress(
-                new AddressId(a.getId()),
-                new SupplierId(a.getSupplierId()),
-                a.getAddress(),
-                a.isBilling(),
-                a.isActive(),
-                a.getState(),
-                a.getMunicipality(),
-                a.getPostalCode()
-            ))
-            .toList();
+                .map(a -> new SupplierAddress(new AddressId(a.getId()),
+                        new SupplierId(a.getSupplierId()), a.getAddress(),
+                        a.isBilling(), a.isActive(), a.getState(),
+                        a.getMunicipality(), a.getPostalCode()))
+                .toList();
 
-        return Supplier.reconstitute(
-            new SupplierId(this.id),
-            SupplierCode.from(this.code),
-            new LegalName(this.legalName),
-            SupplierType.valueOf(this.type),
-            new Rif(this.rif),
-            new SupplierAlias(this.alias),
-            this.notes,
-            this.active,
-            this.createdAt,
-            this.updatedAt,
-            domainEmails,
-            domainPhones,
-            domainAddresses
-        );
+        return Supplier.reconstitute(new SupplierId(this.id),
+                SupplierCode.from(this.code), new LegalName(this.legalName),
+                SupplierType.valueOf(this.type), new Rif(this.rif),
+                new SupplierAlias(this.alias), this.notes, this.active,
+                this.createdAt, this.updatedAt, domainEmails, domainPhones,
+                domainAddresses);
     }
 }

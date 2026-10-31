@@ -7,7 +7,8 @@ public class CreditDays {
 
     public CreditDays(int value) {
         if (value < 0 || value > 365) {
-            throw new IllegalArgumentException("Credit days must be between 0 and 365");
+            throw new IllegalArgumentException(
+                    "Credit days must be between 0 and 365");
         }
         this.value = value;
     }
@@ -18,8 +19,10 @@ public class CreditDays {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         CreditDays that = (CreditDays) obj;
         return value == that.value;
     }

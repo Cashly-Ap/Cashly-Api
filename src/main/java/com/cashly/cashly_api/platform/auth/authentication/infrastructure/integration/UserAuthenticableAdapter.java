@@ -76,7 +76,9 @@ public class UserAuthenticableAdapter implements Authenticable {
     }
 
     @Override
-    public String getPhotoPath() { return user.getPhotoPath(); }
+    public String getPhotoPath() {
+        return user.getPhotoPath();
+    }
 
     public User getUser() {
         return user;

@@ -28,10 +28,10 @@ public class SupplierController {
     private final DeleteSupplierUseCase deleteSupplierUseCase;
 
     public SupplierController(RegisterSupplierUseCase registerSupplierUseCase,
-                               GetSupplierUseCase getSupplierUseCase,
-                               ListSuppliersUseCase listSuppliersUseCase,
-                               UpdateSupplierUseCase updateSupplierUseCase,
-                               DeleteSupplierUseCase deleteSupplierUseCase) {
+            GetSupplierUseCase getSupplierUseCase,
+            ListSuppliersUseCase listSuppliersUseCase,
+            UpdateSupplierUseCase updateSupplierUseCase,
+            DeleteSupplierUseCase deleteSupplierUseCase) {
         this.registerSupplierUseCase = registerSupplierUseCase;
         this.getSupplierUseCase = getSupplierUseCase;
         this.listSuppliersUseCase = listSuppliersUseCase;
@@ -41,8 +41,10 @@ public class SupplierController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('PURCHASES:CREATE')")
-    public ResponseEntity<SupplierCreateResponse> create(@Valid @RequestBody CreateSupplierRequest request) {
-        SupplierCreateResponse response = registerSupplierUseCase.execute(request);
+    public ResponseEntity<SupplierCreateResponse> create(
+            @Valid @RequestBody CreateSupplierRequest request) {
+        SupplierCreateResponse response = registerSupplierUseCase
+                .execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -57,23 +59,27 @@ public class SupplierController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "legalName") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        PageResponse<SupplierListResponse> suppliers = listSuppliersUseCase.execute(
-            search, type, active, state, page, size, orderBy, orderDir);
+        PageResponse<SupplierListResponse> suppliers = listSuppliersUseCase
+                .execute(search, type, active, state, page, size, orderBy,
+                        orderDir);
         return ResponseEntity.ok(suppliers);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('PURCHASES:READ')")
-    public ResponseEntity<SupplierDetailResponse> getById(@PathVariable String id) {
+    public ResponseEntity<SupplierDetailResponse> getById(
+            @PathVariable String id) {
         SupplierDetailResponse supplier = getSupplierUseCase.execute(id);
         return ResponseEntity.ok(supplier);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('PURCHASES:UPDATE')")
-    public ResponseEntity<SupplierDetailResponse> update(@PathVariable String id,
-                                                          @Valid @RequestBody UpdateSupplierRequest request) {
-        SupplierDetailResponse supplier = updateSupplierUseCase.execute(id, request);
+    public ResponseEntity<SupplierDetailResponse> update(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateSupplierRequest request) {
+        SupplierDetailResponse supplier = updateSupplierUseCase.execute(id,
+                request);
         return ResponseEntity.ok(supplier);
     }
 

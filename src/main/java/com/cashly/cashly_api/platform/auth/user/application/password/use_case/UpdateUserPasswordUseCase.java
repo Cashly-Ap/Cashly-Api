@@ -20,15 +20,17 @@ import java.util.UUID;
 public class UpdateUserPasswordUseCase {
     private final UserPreferencesRepository preferences;
 
-
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
     private final PasswordEncoder passwordEncoder;
 
-    public UpdateUserPasswordUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access, UserPreferencesRepository preferences) {
+    public UpdateUserPasswordUseCase(UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
+            UserPreferencesRepository preferences) {
         this.preferences = preferences;
         this.userRepository = userRepository;
-        this.access=access;
+        this.access = access;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,10 +41,13 @@ public class UpdateUserPasswordUseCase {
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
-    public UserResponse executeSelf(String id, UpdateUserPasswordRequest request) {
+    public UserResponse executeSelf(String id,
+            UpdateUserPasswordRequest request) {
         access.authorizeAccountMutation(UUID.fromString(id), true);
-        if (request.currentPassword() == null || request.currentPassword().isBlank()) {
-            throw new InvalidCredentialsException("Current password is required");
+        if (request.currentPassword() == null
+                || request.currentPassword().isBlank()) {
+            throw new InvalidCredentialsException(
+                    "Current password is required");
         }
         return change(id, request);
     }
@@ -50,13 +55,19 @@ public class UpdateUserPasswordUseCase {
     private UserResponse change(String id, UpdateUserPasswordRequest request) {
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-        if (request.currentPassword() != null && !request.currentPassword().isBlank()
-                && !passwordEncoder.matches(request.currentPassword(), user.getPassword().getHashedValue())) {
-            throw new InvalidCredentialsException("Current password is incorrect");
+                .orElseThrow(() -> new UserNotFoundException(
+                        "User not found with id: " + id));
+        if (request.currentPassword() != null
+                && !request.currentPassword().isBlank()
+                && !passwordEncoder.matches(request.currentPassword(),
+                        user.getPassword().getHashedValue())) {
+            throw new InvalidCredentialsException(
+                    "Current password is incorrect");
         }
         Password.validateRawPassword(request.password());
-        user.changePassword(Password.fromHash(passwordEncoder.encode(request.password())));
-        return UserResponse.from(userRepository.save(user)).withLanguage(preferences.languageFor(user.getId().getValue()));
+        user.changePassword(
+                Password.fromHash(passwordEncoder.encode(request.password())));
+        return UserResponse.from(userRepository.save(user))
+                .withLanguage(preferences.languageFor(user.getId().getValue()));
     }
 }

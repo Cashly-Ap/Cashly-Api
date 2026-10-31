@@ -10,16 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class RifUnitTest {
 
     @ParameterizedTest
-    @CsvSource({
-            "V-12345678-9, V-12345678-9",
-            "J-12345678-9, J-12345678-9",
-            "G-12345678-9, G-12345678-9",
-            "E-12345678-9, E-12345678-9",
-            "C-12345678-9, C-12345678-9",
-            "P-12345678-9, P-12345678-9",
-            "v-12345678-9, V-12345678-9",
-            " j-12345678-9 , J-12345678-9"
-    })
+    @CsvSource({"V-12345678-9, V-12345678-9", "J-12345678-9, J-12345678-9",
+            "G-12345678-9, G-12345678-9", "E-12345678-9, E-12345678-9",
+            "C-12345678-9, C-12345678-9", "P-12345678-9, P-12345678-9",
+            "v-12345678-9, V-12345678-9", " j-12345678-9 , J-12345678-9"})
     void should_create_valid_rif(String input, String expected) {
         Rif rif = new Rif(input);
         assertEquals(expected, rif.getValue());
@@ -42,23 +36,28 @@ class RifUnitTest {
 
     @Test
     void should_throw_on_no_dash() {
-        assertThrows(IllegalArgumentException.class, () -> new Rif("V123456789"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Rif("V123456789"));
     }
 
     @Test
     void should_throw_on_wrong_letter() {
-        assertThrows(IllegalArgumentException.class, () -> new Rif("X-12345678-9"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Rif("X-12345678-9"));
     }
 
     @Test
     void should_throw_on_wrong_digit_count() {
-        assertThrows(IllegalArgumentException.class, () -> new Rif("V-1234567-9"));
-        assertThrows(IllegalArgumentException.class, () -> new Rif("V-123456789-9"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Rif("V-1234567-9"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Rif("V-123456789-9"));
     }
 
     @Test
     void should_throw_on_missing_check_digit() {
-        assertThrows(IllegalArgumentException.class, () -> new Rif("V-12345678"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Rif("V-12345678"));
     }
 
     @Test

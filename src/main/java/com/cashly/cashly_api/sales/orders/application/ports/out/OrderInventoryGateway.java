@@ -14,7 +14,9 @@ public interface OrderInventoryGateway {
 
     void restore(List<Allocation> allocations, Reference reference);
 
-    record Allocation(UUID warehouseId, UUID productId, int quantity) {}
+    record Allocation(UUID warehouseId, UUID productId, int quantity) {
+    }
 
-    record Reference(UUID id, String number, String description) {}
+    record Reference(UUID id, String number, String description) {
+    }
 }

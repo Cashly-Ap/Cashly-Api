@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface StockReportJpaRepository extends JpaRepository<WarehouseStockEntity, UUID> {
+public interface StockReportJpaRepository
+        extends
+            JpaRepository<WarehouseStockEntity, UUID> {
 
     @Query(value = """
             SELECT
@@ -27,8 +29,7 @@ public interface StockReportJpaRepository extends JpaRepository<WarehouseStockEn
               AND (:categoryId IS NULL OR p.category_id = UNHEX(REPLACE(:categoryId, '-', '')))
               AND (:withStock IS NULL OR (:withStock = TRUE AND ws.quantity > 0) OR (:withStock = FALSE AND ws.quantity = 0))
             ORDER BY w.name, p.name
-            """,
-            nativeQuery = true)
+            """, nativeQuery = true)
     List<StockReportProjection> findAllForPdf(
             @Param("warehouseId") String warehouseId,
             @Param("categoryId") String categoryId,

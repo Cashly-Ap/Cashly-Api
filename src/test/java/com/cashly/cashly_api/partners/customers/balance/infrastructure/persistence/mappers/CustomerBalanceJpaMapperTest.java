@@ -22,15 +22,16 @@ class CustomerBalanceJpaMapperTest {
         LocalDateTime createdAt = LocalDateTime.of(2026, 1, 15, 10, 30, 0);
         LocalDateTime updatedAt = LocalDateTime.of(2026, 6, 10, 14, 45, 0);
 
-        CustomerBalance domain = CustomerBalance.reconstitute(
-                id, customerId, new BigDecimal("5000.00"), createdAt, updatedAt
-        );
+        CustomerBalance domain = CustomerBalance.reconstitute(id, customerId,
+                new BigDecimal("5000.00"), createdAt, updatedAt);
 
-        CustomerBalanceEntity entity = CustomerBalanceJpaMapper.toEntity(domain);
+        CustomerBalanceEntity entity = CustomerBalanceJpaMapper
+                .toEntity(domain);
 
         assertEquals(id, entity.getId());
         assertEquals(customerId, entity.getCustomerId());
-        assertEquals(0, new BigDecimal("5000.00").compareTo(entity.getTotalBalance()));
+        assertEquals(0,
+                new BigDecimal("5000.00").compareTo(entity.getTotalBalance()));
         assertEquals(createdAt, entity.getCreatedAt());
         assertEquals(updatedAt, entity.getUpdatedAt());
     }
@@ -41,11 +42,11 @@ class CustomerBalanceJpaMapperTest {
         UUID customerId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        CustomerBalance domain = CustomerBalance.reconstitute(
-                id, customerId, BigDecimal.ZERO, now, now
-        );
+        CustomerBalance domain = CustomerBalance.reconstitute(id, customerId,
+                BigDecimal.ZERO, now, now);
 
-        CustomerBalanceEntity entity = CustomerBalanceJpaMapper.toEntity(domain);
+        CustomerBalanceEntity entity = CustomerBalanceJpaMapper
+                .toEntity(domain);
 
         assertEquals(id, entity.getId());
         assertEquals(customerId, entity.getCustomerId());
@@ -72,7 +73,8 @@ class CustomerBalanceJpaMapperTest {
 
         assertEquals(id, domain.getId());
         assertEquals(customerId, domain.getCustomerId());
-        assertEquals(0, new BigDecimal("2500.00").compareTo(domain.getTotalBalance()));
+        assertEquals(0,
+                new BigDecimal("2500.00").compareTo(domain.getTotalBalance()));
         assertEquals(createdAt, domain.getCreatedAt());
         assertEquals(updatedAt, domain.getUpdatedAt());
     }
@@ -93,7 +95,8 @@ class CustomerBalanceJpaMapperTest {
         CustomerBalance domain = CustomerBalanceJpaMapper.toDomain(entity);
 
         assertEquals(id, domain.getId());
-        assertEquals(0, new BigDecimal("-150.00").compareTo(domain.getTotalBalance()));
+        assertEquals(0,
+                new BigDecimal("-150.00").compareTo(domain.getTotalBalance()));
     }
 
     @Test
@@ -103,16 +106,17 @@ class CustomerBalanceJpaMapperTest {
         LocalDateTime createdAt = LocalDateTime.of(2026, 1, 1, 0, 0, 0);
         LocalDateTime updatedAt = LocalDateTime.of(2026, 6, 16, 12, 0, 0);
 
-        CustomerBalance original = CustomerBalance.reconstitute(
-                id, customerId, new BigDecimal("10000.00"), createdAt, updatedAt
-        );
+        CustomerBalance original = CustomerBalance.reconstitute(id, customerId,
+                new BigDecimal("10000.00"), createdAt, updatedAt);
 
-        CustomerBalanceEntity entity = CustomerBalanceJpaMapper.toEntity(original);
+        CustomerBalanceEntity entity = CustomerBalanceJpaMapper
+                .toEntity(original);
         CustomerBalance restored = CustomerBalanceJpaMapper.toDomain(entity);
 
         assertEquals(original.getId(), restored.getId());
         assertEquals(original.getCustomerId(), restored.getCustomerId());
-        assertEquals(0, original.getTotalBalance().compareTo(restored.getTotalBalance()));
+        assertEquals(0, original.getTotalBalance()
+                .compareTo(restored.getTotalBalance()));
         assertEquals(original.getCreatedAt(), restored.getCreatedAt());
         assertEquals(original.getUpdatedAt(), restored.getUpdatedAt());
     }

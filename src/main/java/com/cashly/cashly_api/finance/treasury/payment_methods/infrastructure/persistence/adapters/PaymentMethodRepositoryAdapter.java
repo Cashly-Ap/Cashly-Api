@@ -22,7 +22,8 @@ import java.util.Set;
 @Repository
 public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of("name", "code", "createdAt", "updatedAt");
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("name", "code",
+            "createdAt", "updatedAt");
 
     private final PaymentMethodJpaRepository jpaRepository;
 
@@ -47,8 +48,7 @@ public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
     @Override
     public List<PaymentMethod> findAll(Boolean active) {
         return jpaRepository.findAllActive(active).stream()
-                .map(PaymentMethodJpaMapper::toDomain)
-                .toList();
+                .map(PaymentMethodJpaMapper::toDomain).toList();
     }
 
     @Override
@@ -67,17 +67,20 @@ public class PaymentMethodRepositoryAdapter implements PaymentMethodRepository {
         jpaRepository.deleteById(id.value());
     }
 
-
     @Override
-    public PageResponse<PaymentMethod> findAllWithFilters(String search, Boolean active,
-                                                           int page, int size,
-                                                           String orderBy, String orderDir) {
+    public PageResponse<PaymentMethod> findAllWithFilters(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "name";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        Sort sort = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.by(field).descending()
+                : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
-        Page<PaymentMethodEntity> result = jpaRepository.findAllWithFilters(search, active, pageable);
-        Page<PaymentMethod> mapped = result.map(PaymentMethodJpaMapper::toDomain);
+        Page<PaymentMethodEntity> result = jpaRepository
+                .findAllWithFilters(search, active, pageable);
+        Page<PaymentMethod> mapped = result
+                .map(PaymentMethodJpaMapper::toDomain);
         return PageResponseMapper.from(mapped);
     }
 }

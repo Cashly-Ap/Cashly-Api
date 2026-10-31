@@ -20,7 +20,8 @@ public class CreatePriceTypeUseCase {
         if (priceTypeRepository.existsByName(request.name())) {
             throw new DuplicatePriceTypeNameException(request.name());
         }
-        PriceType priceType = PriceType.create(request.name(), request.description());
+        PriceType priceType = PriceType.create(request.name(),
+                request.description());
         PriceType saved = priceTypeRepository.save(priceType);
         return PriceTypeResponse.from(saved);
     }

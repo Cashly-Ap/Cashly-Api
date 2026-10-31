@@ -35,60 +35,60 @@ class ListWarehousesUseCaseTest {
     @Test
     @DisplayName("returns paginated list")
     void shouldReturnPaginatedList() {
-        Warehouse w1 = Warehouse.reconstitute(
-                UUID.randomUUID(), "WH-001", "Warehouse 1", "Addr 1",
-                "State A", "Mun A", "10001", true, LocalDateTime.now(), LocalDateTime.now()
-        );
-        Warehouse w2 = Warehouse.reconstitute(
-                UUID.randomUUID(), "WH-002", "Warehouse 2", "Addr 2",
-                "State B", "Mun B", "10002", true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        Warehouse w1 = Warehouse.reconstitute(UUID.randomUUID(), "WH-001",
+                "Warehouse 1", "Addr 1", "State A", "Mun A", "10001", true,
+                LocalDateTime.now(), LocalDateTime.now());
+        Warehouse w2 = Warehouse.reconstitute(UUID.randomUUID(), "WH-002",
+                "Warehouse 2", "Addr 2", "State B", "Mun B", "10002", true,
+                LocalDateTime.now(), LocalDateTime.now());
 
-        PageResponse<Warehouse> page = new PageResponse<>(
-                List.of(w1, w2), 2L, 1, 10, 0, true, true, false
-        );
+        PageResponse<Warehouse> page = new PageResponse<>(List.of(w1, w2), 2L,
+                1, 10, 0, true, true, false);
 
-        when(warehouseRepository.findAllWithFilters(null, null, 0, 10, "name", "asc"))
-                .thenReturn(page);
+        when(warehouseRepository.findAllWithFilters(null, null, 0, 10, "name",
+                "asc")).thenReturn(page);
 
-        PageResponse<WarehouseListResponse> response = useCase.execute(null, null, 0, 10, "name", "asc");
+        PageResponse<WarehouseListResponse> response = useCase.execute(null,
+                null, 0, 10, "name", "asc");
 
         assertNotNull(response);
         assertEquals(2, response.content().size());
         assertEquals(2L, response.totalElements());
         assertEquals(1, response.totalPages());
         assertFalse(response.empty());
-        verify(warehouseRepository).findAllWithFilters(null, null, 0, 10, "name", "asc");
+        verify(warehouseRepository).findAllWithFilters(null, null, 0, 10,
+                "name", "asc");
     }
 
     @Test
     @DisplayName("passes search and active filters to repository")
     void shouldPassFiltersToRepository() {
-        PageResponse<Warehouse> page = new PageResponse<>(
-                List.of(), 0L, 0, 10, 0, true, true, true
-        );
+        PageResponse<Warehouse> page = new PageResponse<>(List.of(), 0L, 0, 10,
+                0, true, true, true);
 
-        when(warehouseRepository.findAllWithFilters("main", true, 0, 20, "code", "desc"))
-                .thenReturn(page);
+        when(warehouseRepository.findAllWithFilters("main", true, 0, 20, "code",
+                "desc")).thenReturn(page);
 
-        PageResponse<WarehouseListResponse> response = useCase.execute("main", true, 0, 20, "code", "desc");
+        PageResponse<WarehouseListResponse> response = useCase.execute("main",
+                true, 0, 20, "code", "desc");
 
         assertNotNull(response);
         assertTrue(response.empty());
-        verify(warehouseRepository).findAllWithFilters("main", true, 0, 20, "code", "desc");
+        verify(warehouseRepository).findAllWithFilters("main", true, 0, 20,
+                "code", "desc");
     }
 
     @Test
     @DisplayName("returns empty page when no results")
     void shouldReturnEmptyPage() {
-        PageResponse<Warehouse> page = new PageResponse<>(
-                List.of(), 0L, 0, 10, 0, true, true, true
-        );
+        PageResponse<Warehouse> page = new PageResponse<>(List.of(), 0L, 0, 10,
+                0, true, true, true);
 
-        when(warehouseRepository.findAllWithFilters("nonexistent", null, 0, 10, "name", "asc"))
-                .thenReturn(page);
+        when(warehouseRepository.findAllWithFilters("nonexistent", null, 0, 10,
+                "name", "asc")).thenReturn(page);
 
-        PageResponse<WarehouseListResponse> response = useCase.execute("nonexistent", null, 0, 10, "name", "asc");
+        PageResponse<WarehouseListResponse> response = useCase
+                .execute("nonexistent", null, 0, 10, "name", "asc");
 
         assertNotNull(response);
         assertTrue(response.content().isEmpty());

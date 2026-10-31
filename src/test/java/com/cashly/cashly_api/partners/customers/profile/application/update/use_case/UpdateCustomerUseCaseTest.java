@@ -55,26 +55,29 @@ class UpdateCustomerUseCaseTest {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
 
         UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated",
-                45, new BigDecimal("1000.00"), true,
+                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated", 45,
+                new BigDecimal("1000.00"), true,
                 List.of(new EmailRequest("new@example.com")),
                 List.of(new PhoneRequest("+58-9876543210")),
-                List.of(new AddressRequest("456 New St", true, true, "State", "Mun", "2000")),
-                "Updated notes", null
-        );
+                List.of(new AddressRequest("456 New St", true, true, "State",
+                        "Mun", "2000")),
+                "Updated notes", null);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
-                new CustomerDetailResponse(
-                        customer.getId().toString(), 1001L, "Updated Corp", "BUSINESS",
-                        "J-98765432-1", "Updated", 45, new BigDecimal("1000.00"), true,
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(customerRepository.save(any(Customer.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean()))
+                .thenReturn(new CustomerDetailResponse(
+                        customer.getId().toString(), 1001L, "Updated Corp",
+                        "BUSINESS", "J-98765432-1", "Updated", 45,
+                        new BigDecimal("1000.00"), true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), "Updated notes", null, true
-                )
-        );
+                        List.of(), List.of(), List.of(), "Updated notes", null,
+                        true));
 
-        CustomerDetailResponse response = useCase.execute(customerId.toString(), request);
+        CustomerDetailResponse response = useCase.execute(customerId.toString(),
+                request);
 
         assertNotNull(response);
         assertEquals("Updated Corp", response.legalName());
@@ -88,15 +91,14 @@ class UpdateCustomerUseCaseTest {
     void shouldRejectRifRegisteredByAnotherCustomer() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
         UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated",
-                45, new BigDecimal("1000.00"), true,
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated", 45,
+                new BigDecimal("1000.00"), true, List.of(), List.of(),
+                List.of(), null, null);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(customerRepository.existsByRifAndIdNot(new Rif("J-98765432-1"), new CustomerId(customerId)))
-                .thenReturn(true);
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(customerRepository.existsByRifAndIdNot(new Rif("J-98765432-1"),
+                new CustomerId(customerId))).thenReturn(true);
 
         assertThrows(DuplicateCustomerRifException.class,
                 () -> useCase.execute(customerId.toString(), request));
@@ -108,13 +110,12 @@ class UpdateCustomerUseCaseTest {
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
         UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated",
-                45, new BigDecimal("1000.00"), true,
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+                "Updated Corp", "BUSINESS", "J-98765432-1", "Updated", 45,
+                new BigDecimal("1000.00"), true, List.of(), List.of(),
+                List.of(), null, null);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.empty());
 
         assertThrows(CustomerNotFoundException.class,
                 () -> useCase.execute(customerId.toString(), request));
@@ -128,25 +129,24 @@ class UpdateCustomerUseCaseTest {
     void shouldActivateCustomerWhenActiveIsTrue() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId, false);
 
-        UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
-                30, BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+        UpdateCustomerRequest request = new UpdateCustomerRequest("Test Corp",
+                "BUSINESS", "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
+                List.of(), List.of(), List.of(), null, null);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
-                new CustomerDetailResponse(
-                        customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
-                        "J-12345678-9", "Test", 30, BigDecimal.ZERO, true,
-                        customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), null, null, true
-                )
-        );
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(customerRepository.save(any(Customer.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean()))
+                .thenReturn(new CustomerDetailResponse(
+                        customer.getId().toString(), 1001L, "Test Corp",
+                        "BUSINESS", "J-12345678-9", "Test", 30, BigDecimal.ZERO,
+                        true, customer.getPaymentType(),
+                        customer.getCreatedAt(), List.of(), List.of(),
+                        List.of(), null, null, true));
 
-        CustomerDetailResponse response = useCase.execute(customerId.toString(), request);
+        CustomerDetailResponse response = useCase.execute(customerId.toString(),
+                request);
 
         assertNotNull(response);
         assertTrue(response.active());
@@ -157,25 +157,24 @@ class UpdateCustomerUseCaseTest {
     void shouldDeactivateCustomerWhenActiveIsFalse() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId, true);
 
-        UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
-                30, BigDecimal.ZERO, false,
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+        UpdateCustomerRequest request = new UpdateCustomerRequest("Test Corp",
+                "BUSINESS", "J-12345678-9", "Test", 30, BigDecimal.ZERO, false,
+                List.of(), List.of(), List.of(), null, null);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(mapper.toDetailResponse(any(Customer.class), anyBoolean())).thenReturn(
-                new CustomerDetailResponse(
-                        customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
-                        "J-12345678-9", "Test", 30, BigDecimal.ZERO, false,
-                        customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), null, null, true
-                )
-        );
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(customerRepository.save(any(Customer.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDetailResponse(any(Customer.class), anyBoolean()))
+                .thenReturn(new CustomerDetailResponse(
+                        customer.getId().toString(), 1001L, "Test Corp",
+                        "BUSINESS", "J-12345678-9", "Test", 30, BigDecimal.ZERO,
+                        false, customer.getPaymentType(),
+                        customer.getCreatedAt(), List.of(), List.of(),
+                        List.of(), null, null, true));
 
-        CustomerDetailResponse response = useCase.execute(customerId.toString(), request);
+        CustomerDetailResponse response = useCase.execute(customerId.toString(),
+                request);
 
         assertNotNull(response);
         assertFalse(response.active());

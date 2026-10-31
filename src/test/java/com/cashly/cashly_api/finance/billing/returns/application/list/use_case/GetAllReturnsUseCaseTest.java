@@ -51,7 +51,8 @@ class GetAllReturnsUseCaseTest {
                 .thenReturn(List.of(return_));
         when(returnMapper.toListResponse(return_)).thenReturn(listResponse);
 
-        List<ReturnListResponse> result = useCase.execute(null, null, null, null);
+        List<ReturnListResponse> result = useCase.execute(null, null, null,
+                null);
 
         assertEquals(1, result.size());
         assertSame(listResponse, result.get(0));
@@ -67,10 +68,12 @@ class GetAllReturnsUseCaseTest {
         when(returnRepository.findAllWithFilters(dateFrom, dateTo, null, null))
                 .thenReturn(List.of());
 
-        List<ReturnListResponse> result = useCase.execute(dateFrom, dateTo, null, null);
+        List<ReturnListResponse> result = useCase.execute(dateFrom, dateTo,
+                null, null);
 
         assertTrue(result.isEmpty());
-        verify(returnRepository).findAllWithFilters(dateFrom, dateTo, null, null);
+        verify(returnRepository).findAllWithFilters(dateFrom, dateTo, null,
+                null);
     }
 
     @Test
@@ -80,10 +83,12 @@ class GetAllReturnsUseCaseTest {
         when(returnRepository.findAllWithFilters(null, null, customerId, null))
                 .thenReturn(List.of());
 
-        List<ReturnListResponse> result = useCase.execute(null, null, customerId, null);
+        List<ReturnListResponse> result = useCase.execute(null, null,
+                customerId, null);
 
         assertTrue(result.isEmpty());
-        verify(returnRepository).findAllWithFilters(null, null, customerId, null);
+        verify(returnRepository).findAllWithFilters(null, null, customerId,
+                null);
     }
 
     @Test
@@ -93,10 +98,12 @@ class GetAllReturnsUseCaseTest {
         when(returnRepository.findAllWithFilters(null, null, null, invoiceId))
                 .thenReturn(List.of());
 
-        List<ReturnListResponse> result = useCase.execute(null, null, null, invoiceId);
+        List<ReturnListResponse> result = useCase.execute(null, null, null,
+                invoiceId);
 
         assertTrue(result.isEmpty());
-        verify(returnRepository).findAllWithFilters(null, null, null, invoiceId);
+        verify(returnRepository).findAllWithFilters(null, null, null,
+                invoiceId);
     }
 
     @Test
@@ -105,8 +112,8 @@ class GetAllReturnsUseCaseTest {
                 .thenReturn(List.of());
 
         List<ReturnListResponse> result = useCase.execute(
-                LocalDate.now().minusDays(30), LocalDate.now(), UUID.randomUUID(), UUID.randomUUID()
-        );
+                LocalDate.now().minusDays(30), LocalDate.now(),
+                UUID.randomUUID(), UUID.randomUUID());
 
         assertTrue(result.isEmpty());
     }
@@ -115,23 +122,22 @@ class GetAllReturnsUseCaseTest {
     void should_MapEachReturn_When_MultipleReturns() {
         Return return1 = buildReturn();
         Return return2 = buildReturn();
-        ReturnListResponse resp1 = new ReturnListResponse(
-                UUID.randomUUID(), "RET-2026-0001", UUID.randomUUID(), "INV-001",
+        ReturnListResponse resp1 = new ReturnListResponse(UUID.randomUUID(),
+                "RET-2026-0001", UUID.randomUUID(), "INV-001",
                 UUID.randomUUID(), "Client A", "AUTOMATIC", "Reason A",
-                BigDecimal.TEN, 1, LocalDateTime.now()
-        );
-        ReturnListResponse resp2 = new ReturnListResponse(
-                UUID.randomUUID(), "RET-2026-0002", UUID.randomUUID(), "INV-002",
+                BigDecimal.TEN, 1, LocalDateTime.now());
+        ReturnListResponse resp2 = new ReturnListResponse(UUID.randomUUID(),
+                "RET-2026-0002", UUID.randomUUID(), "INV-002",
                 UUID.randomUUID(), "Client B", "MANUAL", "Reason B",
-                BigDecimal.valueOf(20), 2, LocalDateTime.now()
-        );
+                BigDecimal.valueOf(20), 2, LocalDateTime.now());
 
         when(returnRepository.findAllWithFilters(null, null, null, null))
                 .thenReturn(List.of(return1, return2));
         when(returnMapper.toListResponse(return1)).thenReturn(resp1);
         when(returnMapper.toListResponse(return2)).thenReturn(resp2);
 
-        List<ReturnListResponse> result = useCase.execute(null, null, null, null);
+        List<ReturnListResponse> result = useCase.execute(null, null, null,
+                null);
 
         assertEquals(2, result.size());
         assertEquals("Client A", result.get(0).customerName());
@@ -139,24 +145,14 @@ class GetAllReturnsUseCaseTest {
     }
 
     private Return buildReturn() {
-        return Return.reconstitute(
-                ReturnId.generate(),
-                ReturnNumber.of(2026, 1),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                ReturnType.AUTOMATIC,
-                "Producto defectuoso",
+        return Return.reconstitute(ReturnId.generate(),
+                ReturnNumber.of(2026, 1), UUID.randomUUID(), UUID.randomUUID(),
+                ReturnType.AUTOMATIC, "Producto defectuoso",
                 new BigDecimal("50.00"),
-                List.of(ReturnLine.create(
-                        UUID.randomUUID(), UUID.randomUUID(),
-                        BigDecimal.ONE, new BigDecimal("50.00"), new BigDecimal("50.00"),
-                        List.of()
-                )),
-                List.of(),
-                UUID.randomUUID(),
-                "Test User",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                List.of(ReturnLine.create(UUID.randomUUID(), UUID.randomUUID(),
+                        BigDecimal.ONE, new BigDecimal("50.00"),
+                        new BigDecimal("50.00"), List.of())),
+                List.of(), UUID.randomUUID(), "Test User", LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

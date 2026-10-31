@@ -10,7 +10,8 @@ public class GetOverdueInvoicesUseCase {
 
     private final CreditValidationGateway creditValidationGateway;
 
-    public GetOverdueInvoicesUseCase(CreditValidationGateway creditValidationGateway) {
+    public GetOverdueInvoicesUseCase(
+            CreditValidationGateway creditValidationGateway) {
         this.creditValidationGateway = creditValidationGateway;
     }
 

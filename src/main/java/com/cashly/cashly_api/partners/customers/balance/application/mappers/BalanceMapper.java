@@ -11,26 +11,18 @@ public final class BalanceMapper {
     }
 
     public static CustomerBalanceResponse toResponse(CustomerBalance balance) {
-        return new CustomerBalanceResponse(
-            balance.getCustomerId(),
-            balance.getTotalBalance(),
-            balance.getCreatedAt(),
-            balance.getUpdatedAt()
-        );
+        return new CustomerBalanceResponse(balance.getCustomerId(),
+                balance.getTotalBalance(), balance.getCreatedAt(),
+                balance.getUpdatedAt());
     }
 
-    public static BalanceTransactionResponse toTransactionResponse(BalanceTransaction transaction) {
-        return new BalanceTransactionResponse(
-            transaction.getId(),
-            transaction.getCustomerId(),
-            transaction.getType().name(),
-            transaction.getAmount(),
-            transaction.getReferenceType().name(),
-            transaction.getReferenceId(),
-            transaction.getNumber(),
-            transaction.getReferenceNumber(),
-            transaction.getCreatedBy(),
-            transaction.getCreatedAt()
-        );
+    public static BalanceTransactionResponse toTransactionResponse(
+            BalanceTransaction transaction) {
+        return new BalanceTransactionResponse(transaction.getId(),
+                transaction.getCustomerId(), transaction.getType().name(),
+                transaction.getAmount(), transaction.getReferenceType().name(),
+                transaction.getReferenceId(), transaction.getNumber(),
+                transaction.getReferenceNumber(), transaction.getCreatedBy(),
+                transaction.getCreatedAt());
     }
 }

@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CustomerCreditQueryConfig {
     @Bean
-    public CustomerCreditContextQuery customerCreditContextQuery(CustomerRepository customers, CustomerBalanceRepository balances) {
+    public CustomerCreditContextQuery customerCreditContextQuery(
+            CustomerRepository customers, CustomerBalanceRepository balances) {
         return new RepositoryCustomerCreditContextQuery(customers, balances);
     }
 }

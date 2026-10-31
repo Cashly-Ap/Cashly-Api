@@ -11,7 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class ProductStockBoundaryTest {
     @Test
     void shouldRejectWarehouseAndCustomerTypesInProductStockCore() {
-        for (Class<?> type : List.of(GetProductStockUseCase.class, GetProductsForTransactionUseCase.class, ProductStockByWarehouseResponse.class)) {
+        for (Class<?> type : List.of(GetProductStockUseCase.class,
+                GetProductsForTransactionUseCase.class,
+                ProductStockByWarehouseResponse.class)) {
             for (var constructor : type.getConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
                     assertOwnType(parameter);
@@ -25,7 +27,13 @@ class ProductStockBoundaryTest {
         }
     }
     private void assertOwnType(Class<?> type) {
-        assertFalse(type.getPackageName().startsWith("com.cashly.cashly_api.inventory.warehouses"), type.getName());
-        assertFalse(type.getPackageName().startsWith("com.cashly.cashly_api.partners.customers"), type.getName());
+        assertFalse(
+                type.getPackageName().startsWith(
+                        "com.cashly.cashly_api.inventory.warehouses"),
+                type.getName());
+        assertFalse(
+                type.getPackageName()
+                        .startsWith("com.cashly.cashly_api.partners.customers"),
+                type.getName());
     }
 }

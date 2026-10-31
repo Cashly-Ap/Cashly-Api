@@ -16,46 +16,45 @@ public class StockAvailabilityQueryService implements StockAvailabilityQuery {
     private final WarehouseRepository warehouseRepository;
     private final CustomerWarehouseAccessGateway accessGateway;
 
-    public StockAvailabilityQueryService(WarehouseStockRepository warehouseStockRepository,
-                                   WarehouseRepository warehouseRepository,
-                                   CustomerWarehouseAccessGateway accessGateway) {
+    public StockAvailabilityQueryService(
+            WarehouseStockRepository warehouseStockRepository,
+            WarehouseRepository warehouseRepository,
+            CustomerWarehouseAccessGateway accessGateway) {
         this.warehouseStockRepository = warehouseStockRepository;
         this.warehouseRepository = warehouseRepository;
         this.accessGateway = accessGateway;
     }
 
-
-
     @Override
-    public Map<UUID, List<WarehouseStockInfo>> getAllStockByProducts(UUID customerId, List<UUID> productIds) {
+    public Map<UUID, List<WarehouseStockInfo>> getAllStockByProducts(
+            UUID customerId, List<UUID> productIds) {
         Set<UUID> uniqueProductIds = new HashSet<>(productIds);
 
-        Set<UUID> accessibleWarehouseIds = accessGateway.accessibleWarehouseIds(customerId);
+        Set<UUID> accessibleWarehouseIds = accessGateway
+                .accessibleWarehouseIds(customerId);
 
         Map<UUID, Warehouse> warehouseCache = new HashMap<>();
         Map<UUID, List<WarehouseStockInfo>> result = new HashMap<>();
 
         for (UUID productId : uniqueProductIds) {
-            List<WarehouseStock> stocks = warehouseStockRepository.findByProductId(productId);
+            List<WarehouseStock> stocks = warehouseStockRepository
+                    .findByProductId(productId);
             List<WarehouseStockInfo> stockInfos = new ArrayList<>();
 
             for (WarehouseStock stock : stocks) {
-                if (!accessibleWarehouseIds.contains(stock.getWarehouseId())) continue;
+                if (!accessibleWarehouseIds.contains(stock.getWarehouseId()))
+                    continue;
 
                 Warehouse warehouse = warehouseCache.computeIfAbsent(
                         stock.getWarehouseId(),
-                        wid -> warehouseRepository.findById(wid).orElse(null)
-                );
-                if (warehouse == null) continue;
+                        wid -> warehouseRepository.findById(wid).orElse(null));
+                if (warehouse == null)
+                    continue;
 
-                stockInfos.add(new WarehouseStockInfo(
-                        stock.getWarehouseId(),
-                        warehouse.getCode(),
-                        warehouse.getName(),
-                        stock.getQuantity(),
-                        stock.getReserved(),
-                        stock.getAvailableQuantity()
-                ));
+                stockInfos.add(new WarehouseStockInfo(stock.getWarehouseId(),
+                        warehouse.getCode(), warehouse.getName(),
+                        stock.getQuantity(), stock.getReserved(),
+                        stock.getAvailableQuantity()));
             }
 
             result.put(productId, stockInfos);
@@ -69,8 +68,7 @@ public class StockAvailabilityQueryService implements StockAvailabilityQuery {
         Map<Key, Integer> groupedAllocations = allocations.stream()
                 .collect(Collectors.groupingBy(
                         a -> new Key(a.warehouseId(), a.productId()),
-                        Collectors.summingInt(AllocationData::allocated)
-                ));
+                        Collectors.summingInt(AllocationData::allocated)));
 
         Map<UUID, Warehouse> warehouseCache = new HashMap<>();
         List<EnrichedStock> result = new ArrayList<>();
@@ -81,28 +79,24 @@ public class StockAvailabilityQueryService implements StockAvailabilityQuery {
 
             Warehouse warehouse = warehouseCache.computeIfAbsent(
                     key.warehouseId(),
-                    wid -> warehouseRepository.findById(wid).orElse(null)
-            );
-            if (warehouse == null) continue;
+                    wid -> warehouseRepository.findById(wid).orElse(null));
+            if (warehouse == null)
+                continue;
 
             int currentStock = warehouseStockRepository
-                    .findByWarehouseIdAndProductId(key.warehouseId(), key.productId())
-                    .map(WarehouseStock::getQuantity)
-                    .orElse(0);
+                    .findByWarehouseIdAndProductId(key.warehouseId(),
+                            key.productId())
+                    .map(WarehouseStock::getQuantity).orElse(0);
 
             int availableStock = currentStock + totalAllocated;
 
-            result.add(new EnrichedStock(
-                    key.warehouseId(),
-                    key.productId(),
-                    warehouse.getCode(),
-                    warehouse.getName(),
-                    availableStock
-            ));
+            result.add(new EnrichedStock(key.warehouseId(), key.productId(),
+                    warehouse.getCode(), warehouse.getName(), availableStock));
         }
 
         return result;
     }
 
-    private record Key(UUID warehouseId, UUID productId) {}
+    private record Key(UUID warehouseId, UUID productId) {
+    }
 }

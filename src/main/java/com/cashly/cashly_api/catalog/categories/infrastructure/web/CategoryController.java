@@ -29,10 +29,10 @@ public class CategoryController {
     private final DeleteCategoryUseCase deleteCategoryUseCase;
 
     public CategoryController(CreateCategoryUseCase createCategoryUseCase,
-                               GetCategoryUseCase getCategoryUseCase,
-                               ListCategoriesUseCase listCategoriesUseCase,
-                               UpdateCategoryUseCase updateCategoryUseCase,
-                               DeleteCategoryUseCase deleteCategoryUseCase) {
+            GetCategoryUseCase getCategoryUseCase,
+            ListCategoriesUseCase listCategoriesUseCase,
+            UpdateCategoryUseCase updateCategoryUseCase,
+            DeleteCategoryUseCase deleteCategoryUseCase) {
         this.createCategoryUseCase = createCategoryUseCase;
         this.getCategoryUseCase = getCategoryUseCase;
         this.listCategoriesUseCase = listCategoriesUseCase;
@@ -42,8 +42,10 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('CATALOG:CREATE')")
-    public ResponseEntity<CategoryDetailResponse> create(@Valid @RequestBody CreateCategoryRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createCategoryUseCase.execute(request));
+    public ResponseEntity<CategoryDetailResponse> create(
+            @Valid @RequestBody CreateCategoryRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(createCategoryUseCase.execute(request));
     }
 
     @GetMapping
@@ -55,19 +57,21 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        return ResponseEntity.ok(listCategoriesUseCase.execute(search, active, page, size, orderBy, orderDir));
+        return ResponseEntity.ok(listCategoriesUseCase.execute(search, active,
+                page, size, orderBy, orderDir));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('CATALOG:READ')")
-    public ResponseEntity<CategoryDetailResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<CategoryDetailResponse> getById(
+            @PathVariable UUID id) {
         return ResponseEntity.ok(getCategoryUseCase.execute(id));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
     public ResponseEntity<CategoryDetailResponse> update(@PathVariable UUID id,
-                                                          @Valid @RequestBody UpdateCategoryRequest request) {
+            @Valid @RequestBody UpdateCategoryRequest request) {
         return ResponseEntity.ok(updateCategoryUseCase.execute(id, request));
     }
 

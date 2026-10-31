@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class LocalPaymentMethodUsageGateway implements PaymentMethodUsageGateway {
+public class LocalPaymentMethodUsageGateway
+        implements
+            PaymentMethodUsageGateway {
     private final com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.in.QueryPaymentMethodUsage payments;
     private final com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.QueryPaymentMethodUsage cashregister;
 
@@ -18,6 +20,7 @@ public class LocalPaymentMethodUsageGateway implements PaymentMethodUsageGateway
 
     @Override
     public boolean hasAssociatedRecords(UUID paymentMethodId) {
-        return payments.hasUsage(paymentMethodId) || cashregister.hasUsage(paymentMethodId);
+        return payments.hasUsage(paymentMethodId)
+                || cashregister.hasUsage(paymentMethodId);
     }
 }

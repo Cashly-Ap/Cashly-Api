@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.UUID;
 public class RepositoryCreditNoteLedgerQuery implements CreditNoteLedgerQuery {
     private final CreditNoteRepository notes;
-    public RepositoryCreditNoteLedgerQuery(CreditNoteRepository notes) { this.notes = notes; }
+    public RepositoryCreditNoteLedgerQuery(CreditNoteRepository notes) {
+        this.notes = notes;
+    }
     public List<BigDecimal> amountsByInvoiceId(UUID invoiceId) {
-        return notes.findByInvoiceId(invoiceId).stream().map(note -> note.getAmount()).toList();
+        return notes.findByInvoiceId(invoiceId).stream()
+                .map(note -> note.getAmount()).toList();
     }
 }

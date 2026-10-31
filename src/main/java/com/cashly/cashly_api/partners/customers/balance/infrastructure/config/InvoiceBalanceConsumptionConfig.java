@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InvoiceBalanceConsumptionConfig {
     @Bean
-    public InvoiceBalanceConsumption invoiceBalanceConsumption(ConsumeCustomerBalanceUseCase consumeBalance) {
+    public InvoiceBalanceConsumption invoiceBalanceConsumption(
+            ConsumeCustomerBalanceUseCase consumeBalance) {
         return new InvoiceBalanceConsumptionService(consumeBalance);
     }
 }

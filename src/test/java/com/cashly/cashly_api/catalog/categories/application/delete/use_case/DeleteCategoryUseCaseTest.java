@@ -27,7 +27,8 @@ class DeleteCategoryUseCaseTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Mock private CategoryUsageGateway usageGateway;
+    @Mock
+    private CategoryUsageGateway usageGateway;
 
     @InjectMocks
     private DeleteCategoryUseCase useCase;
@@ -35,9 +36,8 @@ class DeleteCategoryUseCaseTest {
     @Test
     void should_DeactivateCategory_When_NoActiveProducts() {
         UUID id = UUID.randomUUID();
-        Category category = Category.reconstitute(
-                id, "Category", "Description", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category category = Category.reconstitute(id, "Category", "Description",
+                true, LocalDateTime.now(), LocalDateTime.now());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
         when(usageGateway.countActiveProductsByCategory(id)).thenReturn(0L);
@@ -57,7 +57,8 @@ class DeleteCategoryUseCaseTest {
 
         when(categoryRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(CategoryNotFoundException.class, () -> useCase.execute(id));
+        assertThrows(CategoryNotFoundException.class,
+                () -> useCase.execute(id));
 
         verify(categoryRepository).findById(id);
         verify(usageGateway, never()).countActiveProductsByCategory(any());
@@ -67,14 +68,14 @@ class DeleteCategoryUseCaseTest {
     @Test
     void should_ThrowHasActiveProductsException_When_CategoryHasActiveProducts() {
         UUID id = UUID.randomUUID();
-        Category category = Category.reconstitute(
-                id, "Category", "Description", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category category = Category.reconstitute(id, "Category", "Description",
+                true, LocalDateTime.now(), LocalDateTime.now());
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
         when(usageGateway.countActiveProductsByCategory(id)).thenReturn(3L);
 
-        assertThrows(CategoryHasActiveProductsException.class, () -> useCase.execute(id));
+        assertThrows(CategoryHasActiveProductsException.class,
+                () -> useCase.execute(id));
 
         verify(categoryRepository).findById(id);
         verify(usageGateway).countActiveProductsByCategory(id);

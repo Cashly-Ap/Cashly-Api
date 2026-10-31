@@ -17,19 +17,23 @@ public class TogglePaymentMethodUseCase {
     private final PaymentMethodRepository repository;
     private final PaymentMethodUsageGateway usageGateway;
 
-    public TogglePaymentMethodUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
+    public TogglePaymentMethodUseCase(PaymentMethodRepository repository,
+            PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
         this.usageGateway = usageGateway;
     }
 
     @Transactional
     public PaymentMethodResponse execute(UUID id) {
-        PaymentMethod paymentMethod = repository.findById(PaymentMethodId.of(id))
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + id));
+        PaymentMethod paymentMethod = repository
+                .findById(PaymentMethodId.of(id))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment method not found: " + id));
 
         paymentMethod.toggleActive();
         PaymentMethod saved = repository.save(paymentMethod);
 
-        return PaymentMethodMapper.toResponse(saved, usageGateway.hasAssociatedRecords(saved.getId().value()));
+        return PaymentMethodMapper.toResponse(saved,
+                usageGateway.hasAssociatedRecords(saved.getId().value()));
     }
 }

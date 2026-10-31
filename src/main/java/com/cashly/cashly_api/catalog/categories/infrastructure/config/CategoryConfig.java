@@ -20,31 +20,41 @@ public class CategoryConfig {
     }
 
     @Bean
-    public CreateCategoryUseCase createCategoryUseCase(CategoryRepository categoryRepository,
-                                                        CategoryMapper categoryMapper) {
+    public CreateCategoryUseCase createCategoryUseCase(
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
         return new CreateCategoryUseCase(categoryRepository, categoryMapper);
     }
 
     @Bean
-    public GetCategoryUseCase getCategoryUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository,
-                                                  CategoryMapper categoryMapper) {
-        return new GetCategoryUseCase(usageGateway, categoryRepository, categoryMapper);
+    public GetCategoryUseCase getCategoryUseCase(
+            CategoryUsageGateway usageGateway,
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
+        return new GetCategoryUseCase(usageGateway, categoryRepository,
+                categoryMapper);
     }
 
     @Bean
-    public ListCategoriesUseCase listCategoriesUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository,
-                                                        CategoryMapper categoryMapper) {
-        return new ListCategoriesUseCase(usageGateway, categoryRepository, categoryMapper);
+    public ListCategoriesUseCase listCategoriesUseCase(
+            CategoryUsageGateway usageGateway,
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
+        return new ListCategoriesUseCase(usageGateway, categoryRepository,
+                categoryMapper);
     }
 
     @Bean
-    public UpdateCategoryUseCase updateCategoryUseCase(CategoryRepository categoryRepository,
-                                                        CategoryMapper categoryMapper) {
+    public UpdateCategoryUseCase updateCategoryUseCase(
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
         return new UpdateCategoryUseCase(categoryRepository, categoryMapper);
     }
 
     @Bean
-    public DeleteCategoryUseCase deleteCategoryUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository) {
+    public DeleteCategoryUseCase deleteCategoryUseCase(
+            CategoryUsageGateway usageGateway,
+            CategoryRepository categoryRepository) {
         return new DeleteCategoryUseCase(usageGateway, categoryRepository);
     }
 }

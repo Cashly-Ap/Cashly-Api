@@ -12,5 +12,7 @@ public interface InvoiceNoteDetailsGateway {
     Map<UUID, BigDecimal> sumCreditNotes(List<UUID> invoiceIds);
     Map<UUID, BigDecimal> sumDebitNotes(List<UUID> invoiceIds);
 
-    record Note(UUID id, String number, BigDecimal amount, String reason, LocalDateTime createdAt) {}
+    record Note(UUID id, String number, BigDecimal amount, String reason,
+            LocalDateTime createdAt) {
+    }
 }

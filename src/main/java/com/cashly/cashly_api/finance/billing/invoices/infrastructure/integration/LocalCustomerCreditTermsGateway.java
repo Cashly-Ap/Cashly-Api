@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class LocalCustomerCreditTermsGateway implements CustomerCreditTermsGateway {
+public class LocalCustomerCreditTermsGateway
+        implements
+            CustomerCreditTermsGateway {
     private final CustomerCreditTermsQuery query;
 
     public LocalCustomerCreditTermsGateway(CustomerCreditTermsQuery query) {

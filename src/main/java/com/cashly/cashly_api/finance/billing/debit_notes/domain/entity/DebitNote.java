@@ -21,9 +21,10 @@ public class DebitNote {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private DebitNote(DebitNoteId id, DebitNoteNumber noteNumber, UUID customerId, UUID invoiceId,
-                      BigDecimal amount, String reason,
-                      UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private DebitNote(DebitNoteId id, DebitNoteNumber noteNumber,
+            UUID customerId, UUID invoiceId, BigDecimal amount, String reason,
+            UUID createdBy, String createdByName, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.noteNumber = noteNumber;
         this.customerId = customerId;
@@ -36,14 +37,16 @@ public class DebitNote {
         this.updatedAt = updatedAt;
     }
 
-    public static DebitNote create(DebitNoteNumber noteNumber, UUID customerId, UUID invoiceId,
-                                   BigDecimal amount, String reason, UUID createdBy, String createdByName) {
+    public static DebitNote create(DebitNoteNumber noteNumber, UUID customerId,
+            UUID invoiceId, BigDecimal amount, String reason, UUID createdBy,
+            String createdByName) {
         Objects.requireNonNull(noteNumber, "Debit note number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(invoiceId, "Invoice id cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Amount must be greater than zero");
         }
         Objects.requireNonNull(reason, "Reason cannot be null");
         if (reason.isBlank()) {
@@ -53,33 +56,56 @@ public class DebitNote {
         Objects.requireNonNull(createdByName, "Created by name cannot be null");
 
         LocalDateTime now = LocalDateTime.now();
-        return new DebitNote(DebitNoteId.generate(), noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, now, now);
+        return new DebitNote(DebitNoteId.generate(), noteNumber, customerId,
+                invoiceId, amount, reason, createdBy, createdByName, now, now);
     }
 
-    public static DebitNote reconstitute(DebitNoteId id, DebitNoteNumber noteNumber, UUID customerId,
-                                         UUID invoiceId, BigDecimal amount, String reason,
-                                         UUID createdBy, String createdByName,
-                                         LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new DebitNote(id, noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, createdAt, updatedAt);
+    public static DebitNote reconstitute(DebitNoteId id,
+            DebitNoteNumber noteNumber, UUID customerId, UUID invoiceId,
+            BigDecimal amount, String reason, UUID createdBy,
+            String createdByName, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        return new DebitNote(id, noteNumber, customerId, invoiceId, amount,
+                reason, createdBy, createdByName, createdAt, updatedAt);
     }
 
-    public DebitNoteId getId() { return id; }
-    public DebitNoteNumber getNoteNumber() { return noteNumber; }
-    public UUID getCustomerId() { return customerId; }
-    public UUID getInvoiceId() { return invoiceId; }
-    public BigDecimal getAmount() { return amount; }
-    public String getReason() { return reason; }
-    public UUID getCreatedBy() { return createdBy; }
-    public String getCreatedByName() { return createdByName; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public DebitNoteId getId() {
+        return id;
+    }
+    public DebitNoteNumber getNoteNumber() {
+        return noteNumber;
+    }
+    public UUID getCustomerId() {
+        return customerId;
+    }
+    public UUID getInvoiceId() {
+        return invoiceId;
+    }
+    public BigDecimal getAmount() {
+        return amount;
+    }
+    public String getReason() {
+        return reason;
+    }
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+    public String getCreatedByName() {
+        return createdByName;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         DebitNote debitNote = (DebitNote) o;
         return Objects.equals(id, debitNote.id);
     }
@@ -91,6 +117,7 @@ public class DebitNote {
 
     @Override
     public String toString() {
-        return "DebitNote{id=" + id + ", noteNumber=" + noteNumber + ", amount=" + amount + "}";
+        return "DebitNote{id=" + id + ", noteNumber=" + noteNumber + ", amount="
+                + amount + "}";
     }
 }

@@ -17,8 +17,8 @@ public class LocalQuoteWarehouseAdapter implements QuoteWarehouseGateway {
     private final ProductStockQuery stocks;
 
     public LocalQuoteWarehouseAdapter(WarehouseDirectoryQuery directory,
-                                      CustomerWarehouseAccessQuery customerAccess,
-                                      ProductStockQuery stocks) {
+            CustomerWarehouseAccessQuery customerAccess,
+            ProductStockQuery stocks) {
         this.directory = directory;
         this.customerAccess = customerAccess;
         this.stocks = stocks;
@@ -26,8 +26,9 @@ public class LocalQuoteWarehouseAdapter implements QuoteWarehouseGateway {
 
     @Override
     public Optional<Warehouse> findById(UUID warehouseId) {
-        return directory.findById(warehouseId).map(warehouse -> new Warehouse(warehouse.id(),
-                warehouse.name(), warehouse.address()));
+        return directory.findById(warehouseId)
+                .map(warehouse -> new Warehouse(warehouse.id(),
+                        warehouse.name(), warehouse.address()));
     }
 
     @Override
@@ -37,7 +38,10 @@ public class LocalQuoteWarehouseAdapter implements QuoteWarehouseGateway {
 
     @Override
     public List<Stock> findStockByProductId(UUID productId) {
-        return stocks.findByProductId(productId).stream().filter(stock -> stock.warehouseExists())
-                .map(stock -> new Stock(stock.warehouseId(), stock.warehouseName(), stock.available())).toList();
+        return stocks.findByProductId(productId).stream()
+                .filter(stock -> stock.warehouseExists())
+                .map(stock -> new Stock(stock.warehouseId(),
+                        stock.warehouseName(), stock.available()))
+                .toList();
     }
 }

@@ -33,9 +33,9 @@ public class TransferStockUseCase {
     private final StockCatalogGateway catalog;
 
     public TransferStockUseCase(WarehouseRepository warehouseRepository,
-                                 WarehouseStockRepository warehouseStockRepository,
-                                 StockMovementRepository stockMovementRepository,
-                                 StockCatalogGateway catalog) {
+            WarehouseStockRepository warehouseStockRepository,
+            StockMovementRepository stockMovementRepository,
+            StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
@@ -43,33 +43,43 @@ public class TransferStockUseCase {
     }
 
     @Transactional
-    public List<StockMovementResponse> execute(UUID sourceWarehouseId, TransferStockRequest request) {
+    public List<StockMovementResponse> execute(UUID sourceWarehouseId,
+            TransferStockRequest request) {
         Warehouse source = warehouseRepository.findById(sourceWarehouseId)
-                .orElseThrow(() -> new WarehouseNotFoundException(sourceWarehouseId));
-        if (!source.isActive()) throw new WarehouseNotActiveException(sourceWarehouseId);
+                .orElseThrow(() -> new WarehouseNotFoundException(
+                        sourceWarehouseId));
+        if (!source.isActive())
+            throw new WarehouseNotActiveException(sourceWarehouseId);
 
-        Warehouse destination = warehouseRepository.findById(request.destinationWarehouseId())
-                .orElseThrow(() -> new WarehouseNotFoundException(request.destinationWarehouseId()));
-        if (!destination.isActive()) throw new WarehouseNotActiveException(request.destinationWarehouseId());
+        Warehouse destination = warehouseRepository
+                .findById(request.destinationWarehouseId())
+                .orElseThrow(() -> new WarehouseNotFoundException(
+                        request.destinationWarehouseId()));
+        if (!destination.isActive())
+            throw new WarehouseNotActiveException(
+                    request.destinationWarehouseId());
 
         CatalogProduct product = catalog.getProduct(request.productId());
 
-        if (!warehouseStockRepository.existsByWarehouseIdAndProductId(sourceWarehouseId, product.id())) {
-            throw new ProductNotInWarehouseException(product.id(), sourceWarehouseId);
+        if (!warehouseStockRepository.existsByWarehouseIdAndProductId(
+                sourceWarehouseId, product.id())) {
+            throw new ProductNotInWarehouseException(product.id(),
+                    sourceWarehouseId);
         }
 
         Map<UUID, WarehouseStock> lockedStocks = new HashMap<>();
         Stream.of(sourceWarehouseId, request.destinationWarehouseId())
-                .distinct()
-                .sorted(Comparator.naturalOrder())
+                .distinct().sorted(Comparator.naturalOrder())
                 .forEach(warehouseId -> lockedStocks.put(warehouseId,
-                        warehouseStockRepository.findOrCreateByWarehouseIdAndProductIdForUpdate(
-                                warehouseId, product.id())));
+                        warehouseStockRepository
+                                .findOrCreateByWarehouseIdAndProductIdForUpdate(
+                                        warehouseId, product.id())));
         WarehouseStock sourceStock = lockedStocks.get(sourceWarehouseId);
 
         if (sourceStock.getQuantity() < request.quantity()) {
-            throw new InsufficientStockException(product.id(), sourceWarehouseId,
-                    sourceStock.getQuantity(), request.quantity());
+            throw new InsufficientStockException(product.id(),
+                    sourceWarehouseId, sourceStock.getQuantity(),
+                    request.quantity());
         }
 
         String batchId = UUID.randomUUID().toString();
@@ -80,27 +90,29 @@ public class TransferStockUseCase {
 
         StockMovement outMovement = StockMovement.createWithReference(
                 sourceWarehouseId, product.id(), MovementType.TRANSFER_OUT,
-                request.quantity(), sourcePrev, savedSource.getQuantity(),
-                null, batchId, ReferenceType.TRANSFER, null, batchId, request.notes()
-        );
+                request.quantity(), sourcePrev, savedSource.getQuantity(), null,
+                batchId, ReferenceType.TRANSFER, null, batchId,
+                request.notes());
         StockMovement savedOut = stockMovementRepository.save(outMovement);
 
-        WarehouseStock destStock = lockedStocks.get(request.destinationWarehouseId());
+        WarehouseStock destStock = lockedStocks
+                .get(request.destinationWarehouseId());
 
         int destPrev = destStock.getQuantity();
         destStock.addStock(request.quantity());
         WarehouseStock savedDest = warehouseStockRepository.save(destStock);
 
         StockMovement inMovement = StockMovement.createWithReference(
-                request.destinationWarehouseId(), product.id(), MovementType.TRANSFER_IN,
-                request.quantity(), destPrev, savedDest.getQuantity(),
-                savedOut.getId(), batchId, ReferenceType.TRANSFER, null, batchId, request.notes()
-        );
+                request.destinationWarehouseId(), product.id(),
+                MovementType.TRANSFER_IN, request.quantity(), destPrev,
+                savedDest.getQuantity(), savedOut.getId(), batchId,
+                ReferenceType.TRANSFER, null, batchId, request.notes());
         StockMovement savedIn = stockMovementRepository.save(inMovement);
 
         return List.of(
-                StockMovementResponse.from(savedOut, product.code(), product.name()),
-                StockMovementResponse.from(savedIn, product.code(), product.name())
-        );
+                StockMovementResponse.from(savedOut, product.code(),
+                        product.name()),
+                StockMovementResponse.from(savedIn, product.code(),
+                        product.name()));
     }
 }

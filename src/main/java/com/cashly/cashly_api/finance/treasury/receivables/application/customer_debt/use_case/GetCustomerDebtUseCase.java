@@ -10,7 +10,8 @@ public class GetCustomerDebtUseCase {
 
     private final ReceivablesQueryGateway receivablesRepository;
 
-    public GetCustomerDebtUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetCustomerDebtUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         this.receivablesRepository = receivablesRepository;
     }
 

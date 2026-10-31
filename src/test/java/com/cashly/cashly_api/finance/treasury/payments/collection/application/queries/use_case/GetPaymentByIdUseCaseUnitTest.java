@@ -43,13 +43,15 @@ class GetPaymentByIdUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         Payment payment = buildPayment(id);
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.of(payment));
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.of(payment));
 
         PaymentResponse response = getPaymentByIdUseCase.execute(id);
 
         assertNotNull(response);
         assertEquals(id, response.id());
-        assertEquals(payment.getPaymentNumber().value(), response.paymentNumber());
+        assertEquals(payment.getPaymentNumber().value(),
+                response.paymentNumber());
         assertEquals(payment.getCustomerId(), response.customerId());
         assertEquals(payment.getAmount(), response.amount());
         assertEquals(payment.getPaymentMethodId(), response.paymentMethodId());
@@ -70,12 +72,12 @@ class GetPaymentByIdUseCaseUnitTest {
     void should_ThrowIllegalArgumentException_When_PaymentDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.empty());
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> getPaymentByIdUseCase.execute(id)
-        );
+                () -> getPaymentByIdUseCase.execute(id));
 
         assertEquals("Payment not found: " + id, exception.getMessage());
         verify(paymentRepository).findById(PaymentId.of(id));
@@ -83,22 +85,10 @@ class GetPaymentByIdUseCaseUnitTest {
 
     private Payment buildPayment(UUID id) {
         LocalDateTime now = LocalDateTime.now();
-        return Payment.reconstitute(
-                PaymentId.of(id),
-                PaymentNumber.of(2026, 1),
-                UUID.randomUUID(),
-                new BigDecimal("500.00"),
-                UUID.randomUUID(),
-                PaymentSource.PAYMENT_METHOD,
-                "REF-001",
-                LocalDate.of(2026, 5, 28),
-                "Test notes",
-                PaymentStatus.APPLIED,
-                BigDecimal.ZERO,
-                UUID.randomUUID(),
-                "Test User",
-                now,
-                now
-        );
+        return Payment.reconstitute(PaymentId.of(id), PaymentNumber.of(2026, 1),
+                UUID.randomUUID(), new BigDecimal("500.00"), UUID.randomUUID(),
+                PaymentSource.PAYMENT_METHOD, "REF-001",
+                LocalDate.of(2026, 5, 28), "Test notes", PaymentStatus.APPLIED,
+                BigDecimal.ZERO, UUID.randomUUID(), "Test User", now, now);
     }
 }

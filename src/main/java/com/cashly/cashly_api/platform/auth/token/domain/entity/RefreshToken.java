@@ -16,8 +16,9 @@ public class RefreshToken {
     private boolean revoked;
     private LocalDateTime createdAt;
 
-    public RefreshToken(RefreshTokenId id, String subjectId, AuthenticableType subjectType,
-                        String token, LocalDateTime expiresAt) {
+    public RefreshToken(RefreshTokenId id, String subjectId,
+            AuthenticableType subjectType, String token,
+            LocalDateTime expiresAt) {
         validateParameters(id, subjectId, subjectType, token, expiresAt);
 
         this.id = id;
@@ -30,17 +31,22 @@ public class RefreshToken {
     }
 
     @Deprecated
-    public RefreshToken(RefreshTokenId id, UserId userId, String token, LocalDateTime expiresAt) {
-        this(id, userId.getValue().toString(), AuthenticableType.USER, token, expiresAt);
+    public RefreshToken(RefreshTokenId id, UserId userId, String token,
+            LocalDateTime expiresAt) {
+        this(id, userId.getValue().toString(), AuthenticableType.USER, token,
+                expiresAt);
     }
 
-    private void validateParameters(RefreshTokenId id, String subjectId, AuthenticableType subjectType,
-                                    String token, LocalDateTime expiresAt) {
+    private void validateParameters(RefreshTokenId id, String subjectId,
+            AuthenticableType subjectType, String token,
+            LocalDateTime expiresAt) {
         if (id == null) {
-            throw new IllegalArgumentException("RefreshToken ID cannot be null");
+            throw new IllegalArgumentException(
+                    "RefreshToken ID cannot be null");
         }
         if (subjectId == null || subjectId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Subject ID cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "Subject ID cannot be null or empty");
         }
         if (subjectType == null) {
             throw new IllegalArgumentException("Subject type cannot be null");
@@ -49,10 +55,12 @@ public class RefreshToken {
             throw new IllegalArgumentException("Token cannot be null or empty");
         }
         if (expiresAt == null) {
-            throw new IllegalArgumentException("Expiration date cannot be null");
+            throw new IllegalArgumentException(
+                    "Expiration date cannot be null");
         }
         if (expiresAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Expiration date cannot be in the past");
+            throw new IllegalArgumentException(
+                    "Expiration date cannot be in the past");
         }
     }
 
@@ -80,14 +88,15 @@ public class RefreshToken {
         if (userId == null) {
             return false;
         }
-        return this.subjectId.equals(userId.getValue().toString()) &&
-               this.subjectType == AuthenticableType.USER;
+        return this.subjectId.equals(userId.getValue().toString())
+                && this.subjectType == AuthenticableType.USER;
     }
 
     @Deprecated
     public UserId getUserId() {
         if (subjectType != AuthenticableType.USER) {
-            throw new IllegalStateException("This token does not belong to a User");
+            throw new IllegalStateException(
+                    "This token does not belong to a User");
         }
         return UserId.from(subjectId);
     }
@@ -134,8 +143,10 @@ public class RefreshToken {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         RefreshToken that = (RefreshToken) obj;
         return Objects.equals(id, that.id);
     }
@@ -147,14 +158,9 @@ public class RefreshToken {
 
     @Override
     public String toString() {
-        return "RefreshToken{" +
-                "id=" + id +
-                ", subjectId=" + subjectId +
-                ", subjectType=" + subjectType +
-                ", token='***'" +
-                ", expiresAt=" + expiresAt +
-                ", revoked=" + revoked +
-                ", createdAt=" + createdAt +
-                '}';
+        return "RefreshToken{" + "id=" + id + ", subjectId=" + subjectId
+                + ", subjectType=" + subjectType + ", token='***'"
+                + ", expiresAt=" + expiresAt + ", revoked=" + revoked
+                + ", createdAt=" + createdAt + '}';
     }
 }

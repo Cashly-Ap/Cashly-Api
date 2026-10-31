@@ -9,5 +9,7 @@ public interface ReceivablesCustomerProfileGateway {
     Optional<CustomerProfile> findById(UUID customerId);
 
     record CustomerProfile(String legalName, String rif, BigDecimal creditLimit,
-                           BigDecimal currentBalance, List<String> phones, List<String> emails) {}
+            BigDecimal currentBalance, List<String> phones,
+            List<String> emails) {
+    }
 }

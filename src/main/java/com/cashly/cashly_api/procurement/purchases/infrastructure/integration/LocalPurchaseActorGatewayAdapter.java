@@ -14,6 +14,7 @@ public class LocalPurchaseActorGatewayAdapter implements PurchaseActorGateway {
     }
     @Override
     public Optional<Entry> findById(UUID id) {
-        return query.findById(id).map(entry -> new Entry(entry.id(), entry.name()));
+        return query.findById(id)
+                .map(entry -> new Entry(entry.id(), entry.name()));
     }
 }

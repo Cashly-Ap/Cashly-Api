@@ -16,7 +16,8 @@ class InsufficientStockExceptionTest {
         UUID productId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
 
-        InsufficientStockException exception = new InsufficientStockException(productId, warehouseId, 5, 10);
+        InsufficientStockException exception = new InsufficientStockException(
+                productId, warehouseId, 5, 10);
 
         String message = exception.getMessage();
         assertTrue(message.contains(productId.toString()));
@@ -40,7 +41,8 @@ class InsufficientStockExceptionTest {
         InsufficientStockException exception = new InsufficientStockException(
                 UUID.randomUUID(), UUID.randomUUID(), 3, 20);
 
-        assertTrue(exception.getMessage().startsWith("Insufficient stock for product "));
+        assertTrue(exception.getMessage()
+                .startsWith("Insufficient stock for product "));
         assertTrue(exception.getMessage().contains("available=3"));
         assertTrue(exception.getMessage().contains("requested=20"));
     }

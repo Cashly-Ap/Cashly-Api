@@ -27,19 +27,25 @@ class CashRegisterRepositoryAdapterSessionTotalsTest {
     void should_SeparateNetInvoicingFromCashFlow() {
         RegisterId registerId = RegisterId.generate();
         UUID paymentMethodId = UUID.randomUUID();
-        CashRegisterRepositoryAdapter adapter = spy(new CashRegisterRepositoryAdapter(
-                mock(CashRegisterJpaRepository.class),
-                mock(EntityManager.class),
-                mock(CashMovementJpaRepository.class)
-        ));
+        CashRegisterRepositoryAdapter adapter = spy(
+                new CashRegisterRepositoryAdapter(
+                        mock(CashRegisterJpaRepository.class),
+                        mock(EntityManager.class),
+                        mock(CashMovementJpaRepository.class)));
         doReturn(List.of(
-                movement(registerId, CashMovementDirection.IN, CashMovementType.INVOICE, "100.00", null),
-                movement(registerId, CashMovementDirection.IN, CashMovementType.PAYMENT, "40.00", paymentMethodId),
-                movement(registerId, CashMovementDirection.IN, CashMovementType.DEBIT_NOTE, "20.00", null),
-                movement(registerId, CashMovementDirection.OUT, CashMovementType.CREDIT_NOTE, "10.00", null),
-                movement(registerId, CashMovementDirection.OUT, CashMovementType.RETURN, "15.00", null),
-                movement(registerId, CashMovementDirection.OUT, CashMovementType.EXPENSE, "5.00", paymentMethodId)
-        )).when(adapter).findMovements(registerId);
+                movement(registerId, CashMovementDirection.IN,
+                        CashMovementType.INVOICE, "100.00", null),
+                movement(registerId, CashMovementDirection.IN,
+                        CashMovementType.PAYMENT, "40.00", paymentMethodId),
+                movement(registerId, CashMovementDirection.IN,
+                        CashMovementType.DEBIT_NOTE, "20.00", null),
+                movement(registerId, CashMovementDirection.OUT,
+                        CashMovementType.CREDIT_NOTE, "10.00", null),
+                movement(registerId, CashMovementDirection.OUT,
+                        CashMovementType.RETURN, "15.00", null),
+                movement(registerId, CashMovementDirection.OUT,
+                        CashMovementType.EXPENSE, "5.00", paymentMethodId)))
+                .when(adapter).findMovements(registerId);
 
         var totals = adapter.findSessionTotals(registerId);
 
@@ -52,13 +58,13 @@ class CashRegisterRepositoryAdapterSessionTotalsTest {
         assertEquals(new BigDecimal("5.00"), totals.totalExpenses());
     }
 
-    private CashMovement movement(RegisterId registerId, CashMovementDirection direction,
-                                  CashMovementType type, String amount, UUID paymentMethodId) {
-        return CashMovement.reconstitute(
-                UUID.randomUUID(), registerId, direction, type, new BigDecimal(amount),
-                paymentMethodId, paymentMethodId == null ? null : "Efectivo",
-                type.name(), type.name(), UUID.randomUUID(), UUID.randomUUID(), "Tester",
-                LocalDateTime.now()
-        );
+    private CashMovement movement(RegisterId registerId,
+            CashMovementDirection direction, CashMovementType type,
+            String amount, UUID paymentMethodId) {
+        return CashMovement.reconstitute(UUID.randomUUID(), registerId,
+                direction, type, new BigDecimal(amount), paymentMethodId,
+                paymentMethodId == null ? null : "Efectivo", type.name(),
+                type.name(), UUID.randomUUID(), UUID.randomUUID(), "Tester",
+                LocalDateTime.now());
     }
 }

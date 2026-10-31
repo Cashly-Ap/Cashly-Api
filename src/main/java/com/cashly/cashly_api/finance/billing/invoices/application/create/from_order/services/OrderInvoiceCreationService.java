@@ -14,8 +14,9 @@ public class OrderInvoiceCreationService implements OrderInvoiceCreationApi {
 
     @Override
     public CreatedInvoice create(Command command, UUID actorId) {
-        var request = new CreateInvoiceRequest(command.orderId(), null, null, command.paymentType(), null,
-                command.useBalance(), command.balanceAmount(), command.paymentMethodId(),
+        var request = new CreateInvoiceRequest(command.orderId(), null, null,
+                command.paymentType(), null, command.useBalance(),
+                command.balanceAmount(), command.paymentMethodId(),
                 command.confirmationPassword(), null, command.issueDate());
         var invoice = createInvoice.execute(request, actorId);
         return new CreatedInvoice(invoice.id(), invoice.invoiceNumber());

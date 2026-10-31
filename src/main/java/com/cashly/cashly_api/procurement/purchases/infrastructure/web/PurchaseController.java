@@ -41,13 +41,13 @@ public class PurchaseController {
     private final GetProductsForPurchaseUseCase getProductsForPurchaseUseCase;
 
     public PurchaseController(CreatePurchaseUseCase createPurchaseUseCase,
-                               GetPurchaseByIdUseCase getPurchaseByIdUseCase,
-                               ListPurchasesUseCase listPurchasesUseCase,
-                               UpdatePurchaseUseCase updatePurchaseUseCase,
-                               ConfirmPurchaseUseCase confirmPurchaseUseCase,
-                               CancelPurchaseUseCase cancelPurchaseUseCase,
-                               DeletePurchaseUseCase deletePurchaseUseCase,
-                               GetProductsForPurchaseUseCase getProductsForPurchaseUseCase) {
+            GetPurchaseByIdUseCase getPurchaseByIdUseCase,
+            ListPurchasesUseCase listPurchasesUseCase,
+            UpdatePurchaseUseCase updatePurchaseUseCase,
+            ConfirmPurchaseUseCase confirmPurchaseUseCase,
+            CancelPurchaseUseCase cancelPurchaseUseCase,
+            DeletePurchaseUseCase deletePurchaseUseCase,
+            GetProductsForPurchaseUseCase getProductsForPurchaseUseCase) {
         this.createPurchaseUseCase = createPurchaseUseCase;
         this.getPurchaseByIdUseCase = getPurchaseByIdUseCase;
         this.listPurchasesUseCase = listPurchasesUseCase;
@@ -64,7 +64,8 @@ public class PurchaseController {
             @Valid @RequestBody CreatePurchaseRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        PurchaseDetailResponse response = createPurchaseUseCase.execute(request, userId);
+        PurchaseDetailResponse response = createPurchaseUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -81,26 +82,32 @@ public class PurchaseController {
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
-        List<PurchaseListResponse> purchases = action == null ? listPurchasesUseCase.execute(
-                fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir) : listPurchasesUseCase.execute(
-                fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir, action);
+        List<PurchaseListResponse> purchases = action == null
+                ? listPurchasesUseCase.execute(fromDate, toDate, supplierId,
+                        status, productId, categoryId, orderBy, orderDir)
+                : listPurchasesUseCase.execute(fromDate, toDate, supplierId,
+                        status, productId, categoryId, orderBy, orderDir,
+                        action);
         return ResponseEntity.ok(purchases.stream()
-                .filter(purchase -> matchesSearch(search, purchase.purchaseNumber(), purchase.supplierName()))
+                .filter(purchase -> matchesSearch(search,
+                        purchase.purchaseNumber(), purchase.supplierName()))
                 .toList());
     }
 
     private boolean matchesSearch(String search, String... values) {
-        if (search == null || search.isBlank()) return true;
+        if (search == null || search.isBlank())
+            return true;
         String term = search.trim().toLowerCase();
         return java.util.Arrays.stream(values)
                 .filter(java.util.Objects::nonNull)
                 .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
-    public ResponseEntity<List<PurchaseListResponse>> getAll(
-            LocalDate fromDate, LocalDate toDate, UUID supplierId, String status,
-            UUID productId, UUID categoryId, String orderBy, String orderDir) {
-        return getAll(fromDate, toDate, supplierId, status, productId, categoryId, null, orderBy, orderDir, null);
+    public ResponseEntity<List<PurchaseListResponse>> getAll(LocalDate fromDate,
+            LocalDate toDate, UUID supplierId, String status, UUID productId,
+            UUID categoryId, String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, supplierId, status, productId,
+                categoryId, null, orderBy, orderDir, null);
     }
 
     @GetMapping("/products")
@@ -110,12 +117,14 @@ public class PurchaseController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(getProductsForPurchaseUseCase.execute(search, categoryId, page, size));
+        return ResponseEntity.ok(getProductsForPurchaseUseCase.execute(search,
+                categoryId, page, size));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')")
-    public ResponseEntity<PurchaseDetailResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<PurchaseDetailResponse> getById(
+            @PathVariable UUID id) {
         PurchaseDetailResponse response = getPurchaseByIdUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
@@ -123,14 +132,16 @@ public class PurchaseController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('PURCHASES:UPDATE') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<PurchaseDetailResponse> update(@PathVariable UUID id,
-                                                          @Valid @RequestBody UpdatePurchaseRequest request) {
-        PurchaseDetailResponse response = updatePurchaseUseCase.execute(id, request);
+            @Valid @RequestBody UpdatePurchaseRequest request) {
+        PurchaseDetailResponse response = updatePurchaseUseCase.execute(id,
+                request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<PurchaseDetailResponse> confirm(@PathVariable UUID id) {
+    public ResponseEntity<PurchaseDetailResponse> confirm(
+            @PathVariable UUID id) {
         PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
@@ -138,8 +149,9 @@ public class PurchaseController {
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<PurchaseDetailResponse> cancel(@PathVariable UUID id,
-                                                          @Valid @RequestBody CancelPurchaseRequest request) {
-        PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id, request);
+            @Valid @RequestBody CancelPurchaseRequest request) {
+        PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id,
+                request);
         return ResponseEntity.ok(response);
     }
 

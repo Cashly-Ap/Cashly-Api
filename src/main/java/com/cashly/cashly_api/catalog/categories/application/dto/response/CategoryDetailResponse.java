@@ -2,12 +2,7 @@ package com.cashly.cashly_api.catalog.categories.application.dto.response;
 
 import java.time.LocalDateTime;
 
-public record CategoryDetailResponse(
-    String id,
-    String name,
-    String description,
-    boolean active,
-    long productCount,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt
-) {}
+public record CategoryDetailResponse(String id, String name, String description,
+        boolean active, long productCount, LocalDateTime createdAt,
+        LocalDateTime updatedAt) {
+}

@@ -28,10 +28,10 @@ public class PriceTypeController {
     private final ListPriceTypesUseCase listPriceTypesUseCase;
 
     public PriceTypeController(CreatePriceTypeUseCase createPriceTypeUseCase,
-                                UpdatePriceTypeUseCase updatePriceTypeUseCase,
-                                DeletePriceTypeUseCase deletePriceTypeUseCase,
-                                GetPriceTypeUseCase getPriceTypeUseCase,
-                                ListPriceTypesUseCase listPriceTypesUseCase) {
+            UpdatePriceTypeUseCase updatePriceTypeUseCase,
+            DeletePriceTypeUseCase deletePriceTypeUseCase,
+            GetPriceTypeUseCase getPriceTypeUseCase,
+            ListPriceTypesUseCase listPriceTypesUseCase) {
         this.createPriceTypeUseCase = createPriceTypeUseCase;
         this.updatePriceTypeUseCase = updatePriceTypeUseCase;
         this.deletePriceTypeUseCase = deletePriceTypeUseCase;
@@ -41,14 +41,16 @@ public class PriceTypeController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('CATALOG:CREATE')")
-    public ResponseEntity<PriceTypeResponse> create(@Valid @RequestBody CreatePriceTypeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createPriceTypeUseCase.execute(request));
+    public ResponseEntity<PriceTypeResponse> create(
+            @Valid @RequestBody CreatePriceTypeRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(createPriceTypeUseCase.execute(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
     public ResponseEntity<PriceTypeResponse> update(@PathVariable UUID id,
-                                                     @Valid @RequestBody UpdatePriceTypeRequest request) {
+            @Valid @RequestBody UpdatePriceTypeRequest request) {
         return ResponseEntity.ok(updatePriceTypeUseCase.execute(id, request));
     }
 
@@ -74,6 +76,7 @@ public class PriceTypeController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        return ResponseEntity.ok(listPriceTypesUseCase.execute(search, active, page, size, orderBy, orderDir));
+        return ResponseEntity.ok(listPriceTypesUseCase.execute(search, active,
+                page, size, orderBy, orderDir));
     }
 }

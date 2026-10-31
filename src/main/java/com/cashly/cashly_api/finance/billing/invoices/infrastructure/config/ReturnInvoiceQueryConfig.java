@@ -7,5 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ReturnInvoiceQueryConfig {
     @Bean
-    public ReturnInvoiceQuery returnInvoiceQuery(InvoiceRepository invoices) { return new RepositoryReturnInvoiceQuery(invoices); }
+    public ReturnInvoiceQuery returnInvoiceQuery(InvoiceRepository invoices) {
+        return new RepositoryReturnInvoiceQuery(invoices);
+    }
 }

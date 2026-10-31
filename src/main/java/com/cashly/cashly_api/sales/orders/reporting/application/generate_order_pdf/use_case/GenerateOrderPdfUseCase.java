@@ -2,7 +2,6 @@ package com.cashly.cashly_api.sales.orders.reporting.application.generate_order_
 
 import java.util.UUID;
 
-
 public interface GenerateOrderPdfUseCase {
     byte[] execute(UUID orderId);
 }

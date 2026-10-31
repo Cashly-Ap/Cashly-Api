@@ -17,7 +17,8 @@ class InvoiceRemainingBalanceUnitTest {
         UUID invoiceId = UUID.randomUUID();
         BigDecimal remainingAmount = new BigDecimal("300.00");
 
-        InvoiceRemainingBalance balance = new InvoiceRemainingBalance(invoiceId, remainingAmount);
+        InvoiceRemainingBalance balance = new InvoiceRemainingBalance(invoiceId,
+                remainingAmount);
 
         assertEquals(invoiceId, balance.invoiceId());
         assertEquals(remainingAmount, balance.remainingAmount());

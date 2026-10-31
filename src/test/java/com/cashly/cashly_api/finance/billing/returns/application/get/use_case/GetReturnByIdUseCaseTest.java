@@ -48,7 +48,8 @@ class GetReturnByIdUseCaseTest {
         Return return_ = buildReturn(id);
         ReturnResponse expectedResponse = mock(ReturnResponse.class);
 
-        when(returnRepository.findById(ReturnId.of(id))).thenReturn(Optional.of(return_));
+        when(returnRepository.findById(ReturnId.of(id)))
+                .thenReturn(Optional.of(return_));
         when(returnMapper.toResponse(return_)).thenReturn(expectedResponse);
 
         ReturnResponse response = useCase.execute(id);
@@ -62,12 +63,12 @@ class GetReturnByIdUseCaseTest {
     void should_ThrowReturnNotFoundException_When_ReturnDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(returnRepository.findById(ReturnId.of(id))).thenReturn(Optional.empty());
+        when(returnRepository.findById(ReturnId.of(id)))
+                .thenReturn(Optional.empty());
 
         GetReturnByIdUseCase.ReturnNotFoundException exception = assertThrows(
                 GetReturnByIdUseCase.ReturnNotFoundException.class,
-                () -> useCase.execute(id)
-        );
+                () -> useCase.execute(id));
 
         assertEquals("Return not found with id: " + id, exception.getMessage());
         verify(returnRepository).findById(ReturnId.of(id));
@@ -78,15 +79,15 @@ class GetReturnByIdUseCaseTest {
     void should_ReturnCorrectFields_When_ReturnExists() {
         UUID id = UUID.randomUUID();
         Return return_ = buildReturn(id);
-        ReturnResponse expectedResponse = new ReturnResponse(
-                id, "RET-2026-0001", UUID.randomUUID(), "INV-2026-0001",
-                UUID.randomUUID(), "Cliente Test", "J-12345678-9",
-                "AUTOMATIC", "Producto defectuoso",
-                new BigDecimal("50.00"), UUID.randomUUID(), "Test User",
-                LocalDateTime.now(), LocalDateTime.now(), List.of()
-        );
+        ReturnResponse expectedResponse = new ReturnResponse(id,
+                "RET-2026-0001", UUID.randomUUID(), "INV-2026-0001",
+                UUID.randomUUID(), "Cliente Test", "J-12345678-9", "AUTOMATIC",
+                "Producto defectuoso", new BigDecimal("50.00"),
+                UUID.randomUUID(), "Test User", LocalDateTime.now(),
+                LocalDateTime.now(), List.of());
 
-        when(returnRepository.findById(ReturnId.of(id))).thenReturn(Optional.of(return_));
+        when(returnRepository.findById(ReturnId.of(id)))
+                .thenReturn(Optional.of(return_));
         when(returnMapper.toResponse(return_)).thenReturn(expectedResponse);
 
         ReturnResponse response = useCase.execute(id);
@@ -98,24 +99,13 @@ class GetReturnByIdUseCaseTest {
     }
 
     private Return buildReturn(UUID id) {
-        return Return.reconstitute(
-                ReturnId.of(id),
-                ReturnNumber.of(2026, 1),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                ReturnType.AUTOMATIC,
-                "Producto defectuoso",
-                new BigDecimal("50.00"),
-                List.of(ReturnLine.create(
-                        UUID.randomUUID(), UUID.randomUUID(),
-                        BigDecimal.ONE, new BigDecimal("50.00"), new BigDecimal("50.00"),
-                        List.of()
-                )),
-                List.of(),
-                UUID.randomUUID(),
-                "Test User",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        return Return.reconstitute(ReturnId.of(id), ReturnNumber.of(2026, 1),
+                UUID.randomUUID(), UUID.randomUUID(), ReturnType.AUTOMATIC,
+                "Producto defectuoso", new BigDecimal("50.00"),
+                List.of(ReturnLine.create(UUID.randomUUID(), UUID.randomUUID(),
+                        BigDecimal.ONE, new BigDecimal("50.00"),
+                        new BigDecimal("50.00"), List.of())),
+                List.of(), UUID.randomUUID(), "Test User", LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

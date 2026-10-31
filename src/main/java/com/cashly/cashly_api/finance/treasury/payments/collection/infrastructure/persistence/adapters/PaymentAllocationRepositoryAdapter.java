@@ -15,11 +15,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class PaymentAllocationRepositoryAdapter implements PaymentAllocationRepository {
+public class PaymentAllocationRepositoryAdapter
+        implements
+            PaymentAllocationRepository {
 
     private final PaymentAllocationJpaRepository jpaRepository;
 
-    public PaymentAllocationRepositoryAdapter(PaymentAllocationJpaRepository jpaRepository) {
+    public PaymentAllocationRepositoryAdapter(
+            PaymentAllocationJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
@@ -33,15 +36,13 @@ public class PaymentAllocationRepositoryAdapter implements PaymentAllocationRepo
     @Override
     public List<PaymentAllocation> findByPaymentId(UUID paymentId) {
         return jpaRepository.findByPaymentId(paymentId).stream()
-                .map(PaymentAllocationJpaMapper::toDomain)
-                .toList();
+                .map(PaymentAllocationJpaMapper::toDomain).toList();
     }
 
     @Override
     public List<PaymentAllocation> findByInvoiceId(UUID invoiceId) {
         return jpaRepository.findByInvoiceId(invoiceId).stream()
-                .map(PaymentAllocationJpaMapper::toDomain)
-                .toList();
+                .map(PaymentAllocationJpaMapper::toDomain).toList();
     }
 
     @Override
@@ -56,11 +57,9 @@ public class PaymentAllocationRepositoryAdapter implements PaymentAllocationRepo
 
     @Override
     public Map<UUID, BigDecimal> sumByInvoiceIds(Collection<UUID> invoiceIds) {
-        List<Object[]> results = jpaRepository.sumByInvoiceIds(List.copyOf(invoiceIds));
-        return results.stream()
-                .collect(Collectors.toMap(
-                        row -> (UUID) row[0],
-                        row -> (BigDecimal) row[1]
-                ));
+        List<Object[]> results = jpaRepository
+                .sumByInvoiceIds(List.copyOf(invoiceIds));
+        return results.stream().collect(Collectors.toMap(row -> (UUID) row[0],
+                row -> (BigDecimal) row[1]));
     }
 }

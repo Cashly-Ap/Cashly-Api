@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public interface StockDeductionGateway {
     void deduct(List<Allocation> allocations);
-    record Allocation(UUID warehouseId, UUID productId, int quantity) {}
+    record Allocation(UUID warehouseId, UUID productId, int quantity) {
+    }
 }

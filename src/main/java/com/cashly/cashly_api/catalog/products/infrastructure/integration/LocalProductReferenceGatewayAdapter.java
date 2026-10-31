@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-public class LocalProductReferenceGatewayAdapter implements ProductReferenceGateway {
+public class LocalProductReferenceGatewayAdapter
+        implements
+            ProductReferenceGateway {
     private final com.cashly.cashly_api.sales.orders.application.ports.in.ProductReferenceQuery orders;
     private final com.cashly.cashly_api.finance.billing.invoices.application.ports.in.ProductReferenceQuery invoices;
     private final com.cashly.cashly_api.finance.billing.returns.application.ports.in.ProductReferenceQuery returns;
@@ -27,7 +29,8 @@ public class LocalProductReferenceGatewayAdapter implements ProductReferenceGate
         if (ids.isEmpty()) {
             return Set.of();
         }
-        Set<UUID> referenced = new HashSet<>(orders.findReferencedProductIds(ids));
+        Set<UUID> referenced = new HashSet<>(
+                orders.findReferencedProductIds(ids));
         referenced.addAll(invoices.findReferencedProductIds(ids));
         referenced.addAll(returns.findReferencedProductIds(ids));
         referenced.addAll(warehouses.findReferencedProductIds(ids));

@@ -10,11 +10,14 @@ import java.util.UUID;
 @Component
 public class JpaInvoicesProductReferenceQuery implements ProductReferenceQuery {
     private final SpringDataInvoicesProductReferenceRepository references;
-    public JpaInvoicesProductReferenceQuery(SpringDataInvoicesProductReferenceRepository references) {
+    public JpaInvoicesProductReferenceQuery(
+            SpringDataInvoicesProductReferenceRepository references) {
         this.references = references;
     }
     @Override
     public Set<UUID> findReferencedProductIds(Set<UUID> ids) {
-        return ids.isEmpty() ? Set.of() : Set.copyOf(references.findReferencedProductIds(ids));
+        return ids.isEmpty()
+                ? Set.of()
+                : Set.copyOf(references.findReferencedProductIds(ids));
     }
 }

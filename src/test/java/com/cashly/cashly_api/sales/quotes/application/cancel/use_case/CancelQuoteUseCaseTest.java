@@ -43,7 +43,8 @@ class CancelQuoteUseCaseTest {
     void setUp() {
         cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository,
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.LocalQuoteRejectionNotificationGateway(
-                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteRejectionNotificationService(notificationService)));
+                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteRejectionNotificationService(
+                                notificationService)));
     }
 
     @Test
@@ -52,10 +53,12 @@ class CancelQuoteUseCaseTest {
         UUID quoteId = UUID.randomUUID();
         Quote quote = createDraftQuote(quoteId);
 
-        CancelQuoteRequest request = new CancelQuoteRequest("Customer decided to cancel");
+        CancelQuoteRequest request = new CancelQuoteRequest(
+                "Customer decided to cancel");
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(quoteRepository.save(any(Quote.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(quoteRepository.save(any(Quote.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         cancelQuoteUseCase.execute(quoteId, request);
 
@@ -65,7 +68,8 @@ class CancelQuoteUseCaseTest {
         verify(quoteRepository).save(quote);
         var sequence = inOrder(quoteRepository, notificationService);
         sequence.verify(quoteRepository).save(quote);
-        sequence.verify(notificationService).notifyCustomerQuoteRejected(quote.getCustomerId(), quoteId, request.reason());
+        sequence.verify(notificationService).notifyCustomerQuoteRejected(
+                quote.getCustomerId(), quoteId, request.reason());
     }
 
     @Test
@@ -75,11 +79,13 @@ class CancelQuoteUseCaseTest {
         Quote quote = createDraftQuote(quoteId);
         quote.markConvertedToOrder(UUID.randomUUID(), "ORD-001");
 
-        CancelQuoteRequest request = new CancelQuoteRequest("Customer no longer interested");
+        CancelQuoteRequest request = new CancelQuoteRequest(
+                "Customer no longer interested");
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
-        assertThrows(com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteStateException.class,
+        assertThrows(
+                com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteStateException.class,
                 () -> cancelQuoteUseCase.execute(quoteId, request));
         verify(quoteRepository, never()).save(any());
         verifyNoInteractions(notificationService);
@@ -93,21 +99,19 @@ class CancelQuoteUseCaseTest {
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
 
-        assertThrows(QuoteNotFoundException.class, () -> cancelQuoteUseCase.execute(quoteId, request));
+        assertThrows(QuoteNotFoundException.class,
+                () -> cancelQuoteUseCase.execute(quoteId, request));
         verifyNoInteractions(notificationService);
     }
 
     private Quote createDraftQuote(UUID quoteId) {
-        return Quote.reconstitute(
-                quoteId,
-                QuoteNumber.of(2026, 1),
+        return Quote.reconstitute(quoteId, QuoteNumber.of(2026, 1),
                 UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "Creator",
-                QuoteStatus.DRAFT,
-                LocalDate.now(), null, BigDecimal.TEN,
-                null, null, null, null, null, null,
-                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001", BigDecimal.ONE, BigDecimal.TEN)),
-                Instant.now(), Instant.now()
-        );
+                UUID.randomUUID(), "Creator", QuoteStatus.DRAFT,
+                LocalDate.now(), null, BigDecimal.TEN, null, null, null, null,
+                null, null,
+                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001",
+                        BigDecimal.ONE, BigDecimal.TEN)),
+                Instant.now(), Instant.now());
     }
 }

@@ -4,15 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record CustomerDebtListResponse(
-        UUID customerId,
-        String customerName,
-        String customerRif,
-        BigDecimal totalDebt,
-        BigDecimal pendingPaymentsAmount,
-        long pendingInvoicesCount,
-        LocalDate oldestInvoiceDate,
-        BigDecimal creditLimit,
-        BigDecimal availableCredit,
-        BigDecimal customerBalance
-) {}
+public record CustomerDebtListResponse(UUID customerId, String customerName,
+        String customerRif, BigDecimal totalDebt,
+        BigDecimal pendingPaymentsAmount, long pendingInvoicesCount,
+        LocalDate oldestInvoiceDate, BigDecimal creditLimit,
+        BigDecimal availableCredit, BigDecimal customerBalance) {
+}

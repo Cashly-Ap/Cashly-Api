@@ -28,8 +28,9 @@ public class QuoteInvoiceCreationService implements QuoteInvoiceCreationApi {
     private final CustomerCreditTermsGateway creditTerms;
     private final IssueInvoiceService issuance;
 
-    public QuoteInvoiceCreationService(InvoiceRepository invoices, ActorIdentityGateway actors,
-                                      CustomerCreditTermsGateway creditTerms, IssueInvoiceService issuance) {
+    public QuoteInvoiceCreationService(InvoiceRepository invoices,
+            ActorIdentityGateway actors, CustomerCreditTermsGateway creditTerms,
+            IssueInvoiceService issuance) {
         this.invoices = invoices;
         this.actors = actors;
         this.creditTerms = creditTerms;
@@ -41,24 +42,43 @@ public class QuoteInvoiceCreationService implements QuoteInvoiceCreationApi {
     public CreatedInvoice create(Command command, UUID actorId) {
         PaymentType paymentType;
         try {
-            paymentType = PaymentType.valueOf(command.paymentType().toUpperCase());
+            paymentType = PaymentType
+                    .valueOf(command.paymentType().toUpperCase());
         } catch (IllegalArgumentException failure) {
-            throw new IllegalArgumentException("Invalid payment type: " + command.paymentType() + ". Must be CASH or CREDIT");
+            throw new IllegalArgumentException("Invalid payment type: "
+                    + command.paymentType() + ". Must be CASH or CREDIT");
         }
-        var actor = actors.findActor(actorId).orElseThrow(() -> new IllegalArgumentException("User not found: " + actorId));
-        LocalDate issueDate = command.issueDate() == null ? LocalDate.now() : command.issueDate();
-        LocalDate dueDate = issueDate.plusDays(creditTerms.creditDays(command.customerId()));
+        var actor = actors.findActor(actorId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User not found: " + actorId));
+        LocalDate issueDate = command.issueDate() == null
+                ? LocalDate.now()
+                : command.issueDate();
+        LocalDate dueDate = issueDate
+                .plusDays(creditTerms.creditDays(command.customerId()));
         int year = LocalDate.now().getYear();
-        var number = InvoiceNumber.of(year, invoices.getNextSequenceForYear(year));
-        var lines = command.lines().stream().map(line -> InvoiceLine.create(line.productId(), line.productName(),
-                line.productCode(), line.quantity(), line.unitPrice(), line.allocations().stream()
-                        .map(item -> InvoiceLineAllocation.create(item.warehouseId(), item.quantity())).toList())).toList();
-        var invoice = Invoice.reconstitute(InvoiceId.generate(), number, command.customerId(), command.customerName(),
-                command.customerRif(), actorId, actor.name(), null, null, List.of(), List.of(), InvoiceStatus.DRAFT,
-                paymentType, null, BigDecimal.ZERO, null, null, null, lines, LocalDateTime.now(), LocalDateTime.now(),
-                issueDate, dueDate);
-        var saved = issuance.issue(invoice, new IssueInvoiceCommand(command.confirmationPassword(), command.useBalance(),
-                command.balanceAmount(), command.paymentMethodId()), InvoiceOrigin.QUOTE, actorId);
-        return new CreatedInvoice(saved.getId().value(), saved.getInvoiceNumber().value());
+        var number = InvoiceNumber.of(year,
+                invoices.getNextSequenceForYear(year));
+        var lines = command.lines().stream().map(line -> InvoiceLine.create(
+                line.productId(), line.productName(), line.productCode(),
+                line.quantity(), line.unitPrice(),
+                line.allocations().stream()
+                        .map(item -> InvoiceLineAllocation
+                                .create(item.warehouseId(), item.quantity()))
+                        .toList()))
+                .toList();
+        var invoice = Invoice.reconstitute(InvoiceId.generate(), number,
+                command.customerId(), command.customerName(),
+                command.customerRif(), actorId, actor.name(), null, null,
+                List.of(), List.of(), InvoiceStatus.DRAFT, paymentType, null,
+                BigDecimal.ZERO, null, null, null, lines, LocalDateTime.now(),
+                LocalDateTime.now(), issueDate, dueDate);
+        var saved = issuance.issue(invoice,
+                new IssueInvoiceCommand(command.confirmationPassword(),
+                        command.useBalance(), command.balanceAmount(),
+                        command.paymentMethodId()),
+                InvoiceOrigin.QUOTE, actorId);
+        return new CreatedInvoice(saved.getId().value(),
+                saved.getInvoiceNumber().value());
     }
 }

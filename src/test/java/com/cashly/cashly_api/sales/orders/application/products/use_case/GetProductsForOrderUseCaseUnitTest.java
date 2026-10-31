@@ -40,22 +40,30 @@ class GetProductsForOrderUseCaseUnitTest {
         UUID categoryId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
-        when(customers.findById(customerId)).thenReturn(Optional.of(
-                new OrderCustomerGateway.Customer(customerId, "Customer", "RIF")));
-        var stock = new OrderProductCatalogGateway.Stock(warehouseId, "WH-01", "Main", 12, 2, 10);
-        var product = new OrderProductCatalogGateway.ProductEntry(productId, "SKU-1", "Product", categoryId,
-                "Category", false, true, null, BigDecimal.TEN, 12, List.of(stock));
-        when(products.findForCustomer(customerId, "prod", categoryId, false, true, 1, 5))
-                .thenReturn(new PageResponse<>(List.of(product), 7, 2, 5, 1, false, true, false));
+        when(customers.findById(customerId)).thenReturn(
+                Optional.of(new OrderCustomerGateway.Customer(customerId,
+                        "Customer", "RIF")));
+        var stock = new OrderProductCatalogGateway.Stock(warehouseId, "WH-01",
+                "Main", 12, 2, 10);
+        var product = new OrderProductCatalogGateway.ProductEntry(productId,
+                "SKU-1", "Product", categoryId, "Category", false, true, null,
+                BigDecimal.TEN, 12, List.of(stock));
+        when(products.findForCustomer(customerId, "prod", categoryId, false,
+                true, 1, 5))
+                .thenReturn(new PageResponse<>(List.of(product), 7, 2, 5, 1,
+                        false, true, false));
 
-        PageResponse<OrderProductResponse> result = useCase.execute(customerId, "prod", categoryId, false, true, 1, 5);
+        PageResponse<OrderProductResponse> result = useCase.execute(customerId,
+                "prod", categoryId, false, true, 1, 5);
 
         assertEquals(7, result.totalElements());
         assertEquals(2, result.totalPages());
         assertEquals(1, result.number());
         assertEquals("SKU-1", result.content().getFirst().code());
-        assertEquals(10, result.content().getFirst().stock().getFirst().available());
-        verify(products).findForCustomer(customerId, "prod", categoryId, false, true, 1, 5);
+        assertEquals(10,
+                result.content().getFirst().stock().getFirst().available());
+        verify(products).findForCustomer(customerId, "prod", categoryId, false,
+                true, 1, 5);
     }
 
     @Test
@@ -63,8 +71,8 @@ class GetProductsForOrderUseCaseUnitTest {
         UUID customerId = UUID.randomUUID();
         when(customers.findById(customerId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
-                () -> useCase.execute(customerId, null, null, null, null, 0, 20));
+        assertThrows(IllegalArgumentException.class, () -> useCase
+                .execute(customerId, null, null, null, null, 0, 20));
 
         verifyNoInteractions(products);
     }
@@ -72,10 +80,13 @@ class GetProductsForOrderUseCaseUnitTest {
     @Test
     void keepsEmptyPageMetadata() {
         UUID customerId = UUID.randomUUID();
-        when(customers.findById(customerId)).thenReturn(Optional.of(
-                new OrderCustomerGateway.Customer(customerId, "Customer", "RIF")));
-        when(products.findForCustomer(customerId, null, null, null, null, 0, 20))
-                .thenReturn(new PageResponse<>(List.of(), 0, 0, 20, 0, true, true, true));
+        when(customers.findById(customerId)).thenReturn(
+                Optional.of(new OrderCustomerGateway.Customer(customerId,
+                        "Customer", "RIF")));
+        when(products.findForCustomer(customerId, null, null, null, null, 0,
+                20))
+                .thenReturn(new PageResponse<>(List.of(), 0, 0, 20, 0, true,
+                        true, true));
 
         var result = useCase.execute(customerId, null, null, null, null, 0, 20);
 

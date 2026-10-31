@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ReturnInventoryConfig {
     @Bean
-    public ReturnInventoryApi returnInventoryApi(WarehouseStockRepository stocks, StockMovementRepository movements) {
+    public ReturnInventoryApi returnInventoryApi(
+            WarehouseStockRepository stocks,
+            StockMovementRepository movements) {
         return new ReturnInventoryService(stocks, movements);
     }
 }

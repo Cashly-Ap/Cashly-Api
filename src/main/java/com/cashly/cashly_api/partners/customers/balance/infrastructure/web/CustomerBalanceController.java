@@ -25,9 +25,10 @@ public class CustomerBalanceController {
     private final CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase;
     private final RefundCustomerBalanceUseCase refundCustomerBalanceUseCase;
 
-    public CustomerBalanceController(GetCustomerBalanceUseCase getCustomerBalanceUseCase,
-                                      CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase,
-                                      RefundCustomerBalanceUseCase refundCustomerBalanceUseCase) {
+    public CustomerBalanceController(
+            GetCustomerBalanceUseCase getCustomerBalanceUseCase,
+            CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase,
+            RefundCustomerBalanceUseCase refundCustomerBalanceUseCase) {
         this.getCustomerBalanceUseCase = getCustomerBalanceUseCase;
         this.createCustomerAdvanceUseCase = createCustomerAdvanceUseCase;
         this.refundCustomerBalanceUseCase = refundCustomerBalanceUseCase;
@@ -35,7 +36,8 @@ public class CustomerBalanceController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('FINANCES:READ')")
-    public ResponseEntity<CustomerBalanceResponse> getBalance(@PathVariable UUID customerId) {
+    public ResponseEntity<CustomerBalanceResponse> getBalance(
+            @PathVariable UUID customerId) {
         return ResponseEntity.ok(getCustomerBalanceUseCase.execute(customerId));
     }
 
@@ -45,7 +47,8 @@ public class CustomerBalanceController {
             @PathVariable UUID customerId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(getCustomerBalanceUseCase.getTransactions(customerId, page, size));
+        return ResponseEntity.ok(getCustomerBalanceUseCase
+                .getTransactions(customerId, page, size));
     }
 
     @PostMapping("/advance")
@@ -56,7 +59,8 @@ public class CustomerBalanceController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         CustomerBalanceResponse response = createCustomerAdvanceUseCase.execute(
-                customerId, request.amount(), request.paymentMethodId(), request.notes(), userId);
+                customerId, request.amount(), request.paymentMethodId(),
+                request.notes(), userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -68,7 +72,8 @@ public class CustomerBalanceController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         CustomerBalanceResponse response = refundCustomerBalanceUseCase.execute(
-                customerId, request.amount(), request.paymentMethodId(), request.notes(), userId);
+                customerId, request.amount(), request.paymentMethodId(),
+                request.notes(), userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

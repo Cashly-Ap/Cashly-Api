@@ -45,17 +45,22 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
 
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(220, 220, 220);
     private static final DeviceRgb CATEGORY_BG = new DeviceRgb(240, 240, 240);
-    private static final DeviceRgb PLACEHOLDER_BG = new DeviceRgb(230, 230, 230);
+    private static final DeviceRgb PLACEHOLDER_BG = new DeviceRgb(230, 230,
+            230);
     private static final DeviceRgb PRICE_COLOR = new DeviceRgb(30, 30, 30);
     private static final float IMAGE_SIZE = 120f;
-    private static final DecimalFormat PRICE_FORMAT = new DecimalFormat("#,##0.00");
+    private static final DecimalFormat PRICE_FORMAT = new DecimalFormat(
+            "#,##0.00");
 
     private final MediaGateway media;
     private final PdfBranding branding;
 
-    public CommercialCatalogPdfGenerator(MediaGateway media) { this(media, new PdfBranding()); }
+    public CommercialCatalogPdfGenerator(MediaGateway media) {
+        this(media, new PdfBranding());
+    }
 
-    public CommercialCatalogPdfGenerator(MediaGateway media, PdfBranding branding) {
+    public CommercialCatalogPdfGenerator(MediaGateway media,
+            PdfBranding branding) {
         this.media = media;
         this.branding = branding;
     }
@@ -71,36 +76,41 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
-            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            String fecha = LocalDate.now()
+                    .format(ReportMessages.dateFormatter());
 
-            Paragraph title = new Paragraph(ReportMessages.text("catalog.products.reports.commercialCatalog"))
-                    .setFont(bold)
-                    .setFontSize(20)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(2);
+            Paragraph title = new Paragraph(ReportMessages
+                    .text("catalog.products.reports.commercialCatalog"))
+                    .setFont(bold).setFontSize(20)
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(2);
 
-            Paragraph subtitle = new Paragraph(ReportMessages.text("catalog.products.reports.generatedOn") + fecha)
-                    .setFont(regular)
-                    .setFontSize(10)
+            Paragraph subtitle = new Paragraph(
+                    ReportMessages.text("catalog.products.reports.generatedOn")
+                            + fecha)
+                    .setFont(regular).setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(20);
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(20);
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
             document.add(subtitle);
 
-            Map<String, List<CommercialCatalogResponse>> grouped = items.stream()
+            Map<String, List<CommercialCatalogResponse>> grouped = items
+                    .stream()
                     .collect(Collectors.groupingBy(
                             CommercialCatalogResponse::categoryName,
                             Collectors.toList()));
 
-            for (Map.Entry<String, List<CommercialCatalogResponse>> entry : grouped.entrySet()) {
+            for (Map.Entry<String, List<CommercialCatalogResponse>> entry : grouped
+                    .entrySet()) {
                 document.add(createCategoryHeader(entry.getKey(), bold));
 
                 for (CommercialCatalogResponse item : entry.getValue()) {
@@ -110,33 +120,27 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
 
             document.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error generating commercial catalog PDF", e);
+            throw new RuntimeException(
+                    "Error generating commercial catalog PDF", e);
         }
         return baos.toByteArray();
     }
 
     private Paragraph createCategoryHeader(String categoryName, PdfFont bold) {
-        return new Paragraph(categoryName)
-                .setFont(bold)
-                .setFontSize(14)
+        return new Paragraph(categoryName).setFont(bold).setFontSize(14)
                 .setFontColor(ColorConstants.DARK_GRAY)
-                .setBackgroundColor(CATEGORY_BG)
-                .setPaddingLeft(8)
-                .setPaddingTop(6)
-                .setPaddingBottom(6)
-                .setMarginTop(12)
-                .setMarginBottom(8)
-                .setTextAlignment(TextAlignment.LEFT);
+                .setBackgroundColor(CATEGORY_BG).setPaddingLeft(8)
+                .setPaddingTop(6).setPaddingBottom(6).setMarginTop(12)
+                .setMarginBottom(8).setTextAlignment(TextAlignment.LEFT);
     }
 
-    private Table createProductCard(CommercialCatalogResponse item, PdfFont bold, PdfFont regular,
-                                    MediaGateway fileStorageService) throws IOException {
+    private Table createProductCard(CommercialCatalogResponse item,
+            PdfFont bold, PdfFont regular, MediaGateway fileStorageService)
+            throws IOException {
         float[] columnWidths = {IMAGE_SIZE + 20, 1f};
         Table card = new Table(UnitValue.createPointArray(columnWidths))
-                .useAllAvailableWidth()
-                .setMarginBottom(8)
-                .setBorder(new SolidBorder(BORDER_COLOR, 0.5f))
-                .setPadding(10);
+                .useAllAvailableWidth().setMarginBottom(8)
+                .setBorder(new SolidBorder(BORDER_COLOR, 0.5f)).setPadding(10);
 
         Cell imageCell = createImageCell(item, regular, fileStorageService);
         Cell infoCell = createInfoCell(item, bold, regular);
@@ -147,12 +151,10 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
         return card;
     }
 
-    private Cell createImageCell(CommercialCatalogResponse item, PdfFont regular,
-                                  MediaGateway fileStorageService) {
-        Cell cell = new Cell()
-                .setWidth(IMAGE_SIZE + 20)
-                .setHeight(IMAGE_SIZE + 20)
-                .setPadding(5)
+    private Cell createImageCell(CommercialCatalogResponse item,
+            PdfFont regular, MediaGateway fileStorageService) {
+        Cell cell = new Cell().setWidth(IMAGE_SIZE + 20)
+                .setHeight(IMAGE_SIZE + 20).setPadding(5)
                 .setBorder(Border.NO_BORDER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
 
@@ -174,25 +176,24 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
                 img.setMaxHeight(IMAGE_SIZE);
                 cell.add(img);
             } else {
-                Table placeholder = new Table(1)
-                        .setWidth(IMAGE_SIZE)
+                Table placeholder = new Table(1).setWidth(IMAGE_SIZE)
                         .setHeight(IMAGE_SIZE);
                 Cell placeholderCell = new Cell()
                         .setBackgroundColor(PLACEHOLDER_BG)
                         .setBorder(new SolidBorder(BORDER_COLOR, 0.5f))
                         .setTextAlignment(TextAlignment.CENTER)
                         .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                        .add(new Paragraph(ReportMessages.text("catalog.products.reports.noImage"))
-                                .setFont(regular)
-                                .setFontSize(9)
+                        .add(new Paragraph(ReportMessages
+                                .text("catalog.products.reports.noImage"))
+                                .setFont(regular).setFontSize(9)
                                 .setFontColor(ColorConstants.GRAY));
                 placeholder.addCell(placeholderCell);
                 cell.add(placeholder);
             }
         } catch (Exception e) {
-            Paragraph errorText = new Paragraph(ReportMessages.text("catalog.products.reports.noImage"))
-                    .setFont(regular)
-                    .setFontSize(9)
+            Paragraph errorText = new Paragraph(
+                    ReportMessages.text("catalog.products.reports.noImage"))
+                    .setFont(regular).setFontSize(9)
                     .setFontColor(ColorConstants.GRAY);
             cell.add(errorText);
         }
@@ -200,53 +201,45 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
         return cell;
     }
 
-    private Cell createInfoCell(CommercialCatalogResponse item, PdfFont bold, PdfFont regular) {
-        Cell cell = new Cell()
-                .setBorder(Border.NO_BORDER)
-                .setPaddingLeft(10)
-                .setPaddingTop(5)
-                .setVerticalAlignment(VerticalAlignment.TOP);
+    private Cell createInfoCell(CommercialCatalogResponse item, PdfFont bold,
+            PdfFont regular) {
+        Cell cell = new Cell().setBorder(Border.NO_BORDER).setPaddingLeft(10)
+                .setPaddingTop(5).setVerticalAlignment(VerticalAlignment.TOP);
 
-        Paragraph name = new Paragraph(item.productName())
-                .setFont(bold)
-                .setFontSize(13)
-                .setFontColor(ColorConstants.BLACK)
+        Paragraph name = new Paragraph(item.productName()).setFont(bold)
+                .setFontSize(13).setFontColor(ColorConstants.BLACK)
                 .setMarginBottom(2);
 
-        Paragraph sku = new Paragraph(ReportMessages.text("catalog.products.reports.sku") + item.sku())
-                .setFont(regular)
-                .setFontSize(9)
-                .setFontColor(ColorConstants.DARK_GRAY)
-                .setMarginBottom(6);
+        Paragraph sku = new Paragraph(
+                ReportMessages.text("catalog.products.reports.sku")
+                        + item.sku())
+                .setFont(regular).setFontSize(9)
+                .setFontColor(ColorConstants.DARK_GRAY).setMarginBottom(6);
 
         cell.add(name);
         cell.add(sku);
 
         if (item.description() != null && !item.description().isBlank()) {
-            Paragraph desc = new Paragraph(item.description())
-                    .setFont(regular)
-                    .setFontSize(10)
-                    .setFontColor(ColorConstants.DARK_GRAY)
+            Paragraph desc = new Paragraph(item.description()).setFont(regular)
+                    .setFontSize(10).setFontColor(ColorConstants.DARK_GRAY)
                     .setMarginBottom(8);
             cell.add(desc);
         }
 
         if (item.price() != null) {
             String formattedPrice = "$ " + PRICE_FORMAT.format(item.price());
-            Paragraph priceLabel = new Paragraph(formattedPrice)
-                    .setFont(bold)
-                    .setFontSize(14)
-                    .setFontColor(PRICE_COLOR)
+            Paragraph priceLabel = new Paragraph(formattedPrice).setFont(bold)
+                    .setFontSize(14).setFontColor(PRICE_COLOR)
                     .setMarginBottom(1);
 
             String priceTypeLabel = item.priceTypeName() != null
-                    ? ReportMessages.text("catalog.products.reports.price") + item.priceTypeName()
-                    : ReportMessages.text("catalog.products.reports.priceLabel");
+                    ? ReportMessages.text("catalog.products.reports.price")
+                            + item.priceTypeName()
+                    : ReportMessages
+                            .text("catalog.products.reports.priceLabel");
 
-            Paragraph priceType = new Paragraph(priceTypeLabel)
-                    .setFont(regular)
-                    .setFontSize(8)
-                    .setFontColor(ColorConstants.GRAY);
+            Paragraph priceType = new Paragraph(priceTypeLabel).setFont(regular)
+                    .setFontSize(8).setFontColor(ColorConstants.GRAY);
 
             cell.add(priceLabel);
             cell.add(priceType);
@@ -271,19 +264,21 @@ public class CommercialCatalogPdfGenerator implements CommercialCatalogPdfPort {
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
-                layoutCanvas.showTextAligned(
-                        new Paragraph("P\u00e1gina " + pageNumber + ReportMessages.text("catalog.products.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
-                                .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                layoutCanvas
+                        .showTextAligned(
+                                new Paragraph("P\u00e1gina " + pageNumber
+                                        + ReportMessages.text(
+                                                "catalog.products.reports.of")
+                                        + totalPages).setFont(font)
+                                        .setFontSize(8)
+                                        .setFontColor(ColorConstants.GRAY),
+                                pageSize.getWidth() / 2, 20,
+                                TextAlignment.CENTER);
             }
         }
     }

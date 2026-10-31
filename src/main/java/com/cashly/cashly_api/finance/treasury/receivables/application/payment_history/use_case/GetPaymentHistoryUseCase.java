@@ -12,19 +12,24 @@ public class GetPaymentHistoryUseCase {
 
     private final ReceivablesQueryGateway receivablesRepository;
 
-    public GetPaymentHistoryUseCase(ReceivablesQueryGateway receivablesRepository) {
+    public GetPaymentHistoryUseCase(
+            ReceivablesQueryGateway receivablesRepository) {
         this.receivablesRepository = receivablesRepository;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<PendingPaymentResponse> execute(String search, int page, int size) {
-        PageResponse<PendingPaymentResponse> result = receivablesRepository.findPaymentHistory(search, page, size);
+    public PageResponse<PendingPaymentResponse> execute(String search, int page,
+            int size) {
+        PageResponse<PendingPaymentResponse> result = receivablesRepository
+                .findPaymentHistory(search, page, size);
         return result;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<PendingPaymentResponse> execute(UUID customerId, UUID invoiceId, int page, int size) {
-        PageResponse<PendingPaymentResponse> result = receivablesRepository.findCustomerPaymentHistory(customerId, invoiceId, page, size);
+    public PageResponse<PendingPaymentResponse> execute(UUID customerId,
+            UUID invoiceId, int page, int size) {
+        PageResponse<PendingPaymentResponse> result = receivablesRepository
+                .findCustomerPaymentHistory(customerId, invoiceId, page, size);
         return result;
     }
 }

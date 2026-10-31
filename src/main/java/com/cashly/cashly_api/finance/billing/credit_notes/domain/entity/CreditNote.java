@@ -21,9 +21,10 @@ public class CreditNote {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private CreditNote(CreditNoteId id, CreditNoteNumber noteNumber, UUID customerId, UUID invoiceId,
-                       BigDecimal amount, String reason,
-                       UUID createdBy, String createdByName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private CreditNote(CreditNoteId id, CreditNoteNumber noteNumber,
+            UUID customerId, UUID invoiceId, BigDecimal amount, String reason,
+            UUID createdBy, String createdByName, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.noteNumber = noteNumber;
         this.customerId = customerId;
@@ -36,14 +37,16 @@ public class CreditNote {
         this.updatedAt = updatedAt;
     }
 
-    public static CreditNote create(CreditNoteNumber noteNumber, UUID customerId, UUID invoiceId,
-                                    BigDecimal amount, String reason, UUID createdBy, String createdByName) {
+    public static CreditNote create(CreditNoteNumber noteNumber,
+            UUID customerId, UUID invoiceId, BigDecimal amount, String reason,
+            UUID createdBy, String createdByName) {
         Objects.requireNonNull(noteNumber, "Credit note number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(invoiceId, "Invoice id cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Amount must be greater than zero");
         }
         Objects.requireNonNull(reason, "Reason cannot be null");
         if (reason.isBlank()) {
@@ -53,33 +56,56 @@ public class CreditNote {
         Objects.requireNonNull(createdByName, "Created by name cannot be null");
 
         LocalDateTime now = LocalDateTime.now();
-        return new CreditNote(CreditNoteId.generate(), noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, now, now);
+        return new CreditNote(CreditNoteId.generate(), noteNumber, customerId,
+                invoiceId, amount, reason, createdBy, createdByName, now, now);
     }
 
-    public static CreditNote reconstitute(CreditNoteId id, CreditNoteNumber noteNumber, UUID customerId,
-                                          UUID invoiceId, BigDecimal amount, String reason,
-                                          UUID createdBy, String createdByName,
-                                          LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new CreditNote(id, noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, createdAt, updatedAt);
+    public static CreditNote reconstitute(CreditNoteId id,
+            CreditNoteNumber noteNumber, UUID customerId, UUID invoiceId,
+            BigDecimal amount, String reason, UUID createdBy,
+            String createdByName, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        return new CreditNote(id, noteNumber, customerId, invoiceId, amount,
+                reason, createdBy, createdByName, createdAt, updatedAt);
     }
 
-    public CreditNoteId getId() { return id; }
-    public CreditNoteNumber getNoteNumber() { return noteNumber; }
-    public UUID getCustomerId() { return customerId; }
-    public UUID getInvoiceId() { return invoiceId; }
-    public BigDecimal getAmount() { return amount; }
-    public String getReason() { return reason; }
-    public UUID getCreatedBy() { return createdBy; }
-    public String getCreatedByName() { return createdByName; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public CreditNoteId getId() {
+        return id;
+    }
+    public CreditNoteNumber getNoteNumber() {
+        return noteNumber;
+    }
+    public UUID getCustomerId() {
+        return customerId;
+    }
+    public UUID getInvoiceId() {
+        return invoiceId;
+    }
+    public BigDecimal getAmount() {
+        return amount;
+    }
+    public String getReason() {
+        return reason;
+    }
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+    public String getCreatedByName() {
+        return createdByName;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         CreditNote that = (CreditNote) o;
         return Objects.equals(id, that.id);
     }
@@ -91,6 +117,7 @@ public class CreditNote {
 
     @Override
     public String toString() {
-        return "CreditNote{id=" + id + ", noteNumber=" + noteNumber + ", amount=" + amount + "}";
+        return "CreditNote{id=" + id + ", noteNumber=" + noteNumber
+                + ", amount=" + amount + "}";
     }
 }

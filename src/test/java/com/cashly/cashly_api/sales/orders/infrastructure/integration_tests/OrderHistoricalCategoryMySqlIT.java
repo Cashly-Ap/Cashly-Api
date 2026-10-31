@@ -28,7 +28,8 @@ class OrderHistoricalCategoryMySqlIT {
     private final QuoteJpaRepository quotes;
 
     @Autowired
-    OrderHistoricalCategoryMySqlIT(JdbcTemplate jdbc, OrderJpaRepository orders, QuoteJpaRepository quotes) {
+    OrderHistoricalCategoryMySqlIT(JdbcTemplate jdbc, OrderJpaRepository orders,
+            QuoteJpaRepository quotes) {
         this.jdbc = jdbc;
         this.orders = orders;
         this.quotes = quotes;
@@ -48,16 +49,19 @@ class OrderHistoricalCategoryMySqlIT {
         insertProduct(productId, currentCategoryId);
         insertOrder(orderId, customerId);
         insertLine(lineId, orderId, productId);
-        jdbc.update("insert into order_line_category_snapshots (order_line_id, category_id) values (UUID_TO_BIN(?), UUID_TO_BIN(?))",
+        jdbc.update(
+                "insert into order_line_category_snapshots (order_line_id, category_id) values (UUID_TO_BIN(?), UUID_TO_BIN(?))",
                 lineId.toString(), oldCategoryId.toString());
 
-        var historicalMatches = orders.findAllWithFilters(null, null, null, null, null, oldCategoryId,
-                Set.of(new UUID(0, 0)));
-        var currentMatches = orders.findAllWithFilters(null, null, null, null, null, currentCategoryId,
-                Set.of(productId));
+        var historicalMatches = orders.findAllWithFilters(null, null, null,
+                null, null, oldCategoryId, Set.of(new UUID(0, 0)));
+        var currentMatches = orders.findAllWithFilters(null, null, null, null,
+                null, currentCategoryId, Set.of(productId));
 
-        assertThat(historicalMatches).extracting(order -> order.getId()).containsExactly(orderId);
-        assertThat(currentMatches).extracting(order -> order.getId()).containsExactly(orderId);
+        assertThat(historicalMatches).extracting(order -> order.getId())
+                .containsExactly(orderId);
+        assertThat(currentMatches).extracting(order -> order.getId())
+                .containsExactly(orderId);
     }
 
     @Test
@@ -72,13 +76,16 @@ class OrderHistoricalCategoryMySqlIT {
         insertOrder(orderId, customerId);
         insertLine(UUID.randomUUID(), orderId, productId);
 
-        var currentMatches = orders.findAllWithFilters(null, null, null, null, null, categoryId, Set.of(productId));
+        var currentMatches = orders.findAllWithFilters(null, null, null, null,
+                null, categoryId, Set.of(productId));
 
-        assertThat(currentMatches).extracting(order -> order.getId()).containsExactly(orderId);
+        assertThat(currentMatches).extracting(order -> order.getId())
+                .containsExactly(orderId);
     }
 
     @Test
-    void migrationBackfillsExistingOrderAndQuoteLinesBeforeProductsChangeCategory() throws IOException {
+    void migrationBackfillsExistingOrderAndQuoteLinesBeforeProductsChangeCategory()
+            throws IOException {
         UUID customerId = UUID.randomUUID();
         UUID historicalCategoryId = UUID.randomUUID();
         UUID currentCategoryId = UUID.randomUUID();
@@ -98,59 +105,75 @@ class OrderHistoricalCategoryMySqlIT {
 
         executeMigrationBackfill("order_line_category_snapshots");
         executeMigrationBackfill("quote_line_category_snapshots");
-        jdbc.update("update products set category_id = UUID_TO_BIN(?) where id = UUID_TO_BIN(?)",
+        jdbc.update(
+                "update products set category_id = UUID_TO_BIN(?) where id = UUID_TO_BIN(?)",
                 currentCategoryId.toString(), productId.toString());
 
-        var historicalOrders = orders.findAllWithFilters(null, null, null, null, null,
-                historicalCategoryId, Set.of(new UUID(0, 0)));
-        var historicalQuotes = quotes.findAllWithFilters(null, null, customerId, "ALL", null,
-                historicalCategoryId, Set.of(new UUID(0, 0)));
+        var historicalOrders = orders.findAllWithFilters(null, null, null, null,
+                null, historicalCategoryId, Set.of(new UUID(0, 0)));
+        var historicalQuotes = quotes.findAllWithFilters(null, null, customerId,
+                "ALL", null, historicalCategoryId, Set.of(new UUID(0, 0)));
 
-        assertThat(historicalOrders).extracting(order -> order.getId()).containsExactly(orderId);
-        assertThat(historicalQuotes).extracting(quote -> quote.getId()).containsExactly(quoteId);
+        assertThat(historicalOrders).extracting(order -> order.getId())
+                .containsExactly(orderId);
+        assertThat(historicalQuotes).extracting(quote -> quote.getId())
+                .containsExactly(quoteId);
     }
 
     private void executeMigrationBackfill(String table) throws IOException {
         String migration = Files.readString(Path.of(
                 "src/main/resources/db/migration/V25__create_sales_line_category_snapshots.sql"));
-        Matcher statement = Pattern.compile("(?is)INSERT\\s+INTO\\s+" + Pattern.quote(table) + "\\s*\\(.*?;")
-                .matcher(migration);
+        Matcher statement = Pattern.compile("(?is)INSERT\\s+INTO\\s+"
+                + Pattern.quote(table) + "\\s*\\(.*?;").matcher(migration);
         assertThat(statement.find()).as("V25 backfills " + table).isTrue();
         jdbc.execute(statement.group());
     }
 
     private void insertCustomer(UUID id) {
-        jdbc.update("insert into customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, created_at, updated_at) values (UUID_TO_BIN(?), ?, ?, 'COMPANY', ?, ?, 0, 0, true, current_timestamp, current_timestamp)",
-                id.toString(), Math.abs(id.hashCode()), "Customer " + id, "RIF-" + id, "Alias " + id);
+        jdbc.update(
+                "insert into customers (id, code, legal_name, type, rif, alias, credit_days, credit_limit, active, created_at, updated_at) values (UUID_TO_BIN(?), ?, ?, 'COMPANY', ?, ?, 0, 0, true, current_timestamp, current_timestamp)",
+                id.toString(), Math.abs(id.hashCode()), "Customer " + id,
+                "RIF-" + id, "Alias " + id);
     }
 
     private void insertCategory(UUID id, String prefix) {
-        jdbc.update("insert into categories (id, name, active) values (UUID_TO_BIN(?), ?, true)",
+        jdbc.update(
+                "insert into categories (id, name, active) values (UUID_TO_BIN(?), ?, true)",
                 id.toString(), prefix + " " + id);
     }
 
     private void insertProduct(UUID id, UUID categoryId) {
-        jdbc.update("insert into products (id, code, name, category_id, composite, active, created_at, updated_at) values (UUID_TO_BIN(?), ?, ?, UUID_TO_BIN(?), false, true, current_timestamp, current_timestamp)",
-                id.toString(), "SKU-" + id, "Product " + id, categoryId.toString());
+        jdbc.update(
+                "insert into products (id, code, name, category_id, composite, active, created_at, updated_at) values (UUID_TO_BIN(?), ?, ?, UUID_TO_BIN(?), false, true, current_timestamp, current_timestamp)",
+                id.toString(), "SKU-" + id, "Product " + id,
+                categoryId.toString());
     }
 
     private void insertOrder(UUID id, UUID customerId) {
-        jdbc.update("insert into orders (id, order_number, customer_id, customer_name, customer_rif, status, subtotal, created_at, updated_at) values (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), 'Customer', 'RIF', 'DRAFT', 10, current_timestamp, current_timestamp)",
-                id.toString(), "ORD-" + id.toString().replace("-", "").substring(0, 16), customerId.toString());
+        jdbc.update(
+                "insert into orders (id, order_number, customer_id, customer_name, customer_rif, status, subtotal, created_at, updated_at) values (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), 'Customer', 'RIF', 'DRAFT', 10, current_timestamp, current_timestamp)",
+                id.toString(),
+                "ORD-" + id.toString().replace("-", "").substring(0, 16),
+                customerId.toString());
     }
 
     private void insertQuote(UUID id, UUID customerId) {
-        jdbc.update("insert into quotes (id, quote_number, customer_id, customer_name, customer_rif, status, subtotal, created_at, updated_at) values (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), 'Customer', 'RIF', 'DRAFT', 10, current_timestamp, current_timestamp)",
-                id.toString(), "QUO-" + id.toString().replace("-", "").substring(0, 16), customerId.toString());
+        jdbc.update(
+                "insert into quotes (id, quote_number, customer_id, customer_name, customer_rif, status, subtotal, created_at, updated_at) values (UUID_TO_BIN(?), ?, UUID_TO_BIN(?), 'Customer', 'RIF', 'DRAFT', 10, current_timestamp, current_timestamp)",
+                id.toString(),
+                "QUO-" + id.toString().replace("-", "").substring(0, 16),
+                customerId.toString());
     }
 
     private void insertQuoteLine(UUID id, UUID quoteId, UUID productId) {
-        jdbc.update("insert into quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total) values (UUID_TO_BIN(?), UUID_TO_BIN(?), UUID_TO_BIN(?), 'Product', 'SKU', 1, 10, 10)",
+        jdbc.update(
+                "insert into quote_lines (id, quote_id, product_id, product_name, product_code, quantity, unit_price, line_total) values (UUID_TO_BIN(?), UUID_TO_BIN(?), UUID_TO_BIN(?), 'Product', 'SKU', 1, 10, 10)",
                 id.toString(), quoteId.toString(), productId.toString());
     }
 
     private void insertLine(UUID id, UUID orderId, UUID productId) {
-        jdbc.update("insert into order_lines (id, order_id, product_id, product_name, product_code, quantity, unit_price, line_total) values (UUID_TO_BIN(?), UUID_TO_BIN(?), UUID_TO_BIN(?), 'Product', 'SKU', 1, 10, 10)",
+        jdbc.update(
+                "insert into order_lines (id, order_id, product_id, product_name, product_code, quantity, unit_price, line_total) values (UUID_TO_BIN(?), UUID_TO_BIN(?), UUID_TO_BIN(?), 'Product', 'SKU', 1, 10, 10)",
                 id.toString(), orderId.toString(), productId.toString());
     }
 }

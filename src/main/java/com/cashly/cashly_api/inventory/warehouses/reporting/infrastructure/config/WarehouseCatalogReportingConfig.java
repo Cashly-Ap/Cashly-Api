@@ -37,6 +37,7 @@ public class WarehouseCatalogReportingConfig {
     public GenerateCatalogPdfUseCase generateCatalogPdfUseCase(
             CatalogReportRepositoryPort catalogReportRepositoryPort,
             CatalogPdfPort catalogPdfPort) {
-        return new GenerateCatalogPdfUseCaseImpl(catalogReportRepositoryPort, catalogPdfPort);
+        return new GenerateCatalogPdfUseCaseImpl(catalogReportRepositoryPort,
+                catalogPdfPort);
     }
 }

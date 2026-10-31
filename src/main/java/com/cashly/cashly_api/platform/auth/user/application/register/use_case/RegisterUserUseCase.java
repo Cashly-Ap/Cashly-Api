@@ -19,14 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegisterUserUseCase {
     private final UserPreferencesRepository preferences;
 
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public RegisterUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder, com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access, UserPreferencesRepository preferences) {
+    public RegisterUserUseCase(UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
+            UserPreferencesRepository preferences) {
         this.preferences = preferences;
-        this.access=access;
+        this.access = access;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -34,11 +36,14 @@ public class RegisterUserUseCase {
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public UserResponse execute(RegisterUserRequest request) {
         access.lockAdministration();
-        access.require(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS, com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CREATE);
-        access.validateAssignment(request.roleId(),request.departmentId());
+        access.require(
+                com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS,
+                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CREATE);
+        access.validateAssignment(request.roleId(), request.departmentId());
         Email email = new Email(request.email());
         if (userRepository.existsByEmail(email)) {
-            throw new DuplicateEmailException("Email already registered: " + request.email());
+            throw new DuplicateEmailException(
+                    "Email already registered: " + request.email());
         }
 
         UserName userName = new UserName(request.userName());
@@ -49,10 +54,12 @@ public class RegisterUserUseCase {
 
         User user = new User(UserId.generate(), email, userName, password);
 
-        user.updateProfile(request.profile(),request.roleId(),request.departmentId());
+        user.updateProfile(request.profile(), request.roleId(),
+                request.departmentId());
         User savedUser = userRepository.save(user);
 
-        preferences.updateLanguage(savedUser.getId().getValue(), request.language());
+        preferences.updateLanguage(savedUser.getId().getValue(),
+                request.language());
         return UserResponse.from(savedUser).withLanguage(request.language());
     }
 }

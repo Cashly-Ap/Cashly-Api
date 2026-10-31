@@ -44,23 +44,21 @@ class GetQuotesUseCaseTest {
     @Test
     @DisplayName("should return list of quotes mapped to list responses")
     void shouldReturnQuoteListResponses() {
-        Quote quote = Quote.reconstitute(
-                UUID.randomUUID(),
-                QuoteNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "Creator",
-                QuoteStatus.DRAFT,
-                LocalDate.of(2026, 12, 31), "Notes", BigDecimal.TEN,
-                null, null, null, null, null, null,
-                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001", BigDecimal.ONE, BigDecimal.TEN)),
-                Instant.now(), Instant.now()
-        );
+        Quote quote = Quote.reconstitute(UUID.randomUUID(),
+                QuoteNumber.of(2026, 1), UUID.randomUUID(), "Customer",
+                "J-12345678-9", UUID.randomUUID(), "Creator", QuoteStatus.DRAFT,
+                LocalDate.of(2026, 12, 31), "Notes", BigDecimal.TEN, null, null,
+                null, null, null, null,
+                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001",
+                        BigDecimal.ONE, BigDecimal.TEN)),
+                Instant.now(), Instant.now());
 
-        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, java.util.Set.of(), "createdAt", "desc"))
+        when(quoteRepository.findAllWithFilters(null, null, null, null, null,
+                null, java.util.Set.of(), "createdAt", "desc"))
                 .thenReturn(List.of(quote));
 
-        List<QuoteListResponse> responses = getQuotesUseCase.execute(
-                null, null, null, null, null, null, "createdAt", "desc");
+        List<QuoteListResponse> responses = getQuotesUseCase.execute(null, null,
+                null, null, null, null, "createdAt", "desc");
 
         assertEquals(1, responses.size());
         QuoteListResponse response = responses.get(0);
@@ -69,44 +67,53 @@ class GetQuotesUseCaseTest {
         assertEquals("Customer", response.customerName());
         assertEquals("DRAFT", response.status());
         assertEquals(quote.getCreatedByName(), response.createdByName());
-        verify(quoteRepository).findAllWithFilters(null, null, null, null, null, null, java.util.Set.of(), "createdAt", "desc");
+        verify(quoteRepository).findAllWithFilters(null, null, null, null, null,
+                null, java.util.Set.of(), "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no quotes exist")
     void shouldReturnEmptyListWhenNoQuotes() {
-        when(quoteRepository.findAllWithFilters(null, null, null, null, null, null, java.util.Set.of(), "createdAt", "desc"))
+        when(quoteRepository.findAllWithFilters(null, null, null, null, null,
+                null, java.util.Set.of(), "createdAt", "desc"))
                 .thenReturn(List.of());
 
-        List<QuoteListResponse> responses = getQuotesUseCase.execute(
-                null, null, null, null, null, null, "createdAt", "desc");
+        List<QuoteListResponse> responses = getQuotesUseCase.execute(null, null,
+                null, null, null, null, "createdAt", "desc");
 
         assertTrue(responses.isEmpty());
     }
     @Test
     void shouldQueryOnlyEligibleRecordsForEdit() {
-        getQuotesUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null,
+                "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
-        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
+                null, null, java.util.Set.of(), "createdAt", "desc");
     }
 
     @Test
     void shouldQueryOnlyEligibleRecordsForConvertToOrder() {
-        getQuotesUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null,
+                "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_ORDER);
-        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
+                null, null, java.util.Set.of(), "createdAt", "desc");
     }
 
     @Test
     void shouldQueryOnlyEligibleRecordsForConvertToInvoice() {
-        getQuotesUseCase.execute(null, null, null, "ALL", null, null, "createdAt", "desc",
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null,
+                "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_INVOICE);
-        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT", null, null, java.util.Set.of(), "createdAt", "desc");
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
+                null, null, java.util.Set.of(), "createdAt", "desc");
     }
 
     @Test
     void shouldReturnEmptyWhenRequestedStatusCannotPerformAction() {
-        var result = getQuotesUseCase.execute(null, null, null, "CANCELLED", null, null, "createdAt", "desc",
+        var result = getQuotesUseCase.execute(null, null, null, "CANCELLED",
+                null, null, "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
         assertTrue(result.isEmpty());
         verifyNoInteractions(quoteRepository);
@@ -114,8 +121,10 @@ class GetQuotesUseCaseTest {
 
     @Test
     void shouldRejectUnsupportedAction() {
-        assertThrows(IllegalArgumentException.class, () -> getQuotesUseCase.execute(null, null, null, null, null, null,
-                "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE));
+        assertThrows(IllegalArgumentException.class,
+                () -> getQuotesUseCase.execute(null, null, null, null, null,
+                        null, "createdAt", "desc",
+                        com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE));
         verifyNoInteractions(quoteRepository);
     }
 

@@ -22,9 +22,9 @@ public class PurchasesReportController {
     private final GeneratePurchasePdfUseCase generatePurchasePdfUseCase;
     private final GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase;
 
-
-    public PurchasesReportController(GeneratePurchasePdfUseCase generatePurchasePdfUseCase,
-                                      GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase) {
+    public PurchasesReportController(
+            GeneratePurchasePdfUseCase generatePurchasePdfUseCase,
+            GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase) {
         this.generatePurchasePdfUseCase = generatePurchasePdfUseCase;
         this.generatePurchasesReportPdfUseCase = generatePurchasesReportPdfUseCase;
 
@@ -34,9 +34,9 @@ public class PurchasesReportController {
     @PreAuthorize("hasAuthority('PURCHASES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getPurchasePdf(@PathVariable UUID id) {
         byte[] pdf = generatePurchasePdfUseCase.execute(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"compra-" + id + ".pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"compra-" + id + ".pdf\"")
                 .body(pdf);
     }
 
@@ -51,13 +51,15 @@ public class PurchasesReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        PurchaseReportFilter filter = new PurchaseReportFilter(dateFrom, dateTo, supplierId, status, productId, categoryId);
+        PurchaseReportFilter filter = new PurchaseReportFilter(dateFrom, dateTo,
+                supplierId, status, productId, categoryId);
         byte[] pdf = generatePurchasesReportPdfUseCase.execute(filter, mode);
 
-        String filename = "reporte-compras-" + LocalDate.now().toString() + ".pdf";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+        String filename = "reporte-compras-" + LocalDate.now().toString()
+                + ".pdf";
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .body(pdf);
     }
 }

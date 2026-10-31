@@ -14,7 +14,8 @@ public class DeletePaymentMethodUseCase {
     private final PaymentMethodRepository repository;
     private final PaymentMethodUsageGateway usageGateway;
 
-    public DeletePaymentMethodUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
+    public DeletePaymentMethodUseCase(PaymentMethodRepository repository,
+            PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
         this.usageGateway = usageGateway;
     }
@@ -24,7 +25,8 @@ public class DeletePaymentMethodUseCase {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
 
         if (!repository.findById(paymentMethodId).isPresent()) {
-            throw new IllegalArgumentException("Payment method not found: " + id);
+            throw new IllegalArgumentException(
+                    "Payment method not found: " + id);
         }
 
         if (usageGateway.hasAssociatedRecords(paymentMethodId.value())) {

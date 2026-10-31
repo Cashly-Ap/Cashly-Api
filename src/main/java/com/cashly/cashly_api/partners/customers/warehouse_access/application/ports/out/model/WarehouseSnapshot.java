@@ -2,4 +2,5 @@ package com.cashly.cashly_api.partners.customers.warehouse_access.application.po
 
 import java.util.UUID;
 
-public record WarehouseSnapshot(UUID id, String name) {}
+public record WarehouseSnapshot(UUID id, String name) {
+}

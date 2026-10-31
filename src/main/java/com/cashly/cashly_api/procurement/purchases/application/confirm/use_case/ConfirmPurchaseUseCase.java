@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.procurement.purchases.application.confirm.use_case;
 
-
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler;
 import com.cashly.cashly_api.procurement.purchases.domain.entity.Purchase;
@@ -19,8 +18,8 @@ public class ConfirmPurchaseUseCase {
     private final PurchaseDetailResponseAssembler responseAssembler;
 
     public ConfirmPurchaseUseCase(PurchaseRepository purchaseRepository,
-                                   InventoryGateway inventoryGateway,
-                                   PurchaseDetailResponseAssembler responseAssembler) {
+            InventoryGateway inventoryGateway,
+            PurchaseDetailResponseAssembler responseAssembler) {
         this.purchaseRepository = purchaseRepository;
         this.inventoryGateway = inventoryGateway;
         this.responseAssembler = responseAssembler;
@@ -39,9 +38,14 @@ public class ConfirmPurchaseUseCase {
     }
 
     private void addStockFromPurchase(Purchase purchase) {
-        inventoryGateway.receive(purchase.getId().getValue(), purchase.getPurchaseNumber().getValue(),
-                purchase.getLines().stream().flatMap(line -> line.getAllocations().stream()
-                        .map(allocation -> new InventoryGateway.Allocation(allocation.getWarehouseId(), line.getProductId(),
-                                allocation.getQuantity().intValue()))).toList());
+        inventoryGateway.receive(purchase.getId().getValue(),
+                purchase.getPurchaseNumber().getValue(),
+                purchase.getLines().stream().flatMap(line -> line
+                        .getAllocations().stream()
+                        .map(allocation -> new InventoryGateway.Allocation(
+                                allocation.getWarehouseId(),
+                                line.getProductId(),
+                                allocation.getQuantity().intValue())))
+                        .toList());
     }
 }

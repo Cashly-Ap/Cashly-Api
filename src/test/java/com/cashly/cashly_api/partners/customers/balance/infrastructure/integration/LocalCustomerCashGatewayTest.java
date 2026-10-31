@@ -17,13 +17,16 @@ class LocalCustomerCashGatewayTest {
     void maps_customer_cash_contract_to_cash_register_api() {
         CashMovementService cash = mock(CashMovementService.class);
         var gateway = new LocalCustomerCashGateway(cash);
-        var movement = new CustomerCashMovement("IN", "ADVANCE", new BigDecimal("25.00"),
-                UUID.randomUUID(), "Advance", "CUSTOMER_BALANCE", UUID.randomUUID(), UUID.randomUUID(), "Operator");
+        var movement = new CustomerCashMovement("IN", "ADVANCE",
+                new BigDecimal("25.00"), UUID.randomUUID(), "Advance",
+                "CUSTOMER_BALANCE", UUID.randomUUID(), UUID.randomUUID(),
+                "Operator");
 
         gateway.record(movement);
 
-        verify(cash).record(CashMovementDirection.IN, CashMovementType.ADVANCE, movement.amount(),
-                movement.paymentMethodId(), movement.description(), movement.sourceType(), movement.sourceId(),
-                movement.actorId(), movement.actorName());
+        verify(cash).record(CashMovementDirection.IN, CashMovementType.ADVANCE,
+                movement.amount(), movement.paymentMethodId(),
+                movement.description(), movement.sourceType(),
+                movement.sourceId(), movement.actorId(), movement.actorName());
     }
 }

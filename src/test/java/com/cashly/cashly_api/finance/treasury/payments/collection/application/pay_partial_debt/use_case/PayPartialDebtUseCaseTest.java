@@ -74,140 +74,146 @@ class PayPartialDebtUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        PaymentAllocationService paymentAllocationService =
-                new PaymentAllocationService(paymentRepository, allocationRepository);
-        useCase = new PayPartialDebtUseCase(
-                paymentRepository, allocationRepository,
-                invoiceGateway, customerGateway, cashRegisterGateway,
-                paymentAllocationService
-        );
+        PaymentAllocationService paymentAllocationService = new PaymentAllocationService(
+                paymentRepository, allocationRepository);
+        useCase = new PayPartialDebtUseCase(paymentRepository,
+                allocationRepository, invoiceGateway, customerGateway,
+                cashRegisterGateway, paymentAllocationService);
     }
 
-    private Invoice unpaidInvoice(UUID id, BigDecimal lineQty, BigDecimal unitPrice) {
-        return Invoice.reconstitute(
-                InvoiceId.of(id),
-                InvoiceNumber.of(2026, 1),
-                customerId,
-                "Test Customer",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "Creator",
-                null, null,
-                InvoiceStatus.PENDING_PAYMENT,
-                PaymentType.CREDIT,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null, null,
-                List.of(InvoiceLine.create(UUID.randomUUID(), "Product", "P001", lineQty, unitPrice, List.of())),
-                LocalDate.now().atStartOfDay(),
-                LocalDate.now().atStartOfDay()
-        );
+    private Invoice unpaidInvoice(UUID id, BigDecimal lineQty,
+            BigDecimal unitPrice) {
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+                customerId, "Test Customer", "J-12345678-9", UUID.randomUUID(),
+                "Creator", null, null, InvoiceStatus.PENDING_PAYMENT,
+                PaymentType.CREDIT, null, BigDecimal.ZERO, null, null, null,
+                List.of(InvoiceLine.create(UUID.randomUUID(), "Product", "P001",
+                        lineQty, unitPrice, List.of())),
+                LocalDate.now().atStartOfDay(), LocalDate.now().atStartOfDay());
     }
 
-    private List<PaymentInvoiceGateway.InvoiceSnapshot> snapshots(Invoice... invoices) {
-        return java.util.Arrays.stream(invoices).map(invoice -> new PaymentInvoiceGateway.InvoiceSnapshot(
-                invoice.getId().value(), invoice.getCustomerId(), invoice.getInvoiceNumber().value(),
-                invoice.calculateTotal(BigDecimal.ZERO, BigDecimal.ZERO))).toList();
+    private List<PaymentInvoiceGateway.InvoiceSnapshot> snapshots(
+            Invoice... invoices) {
+        return java.util.Arrays.stream(invoices)
+                .map(invoice -> new PaymentInvoiceGateway.InvoiceSnapshot(
+                        invoice.getId().value(), invoice.getCustomerId(),
+                        invoice.getInvoiceNumber().value(),
+                        invoice.calculateTotal(BigDecimal.ZERO,
+                                BigDecimal.ZERO)))
+                .toList();
     }
 
     @Test
     void should_PayPartialDebt_When_ValidRequest() {
         UUID invoiceId = UUID.randomUUID();
-        Invoice invoice = unpaidInvoice(invoiceId, new BigDecimal("5"), new BigDecimal("200.00"));
+        Invoice invoice = unpaidInvoice(invoiceId, new BigDecimal("5"),
+                new BigDecimal("200.00"));
 
         PayPartialDebtRequest request = new PayPartialDebtRequest(
                 paymentMethodId, "REF-001", LocalDate.now(),
-                new BigDecimal("500.00"), false, null
-        );
+                new BigDecimal("500.00"), false, null);
 
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(invoice));
-        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots(invoice));
+        when(paymentRepository
+                .getNextSequenceForYear(LocalDate.now().getYear()))
+                .thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        PaymentResultResponse response = useCase.execute(customerId, request, authenticatedUserId, authenticatedUserName);
+        PaymentResultResponse response = useCase.execute(customerId, request,
+                authenticatedUserId, authenticatedUserName);
 
         assertNotNull(response);
         assertNotNull(response.message());
         assertEquals(PaymentStatus.APPLIED.name(), response.status());
-        verify(paymentRepository, org.mockito.Mockito.times(2)).save(paymentCaptor.capture());
+        verify(paymentRepository, org.mockito.Mockito.times(2))
+                .save(paymentCaptor.capture());
         Payment saved = paymentCaptor.getAllValues().get(1);
         assertEquals(new BigDecimal("500.00"), saved.getAmount());
-        verify(cashRegisterGateway).recordMovement(new CashRegisterGateway.Movement(
-                CashRegisterGateway.Direction.IN, CashRegisterGateway.Type.PAYMENT,
-                new CashRegisterGateway.PaymentEntry(new BigDecimal("500.00"), paymentMethodId,
-                        "Pago parcial de deuda del cliente", saved.getId().value(), authenticatedUserId,
-                        authenticatedUserName)));
+        verify(cashRegisterGateway)
+                .recordMovement(new CashRegisterGateway.Movement(
+                        CashRegisterGateway.Direction.IN,
+                        CashRegisterGateway.Type.PAYMENT,
+                        new CashRegisterGateway.PaymentEntry(
+                                new BigDecimal("500.00"), paymentMethodId,
+                                "Pago parcial de deuda del cliente",
+                                saved.getId().value(), authenticatedUserId,
+                                authenticatedUserName)));
     }
 
     @Test
     void should_Throw_When_NoUnpaidInvoices() {
         PayPartialDebtRequest request = new PayPartialDebtRequest(
                 paymentMethodId, "REF-001", LocalDate.now(),
-                new BigDecimal("500.00"), false, null
-        );
+                new BigDecimal("500.00"), false, null);
 
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots());
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(customerId, request, authenticatedUserId, authenticatedUserName)
-        );
+                () -> useCase.execute(customerId, request, authenticatedUserId,
+                        authenticatedUserName));
 
-        assertTrue(exception.getMessage().contains("Customer has no unpaid invoices"));
+        assertTrue(exception.getMessage()
+                .contains("Customer has no unpaid invoices"));
     }
 
     @Test
     void should_Throw_When_PaymentAmountIsZero() {
-        PayPartialDebtRequest request = new PayPartialDebtRequest(
-                null, null, LocalDate.now(),
-                BigDecimal.ZERO, false, null
-        );
+        PayPartialDebtRequest request = new PayPartialDebtRequest(null, null,
+                LocalDate.now(), BigDecimal.ZERO, false, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(customerId, request, authenticatedUserId, authenticatedUserName)
-        );
+                () -> useCase.execute(customerId, request, authenticatedUserId,
+                        authenticatedUserName));
 
-        assertTrue(exception.getMessage().contains("Payment amount must be greater than zero"));
+        assertTrue(exception.getMessage()
+                .contains("Payment amount must be greater than zero"));
     }
 
     @Test
     void should_Throw_When_PaymentMethodMissing() {
-        PayPartialDebtRequest request = new PayPartialDebtRequest(
-                null, null, LocalDate.now(),
-                new BigDecimal("500.00"), false, null
-        );
+        PayPartialDebtRequest request = new PayPartialDebtRequest(null, null,
+                LocalDate.now(), new BigDecimal("500.00"), false, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(customerId, request, authenticatedUserId, authenticatedUserName)
-        );
+                () -> useCase.execute(customerId, request, authenticatedUserId,
+                        authenticatedUserName));
 
-        assertTrue(exception.getMessage().contains("Payment method is required"));
+        assertTrue(
+                exception.getMessage().contains("Payment method is required"));
     }
 
     @Test
     void should_AllocateRemainingToInvoices_When_PartialPayment() {
         UUID invoice1Id = UUID.randomUUID();
         UUID invoice2Id = UUID.randomUUID();
-        Invoice invoice1 = unpaidInvoice(invoice1Id, new BigDecimal("1"), new BigDecimal("300.00"));
-        Invoice invoice2 = unpaidInvoice(invoice2Id, new BigDecimal("1"), new BigDecimal("300.00"));
+        Invoice invoice1 = unpaidInvoice(invoice1Id, new BigDecimal("1"),
+                new BigDecimal("300.00"));
+        Invoice invoice2 = unpaidInvoice(invoice2Id, new BigDecimal("1"),
+                new BigDecimal("300.00"));
 
         PayPartialDebtRequest request = new PayPartialDebtRequest(
                 paymentMethodId, null, LocalDate.now(),
-                new BigDecimal("400.00"), false, null
-        );
+                new BigDecimal("400.00"), false, null);
 
-        when(invoiceGateway.findUnpaidByCustomerId(customerId)).thenReturn(snapshots(invoice1, invoice2));
-        when(paymentRepository.getNextSequenceForYear(LocalDate.now().getYear())).thenReturn(1);
+        when(invoiceGateway.findUnpaidByCustomerId(customerId))
+                .thenReturn(snapshots(invoice1, invoice2));
+        when(paymentRepository
+                .getNextSequenceForYear(LocalDate.now().getYear()))
+                .thenReturn(1);
         when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        useCase.execute(customerId, request, authenticatedUserId, authenticatedUserName);
+        useCase.execute(customerId, request, authenticatedUserId,
+                authenticatedUserName);
 
-        verify(paymentRepository, org.mockito.Mockito.times(2)).save(paymentCaptor.capture());
+        verify(paymentRepository, org.mockito.Mockito.times(2))
+                .save(paymentCaptor.capture());
         Payment saved = paymentCaptor.getAllValues().get(1);
         assertEquals(new BigDecimal("400.00"), saved.getAmount());
     }

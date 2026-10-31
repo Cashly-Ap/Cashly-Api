@@ -27,8 +27,8 @@ class CustomerPhoneUnitTest {
         CustomerId customerId = CustomerId.generate();
         PhoneNumber phone = new PhoneNumber("+58-212-555-1234");
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new CustomerPhone(null, customerId, phone));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerPhone(null, customerId, phone));
     }
 
     @Test
@@ -36,8 +36,8 @@ class CustomerPhoneUnitTest {
         PhoneId id = PhoneId.generate();
         PhoneNumber phone = new PhoneNumber("+58-212-555-1234");
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new CustomerPhone(id, null, phone));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerPhone(id, null, phone));
     }
 
     @Test
@@ -45,8 +45,8 @@ class CustomerPhoneUnitTest {
         PhoneId id = PhoneId.generate();
         CustomerId customerId = CustomerId.generate();
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new CustomerPhone(id, customerId, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerPhone(id, customerId, null));
     }
 
     @Test
@@ -54,8 +54,10 @@ class CustomerPhoneUnitTest {
         PhoneId id = PhoneId.generate();
         CustomerId customerId = CustomerId.generate();
 
-        CustomerPhone phone1 = new CustomerPhone(id, customerId, new PhoneNumber("5551234"));
-        CustomerPhone phone2 = new CustomerPhone(id, customerId, new PhoneNumber("5555678"));
+        CustomerPhone phone1 = new CustomerPhone(id, customerId,
+                new PhoneNumber("5551234"));
+        CustomerPhone phone2 = new CustomerPhone(id, customerId,
+                new PhoneNumber("5555678"));
 
         assertEquals(phone1, phone2);
         assertEquals(phone1.hashCode(), phone2.hashCode());

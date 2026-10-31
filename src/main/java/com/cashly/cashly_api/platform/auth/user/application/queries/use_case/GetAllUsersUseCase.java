@@ -20,43 +20,39 @@ import java.util.stream.Collectors;
 public class GetAllUsersUseCase {
     private final UserPreferencesRepository preferences;
 
-
     private final UserRepository userRepository;
 
-    public GetAllUsersUseCase(UserRepository userRepository, UserPreferencesRepository preferences) {
+    public GetAllUsersUseCase(UserRepository userRepository,
+            UserPreferencesRepository preferences) {
         this.preferences = preferences;
         this.userRepository = userRepository;
     }
 
-    public PageResponse<UserResponse> execute(String authenticatedUserId, UUID roleId, Boolean active,
-                                               String search, int page, int size,
-                                               String orderBy, String orderDir) {
+    public PageResponse<UserResponse> execute(String authenticatedUserId,
+            UUID roleId, Boolean active, String search, int page, int size,
+            String orderBy, String orderDir) {
         Boolean effectiveActive = active != null ? active : true;
-        PageResponse<User> userPage =
-            userRepository.findAllWithFilters(search, roleId, effectiveActive, authenticatedUserId, page, size, orderBy, orderDir);
+        PageResponse<User> userPage = userRepository.findAllWithFilters(search,
+                roleId, effectiveActive, authenticatedUserId, page, size,
+                orderBy, orderDir);
 
         Set<UUID> idsWithRecords = userRepository.findIdsWithAssociatedRecords(
-            userPage.content().stream()
-                .map(u -> u.getId().getValue())
-                .collect(Collectors.toSet())
-        );
+                userPage.content().stream().map(u -> u.getId().getValue())
+                        .collect(Collectors.toSet()));
 
-        var languages = preferences.languagesFor(userPage.content().stream().map(user -> user.getId().getValue()).collect(Collectors.toSet()));
+        var languages = preferences.languagesFor(
+                userPage.content().stream().map(user -> user.getId().getValue())
+                        .collect(Collectors.toSet()));
 
         List<UserResponse> content = userPage.content().stream()
-            .map(u -> UserResponse.from(u, !idsWithRecords.contains(u.getId().getValue())).withLanguage(languages.getOrDefault(u.getId().getValue(), "es")))
-            .toList();
+                .map(u -> UserResponse
+                        .from(u, !idsWithRecords.contains(u.getId().getValue()))
+                        .withLanguage(languages
+                                .getOrDefault(u.getId().getValue(), "es")))
+                .toList();
 
-        return new PageResponse<>(
-            content,
-            userPage.totalElements(),
-            userPage.totalPages(),
-            userPage.size(),
-            userPage.number(),
-            userPage.first(),
-            userPage.last(),
-            userPage.empty()
-        );
+        return new PageResponse<>(content, userPage.totalElements(),
+                userPage.totalPages(), userPage.size(), userPage.number(),
+                userPage.first(), userPage.last(), userPage.empty());
     }
 }
-

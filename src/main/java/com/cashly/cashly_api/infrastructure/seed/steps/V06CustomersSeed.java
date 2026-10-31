@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V06CustomersSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 3, 8, 0);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 3,
+            8, 0);
     private final EntityManager entityManager;
 
     public V06CustomersSeed(EntityManager entityManager) {
@@ -31,18 +32,22 @@ public class V06CustomersSeed implements SeedStep {
 
     @Override
     public void seed() {
-        persistCustomer(CUSTOMER_ONE, 1001L, "Mercado Central, C.A.", "BUSINESS", "J-10000001-1", "Mercado Central",
-                "compras@mercadocentral.local", "+58-212-1000001", "Avenida Mercado 1");
-        persistCustomer(CUSTOMER_TWO, 1002L, "Ana Pérez", "INDIVIDUAL", "V-10000002-2", "Ana",
-                "ana.perez@example.local", "+58-412-1000002", "Calle Los Cedros 2");
+        persistCustomer(CUSTOMER_ONE, 1001L, "Mercado Central, C.A.",
+                "BUSINESS", "J-10000001-1", "Mercado Central",
+                "compras@mercadocentral.local", "+58-212-1000001",
+                "Avenida Mercado 1");
+        persistCustomer(CUSTOMER_TWO, 1002L, "Ana Pérez", "INDIVIDUAL",
+                "V-10000002-2", "Ana", "ana.perez@example.local",
+                "+58-412-1000002", "Calle Los Cedros 2");
         persistBalance(CUSTOMER_ONE, new BigDecimal("120.00"));
         persistBalance(CUSTOMER_TWO, new BigDecimal("40.00"));
         persistTransaction(CUSTOMER_ONE, new BigDecimal("120.00"), "BAL-0001");
         persistTransaction(CUSTOMER_TWO, new BigDecimal("40.00"), "BAL-0002");
     }
 
-    private void persistCustomer(UUID id, long code, String legalName, String type, String rif, String alias,
-            String emailValue, String phoneValue, String addressValue) {
+    private void persistCustomer(UUID id, long code, String legalName,
+            String type, String rif, String alias, String emailValue,
+            String phoneValue, String addressValue) {
         if (entityManager.find(CustomerEntity.class, id) != null)
             return;
         var customer = new CustomerEntity();
@@ -92,9 +97,11 @@ public class V06CustomersSeed implements SeedStep {
         entityManager.persist(balance);
     }
 
-    private void persistTransaction(UUID customerId, BigDecimal amount, String number) {
+    private void persistTransaction(UUID customerId, BigDecimal amount,
+            String number) {
         UUID transactionId = id("balance-transaction." + customerId);
-        if (entityManager.find(BalanceTransactionEntity.class, transactionId) != null)
+        if (entityManager.find(BalanceTransactionEntity.class,
+                transactionId) != null)
             return;
         var transaction = new BalanceTransactionEntity();
         transaction.setId(transactionId);

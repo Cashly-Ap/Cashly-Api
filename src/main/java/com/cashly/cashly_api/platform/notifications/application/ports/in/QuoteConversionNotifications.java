@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public interface QuoteConversionNotifications {
     void convertedToOrder(UUID customerId, UUID quoteId, String orderNumber);
-    void convertedToInvoice(UUID customerId, UUID quoteId, String invoiceNumber);
+    void convertedToInvoice(UUID customerId, UUID quoteId,
+            String invoiceNumber);
 }

@@ -17,12 +17,15 @@ import static org.mockito.Mockito.when;
 
 class DashboardQueryGatewayTest {
 
-    private final DashboardQueryGateway gateway = mock(DashboardQueryGateway.class);
-    private final GetDashboardUseCase useCase = new GetDashboardUseCase(gateway);
+    private final DashboardQueryGateway gateway = mock(
+            DashboardQueryGateway.class);
+    private final GetDashboardUseCase useCase = new GetDashboardUseCase(
+            gateway);
 
     @Test
     void should_preserve_summary_from_query_gateway() {
-        var summary = new DashboardSummaryResponse(BigDecimal.TEN, 2L, BigDecimal.ONE, 3L);
+        var summary = new DashboardSummaryResponse(BigDecimal.TEN, 2L,
+                BigDecimal.ONE, 3L);
         when(gateway.getSummary()).thenReturn(summary);
 
         assertThat(useCase.getSummary()).isSameAs(summary);

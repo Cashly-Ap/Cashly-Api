@@ -33,7 +33,8 @@ public class ProductComponentEntity {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    public static ProductComponentEntity fromDomain(ProductComponent component, ProductEntity parent) {
+    public static ProductComponentEntity fromDomain(ProductComponent component,
+            ProductEntity parent) {
         ProductComponentEntity entity = new ProductComponentEntity();
         entity.id = component.getId();
         entity.product = parent;
@@ -43,6 +44,7 @@ public class ProductComponentEntity {
     }
 
     public ProductComponent toDomain() {
-        return new ProductComponent(id, product.getId(), componentProductId, quantity);
+        return new ProductComponent(id, product.getId(), componentProductId,
+                quantity);
     }
 }

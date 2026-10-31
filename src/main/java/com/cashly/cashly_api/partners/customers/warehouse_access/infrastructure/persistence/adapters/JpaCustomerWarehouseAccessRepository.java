@@ -12,7 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class JpaCustomerWarehouseAccessRepository implements CustomerWarehouseAccessRepository {
+public class JpaCustomerWarehouseAccessRepository
+        implements
+            CustomerWarehouseAccessRepository {
 
     private final SpringDataCustomerWarehouseAccessRepository springDataRepository;
 
@@ -23,28 +25,29 @@ public class JpaCustomerWarehouseAccessRepository implements CustomerWarehouseAc
 
     @Override
     public CustomerWarehouseAccess save(CustomerWarehouseAccess access) {
-        CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity.fromDomain(access);
+        CustomerWarehouseAccessEntity entity = CustomerWarehouseAccessEntity
+                .fromDomain(access);
         return springDataRepository.save(entity).toDomain();
     }
 
     @Override
-    public Optional<CustomerWarehouseAccess> findByCustomerIdAndWarehouseId(UUID customerId, UUID warehouseId) {
-        return springDataRepository.findByCustomerIdAndWarehouseId(customerId, warehouseId)
+    public Optional<CustomerWarehouseAccess> findByCustomerIdAndWarehouseId(
+            UUID customerId, UUID warehouseId) {
+        return springDataRepository
+                .findByCustomerIdAndWarehouseId(customerId, warehouseId)
                 .map(CustomerWarehouseAccessEntity::toDomain);
     }
 
     @Override
     public List<CustomerWarehouseAccess> findByCustomerId(UUID customerId) {
         return springDataRepository.findByCustomerId(customerId).stream()
-                .map(CustomerWarehouseAccessEntity::toDomain)
-                .toList();
+                .map(CustomerWarehouseAccessEntity::toDomain).toList();
     }
 
     @Override
     public List<CustomerWarehouseAccess> findByWarehouseId(UUID warehouseId) {
         return springDataRepository.findByWarehouseId(warehouseId).stream()
-                .map(CustomerWarehouseAccessEntity::toDomain)
-                .toList();
+                .map(CustomerWarehouseAccessEntity::toDomain).toList();
     }
 
     @Override
@@ -53,7 +56,9 @@ public class JpaCustomerWarehouseAccessRepository implements CustomerWarehouseAc
     }
 
     @Override
-    public boolean existsByCustomerIdAndWarehouseId(UUID customerId, UUID warehouseId) {
-        return springDataRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId);
+    public boolean existsByCustomerIdAndWarehouseId(UUID customerId,
+            UUID warehouseId) {
+        return springDataRepository.existsByCustomerIdAndWarehouseId(customerId,
+                warehouseId);
     }
 }

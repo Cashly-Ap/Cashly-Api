@@ -29,10 +29,10 @@ public class WarehouseController {
     private final DeleteWarehouseUseCase deleteWarehouseUseCase;
 
     public WarehouseController(CreateWarehouseUseCase createWarehouseUseCase,
-                                GetWarehouseUseCase getWarehouseUseCase,
-                                ListWarehousesUseCase listWarehousesUseCase,
-                                UpdateWarehouseUseCase updateWarehouseUseCase,
-                                DeleteWarehouseUseCase deleteWarehouseUseCase) {
+            GetWarehouseUseCase getWarehouseUseCase,
+            ListWarehousesUseCase listWarehousesUseCase,
+            UpdateWarehouseUseCase updateWarehouseUseCase,
+            DeleteWarehouseUseCase deleteWarehouseUseCase) {
         this.createWarehouseUseCase = createWarehouseUseCase;
         this.getWarehouseUseCase = getWarehouseUseCase;
         this.listWarehousesUseCase = listWarehousesUseCase;
@@ -42,13 +42,16 @@ public class WarehouseController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('INVENTORY:CREATE')")
-    public ResponseEntity<WarehouseDetailResponse> create(@Valid @RequestBody CreateWarehouseRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createWarehouseUseCase.execute(request));
+    public ResponseEntity<WarehouseDetailResponse> create(
+            @Valid @RequestBody CreateWarehouseRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(createWarehouseUseCase.execute(request));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('INVENTORY:READ')")
-    public ResponseEntity<WarehouseDetailResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<WarehouseDetailResponse> getById(
+            @PathVariable UUID id) {
         return ResponseEntity.ok(getWarehouseUseCase.execute(id));
     }
 
@@ -61,13 +64,14 @@ public class WarehouseController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir) {
-        return ResponseEntity.ok(listWarehousesUseCase.execute(search, active, page, size, orderBy, orderDir));
+        return ResponseEntity.ok(listWarehousesUseCase.execute(search, active,
+                page, size, orderBy, orderDir));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('INVENTORY:UPDATE')")
     public ResponseEntity<WarehouseDetailResponse> update(@PathVariable UUID id,
-                                                           @Valid @RequestBody UpdateWarehouseRequest request) {
+            @Valid @RequestBody UpdateWarehouseRequest request) {
         return ResponseEntity.ok(updateWarehouseUseCase.execute(id, request));
     }
 

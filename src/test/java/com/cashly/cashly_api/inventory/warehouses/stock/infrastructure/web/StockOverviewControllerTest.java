@@ -25,8 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringJUnitConfig(StockOverviewControllerTest.Config.class)
 class StockOverviewControllerTest {
-    @Autowired private StockOverviewController controller;
-    @Autowired private StockOverviewQueryGateway gateway;
+    @Autowired
+    private StockOverviewController controller;
+    @Autowired
+    private StockOverviewQueryGateway gateway;
 
     @BeforeEach
     void resetMocks() {
@@ -36,10 +38,13 @@ class StockOverviewControllerTest {
     @Test
     @WithMockUser(authorities = "INVENTORY:READ")
     void readsStockAndOptionsWithoutCatalogPermission() throws Exception {
-        var response = new StockOverviewResponse(new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true),
+        var response = new StockOverviewResponse(
+                new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true),
                 new StockOverviewResponse.Summary(0, 0, 0, 0, 0),
-                List.of(new StockOverviewResponse.Option("warehouse-id", "Main")),
-                List.of(new StockOverviewResponse.Option("category-id", "Category")));
+                List.of(new StockOverviewResponse.Option("warehouse-id",
+                        "Main")),
+                List.of(new StockOverviewResponse.Option("category-id",
+                        "Category")));
         when(gateway.search(any())).thenReturn(response);
         MockMvcBuilders.standaloneSetup(controller).build()
                 .perform(get("/api/warehouses/stock"))
@@ -54,23 +59,26 @@ class StockOverviewControllerTest {
     @Test
     @WithMockUser(authorities = "CATALOG:READ")
     void rejectsCallersWithoutInventoryRead() {
-        assertThatThrownBy(() -> controller.getStock(null, null, null, 0, 10)).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> controller.getStock(null, null, null, 0, 10))
+                .isInstanceOf(AccessDeniedException.class);
         verifyNoInteractions(gateway);
     }
 
     @Test
     @WithMockUser(authorities = "INVENTORY:READ")
     void bindsGroupingAndRejectsUnknownGrouping() throws Exception {
-        var response = new StockOverviewResponse(null, new StockOverviewResponse.Summary(0, 0, 0, 0, 0),
-                List.of(), List.of(), StockOverviewGroupBy.PRODUCT,
+        var response = new StockOverviewResponse(null,
+                new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
+                List.of(), StockOverviewGroupBy.PRODUCT,
                 new PageResponse<>(List.of(), 0, 0, 1, 0, true, true, true));
         when(gateway.search(any())).thenReturn(response);
         var mvc = MockMvcBuilders.standaloneSetup(controller).build();
-        mvc.perform(get("/api/warehouses/stock").param("groupBy", "PRODUCT").param("size", "1"))
-                .andExpect(status().isOk())
+        mvc.perform(get("/api/warehouses/stock").param("groupBy", "PRODUCT")
+                .param("size", "1")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.groupBy").value("PRODUCT"))
                 .andExpect(jsonPath("$.groups.totalElements").value(0));
-        verify(gateway).search(new StockOverviewFilter(null, null, "", 0, 1, StockOverviewGroupBy.PRODUCT));
+        verify(gateway).search(new StockOverviewFilter(null, null, "", 0, 1,
+                StockOverviewGroupBy.PRODUCT));
         clearInvocations(gateway);
         mvc.perform(get("/api/warehouses/stock").param("groupBy", "UNKNOWN"))
                 .andExpect(status().isBadRequest());

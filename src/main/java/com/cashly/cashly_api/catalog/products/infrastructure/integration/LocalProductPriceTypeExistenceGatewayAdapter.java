@@ -8,10 +8,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-public class LocalProductPriceTypeExistenceGatewayAdapter implements ProductPriceTypeExistenceGateway {
+public class LocalProductPriceTypeExistenceGatewayAdapter
+        implements
+            ProductPriceTypeExistenceGateway {
     private final ProductPriceTypeExistenceQuery priceTypes;
 
-    public LocalProductPriceTypeExistenceGatewayAdapter(ProductPriceTypeExistenceQuery priceTypes) {
+    public LocalProductPriceTypeExistenceGatewayAdapter(
+            ProductPriceTypeExistenceQuery priceTypes) {
         this.priceTypes = priceTypes;
     }
 

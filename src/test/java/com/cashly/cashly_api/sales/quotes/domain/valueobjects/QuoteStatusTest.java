@@ -7,26 +7,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QuoteStatusTest {
 
-    
-
     @Test
     void should_allow_draft_to_converted_to_order() {
-        assertTrue(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.CONVERTED_TO_ORDER));
+        assertTrue(QuoteStatus.DRAFT
+                .canTransitionTo(QuoteStatus.CONVERTED_TO_ORDER));
     }
 
     @Test
     void should_allow_draft_to_converted_to_invoice() {
-        assertTrue(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.CONVERTED_TO_INVOICE));
+        assertTrue(QuoteStatus.DRAFT
+                .canTransitionTo(QuoteStatus.CONVERTED_TO_INVOICE));
     }
 
     @Test
     void should_allow_draft_to_cancelled() {
         assertTrue(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.CANCELLED));
     }
-
-    
-
-    
 
     @Test
     void should_not_allow_draft_to_draft() {
@@ -44,7 +40,8 @@ class QuoteStatusTest {
     @Test
     void should_not_allow_converted_to_invoice_to_any() {
         for (QuoteStatus target : QuoteStatus.values()) {
-            assertFalse(QuoteStatus.CONVERTED_TO_INVOICE.canTransitionTo(target),
+            assertFalse(
+                    QuoteStatus.CONVERTED_TO_INVOICE.canTransitionTo(target),
                     "CONVERTED_TO_INVOICE should not transition to " + target);
         }
     }
@@ -57,13 +54,12 @@ class QuoteStatusTest {
         }
     }
 
-    
-
     @Test
     void should_not_allow_transition_to_same_state() {
         for (QuoteStatus status : QuoteStatus.values()) {
             assertFalse(status.canTransitionTo(status),
-                    "Should not allow transition from " + status + " to itself");
+                    "Should not allow transition from " + status
+                            + " to itself");
         }
     }
 }

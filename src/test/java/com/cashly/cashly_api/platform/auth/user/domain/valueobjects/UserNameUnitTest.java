@@ -2,7 +2,6 @@ package com.cashly.cashly_api.platform.auth.user.domain.valueobjects;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserNameUnitTest;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -30,28 +29,25 @@ class UserNameUnitTest {
 
     @Test
     void should_ThrowException_When_ValueIsNull() {
-        assertThrows(IllegalArgumentException.class, 
-            () -> new UserName(null));
+        assertThrows(IllegalArgumentException.class, () -> new UserName(null));
     }
 
     @Test
     void should_ThrowException_When_ValueIsEmpty() {
-        assertThrows(IllegalArgumentException.class, 
-            () -> new UserName(""));
+        assertThrows(IllegalArgumentException.class, () -> new UserName(""));
     }
 
     @Test
     void should_ThrowException_When_ValueIsBlank() {
-        assertThrows(IllegalArgumentException.class, 
-            () -> new UserName("   "));
+        assertThrows(IllegalArgumentException.class, () -> new UserName("   "));
     }
 
     @Test
     void should_ThrowException_When_ValueIsTooShort() {
         String shortName = "A";
 
-        assertThrows(IllegalArgumentException.class, 
-            () -> new UserName(shortName));
+        assertThrows(IllegalArgumentException.class,
+                () -> new UserName(shortName));
     }
 
     @Test
@@ -68,8 +64,8 @@ class UserNameUnitTest {
     void should_ThrowException_When_ValueIsTooLong() {
         String longName = "A".repeat(101);
 
-        assertThrows(IllegalArgumentException.class, 
-            () -> new UserName(longName));
+        assertThrows(IllegalArgumentException.class,
+                () -> new UserName(longName));
     }
 
     @Test

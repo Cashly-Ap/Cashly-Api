@@ -7,16 +7,32 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 @Component
-public class LocalReturnPaymentSettlementGateway implements ReturnPaymentSettlementGateway {
+public class LocalReturnPaymentSettlementGateway
+        implements
+            ReturnPaymentSettlementGateway {
     private final ReturnPaymentOperations operations;
-    public LocalReturnPaymentSettlementGateway(ReturnPaymentOperations operations) { this.operations = operations; }
-    public BigDecimal allocatedAmount(UUID invoiceId) { return operations.allocatedAmount(invoiceId); }
-    public List<CancelledAllocation> capture(UUID invoiceId) {
-        return operations.capture(invoiceId).stream().map(snapshot -> CancelledAllocation.create(snapshot.paymentId(), snapshot.invoiceId(), snapshot.amount())).toList();
+    public LocalReturnPaymentSettlementGateway(
+            ReturnPaymentOperations operations) {
+        this.operations = operations;
     }
-    public void cancelInvoicePayments(UUID invoiceId) { operations.cancelInvoicePayments(invoiceId); }
+    public BigDecimal allocatedAmount(UUID invoiceId) {
+        return operations.allocatedAmount(invoiceId);
+    }
+    public List<CancelledAllocation> capture(UUID invoiceId) {
+        return operations.capture(invoiceId).stream()
+                .map(snapshot -> CancelledAllocation.create(
+                        snapshot.paymentId(), snapshot.invoiceId(),
+                        snapshot.amount()))
+                .toList();
+    }
+    public void cancelInvoicePayments(UUID invoiceId) {
+        operations.cancelInvoicePayments(invoiceId);
+    }
     public void restore(List<CancelledAllocation> allocations) {
-        operations.restore(allocations.stream().map(allocation -> new ReturnPaymentOperations.AllocationSnapshot(
-                allocation.getPaymentId(), allocation.getInvoiceId(), allocation.getAmount())).toList());
+        operations.restore(allocations.stream().map(
+                allocation -> new ReturnPaymentOperations.AllocationSnapshot(
+                        allocation.getPaymentId(), allocation.getInvoiceId(),
+                        allocation.getAmount()))
+                .toList());
     }
 }

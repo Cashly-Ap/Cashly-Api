@@ -23,11 +23,11 @@ public class StockMovement {
     private final String notes;
     private final LocalDateTime createdAt;
 
-    public StockMovement(UUID id, UUID warehouseId, UUID productId, MovementType movementType,
-                         int quantity, int previousStock, int newStock,
-                         UUID originMovementId, String transferBatchId,
-                         ReferenceType referenceType, UUID referenceId, String referenceNumber,
-                         String notes, LocalDateTime createdAt) {
+    public StockMovement(UUID id, UUID warehouseId, UUID productId,
+            MovementType movementType, int quantity, int previousStock,
+            int newStock, UUID originMovementId, String transferBatchId,
+            ReferenceType referenceType, UUID referenceId,
+            String referenceNumber, String notes, LocalDateTime createdAt) {
         this.id = id;
         this.warehouseId = warehouseId;
         this.productId = productId;
@@ -44,38 +44,66 @@ public class StockMovement {
         this.createdAt = createdAt;
     }
 
-    
-    public static StockMovement create(UUID warehouseId, UUID productId, MovementType movementType,
-                                        int quantity, int previousStock, int newStock,
-                                        UUID originMovementId, String transferBatchId, String notes) {
-        return new StockMovement(null, warehouseId, productId, movementType, quantity,
-                previousStock, newStock, originMovementId, transferBatchId,
-                null, null, null, notes, LocalDateTime.now());
+    public static StockMovement create(UUID warehouseId, UUID productId,
+            MovementType movementType, int quantity, int previousStock,
+            int newStock, UUID originMovementId, String transferBatchId,
+            String notes) {
+        return new StockMovement(null, warehouseId, productId, movementType,
+                quantity, previousStock, newStock, originMovementId,
+                transferBatchId, null, null, null, notes, LocalDateTime.now());
     }
 
-    
-    public static StockMovement createWithReference(UUID warehouseId, UUID productId, MovementType movementType,
-                                                     int quantity, int previousStock, int newStock,
-                                                     UUID originMovementId, String transferBatchId,
-                                                     ReferenceType referenceType, UUID referenceId, 
-                                                     String referenceNumber, String notes) {
-        return new StockMovement(null, warehouseId, productId, movementType, quantity,
-                previousStock, newStock, originMovementId, transferBatchId,
-                referenceType, referenceId, referenceNumber, notes, LocalDateTime.now());
+    public static StockMovement createWithReference(UUID warehouseId,
+            UUID productId, MovementType movementType, int quantity,
+            int previousStock, int newStock, UUID originMovementId,
+            String transferBatchId, ReferenceType referenceType,
+            UUID referenceId, String referenceNumber, String notes) {
+        return new StockMovement(null, warehouseId, productId, movementType,
+                quantity, previousStock, newStock, originMovementId,
+                transferBatchId, referenceType, referenceId, referenceNumber,
+                notes, LocalDateTime.now());
     }
 
-    public UUID getId() { return id; }
-    public UUID getWarehouseId() { return warehouseId; }
-    public UUID getProductId() { return productId; }
-    public MovementType getMovementType() { return movementType; }
-    public int getQuantity() { return quantity; }
-    public int getPreviousStock() { return previousStock; }
-    public int getNewStock() { return newStock; }
-    public UUID getOriginMovementId() { return originMovementId; }
-    public String getTransferBatchId() { return transferBatchId; }
-    public ReferenceType getReferenceType() { return referenceType; }
-    public UUID getReferenceId() { return referenceId; }
-    public String getReferenceNumber() { return referenceNumber; }
-    public String getNotes() { return notes; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public UUID getId() {
+        return id;
+    }
+    public UUID getWarehouseId() {
+        return warehouseId;
+    }
+    public UUID getProductId() {
+        return productId;
+    }
+    public MovementType getMovementType() {
+        return movementType;
+    }
+    public int getQuantity() {
+        return quantity;
+    }
+    public int getPreviousStock() {
+        return previousStock;
+    }
+    public int getNewStock() {
+        return newStock;
+    }
+    public UUID getOriginMovementId() {
+        return originMovementId;
+    }
+    public String getTransferBatchId() {
+        return transferBatchId;
+    }
+    public ReferenceType getReferenceType() {
+        return referenceType;
+    }
+    public UUID getReferenceId() {
+        return referenceId;
+    }
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+    public String getNotes() {
+        return notes;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }

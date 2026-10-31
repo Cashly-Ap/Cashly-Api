@@ -26,10 +26,9 @@ public class Notification {
     private final LocalDateTime createdAt;
 
     private Notification(NotificationId id, UUID userId, UUID customerId,
-                         NotificationType type, String title, String message,
-                         String referenceType, UUID referenceId,
-                         boolean isRead, LocalDateTime readAt,
-                         LocalDateTime createdAt) {
+            NotificationType type, String title, String message,
+            String referenceType, UUID referenceId, boolean isRead,
+            LocalDateTime readAt, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.customerId = customerId;
@@ -44,38 +43,47 @@ public class Notification {
     }
 
     public static Notification create(UUID userId, UUID customerId,
-                                       NotificationType type, String title,
-                                       String message, String referenceType, UUID referenceId) {
+            NotificationType type, String title, String message,
+            String referenceType, UUID referenceId) {
         if (userId == null && customerId == null) {
-            throw new IllegalArgumentException("Either userId or customerId must be provided");
+            throw new IllegalArgumentException(
+                    "Either userId or customerId must be provided");
         }
         Objects.requireNonNull(type, "Notification type cannot be null");
         Objects.requireNonNull(title, "Title cannot be null");
         Objects.requireNonNull(message, "Message cannot be null");
 
         return new Notification(NotificationId.generate(), userId, customerId,
-                type, title, message, referenceType, referenceId,
-                false, null, LocalDateTime.now(ZoneOffset.UTC));
+                type, title, message, referenceType, referenceId, false, null,
+                LocalDateTime.now(ZoneOffset.UTC));
     }
 
-    public static Notification reconstitute(NotificationId id, UUID userId, UUID customerId,
-                                             NotificationType type, String title,
-                                             String message, String referenceType,
-                                             UUID referenceId, boolean isRead,
-                                             LocalDateTime readAt, LocalDateTime createdAt) {
-        return new Notification(id, userId, customerId, type, title, message, referenceType,
-                referenceId, isRead, readAt, createdAt);
+    public static Notification reconstitute(NotificationId id, UUID userId,
+            UUID customerId, NotificationType type, String title,
+            String message, String referenceType, UUID referenceId,
+            boolean isRead, LocalDateTime readAt, LocalDateTime createdAt) {
+        return new Notification(id, userId, customerId, type, title, message,
+                referenceType, referenceId, isRead, readAt, createdAt);
     }
 
-    public Notification withTranslation(String titleKey, String messageKey, java.util.List<String> arguments) {
+    public Notification withTranslation(String titleKey, String messageKey,
+            java.util.List<String> arguments) {
         this.titleKey = titleKey;
         this.messageKey = messageKey;
-        this.messageArguments = arguments == null ? java.util.List.of() : java.util.List.copyOf(arguments);
+        this.messageArguments = arguments == null
+                ? java.util.List.of()
+                : java.util.List.copyOf(arguments);
         return this;
     }
-    public String getTitleKey() { return titleKey; }
-    public String getMessageKey() { return messageKey; }
-    public java.util.List<String> getMessageArguments() { return messageArguments; }
+    public String getTitleKey() {
+        return titleKey;
+    }
+    public String getMessageKey() {
+        return messageKey;
+    }
+    public java.util.List<String> getMessageArguments() {
+        return messageArguments;
+    }
 
     public void markAsRead() {
         if (!this.isRead) {
@@ -130,8 +138,10 @@ public class Notification {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Notification that = (Notification) o;
         return Objects.equals(id, that.id);
     }
@@ -143,6 +153,7 @@ public class Notification {
 
     @Override
     public String toString() {
-        return "Notification{id=" + id + ", type=" + type + ", title=" + title + "}";
+        return "Notification{id=" + id + ", type=" + type + ", title=" + title
+                + "}";
     }
 }

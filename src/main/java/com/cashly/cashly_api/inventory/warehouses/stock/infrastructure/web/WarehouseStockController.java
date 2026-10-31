@@ -32,10 +32,10 @@ public class WarehouseStockController {
     private final GetWarehouseStockUseCase getWarehouseStockUseCase;
 
     public WarehouseStockController(StockEntryUseCase stockEntryUseCase,
-                                     StockExitUseCase stockExitUseCase,
-                                     StockAdjustmentUseCase stockAdjustmentUseCase,
-                                     TransferStockUseCase transferStockUseCase,
-                                     GetWarehouseStockUseCase getWarehouseStockUseCase) {
+            StockExitUseCase stockExitUseCase,
+            StockAdjustmentUseCase stockAdjustmentUseCase,
+            TransferStockUseCase transferStockUseCase,
+            GetWarehouseStockUseCase getWarehouseStockUseCase) {
         this.stockEntryUseCase = stockEntryUseCase;
         this.stockExitUseCase = stockExitUseCase;
         this.stockAdjustmentUseCase = stockAdjustmentUseCase;
@@ -49,34 +49,43 @@ public class WarehouseStockController {
             @PathVariable UUID warehouseId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(getWarehouseStockUseCase.execute(warehouseId, page, size));
+        return ResponseEntity
+                .ok(getWarehouseStockUseCase.execute(warehouseId, page, size));
     }
 
     @PostMapping("/entry")
     @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<List<StockMovementResponse>> entry(@PathVariable UUID warehouseId,
-                                                              @Valid @RequestBody StockEntryRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(stockEntryUseCase.execute(warehouseId, request));
+    public ResponseEntity<List<StockMovementResponse>> entry(
+            @PathVariable UUID warehouseId,
+            @Valid @RequestBody StockEntryRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(stockEntryUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/exit")
     @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<List<StockMovementResponse>> exit(@PathVariable UUID warehouseId,
-                                                             @Valid @RequestBody StockExitRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(stockExitUseCase.execute(warehouseId, request));
+    public ResponseEntity<List<StockMovementResponse>> exit(
+            @PathVariable UUID warehouseId,
+            @Valid @RequestBody StockExitRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(stockExitUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/adjustment")
     @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<StockMovementResponse> adjustment(@PathVariable UUID warehouseId,
-                                                             @Valid @RequestBody StockAdjustmentRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(stockAdjustmentUseCase.execute(warehouseId, request));
+    public ResponseEntity<StockMovementResponse> adjustment(
+            @PathVariable UUID warehouseId,
+            @Valid @RequestBody StockAdjustmentRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(stockAdjustmentUseCase.execute(warehouseId, request));
     }
 
     @PostMapping("/transfer")
     @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
-    public ResponseEntity<List<StockMovementResponse>> transfer(@PathVariable UUID warehouseId,
-                                                                  @Valid @RequestBody TransferStockRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(transferStockUseCase.execute(warehouseId, request));
+    public ResponseEntity<List<StockMovementResponse>> transfer(
+            @PathVariable UUID warehouseId,
+            @Valid @RequestBody TransferStockRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(transferStockUseCase.execute(warehouseId, request));
     }
 }

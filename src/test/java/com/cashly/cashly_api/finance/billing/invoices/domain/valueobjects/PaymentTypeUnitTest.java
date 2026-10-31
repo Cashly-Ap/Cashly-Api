@@ -29,6 +29,7 @@ class PaymentTypeUnitTest {
 
     @Test
     void should_ThrowException_When_InvalidPaymentTypeName() {
-        assertThrows(IllegalArgumentException.class, () -> PaymentType.valueOf("INVALID"));
+        assertThrows(IllegalArgumentException.class,
+                () -> PaymentType.valueOf("INVALID"));
     }
 }

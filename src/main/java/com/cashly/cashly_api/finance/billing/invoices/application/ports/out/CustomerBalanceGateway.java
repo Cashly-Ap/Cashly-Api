@@ -3,5 +3,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 public interface CustomerBalanceGateway {
     void consumeInvoiceBalance(Consumption command);
-    record Consumption(UUID customerId, BigDecimal amount, UUID invoiceId, String invoiceNumber, UUID actorId) {}
+    record Consumption(UUID customerId, BigDecimal amount, UUID invoiceId,
+            String invoiceNumber, UUID actorId) {
+    }
 }

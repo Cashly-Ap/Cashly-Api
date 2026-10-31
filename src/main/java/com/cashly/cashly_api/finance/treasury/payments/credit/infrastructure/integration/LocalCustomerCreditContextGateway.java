@@ -6,10 +6,17 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 @Component
-public class LocalCustomerCreditContextGateway implements CustomerCreditContextGateway {
+public class LocalCustomerCreditContextGateway
+        implements
+            CustomerCreditContextGateway {
     private final CustomerCreditContextQuery query;
-    public LocalCustomerCreditContextGateway(CustomerCreditContextQuery query) { this.query = query; }
+    public LocalCustomerCreditContextGateway(CustomerCreditContextQuery query) {
+        this.query = query;
+    }
     public Optional<CustomerCreditContext> findById(UUID id) {
-        return query.findById(id).map(entry -> new CustomerCreditContext(entry.customerId(), entry.name(), entry.rif(), entry.creditLimit(), entry.balance()));
+        return query.findById(id)
+                .map(entry -> new CustomerCreditContext(entry.customerId(),
+                        entry.name(), entry.rif(), entry.creditLimit(),
+                        entry.balance()));
     }
 }

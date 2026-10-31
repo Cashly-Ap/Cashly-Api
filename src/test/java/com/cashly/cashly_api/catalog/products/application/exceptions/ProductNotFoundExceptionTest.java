@@ -17,13 +17,15 @@ class ProductNotFoundExceptionTest {
 
         ProductNotFoundException exception = new ProductNotFoundException(id);
 
-        assertEquals("Product not found with id: " + id, exception.getMessage());
+        assertEquals("Product not found with id: " + id,
+                exception.getMessage());
     }
 
     @Test
     @DisplayName("should be runtime exception")
     void should_be_runtime_exception() {
-        ProductNotFoundException exception = new ProductNotFoundException(UUID.randomUUID());
+        ProductNotFoundException exception = new ProductNotFoundException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }

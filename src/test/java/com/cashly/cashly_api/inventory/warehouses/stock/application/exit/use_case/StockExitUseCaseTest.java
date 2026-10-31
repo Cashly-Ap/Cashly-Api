@@ -56,8 +56,10 @@ class StockExitUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new StockExitUseCase(warehouseRepository, warehouseStockRepository,
-                stockMovementRepository, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
+        useCase = new StockExitUseCase(warehouseRepository,
+                warehouseStockRepository, stockMovementRepository,
+                new LocalStockCatalogGatewayAdapter(
+                        new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
@@ -69,23 +71,32 @@ class StockExitUseCaseTest {
         stock.addStock(100);
 
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, "Sale"))
-        );
+                List.of(new StockBatchItem(productId, 10, "Sale")));
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
-        when(warehouseStockRepository.save(any(WarehouseStock.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(stockMovementRepository.save(any(StockMovement.class))).thenAnswer(inv -> {
-            StockMovement m = inv.getArgument(0);
-            return new StockMovement(UUID.randomUUID(), m.getWarehouseId(), m.getProductId(),
-                    m.getMovementType(), m.getQuantity(), m.getPreviousStock(), m.getNewStock(),
-                    m.getOriginMovementId(), m.getTransferBatchId(), m.getReferenceType(),
-                    m.getReferenceId(), m.getReferenceNumber(), m.getNotes(), m.getCreatedAt());
-        });
+        when(warehouseStockRepository.save(any(WarehouseStock.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(stockMovementRepository.save(any(StockMovement.class)))
+                .thenAnswer(inv -> {
+                    StockMovement m = inv.getArgument(0);
+                    return new StockMovement(UUID.randomUUID(),
+                            m.getWarehouseId(), m.getProductId(),
+                            m.getMovementType(), m.getQuantity(),
+                            m.getPreviousStock(), m.getNewStock(),
+                            m.getOriginMovementId(), m.getTransferBatchId(),
+                            m.getReferenceType(), m.getReferenceId(),
+                            m.getReferenceNumber(), m.getNotes(),
+                            m.getCreatedAt());
+                });
 
-        List<StockMovementResponse> response = useCase.execute(warehouseId, request);
+        List<StockMovementResponse> response = useCase.execute(warehouseId,
+                request);
 
         assertNotNull(response);
         assertEquals(1, response.size());
@@ -93,8 +104,10 @@ class StockExitUseCaseTest {
         assertEquals(10, response.get(0).quantity());
         assertEquals("PROD-001", response.get(0).productCode());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
-        verify(warehouseStockRepository, atLeastOnce()).findByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductId(any(), any());
+        verify(warehouseStockRepository, atLeastOnce())
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId);
+        verify(warehouseStockRepository, never())
+                .findByWarehouseIdAndProductId(any(), any());
         verify(stockMovementRepository).save(any(StockMovement.class));
     }
 
@@ -102,12 +115,13 @@ class StockExitUseCaseTest {
     @DisplayName("throws WarehouseNotFoundException when warehouse not found")
     void shouldThrowWhenWarehouseNotFound() {
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, null))
-        );
+                List.of(new StockBatchItem(productId, 10, null)));
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(warehouseId, request));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(warehouseId, request));
     }
 
     @Test
@@ -117,15 +131,18 @@ class StockExitUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, null))
-        );
+                List.of(new StockBatchItem(productId, 10, null)));
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ProductNotInWarehouseException.class, () -> useCase.execute(warehouseId, request));
+        assertThrows(ProductNotInWarehouseException.class,
+                () -> useCase.execute(warehouseId, request));
     }
 
     @Test
@@ -134,32 +151,31 @@ class StockExitUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(5); 
+        stock.addStock(5);
 
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, null))
-        );
+                List.of(new StockBatchItem(productId, 10, null)));
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
-        assertThrows(InsufficientStockException.class, () -> useCase.execute(warehouseId, request));
+        assertThrows(InsufficientStockException.class,
+                () -> useCase.execute(warehouseId, request));
     }
 
     private Warehouse buildActiveWarehouse(UUID id) {
-        return Warehouse.reconstitute(
-                id, "WH-001", "Main", "Addr", "State", "Mun", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Warehouse.reconstitute(id, "WH-001", "Main", "Addr", "State",
+                "Mun", "10001", true, LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Product buildProduct(UUID id, String code, String name) {
-        return Product.reconstitute(
-                id, code, name, "Desc", null, false, true, null,
-                BigDecimal.ZERO,
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(id, code, name, "Desc", null, false, true,
+                null, BigDecimal.ZERO, List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

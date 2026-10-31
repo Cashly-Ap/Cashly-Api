@@ -9,7 +9,8 @@ import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 class RepositoryCreditNoteLedgerQueryTest {
     private final CreditNoteRepository notes = mock(CreditNoteRepository.class);
-    private final RepositoryCreditNoteLedgerQuery query = new RepositoryCreditNoteLedgerQuery(notes);
+    private final RepositoryCreditNoteLedgerQuery query = new RepositoryCreditNoteLedgerQuery(
+            notes);
     @Test
     void should_preserve_all_note_amounts_for_requested_invoice() {
         UUID id = UUID.randomUUID();
@@ -18,7 +19,8 @@ class RepositoryCreditNoteLedgerQueryTest {
         when(first.getAmount()).thenReturn(new BigDecimal("12.50"));
         when(second.getAmount()).thenReturn(new BigDecimal("7.50"));
         when(notes.findByInvoiceId(id)).thenReturn(List.of(first, second));
-        assertThat(query.amountsByInvoiceId(id)).containsExactly(new BigDecimal("12.50"), new BigDecimal("7.50"));
+        assertThat(query.amountsByInvoiceId(id)).containsExactly(
+                new BigDecimal("12.50"), new BigDecimal("7.50"));
         verify(notes).findByInvoiceId(id);
     }
     @Test

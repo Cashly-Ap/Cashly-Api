@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface CreditNoteJpaRepository extends JpaRepository<CreditNoteEntity, UUID> {
+public interface CreditNoteJpaRepository
+        extends
+            JpaRepository<CreditNoteEntity, UUID> {
 
     @Query("""
             SELECT c FROM CreditNoteEntity c
@@ -22,8 +24,7 @@ public interface CreditNoteJpaRepository extends JpaRepository<CreditNoteEntity,
     List<CreditNoteEntity> findAllWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
-            @Param("customerId") UUID customerId
-    );
+            @Param("customerId") UUID customerId);
 
     List<CreditNoteEntity> findByInvoiceId(UUID invoiceId);
 

@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CustomerWarehouseAccessQueryConfig {
     @Bean
-    public CustomerWarehouseAccessQuery customerWarehouseAccessQuery(CustomerWarehouseAccessRepository repository) {
+    public CustomerWarehouseAccessQuery customerWarehouseAccessQuery(
+            CustomerWarehouseAccessRepository repository) {
         return new RepositoryCustomerWarehouseAccessQuery(repository);
     }
 }

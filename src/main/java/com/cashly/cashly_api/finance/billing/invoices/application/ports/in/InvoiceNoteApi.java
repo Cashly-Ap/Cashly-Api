@@ -11,5 +11,7 @@ public interface InvoiceNoteApi {
     void recalculate(UUID invoiceId);
 
     record Context(UUID id, String number, String status, String statusLabel,
-                   String customerName, String customerRif, BigDecimal totalBeforeNotes) {}
+            String customerName, String customerRif,
+            BigDecimal totalBeforeNotes) {
+    }
 }

@@ -33,23 +33,27 @@ class SupplierAliasUnitTest {
 
     @Test
     void should_throw_on_null() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierAlias(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierAlias(null));
     }
 
     @Test
     void should_throw_on_blank() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierAlias("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierAlias("   "));
     }
 
     @Test
     void should_throw_on_empty() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierAlias(""));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierAlias(""));
     }
 
     @Test
     void should_throw_on_too_long() {
         String tooLong = "A".repeat(101);
-        assertThrows(IllegalArgumentException.class, () -> new SupplierAlias(tooLong));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierAlias(tooLong));
     }
 
     @Test

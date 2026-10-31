@@ -16,7 +16,8 @@ class ProductComponentUnitTest {
         UUID parentId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
 
-        ProductComponent component = new ProductComponent(id, parentId, componentId, 3);
+        ProductComponent component = new ProductComponent(id, parentId,
+                componentId, 3);
 
         assertEquals(id, component.getId());
         assertEquals(parentId, component.getParentProductId());
@@ -30,8 +31,8 @@ class ProductComponentUnitTest {
         UUID parentId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new ProductComponent(id, parentId, componentId, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ProductComponent(id, parentId, componentId, 0));
     }
 
     @Test
@@ -40,8 +41,8 @@ class ProductComponentUnitTest {
         UUID parentId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
 
-        assertThrows(IllegalArgumentException.class, () ->
-                new ProductComponent(id, parentId, componentId, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ProductComponent(id, parentId, componentId, -1));
     }
 
     @Test
@@ -49,10 +50,12 @@ class ProductComponentUnitTest {
         UUID id = UUID.randomUUID();
         UUID parentId = UUID.randomUUID();
 
-        NullPointerException exception = assertThrows(NullPointerException.class, () ->
-                new ProductComponent(id, parentId, null, 1));
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new ProductComponent(id, parentId, null, 1));
 
-        assertEquals("Component product ID cannot be null", exception.getMessage());
+        assertEquals("Component product ID cannot be null",
+                exception.getMessage());
     }
 
     @Test
@@ -61,7 +64,8 @@ class ProductComponentUnitTest {
         UUID parentId = UUID.randomUUID();
         UUID componentId = UUID.randomUUID();
 
-        ProductComponent component = new ProductComponent(id, parentId, componentId, 1);
+        ProductComponent component = new ProductComponent(id, parentId,
+                componentId, 1);
 
         assertEquals(1, component.getQuantity());
     }

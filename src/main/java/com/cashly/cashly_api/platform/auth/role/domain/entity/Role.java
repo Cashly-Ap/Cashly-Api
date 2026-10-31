@@ -10,8 +10,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public record Role(UUID id, String name, String description, boolean active, long version, String systemKey,
-                   Map<BusinessModule, Set<PermissionAction>> permissions) {
+public record Role(UUID id, String name, String description, boolean active,
+        long version, String systemKey,
+        Map<BusinessModule, Set<PermissionAction>> permissions) {
     public Role {
         Objects.requireNonNull(id);
         name = UserProfile.text(name, 100, true);
@@ -24,7 +25,9 @@ public record Role(UUID id, String name, String description, boolean active, lon
     }
 
     public Map<BusinessModule, Set<PermissionAction>> permissions() {
-        return systemAdministrator() ? PermissionRegistry.modules() : permissions;
+        return systemAdministrator()
+                ? PermissionRegistry.modules()
+                : permissions;
     }
 
     public Map<BusinessModule, Set<PermissionAction>> effectivePermissions() {

@@ -21,18 +21,23 @@ class GetCreditNoteByIdUseCaseTest {
     @Test
     void givenCreditNote_whenFinding_thenEnrichesFromNeutralInvoiceContext() {
         CreditNoteRepository notes = mock(CreditNoteRepository.class);
-        CreditNoteInvoiceGateway invoices = mock(CreditNoteInvoiceGateway.class);
+        CreditNoteInvoiceGateway invoices = mock(
+                CreditNoteInvoiceGateway.class);
         UUID noteId = UUID.randomUUID();
         UUID invoiceId = UUID.randomUUID();
-        CreditNote note = CreditNote.reconstitute(CreditNoteId.of(noteId), CreditNoteNumber.of(2026, 1),
-                UUID.randomUUID(), invoiceId, new BigDecimal("15.00"), "Reason", UUID.randomUUID(),
-                "User", LocalDateTime.now(), LocalDateTime.now());
-        when(notes.findById(CreditNoteId.of(noteId))).thenReturn(Optional.of(note));
+        CreditNote note = CreditNote.reconstitute(CreditNoteId.of(noteId),
+                CreditNoteNumber.of(2026, 1), UUID.randomUUID(), invoiceId,
+                new BigDecimal("15.00"), "Reason", UUID.randomUUID(), "User",
+                LocalDateTime.now(), LocalDateTime.now());
+        when(notes.findById(CreditNoteId.of(noteId)))
+                .thenReturn(Optional.of(note));
         when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of(invoiceId,
-                new CreditNoteInvoiceGateway.CreditNoteInvoiceContext(invoiceId, "FAC-1", "PAID",
-                        "Pagada", "Acme", "RIF-1", new BigDecimal("15.00"))));
+                new CreditNoteInvoiceGateway.CreditNoteInvoiceContext(invoiceId,
+                        "FAC-1", "PAID", "Pagada", "Acme", "RIF-1",
+                        new BigDecimal("15.00"))));
 
-        var response = new GetCreditNoteByIdUseCase(notes, invoices).execute(noteId);
+        var response = new GetCreditNoteByIdUseCase(notes, invoices)
+                .execute(noteId);
 
         assertEquals("Acme", response.customerName());
         assertEquals("RIF-1", response.customerRif());
@@ -42,16 +47,20 @@ class GetCreditNoteByIdUseCaseTest {
     @Test
     void givenInvoiceAbsent_whenFinding_thenReturnsNullInvoiceDetails() {
         CreditNoteRepository notes = mock(CreditNoteRepository.class);
-        CreditNoteInvoiceGateway invoices = mock(CreditNoteInvoiceGateway.class);
+        CreditNoteInvoiceGateway invoices = mock(
+                CreditNoteInvoiceGateway.class);
         UUID noteId = UUID.randomUUID();
         UUID invoiceId = UUID.randomUUID();
-        CreditNote note = CreditNote.reconstitute(CreditNoteId.of(noteId), CreditNoteNumber.of(2026, 1),
-                UUID.randomUUID(), invoiceId, new BigDecimal("15.00"), "Reason", UUID.randomUUID(),
-                "User", LocalDateTime.now(), LocalDateTime.now());
-        when(notes.findById(CreditNoteId.of(noteId))).thenReturn(Optional.of(note));
+        CreditNote note = CreditNote.reconstitute(CreditNoteId.of(noteId),
+                CreditNoteNumber.of(2026, 1), UUID.randomUUID(), invoiceId,
+                new BigDecimal("15.00"), "Reason", UUID.randomUUID(), "User",
+                LocalDateTime.now(), LocalDateTime.now());
+        when(notes.findById(CreditNoteId.of(noteId)))
+                .thenReturn(Optional.of(note));
         when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of());
 
-        var response = new GetCreditNoteByIdUseCase(notes, invoices).execute(noteId);
+        var response = new GetCreditNoteByIdUseCase(notes, invoices)
+                .execute(noteId);
 
         assertNull(response.customerName());
         assertNull(response.customerRif());

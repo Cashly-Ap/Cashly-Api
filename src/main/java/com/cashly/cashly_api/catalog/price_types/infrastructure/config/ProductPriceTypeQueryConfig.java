@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProductPriceTypeQueryConfig {
     @Bean
-    public ProductPriceTypeQuery productPriceTypeQuery(PriceTypeRepository repository) {
+    public ProductPriceTypeQuery productPriceTypeQuery(
+            PriceTypeRepository repository) {
         return new RepositoryProductPriceTypeQuery(repository);
     }
 }

@@ -19,12 +19,10 @@ public class RefreshTokenUseCase {
     private final TokenService tokenService;
     private final com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore;
 
-    public RefreshTokenUseCase(
-        RefreshTokenRepository refreshTokenRepository,
-        AuthenticableSubjectGateway subjectGateway,
-        TokenService tokenService,
-        com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore
-    ) {
+    public RefreshTokenUseCase(RefreshTokenRepository refreshTokenRepository,
+            AuthenticableSubjectGateway subjectGateway,
+            TokenService tokenService,
+            com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.subjectGateway = subjectGateway;
         this.tokenService = tokenService;
@@ -33,21 +31,24 @@ public class RefreshTokenUseCase {
 
     @Transactional
     public AuthenticationResponse execute(RefreshTokenRequest request) {
-        String subjectId = refreshTokenRepository.findSubjectIdByToken(request.refreshToken())
-            .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
+        String subjectId = refreshTokenRepository
+                .findSubjectIdByToken(request.refreshToken())
+                .orElseThrow(() -> new InvalidTokenException(
+                        "Invalid refresh token"));
         mfaStore.lock(subjectId);
 
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.refreshToken())
-            .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(request.refreshToken())
+                .orElseThrow(() -> new InvalidTokenException(
+                        "Invalid refresh token"));
 
         if (!refreshToken.isValid()) {
-            throw new InvalidTokenException("Refresh token is expired or revoked");
+            throw new InvalidTokenException(
+                    "Refresh token is expired or revoked");
         }
 
         Authenticable authenticable = subjectGateway.resolve(
-            refreshToken.getSubjectId(),
-            refreshToken.getSubjectType()
-        );
+                refreshToken.getSubjectId(), refreshToken.getSubjectType());
 
         if (!authenticable.canAuthenticate()) {
             throw new InvalidTokenException("Account is not active");
@@ -57,16 +58,15 @@ public class RefreshTokenUseCase {
         refreshTokenRepository.save(refreshToken);
 
         String accessToken = tokenService.generateAccessToken(authenticable);
-        RefreshToken newRefreshToken = tokenService.generateRefreshToken(authenticable);
+        RefreshToken newRefreshToken = tokenService
+                .generateRefreshToken(authenticable);
         refreshTokenRepository.save(newRefreshToken);
 
-        AuthenticatedEntityResponse entityResponse = AuthenticatedEntityResponse.from(authenticable);
-        return AuthenticationResponse.of(
-            accessToken,
-            newRefreshToken.getToken(),
-            tokenService.getAccessTokenExpiration(),
-            entityResponse
-        );
+        AuthenticatedEntityResponse entityResponse = AuthenticatedEntityResponse
+                .from(authenticable);
+        return AuthenticationResponse.of(accessToken,
+                newRefreshToken.getToken(),
+                tokenService.getAccessTokenExpiration(), entityResponse);
     }
 
 }

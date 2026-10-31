@@ -28,10 +28,8 @@ public class CreateOrderUseCase {
     private final OrderInventoryGateway inventory;
 
     public CreateOrderUseCase(OrderRepository orderRepository,
-                               OrderCustomerGateway customers,
-                               OrderProductCatalogGateway products,
-                               OrderActorGateway actors,
-                               OrderInventoryGateway inventory) {
+            OrderCustomerGateway customers, OrderProductCatalogGateway products,
+            OrderActorGateway actors, OrderInventoryGateway inventory) {
         this.orderRepository = orderRepository;
         this.customers = customers;
         this.products = products;
@@ -40,12 +38,15 @@ public class CreateOrderUseCase {
     }
 
     @Transactional
-    public OrderDetailResponse execute(CreateOrderRequest request, UUID authenticatedUserId) {
+    public OrderDetailResponse execute(CreateOrderRequest request,
+            UUID authenticatedUserId) {
         var customer = customers.findById(request.customerId())
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + request.customerId()));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Customer not found: " + request.customerId()));
 
         var user = actors.findById(authenticatedUserId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User not found: " + authenticatedUserId));
 
         List<OrderLine> lines = buildOrderLines(request);
 
@@ -53,49 +54,41 @@ public class CreateOrderUseCase {
         int sequence = orderRepository.getNextSequenceForYear(year);
         OrderNumber orderNumber = OrderNumber.of(year, sequence);
 
-        Order order = Order.create(
-                orderNumber,
-                customer.id(),
-                customer.legalName(),
-                customer.rif(),
-                user.id(),
-                user.name(),
-                request.notes(),
-                lines
-        );
+        Order order = Order.create(orderNumber, customer.id(),
+                customer.legalName(), customer.rif(), user.id(), user.name(),
+                request.notes(), lines);
 
         Order saved = orderRepository.save(order);
         return OrderMapper.toDetailResponse(saved);
     }
 
     private List<OrderLine> buildOrderLines(CreateOrderRequest request) {
-        return request.lines().stream()
-                .map(lineRequest -> {
-                    var product = products.findProduct(lineRequest.productId())
-                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+        return request.lines().stream().map(lineRequest -> {
+            var product = products.findProduct(lineRequest.productId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Product not found: " + lineRequest.productId()));
 
-                    List<OrderLineAllocation> allocations = applyStockAllocations(lineRequest, product.id());
+            List<OrderLineAllocation> allocations = applyStockAllocations(
+                    lineRequest, product.id());
 
-                    return OrderLine.create(
-                            product.id(),
-                            product.name(),
-                            product.code(),
-                            product.categoryId(),
-                            lineRequest.quantity(),
-                            lineRequest.unitPrice(),
-                            allocations
-                    );
-                })
-                .toList();
+            return OrderLine.create(product.id(), product.name(),
+                    product.code(), product.categoryId(),
+                    lineRequest.quantity(), lineRequest.unitPrice(),
+                    allocations);
+        }).toList();
     }
 
-    private List<OrderLineAllocation> applyStockAllocations(CreateOrderRequest.OrderLineRequest lineRequest, UUID productId) {
+    private List<OrderLineAllocation> applyStockAllocations(
+            CreateOrderRequest.OrderLineRequest lineRequest, UUID productId) {
         List<OrderLineAllocation> allocations = new java.util.ArrayList<>();
-        for (CreateOrderRequest.WarehouseAllocationRequest allocation : lineRequest.warehouseAllocations()) {
-            inventory.reserve(List.of(new OrderInventoryGateway.Allocation(allocation.warehouseId(), productId,
+        for (CreateOrderRequest.WarehouseAllocationRequest allocation : lineRequest
+                .warehouseAllocations()) {
+            inventory.reserve(List.of(new OrderInventoryGateway.Allocation(
+                    allocation.warehouseId(), productId,
                     allocation.allocated())));
 
-            allocations.add(OrderLineAllocation.create(allocation.warehouseId(), BigDecimal.valueOf(allocation.allocated())));
+            allocations.add(OrderLineAllocation.create(allocation.warehouseId(),
+                    BigDecimal.valueOf(allocation.allocated())));
         }
         return allocations;
     }

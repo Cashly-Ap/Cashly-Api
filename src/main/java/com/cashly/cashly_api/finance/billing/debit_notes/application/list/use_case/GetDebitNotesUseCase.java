@@ -20,30 +20,30 @@ public class GetDebitNotesUseCase {
     private final DebitNoteInvoiceGateway invoices;
 
     public GetDebitNotesUseCase(DebitNoteRepository debitNoteRepository,
-                                  DebitNoteInvoiceGateway invoices) {
+            DebitNoteInvoiceGateway invoices) {
         this.debitNoteRepository = debitNoteRepository;
         this.invoices = invoices;
     }
 
     public List<DebitNoteResponse> execute(LocalDate dateFrom, LocalDate dateTo,
-                                              UUID customerId) {
-        List<DebitNote> debitNotes = debitNoteRepository.findAllWithFilters(dateFrom, dateTo, customerId);
+            UUID customerId) {
+        List<DebitNote> debitNotes = debitNoteRepository
+                .findAllWithFilters(dateFrom, dateTo, customerId);
 
-        Set<UUID> invoiceIds = debitNotes.stream()
-                .map(DebitNote::getInvoiceId)
-                .distinct()
-                .collect(Collectors.toSet());
+        Set<UUID> invoiceIds = debitNotes.stream().map(DebitNote::getInvoiceId)
+                .distinct().collect(Collectors.toSet());
 
         var invoiceContexts = invoices.findAll(invoiceIds);
 
-        return debitNotes.stream()
-                .map(dn -> {
-                    var invoice = invoiceContexts.get(dn.getInvoiceId());
-                    String customerName = invoice != null ? invoice.customerName() : null;
-                    String customerRif = invoice != null ? invoice.customerRif() : null;
-                    String invoiceNumber = invoice != null ? invoice.number() : null;
-                    return DebitNoteMapper.toDebitNoteResponse(dn, customerName, customerRif, invoiceNumber);
-                })
-                .toList();
+        return debitNotes.stream().map(dn -> {
+            var invoice = invoiceContexts.get(dn.getInvoiceId());
+            String customerName = invoice != null
+                    ? invoice.customerName()
+                    : null;
+            String customerRif = invoice != null ? invoice.customerRif() : null;
+            String invoiceNumber = invoice != null ? invoice.number() : null;
+            return DebitNoteMapper.toDebitNoteResponse(dn, customerName,
+                    customerRif, invoiceNumber);
+        }).toList();
     }
 }

@@ -8,13 +8,9 @@ import org.hibernate.type.SqlTypes;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "supplier_addresses",
-    indexes = {
+@Table(name = "supplier_addresses", indexes = {
         @Index(name = "idx_supplier_addresses_supplier_id", columnList = "supplier_id"),
-        @Index(name = "idx_supplier_addresses_billing", columnList = "billing")
-    }
-)
+        @Index(name = "idx_supplier_addresses_billing", columnList = "billing")})
 @Getter
 @Setter
 @NoArgsConstructor

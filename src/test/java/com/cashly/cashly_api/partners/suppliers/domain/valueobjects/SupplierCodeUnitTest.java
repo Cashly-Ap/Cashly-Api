@@ -26,17 +26,20 @@ class SupplierCodeUnitTest {
 
     @Test
     void should_throw_on_null() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierCode(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierCode(null));
     }
 
     @Test
     void should_throw_on_zero() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierCode(0L));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierCode(0L));
     }
 
     @Test
     void should_throw_on_negative() {
-        assertThrows(IllegalArgumentException.class, () -> new SupplierCode(-1L));
+        assertThrows(IllegalArgumentException.class,
+                () -> new SupplierCode(-1L));
     }
 
     @Test

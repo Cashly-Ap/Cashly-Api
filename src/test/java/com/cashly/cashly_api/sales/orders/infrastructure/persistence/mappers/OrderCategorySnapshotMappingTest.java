@@ -17,11 +17,12 @@ class OrderCategorySnapshotMappingTest {
     @Test
     void mapsHistoricalCategoryThroughPersistence() {
         UUID categoryId = UUID.randomUUID();
-        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product", "SKU", categoryId,
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        var order = com.cashly.cashly_api.sales.orders.domain.entity.Order.create(
-                com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderNumber.of(2026, 1), UUID.randomUUID(),
-                "Customer", "RIF", UUID.randomUUID(), "Actor", null, List.of(line));
+        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product", "SKU",
+                categoryId, BigDecimal.ONE, BigDecimal.TEN, List.of());
+        var order = com.cashly.cashly_api.sales.orders.domain.entity.Order
+                .create(com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderNumber
+                        .of(2026, 1), UUID.randomUUID(), "Customer", "RIF",
+                        UUID.randomUUID(), "Actor", null, List.of(line));
 
         OrderEntity persisted = OrderJpaMapper.toEntity(order);
         OrderLineEntity lineEntity = persisted.getLines().getFirst();
@@ -35,9 +36,10 @@ class OrderCategorySnapshotMappingTest {
     void keepsLegacyCategorySnapshotAbsent() {
         OrderLine line = OrderLine.create(UUID.randomUUID(), "Product", "SKU",
                 BigDecimal.ONE, BigDecimal.TEN, List.of());
-        var order = com.cashly.cashly_api.sales.orders.domain.entity.Order.create(
-                com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderNumber.of(2026, 1), UUID.randomUUID(),
-                "Customer", "RIF", UUID.randomUUID(), "Actor", null, List.of(line));
+        var order = com.cashly.cashly_api.sales.orders.domain.entity.Order
+                .create(com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderNumber
+                        .of(2026, 1), UUID.randomUUID(), "Customer", "RIF",
+                        UUID.randomUUID(), "Actor", null, List.of(line));
 
         var persisted = OrderJpaMapper.toEntity(order);
 

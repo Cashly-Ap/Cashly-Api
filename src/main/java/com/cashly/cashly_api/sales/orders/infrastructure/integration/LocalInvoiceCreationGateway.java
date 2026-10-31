@@ -15,9 +15,12 @@ public class LocalInvoiceCreationGateway implements InvoiceCreationGateway {
 
     @Override
     public CreatedInvoice create(Command command, UUID actorId) {
-        var invoice = api.create(new OrderInvoiceCreationApi.Command(command.orderId(), command.paymentType(),
-                command.useBalance(), command.balanceAmount(), command.paymentMethodId(),
-                command.confirmationPassword(), command.issueDate()), actorId);
+        var invoice = api.create(
+                new OrderInvoiceCreationApi.Command(command.orderId(),
+                        command.paymentType(), command.useBalance(),
+                        command.balanceAmount(), command.paymentMethodId(),
+                        command.confirmationPassword(), command.issueDate()),
+                actorId);
         return new CreatedInvoice(invoice.id(), invoice.invoiceNumber());
     }
 }

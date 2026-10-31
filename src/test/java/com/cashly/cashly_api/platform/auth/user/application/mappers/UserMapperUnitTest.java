@@ -21,7 +21,8 @@ class UserMapperUnitTest {
 
     @BeforeEach
     void setUp() {
-        userMapper = new UserMapper(org.mockito.Mockito.mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class));
+        userMapper = new UserMapper(org.mockito.Mockito.mock(
+                com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class));
 
         UserId userId = UserId.generate();
         Email email = new Email("test@example.com");
@@ -67,7 +68,7 @@ class UserMapperUnitTest {
     @DisplayName("should_MapActiveStatus_When_UserIsInactive")
     void should_MapActiveStatus_When_UserIsInactive() {
         testUser.deactivate();
-        
+
         UserResponse response = userMapper.toResponse(testUser);
 
         assertFalse(response.active());
@@ -77,7 +78,7 @@ class UserMapperUnitTest {
     @DisplayName("should_MapEmailVerified_When_EmailIsVerified")
     void should_MapEmailVerified_When_EmailIsVerified() {
         testUser.verifyEmail();
-        
+
         UserResponse response = userMapper.toResponse(testUser);
 
         assertTrue(response.emailVerified());

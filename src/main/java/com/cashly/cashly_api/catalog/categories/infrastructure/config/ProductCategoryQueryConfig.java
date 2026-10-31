@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProductCategoryQueryConfig {
     @Bean
-    public ProductCategoryQuery productCategoryQuery(CategoryRepository repository) {
+    public ProductCategoryQuery productCategoryQuery(
+            CategoryRepository repository) {
         return new RepositoryProductCategoryQuery(repository);
     }
 }

@@ -6,7 +6,9 @@ import java.util.UUID;
 import java.util.Collection;
 import java.util.Set;
 
-public class RepositorySupplierPurchaseUsageQuery implements SupplierPurchaseUsageQuery {
+public class RepositorySupplierPurchaseUsageQuery
+        implements
+            SupplierPurchaseUsageQuery {
     private final PurchaseRepository purchases;
 
     public RepositorySupplierPurchaseUsageQuery(PurchaseRepository purchases) {
@@ -19,7 +21,8 @@ public class RepositorySupplierPurchaseUsageQuery implements SupplierPurchaseUsa
     }
 
     @Override
-    public Set<UUID> findSupplierIdsWithPurchases(Collection<UUID> supplierIds) {
+    public Set<UUID> findSupplierIdsWithPurchases(
+            Collection<UUID> supplierIds) {
         if (supplierIds.isEmpty()) {
             return Set.of();
         }

@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public record ReturnStockCommand(UUID returnId, String returnNumber, String userName, List<Allocation> allocations) {
+public record ReturnStockCommand(UUID returnId, String returnNumber,
+        String userName, List<Allocation> allocations) {
     public ReturnStockCommand {
         Objects.requireNonNull(returnId);
         Objects.requireNonNull(returnNumber);
@@ -16,7 +17,8 @@ public record ReturnStockCommand(UUID returnId, String returnNumber, String user
             Objects.requireNonNull(warehouseId);
             Objects.requireNonNull(productId);
             if (quantity <= 0) {
-                throw new IllegalArgumentException("Stock quantity must be positive");
+                throw new IllegalArgumentException(
+                        "Stock quantity must be positive");
             }
         }
     }

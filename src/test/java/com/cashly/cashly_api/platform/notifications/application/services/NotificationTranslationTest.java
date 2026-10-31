@@ -18,42 +18,74 @@ import static org.mockito.Mockito.*;
 
 class NotificationTranslationTest {
     private Notification sample(UUID user) {
-        return Notification.create(user, null, NotificationType.INVOICE_CANCELLED, "notifications.invoice_cancelled.title",
-                "notifications.invoice_cancelled.message", "INVOICE", UUID.randomUUID())
-                .withTranslation("notifications.invoice_cancelled.title", "notifications.invoice_cancelled.message", List.of("INV-123", "Customer reason"));
+        return Notification
+                .create(user, null, NotificationType.INVOICE_CANCELLED,
+                        "notifications.invoice_cancelled.title",
+                        "notifications.invoice_cancelled.message", "INVOICE",
+                        UUID.randomUUID())
+                .withTranslation("notifications.invoice_cancelled.title",
+                        "notifications.invoice_cancelled.message",
+                        List.of("INV-123", "Customer reason"));
     }
-    @Test void storedTemplateCanRenderInBothLanguagesAfterPreferenceChanges() {
+    @Test
+    void storedTemplateCanRenderInBothLanguagesAfterPreferenceChanges() {
         var source = sample(UUID.randomUUID());
-        var stored = NotificationJpaMapper.toDomain(NotificationJpaMapper.toEntity(source));
+        var stored = NotificationJpaMapper
+                .toDomain(NotificationJpaMapper.toEntity(source));
         var renderer = new NotificationTranslator();
-        assertThat(renderer.render(stored, Locale.ENGLISH).getMessage()).isEqualTo("Your invoice #INV-123 was cancelled: Customer reason");
-        assertThat(renderer.render(stored, Locale.forLanguageTag("es")).getMessage()).isEqualTo("Tu factura #INV-123 fue cancelada: Customer reason");
-        assertThat(stored.getMessageKey()).isEqualTo("notifications.invoice_cancelled.message");
-        assertThat(stored.getMessageArguments()).containsExactly("INV-123", "Customer reason");
+        assertThat(renderer.render(stored, Locale.ENGLISH).getMessage())
+                .isEqualTo(
+                        "Your invoice #INV-123 was cancelled: Customer reason");
+        assertThat(renderer.render(stored, Locale.forLanguageTag("es"))
+                .getMessage()).isEqualTo(
+                        "Tu factura #INV-123 fue cancelada: Customer reason");
+        assertThat(stored.getMessageKey())
+                .isEqualTo("notifications.invoice_cancelled.message");
+        assertThat(stored.getMessageArguments()).containsExactly("INV-123",
+                "Customer reason");
     }
-    @Test void websocketUsesRecipientsSavedLanguage() {
+    @Test
+    void websocketUsesRecipientsSavedLanguage() {
         var user = UUID.randomUUID();
-        var preferences = mock(UserPreferencesRepository.class, CALLS_REAL_METHODS);
-        when(preferences.findByUserId(user)).thenReturn(Optional.of(UserPreferences.defaults().withLanguage("en")));
+        var preferences = mock(UserPreferencesRepository.class,
+                CALLS_REAL_METHODS);
+        when(preferences.findByUserId(user)).thenReturn(
+                Optional.of(UserPreferences.defaults().withLanguage("en")));
         var messaging = mock(SimpMessagingTemplate.class);
-        new WebSocketNotificationDeliveryAdapter(messaging, preferences).deliver(sample(user));
-        verify(messaging).convertAndSend(eq("/topic/notifications/user/" + user), argThat((Notification n) -> n.getTitle().equals("Invoice cancelled")));
+        new WebSocketNotificationDeliveryAdapter(messaging, preferences)
+                .deliver(sample(user));
+        verify(messaging).convertAndSend(
+                eq("/topic/notifications/user/" + user),
+                argThat((Notification n) -> n.getTitle()
+                        .equals("Invoice cancelled")));
     }
-    @Test void legacyUserSuppliedNotificationsRemainUnchanged() {
-        var raw = Notification.create(UUID.randomUUID(), null, NotificationType.ORDER_CREATED, "User title", "User text", null, null);
-        assertThat(new NotificationTranslator().render(raw, Locale.ENGLISH)).isSameAs(raw);
+    @Test
+    void legacyUserSuppliedNotificationsRemainUnchanged() {
+        var raw = Notification.create(UUID.randomUUID(), null,
+                NotificationType.ORDER_CREATED, "User title", "User text", null,
+                null);
+        assertThat(new NotificationTranslator().render(raw, Locale.ENGLISH))
+                .isSameAs(raw);
     }
-    @Test void everyNotificationTypeHasBothLanguagesAndKeepsArgumentData() {
+    @Test
+    void everyNotificationTypeHasBothLanguagesAndKeepsArgumentData() {
         var translator = new NotificationTranslator();
         for (var type : NotificationType.values()) {
-            String base = "notifications." + type.name().toLowerCase(Locale.ROOT);
-            var notification = Notification.create(UUID.randomUUID(), null, type, base + ".title", base + ".message", "TEST", UUID.randomUUID())
-                    .withTranslation(base + ".title", base + ".message", List.of("Dato del usuario", "123.45"));
+            String base = "notifications."
+                    + type.name().toLowerCase(Locale.ROOT);
+            var notification = Notification
+                    .create(UUID.randomUUID(), null, type, base + ".title",
+                            base + ".message", "TEST", UUID.randomUUID())
+                    .withTranslation(base + ".title", base + ".message",
+                            List.of("Dato del usuario", "123.45"));
             var english = translator.render(notification, Locale.ENGLISH);
-            var spanish = translator.render(notification, Locale.forLanguageTag("es"));
+            var spanish = translator.render(notification,
+                    Locale.forLanguageTag("es"));
             assertThat(english.getTitle()).isNotEqualTo(spanish.getTitle());
-            assertThat(english.getMessage()).doesNotContain("notifications.", "{0}", "{1}");
-            assertThat(spanish.getMessage()).doesNotContain("notifications.", "{0}", "{1}");
+            assertThat(english.getMessage()).doesNotContain("notifications.",
+                    "{0}", "{1}");
+            assertThat(spanish.getMessage()).doesNotContain("notifications.",
+                    "{0}", "{1}");
         }
     }
 

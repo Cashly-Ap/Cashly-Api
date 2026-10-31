@@ -10,7 +10,8 @@ public class RepositoryProductStockQuery implements ProductStockQuery {
     private final WarehouseStockRepository stocks;
     private final WarehouseRepository warehouses;
 
-    public RepositoryProductStockQuery(WarehouseStockRepository stocks, WarehouseRepository warehouses) {
+    public RepositoryProductStockQuery(WarehouseStockRepository stocks,
+            WarehouseRepository warehouses) {
         this.stocks = stocks;
         this.warehouses = warehouses;
     }
@@ -19,9 +20,12 @@ public class RepositoryProductStockQuery implements ProductStockQuery {
     public List<Stock> findByProductId(UUID productId) {
         return stocks.findByProductId(productId).stream().map(stock -> {
             var warehouse = warehouses.findById(stock.getWarehouseId());
-            return new Stock(stock.getWarehouseId(), warehouse.map(value -> value.getCode()).orElse(null),
-                    warehouse.map(value -> value.getName()).orElse("Unknown"), warehouse.isPresent(),
-                    stock.getQuantity(), stock.getReserved(), stock.getAvailableQuantity(), stock.getLastMovementAt());
+            return new Stock(stock.getWarehouseId(),
+                    warehouse.map(value -> value.getCode()).orElse(null),
+                    warehouse.map(value -> value.getName()).orElse("Unknown"),
+                    warehouse.isPresent(), stock.getQuantity(),
+                    stock.getReserved(), stock.getAvailableQuantity(),
+                    stock.getLastMovementAt());
         }).toList();
     }
 }

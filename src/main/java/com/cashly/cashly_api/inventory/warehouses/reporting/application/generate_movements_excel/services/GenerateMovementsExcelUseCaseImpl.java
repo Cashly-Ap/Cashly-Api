@@ -9,12 +9,16 @@ import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.quer
 
 import java.util.List;
 
-public class GenerateMovementsExcelUseCaseImpl implements GenerateMovementsExcelUseCase {
+public class GenerateMovementsExcelUseCaseImpl
+        implements
+            GenerateMovementsExcelUseCase {
 
     private final MovementsReportRepositoryPort repository;
     private final MovementsExcelPort excelPort;
 
-    public GenerateMovementsExcelUseCaseImpl(MovementsReportRepositoryPort repository, MovementsExcelPort excelPort) {
+    public GenerateMovementsExcelUseCaseImpl(
+            MovementsReportRepositoryPort repository,
+            MovementsExcelPort excelPort) {
         this.repository = repository;
         this.excelPort = excelPort;
     }

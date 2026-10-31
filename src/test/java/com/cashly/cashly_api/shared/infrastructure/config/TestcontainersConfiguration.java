@@ -11,10 +11,10 @@ import org.testcontainers.utility.DockerImageName;
 @Profile("testcontainers")
 public class TestcontainersConfiguration {
 
-	@Bean
-	@ServiceConnection
-	MySQLContainer<?> mysqlContainer() {
-		return new MySQLContainer<>(DockerImageName.parse("mysql:8.0"));
-	}
+    @Bean
+    @ServiceConnection
+    MySQLContainer<?> mysqlContainer() {
+        return new MySQLContainer<>(DockerImageName.parse("mysql:8.0"));
+    }
 
 }

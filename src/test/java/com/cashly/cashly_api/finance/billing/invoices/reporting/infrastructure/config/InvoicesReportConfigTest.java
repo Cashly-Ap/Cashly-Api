@@ -32,10 +32,12 @@ class InvoicesReportConfigTest {
     void should_create_use_case_beans() {
         var config = new InvoicesReportConfig();
 
-        var generateInvoicePdf = config.generateInvoicePdfUseCase(getInvoiceByIdUseCase, invoicePdfPort);
+        var generateInvoicePdf = config.generateInvoicePdfUseCase(
+                getInvoiceByIdUseCase, invoicePdfPort);
         assertNotNull(generateInvoicePdf);
 
-        var generateReportPdf = config.generateInvoicesReportPdfUseCase(getInvoiceByIdUseCase, invoicesReportPdfPort);
+        var generateReportPdf = config.generateInvoicesReportPdfUseCase(
+                getInvoiceByIdUseCase, invoicesReportPdfPort);
         assertNotNull(generateReportPdf);
     }
 

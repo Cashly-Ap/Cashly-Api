@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OrderInvoiceCreationConfig {
     @Bean
-    public OrderInvoiceCreationApi orderInvoiceCreationApi(CreateInvoiceUseCase createInvoice) {
+    public OrderInvoiceCreationApi orderInvoiceCreationApi(
+            CreateInvoiceUseCase createInvoice) {
         return new OrderInvoiceCreationService(createInvoice);
     }
 }

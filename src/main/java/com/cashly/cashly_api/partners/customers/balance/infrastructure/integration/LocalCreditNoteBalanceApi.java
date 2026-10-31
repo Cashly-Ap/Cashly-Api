@@ -17,9 +17,10 @@ public class LocalCreditNoteBalanceApi implements CreditNoteBalanceApi {
     }
 
     @Override
-    public void addCredit(UUID customerId, BigDecimal amount, UUID noteId, String noteNumber,
-                          String invoiceNumber, UUID authenticatedUserId) {
-        balances.execute(customerId, BalanceType.CREDIT_NOTE, amount, BalanceType.CREDIT_NOTE,
-                noteId, noteNumber, invoiceNumber, authenticatedUserId);
+    public void addCredit(UUID customerId, BigDecimal amount, UUID noteId,
+            String noteNumber, String invoiceNumber, UUID authenticatedUserId) {
+        balances.execute(customerId, BalanceType.CREDIT_NOTE, amount,
+                BalanceType.CREDIT_NOTE, noteId, noteNumber, invoiceNumber,
+                authenticatedUserId);
     }
 }

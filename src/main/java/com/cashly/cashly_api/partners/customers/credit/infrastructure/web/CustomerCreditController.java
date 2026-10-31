@@ -18,23 +18,27 @@ public class CustomerCreditController {
     private final GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase;
     private final GetOverdueInvoicesUseCase getOverdueInvoicesUseCase;
 
-    public CustomerCreditController(GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase,
-                                     GetOverdueInvoicesUseCase getOverdueInvoicesUseCase) {
+    public CustomerCreditController(
+            GetCustomerCreditStatusUseCase getCustomerCreditStatusUseCase,
+            GetOverdueInvoicesUseCase getOverdueInvoicesUseCase) {
         this.getCustomerCreditStatusUseCase = getCustomerCreditStatusUseCase;
         this.getOverdueInvoicesUseCase = getOverdueInvoicesUseCase;
     }
 
     @GetMapping("/{customerId}/credit")
     @PreAuthorize("hasAuthority('FINANCES:READ')")
-    public ResponseEntity<CreditStatusResponse> getCreditStatus(@PathVariable UUID customerId) {
-        CreditStatusResponse response = getCustomerCreditStatusUseCase.execute(customerId);
+    public ResponseEntity<CreditStatusResponse> getCreditStatus(
+            @PathVariable UUID customerId) {
+        CreditStatusResponse response = getCustomerCreditStatusUseCase
+                .execute(customerId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/credit/overdue")
     @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<List<OverdueInvoiceResponse>> getOverdueInvoices() {
-        List<OverdueInvoiceResponse> response = getOverdueInvoicesUseCase.execute();
+        List<OverdueInvoiceResponse> response = getOverdueInvoicesUseCase
+                .execute();
         return ResponseEntity.ok(response);
     }
 }

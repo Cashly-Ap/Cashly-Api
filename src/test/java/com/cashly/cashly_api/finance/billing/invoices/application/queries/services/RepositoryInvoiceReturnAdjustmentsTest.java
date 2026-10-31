@@ -22,24 +22,44 @@ class RepositoryInvoiceReturnAdjustmentsTest {
     void shouldReverseOwnedAdjustmentAndRecalculateBeforeSaving() {
         InvoiceRepository repository = mock(InvoiceRepository.class);
         Invoice invoice = mock(Invoice.class);
-        InvoiceReturnCommand command = new InvoiceReturnCommand(UUID.randomUUID(), BigDecimal.TEN, List.of(new InvoiceReturnCommand.Line(UUID.randomUUID(), BigDecimal.ONE)), true);
-        when(repository.findById(InvoiceId.of(command.invoiceId()))).thenReturn(Optional.of(invoice));
+        InvoiceReturnCommand command = new InvoiceReturnCommand(
+                UUID.randomUUID(), BigDecimal.TEN,
+                List.of(new InvoiceReturnCommand.Line(UUID.randomUUID(),
+                        BigDecimal.ONE)),
+                true);
+        when(repository.findById(InvoiceId.of(command.invoiceId())))
+                .thenReturn(Optional.of(invoice));
 
-        new RepositoryInvoiceReturnAdjustments(repository).reverse(command, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO);
+        new RepositoryInvoiceReturnAdjustments(repository).reverse(command,
+                BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO);
 
         var order = inOrder(invoice, repository);
-        order.verify(invoice).revertReturn(new InvoiceReturnAdjustment(command.invoiceId(), BigDecimal.TEN, List.of(new InvoiceReturnAdjustment.Line(command.lines().getFirst().invoiceLineId(), BigDecimal.ONE)), true));
-        order.verify(invoice).recalculatePaymentStatus(BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO);
+        order.verify(invoice)
+                .revertReturn(new InvoiceReturnAdjustment(command.invoiceId(),
+                        BigDecimal.TEN,
+                        List.of(new InvoiceReturnAdjustment.Line(
+                                command.lines().getFirst().invoiceLineId(),
+                                BigDecimal.ONE)),
+                        true));
+        order.verify(invoice).recalculatePaymentStatus(BigDecimal.TEN,
+                BigDecimal.ONE, BigDecimal.ZERO);
         order.verify(repository).save(invoice);
     }
 
     @Test
     void shouldRejectMissingInvoiceWithoutSaving() {
         InvoiceRepository repository = mock(InvoiceRepository.class);
-        InvoiceReturnCommand command = new InvoiceReturnCommand(UUID.randomUUID(), BigDecimal.TEN, List.of(new InvoiceReturnCommand.Line(UUID.randomUUID(), BigDecimal.ONE)), false);
-        when(repository.findById(InvoiceId.of(command.invoiceId()))).thenReturn(Optional.empty());
+        InvoiceReturnCommand command = new InvoiceReturnCommand(
+                UUID.randomUUID(), BigDecimal.TEN,
+                List.of(new InvoiceReturnCommand.Line(UUID.randomUUID(),
+                        BigDecimal.ONE)),
+                false);
+        when(repository.findById(InvoiceId.of(command.invoiceId())))
+                .thenReturn(Optional.empty());
 
-        assertThrows(InvoiceNotFoundException.class, () -> new RepositoryInvoiceReturnAdjustments(repository).apply(command));
+        assertThrows(InvoiceNotFoundException.class,
+                () -> new RepositoryInvoiceReturnAdjustments(repository)
+                        .apply(command));
         verify(repository, never()).save(any());
     }
 }

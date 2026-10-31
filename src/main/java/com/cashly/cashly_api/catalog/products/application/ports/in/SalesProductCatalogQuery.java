@@ -11,9 +11,11 @@ public interface SalesProductCatalogQuery {
 
     Set<UUID> findProductIdsByCurrentCategory(UUID categoryId);
 
-    PageResponse<SalesProductCatalogEntry> findForTransaction(UUID customerId, String search,
-                                                               UUID categoryId, Boolean composite,
-                                                               Boolean withStock, int page, int size);
+    PageResponse<SalesProductCatalogEntry> findForTransaction(UUID customerId,
+            String search, UUID categoryId, Boolean composite,
+            Boolean withStock, int page, int size);
 
-    record ProductReference(UUID id, String code, String name, UUID categoryId) {}
+    record ProductReference(UUID id, String code, String name,
+            UUID categoryId) {
+    }
 }

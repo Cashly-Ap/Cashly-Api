@@ -23,9 +23,8 @@ class RefreshTokenRequestUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenIsNull")
     void should_ThrowException_When_RefreshTokenIsNull() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshTokenRequest(null)
-        );
+                IllegalArgumentException.class,
+                () -> new RefreshTokenRequest(null));
 
         assertEquals("Refresh token is required", exception.getMessage());
     }
@@ -34,9 +33,8 @@ class RefreshTokenRequestUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenIsEmpty")
     void should_ThrowException_When_RefreshTokenIsEmpty() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshTokenRequest("")
-        );
+                IllegalArgumentException.class,
+                () -> new RefreshTokenRequest(""));
 
         assertEquals("Refresh token is required", exception.getMessage());
     }
@@ -45,9 +43,8 @@ class RefreshTokenRequestUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenIsBlank")
     void should_ThrowException_When_RefreshTokenIsBlank() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshTokenRequest("   ")
-        );
+                IllegalArgumentException.class,
+                () -> new RefreshTokenRequest("   "));
 
         assertEquals("Refresh token is required", exception.getMessage());
     }

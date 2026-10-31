@@ -56,30 +56,30 @@ class CustomerControllerTest {
     void should_create_customer_and_return_201() {
         String customerId = UUID.randomUUID().toString();
         UUID grantedBy = UUID.randomUUID();
-        CustomerCreateResponse response = new CustomerCreateResponse(
-                customerId, 1001L, "Test Corp", "BUSINESS", "J-12345678-9",
-                "Test", 30, java.math.BigDecimal.ZERO, true,
-                null, LocalDateTime.now(), List.of(), List.of(), List.of(),
-                null, null);
+        CustomerCreateResponse response = new CustomerCreateResponse(customerId,
+                1001L, "Test Corp", "BUSINESS", "J-12345678-9", "Test", 30,
+                java.math.BigDecimal.ZERO, true, null, LocalDateTime.now(),
+                List.of(), List.of(), List.of(), null, null);
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn(grantedBy.toString());
 
-        when(registerCustomerUseCase.execute(any(CreateCustomerRequest.class), any(UUID.class))).thenReturn(response);
+        when(registerCustomerUseCase.execute(any(CreateCustomerRequest.class),
+                any(UUID.class))).thenReturn(response);
 
-        CreateCustomerRequest request = new CreateCustomerRequest(
-                "Test Corp", "BUSINESS", "J-12345678-9", "Test",
-                30, java.math.BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(),
-                List.of(UUID.randomUUID()),
-                null, null);
+        CreateCustomerRequest request = new CreateCustomerRequest("Test Corp",
+                "BUSINESS", "J-12345678-9", "Test", 30,
+                java.math.BigDecimal.ZERO, true, List.of(), List.of(),
+                List.of(), List.of(UUID.randomUUID()), null, null);
 
-        ResponseEntity<CustomerCreateResponse> result = customerController.create(request, authentication);
+        ResponseEntity<CustomerCreateResponse> result = customerController
+                .create(request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(customerId, result.getBody().id());
-        verify(registerCustomerUseCase).execute(any(CreateCustomerRequest.class), eq(grantedBy));
+        verify(registerCustomerUseCase)
+                .execute(any(CreateCustomerRequest.class), eq(grantedBy));
     }
 
     @Test
@@ -92,16 +92,18 @@ class CustomerControllerTest {
         PageResponse<CustomerListResponse> pageResponse = new PageResponse<>(
                 List.of(customer), 1L, 1, 10, 0, true, true, false);
 
-        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(),
-                anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(pageResponse);
+        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(),
+                any(), any(), any(), anyInt(), anyInt(), anyString(),
+                anyString())).thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<CustomerListResponse>> result = customerController.getAll(
-                null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        ResponseEntity<PageResponse<CustomerListResponse>> result = customerController
+                .getAll(null, null, null, null, null, null, null, 0, 10,
+                        "legalName", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listCustomersUseCase).execute(null, null, null, null, null, null,
+                null, null, 0, 10, "legalName", "asc");
     }
 
     @Test
@@ -110,31 +112,33 @@ class CustomerControllerTest {
         PageResponse<CustomerListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any(),
-                anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(emptyPage);
+        when(listCustomersUseCase.execute(any(), any(), any(), any(), any(),
+                any(), any(), any(), anyInt(), anyInt(), anyString(),
+                anyString())).thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<CustomerListResponse>> result = customerController.getAll(
-                null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        ResponseEntity<PageResponse<CustomerListResponse>> result = customerController
+                .getAll(null, null, null, null, null, null, null, 0, 10,
+                        "legalName", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listCustomersUseCase).execute(null, null, null, null, null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listCustomersUseCase).execute(null, null, null, null, null, null,
+                null, null, 0, 10, "legalName", "asc");
     }
 
     @Test
     @DisplayName("should get customer by id and return 200")
     void should_get_customer_by_id_and_return_200() {
         String id = UUID.randomUUID().toString();
-        CustomerDetailResponse response = new CustomerDetailResponse(
-                id, 1001L, "Test Corp", "BUSINESS", "J-12345678-9", "Test",
-                30, java.math.BigDecimal.ZERO, true, null,
-                LocalDateTime.now(), List.of(), List.of(), List.of(),
-                null, null, true);
+        CustomerDetailResponse response = new CustomerDetailResponse(id, 1001L,
+                "Test Corp", "BUSINESS", "J-12345678-9", "Test", 30,
+                java.math.BigDecimal.ZERO, true, null, LocalDateTime.now(),
+                List.of(), List.of(), List.of(), null, null, true);
 
         when(getCustomerUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<CustomerDetailResponse> result = customerController.getById(id);
+        ResponseEntity<CustomerDetailResponse> result = customerController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -145,24 +149,26 @@ class CustomerControllerTest {
     @DisplayName("should update customer and return 200")
     void should_update_customer_and_return_200() {
         String id = UUID.randomUUID().toString();
-        CustomerDetailResponse response = new CustomerDetailResponse(
-                id, 1001L, "Updated Corp", "BUSINESS", "J-12345678-9", "Updated",
-                30, java.math.BigDecimal.ZERO, true, null,
-                LocalDateTime.now(), List.of(), List.of(), List.of(),
-                null, null, true);
+        CustomerDetailResponse response = new CustomerDetailResponse(id, 1001L,
+                "Updated Corp", "BUSINESS", "J-12345678-9", "Updated", 30,
+                java.math.BigDecimal.ZERO, true, null, LocalDateTime.now(),
+                List.of(), List.of(), List.of(), null, null, true);
 
-        when(updateCustomerUseCase.execute(eq(id), any(UpdateCustomerRequest.class))).thenReturn(response);
+        when(updateCustomerUseCase.execute(eq(id),
+                any(UpdateCustomerRequest.class))).thenReturn(response);
 
         UpdateCustomerRequest request = new UpdateCustomerRequest(
-                "Updated Corp", "BUSINESS", "J-12345678-9", "Updated",
-                30, java.math.BigDecimal.ZERO, true,
-                List.of(), List.of(), List.of(), null, null);
+                "Updated Corp", "BUSINESS", "J-12345678-9", "Updated", 30,
+                java.math.BigDecimal.ZERO, true, List.of(), List.of(),
+                List.of(), null, null);
 
-        ResponseEntity<CustomerDetailResponse> result = customerController.update(id, request);
+        ResponseEntity<CustomerDetailResponse> result = customerController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
-        verify(updateCustomerUseCase).execute(eq(id), any(UpdateCustomerRequest.class));
+        verify(updateCustomerUseCase).execute(eq(id),
+                any(UpdateCustomerRequest.class));
     }
 
     @Test

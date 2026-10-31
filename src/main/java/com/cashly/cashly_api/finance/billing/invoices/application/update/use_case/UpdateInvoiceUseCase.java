@@ -34,10 +34,10 @@ public class UpdateInvoiceUseCase {
     private final CustomerCreditTermsGateway customerRepository;
 
     public UpdateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                InvoiceCatalogGateway productRepository,
-                                InventoryGateway inventoryGateway,
-                                StockAvailabilityGateway stockEnrichmentService,
-                                CustomerCreditTermsGateway customerRepository) {
+            InvoiceCatalogGateway productRepository,
+            InventoryGateway inventoryGateway,
+            StockAvailabilityGateway stockEnrichmentService,
+            CustomerCreditTermsGateway customerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.productRepository = productRepository;
         this.inventoryGateway = inventoryGateway;
@@ -46,7 +46,8 @@ public class UpdateInvoiceUseCase {
     }
 
     @Transactional
-    public InvoiceDetailResponse execute(UUID id, UpdateInvoiceRequest request) {
+    public InvoiceDetailResponse execute(UUID id,
+            UpdateInvoiceRequest request) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
 
@@ -54,63 +55,71 @@ public class UpdateInvoiceUseCase {
 
         List<InvoiceLine> newLines = request.lines().stream()
                 .map(lineRequest -> {
-                    InvoiceCatalogGateway.Product product = productRepository.findProduct(lineRequest.productId())
+                    InvoiceCatalogGateway.Product product = productRepository
+                            .findProduct(lineRequest.productId())
                             .orElseThrow(() -> new IllegalArgumentException(
-                                    "Product not found: " + lineRequest.productId()));
+                                    "Product not found: "
+                                            + lineRequest.productId()));
 
                     List<InvoiceLineAllocation> allocations = applyStockAllocations(
                             lineRequest, product.id());
 
-                    return InvoiceLine.create(
-                            product.id(),
-                            product.name(),
-                            product.code(),
-                            lineRequest.quantity(),
-                            lineRequest.unitPrice(),
-                            allocations
-                    );
-                })
-                .toList();
+                    return InvoiceLine.create(product.id(), product.name(),
+                            product.code(), lineRequest.quantity(),
+                            lineRequest.unitPrice(), allocations);
+                }).toList();
 
         PaymentType paymentType = PaymentType.valueOf(request.paymentType());
         invoice.update(paymentType, request.notes(), newLines);
         if (request.issueDate() != null) {
-            int creditDays = customerRepository.creditDays(invoice.getCustomerId());
-            invoice.updateDates(request.issueDate(), request.issueDate().plusDays(creditDays));
+            int creditDays = customerRepository
+                    .creditDays(invoice.getCustomerId());
+            invoice.updateDates(request.issueDate(),
+                    request.issueDate().plusDays(creditDays));
         }
 
         Invoice saved = invoiceRepository.save(invoice);
 
-        List<StockAvailabilityGateway.AllocationData> allocations = saved.getLines().stream()
+        List<StockAvailabilityGateway.AllocationData> allocations = saved
+                .getLines().stream()
                 .flatMap(line -> line.getAllocations().stream()
                         .map(a -> new StockAvailabilityGateway.AllocationData(
-                                a.getWarehouseId(),
-                                line.getProductId(),
-                                a.getAllocated().intValue()
-                        )))
+                                a.getWarehouseId(), line.getProductId(),
+                                a.getAllocated().intValue())))
                 .toList();
 
-        List<StockAvailabilityGateway.EnrichedStock> enriched = stockEnrichmentService.enrich(allocations);
+        List<StockAvailabilityGateway.EnrichedStock> enriched = stockEnrichmentService
+                .enrich(allocations);
 
         Map<InvoiceMapper.WarehouseProductKey, InvoiceMapper.WarehouseEnrichment> enrichmentMap = new HashMap<>();
         for (StockAvailabilityGateway.EnrichedStock es : enriched) {
             enrichmentMap.put(
-                    new InvoiceMapper.WarehouseProductKey(es.warehouseId(), es.productId()),
-                    new InvoiceMapper.WarehouseEnrichment(es.warehouseCode(), es.warehouseName(), es.availableStock())
-            );
+                    new InvoiceMapper.WarehouseProductKey(es.warehouseId(),
+                            es.productId()),
+                    new InvoiceMapper.WarehouseEnrichment(es.warehouseCode(),
+                            es.warehouseName(), es.availableStock()));
         }
 
         return InvoiceMapper.toDetailResponse(saved, enrichmentMap, Map.of());
     }
 
     private void revertStockAllocations(Invoice invoice) {
-        inventoryGateway.releaseInvoiceReservations(InventoryGateway.InvoiceInventoryCommand.from(invoice));
+        inventoryGateway.releaseInvoiceReservations(
+                InventoryGateway.InvoiceInventoryCommand.from(invoice));
     }
 
-    private List<InvoiceLineAllocation> applyStockAllocations(UpdateInvoiceRequest.InvoiceLineRequest lineRequest, UUID productId) {
-        inventoryGateway.reserveAllocations(lineRequest.warehouseAllocations().stream()
-                .map(a -> new InventoryGateway.Allocation(a.warehouseId(), productId, a.allocated().intValue())).toList());
+    private List<InvoiceLineAllocation> applyStockAllocations(
+            UpdateInvoiceRequest.InvoiceLineRequest lineRequest,
+            UUID productId) {
+        inventoryGateway
+                .reserveAllocations(lineRequest.warehouseAllocations().stream()
+                        .map(a -> new InventoryGateway.Allocation(
+                                a.warehouseId(), productId,
+                                a.allocated().intValue()))
+                        .toList());
         return lineRequest.warehouseAllocations().stream()
-                .map(a -> InvoiceLineAllocation.create(a.warehouseId(), a.allocated())).toList();
+                .map(a -> InvoiceLineAllocation.create(a.warehouseId(),
+                        a.allocated()))
+                .toList();
     }
 }

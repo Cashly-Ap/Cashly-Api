@@ -32,20 +32,25 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdfPort {
+public class PaymentHistoryReportPdfGenerator
+        implements
+            PaymentHistoryReportPdfPort {
 
     private final PdfBranding branding;
 
-    public PaymentHistoryReportPdfGenerator() { this(new PdfBranding()); }
+    public PaymentHistoryReportPdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public PaymentHistoryReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public PaymentHistoryReportPdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
-    private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
+    private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245,
+            245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-
-
 
     @Override
     public byte[] generateReport(PaymentHistoryReportData data) {
@@ -58,10 +63,13 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(buildTitle(bold));
@@ -71,46 +79,71 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
 
             document.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error generating payment history report PDF", e);
+            throw new RuntimeException(
+                    "Error generating payment history report PDF", e);
         }
         return baos.toByteArray();
     }
 
     private Paragraph buildTitle(PdfFont bold) {
-        return new Paragraph(ReportMessages.text("finance.treasury.payments.reports.paymentHistory"))
-                .setFont(bold)
-                .setFontSize(18)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(10);
+        return new Paragraph(ReportMessages
+                .text("finance.treasury.payments.reports.paymentHistory"))
+                .setFont(bold).setFontSize(18)
+                .setTextAlignment(TextAlignment.CENTER).setMarginBottom(10);
     }
 
-    private Paragraph buildFilters(PaymentHistoryReportData data, PdfFont regular) {
+    private Paragraph buildFilters(PaymentHistoryReportData data,
+            PdfFont regular) {
         StringBuilder filters = new StringBuilder();
         if (data.dateFrom() != null) {
-            filters.append(ReportMessages.text("finance.treasury.payments.reports.from")).append(data.dateFrom().format(ReportMessages.dateFormatter()));
+            filters.append(ReportMessages
+                    .text("finance.treasury.payments.reports.from"))
+                    .append(data.dateFrom()
+                            .format(ReportMessages.dateFormatter()));
         }
         if (data.dateTo() != null) {
-            if (!filters.isEmpty()) filters.append(" | ");
-            filters.append(ReportMessages.text("finance.treasury.payments.reports.to")).append(data.dateTo().format(ReportMessages.dateFormatter()));
+            if (!filters.isEmpty())
+                filters.append(" | ");
+            filters.append(
+                    ReportMessages.text("finance.treasury.payments.reports.to"))
+                    .append(data.dateTo()
+                            .format(ReportMessages.dateFormatter()));
         }
         if (data.customerId() != null) {
-            if (!filters.isEmpty()) filters.append(" | ");
-            filters.append(ReportMessages.text("finance.treasury.payments.reports.customer")).append(data.customerId());
+            if (!filters.isEmpty())
+                filters.append(" | ");
+            filters.append(ReportMessages
+                    .text("finance.treasury.payments.reports.customer"))
+                    .append(data.customerId());
         }
 
-        return new Paragraph(filters.isEmpty() ? ReportMessages.text("finance.treasury.payments.reports.date") + java.time.LocalDate.now().format(ReportMessages.dateFormatter()) : filters.toString())
-                .setFont(regular)
-                .setFontSize(10)
+        return new Paragraph(filters.isEmpty()
+                ? ReportMessages.text("finance.treasury.payments.reports.date")
+                        + java.time.LocalDate.now()
+                                .format(ReportMessages.dateFormatter())
+                : filters.toString()).setFont(regular).setFontSize(10)
                 .setFontColor(ColorConstants.DARK_GRAY)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(20);
+                .setTextAlignment(TextAlignment.CENTER).setMarginBottom(20);
     }
 
-    private Table buildMainTable(PaymentHistoryReportData data, PdfFont bold, PdfFont regular) {
+    private Table buildMainTable(PaymentHistoryReportData data, PdfFont bold,
+            PdfFont regular) {
         float[] columnWidths = {2.5f, 4f, 2f, 2f, 2.5f, 3f, 2f};
-        Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+        Table table = new Table(UnitValue.createPercentArray(columnWidths))
+                .useAllAvailableWidth();
 
-        String[] headers = {ReportMessages.text("finance.treasury.payments.reports.paymentNo"), ReportMessages.text("finance.treasury.payments.reports.customerLabel"), ReportMessages.text("finance.treasury.payments.reports.type"), ReportMessages.text("finance.treasury.payments.reports.method"), ReportMessages.text("finance.treasury.payments.reports.amount"), ReportMessages.text("finance.treasury.payments.reports.dateLabel"), ReportMessages.text("finance.treasury.payments.reports.status")};
+        String[] headers = {
+                ReportMessages
+                        .text("finance.treasury.payments.reports.paymentNo"),
+                ReportMessages.text(
+                        "finance.treasury.payments.reports.customerLabel"),
+                ReportMessages.text("finance.treasury.payments.reports.type"),
+                ReportMessages.text("finance.treasury.payments.reports.method"),
+                ReportMessages.text("finance.treasury.payments.reports.amount"),
+                ReportMessages
+                        .text("finance.treasury.payments.reports.dateLabel"),
+                ReportMessages
+                        .text("finance.treasury.payments.reports.status")};
         for (String h : headers) {
             table.addHeaderCell(createHeaderCell(h, bold));
         }
@@ -119,13 +152,21 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
             var row = data.rows().get(i);
             DeviceRgb rowBg = (i % 2 != 0) ? LIGHT_GRAY_ROW : null;
 
-            addTableCell(table, row.paymentNumber(), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, row.customerName(), regular, rowBg, TextAlignment.LEFT);
-            addTableCell(table, row.type(), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, row.method(), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, "$ " + formatDecimal(row.amount()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, row.date().format(ReportMessages.dateTimeFormatter()), regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, row.status(), regular, rowBg, TextAlignment.CENTER);
+            addTableCell(table, row.paymentNumber(), regular, rowBg,
+                    TextAlignment.CENTER);
+            addTableCell(table, row.customerName(), regular, rowBg,
+                    TextAlignment.LEFT);
+            addTableCell(table, row.type(), regular, rowBg,
+                    TextAlignment.CENTER);
+            addTableCell(table, row.method(), regular, rowBg,
+                    TextAlignment.CENTER);
+            addTableCell(table, "$ " + formatDecimal(row.amount()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table,
+                    row.date().format(ReportMessages.dateTimeFormatter()),
+                    regular, rowBg, TextAlignment.CENTER);
+            addTableCell(table, row.status(), regular, rowBg,
+                    TextAlignment.CENTER);
         }
 
         return table;
@@ -133,21 +174,20 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
 
     private Cell createHeaderCell(String text, PdfFont bold) {
         return new Cell()
-                .add(new Paragraph(text).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                .add(new Paragraph(text).setFont(bold).setFontSize(9)
+                        .setFontColor(HEADER_TEXT))
                 .setBackgroundColor(HEADER_BG)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setPadding(6)
+                .setTextAlignment(TextAlignment.CENTER).setPadding(6)
                 .setBorder(Border.NO_BORDER);
     }
 
-    private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addTableCell(Table table, String text, PdfFont font,
+            DeviceRgb bg, TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "").setFont(font).setFontSize(8))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(4)
-                .setPaddingRight(4)
+                .add(new Paragraph(text != null ? text : "").setFont(font)
+                        .setFontSize(8))
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(4).setPaddingRight(4)
                 .setBorder(Border.NO_BORDER);
         if (bg != null) {
             cell.setBackgroundColor(bg);
@@ -155,26 +195,41 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
         table.addCell(cell);
     }
 
-    private Table buildSummary(PaymentHistoryReportData.Summary summary, PdfFont bold, PdfFont regular) {
-        Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
+    private Table buildSummary(PaymentHistoryReportData.Summary summary,
+            PdfFont bold, PdfFont regular) {
+        Table table = new Table(
+                UnitValue.createPercentArray(new float[]{50f, 50f}))
+                .useAllAvailableWidth();
         table.setMarginTop(20);
 
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.totalPayments"), String.valueOf(summary.totalPayments()), bold, regular));
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.totalAmountCollected"), "$ " + formatDecimal(summary.totalAmount()), bold, regular));
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.payments"), String.valueOf(summary.paymentCount()), bold, regular));
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.payments.reports.advances"), String.valueOf(summary.advanceCount()), bold, regular));
+        table.addCell(buildSummaryCell(
+                ReportMessages.text(
+                        "finance.treasury.payments.reports.totalPayments"),
+                String.valueOf(summary.totalPayments()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages
+                .text("finance.treasury.payments.reports.totalAmountCollected"),
+                "$ " + formatDecimal(summary.totalAmount()), bold, regular));
+        table.addCell(buildSummaryCell(
+                ReportMessages
+                        .text("finance.treasury.payments.reports.payments"),
+                String.valueOf(summary.paymentCount()), bold, regular));
+        table.addCell(buildSummaryCell(
+                ReportMessages
+                        .text("finance.treasury.payments.reports.advances"),
+                String.valueOf(summary.advanceCount()), bold, regular));
 
         return table;
     }
 
-    private Cell buildSummaryCell(String label, String value, PdfFont bold, PdfFont regular) {
+    private Cell buildSummaryCell(String label, String value, PdfFont bold,
+            PdfFont regular) {
         Paragraph p = new Paragraph()
-                .add(new com.itextpdf.layout.element.Text(label).setFont(bold).setFontSize(10))
-                .add(new com.itextpdf.layout.element.Text(" " + value).setFont(regular).setFontSize(10));
+                .add(new com.itextpdf.layout.element.Text(label).setFont(bold)
+                        .setFontSize(10))
+                .add(new com.itextpdf.layout.element.Text(" " + value)
+                        .setFont(regular).setFontSize(10));
 
-        return new Cell()
-                .add(p)
-                .setPadding(6)
+        return new Cell().add(p).setPadding(6)
                 .setBorder(new SolidBorder(BORDER_COLOR, 1))
                 .setBackgroundColor(LIGHT_GRAY_ROW);
     }
@@ -199,19 +254,20 @@ public class PaymentHistoryReportPdfGenerator implements PaymentHistoryReportPdf
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("finance.treasury.payments.reports.page") + pageNumber + ReportMessages.text("finance.treasury.payments.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
+                        new Paragraph(ReportMessages
+                                .text("finance.treasury.payments.reports.page")
+                                + pageNumber
+                                + ReportMessages.text(
+                                        "finance.treasury.payments.reports.of")
+                                + totalPages).setFont(font).setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

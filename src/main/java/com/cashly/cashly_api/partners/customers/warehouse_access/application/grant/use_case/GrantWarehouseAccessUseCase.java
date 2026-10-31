@@ -19,26 +19,32 @@ public class GrantWarehouseAccessUseCase {
     private final CustomerRepository customerRepository;
     private final WarehouseDirectoryGateway warehouseDirectory;
 
-    public GrantWarehouseAccessUseCase(CustomerWarehouseAccessRepository accessRepository,
-                                        CustomerRepository customerRepository,
-                                        WarehouseDirectoryGateway warehouseDirectory) {
+    public GrantWarehouseAccessUseCase(
+            CustomerWarehouseAccessRepository accessRepository,
+            CustomerRepository customerRepository,
+            WarehouseDirectoryGateway warehouseDirectory) {
         this.accessRepository = accessRepository;
         this.customerRepository = customerRepository;
         this.warehouseDirectory = warehouseDirectory;
     }
 
     @Transactional
-    public CustomerWarehouseAccessResponse execute(UUID customerId, UUID warehouseId, UUID grantedBy) {
-        customerRepository.findById(new CustomerId(customerId))
-                .orElseThrow(() -> new CustomerNotFoundException(customerId.toString()));
+    public CustomerWarehouseAccessResponse execute(UUID customerId,
+            UUID warehouseId, UUID grantedBy) {
+        customerRepository.findById(new CustomerId(customerId)).orElseThrow(
+                () -> new CustomerNotFoundException(customerId.toString()));
 
-        WarehouseSnapshot warehouse = warehouseDirectory.requireById(warehouseId);
+        WarehouseSnapshot warehouse = warehouseDirectory
+                .requireById(warehouseId);
 
-        if (accessRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId)) {
-            throw new CustomerWarehouseAccessAlreadyExistsException(customerId, warehouseId);
+        if (accessRepository.existsByCustomerIdAndWarehouseId(customerId,
+                warehouseId)) {
+            throw new CustomerWarehouseAccessAlreadyExistsException(customerId,
+                    warehouseId);
         }
 
-        CustomerWarehouseAccess access = CustomerWarehouseAccess.create(customerId, warehouseId, grantedBy);
+        CustomerWarehouseAccess access = CustomerWarehouseAccess
+                .create(customerId, warehouseId, grantedBy);
         CustomerWarehouseAccess saved = accessRepository.save(access);
 
         return CustomerWarehouseAccessResponse.from(saved, warehouse.name());

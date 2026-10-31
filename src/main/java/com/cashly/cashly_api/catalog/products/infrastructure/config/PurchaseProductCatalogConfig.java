@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PurchaseProductCatalogConfig {
     @Bean
-    public PurchaseProductCatalogQuery purchaseProductCatalogQuery(ProductRepository products) {
+    public PurchaseProductCatalogQuery purchaseProductCatalogQuery(
+            ProductRepository products) {
         return new RepositoryPurchaseProductCatalogQuery(products);
     }
 }

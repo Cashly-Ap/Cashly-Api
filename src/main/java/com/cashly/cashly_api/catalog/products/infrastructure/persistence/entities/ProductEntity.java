@@ -17,14 +17,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "products",
-    indexes = {
+@Table(name = "products", indexes = {
         @Index(name = "idx_product_code", columnList = "code"),
         @Index(name = "idx_product_category", columnList = "category_id"),
-        @Index(name = "idx_product_active", columnList = "active")
-    }
-)
+        @Index(name = "idx_product_active", columnList = "active")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -88,12 +84,14 @@ public class ProductEntity {
         entity.createdAt = product.getCreatedAt();
         entity.updatedAt = product.getUpdatedAt();
         entity.components = product.getComponents().stream()
-            .map(c -> ProductComponentEntity.fromDomain(c, entity))
-            .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+                .map(c -> ProductComponentEntity.fromDomain(c, entity))
+                .collect(java.util.stream.Collectors
+                        .toCollection(ArrayList::new));
         return entity;
     }
 
-    public void applyPrices(List<ProductPrice> prices, Set<UUID> existingPriceTypeIds) {
+    public void applyPrices(List<ProductPrice> prices,
+            Set<UUID> existingPriceTypeIds) {
         this.productPrices.clear();
         prices.forEach(p -> {
             if (existingPriceTypeIds.contains(p.getPriceTypeId())) {
@@ -102,7 +100,8 @@ public class ProductEntity {
         });
     }
 
-    public void updateFromDomain(Product product, Set<UUID> existingPriceTypeIds) {
+    public void updateFromDomain(Product product,
+            Set<UUID> existingPriceTypeIds) {
         this.name = product.getName();
         this.description = product.getDescription();
         this.categoryId = product.getCategoryId();
@@ -112,19 +111,18 @@ public class ProductEntity {
         this.purchasePrice = product.getPurchasePrice();
         this.updatedAt = product.getUpdatedAt();
         this.components.clear();
-        product.getComponents().forEach(c -> this.components.add(ProductComponentEntity.fromDomain(c, this)));
+        product.getComponents().forEach(c -> this.components
+                .add(ProductComponentEntity.fromDomain(c, this)));
         applyPrices(product.getProductPrices(), existingPriceTypeIds);
     }
 
     public Product toDomain() {
         var domainComponents = this.components.stream()
-            .map(ProductComponentEntity::toDomain)
-            .toList();
+                .map(ProductComponentEntity::toDomain).toList();
         var domainPrices = this.productPrices.stream()
-            .map(ProductPriceEntity::toDomain)
-            .toList();
+                .map(ProductPriceEntity::toDomain).toList();
         return Product.reconstitute(id, code, name, description, categoryId,
-                composite, active, photo, purchasePrice,
-                domainComponents, domainPrices, createdAt, updatedAt);
+                composite, active, photo, purchasePrice, domainComponents,
+                domainPrices, createdAt, updatedAt);
     }
 }

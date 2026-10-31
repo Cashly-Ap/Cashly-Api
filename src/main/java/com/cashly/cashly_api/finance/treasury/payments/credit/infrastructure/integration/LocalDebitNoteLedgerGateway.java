@@ -8,6 +8,10 @@ import java.util.UUID;
 @Component
 public class LocalDebitNoteLedgerGateway implements DebitNoteLedgerGateway {
     private final DebitNoteLedgerQuery query;
-    public LocalDebitNoteLedgerGateway(DebitNoteLedgerQuery query) { this.query = query; }
-    public List<BigDecimal> amountsByInvoiceId(UUID id) { return query.amountsByInvoiceId(id); }
+    public LocalDebitNoteLedgerGateway(DebitNoteLedgerQuery query) {
+        this.query = query;
+    }
+    public List<BigDecimal> amountsByInvoiceId(UUID id) {
+        return query.amountsByInvoiceId(id);
+    }
 }

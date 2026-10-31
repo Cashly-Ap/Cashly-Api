@@ -10,14 +10,16 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Component
-public class LocalInvoiceFinancialPositionGateway implements InvoiceFinancialPositionGateway {
+public class LocalInvoiceFinancialPositionGateway
+        implements
+            InvoiceFinancialPositionGateway {
     private final InvoicePaymentTotalQuery payments;
     private final DebitNoteLedgerQuery debitNotes;
     private final CreditNoteLedgerQuery creditNotes;
 
-    public LocalInvoiceFinancialPositionGateway(InvoicePaymentTotalQuery payments,
-                                                DebitNoteLedgerQuery debitNotes,
-                                                CreditNoteLedgerQuery creditNotes) {
+    public LocalInvoiceFinancialPositionGateway(
+            InvoicePaymentTotalQuery payments, DebitNoteLedgerQuery debitNotes,
+            CreditNoteLedgerQuery creditNotes) {
         this.payments = payments;
         this.debitNotes = debitNotes;
         this.creditNotes = creditNotes;
@@ -27,11 +29,13 @@ public class LocalInvoiceFinancialPositionGateway implements InvoiceFinancialPos
     public Position findByInvoiceId(UUID invoiceId) {
         BigDecimal debits = sum(debitNotes.amountsByInvoiceId(invoiceId));
         BigDecimal credits = sum(creditNotes.amountsByInvoiceId(invoiceId));
-        return new Position(payments.totalAllocatedByInvoiceId(invoiceId), debits, credits);
+        return new Position(payments.totalAllocatedByInvoiceId(invoiceId),
+                debits, credits);
     }
 
     private BigDecimal sum(java.util.List<BigDecimal> amounts) {
-        return amounts.stream().map(amount -> amount == null ? BigDecimal.ZERO : amount)
+        return amounts.stream()
+                .map(amount -> amount == null ? BigDecimal.ZERO : amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

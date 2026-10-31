@@ -9,9 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface PurchaseNumberSequenceJpaRepository extends JpaRepository<PurchaseNumberSequenceEntity, Integer> {
+public interface PurchaseNumberSequenceJpaRepository
+        extends
+            JpaRepository<PurchaseNumberSequenceEntity, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM PurchaseNumberSequenceEntity s WHERE s.year = :year")
-    Optional<PurchaseNumberSequenceEntity> findByYearForUpdate(@Param("year") int year);
+    Optional<PurchaseNumberSequenceEntity> findByYearForUpdate(
+            @Param("year") int year);
 }

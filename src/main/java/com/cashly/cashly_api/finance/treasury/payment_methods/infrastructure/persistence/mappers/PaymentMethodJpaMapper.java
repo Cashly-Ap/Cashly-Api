@@ -6,7 +6,8 @@ import com.cashly.cashly_api.finance.treasury.payment_methods.infrastructure.per
 
 public class PaymentMethodJpaMapper {
 
-    private PaymentMethodJpaMapper() {}
+    private PaymentMethodJpaMapper() {
+    }
 
     public static PaymentMethodEntity toEntity(PaymentMethod paymentMethod) {
         PaymentMethodEntity entity = new PaymentMethodEntity();
@@ -21,14 +22,9 @@ public class PaymentMethodJpaMapper {
     }
 
     public static PaymentMethod toDomain(PaymentMethodEntity entity) {
-        return PaymentMethod.reconstitute(
-                PaymentMethodId.of(entity.getId()),
-                entity.getCode(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.isActive(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return PaymentMethod.reconstitute(PaymentMethodId.of(entity.getId()),
+                entity.getCode(), entity.getName(), entity.getDescription(),
+                entity.isActive(), entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 }

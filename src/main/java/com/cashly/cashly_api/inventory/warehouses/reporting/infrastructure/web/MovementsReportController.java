@@ -38,11 +38,12 @@ public class MovementsReportController {
             @RequestParam(required = false) String movementType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
-        MovementsPdfQuery query = new MovementsPdfQuery(warehouseId, productId, movementType, dateFrom, dateTo);
+        MovementsPdfQuery query = new MovementsPdfQuery(warehouseId, productId,
+                movementType, dateFrom, dateTo);
         byte[] pdf = generateMovementsPdfUseCase.execute(query);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"historial-movimientos.pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"historial-movimientos.pdf\"")
                 .body(pdf);
     }
 
@@ -54,11 +55,13 @@ public class MovementsReportController {
             @RequestParam(required = false) String movementType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
-        MovementsPdfQuery query = new MovementsPdfQuery(warehouseId, productId, movementType, dateFrom, dateTo);
+        MovementsPdfQuery query = new MovementsPdfQuery(warehouseId, productId,
+                movementType, dateFrom, dateTo);
         byte[] excel = generateMovementsExcelUseCase.execute(query);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"historial-movimientos.xlsx\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"historial-movimientos.xlsx\"")
                 .body(excel);
     }
 }

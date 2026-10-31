@@ -9,7 +9,8 @@ class InvoiceLineEntityUnitTest {
 
     @Test
     void shouldBatchLoadAllocations() throws NoSuchFieldException {
-        var allocations = InvoiceLineEntity.class.getDeclaredField("allocations");
+        var allocations = InvoiceLineEntity.class
+                .getDeclaredField("allocations");
         var batchSize = allocations.getAnnotation(BatchSize.class);
 
         assertEquals(100, batchSize.size());

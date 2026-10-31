@@ -13,7 +13,9 @@ import java.util.UUID;
 import java.util.Collection;
 import java.util.Set;
 
-public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUID> {
+public interface PurchaseJpaRepository
+        extends
+            JpaRepository<PurchaseEntity, UUID> {
 
     @Query("""
             SELECT DISTINCT p FROM PurchaseEntity p
@@ -27,7 +29,8 @@ public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUI
             LEFT JOIN FETCH l.allocations
             WHERE l.purchase.id = :purchaseId
             """)
-    List<PurchaseLineEntity> findWithAllocationsForPurchase(@Param("purchaseId") UUID purchaseId);
+    List<PurchaseLineEntity> findWithAllocationsForPurchase(
+            @Param("purchaseId") UUID purchaseId);
 
     @Query("""
             SELECT DISTINCT p FROM PurchaseEntity p
@@ -49,13 +52,12 @@ public interface PurchaseJpaRepository extends JpaRepository<PurchaseEntity, UUI
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("supplierId") UUID supplierId,
-            @Param("status") String status,
-            @Param("productId") UUID productId,
-            @Param("categoryId") UUID categoryId
-    );
+            @Param("status") String status, @Param("productId") UUID productId,
+            @Param("categoryId") UUID categoryId);
 
     boolean existsBySupplierId(UUID supplierId);
 
     @Query("SELECT DISTINCT p.supplierId FROM PurchaseEntity p WHERE p.supplierId IN :supplierIds")
-    Set<UUID> findSupplierIdsWithPurchases(@Param("supplierIds") Collection<UUID> supplierIds);
+    Set<UUID> findSupplierIdsWithPurchases(
+            @Param("supplierIds") Collection<UUID> supplierIds);
 }

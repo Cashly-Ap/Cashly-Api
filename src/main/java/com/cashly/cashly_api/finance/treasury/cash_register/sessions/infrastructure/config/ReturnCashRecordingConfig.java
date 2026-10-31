@@ -7,5 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ReturnCashRecordingConfig {
     @Bean
-    public ReturnCashRecording returnCashRecording(CashMovementService movements) { return new ReturnCashRecordingService(movements); }
+    public ReturnCashRecording returnCashRecording(
+            CashMovementService movements) {
+        return new ReturnCashRecordingService(movements);
+    }
 }

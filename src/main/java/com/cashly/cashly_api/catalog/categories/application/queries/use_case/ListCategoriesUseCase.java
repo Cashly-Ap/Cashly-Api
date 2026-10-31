@@ -18,28 +18,35 @@ public class ListCategoriesUseCase {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public ListCategoriesUseCase(CategoryUsageGateway usageGateway, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public ListCategoriesUseCase(CategoryUsageGateway usageGateway,
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper) {
         this.usageGateway = usageGateway;
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<CategoryListResponse> execute(String search, Boolean active,
-                                                       int page, int size,
-                                                       String orderBy, String orderDir) {
-        PageResponse<Category> summaryPage = categoryRepository.findAllWithFilters(
-                search, active, page, size, orderBy, orderDir);
+    public PageResponse<CategoryListResponse> execute(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir) {
+        PageResponse<Category> summaryPage = categoryRepository
+                .findAllWithFilters(search, active, page, size, orderBy,
+                        orderDir);
 
-        var counts = usageGateway.countActiveProductsByCategoryIds(summaryPage.content().stream()
-                .map(Category::getId).collect(Collectors.toSet()));
+        var counts = usageGateway
+                .countActiveProductsByCategoryIds(summaryPage.content().stream()
+                        .map(Category::getId).collect(Collectors.toSet()));
 
         List<CategoryListResponse> content = summaryPage.content().stream()
-                .map(category -> categoryMapper.toListResponse(new CategorySummary(category, counts.getOrDefault(category.getId(), 0L))))
+                .map(category -> categoryMapper
+                        .toListResponse(new CategorySummary(category,
+                                counts.getOrDefault(category.getId(), 0L))))
                 .toList();
 
-        return new PageResponse<>(content, summaryPage.totalElements(), summaryPage.totalPages(),
-                summaryPage.size(), summaryPage.number(), summaryPage.first(),
-                summaryPage.last(), summaryPage.empty());
+        return new PageResponse<>(content, summaryPage.totalElements(),
+                summaryPage.totalPages(), summaryPage.size(),
+                summaryPage.number(), summaryPage.first(), summaryPage.last(),
+                summaryPage.empty());
     }
 }

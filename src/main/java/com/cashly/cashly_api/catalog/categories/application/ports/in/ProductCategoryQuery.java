@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public interface ProductCategoryQuery {
     Optional<Entry> findById(UUID id);
-    record Entry(UUID id, String name) {}
+    record Entry(UUID id, String name) {
+    }
 }

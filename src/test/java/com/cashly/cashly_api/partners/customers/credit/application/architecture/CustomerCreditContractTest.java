@@ -20,15 +20,18 @@ class CustomerCreditContractTest {
         var query = mock(CreditValidationGateway.class);
         var limit = new BigDecimal("1000.00");
         var available = new BigDecimal("400.00");
-        when(query.getCreditStatus(customerId)).thenReturn(new CreditStatusResponse(
-                customerId, "Customer", "RIF", limit, new BigDecimal("600.00"),
-                BigDecimal.ZERO, available, List.of(), false, true));
+        when(query.getCreditStatus(customerId))
+                .thenReturn(new CreditStatusResponse(customerId, "Customer",
+                        "RIF", limit, new BigDecimal("600.00"), BigDecimal.ZERO,
+                        available, List.of(), false, true));
         var service = new CustomerCreditEligibilityService(query);
         var invoiceAdapter = new InvoiceCustomerCreditAdapter(service);
         var orderAdapter = new OrderCustomerCreditAdapter(service);
 
-        assertThat(invoiceAdapter.isCreditAvailable(customerId, available)).isTrue();
-        assertThat(invoiceAdapter.isCreditAvailable(customerId, new BigDecimal("400.01"))).isFalse();
+        assertThat(invoiceAdapter.isCreditAvailable(customerId, available))
+                .isTrue();
+        assertThat(invoiceAdapter.isCreditAvailable(customerId,
+                new BigDecimal("400.01"))).isFalse();
         var limits = orderAdapter.getCreditLimits(customerId);
         assertThat(limits.creditLimit()).isEqualTo(limit);
         assertThat(limits.availableCredit()).isEqualTo(available);

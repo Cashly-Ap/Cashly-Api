@@ -39,24 +39,26 @@ class GenerateCashRegisterExcelUseCaseImplTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GenerateCashRegisterExcelUseCaseImpl(repository, excelPort);
+        useCase = new GenerateCashRegisterExcelUseCaseImpl(repository,
+                excelPort);
     }
 
     @Test
     @DisplayName("should generate DETAILED Excel by fetching rows and delegating to port")
     void shouldGenerateDetalladoExcelByFetchingRowsAndDelegatingToPort() {
-        List<CashRegisterExportRow> mockRows = List.of(
-                CashRegisterExportRow.of(DATE_FROM, "FAC", "INV-001", BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(500), BigDecimal.ZERO, BigDecimal.ZERO,
-                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                        "Cliente A", "VENTAS", 1)
-        );
+        List<CashRegisterExportRow> mockRows = List.of(CashRegisterExportRow.of(
+                DATE_FROM, "FAC", "INV-001", BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(500), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, "Cliente A", "VENTAS", 1));
         byte[] expectedBytes = new byte[]{1, 2, 3};
 
-        when(repository.findExportRows(DATE_FROM, DATE_TO)).thenReturn(mockRows);
+        when(repository.findExportRows(DATE_FROM, DATE_TO))
+                .thenReturn(mockRows);
         when(excelPort.generateExcel(mockRows)).thenReturn(expectedBytes);
 
-        byte[] result = useCase.execute(DATE_FROM, DATE_TO, ReportType.DETAILED);
+        byte[] result = useCase.execute(DATE_FROM, DATE_TO,
+                ReportType.DETAILED);
 
         assertNotNull(result);
         assertArrayEquals(expectedBytes, result);
@@ -67,10 +69,12 @@ class GenerateCashRegisterExcelUseCaseImplTest {
     @Test
     @DisplayName("should generate DETAILED Excel with empty rows when no data")
     void shouldGenerateDetalladoExcelWithEmptyRowsWhenNoData() {
-        when(repository.findExportRows(DATE_FROM, DATE_TO)).thenReturn(List.of());
+        when(repository.findExportRows(DATE_FROM, DATE_TO))
+                .thenReturn(List.of());
         when(excelPort.generateExcel(List.of())).thenReturn(new byte[0]);
 
-        byte[] result = useCase.execute(DATE_FROM, DATE_TO, ReportType.DETAILED);
+        byte[] result = useCase.execute(DATE_FROM, DATE_TO,
+                ReportType.DETAILED);
 
         assertNotNull(result);
         assertEquals(0, result.length);
@@ -81,9 +85,11 @@ class GenerateCashRegisterExcelUseCaseImplTest {
     @Test
     @DisplayName("should propagate exception when repository fails for DETAILED")
     void shouldPropagateExceptionWhenRepositoryFailsForDetallado() {
-        when(repository.findExportRows(DATE_FROM, DATE_TO)).thenThrow(new RuntimeException("DB error"));
+        when(repository.findExportRows(DATE_FROM, DATE_TO))
+                .thenThrow(new RuntimeException("DB error"));
 
-        assertThrows(RuntimeException.class, () -> useCase.execute(DATE_FROM, DATE_TO, ReportType.DETAILED));
+        assertThrows(RuntimeException.class,
+                () -> useCase.execute(DATE_FROM, DATE_TO, ReportType.DETAILED));
         verify(repository).findExportRows(DATE_FROM, DATE_TO);
         verifyNoInteractions(excelPort);
     }
@@ -91,27 +97,23 @@ class GenerateCashRegisterExcelUseCaseImplTest {
     @Test
     @DisplayName("should generate SIMPLE report with payment summary and totals")
     void shouldGenerateSimpleReport() {
-        var detail = CashRegisterDetail.create(
-                UUID.randomUUID(), "Efectivo", 5, BigDecimal.valueOf(2500));
+        var detail = CashRegisterDetail.create(UUID.randomUUID(), "Efectivo", 5,
+                BigDecimal.valueOf(2500));
         List<CashRegisterDetail> paymentSummary = List.of(detail);
 
-        DailyTotals totals = new DailyTotals(
-                BigDecimal.valueOf(2500), 5,
-                BigDecimal.ZERO, 0,
-                BigDecimal.valueOf(500), 1,
-                BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(3000), 3,
-                BigDecimal.valueOf(3000),
-                BigDecimal.valueOf(2500),
-                BigDecimal.valueOf(500),
-                paymentSummary
-        );
+        DailyTotals totals = new DailyTotals(BigDecimal.valueOf(2500), 5,
+                BigDecimal.ZERO, 0, BigDecimal.valueOf(500), 1, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.valueOf(3000), 3,
+                BigDecimal.valueOf(3000), BigDecimal.valueOf(2500),
+                BigDecimal.valueOf(500), paymentSummary);
 
         byte[] expectedBytes = new byte[]{4, 5, 6};
 
-        when(repository.findPaymentMethodSummary(DATE_FROM, DATE_TO)).thenReturn(paymentSummary);
+        when(repository.findPaymentMethodSummary(DATE_FROM, DATE_TO))
+                .thenReturn(paymentSummary);
         when(repository.findRangeTotals(DATE_FROM, DATE_TO)).thenReturn(totals);
-        when(excelPort.generateSimpleExcel(paymentSummary, totals)).thenReturn(expectedBytes);
+        when(excelPort.generateSimpleExcel(paymentSummary, totals))
+                .thenReturn(expectedBytes);
 
         byte[] result = useCase.execute(DATE_FROM, DATE_TO, ReportType.SIMPLE);
 
@@ -125,15 +127,15 @@ class GenerateCashRegisterExcelUseCaseImplTest {
     @Test
     @DisplayName("should generate GROUPED report with customer summaries")
     void shouldGenerateAgrupadoReport() {
-        List<CustomerSummary> summaries = List.of(
-                new CustomerSummary("Cliente A", BigDecimal.valueOf(5000),
-                        BigDecimal.valueOf(4800), BigDecimal.valueOf(200),
-                        BigDecimal.valueOf(4600))
-        );
+        List<CustomerSummary> summaries = List.of(new CustomerSummary(
+                "Cliente A", BigDecimal.valueOf(5000), BigDecimal.valueOf(4800),
+                BigDecimal.valueOf(200), BigDecimal.valueOf(4600)));
         byte[] expectedBytes = new byte[]{7, 8, 9};
 
-        when(repository.findCustomerSummary(DATE_FROM, DATE_TO)).thenReturn(summaries);
-        when(excelPort.generateGroupedExcel(summaries)).thenReturn(expectedBytes);
+        when(repository.findCustomerSummary(DATE_FROM, DATE_TO))
+                .thenReturn(summaries);
+        when(excelPort.generateGroupedExcel(summaries))
+                .thenReturn(expectedBytes);
 
         byte[] result = useCase.execute(DATE_FROM, DATE_TO, ReportType.GROUPED);
 

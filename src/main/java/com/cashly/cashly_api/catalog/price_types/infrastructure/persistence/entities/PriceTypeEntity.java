@@ -55,6 +55,7 @@ public class PriceTypeEntity {
     }
 
     public PriceType toDomain() {
-        return PriceType.reconstitute(id, name, description, active, createdAt, updatedAt);
+        return PriceType.reconstitute(id, name, description, active, createdAt,
+                updatedAt);
     }
 }

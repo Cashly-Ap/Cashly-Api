@@ -8,11 +8,14 @@ import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class GenerateCollectionsReportPdfUseCaseImpl implements GenerateCollectionsReportPdfUseCase {
+public class GenerateCollectionsReportPdfUseCaseImpl
+        implements
+            GenerateCollectionsReportPdfUseCase {
 
     private final CollectionsReportPdfPort pdfPort;
 
-    public GenerateCollectionsReportPdfUseCaseImpl(CollectionsReportPdfPort pdfPort) {
+    public GenerateCollectionsReportPdfUseCaseImpl(
+            CollectionsReportPdfPort pdfPort) {
         this.pdfPort = pdfPort;
     }
 
@@ -22,21 +25,13 @@ public class GenerateCollectionsReportPdfUseCaseImpl implements GenerateCollecti
         return pdfPort.generateReport(data);
     }
 
-    private CollectionsReportData buildReportData(UUID customerId, LocalDate agingFrom) {
-        return new CollectionsReportData(
-                LocalDate.now(),
-                customerId,
-                agingFrom,
+    private CollectionsReportData buildReportData(UUID customerId,
+            LocalDate agingFrom) {
+        return new CollectionsReportData(LocalDate.now(), customerId, agingFrom,
                 java.util.List.of(),
-                new CollectionsReportData.Summary(
-                        0,
-                        java.math.BigDecimal.ZERO,
-                        java.math.BigDecimal.ZERO,
-                        java.math.BigDecimal.ZERO,
-                        java.math.BigDecimal.ZERO,
-                        java.math.BigDecimal.ZERO,
-                        java.math.BigDecimal.ZERO
-                )
-        );
+                new CollectionsReportData.Summary(0, java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO,
+                        java.math.BigDecimal.ZERO));
     }
 }

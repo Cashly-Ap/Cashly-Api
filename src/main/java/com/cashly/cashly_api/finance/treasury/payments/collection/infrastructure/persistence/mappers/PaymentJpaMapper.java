@@ -9,7 +9,8 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure
 
 public class PaymentJpaMapper {
 
-    private PaymentJpaMapper() {}
+    private PaymentJpaMapper() {
+    }
 
     public static PaymentEntity toEntity(Payment payment) {
         PaymentEntity entity = new PaymentEntity();
@@ -18,7 +19,9 @@ public class PaymentJpaMapper {
         entity.setCustomerId(payment.getCustomerId());
         entity.setAmount(payment.getAmount());
         entity.setPaymentMethodId(payment.getPaymentMethodId());
-        entity.setSource(payment.getSource() != null ? payment.getSource().name() : PaymentSource.PAYMENT_METHOD.name());
+        entity.setSource(payment.getSource() != null
+                ? payment.getSource().name()
+                : PaymentSource.PAYMENT_METHOD.name());
         entity.setReferenceNumber(payment.getReferenceNumber());
         entity.setPaymentDate(payment.getPaymentDate());
         entity.setNotes(payment.getNotes());
@@ -39,26 +42,16 @@ public class PaymentJpaMapper {
         PaymentSource source = entity.getSource() != null
                 ? PaymentSource.valueOf(entity.getSource())
                 : PaymentSource.PAYMENT_METHOD;
-        return Payment.reconstitute(
-                PaymentId.of(entity.getId()),
+        return Payment.reconstitute(PaymentId.of(entity.getId()),
                 new PaymentNumber(entity.getPaymentNumber()),
-                entity.getCustomerId(),
-                entity.getAmount(),
-                entity.getPaymentMethodId(),
-                source,
-                entity.getReferenceNumber(),
-                entity.getPaymentDate(),
-                entity.getNotes(),
-                PaymentStatus.valueOf(entity.getStatus()),
-                entity.getAppliedAmount(),
-                entity.getCreatedBy(),
-                entity.getCreatedByName(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getCancelledReason(),
-                entity.getVerifiedBy(),
-                entity.getVerifiedByName(),
-                entity.getVerifiedAt()
-        );
+                entity.getCustomerId(), entity.getAmount(),
+                entity.getPaymentMethodId(), source,
+                entity.getReferenceNumber(), entity.getPaymentDate(),
+                entity.getNotes(), PaymentStatus.valueOf(entity.getStatus()),
+                entity.getAppliedAmount(), entity.getCreatedBy(),
+                entity.getCreatedByName(), entity.getCreatedAt(),
+                entity.getUpdatedAt(), entity.getCancelledReason(),
+                entity.getVerifiedBy(), entity.getVerifiedByName(),
+                entity.getVerifiedAt());
     }
 }

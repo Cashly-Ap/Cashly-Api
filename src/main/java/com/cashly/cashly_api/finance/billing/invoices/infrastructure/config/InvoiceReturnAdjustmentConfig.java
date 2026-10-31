@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InvoiceReturnAdjustmentConfig {
     @Bean
-    public InvoiceReturnAdjustments invoiceReturnAdjustments(InvoiceRepository invoiceRepository) {
+    public InvoiceReturnAdjustments invoiceReturnAdjustments(
+            InvoiceRepository invoiceRepository) {
         return new RepositoryInvoiceReturnAdjustments(invoiceRepository);
     }
 }

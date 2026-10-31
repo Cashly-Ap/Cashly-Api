@@ -19,54 +19,73 @@ import static org.mockito.Mockito.mock;
 
 class EndpointPermissionCoverageTest {
     private static final Set<String> SELF_SERVICE = Set.of(
-            "AuthController#login", "AuthController#refresh", "AuthController#logout",
-            "AuthController#changePassword", "AuthController#profile", "AuthController#updateProfile", "CurrentAccessController#current",
-            "NotificationController#list", "NotificationController#unreadCount",
-            "NotificationController#markAsRead", "NotificationController#markAllAsRead");
+            "AuthController#login", "AuthController#refresh",
+            "AuthController#logout", "AuthController#changePassword",
+            "AuthController#profile", "AuthController#updateProfile",
+            "CurrentAccessController#current", "NotificationController#list",
+            "NotificationController#unreadCount",
+            "NotificationController#markAsRead",
+            "NotificationController#markAllAsRead");
 
     @Test
-    void everyControllerOperationHasExplicitPermissionsOrASelfServiceContract() throws Exception {
+    void everyControllerOperationHasExplicitPermissionsOrASelfServiceContract()
+            throws Exception {
         var scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
-        var controllers = scanner.findCandidateComponents("com.cashly.cashly_api");
+        scanner.addIncludeFilter(
+                new AnnotationTypeFilter(RestController.class));
+        var controllers = scanner
+                .findCandidateComponents("com.cashly.cashly_api");
         var missing = new ArrayList<String>();
         var legacy = new ArrayList<String>();
         int mappings = 0;
         for (var definition : controllers) {
             var controller = Class.forName(definition.getBeanClassName());
             for (var method : controller.getDeclaredMethods()) {
-                if (!AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class)) {
+                if (!AnnotatedElementUtils.hasAnnotation(method,
+                        RequestMapping.class)) {
                     continue;
                 }
                 mappings++;
-                var permission = AnnotatedElementUtils.findMergedAnnotation(method, PreAuthorize.class);
+                var permission = AnnotatedElementUtils
+                        .findMergedAnnotation(method, PreAuthorize.class);
                 if (permission == null) {
-                    permission = AnnotatedElementUtils.findMergedAnnotation(controller, PreAuthorize.class);
+                    permission = AnnotatedElementUtils.findMergedAnnotation(
+                            controller, PreAuthorize.class);
                 }
-                String operation = controller.getSimpleName() + "#" + method.getName();
+                String operation = controller.getSimpleName() + "#"
+                        + method.getName();
                 if (permission == null && !SELF_SERVICE.contains(operation)) {
                     missing.add(operation);
                 }
-                if (permission != null && (permission.value().contains("hasRole(")
-                        || permission.value().contains("hasAnyRole(")
-                        || permission.value().contains("MODULE_"))) {
+                if (permission != null
+                        && (permission.value().contains("hasRole(")
+                                || permission.value().contains("hasAnyRole(")
+                                || permission.value().contains("MODULE_"))) {
                     legacy.add(operation);
                 }
             }
         }
-        assertThat(mappings).as("The controller scan must discover the real API").isGreaterThan(180);
-        assertThat(missing).as("Protected operations require explicit permissions").isEmpty();
-        assertThat(legacy).as("Fixed role names and direct user grants cannot authorize operations").isEmpty();
+        assertThat(mappings)
+                .as("The controller scan must discover the real API")
+                .isGreaterThan(180);
+        assertThat(missing)
+                .as("Protected operations require explicit permissions")
+                .isEmpty();
+        assertThat(legacy).as(
+                "Fixed role names and direct user grants cannot authorize operations")
+                .isEmpty();
     }
 
     @Test
     void ownProfileHasAnExplicitSelfServiceException() throws Exception {
         var controller = com.cashly.cashly_api.platform.auth.authentication.infrastructure.web.AuthController.class;
         var handler = new HandlerMethod(mock(controller),
-                controller.getDeclaredMethod("profile", org.springframework.security.core.Authentication.class));
+                controller.getDeclaredMethod("profile",
+                        org.springframework.security.core.Authentication.class));
         assertThat(new PermissionCoverageInterceptor().preHandle(
                 mock(jakarta.servlet.http.HttpServletRequest.class),
-                mock(jakarta.servlet.http.HttpServletResponse.class), handler)).isTrue();
+                mock(jakarta.servlet.http.HttpServletResponse.class), handler))
+                .isTrue();
     }
 
     @Test
@@ -75,17 +94,22 @@ class EndpointPermissionCoverageTest {
         var interceptor = new PermissionCoverageInterceptor();
         int mappings = 0;
         for (var method : controller.getDeclaredMethods()) {
-            if (!AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class)) {
+            if (!AnnotatedElementUtils.hasAnnotation(method,
+                    RequestMapping.class)) {
                 continue;
             }
             mappings++;
             var permission = method.getAnnotation(PreAuthorize.class);
             assertThat(permission).isNotNull();
-            assertThat(permission.value()).isEqualTo(method.getName().equals("verify")
-                ? "permitAll()" : "isAuthenticated()");
+            assertThat(permission.value())
+                    .isEqualTo(method.getName().equals("verify")
+                            ? "permitAll()"
+                            : "isAuthenticated()");
             var handler = new HandlerMethod(mock(controller), method);
-            assertThat(interceptor.preHandle(mock(jakarta.servlet.http.HttpServletRequest.class),
-                mock(jakarta.servlet.http.HttpServletResponse.class), handler)).isTrue();
+            assertThat(interceptor.preHandle(
+                    mock(jakarta.servlet.http.HttpServletRequest.class),
+                    mock(jakarta.servlet.http.HttpServletResponse.class),
+                    handler)).isTrue();
         }
         assertThat(mappings).isEqualTo(5);
     }
@@ -103,6 +127,7 @@ class EndpointPermissionCoverageTest {
     }
 
     static class UnmappedController {
-        public void write() {}
+        public void write() {
+        }
     }
 }

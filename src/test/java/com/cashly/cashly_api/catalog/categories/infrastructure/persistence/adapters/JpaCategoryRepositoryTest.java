@@ -54,13 +54,16 @@ class JpaCategoryRepositoryTest {
 
         @Test
         void should_CreateNewEntity_When_IdIsNull() {
-            Category category = Category.create("Electronics", "Electronic items");
+            Category category = Category.create("Electronics",
+                    "Electronic items");
             UUID generatedId = UUID.randomUUID();
 
-            CategoryEntity entityWithoutId = CategoryEntity.fromDomain(category);
+            CategoryEntity entityWithoutId = CategoryEntity
+                    .fromDomain(category);
             entityWithoutId.setId(generatedId);
 
-            when(springDataRepository.save(any(CategoryEntity.class))).thenReturn(entityWithoutId);
+            when(springDataRepository.save(any(CategoryEntity.class)))
+                    .thenReturn(entityWithoutId);
 
             Category saved = repository.save(category);
 
@@ -81,15 +84,16 @@ class JpaCategoryRepositoryTest {
         @Test
         void should_UpdateExistingEntity_When_IdIsNotNullAndFound() {
             UUID id = UUID.randomUUID();
-            Category existing = Category.reconstitute(
-                    id, "Old Name", "Old Description", true,
-                    LocalDateTime.now().minusDays(1), LocalDateTime.now().minusDays(1)
-            );
+            Category existing = Category.reconstitute(id, "Old Name",
+                    "Old Description", true, LocalDateTime.now().minusDays(1),
+                    LocalDateTime.now().minusDays(1));
             existing.update("Updated Name", "Updated Description", true);
 
             CategoryEntity existingEntity = CategoryEntity.fromDomain(existing);
-            when(springDataRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-            when(springDataRepository.save(any(CategoryEntity.class))).thenReturn(existingEntity);
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.of(existingEntity));
+            when(springDataRepository.save(any(CategoryEntity.class)))
+                    .thenReturn(existingEntity);
 
             Category saved = repository.save(existing);
 
@@ -103,14 +107,15 @@ class JpaCategoryRepositoryTest {
         @Test
         void should_CreateNewEntity_When_IdIsNotNullButNotFound() {
             UUID id = UUID.randomUUID();
-            Category category = Category.reconstitute(
-                    id, "New Name", "New Description", true,
-                    LocalDateTime.now(), LocalDateTime.now()
-            );
+            Category category = Category.reconstitute(id, "New Name",
+                    "New Description", true, LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            when(springDataRepository.findById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.empty());
             CategoryEntity newEntity = CategoryEntity.fromDomain(category);
-            when(springDataRepository.save(any(CategoryEntity.class))).thenReturn(newEntity);
+            when(springDataRepository.save(any(CategoryEntity.class)))
+                    .thenReturn(newEntity);
 
             Category saved = repository.save(category);
 
@@ -130,11 +135,11 @@ class JpaCategoryRepositoryTest {
         void should_ReturnDomainObject_When_EntityFound() {
             UUID id = UUID.randomUUID();
             CategoryEntity entity = CategoryEntity.fromDomain(
-                    Category.reconstitute(id, "Electronics", "Electronic items", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    Category.reconstitute(id, "Electronics", "Electronic items",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
-            when(springDataRepository.findById(id)).thenReturn(Optional.of(entity));
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.of(entity));
 
             Optional<Category> result = repository.findById(id);
 
@@ -147,7 +152,8 @@ class JpaCategoryRepositoryTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.findById(id)).thenReturn(Optional.empty());
+            when(springDataRepository.findById(id))
+                    .thenReturn(Optional.empty());
 
             Optional<Category> result = repository.findById(id);
 
@@ -162,7 +168,8 @@ class JpaCategoryRepositoryTest {
 
         @Test
         void should_ReturnTrue_When_NameExists() {
-            when(springDataRepository.existsByName("Electronics")).thenReturn(true);
+            when(springDataRepository.existsByName("Electronics"))
+                    .thenReturn(true);
 
             boolean result = repository.existsByName("Electronics");
 
@@ -172,7 +179,8 @@ class JpaCategoryRepositoryTest {
 
         @Test
         void should_ReturnFalse_When_NameDoesNotExist() {
-            when(springDataRepository.existsByName("NonExistent")).thenReturn(false);
+            when(springDataRepository.existsByName("NonExistent"))
+                    .thenReturn(false);
 
             boolean result = repository.existsByName("NonExistent");
 
@@ -188,23 +196,27 @@ class JpaCategoryRepositoryTest {
         @Test
         void should_ReturnTrue_When_NameExistsForDifferentId() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.existsByNameAndIdNot("Electronics", id)).thenReturn(true);
+            when(springDataRepository.existsByNameAndIdNot("Electronics", id))
+                    .thenReturn(true);
 
             boolean result = repository.existsByNameAndIdNot("Electronics", id);
 
             assertTrue(result);
-            verify(springDataRepository).existsByNameAndIdNot("Electronics", id);
+            verify(springDataRepository).existsByNameAndIdNot("Electronics",
+                    id);
         }
 
         @Test
         void should_ReturnFalse_When_NameDoesNotExistForDifferentId() {
             UUID id = UUID.randomUUID();
-            when(springDataRepository.existsByNameAndIdNot("Electronics", id)).thenReturn(false);
+            when(springDataRepository.existsByNameAndIdNot("Electronics", id))
+                    .thenReturn(false);
 
             boolean result = repository.existsByNameAndIdNot("Electronics", id);
 
             assertFalse(result);
-            verify(springDataRepository).existsByNameAndIdNot("Electronics", id);
+            verify(springDataRepository).existsByNameAndIdNot("Electronics",
+                    id);
         }
     }
 
@@ -216,64 +228,61 @@ class JpaCategoryRepositoryTest {
         void should_ReturnPageResponse_When_EntitiesFound() {
             UUID id = UUID.randomUUID();
             CategoryEntity entity = CategoryEntity.fromDomain(
-                    Category.reconstitute(id, "Electronics", "Electronic items", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    Category.reconstitute(id, "Electronics", "Electronic items",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
             Page<CategoryEntity> entityPage = new PageImpl<>(List.of(entity));
-            when(springDataRepository.findAllWithFilters(
-                    anyString(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(anyString(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Category> result = repository.findAllWithFilters(
-                    "Electr", true, 0, 10, "name", "asc");
+            PageResponse<Category> result = repository
+                    .findAllWithFilters("Electr", true, 0, 10, "name", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
             assertEquals("Electronics", result.content().get(0).getName());
-            assertEquals("Electronic items", result.content().get(0).getDescription());
-            verify(springDataRepository).findAllWithFilters(eq("Electr"), eq(true), any(PageRequest.class));
+            assertEquals("Electronic items",
+                    result.content().get(0).getDescription());
+            verify(springDataRepository).findAllWithFilters(eq("Electr"),
+                    eq(true), any(PageRequest.class));
         }
 
         @Test
         void should_ReturnEmptyPageResponse_When_NoEntities() {
             Page<CategoryEntity> entityPage = new PageImpl<>(List.of());
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(any(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Category> result = repository.findAllWithFilters(
-                    null, null, 0, 10, "name", "asc");
+            PageResponse<Category> result = repository.findAllWithFilters(null,
+                    null, 0, 10, "name", "asc");
 
             assertNotNull(result);
             assertTrue(result.empty());
             assertEquals(0, result.totalElements());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllWithFilters(
-                    isNull(), isNull(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(isNull(), isNull(),
+                    any(PageRequest.class));
         }
 
         @Test
         void should_DefaultToNameSort_When_InvalidOrderBy() {
             UUID id = UUID.randomUUID();
             CategoryEntity entity = CategoryEntity.fromDomain(
-                    Category.reconstitute(id, "Electronics", "Electronic items", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    Category.reconstitute(id, "Electronics", "Electronic items",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
             Page<CategoryEntity> entityPage = new PageImpl<>(List.of(entity));
-            when(springDataRepository.findAllWithFilters(
-                    anyString(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(anyString(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
             PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "invalidField", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(springDataRepository).findAllWithFilters(
-                    eq("Electr"), eq(true), pageRequestCaptor.capture());
+            verify(springDataRepository).findAllWithFilters(eq("Electr"),
+                    eq(true), pageRequestCaptor.capture());
             PageRequest captured = pageRequestCaptor.getValue();
             assertEquals(Sort.by("name").ascending(), captured.getSort());
         }
@@ -282,22 +291,20 @@ class JpaCategoryRepositoryTest {
         void should_UseDescendingSort_When_DescOrderDir() {
             UUID id = UUID.randomUUID();
             CategoryEntity entity = CategoryEntity.fromDomain(
-                    Category.reconstitute(id, "Electronics", "Electronic items", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    Category.reconstitute(id, "Electronics", "Electronic items",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
             Page<CategoryEntity> entityPage = new PageImpl<>(List.of(entity));
-            when(springDataRepository.findAllWithFilters(
-                    anyString(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(anyString(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
-            PageResponse<Category> result = repository.findAllWithFilters(
-                    "Electr", true, 0, 10, "name", "desc");
+            PageResponse<Category> result = repository
+                    .findAllWithFilters("Electr", true, 0, 10, "name", "desc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(springDataRepository).findAllWithFilters(
-                    eq("Electr"), eq(true), pageRequestCaptor.capture());
+            verify(springDataRepository).findAllWithFilters(eq("Electr"),
+                    eq(true), pageRequestCaptor.capture());
             PageRequest captured = pageRequestCaptor.getValue();
             assertEquals(Sort.by("name").descending(), captured.getSort());
         }
@@ -306,22 +313,20 @@ class JpaCategoryRepositoryTest {
         void should_SortByCreatedAt() {
             UUID id = UUID.randomUUID();
             CategoryEntity entity = CategoryEntity.fromDomain(
-                    Category.reconstitute(id, "Electronics", "Electronic items", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    Category.reconstitute(id, "Electronics", "Electronic items",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
             Page<CategoryEntity> entityPage = new PageImpl<>(List.of(entity));
-            when(springDataRepository.findAllWithFilters(
-                    anyString(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(anyString(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
             PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "createdAt", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(springDataRepository).findAllWithFilters(
-                    eq("Electr"), eq(true), pageRequestCaptor.capture());
+            verify(springDataRepository).findAllWithFilters(eq("Electr"),
+                    eq(true), pageRequestCaptor.capture());
             PageRequest captured = pageRequestCaptor.getValue();
             assertEquals(Sort.by("createdAt").ascending(), captured.getSort());
         }
@@ -330,22 +335,20 @@ class JpaCategoryRepositoryTest {
         void should_SortByUpdatedAt() {
             UUID id = UUID.randomUUID();
             CategoryEntity entity = CategoryEntity.fromDomain(
-                    Category.reconstitute(id, "Electronics", "Electronic items", true,
-                            LocalDateTime.now(), LocalDateTime.now())
-            );
+                    Category.reconstitute(id, "Electronics", "Electronic items",
+                            true, LocalDateTime.now(), LocalDateTime.now()));
 
             Page<CategoryEntity> entityPage = new PageImpl<>(List.of(entity));
-            when(springDataRepository.findAllWithFilters(
-                    anyString(), any(), any(PageRequest.class)))
-                    .thenReturn(entityPage);
+            when(springDataRepository.findAllWithFilters(anyString(), any(),
+                    any(PageRequest.class))).thenReturn(entityPage);
 
             PageResponse<Category> result = repository.findAllWithFilters(
                     "Electr", true, 0, 10, "updatedAt", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(springDataRepository).findAllWithFilters(
-                    eq("Electr"), eq(true), pageRequestCaptor.capture());
+            verify(springDataRepository).findAllWithFilters(eq("Electr"),
+                    eq(true), pageRequestCaptor.capture());
             PageRequest captured = pageRequestCaptor.getValue();
             assertEquals(Sort.by("updatedAt").ascending(), captured.getSort());
         }

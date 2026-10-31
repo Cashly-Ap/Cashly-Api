@@ -18,8 +18,10 @@ public class LogoutUserUseCase {
 
     @Transactional
     public void execute(LogoutRequest request) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.refreshToken())
-            .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(request.refreshToken())
+                .orElseThrow(() -> new InvalidTokenException(
+                        "Invalid refresh token"));
 
         refreshToken.revoke();
         refreshTokenRepository.save(refreshToken);

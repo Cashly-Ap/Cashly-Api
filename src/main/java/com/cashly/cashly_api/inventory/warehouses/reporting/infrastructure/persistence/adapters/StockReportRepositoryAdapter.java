@@ -13,30 +13,27 @@ public class StockReportRepositoryAdapter implements StockReportRepositoryPort {
 
     private final StockReportJpaRepository jpaRepository;
 
-    public StockReportRepositoryAdapter(StockReportJpaRepository jpaRepository) {
+    public StockReportRepositoryAdapter(
+            StockReportJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
     @Override
     public List<StockReportResponse> findAllForPdf(StockPdfQuery query) {
         List<StockReportProjection> projections = jpaRepository.findAllForPdf(
-                query.warehouseId() != null ? query.warehouseId().toString() : null,
-                query.categoryId() != null ? query.categoryId().toString() : null,
-                query.withStock(),
-                query.lowStock()
-        );
+                query.warehouseId() != null
+                        ? query.warehouseId().toString()
+                        : null,
+                query.categoryId() != null
+                        ? query.categoryId().toString()
+                        : null,
+                query.withStock(), query.lowStock());
         return projections.stream().map(this::toResponse).toList();
     }
 
     private StockReportResponse toResponse(StockReportProjection p) {
         String status = p.getQuantity() == 0 ? "OUT_OF_STOCK" : "IN_STOCK";
-        return new StockReportResponse(
-                p.getWarehouseName(),
-                p.getProductName(),
-                p.getSku(),
-                p.getCategoryName(),
-                p.getQuantity(),
-                status
-        );
+        return new StockReportResponse(p.getWarehouseName(), p.getProductName(),
+                p.getSku(), p.getCategoryName(), p.getQuantity(), status);
     }
 }

@@ -12,6 +12,7 @@ class PageResponseBoundaryTest {
         assertThat(Arrays.stream(PageResponse.class.getDeclaredMethods())
                 .flatMap(method -> Arrays.stream(method.getParameterTypes()))
                 .map(Class::getPackageName))
-                .noneMatch(packageName -> packageName.startsWith("org.springframework"));
+                .noneMatch(packageName -> packageName
+                        .startsWith("org.springframework"));
     }
 }

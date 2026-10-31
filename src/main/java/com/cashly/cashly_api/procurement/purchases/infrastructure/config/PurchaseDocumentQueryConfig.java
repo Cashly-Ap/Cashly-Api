@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PurchaseDocumentQueryConfig {
     @Bean
-    public PurchaseDocumentQuery purchaseDocumentQuery(PurchaseRepository repository, ListPurchasesUseCase listQuery) {
+    public PurchaseDocumentQuery purchaseDocumentQuery(
+            PurchaseRepository repository, ListPurchasesUseCase listQuery) {
         return new PurchaseDocumentQueryService(repository, listQuery);
     }
 }

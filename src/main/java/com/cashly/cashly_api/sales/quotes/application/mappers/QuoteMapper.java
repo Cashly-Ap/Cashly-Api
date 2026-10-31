@@ -15,23 +15,17 @@ import java.util.UUID;
 
 public class QuoteMapper {
 
-    private QuoteMapper() {}
+    private QuoteMapper() {
+    }
 
     public static QuoteListResponse toListResponse(Quote quote) {
-        return new QuoteListResponse(
-                quote.getId(),
-                quote.getQuoteNumber().value(),
-                quote.getCustomerId(),
-                quote.getCustomerName(),
-                quote.getCustomerRif(),
-                quote.getStatus().name(),
-                quote.getExpiryDate(),
-                quote.getSubtotal(),
-                quote.getCreatedBy(),
-                quote.getCreatedByName(),
-                quote.getCreatedAt(),
-                quote.getUpdatedAt()
-        );
+        return new QuoteListResponse(quote.getId(),
+                quote.getQuoteNumber().value(), quote.getCustomerId(),
+                quote.getCustomerName(), quote.getCustomerRif(),
+                quote.getStatus().name(), quote.getExpiryDate(),
+                quote.getSubtotal(), quote.getCreatedBy(),
+                quote.getCreatedByName(), quote.getCreatedAt(),
+                quote.getUpdatedAt());
     }
 
     public static QuoteDetailResponse toDetailResponse(Quote quote) {
@@ -39,62 +33,50 @@ public class QuoteMapper {
     }
 
     public static QuoteDetailResponse toDetailResponse(Quote quote,
-                                                        Map<UUID, List<WarehouseStockInfo>> stockByProduct) {
+            Map<UUID, List<WarehouseStockInfo>> stockByProduct) {
         List<QuoteLineDetailResponse> lineResponses = quote.getLines().stream()
-                .map(line -> toLineDetailResponse(line, stockByProduct.get(line.getProductId())))
+                .map(line -> toLineDetailResponse(line,
+                        stockByProduct.get(line.getProductId())))
                 .toList();
 
-        return new QuoteDetailResponse(
-                quote.getId(),
-                quote.getQuoteNumber().value(),
-                quote.getCustomerId(),
-                quote.getCustomerName(),
-                quote.getCustomerRif(),
-                quote.getCreatedBy(),
-                quote.getCreatedByName(),
-                quote.getStatus().name(),
-                quote.getExpiryDate(),
-                quote.getNotes(),
-                quote.getSubtotal(),
-                quote.getOrderId(),
-                quote.getOrderNumber(),
-                quote.getInvoiceId(),
-                quote.getInvoiceNumber(),
-                quote.getCancelledAt(),
-                quote.getCancelledReason(),
-                quote.getCreatedAt(),
-                quote.getUpdatedAt(),
-                lineResponses
-        );
+        return new QuoteDetailResponse(quote.getId(),
+                quote.getQuoteNumber().value(), quote.getCustomerId(),
+                quote.getCustomerName(), quote.getCustomerRif(),
+                quote.getCreatedBy(), quote.getCreatedByName(),
+                quote.getStatus().name(), quote.getExpiryDate(),
+                quote.getNotes(), quote.getSubtotal(), quote.getOrderId(),
+                quote.getOrderNumber(), quote.getInvoiceId(),
+                quote.getInvoiceNumber(), quote.getCancelledAt(),
+                quote.getCancelledReason(), quote.getCreatedAt(),
+                quote.getUpdatedAt(), lineResponses);
     }
 
-    private static QuoteLineDetailResponse toLineDetailResponse(QuoteLine line, List<WarehouseStockInfo> stockInfo) {
-        List<QuoteAllocationDetailResponse> allocationResponses = line.getAllocations().stream()
-                .map(QuoteMapper::toAllocationDetailResponse)
-                .toList();
+    private static QuoteLineDetailResponse toLineDetailResponse(QuoteLine line,
+            List<WarehouseStockInfo> stockInfo) {
+        List<QuoteAllocationDetailResponse> allocationResponses = line
+                .getAllocations().stream()
+                .map(QuoteMapper::toAllocationDetailResponse).toList();
         List<WarehouseStockInfoResponse> warehouseStocks = stockInfo != null
                 ? stockInfo.stream()
-                        .map(si -> new WarehouseStockInfoResponse(si.warehouseId(), si.warehouseName(), si.available()))
+                        .map(si -> new WarehouseStockInfoResponse(
+                                si.warehouseId(), si.warehouseName(),
+                                si.available()))
                         .toList()
                 : List.of();
-        return new QuoteLineDetailResponse(
-                line.getId().value(),
-                line.getProductId(),
-                line.getProductName(),
-                line.getProductCode(),
-                line.getQuantity(),
-                line.getUnitPrice(),
-                line.getLineTotal(),
-                allocationResponses,
-                warehouseStocks
-        );
+        return new QuoteLineDetailResponse(line.getId().value(),
+                line.getProductId(), line.getProductName(),
+                line.getProductCode(), line.getQuantity(), line.getUnitPrice(),
+                line.getLineTotal(), allocationResponses, warehouseStocks);
     }
 
-    private static QuoteAllocationDetailResponse toAllocationDetailResponse(QuoteAllocation allocation) {
-        return new QuoteAllocationDetailResponse(
-                allocation.getId().value(), allocation.getWarehouseId(), allocation.getWarehouseName(),
+    private static QuoteAllocationDetailResponse toAllocationDetailResponse(
+            QuoteAllocation allocation) {
+        return new QuoteAllocationDetailResponse(allocation.getId().value(),
+                allocation.getWarehouseId(), allocation.getWarehouseName(),
                 allocation.getAllocatedQuantity());
     }
 
-    public record WarehouseStockInfo(UUID warehouseId, String warehouseName, int available) {}
+    public record WarehouseStockInfo(UUID warehouseId, String warehouseName,
+            int available) {
+    }
 }

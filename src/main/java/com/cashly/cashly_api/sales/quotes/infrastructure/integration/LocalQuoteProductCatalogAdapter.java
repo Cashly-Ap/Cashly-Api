@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-public class LocalQuoteProductCatalogAdapter implements QuoteProductCatalogGateway {
+public class LocalQuoteProductCatalogAdapter
+        implements
+            QuoteProductCatalogGateway {
     private final SalesProductCatalogQuery products;
 
     public LocalQuoteProductCatalogAdapter(SalesProductCatalogQuery products) {
@@ -18,8 +20,9 @@ public class LocalQuoteProductCatalogAdapter implements QuoteProductCatalogGatew
 
     @Override
     public java.util.Optional<ProductReference> findProduct(UUID productId) {
-        return products.findProduct(productId).map(product -> new ProductReference(product.id(), product.code(),
-                product.name(), product.categoryId()));
+        return products.findProduct(productId)
+                .map(product -> new ProductReference(product.id(),
+                        product.code(), product.name(), product.categoryId()));
     }
 
     @Override
@@ -28,13 +31,20 @@ public class LocalQuoteProductCatalogAdapter implements QuoteProductCatalogGatew
     }
 
     @Override
-    public PageResponse<ProductEntry> findForCustomer(UUID customerId, String search, UUID categoryId,
-                                                       Boolean composite, int page, int size) {
-        var result = products.findForTransaction(customerId, search, categoryId, composite, null, page, size);
-        var content = result.content().stream().map(product -> new ProductEntry(product.id(), product.code(),
-                product.name(), product.categoryId(), product.categoryName(), product.composite(), product.active(),
-                product.photo(), product.customerPrice())).toList();
-        return new PageResponse<>(content, result.totalElements(), result.totalPages(), result.size(),
-                result.number(), result.first(), result.last(), result.empty());
+    public PageResponse<ProductEntry> findForCustomer(UUID customerId,
+            String search, UUID categoryId, Boolean composite, int page,
+            int size) {
+        var result = products.findForTransaction(customerId, search, categoryId,
+                composite, null, page, size);
+        var content = result.content().stream()
+                .map(product -> new ProductEntry(product.id(), product.code(),
+                        product.name(), product.categoryId(),
+                        product.categoryName(), product.composite(),
+                        product.active(), product.photo(),
+                        product.customerPrice()))
+                .toList();
+        return new PageResponse<>(content, result.totalElements(),
+                result.totalPages(), result.size(), result.number(),
+                result.first(), result.last(), result.empty());
     }
 }

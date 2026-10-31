@@ -11,12 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class OrderWarehouseReassignmentRemovalTest {
     @Test
-    void should_not_expose_standalone_warehouse_reassignment() throws Exception {
-        var mvc = MockMvcBuilders.standaloneSetup(new OrderController(null, null, null, null, null, null, null, null)).build();
+    void should_not_expose_standalone_warehouse_reassignment()
+            throws Exception {
+        var mvc = MockMvcBuilders.standaloneSetup(new OrderController(null,
+                null, null, null, null, null, null, null)).build();
 
         mvc.perform(put("/api/orders/" + UUID.randomUUID() + "/allocations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"lines\":[]}"))
-                .andExpect(status().isNotFound());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"lines\":[]}")).andExpect(status().isNotFound());
     }
 }

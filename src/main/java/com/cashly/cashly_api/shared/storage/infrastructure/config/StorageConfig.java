@@ -35,7 +35,8 @@ public class StorageConfig {
     @Bean
     public FileStorageService fileStorageService() {
         if ("s3".equalsIgnoreCase(storageType)) {
-            return new S3FileStorageService(s3Endpoint, s3AccessKey, s3SecretKey, s3Bucket, s3Region);
+            return new S3FileStorageService(s3Endpoint, s3AccessKey,
+                    s3SecretKey, s3Bucket, s3Region);
         }
         return new LocalFileStorageService(localPath);
     }

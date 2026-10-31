@@ -4,7 +4,6 @@ import com.cashly.cashly_api.procurement.purchases.reporting.application.dto.mod
 
 import java.util.List;
 
-
 public interface PurchasesReportPdfPort {
     byte[] generatePdf(List<PurchaseReportRow> purchases, String mode);
 }

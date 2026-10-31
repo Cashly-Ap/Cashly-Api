@@ -4,7 +4,6 @@ import com.cashly.cashly_api.sales.quotes.reporting.application.dto.model.QuoteR
 
 import java.util.List;
 
-
 public interface QuotesReportPdfPort {
     byte[] generatePdf(List<QuoteReportRow> quotes, String mode);
 }

@@ -35,11 +35,12 @@ public class StockReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) Boolean withStock,
             @RequestParam(required = false) Boolean lowStock) {
-        StockPdfQuery query = new StockPdfQuery(warehouseId, categoryId, withStock, lowStock);
+        StockPdfQuery query = new StockPdfQuery(warehouseId, categoryId,
+                withStock, lowStock);
         byte[] pdf = generateStockPdfUseCase.execute(query);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stock-almacenes.pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"stock-almacenes.pdf\"")
                 .body(pdf);
     }
 
@@ -50,11 +51,13 @@ public class StockReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) Boolean withStock,
             @RequestParam(required = false) Boolean lowStock) {
-        StockPdfQuery query = new StockPdfQuery(warehouseId, categoryId, withStock, lowStock);
+        StockPdfQuery query = new StockPdfQuery(warehouseId, categoryId,
+                withStock, lowStock);
         byte[] excel = generateStockExcelUseCase.execute(query);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stock-almacenes.xlsx\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"stock-almacenes.xlsx\"")
                 .body(excel);
     }
 }

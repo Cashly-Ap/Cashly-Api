@@ -16,7 +16,8 @@ class InvoiceLineAllocationUnitTest {
         UUID warehouseId = UUID.randomUUID();
         BigDecimal allocated = BigDecimal.valueOf(10);
 
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, allocated);
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(warehouseId, allocated);
 
         assertNotNull(allocation.getId());
         assertEquals(warehouseId, allocation.getWarehouseId());
@@ -27,8 +28,10 @@ class InvoiceLineAllocationUnitTest {
     void should_GenerateUniqueId_When_Created() {
         UUID warehouseId = UUID.randomUUID();
 
-        InvoiceLineAllocation first = InvoiceLineAllocation.create(warehouseId, BigDecimal.ONE);
-        InvoiceLineAllocation second = InvoiceLineAllocation.create(warehouseId, BigDecimal.ONE);
+        InvoiceLineAllocation first = InvoiceLineAllocation.create(warehouseId,
+                BigDecimal.ONE);
+        InvoiceLineAllocation second = InvoiceLineAllocation.create(warehouseId,
+                BigDecimal.ONE);
 
         assertNotEquals(first.getId(), second.getId());
     }
@@ -39,7 +42,8 @@ class InvoiceLineAllocationUnitTest {
         UUID warehouseId = UUID.randomUUID();
         BigDecimal allocated = BigDecimal.valueOf(5);
 
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.reconstitute(id, warehouseId, allocated);
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .reconstitute(id, warehouseId, allocated);
 
         assertEquals(id, allocation.getId());
         assertEquals(warehouseId, allocation.getWarehouseId());
@@ -50,29 +54,33 @@ class InvoiceLineAllocationUnitTest {
     void should_PreserveId_When_Reconstituted() {
         UUID specificId = UUID.randomUUID();
 
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.reconstitute(specificId, UUID.randomUUID(), BigDecimal.ONE);
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .reconstitute(specificId, UUID.randomUUID(), BigDecimal.ONE);
 
         assertEquals(specificId, allocation.getId());
     }
 
     @Test
     void should_AllowZeroAllocated() {
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(UUID.randomUUID(), BigDecimal.ZERO);
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(UUID.randomUUID(), BigDecimal.ZERO);
 
         assertEquals(BigDecimal.ZERO, allocation.getAllocated());
     }
 
     @Test
     void should_AllowNullId_When_Reconstituted() {
-        
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.reconstitute(null, UUID.randomUUID(), BigDecimal.ONE);
+
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .reconstitute(null, UUID.randomUUID(), BigDecimal.ONE);
 
         assertNull(allocation.getId());
     }
 
     @Test
     void should_AllowNullWarehouseId() {
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(null, BigDecimal.ONE);
+        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(null,
+                BigDecimal.ONE);
 
         assertNull(allocation.getWarehouseId());
     }

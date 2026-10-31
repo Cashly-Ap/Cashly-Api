@@ -43,17 +43,20 @@ class InvoiceNumberUnitTest {
 
     @Test
     void should_ThrowException_When_BlankValueProvided() {
-        assertThrows(IllegalArgumentException.class, () -> new InvoiceNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new InvoiceNumber("   "));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> InvoiceNumber.of(2026, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> InvoiceNumber.of(2026, 0));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> InvoiceNumber.of(2026, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> InvoiceNumber.of(2026, -1));
     }
 
     @Test

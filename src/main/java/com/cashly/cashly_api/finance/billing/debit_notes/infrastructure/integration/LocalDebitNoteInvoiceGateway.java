@@ -24,8 +24,9 @@ public class LocalDebitNoteInvoiceGateway implements DebitNoteInvoiceGateway {
 
     @Override
     public Map<UUID, InvoiceContext> findAll(Set<UUID> invoiceIds) {
-        return invoices.findAll(invoiceIds).entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey, entry -> map(entry.getValue())));
+        return invoices.findAll(invoiceIds).entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> map(entry.getValue())));
     }
 
     @Override
@@ -34,7 +35,8 @@ public class LocalDebitNoteInvoiceGateway implements DebitNoteInvoiceGateway {
     }
 
     private InvoiceContext map(InvoiceNoteApi.Context context) {
-        return new InvoiceContext(context.id(), context.number(), context.status(), context.statusLabel(),
-                context.customerName(), context.customerRif());
+        return new InvoiceContext(context.id(), context.number(),
+                context.status(), context.statusLabel(), context.customerName(),
+                context.customerRif());
     }
 }

@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public interface CustomerCreditGateway {
     CreditLimits getCreditLimits(UUID customerId);
-    record CreditLimits(BigDecimal creditLimit, BigDecimal availableCredit) {}
+    record CreditLimits(BigDecimal creditLimit, BigDecimal availableCredit) {
+    }
 }

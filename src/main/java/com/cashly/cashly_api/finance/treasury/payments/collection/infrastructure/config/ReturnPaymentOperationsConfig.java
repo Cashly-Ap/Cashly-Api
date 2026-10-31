@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ReturnPaymentOperationsConfig {
     @Bean
-    public ReturnPaymentOperations returnPaymentOperations(PaymentRepository payments, PaymentAllocationRepository allocations, PaymentAllocationService service) {
-        return new ReturnPaymentOperationsService(payments, allocations, service);
+    public ReturnPaymentOperations returnPaymentOperations(
+            PaymentRepository payments, PaymentAllocationRepository allocations,
+            PaymentAllocationService service) {
+        return new ReturnPaymentOperationsService(payments, allocations,
+                service);
     }
 }

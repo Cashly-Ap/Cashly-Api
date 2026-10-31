@@ -26,7 +26,7 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     private final InvoiceNumberSequenceJpaRepository sequenceJpaRepository;
 
     public InvoiceRepositoryAdapter(InvoiceJpaRepository jpaRepository,
-                                     InvoiceNumberSequenceJpaRepository sequenceJpaRepository) {
+            InvoiceNumberSequenceJpaRepository sequenceJpaRepository) {
         this.jpaRepository = jpaRepository;
         this.sequenceJpaRepository = sequenceJpaRepository;
     }
@@ -49,8 +49,7 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     public List<Invoice> findAllById(Collection<InvoiceId> ids) {
         List<UUID> uuidIds = ids.stream().map(InvoiceId::value).toList();
         return jpaRepository.findAllById(uuidIds).stream()
-                .map(InvoiceJpaMapper::toDomain)
-                .toList();
+                .map(InvoiceJpaMapper::toDomain).toList();
     }
 
     @Override
@@ -59,42 +58,49 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     }
 
     @Override
-    public List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                             UUID customerId, List<String> statuses,
-                                             List<String> returnStatus,
-                                             String dueStatus,
-                                             UUID productId, UUID categoryId,
-                                             String orderBy, String orderDir) {
+    public List<Invoice> findAllWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, List<String> statuses,
+            List<String> returnStatus, String dueStatus, UUID productId,
+            UUID categoryId, String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId, statuses, returnStatus, dueStatus, productId, categoryId);
+        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from,
+                to, customerId, statuses, returnStatus, dueStatus, productId,
+                categoryId);
 
         return sortAndMap(entities, orderBy, orderDir);
     }
 
-    public List<Invoice> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                             UUID customerId, List<String> statuses,
-                                             List<String> returnStatus,
-                                             UUID productId, UUID categoryId,
-                                             String orderBy, String orderDir) {
+    public List<Invoice> findAllWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, List<String> statuses,
+            List<String> returnStatus, UUID productId, UUID categoryId,
+            String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
-        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(
-                from, to, customerId, statuses, returnStatus, productId, categoryId);
+        List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from,
+                to, customerId, statuses, returnStatus, productId, categoryId);
         return sortAndMap(entities, orderBy, orderDir);
     }
 
-    private List<Invoice> sortAndMap(List<InvoiceEntity> entities, String orderBy, String orderDir) {
+    private List<Invoice> sortAndMap(List<InvoiceEntity> entities,
+            String orderBy, String orderDir) {
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<InvoiceEntity> comparator = switch (orderBy) {
             case null -> Comparator.comparing(InvoiceEntity::getCreatedAt);
-            case "invoiceNumber" -> Comparator.comparing(InvoiceEntity::getInvoiceNumber);
-            case "customerName" -> Comparator.comparing(InvoiceEntity::getCustomerName);
+            case "invoiceNumber" ->
+                Comparator.comparing(InvoiceEntity::getInvoiceNumber);
+            case "customerName" ->
+                Comparator.comparing(InvoiceEntity::getCustomerName);
             case "status" -> Comparator.comparing(InvoiceEntity::getStatus);
             case "subtotal" -> Comparator.comparing(InvoiceEntity::getSubtotal);
-            case "total" -> Comparator.comparing((InvoiceEntity e) -> e.getSubtotal().subtract(e.getReturnedTotal() != null ? e.getReturnedTotal() : java.math.BigDecimal.ZERO));
-            case "paymentType" -> Comparator.comparing(InvoiceEntity::getPaymentType);
+            case "total" ->
+                Comparator.comparing((InvoiceEntity e) -> e.getSubtotal()
+                        .subtract(e.getReturnedTotal() != null
+                                ? e.getReturnedTotal()
+                                : java.math.BigDecimal.ZERO));
+            case "paymentType" ->
+                Comparator.comparing(InvoiceEntity::getPaymentType);
             default -> Comparator.comparing(InvoiceEntity::getCreatedAt);
         };
 
@@ -102,16 +108,14 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
             comparator = comparator.reversed();
         }
 
-        return entities.stream()
-                .sorted(comparator)
-                .map(InvoiceJpaMapper::toDomain)
-                .toList();
+        return entities.stream().sorted(comparator)
+                .map(InvoiceJpaMapper::toDomain).toList();
     }
 
     @Override
     public int getNextSequenceForYear(int year) {
-        InvoiceNumberSequenceEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
-                .orElseGet(() -> {
+        InvoiceNumberSequenceEntity sequence = sequenceJpaRepository
+                .findByYearForUpdate(year).orElseGet(() -> {
                     InvoiceNumberSequenceEntity newSeq = new InvoiceNumberSequenceEntity();
                     newSeq.setYear(year);
                     newSeq.setNextValue(0);

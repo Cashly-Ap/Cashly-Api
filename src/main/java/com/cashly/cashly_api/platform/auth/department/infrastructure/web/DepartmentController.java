@@ -39,13 +39,15 @@ public class DepartmentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('DEPARTMENTS:CREATE')")
-    public Department create(@RequestBody ManageDepartmentsUseCase.Request request) {
+    public Department create(
+            @RequestBody ManageDepartmentsUseCase.Request request) {
         return useCase.save(null, request);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('DEPARTMENTS:UPDATE')")
-    public Department update(@PathVariable UUID id, @RequestBody ManageDepartmentsUseCase.Request request) {
+    public Department update(@PathVariable UUID id,
+            @RequestBody ManageDepartmentsUseCase.Request request) {
         return useCase.save(id, request);
     }
 

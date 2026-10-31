@@ -47,17 +47,17 @@ class GetCustomerUseCaseTest {
     void shouldReturnCustomerDetailWhenFound() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
         when(mapper.toDetailResponse(customer, true)).thenReturn(
-                new CustomerDetailResponse(
-                        customer.getId().toString(), 1001L, "Test Corp", "BUSINESS",
-                        "J-12345678-9", "Test", 30, java.math.BigDecimal.ZERO, true,
+                new CustomerDetailResponse(customer.getId().toString(), 1001L,
+                        "Test Corp", "BUSINESS", "J-12345678-9", "Test", 30,
+                        java.math.BigDecimal.ZERO, true,
                         customer.getPaymentType(), customer.getCreatedAt(),
-                        List.of(), List.of(), List.of(), null, null, true
-                )
-        );
+                        List.of(), List.of(), List.of(), null, null, true));
 
-        CustomerDetailResponse response = useCase.execute(customerId.toString());
+        CustomerDetailResponse response = useCase
+                .execute(customerId.toString());
 
         assertNotNull(response);
         assertEquals(customerId.toString(), response.id());
@@ -70,7 +70,8 @@ class GetCustomerUseCaseTest {
     @Test
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.empty());
 
         assertThrows(CustomerNotFoundException.class,
                 () -> useCase.execute(customerId.toString()));

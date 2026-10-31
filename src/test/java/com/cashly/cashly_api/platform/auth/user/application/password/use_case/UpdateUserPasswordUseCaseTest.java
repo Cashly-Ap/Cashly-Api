@@ -52,23 +52,25 @@ class UpdateUserPasswordUseCaseTest {
     void setUp() {
         UUID uuid = UUID.randomUUID();
         userId = uuid.toString();
-        testUser = new User(
-            new UserId(uuid),
-            new Email("test@example.com"),
-            new UserName("Test User"),
-            Password.fromHash("$2a$10$oldHashedPassword")
-        );
+        testUser = new User(new UserId(uuid), new Email("test@example.com"),
+                new UserName("Test User"),
+                Password.fromHash("$2a$10$oldHashedPassword"));
     }
 
     @Test
     @DisplayName("should_UpdatePassword_When_UserExists")
     void should_UpdatePassword_When_UserExists() {
-        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("OldPass123!", "NewSecurePass123!");
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest(
+                "OldPass123!", "NewSecurePass123!");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("OldPass123!", "$2a$10$oldHashedPassword")).thenReturn(true);
-        when(passwordEncoder.encode("NewSecurePass123!")).thenReturn("$2a$10$newHashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("OldPass123!", "$2a$10$oldHashedPassword"))
+                .thenReturn(true);
+        when(passwordEncoder.encode("NewSecurePass123!"))
+                .thenReturn("$2a$10$newHashedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = useCase.execute(userId, request);
 
@@ -80,14 +82,15 @@ class UpdateUserPasswordUseCaseTest {
     @Test
     @DisplayName("should_ThrowUserNotFoundException_When_UserDoesNotExist")
     void should_ThrowUserNotFoundException_When_UserDoesNotExist() {
-        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("OldPass123!", "NewSecurePass123!");
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest(
+                "OldPass123!", "NewSecurePass123!");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
-            UserNotFoundException.class,
-            () -> useCase.execute(userId, request)
-        );
+                UserNotFoundException.class,
+                () -> useCase.execute(userId, request));
 
         assertTrue(exception.getMessage().contains("User not found"));
         verify(userRepository).findById(any(UserId.class));
@@ -98,12 +101,17 @@ class UpdateUserPasswordUseCaseTest {
     @Test
     @DisplayName("should_EncodePassword_When_UpdatingPassword")
     void should_EncodePassword_When_UpdatingPassword() {
-        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest("OldPass123!", "NewSecurePass123!");
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest(
+                "OldPass123!", "NewSecurePass123!");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("OldPass123!", "$2a$10$oldHashedPassword")).thenReturn(true);
-        when(passwordEncoder.encode("NewSecurePass123!")).thenReturn("$2a$10$encodedHash");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("OldPass123!", "$2a$10$oldHashedPassword"))
+                .thenReturn(true);
+        when(passwordEncoder.encode("NewSecurePass123!"))
+                .thenReturn("$2a$10$encodedHash");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(userId, request);
 
@@ -113,7 +121,8 @@ class UpdateUserPasswordUseCaseTest {
     void selfServiceRequiresCurrentPasswordBeforeChangingCredentials() {
         var request = new UpdateUserPasswordRequest(null, "NewSecurePass123!");
 
-        assertThrows(com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
+        assertThrows(
+                com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
                 () -> useCase.executeSelf(userId, request));
 
         verify(access).authorizeAccountMutation(UUID.fromString(userId), true);
@@ -122,11 +131,15 @@ class UpdateUserPasswordUseCaseTest {
 
     @Test
     void selfServiceRejectsIncorrectCurrentPassword() {
-        var request = new UpdateUserPasswordRequest("IncorrectPass123!", "NewSecurePass123!");
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("IncorrectPass123!", "$2a$10$oldHashedPassword")).thenReturn(false);
+        var request = new UpdateUserPasswordRequest("IncorrectPass123!",
+                "NewSecurePass123!");
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("IncorrectPass123!",
+                "$2a$10$oldHashedPassword")).thenReturn(false);
 
-        assertThrows(com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
+        assertThrows(
+                com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
                 () -> useCase.executeSelf(userId, request));
 
         verify(userRepository, never()).save(any());

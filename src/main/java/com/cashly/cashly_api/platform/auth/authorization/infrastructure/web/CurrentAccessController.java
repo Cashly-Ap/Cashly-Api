@@ -7,12 +7,13 @@ import com.cashly.cashly_api.platform.auth.authorization.application.services.Ac
 
 @RestController
 @RequestMapping("/api/auth/access")
-public class CurrentAccessController  {
+public class CurrentAccessController {
     private final AccessService access;
-    public CurrentAccessController(AccessService access)  {
-        this.access=access;
+    public CurrentAccessController(AccessService access) {
+        this.access = access;
     }
-    @GetMapping public AccessService.CurrentAccess current()  {
+    @GetMapping
+    public AccessService.CurrentAccess current() {
         return access.current();
     }
 }

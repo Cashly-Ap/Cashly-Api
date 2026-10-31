@@ -27,7 +27,8 @@ class UserUnitTest {
 
     @Test
     void should_CreateUser_When_ValidParametersProvided() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         assertNotNull(user);
         assertEquals(userId, user.getId());
@@ -42,42 +43,39 @@ class UserUnitTest {
     @Test
     void should_ThrowException_When_NullUserIdProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new User(null, email, new UserName("Test User"), password)
-        );
+                IllegalArgumentException.class, () -> new User(null, email,
+                        new UserName("Test User"), password));
         assertEquals("User ID cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_NullEmailProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new User(userId, null, new UserName("Test User"), password)
-        );
+                IllegalArgumentException.class, () -> new User(userId, null,
+                        new UserName("Test User"), password));
         assertEquals("Email cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_NullUserNameProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new User(userId, email, null, password)
-        );
+                IllegalArgumentException.class,
+                () -> new User(userId, email, null, password));
         assertEquals("User name cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_NullPasswordProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new User(userId, email, new UserName("Test User"), null)
-        );
+                IllegalArgumentException.class,
+                () -> new User(userId, email, new UserName("Test User"), null));
         assertEquals("Password cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ChangePassword_When_NewPasswordProvided() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
         Password newPassword = Password.fromHash("$2a$12$newHashedPassword");
 
         user.changePassword(newPassword);
@@ -87,18 +85,19 @@ class UserUnitTest {
 
     @Test
     void should_ThrowException_When_NullPasswordProvidedForChange() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> user.changePassword(null)
-        );
+                IllegalArgumentException.class,
+                () -> user.changePassword(null));
         assertEquals("New password cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ActivateUser_When_ActivateMethodCalled() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
         user.deactivate();
 
         user.activate();
@@ -108,7 +107,8 @@ class UserUnitTest {
 
     @Test
     void should_DeactivateUser_When_DeactivateMethodCalled() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         user.deactivate();
 
@@ -117,7 +117,8 @@ class UserUnitTest {
 
     @Test
     void should_VerifyEmail_When_VerifyEmailMethodCalled() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         user.verifyEmail();
 
@@ -126,7 +127,8 @@ class UserUnitTest {
 
     @Test
     void should_ReturnTrue_When_UserCanAuthenticate() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         boolean canAuthenticate = user.canAuthenticate();
 
@@ -135,7 +137,8 @@ class UserUnitTest {
 
     @Test
     void should_ReturnFalse_When_UserIsDeactivated() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
         user.deactivate();
 
         boolean canAuthenticate = user.canAuthenticate();
@@ -145,7 +148,8 @@ class UserUnitTest {
 
     @Test
     void should_ReturnTrue_When_UserHasGivenEmail() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         boolean hasEmail = user.hasEmail(email);
 
@@ -154,7 +158,8 @@ class UserUnitTest {
 
     @Test
     void should_ReturnFalse_When_UserDoesNotHaveGivenEmail() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
         Email differentEmail = new Email("other@example.com");
 
         boolean hasEmail = user.hasEmail(differentEmail);
@@ -164,7 +169,8 @@ class UserUnitTest {
 
     @Test
     void should_ReturnFalse_When_NullEmailProvidedForHasEmail() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         boolean hasEmail = user.hasEmail(null);
 
@@ -173,8 +179,10 @@ class UserUnitTest {
 
     @Test
     void should_BeEqual_When_SameUserIdProvided() {
-        User user1 = new User(userId, email, new UserName("Test User"), password);
-        User user2 = new User(userId, new Email("different@example.com"), new UserName("Other User"), password);
+        User user1 = new User(userId, email, new UserName("Test User"),
+                password);
+        User user2 = new User(userId, new Email("different@example.com"),
+                new UserName("Other User"), password);
 
         assertEquals(user1, user2);
         assertEquals(user1.hashCode(), user2.hashCode());
@@ -182,15 +190,18 @@ class UserUnitTest {
 
     @Test
     void should_NotBeEqual_When_DifferentUserIdProvided() {
-        User user1 = new User(UserId.generate(), email, new UserName("Test User"), password);
-        User user2 = new User(UserId.generate(), email, new UserName("Test User"), password);
+        User user1 = new User(UserId.generate(), email,
+                new UserName("Test User"), password);
+        User user2 = new User(UserId.generate(), email,
+                new UserName("Test User"), password);
 
         assertNotEquals(user1, user2);
     }
 
     @Test
     void should_UpdateUserName_When_NewUserNameProvided() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
         UserName newUserName = new UserName("Updated User");
 
         user.updateUserName(newUserName);
@@ -200,18 +211,19 @@ class UserUnitTest {
 
     @Test
     void should_ThrowException_When_NullUserNameProvidedForUpdate() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> user.updateUserName(null)
-        );
+                IllegalArgumentException.class,
+                () -> user.updateUserName(null));
         assertEquals("User name cannot be null", exception.getMessage());
     }
 
     @Test
     void should_HidePasswordInToString_When_UserCreated() {
-        User user = new User(userId, email, new UserName("Test User"), password);
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
 
         String result = user.toString();
 

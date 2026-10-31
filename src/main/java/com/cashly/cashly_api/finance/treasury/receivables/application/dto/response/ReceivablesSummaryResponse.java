@@ -3,17 +3,12 @@ package com.cashly.cashly_api.finance.treasury.receivables.application.dto.respo
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record ReceivablesSummaryResponse(
-        BigDecimal totalDebt,
-        long totalCustomersWithDebt,
-        long totalInvoicesWithDebt,
+public record ReceivablesSummaryResponse(BigDecimal totalDebt,
+        long totalCustomersWithDebt, long totalInvoicesWithDebt,
         BigDecimal totalPendingValidationAmount,
-        BigDecimal totalCustomerBalance,
-        LocalDateTime calculatedAt
-) {
+        BigDecimal totalCustomerBalance, LocalDateTime calculatedAt) {
     public static ReceivablesSummaryResponse empty() {
-        return new ReceivablesSummaryResponse(
-                BigDecimal.ZERO, 0L, 0L, BigDecimal.ZERO, BigDecimal.ZERO, LocalDateTime.now()
-        );
+        return new ReceivablesSummaryResponse(BigDecimal.ZERO, 0L, 0L,
+                BigDecimal.ZERO, BigDecimal.ZERO, LocalDateTime.now());
     }
 }

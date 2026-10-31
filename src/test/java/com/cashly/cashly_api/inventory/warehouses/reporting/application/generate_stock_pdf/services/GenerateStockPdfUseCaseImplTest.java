@@ -33,10 +33,10 @@ class GenerateStockPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate stock PDF from query")
     void should_generate_stock_pdf() {
-        StockPdfQuery query = new StockPdfQuery(
-                UUID.randomUUID(), UUID.randomUUID(), true, true);
-        List<StockReportResponse> items = List.of(
-                new StockReportResponse("Warehouse", "Product", "SKU001", "Category", 0, "Sin Stock"));
+        StockPdfQuery query = new StockPdfQuery(UUID.randomUUID(),
+                UUID.randomUUID(), true, true);
+        List<StockReportResponse> items = List.of(new StockReportResponse(
+                "Warehouse", "Product", "SKU001", "Category", 0, "Sin Stock"));
         byte[] expectedPdf = "Stock PDF".getBytes();
 
         when(repository.findAllForPdf(query)).thenReturn(items);

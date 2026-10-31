@@ -19,12 +19,19 @@ public class LocalInvoiceOrderGateway implements InvoiceOrderGateway {
     @Override
     public Order findOrder(UUID orderId) {
         return orders.findById(OrderId.of(orderId)).map(order -> new Order(
-                order.getId().value(), order.getOrderNumber().value(), order.getCustomerId(),
-                order.getCustomerName(), order.getCustomerRif(), order.getStatus().name(),
-                order.getLines().stream().map(line -> new Line(line.getProductId(), line.getProductName(),
-                        line.getProductCode(), line.getQuantity(), line.getUnitPrice(),
-                        line.getAllocations().stream().map(allocation -> new Allocation(
-                                allocation.getWarehouseId(), allocation.getAllocated())).toList())).toList()))
+                order.getId().value(), order.getOrderNumber().value(),
+                order.getCustomerId(), order.getCustomerName(),
+                order.getCustomerRif(), order.getStatus().name(),
+                order.getLines().stream().map(line -> new Line(
+                        line.getProductId(), line.getProductName(),
+                        line.getProductCode(), line.getQuantity(),
+                        line.getUnitPrice(),
+                        line.getAllocations().stream()
+                                .map(allocation -> new Allocation(
+                                        allocation.getWarehouseId(),
+                                        allocation.getAllocated()))
+                                .toList()))
+                        .toList()))
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 

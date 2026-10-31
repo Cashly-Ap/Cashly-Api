@@ -17,7 +17,8 @@ class CancelledAllocationUnitTest {
 
     @Test
     void should_CreateCancelledAllocation_When_ValidParametersProvided() {
-        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
 
         assertNotNull(allocation);
         assertEquals(PAYMENT_ID, allocation.getPaymentId());
@@ -27,7 +28,8 @@ class CancelledAllocationUnitTest {
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
-        CancelledAllocation allocation = CancelledAllocation.reconstitute(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation = CancelledAllocation
+                .reconstitute(PAYMENT_ID, INVOICE_ID, AMOUNT);
 
         assertNotNull(allocation);
         assertEquals(PAYMENT_ID, allocation.getPaymentId());
@@ -37,40 +39,44 @@ class CancelledAllocationUnitTest {
 
     @Test
     void should_ThrowException_When_PaymentIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                CancelledAllocation.create(null, INVOICE_ID, AMOUNT));
+        assertThrows(NullPointerException.class,
+                () -> CancelledAllocation.create(null, INVOICE_ID, AMOUNT));
     }
 
     @Test
     void should_ThrowException_When_InvoiceIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                CancelledAllocation.create(PAYMENT_ID, null, AMOUNT));
+        assertThrows(NullPointerException.class,
+                () -> CancelledAllocation.create(PAYMENT_ID, null, AMOUNT));
     }
 
     @Test
     void should_ThrowException_When_AmountIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, null));
+        assertThrows(NullPointerException.class,
+                () -> CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, null));
     }
 
     @Test
     void should_ThrowException_When_AmountIsZero() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, BigDecimal.ZERO));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> CancelledAllocation
+                        .create(PAYMENT_ID, INVOICE_ID, BigDecimal.ZERO));
 
-        assertEquals("Amount must be greater than zero", exception.getMessage());
+        assertEquals("Amount must be greater than zero",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_AmountIsNegative() {
-        assertThrows(IllegalArgumentException.class, () ->
-                CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, new BigDecimal("-100.00")));
+        assertThrows(IllegalArgumentException.class, () -> CancelledAllocation
+                .create(PAYMENT_ID, INVOICE_ID, new BigDecimal("-100.00")));
     }
 
     @Test
     void should_BeEqual_When_SamePaymentIdAndInvoiceId() {
-        CancelledAllocation allocation1 = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
-        CancelledAllocation allocation2 = CancelledAllocation.reconstitute(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation1 = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation2 = CancelledAllocation
+                .reconstitute(PAYMENT_ID, INVOICE_ID, AMOUNT);
 
         assertEquals(allocation1, allocation2);
         assertEquals(allocation1.hashCode(), allocation2.hashCode());
@@ -78,46 +84,52 @@ class CancelledAllocationUnitTest {
 
     @Test
     void should_NotBeEqual_When_DifferentPaymentId() {
-        CancelledAllocation allocation1 = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
-        CancelledAllocation allocation2 = CancelledAllocation.create(
-                UUID.randomUUID(), INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation1 = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation2 = CancelledAllocation
+                .create(UUID.randomUUID(), INVOICE_ID, AMOUNT);
 
         assertNotEquals(allocation1, allocation2);
     }
 
     @Test
     void should_NotBeEqual_When_DifferentInvoiceId() {
-        CancelledAllocation allocation1 = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
-        CancelledAllocation allocation2 = CancelledAllocation.create(
-                PAYMENT_ID, UUID.randomUUID(), AMOUNT);
+        CancelledAllocation allocation1 = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation2 = CancelledAllocation.create(PAYMENT_ID,
+                UUID.randomUUID(), AMOUNT);
 
         assertNotEquals(allocation1, allocation2);
     }
 
     @Test
     void should_NotBeEqual_When_Null() {
-        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
 
         assertNotEquals(null, allocation);
     }
 
     @Test
     void should_NotBeEqual_When_DifferentClass() {
-        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
 
         assertNotEquals("some string", allocation);
     }
 
     @Test
     void should_BeEqual_When_SameReference() {
-        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
 
         assertEquals(allocation, allocation);
     }
 
     @Test
     void should_ReturnString_When_ToStringCalled() {
-        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID, INVOICE_ID, AMOUNT);
+        CancelledAllocation allocation = CancelledAllocation.create(PAYMENT_ID,
+                INVOICE_ID, AMOUNT);
 
         String result = allocation.toString();
 

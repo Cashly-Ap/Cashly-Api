@@ -16,7 +16,8 @@ public class MultipartConfig {
             @Override
             public boolean isMultipart(HttpServletRequest request) {
                 String contentType = request.getContentType();
-                return contentType != null && contentType.toLowerCase().startsWith("multipart/");
+                return contentType != null
+                        && contentType.toLowerCase().startsWith("multipart/");
             }
         };
     }

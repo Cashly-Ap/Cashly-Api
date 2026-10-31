@@ -2,8 +2,6 @@ package com.cashly.cashly_api.procurement.purchases.reporting.application.genera
 
 import com.cashly.cashly_api.procurement.purchases.reporting.application.dto.model.PurchaseReportFilter;
 
-
-
 public interface GeneratePurchasesReportPdfUseCase {
     byte[] execute(PurchaseReportFilter filter, String mode);
 }

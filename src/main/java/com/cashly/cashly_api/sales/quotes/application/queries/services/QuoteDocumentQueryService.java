@@ -15,19 +15,33 @@ import java.util.UUID;
 public class QuoteDocumentQueryService implements QuoteDocumentQuery {
     private final QuoteRepository repository;
     private final GetQuotesUseCase listQuery;
-    public QuoteDocumentQueryService(QuoteRepository repository, GetQuotesUseCase listQuery) {
+    public QuoteDocumentQueryService(QuoteRepository repository,
+            GetQuotesUseCase listQuery) {
         this.repository = repository;
         this.listQuery = listQuery;
     }
     public QuoteDocumentSnapshot find(UUID id) {
-        var entity = repository.findById(id).orElseThrow(() -> new QuoteNotFoundException(id));
+        var entity = repository.findById(id)
+                .orElseThrow(() -> new QuoteNotFoundException(id));
         var data = QuoteMapper.toDetailResponse(entity);
-        return new QuoteDocumentSnapshot(data.id(), data.quoteNumber(), data.customerName(), data.customerRif(), data.status(),
-                data.notes(), data.cancelledReason(), data.createdAt(), data.subtotal(),
-                data.lines().stream().map(line -> new QuoteDocumentSnapshot.Line(line.productCode(), line.productName(), line.quantity(), line.unitPrice(), line.lineTotal())).toList());
+        return new QuoteDocumentSnapshot(data.id(), data.quoteNumber(),
+                data.customerName(), data.customerRif(), data.status(),
+                data.notes(), data.cancelledReason(), data.createdAt(),
+                data.subtotal(),
+                data.lines().stream()
+                        .map(line -> new QuoteDocumentSnapshot.Line(
+                                line.productCode(), line.productName(),
+                                line.quantity(), line.unitPrice(),
+                                line.lineTotal()))
+                        .toList());
     }
     public List<QuoteDocumentRow> findAll(QuoteDocumentFilter filter) {
-        return listQuery.execute(filter.dateFrom(), filter.dateTo(), filter.customerId(), filter.status(), filter.productId(), filter.categoryId(), "createdAt", "desc")
-                .stream().map(data -> new QuoteDocumentRow(data.id(), data.quoteNumber(), data.customerName(), data.status(), data.subtotal(), data.createdAt())).toList();
+        return listQuery.execute(filter.dateFrom(), filter.dateTo(),
+                filter.customerId(), filter.status(), filter.productId(),
+                filter.categoryId(), "createdAt", "desc").stream()
+                .map(data -> new QuoteDocumentRow(data.id(), data.quoteNumber(),
+                        data.customerName(), data.status(), data.subtotal(),
+                        data.createdAt()))
+                .toList();
     }
 }

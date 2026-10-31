@@ -16,12 +16,14 @@ class InvoiceNotFoundExceptionTest {
 
         InvoiceNotFoundException exception = new InvoiceNotFoundException(id);
 
-        assertEquals("Invoice not found with id: " + id, exception.getMessage());
+        assertEquals("Invoice not found with id: " + id,
+                exception.getMessage());
     }
 
     @Test
     void should_BeRuntimeException() {
-        InvoiceNotFoundException exception = new InvoiceNotFoundException(UUID.randomUUID());
+        InvoiceNotFoundException exception = new InvoiceNotFoundException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }

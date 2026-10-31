@@ -37,16 +37,22 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
 
     private final PdfBranding branding;
 
-    public PurchasesReportPdfGenerator() { this(new PdfBranding()); }
+    public PurchasesReportPdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public PurchasesReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public PurchasesReportPdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb STATUS_DRAFT = new DeviceRgb(128, 128, 128);
-    private static final DeviceRgb STATUS_CONFIRMED = new DeviceRgb(34, 139, 34);
-    private static final DeviceRgb STATUS_CANCELLED = new DeviceRgb(220, 20, 60);
+    private static final DeviceRgb STATUS_CONFIRMED = new DeviceRgb(34, 139,
+            34);
+    private static final DeviceRgb STATUS_CANCELLED = new DeviceRgb(220, 20,
+            60);
 
     @Override
     public byte[] generatePdf(List<PurchaseReportRow> purchases, String mode) {
@@ -61,28 +67,41 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph(ReportMessages.text("procurement.purchases.reports.purchasesReport"))
-                    .setFont(bold)
-                    .setFontSize(18)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(4);
+            Paragraph title = new Paragraph(ReportMessages
+                    .text("procurement.purchases.reports.purchasesReport"))
+                    .setFont(bold).setFontSize(18)
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(4);
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
-            String modeLabel = detailed ? ReportMessages.text("procurement.purchases.reports.detailed") : ReportMessages.text("procurement.purchases.reports.simple");
-            Paragraph subtitle = new Paragraph(ReportMessages.text("procurement.purchases.reports.generatedOn") + fecha + ReportMessages.text("procurement.purchases.reports.mode") + modeLabel + ReportMessages.text("procurement.purchases.reports.totalLabel") + purchases.size() + ReportMessages.text("procurement.purchases.reports.purchases"))
-                    .setFont(regular)
-                    .setFontSize(10)
+            String fecha = LocalDate.now()
+                    .format(ReportMessages.dateFormatter());
+            String modeLabel = detailed
+                    ? ReportMessages
+                            .text("procurement.purchases.reports.detailed")
+                    : ReportMessages
+                            .text("procurement.purchases.reports.simple");
+            Paragraph subtitle = new Paragraph(ReportMessages
+                    .text("procurement.purchases.reports.generatedOn") + fecha
+                    + ReportMessages.text("procurement.purchases.reports.mode")
+                    + modeLabel
+                    + ReportMessages
+                            .text("procurement.purchases.reports.totalLabel")
+                    + purchases.size()
+                    + ReportMessages
+                            .text("procurement.purchases.reports.purchases"))
+                    .setFont(regular).setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(16);
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(16);
 
             document.add(subtitle);
 
@@ -93,15 +112,31 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{ReportMessages.text("procurement.purchases.reports.purchaseNoLabel"), ReportMessages.text("procurement.purchases.reports.supplierLabel"), ReportMessages.text("procurement.purchases.reports.status"), ReportMessages.text("procurement.purchases.reports.total"), ReportMessages.text("procurement.purchases.reports.dateLabel")}
-                    : new String[]{ReportMessages.text("procurement.purchases.reports.purchaseNoLabel"), ReportMessages.text("procurement.purchases.reports.supplierLabel"), ReportMessages.text("procurement.purchases.reports.total"), ReportMessages.text("procurement.purchases.reports.dateLabel")};
+                    ? new String[]{ReportMessages.text(
+                            "procurement.purchases.reports.purchaseNoLabel"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.supplierLabel"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.status"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.total"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.dateLabel")}
+                    : new String[]{ReportMessages.text(
+                            "procurement.purchases.reports.purchaseNoLabel"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.supplierLabel"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.total"),
+                            ReportMessages.text(
+                                    "procurement.purchases.reports.dateLabel")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
-                        .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                        .add(new Paragraph(h).setFont(bold).setFontSize(9)
+                                .setFontColor(HEADER_TEXT))
                         .setBackgroundColor(HEADER_BG)
-                        .setTextAlignment(TextAlignment.CENTER)
-                        .setPadding(6);
+                        .setTextAlignment(TextAlignment.CENTER).setPadding(6);
                 table.addHeaderCell(headerCell);
             }
 
@@ -110,50 +145,57 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 
-                addCell(table, purchase.purchaseNumber(), regular, rowColor, TextAlignment.LEFT);
-                addCell(table, purchase.supplierName(), regular, rowColor, TextAlignment.LEFT);
+                addCell(table, purchase.purchaseNumber(), regular, rowColor,
+                        TextAlignment.LEFT);
+                addCell(table, purchase.supplierName(), regular, rowColor,
+                        TextAlignment.LEFT);
 
                 if (detailed) {
-                    addCell(table, formatStatus(purchase.status()), regular, rowColor, TextAlignment.CENTER);
+                    addCell(table, formatStatus(purchase.status()), regular,
+                            rowColor, TextAlignment.CENTER);
                 }
 
-                addCell(table, "$" + formatDecimal(purchase.subtotal()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, purchase.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, "$" + formatDecimal(purchase.subtotal()),
+                        regular, rowColor, TextAlignment.RIGHT);
+                addCell(table,
+                        purchase.createdAt().atZone(ZoneId.systemDefault())
+                                .format(ReportMessages.dateTimeFormatter()),
+                        regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph totalLabel = new Paragraph(ReportMessages.text("procurement.purchases.reports.totalPurchases") + purchases.size())
-                    .setFont(bold)
-                    .setFontSize(11)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setMarginTop(16);
+            Paragraph totalLabel = new Paragraph(ReportMessages
+                    .text("procurement.purchases.reports.totalPurchases")
+                    + purchases.size()).setFont(bold).setFontSize(11)
+                    .setTextAlignment(TextAlignment.RIGHT).setMarginTop(16);
             document.add(totalLabel);
 
-            long draft = purchases.stream().filter(q -> "DRAFT".equals(q.status())).count();
-            long confirmed = purchases.stream().filter(q -> "CONFIRMED".equals(q.status())).count();
-            long cancelled = purchases.stream().filter(q -> "CANCELLED".equals(q.status())).count();
+            long draft = purchases.stream()
+                    .filter(q -> "DRAFT".equals(q.status())).count();
+            long confirmed = purchases.stream()
+                    .filter(q -> "CONFIRMED".equals(q.status())).count();
+            long cancelled = purchases.stream()
+                    .filter(q -> "CANCELLED".equals(q.status())).count();
 
-            Paragraph summary = new Paragraph(String.format(ReportMessages.text("procurement.purchases.reports.draftDConfirmedDCancelledD"),
-                    draft, confirmed, cancelled))
-                    .setFont(regular)
-                    .setFontSize(9)
-                    .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setMarginTop(8);
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text(
+                    "procurement.purchases.reports.draftDConfirmedDCancelledD"),
+                    draft, confirmed, cancelled)).setFont(regular)
+                    .setFontSize(9).setFontColor(ColorConstants.DARK_GRAY)
+                    .setTextAlignment(TextAlignment.RIGHT).setMarginTop(8);
             document.add(summary);
 
-            Paragraph footer = new Paragraph(ReportMessages.text("procurement.purchases.reports.documentAutomaticallyGeneratedByCashly"))
-                    .setFont(regular)
-                    .setFontSize(8)
+            Paragraph footer = new Paragraph(ReportMessages.text(
+                    "procurement.purchases.reports.documentAutomaticallyGeneratedByCashly"))
+                    .setFont(regular).setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginTop(30);
+                    .setTextAlignment(TextAlignment.CENTER).setMarginTop(30);
             document.add(footer);
 
             document.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error generating purchases report PDF", e);
+            throw new RuntimeException("Error generating purchases report PDF",
+                    e);
         }
         return baos.toByteArray();
     }
@@ -163,23 +205,26 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
     }
 
     private String formatStatus(String status) {
-        if (status == null) return "-";
+        if (status == null)
+            return "-";
         return switch (status) {
-            case "DRAFT" -> ReportMessages.text("procurement.purchases.reports.draft");
-            case "CONFIRMED" -> ReportMessages.text("procurement.purchases.reports.confirmed");
-            case "CANCELLED" -> ReportMessages.text("procurement.purchases.reports.cancelled");
+            case "DRAFT" ->
+                ReportMessages.text("procurement.purchases.reports.draft");
+            case "CONFIRMED" ->
+                ReportMessages.text("procurement.purchases.reports.confirmed");
+            case "CANCELLED" ->
+                ReportMessages.text("procurement.purchases.reports.cancelled");
             default -> status;
         };
     }
 
-    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg,
+            TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "-").setFont(font).setFontSize(8))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(5)
-                .setPaddingRight(5);
+                .add(new Paragraph(text != null ? text : "-").setFont(font)
+                        .setFontSize(8))
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(5).setPaddingRight(5);
         if (bg != null) {
             cell.setBackgroundColor(bg);
         }
@@ -202,19 +247,20 @@ public class PurchasesReportPdfGenerator implements PurchasesReportPdfPort {
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("procurement.purchases.reports.page") + pageNumber + ReportMessages.text("procurement.purchases.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
+                        new Paragraph(ReportMessages
+                                .text("procurement.purchases.reports.page")
+                                + pageNumber
+                                + ReportMessages.text(
+                                        "procurement.purchases.reports.of")
+                                + totalPages).setFont(font).setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

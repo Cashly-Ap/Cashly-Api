@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-public interface PaymentAllocationJpaRepository extends JpaRepository<PaymentAllocationEntity, UUID> {
+public interface PaymentAllocationJpaRepository
+        extends
+            JpaRepository<PaymentAllocationEntity, UUID> {
 
     List<PaymentAllocationEntity> findByPaymentId(UUID paymentId);
     List<PaymentAllocationEntity> findByInvoiceId(UUID invoiceId);
@@ -19,5 +21,6 @@ public interface PaymentAllocationJpaRepository extends JpaRepository<PaymentAll
     List<Object[]> sumByInvoiceIds(@Param("invoiceIds") List<UUID> invoiceIds);
 
     @Query("SELECT COALESCE(SUM(a.allocatedAmount), 0) FROM PaymentAllocationEntity a WHERE a.invoiceId = :invoiceId")
-    BigDecimal sumAllocatedAmountByInvoiceId(@Param("invoiceId") UUID invoiceId);
+    BigDecimal sumAllocatedAmountByInvoiceId(
+            @Param("invoiceId") UUID invoiceId);
 }

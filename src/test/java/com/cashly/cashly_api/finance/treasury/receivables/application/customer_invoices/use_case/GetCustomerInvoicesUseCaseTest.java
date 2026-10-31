@@ -42,24 +42,25 @@ class GetCustomerInvoicesUseCaseTest {
                 UUID.randomUUID(), "INV-2026-00001", "PENDING_PAYMENT",
                 LocalDate.now(), new BigDecimal("1000.00"), BigDecimal.ZERO,
                 new BigDecimal("500.00"), BigDecimal.ZERO, BigDecimal.ZERO,
-                new BigDecimal("1000.00"), new BigDecimal("500.00"),
-                null, null
-        );
-        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(new PageImpl<>(
-                List.of(invoice), PageRequest.of(0, 20), 1
-        ));
+                new BigDecimal("1000.00"), new BigDecimal("500.00"), null,
+                null);
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(
+                new PageImpl<>(List.of(invoice), PageRequest.of(0, 20), 1));
 
-        when(receivablesRepository.findCustomerInvoices(customerId, null, null, 0, 20))
-                .thenReturn(invoicePage);
+        when(receivablesRepository.findCustomerInvoices(customerId, null, null,
+                0, 20)).thenReturn(invoicePage);
 
-        PageResponse<CustomerInvoiceDebtResponse> result = useCase.execute(customerId, null, null, 0, 20);
+        PageResponse<CustomerInvoiceDebtResponse> result = useCase
+                .execute(customerId, null, null, 0, 20);
 
         assertNotNull(result);
         assertFalse(result.empty());
         assertEquals(1, result.content().size());
         assertEquals("INV-2026-00001", result.content().get(0).invoiceNumber());
-        assertEquals(new BigDecimal("500.00"), result.content().get(0).balance());
-        verify(receivablesRepository).findCustomerInvoices(customerId, null, null, 0, 20);
+        assertEquals(new BigDecimal("500.00"),
+                result.content().get(0).balance());
+        verify(receivablesRepository).findCustomerInvoices(customerId, null,
+                null, 0, 20);
     }
 
     @Test
@@ -67,15 +68,18 @@ class GetCustomerInvoicesUseCaseTest {
         UUID customerId = UUID.randomUUID();
         String status = "PENDING";
 
-        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(org.springframework.data.domain.Page.empty());
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(
+                org.springframework.data.domain.Page.empty());
 
-        when(receivablesRepository.findCustomerInvoices(customerId, null, status, 0, 20))
-                .thenReturn(invoicePage);
+        when(receivablesRepository.findCustomerInvoices(customerId, null,
+                status, 0, 20)).thenReturn(invoicePage);
 
-        PageResponse<CustomerInvoiceDebtResponse> result = useCase.execute(customerId, null, status, 0, 20);
+        PageResponse<CustomerInvoiceDebtResponse> result = useCase
+                .execute(customerId, null, status, 0, 20);
 
         assertTrue(result.empty());
-        verify(receivablesRepository).findCustomerInvoices(customerId, null, status, 0, 20);
+        verify(receivablesRepository).findCustomerInvoices(customerId, null,
+                status, 0, 20);
     }
 
     @Test
@@ -83,15 +87,18 @@ class GetCustomerInvoicesUseCaseTest {
         UUID customerId = UUID.randomUUID();
         String search = "INV-2026";
 
-        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(org.springframework.data.domain.Page.empty());
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(
+                org.springframework.data.domain.Page.empty());
 
-        when(receivablesRepository.findCustomerInvoices(customerId, search, null, 0, 20))
-                .thenReturn(invoicePage);
+        when(receivablesRepository.findCustomerInvoices(customerId, search,
+                null, 0, 20)).thenReturn(invoicePage);
 
-        PageResponse<CustomerInvoiceDebtResponse> result = useCase.execute(customerId, search, null, 0, 20);
+        PageResponse<CustomerInvoiceDebtResponse> result = useCase
+                .execute(customerId, search, null, 0, 20);
 
         assertTrue(result.empty());
-        verify(receivablesRepository).findCustomerInvoices(customerId, search, null, 0, 20);
+        verify(receivablesRepository).findCustomerInvoices(customerId, search,
+                null, 0, 20);
     }
 
     @Test
@@ -101,16 +108,15 @@ class GetCustomerInvoicesUseCaseTest {
                 UUID.randomUUID(), "INV-2026-00001", "PENDING_PAYMENT",
                 LocalDate.now(), BigDecimal.TEN, BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.TEN, BigDecimal.TEN, null, null
-        );
-        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(new PageImpl<>(
-                List.of(invoice), PageRequest.of(1, 5), 12
-        ));
+                BigDecimal.TEN, BigDecimal.TEN, null, null);
+        PageResponse<CustomerInvoiceDebtResponse> invoicePage = toPageResponse(
+                new PageImpl<>(List.of(invoice), PageRequest.of(1, 5), 12));
 
-        when(receivablesRepository.findCustomerInvoices(customerId, null, "PARTIAL", 1, 5))
-                .thenReturn(invoicePage);
+        when(receivablesRepository.findCustomerInvoices(customerId, null,
+                "PARTIAL", 1, 5)).thenReturn(invoicePage);
 
-        PageResponse<CustomerInvoiceDebtResponse> result = useCase.execute(customerId, null, "PARTIAL", 1, 5);
+        PageResponse<CustomerInvoiceDebtResponse> result = useCase
+                .execute(customerId, null, "PARTIAL", 1, 5);
 
         assertEquals(1, result.content().size());
         assertEquals(12, result.totalElements());
@@ -118,8 +124,10 @@ class GetCustomerInvoicesUseCaseTest {
         assertEquals(1, result.number());
         assertFalse(result.first());
     }
-    private static <T> PageResponse<T> toPageResponse(org.springframework.data.domain.Page<T> page) {
-        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
-                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
+    private static <T> PageResponse<T> toPageResponse(
+            org.springframework.data.domain.Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(),
+                page.getTotalPages(), page.getSize(), page.getNumber(),
+                page.isFirst(), page.isLast(), page.isEmpty());
     }
 }

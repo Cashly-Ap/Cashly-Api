@@ -6,5 +6,6 @@ import java.util.UUID;
 public interface OrderCustomerGateway {
     Optional<Customer> findById(UUID customerId);
 
-    record Customer(UUID id, String legalName, String rif) {}
+    record Customer(UUID id, String legalName, String rif) {
+    }
 }

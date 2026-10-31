@@ -59,27 +59,19 @@ class RefreshTokenUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        refreshTokenUseCase = new RefreshTokenUseCase(
-            refreshTokenRepository,
-            subjectGateway,
-            tokenService,
-            mfaStore
-        );
+        refreshTokenUseCase = new RefreshTokenUseCase(refreshTokenRepository,
+                subjectGateway, tokenService, mfaStore);
 
         String tokenString = UUID.randomUUID().toString();
         validRequest = new RefreshTokenRequest(tokenString);
 
         userId = UserId.generate();
-        validRefreshToken = new RefreshToken(
-            RefreshTokenId.generate(),
-            userId.getValue().toString(),
-            AuthenticableType.USER,
-            tokenString,
-            LocalDateTime.now().plusDays(7)
-        );
+        validRefreshToken = new RefreshToken(RefreshTokenId.generate(),
+                userId.getValue().toString(), AuthenticableType.USER,
+                tokenString, LocalDateTime.now().plusDays(7));
 
         lenient().when(refreshTokenRepository.findSubjectIdByToken(anyString()))
-            .thenReturn(Optional.of(userId.getValue().toString()));
+                .thenReturn(Optional.of(userId.getValue().toString()));
 
         Email email = new Email("test@example.com");
         Password password = Password.fromHash("$2a$10$hashedPassword");
@@ -90,22 +82,32 @@ class RefreshTokenUseCaseUnitTest {
     @DisplayName("should_RefreshTokens_When_ValidRefreshTokenProvided")
     void should_RefreshTokens_When_ValidRefreshTokenProvided() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
-        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
-        when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
-        when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(validRefreshToken);
+                .thenReturn(Optional.of(validRefreshToken));
+        when(subjectGateway.resolve(userId.getValue().toString(),
+                AuthenticableType.USER))
+                .thenReturn(new UserAuthenticableAdapter(testUser));
+        when(tokenService.generateAccessToken(any(Authenticable.class)))
+                .thenReturn("new-access-token");
+        when(tokenService.generateRefreshToken(any(Authenticable.class)))
+                .thenReturn(validRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
-        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(validRefreshToken);
+        when(refreshTokenRepository.save(any(RefreshToken.class)))
+                .thenReturn(validRefreshToken);
 
-        AuthenticationResponse response = refreshTokenUseCase.execute(validRequest);
+        AuthenticationResponse response = refreshTokenUseCase
+                .execute(validRequest);
 
         assertNotNull(response);
         assertEquals("new-access-token", response.accessToken());
         assertEquals(validRefreshToken.getToken(), response.refreshToken());
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(subjectGateway, times(1)).resolve(userId.getValue().toString(), AuthenticableType.USER);
-        verify(tokenService, times(1)).generateAccessToken(any(Authenticable.class));
-        verify(tokenService, times(1)).generateRefreshToken(any(Authenticable.class));
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
+        verify(subjectGateway, times(1)).resolve(userId.getValue().toString(),
+                AuthenticableType.USER);
+        verify(tokenService, times(1))
+                .generateAccessToken(any(Authenticable.class));
+        verify(tokenService, times(1))
+                .generateRefreshToken(any(Authenticable.class));
         verify(refreshTokenRepository, times(2)).save(any(RefreshToken.class));
     }
 
@@ -113,42 +115,40 @@ class RefreshTokenUseCaseUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenNotFound")
     void should_ThrowException_When_RefreshTokenNotFound() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         InvalidTokenException exception = assertThrows(
-            InvalidTokenException.class,
-            () -> refreshTokenUseCase.execute(validRequest)
-        );
+                InvalidTokenException.class,
+                () -> refreshTokenUseCase.execute(validRequest));
 
         assertEquals("Invalid refresh token", exception.getMessage());
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verifyNoInteractions(subjectGateway);
-        verify(tokenService, never()).generateAccessToken(any(Authenticable.class));
+        verify(tokenService, never())
+                .generateAccessToken(any(Authenticable.class));
     }
 
     @Test
     @DisplayName("should_ThrowException_When_RefreshTokenExpired")
     void should_ThrowException_When_RefreshTokenExpired() {
-        RefreshToken token = new RefreshToken(
-            RefreshTokenId.generate(),
-            userId.getValue().toString(),
-            AuthenticableType.USER,
-            UUID.randomUUID().toString(),
-            LocalDateTime.now().plusDays(1)
-        );
+        RefreshToken token = new RefreshToken(RefreshTokenId.generate(),
+                userId.getValue().toString(), AuthenticableType.USER,
+                UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1));
 
         token.setExpiresAt(LocalDateTime.now().minusDays(1));
 
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(token));
+                .thenReturn(Optional.of(token));
 
         InvalidTokenException exception = assertThrows(
-            InvalidTokenException.class,
-            () -> refreshTokenUseCase.execute(validRequest)
-        );
+                InvalidTokenException.class,
+                () -> refreshTokenUseCase.execute(validRequest));
 
-        assertEquals("Refresh token is expired or revoked", exception.getMessage());
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        assertEquals("Refresh token is expired or revoked",
+                exception.getMessage());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verifyNoInteractions(subjectGateway);
     }
 
@@ -157,15 +157,16 @@ class RefreshTokenUseCaseUnitTest {
     void should_ThrowException_When_RefreshTokenRevoked() {
         validRefreshToken.revoke();
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
+                .thenReturn(Optional.of(validRefreshToken));
 
         InvalidTokenException exception = assertThrows(
-            InvalidTokenException.class,
-            () -> refreshTokenUseCase.execute(validRequest)
-        );
+                InvalidTokenException.class,
+                () -> refreshTokenUseCase.execute(validRequest));
 
-        assertEquals("Refresh token is expired or revoked", exception.getMessage());
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        assertEquals("Refresh token is expired or revoked",
+                exception.getMessage());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verifyNoInteractions(subjectGateway);
     }
 
@@ -173,60 +174,75 @@ class RefreshTokenUseCaseUnitTest {
     @DisplayName("should_ThrowException_When_UserNotFound")
     void should_ThrowException_When_UserNotFound() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
-        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenThrow(new UserNotFoundException("User not found"));
+                .thenReturn(Optional.of(validRefreshToken));
+        when(subjectGateway.resolve(userId.getValue().toString(),
+                AuthenticableType.USER))
+                .thenThrow(new UserNotFoundException("User not found"));
 
         UserNotFoundException exception = assertThrows(
-            UserNotFoundException.class,
-            () -> refreshTokenUseCase.execute(validRequest)
-        );
+                UserNotFoundException.class,
+                () -> refreshTokenUseCase.execute(validRequest));
 
         assertEquals("User not found", exception.getMessage());
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
-        verify(subjectGateway, times(1)).resolve(userId.getValue().toString(), AuthenticableType.USER);
-        verify(tokenService, never()).generateAccessToken(any(Authenticable.class));
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
+        verify(subjectGateway, times(1)).resolve(userId.getValue().toString(),
+                AuthenticableType.USER);
+        verify(tokenService, never())
+                .generateAccessToken(any(Authenticable.class));
     }
 
     @Test
     @DisplayName("should_GenerateNewAccessToken_When_RefreshSuccessful")
     void should_GenerateNewAccessToken_When_RefreshSuccessful() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
-        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
-        when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
-        when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(validRefreshToken);
+                .thenReturn(Optional.of(validRefreshToken));
+        when(subjectGateway.resolve(userId.getValue().toString(),
+                AuthenticableType.USER))
+                .thenReturn(new UserAuthenticableAdapter(testUser));
+        when(tokenService.generateAccessToken(any(Authenticable.class)))
+                .thenReturn("new-access-token");
+        when(tokenService.generateRefreshToken(any(Authenticable.class)))
+                .thenReturn(validRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
-        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(validRefreshToken);
+        when(refreshTokenRepository.save(any(RefreshToken.class)))
+                .thenReturn(validRefreshToken);
 
-        AuthenticationResponse response = refreshTokenUseCase.execute(validRequest);
+        AuthenticationResponse response = refreshTokenUseCase
+                .execute(validRequest);
 
         assertEquals("new-access-token", response.accessToken());
-        verify(tokenService, times(1)).generateAccessToken(any(Authenticable.class));
+        verify(tokenService, times(1))
+                .generateAccessToken(any(Authenticable.class));
     }
 
     @Test
     @DisplayName("should_GenerateNewRefreshToken_When_RefreshSuccessful")
     void should_GenerateNewRefreshToken_When_RefreshSuccessful() {
         RefreshToken newRefreshToken = new RefreshToken(
-            RefreshTokenId.generate(),
-            userId.getValue().toString(),
-            AuthenticableType.USER,
-            UUID.randomUUID().toString(),
-            LocalDateTime.now().plusDays(7)
-        );
+                RefreshTokenId.generate(), userId.getValue().toString(),
+                AuthenticableType.USER, UUID.randomUUID().toString(),
+                LocalDateTime.now().plusDays(7));
 
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
-        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
-        when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
-        when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(newRefreshToken);
+                .thenReturn(Optional.of(validRefreshToken));
+        when(subjectGateway.resolve(userId.getValue().toString(),
+                AuthenticableType.USER))
+                .thenReturn(new UserAuthenticableAdapter(testUser));
+        when(tokenService.generateAccessToken(any(Authenticable.class)))
+                .thenReturn("new-access-token");
+        when(tokenService.generateRefreshToken(any(Authenticable.class)))
+                .thenReturn(newRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
-        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(newRefreshToken);
+        when(refreshTokenRepository.save(any(RefreshToken.class)))
+                .thenReturn(newRefreshToken);
 
-        AuthenticationResponse response = refreshTokenUseCase.execute(validRequest);
+        AuthenticationResponse response = refreshTokenUseCase
+                .execute(validRequest);
 
         assertEquals(newRefreshToken.getToken(), response.refreshToken());
-        verify(tokenService, times(1)).generateRefreshToken(any(Authenticable.class));
+        verify(tokenService, times(1))
+                .generateRefreshToken(any(Authenticable.class));
         verify(refreshTokenRepository, times(1)).save(newRefreshToken);
     }
 
@@ -234,14 +250,20 @@ class RefreshTokenUseCaseUnitTest {
     @DisplayName("should_ReturnEntityResponse_When_RefreshSuccessful")
     void should_ReturnEntityResponse_When_RefreshSuccessful() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
-        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(new UserAuthenticableAdapter(testUser));
-        when(tokenService.generateAccessToken(any(Authenticable.class))).thenReturn("new-access-token");
-        when(tokenService.generateRefreshToken(any(Authenticable.class))).thenReturn(validRefreshToken);
+                .thenReturn(Optional.of(validRefreshToken));
+        when(subjectGateway.resolve(userId.getValue().toString(),
+                AuthenticableType.USER))
+                .thenReturn(new UserAuthenticableAdapter(testUser));
+        when(tokenService.generateAccessToken(any(Authenticable.class)))
+                .thenReturn("new-access-token");
+        when(tokenService.generateRefreshToken(any(Authenticable.class)))
+                .thenReturn(validRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(900000L);
-        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(validRefreshToken);
+        when(refreshTokenRepository.save(any(RefreshToken.class)))
+                .thenReturn(validRefreshToken);
 
-        AuthenticationResponse response = refreshTokenUseCase.execute(validRequest);
+        AuthenticationResponse response = refreshTokenUseCase
+                .execute(validRequest);
 
         assertNotNull(response.entity());
         assertEquals(AuthenticableType.USER, response.entity().type());
@@ -253,9 +275,11 @@ class RefreshTokenUseCaseUnitTest {
                 .thenReturn(Optional.of(validRefreshToken));
         Authenticable subject = mock(Authenticable.class);
         when(subject.canAuthenticate()).thenReturn(false);
-        when(subjectGateway.resolve(userId.getValue().toString(), AuthenticableType.USER)).thenReturn(subject);
+        when(subjectGateway.resolve(userId.getValue().toString(),
+                AuthenticableType.USER)).thenReturn(subject);
 
-        InvalidTokenException exception = assertThrows(InvalidTokenException.class,
+        InvalidTokenException exception = assertThrows(
+                InvalidTokenException.class,
                 () -> refreshTokenUseCase.execute(validRequest));
 
         assertEquals("Account is not active", exception.getMessage());

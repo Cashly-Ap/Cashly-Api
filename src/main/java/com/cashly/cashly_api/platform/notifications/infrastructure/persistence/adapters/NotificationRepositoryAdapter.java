@@ -17,7 +17,8 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
 
     private final NotificationJpaRepository jpaRepository;
 
-    public NotificationRepositoryAdapter(NotificationJpaRepository jpaRepository) {
+    public NotificationRepositoryAdapter(
+            NotificationJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
@@ -30,10 +31,8 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
 
     @Override
     public List<Notification> findByUserIdOrderByCreatedAtDesc(UUID userId) {
-        return jpaRepository.findByUserIdOrderByCreatedAtDesc(userId)
-                .stream()
-                .map(NotificationJpaMapper::toDomain)
-                .toList();
+        return jpaRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(NotificationJpaMapper::toDomain).toList();
     }
 
     @Override
@@ -42,11 +41,10 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
     }
 
     @Override
-    public List<Notification> findByCustomerIdOrderByCreatedAtDesc(UUID customerId) {
+    public List<Notification> findByCustomerIdOrderByCreatedAtDesc(
+            UUID customerId) {
         return jpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId)
-                .stream()
-                .map(NotificationJpaMapper::toDomain)
-                .toList();
+                .stream().map(NotificationJpaMapper::toDomain).toList();
     }
 
     @Override

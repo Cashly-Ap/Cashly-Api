@@ -27,7 +27,7 @@ public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
     private final DebitNoteNumberSequenceJpaRepository sequenceJpaRepository;
 
     public DebitNoteRepositoryAdapter(DebitNoteJpaRepository jpaRepository,
-                                       DebitNoteNumberSequenceJpaRepository sequenceJpaRepository) {
+            DebitNoteNumberSequenceJpaRepository sequenceJpaRepository) {
         this.jpaRepository = jpaRepository;
         this.sequenceJpaRepository = sequenceJpaRepository;
     }
@@ -46,35 +46,31 @@ public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
     }
 
     @Override
-    public List<DebitNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                                UUID customerId) {
+    public List<DebitNote> findAllWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<DebitNoteEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId);
+        List<DebitNoteEntity> entities = jpaRepository.findAllWithFilters(from,
+                to, customerId);
 
-        return entities.stream()
-                .map(DebitNoteJpaMapper::toDomain)
-                .toList();
+        return entities.stream().map(DebitNoteJpaMapper::toDomain).toList();
     }
 
     @Override
     public List<DebitNote> findByInvoiceId(UUID invoiceId) {
-        List<DebitNoteEntity> entities = jpaRepository.findByInvoiceId(invoiceId);
-        return entities.stream()
-                .map(DebitNoteJpaMapper::toDomain)
-                .toList();
+        List<DebitNoteEntity> entities = jpaRepository
+                .findByInvoiceId(invoiceId);
+        return entities.stream().map(DebitNoteJpaMapper::toDomain).toList();
     }
 
     @Override
     public Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds) {
-        if (invoiceIds.isEmpty()) return Map.of();
+        if (invoiceIds.isEmpty())
+            return Map.of();
         List<Object[]> results = jpaRepository.sumByInvoiceIds(invoiceIds);
-        return results.stream()
-                .collect(Collectors.toMap(
-                        row -> (UUID) row[0],
-                        row -> (BigDecimal) row[1]
-                ));
+        return results.stream().collect(Collectors.toMap(row -> (UUID) row[0],
+                row -> (BigDecimal) row[1]));
     }
 
     @Override
@@ -84,8 +80,8 @@ public class DebitNoteRepositoryAdapter implements DebitNoteRepository {
 
     @Override
     public int getNextSequenceForYear(int year) {
-        DebitNoteNumberSequenceEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
-                .orElseGet(() -> {
+        DebitNoteNumberSequenceEntity sequence = sequenceJpaRepository
+                .findByYearForUpdate(year).orElseGet(() -> {
                     DebitNoteNumberSequenceEntity newSeq = new DebitNoteNumberSequenceEntity();
                     newSeq.setYear(year);
                     newSeq.setNextValue(0);

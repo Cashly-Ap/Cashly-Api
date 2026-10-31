@@ -13,14 +13,14 @@ public interface OrderRepository {
     Order save(Order order);
     Optional<Order> findById(OrderId id);
     List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                   UUID customerId, String status,
-                                   UUID productId, UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
-                                   String orderBy, String orderDir);
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            java.util.Set<UUID> currentCategoryProductIds, String orderBy,
+            String orderDir);
     default List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                           UUID customerId, String status, UUID productId, UUID categoryId,
-                                           String orderBy, String orderDir) {
-        return findAllWithFilters(dateFrom, dateTo, customerId, status, productId, categoryId,
-                java.util.Set.of(), orderBy, orderDir);
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            String orderBy, String orderDir) {
+        return findAllWithFilters(dateFrom, dateTo, customerId, status,
+                productId, categoryId, java.util.Set.of(), orderBy, orderDir);
     }
     int getNextSequenceForYear(int year);
     void deleteById(OrderId id);

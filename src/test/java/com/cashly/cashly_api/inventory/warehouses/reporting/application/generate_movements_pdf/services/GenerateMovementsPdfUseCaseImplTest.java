@@ -34,12 +34,12 @@ class GenerateMovementsPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate movements PDF from query")
     void should_generate_movements_pdf() {
-        MovementsPdfQuery query = new MovementsPdfQuery(
-                UUID.randomUUID(), UUID.randomUUID(), "EXIT",
-                java.time.LocalDate.of(2026, 1, 1), java.time.LocalDate.of(2026, 12, 31));
-        List<MovementReportResponse> items = List.of(
-                new MovementReportResponse(UUID.randomUUID(), "Warehouse", "Product",
-                        "SKU001", "Salida", 5, 10, 5, "exit notes", LocalDateTime.now()));
+        MovementsPdfQuery query = new MovementsPdfQuery(UUID.randomUUID(),
+                UUID.randomUUID(), "EXIT", java.time.LocalDate.of(2026, 1, 1),
+                java.time.LocalDate.of(2026, 12, 31));
+        List<MovementReportResponse> items = List.of(new MovementReportResponse(
+                UUID.randomUUID(), "Warehouse", "Product", "SKU001", "Salida",
+                5, 10, 5, "exit notes", LocalDateTime.now()));
         byte[] expectedPdf = "Movements PDF".getBytes();
 
         when(repository.findAllForPdf(query)).thenReturn(items);
@@ -55,8 +55,8 @@ class GenerateMovementsPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate movements PDF with empty result")
     void should_generate_movements_pdf_with_empty_result() {
-        MovementsPdfQuery query = new MovementsPdfQuery(
-                null, null, null, null, null);
+        MovementsPdfQuery query = new MovementsPdfQuery(null, null, null, null,
+                null);
         List<MovementReportResponse> items = List.of();
         byte[] expectedPdf = "Empty PDF".getBytes();
 

@@ -35,7 +35,8 @@ class CustomerBalanceTest {
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
         LocalDateTime updatedAt = LocalDateTime.now();
 
-        CustomerBalance balance = CustomerBalance.reconstitute(id, customerId, totalBalance, createdAt, updatedAt);
+        CustomerBalance balance = CustomerBalance.reconstitute(id, customerId,
+                totalBalance, createdAt, updatedAt);
 
         assertEquals(id, balance.getId());
         assertEquals(customerId, balance.getCustomerId());
@@ -71,7 +72,8 @@ class CustomerBalanceTest {
     void should_throw_when_adding_null_amount() {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
 
-        assertThrows(NullPointerException.class, () -> balance.addToBalance(null));
+        assertThrows(NullPointerException.class,
+                () -> balance.addToBalance(null));
     }
 
     @Test
@@ -79,7 +81,8 @@ class CustomerBalanceTest {
     void should_throw_when_adding_zero_amount() {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
 
-        assertThrows(IllegalArgumentException.class, () -> balance.addToBalance(BigDecimal.ZERO));
+        assertThrows(IllegalArgumentException.class,
+                () -> balance.addToBalance(BigDecimal.ZERO));
     }
 
     @Test
@@ -87,7 +90,8 @@ class CustomerBalanceTest {
     void should_throw_when_adding_negative_amount() {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
 
-        assertThrows(IllegalArgumentException.class, () -> balance.addToBalance(new BigDecimal("-50.00")));
+        assertThrows(IllegalArgumentException.class,
+                () -> balance.addToBalance(new BigDecimal("-50.00")));
     }
 
     @Test
@@ -117,7 +121,8 @@ class CustomerBalanceTest {
     void should_throw_when_consuming_null_amount() {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
 
-        assertThrows(NullPointerException.class, () -> balance.consumeFromBalance(null));
+        assertThrows(NullPointerException.class,
+                () -> balance.consumeFromBalance(null));
     }
 
     @Test
@@ -125,7 +130,8 @@ class CustomerBalanceTest {
     void should_throw_when_consuming_zero_amount() {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
 
-        assertThrows(IllegalArgumentException.class, () -> balance.consumeFromBalance(BigDecimal.ZERO));
+        assertThrows(IllegalArgumentException.class,
+                () -> balance.consumeFromBalance(BigDecimal.ZERO));
     }
 
     @Test
@@ -133,7 +139,8 @@ class CustomerBalanceTest {
     void should_throw_when_consuming_negative_amount() {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
 
-        assertThrows(IllegalArgumentException.class, () -> balance.consumeFromBalance(new BigDecimal("-30.00")));
+        assertThrows(IllegalArgumentException.class,
+                () -> balance.consumeFromBalance(new BigDecimal("-30.00")));
     }
 
     @Test
@@ -142,13 +149,15 @@ class CustomerBalanceTest {
         CustomerBalance balance = CustomerBalance.create(UUID.randomUUID());
         balance.addToBalance(new BigDecimal("50.00"));
 
-        assertThrows(IllegalArgumentException.class, () -> balance.consumeFromBalance(new BigDecimal("100.00")));
+        assertThrows(IllegalArgumentException.class,
+                () -> balance.consumeFromBalance(new BigDecimal("100.00")));
     }
 
     @Test
     @DisplayName("should throw when creating balance with null customer id")
     void should_throw_when_creating_balance_with_null_customer_id() {
-        assertThrows(NullPointerException.class, () -> CustomerBalance.create(null));
+        assertThrows(NullPointerException.class,
+                () -> CustomerBalance.create(null));
     }
 
     @Test
@@ -159,7 +168,8 @@ class CustomerBalanceTest {
 
         balance.addToBalance(new BigDecimal("50.00"));
 
-        assertTrue(balance.getUpdatedAt().isAfter(before) || balance.getUpdatedAt().equals(before));
+        assertTrue(balance.getUpdatedAt().isAfter(before)
+                || balance.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -171,7 +181,8 @@ class CustomerBalanceTest {
 
         balance.consumeFromBalance(new BigDecimal("30.00"));
 
-        assertTrue(balance.getUpdatedAt().isAfter(before) || balance.getUpdatedAt().equals(before));
+        assertTrue(balance.getUpdatedAt().isAfter(before)
+                || balance.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -180,10 +191,11 @@ class CustomerBalanceTest {
         UUID id = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
 
-        CustomerBalance balance1 = CustomerBalance.reconstitute(
-                id, customerId, BigDecimal.TEN, LocalDateTime.now(), LocalDateTime.now());
-        CustomerBalance balance2 = CustomerBalance.reconstitute(
-                id, customerId, BigDecimal.valueOf(999), LocalDateTime.now(), LocalDateTime.now());
+        CustomerBalance balance1 = CustomerBalance.reconstitute(id, customerId,
+                BigDecimal.TEN, LocalDateTime.now(), LocalDateTime.now());
+        CustomerBalance balance2 = CustomerBalance.reconstitute(id, customerId,
+                BigDecimal.valueOf(999), LocalDateTime.now(),
+                LocalDateTime.now());
 
         assertEquals(balance1, balance2);
         assertEquals(balance1.hashCode(), balance2.hashCode());

@@ -6,5 +6,7 @@ import java.util.UUID;
 public interface CreditNoteFinancialPositionGateway {
     Position findByInvoiceId(UUID invoiceId);
 
-    record Position(BigDecimal paid, BigDecimal creditNotes, BigDecimal debitNotes) {}
+    record Position(BigDecimal paid, BigDecimal creditNotes,
+            BigDecimal debitNotes) {
+    }
 }

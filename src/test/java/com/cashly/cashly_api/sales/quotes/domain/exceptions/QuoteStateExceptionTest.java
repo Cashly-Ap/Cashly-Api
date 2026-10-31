@@ -10,10 +10,10 @@ class QuoteStateExceptionTest {
     @Test
     void should_throw_with_correct_message() {
         String message = "Invalid status transition from DRAFT to ACCEPTED";
-        QuoteStateException exception = assertThrows(
-                QuoteStateException.class,
-                () -> { throw new QuoteStateException(message); }
-        );
+        QuoteStateException exception = assertThrows(QuoteStateException.class,
+                () -> {
+                    throw new QuoteStateException(message);
+                });
         assertEquals(message, exception.getMessage());
     }
 

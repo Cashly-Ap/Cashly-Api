@@ -42,17 +42,17 @@ class CatalogReportControllerTest {
     @DisplayName("should return catalog report page")
     void should_get_catalog_report() {
         CatalogReportResponse item = new CatalogReportResponse(
-                UUID.randomUUID(), "Product A", "SKU001",
-                UUID.randomUUID(), "Category", false,
-                UUID.randomUUID(), "Warehouse", BigDecimal.TEN, true);
+                UUID.randomUUID(), "Product A", "SKU001", UUID.randomUUID(),
+                "Category", false, UUID.randomUUID(), "Warehouse",
+                BigDecimal.TEN, true);
 
         List<CatalogReportResponse> items = List.of(item);
-        when(getCatalogReportUseCase.execute(any())).thenReturn(
-                PageResponseMapper.from(new PageImpl<>(items)));
+        when(getCatalogReportUseCase.execute(any()))
+                .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
 
         PageResponse<CatalogReportResponse> result = controller.getCatalog(
-                "search", UUID.randomUUID(), UUID.randomUUID(),
-                true, true, false, 0, 20);
+                "search", UUID.randomUUID(), UUID.randomUUID(), true, true,
+                false, 0, 20);
 
         assertNotNull(result);
         assertEquals(1, result.content().size());
@@ -64,11 +64,11 @@ class CatalogReportControllerTest {
     @DisplayName("should return catalog report without optional params")
     void should_get_catalog_report_without_optional_params() {
         List<CatalogReportResponse> items = List.of();
-        when(getCatalogReportUseCase.execute(any())).thenReturn(
-                PageResponseMapper.from(new PageImpl<>(items)));
+        when(getCatalogReportUseCase.execute(any()))
+                .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
 
-        PageResponse<CatalogReportResponse> result = controller.getCatalog(
-                null, null, null, null, null, null, 0, 20);
+        PageResponse<CatalogReportResponse> result = controller.getCatalog(null,
+                null, null, null, null, null, 0, 20);
 
         assertNotNull(result);
         assertTrue(result.content().isEmpty());
@@ -83,13 +83,13 @@ class CatalogReportControllerTest {
         when(generateCatalogPdfUseCase.execute(any(CatalogPdfQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getCatalogPdf(
-                "search", UUID.randomUUID(), UUID.randomUUID(),
-                true, true, false);
+        ResponseEntity<byte[]> result = controller.getCatalogPdf("search",
+                UUID.randomUUID(), UUID.randomUUID(), true, true, false);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("reporte-productos.pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("reporte-productos.pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generateCatalogPdfUseCase).execute(any(CatalogPdfQuery.class));
@@ -103,8 +103,8 @@ class CatalogReportControllerTest {
         when(generateCatalogPdfUseCase.execute(any(CatalogPdfQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getCatalogPdf(
-                null, null, null, null, null, null);
+        ResponseEntity<byte[]> result = controller.getCatalogPdf(null, null,
+                null, null, null, null);
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateCatalogPdfUseCase).execute(any(CatalogPdfQuery.class));

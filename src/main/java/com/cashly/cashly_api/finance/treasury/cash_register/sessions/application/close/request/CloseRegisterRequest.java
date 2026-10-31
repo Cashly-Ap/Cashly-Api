@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record CloseRegisterRequest(
-        @NotBlank String closedByName,
+public record CloseRegisterRequest(@NotBlank String closedByName,
         @NotNull @DecimalMin("0.00") BigDecimal declaredBalance,
-        String closingNotes
-) {}
+        String closingNotes) {
+}

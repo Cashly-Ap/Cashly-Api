@@ -10,15 +10,18 @@ public record PurchaseNumber(String value) {
     public PurchaseNumber {
         Objects.requireNonNull(value, "PurchaseNumber cannot be null");
         if (value.isBlank()) {
-            throw new IllegalArgumentException("PurchaseNumber cannot be blank");
+            throw new IllegalArgumentException(
+                    "PurchaseNumber cannot be blank");
         }
     }
 
     public static PurchaseNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
-        return new PurchaseNumber(String.format(FORMAT, PREFIX, year, sequence));
+        return new PurchaseNumber(
+                String.format(FORMAT, PREFIX, year, sequence));
     }
 
     public String getValue() {

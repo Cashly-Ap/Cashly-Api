@@ -54,15 +54,21 @@ class GetInvoiceByIdUseCaseNotesTest {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
-        when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
+        when(stockEnrichmentService.getAllStockByProducts(any(), any()))
+                .thenReturn(java.util.Map.of());
         UUID creditNoteId = UUID.randomUUID();
         UUID debitNoteId = UUID.randomUUID();
-        when(noteDetails.findCreditNotes(id)).thenReturn(List.of(new InvoiceNoteDetailsGateway.Note(creditNoteId,
-                "NC-2026-00001", BigDecimal.valueOf(200), "Damaged goods", LocalDateTime.now())));
-        when(noteDetails.findDebitNotes(id)).thenReturn(List.of(new InvoiceNoteDetailsGateway.Note(debitNoteId,
-                "ND-2026-00001", BigDecimal.valueOf(50), "Extra shipping", LocalDateTime.now())));
+        when(noteDetails.findCreditNotes(id)).thenReturn(
+                List.of(new InvoiceNoteDetailsGateway.Note(creditNoteId,
+                        "NC-2026-00001", BigDecimal.valueOf(200),
+                        "Damaged goods", LocalDateTime.now())));
+        when(noteDetails.findDebitNotes(id)).thenReturn(
+                List.of(new InvoiceNoteDetailsGateway.Note(debitNoteId,
+                        "ND-2026-00001", BigDecimal.valueOf(50),
+                        "Extra shipping", LocalDateTime.now())));
         when(returnDetails.findByInvoiceId(id)).thenReturn(List.of());
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
@@ -84,9 +90,11 @@ class GetInvoiceByIdUseCaseNotesTest {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(List.of());
-        when(stockEnrichmentService.getAllStockByProducts(any(), any())).thenReturn(java.util.Map.of());
+        when(stockEnrichmentService.getAllStockByProducts(any(), any()))
+                .thenReturn(java.util.Map.of());
         when(noteDetails.findCreditNotes(id)).thenReturn(List.of());
         when(noteDetails.findDebitNotes(id)).thenReturn(List.of());
         when(returnDetails.findByInvoiceId(id)).thenReturn(List.of());
@@ -101,30 +109,13 @@ class GetInvoiceByIdUseCaseNotesTest {
     }
 
     private Invoice buildInvoice(UUID id) {
-        InvoiceLine line = InvoiceLine.create(
-                UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.valueOf(1000), List.of()
-        );
-        return Invoice.reconstitute(
-                InvoiceId.of(id),
-                InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                null,
-                null,
-                InvoiceStatus.DRAFT,
-                PaymentType.CASH,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.valueOf(1000),
+                List.of());
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+                UUID.randomUUID(), "Customer Name", "J-12345678-9",
+                UUID.randomUUID(), "User Name", null, null, InvoiceStatus.DRAFT,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 }

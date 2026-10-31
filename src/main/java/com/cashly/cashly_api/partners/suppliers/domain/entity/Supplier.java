@@ -30,11 +30,11 @@ public class Supplier {
     private List<SupplierPhone> phones;
     private List<SupplierAddress> addresses;
 
-    private Supplier(SupplierId id, SupplierCode code, LegalName legalName, SupplierType type,
-                     Rif rif, SupplierAlias alias, String notes, boolean active,
-                     LocalDateTime createdAt, LocalDateTime updatedAt,
-                     List<SupplierEmail> emails, List<SupplierPhone> phones,
-                     List<SupplierAddress> addresses) {
+    private Supplier(SupplierId id, SupplierCode code, LegalName legalName,
+            SupplierType type, Rif rif, SupplierAlias alias, String notes,
+            boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
+            List<SupplierEmail> emails, List<SupplierPhone> phones,
+            List<SupplierAddress> addresses) {
         this.id = id;
         this.code = code;
         this.legalName = legalName;
@@ -47,49 +47,52 @@ public class Supplier {
         this.updatedAt = updatedAt;
         this.emails = new ArrayList<>(emails != null ? emails : List.of());
         this.phones = new ArrayList<>(phones != null ? phones : List.of());
-        this.addresses = new ArrayList<>(addresses != null ? addresses : List.of());
+        this.addresses = new ArrayList<>(
+                addresses != null ? addresses : List.of());
     }
 
-    public static Supplier create(SupplierCode code, LegalName legalName, SupplierType type,
-                                   Rif rif, SupplierAlias alias) {
+    public static Supplier create(SupplierCode code, LegalName legalName,
+            SupplierType type, Rif rif, SupplierAlias alias) {
         LocalDateTime now = LocalDateTime.now();
-        return new Supplier(
-            SupplierId.generate(), code, legalName, type, rif, alias,
-            null, true, now, now,
-            new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
-        );
+        return new Supplier(SupplierId.generate(), code, legalName, type, rif,
+                alias, null, true, now, now, new ArrayList<>(),
+                new ArrayList<>(), new ArrayList<>());
     }
 
-    public static Supplier reconstitute(SupplierId id, SupplierCode code, LegalName legalName,
-                                         SupplierType type, Rif rif, SupplierAlias alias,
-                                         String notes, boolean active,
-                                         LocalDateTime createdAt, LocalDateTime updatedAt,
-                                         List<SupplierEmail> emails, List<SupplierPhone> phones,
-                                         List<SupplierAddress> addresses) {
-        return new Supplier(id, code, legalName, type, rif, alias, notes, active,
-            createdAt, updatedAt, emails, phones, addresses);
+    public static Supplier reconstitute(SupplierId id, SupplierCode code,
+            LegalName legalName, SupplierType type, Rif rif,
+            SupplierAlias alias, String notes, boolean active,
+            LocalDateTime createdAt, LocalDateTime updatedAt,
+            List<SupplierEmail> emails, List<SupplierPhone> phones,
+            List<SupplierAddress> addresses) {
+        return new Supplier(id, code, legalName, type, rif, alias, notes,
+                active, createdAt, updatedAt, emails, phones, addresses);
     }
 
     public void updateLegalName(LegalName legalName) {
-        if (legalName == null) throw new IllegalArgumentException("Legal name cannot be null");
+        if (legalName == null)
+            throw new IllegalArgumentException("Legal name cannot be null");
         this.legalName = legalName;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateRif(Rif rif) {
-        if (rif == null) throw new IllegalArgumentException("RIF cannot be null");
+        if (rif == null)
+            throw new IllegalArgumentException("RIF cannot be null");
         this.rif = rif;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateAlias(SupplierAlias alias) {
-        if (alias == null) throw new IllegalArgumentException("Alias cannot be null");
+        if (alias == null)
+            throw new IllegalArgumentException("Alias cannot be null");
         this.alias = alias;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateType(SupplierType type) {
-        if (type == null) throw new IllegalArgumentException("Supplier type cannot be null");
+        if (type == null)
+            throw new IllegalArgumentException("Supplier type cannot be null");
         this.type = type;
         this.updatedAt = LocalDateTime.now();
     }
@@ -100,23 +103,26 @@ public class Supplier {
     }
 
     public void addEmail(EmailAddress emailAddress) {
-        SupplierEmail supplierEmail = SupplierEmail.create(this.id, emailAddress);
+        SupplierEmail supplierEmail = SupplierEmail.create(this.id,
+                emailAddress);
         this.emails.add(supplierEmail);
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addPhone(PhoneNumber phoneNumber) {
-        SupplierPhone supplierPhone = SupplierPhone.create(this.id, phoneNumber);
+        SupplierPhone supplierPhone = SupplierPhone.create(this.id,
+                phoneNumber);
         this.phones.add(supplierPhone);
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addAddress(String address, boolean billing, boolean active,
-                           String state, String municipality, String postalCode) {
+            String state, String municipality, String postalCode) {
         if (billing) {
             this.addresses.forEach(SupplierAddress::unmarkAsBilling);
         }
-        SupplierAddress supplierAddress = SupplierAddress.create(this.id, address, billing, active, state, municipality, postalCode);
+        SupplierAddress supplierAddress = SupplierAddress.create(this.id,
+                address, billing, active, state, municipality, postalCode);
         this.addresses.add(supplierAddress);
         this.updatedAt = LocalDateTime.now();
     }
@@ -146,33 +152,64 @@ public class Supplier {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public SupplierId getId() { return id; }
-    public SupplierCode getCode() { return code; }
-    public LegalName getLegalName() { return legalName; }
-    public SupplierType getType() { return type; }
-    public Rif getRif() { return rif; }
-    public SupplierAlias getAlias() { return alias; }
-    public String getNotes() { return notes; }
-    public boolean isActive() { return active; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public List<SupplierEmail> getEmails() { return Collections.unmodifiableList(emails); }
-    public List<SupplierPhone> getPhones() { return Collections.unmodifiableList(phones); }
-    public List<SupplierAddress> getAddresses() { return Collections.unmodifiableList(addresses); }
+    public SupplierId getId() {
+        return id;
+    }
+    public SupplierCode getCode() {
+        return code;
+    }
+    public LegalName getLegalName() {
+        return legalName;
+    }
+    public SupplierType getType() {
+        return type;
+    }
+    public Rif getRif() {
+        return rif;
+    }
+    public SupplierAlias getAlias() {
+        return alias;
+    }
+    public String getNotes() {
+        return notes;
+    }
+    public boolean isActive() {
+        return active;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    public List<SupplierEmail> getEmails() {
+        return Collections.unmodifiableList(emails);
+    }
+    public List<SupplierPhone> getPhones() {
+        return Collections.unmodifiableList(phones);
+    }
+    public List<SupplierAddress> getAddresses() {
+        return Collections.unmodifiableList(addresses);
+    }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         Supplier that = (Supplier) obj;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(id); }
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     @Override
     public String toString() {
-        return "Supplier{id=" + id + ", code=" + code + ", alias=" + alias + ", active=" + active + "}";
+        return "Supplier{id=" + id + ", code=" + code + ", alias=" + alias
+                + ", active=" + active + "}";
     }
 }

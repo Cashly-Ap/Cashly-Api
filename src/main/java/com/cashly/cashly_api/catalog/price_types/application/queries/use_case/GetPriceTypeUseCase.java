@@ -15,8 +15,7 @@ public class GetPriceTypeUseCase {
     }
 
     public PriceTypeResponse execute(UUID id) {
-        return priceTypeRepository.findById(id)
-            .map(PriceTypeResponse::from)
-            .orElseThrow(() -> new PriceTypeNotFoundException(id));
+        return priceTypeRepository.findById(id).map(PriceTypeResponse::from)
+                .orElseThrow(() -> new PriceTypeNotFoundException(id));
     }
 }

@@ -27,15 +27,10 @@ class CustomerUnitTest {
 
     @Test
     void should_create_active_customer_with_empty_collections() {
-        Customer customer = Customer.create(
-                new CustomerCode(1L),
-                new LegalName("Cashly C.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Cashly"),
-                new CreditDays(30),
-                new CreditLimit(new BigDecimal("1000.00"))
-        );
+        Customer customer = Customer.create(new CustomerCode(1L),
+                new LegalName("Cashly C.A."), CustomerType.BUSINESS,
+                new Rif("J-12345678-9"), new CustomerAlias("Cashly"),
+                new CreditDays(30), new CreditLimit(new BigDecimal("1000.00")));
 
         assertNotNull(customer.getId());
         assertTrue(customer.isActive());
@@ -50,28 +45,15 @@ class CustomerUnitTest {
     void should_reconstitute_customer_with_state() {
         CustomerId id = CustomerId.generate();
         LocalDateTime now = LocalDateTime.now();
-        List<CustomerEmail> emails = List.of(
-                new CustomerEmail(EmailId.generate(), id, new EmailAddress("test@example.com"))
-        );
+        List<CustomerEmail> emails = List.of(new CustomerEmail(
+                EmailId.generate(), id, new EmailAddress("test@example.com")));
 
-        Customer customer = Customer.reconstitute(
-                id,
-                new CustomerCode(1L),
-                new LegalName("Cashly C.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Cashly"),
-                new CreditDays(30),
-                new CreditLimit(new BigDecimal("1000.00")),
-                false,
-                now,
-                now,
-                emails,
-                List.of(),
-                List.of(),
-                "Some notes",
-                UUID.randomUUID()
-        );
+        Customer customer = Customer.reconstitute(id, new CustomerCode(1L),
+                new LegalName("Cashly C.A."), CustomerType.BUSINESS,
+                new Rif("J-12345678-9"), new CustomerAlias("Cashly"),
+                new CreditDays(30), new CreditLimit(new BigDecimal("1000.00")),
+                false, now, now, emails, List.of(), List.of(), "Some notes",
+                UUID.randomUUID());
 
         assertEquals(id, customer.getId());
         assertEquals(1L, customer.getCode().getValue());
@@ -80,7 +62,8 @@ class CustomerUnitTest {
         assertEquals("J-12345678-9", customer.getRif().getValue());
         assertEquals("Cashly", customer.getAlias().getValue());
         assertEquals(30, customer.getCreditDays().getValue());
-        assertEquals(new BigDecimal("1000.00"), customer.getCreditLimit().getValue());
+        assertEquals(new BigDecimal("1000.00"),
+                customer.getCreditLimit().getValue());
         assertFalse(customer.isActive());
         assertEquals(now, customer.getCreatedAt());
         assertEquals(now, customer.getUpdatedAt());
@@ -117,7 +100,8 @@ class CustomerUnitTest {
 
         customer.addEmail(new EmailAddress("test@example.com"));
         assertEquals(1, customer.getEmails().size());
-        assertEquals("test@example.com", customer.getEmails().get(0).getEmail().getValue());
+        assertEquals("test@example.com",
+                customer.getEmails().get(0).getEmail().getValue());
     }
 
     @Test
@@ -127,7 +111,8 @@ class CustomerUnitTest {
 
         customer.addPhone(new PhoneNumber("+58-212-555-1234"));
         assertEquals(1, customer.getPhones().size());
-        assertEquals("+58-212-555-1234", customer.getPhones().get(0).getPhone().getValue());
+        assertEquals("+58-212-555-1234",
+                customer.getPhones().get(0).getPhone().getValue());
     }
 
     @Test
@@ -135,9 +120,11 @@ class CustomerUnitTest {
         Customer customer = createTestCustomer();
         assertTrue(customer.getAddresses().isEmpty());
 
-        customer.addAddress("123 Main St", true, true, "State", "Municipality", "1000");
+        customer.addAddress("123 Main St", true, true, "State", "Municipality",
+                "1000");
         assertEquals(1, customer.getAddresses().size());
-        assertEquals("123 Main St", customer.getAddresses().get(0).getAddress());
+        assertEquals("123 Main St",
+                customer.getAddresses().get(0).getAddress());
         assertTrue(customer.getAddresses().get(0).isBilling());
     }
 
@@ -147,9 +134,8 @@ class CustomerUnitTest {
         customer.addAddress("Address 1", true, true, "State", "Mun", "1000");
         customer.addAddress("Address 2", true, true, "State", "Mun", "1000");
 
-        
         assertFalse(customer.getAddresses().get(0).isBilling());
-        
+
         assertTrue(customer.getAddresses().get(1).isBilling());
     }
 
@@ -185,29 +171,19 @@ class CustomerUnitTest {
 
     @Test
     void should_return_credit_when_credit_limit_positive() {
-        Customer customer = Customer.create(
-                new CustomerCode(1L),
-                new LegalName("Cashly C.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Cashly"),
-                new CreditDays(30),
-                new CreditLimit(new BigDecimal("1000.00"))
-        );
+        Customer customer = Customer.create(new CustomerCode(1L),
+                new LegalName("Cashly C.A."), CustomerType.BUSINESS,
+                new Rif("J-12345678-9"), new CustomerAlias("Cashly"),
+                new CreditDays(30), new CreditLimit(new BigDecimal("1000.00")));
         assertEquals(PaymentType.CREDIT, customer.getPaymentType());
     }
 
     @Test
     void should_return_cash_when_credit_limit_zero() {
-        Customer customer = Customer.create(
-                new CustomerCode(1L),
-                new LegalName("Cashly C.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Cashly"),
-                new CreditDays(0),
-                new CreditLimit(BigDecimal.ZERO)
-        );
+        Customer customer = Customer.create(new CustomerCode(1L),
+                new LegalName("Cashly C.A."), CustomerType.BUSINESS,
+                new Rif("J-12345678-9"), new CustomerAlias("Cashly"),
+                new CreditDays(0), new CreditLimit(BigDecimal.ZERO));
         assertEquals(PaymentType.CASH, customer.getPaymentType());
     }
 
@@ -218,7 +194,8 @@ class CustomerUnitTest {
 
         customer.updateLegalName(new LegalName("New Name C.A."));
         assertEquals("New Name C.A.", customer.getLegalName().getValue());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -228,7 +205,8 @@ class CustomerUnitTest {
 
         customer.updateRif(new Rif("V-87654321-1"));
         assertEquals("V-87654321-1", customer.getRif().getValue());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -238,7 +216,8 @@ class CustomerUnitTest {
 
         customer.updateAlias(new CustomerAlias("NewAlias"));
         assertEquals("NewAlias", customer.getAlias().getValue());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -248,7 +227,8 @@ class CustomerUnitTest {
 
         customer.updateCreditDays(new CreditDays(60));
         assertEquals(60, customer.getCreditDays().getValue());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -257,8 +237,10 @@ class CustomerUnitTest {
         LocalDateTime before = customer.getUpdatedAt();
 
         customer.updateCreditLimit(new CreditLimit(new BigDecimal("5000.00")));
-        assertEquals(new BigDecimal("5000.00"), customer.getCreditLimit().getValue());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertEquals(new BigDecimal("5000.00"),
+                customer.getCreditLimit().getValue());
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -268,7 +250,8 @@ class CustomerUnitTest {
 
         customer.updateType(CustomerType.INDIVIDUAL);
         assertEquals(CustomerType.INDIVIDUAL, customer.getType());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -278,7 +261,8 @@ class CustomerUnitTest {
 
         customer.updateNotes("Important notes");
         assertEquals("Important notes", customer.getNotes());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -289,7 +273,8 @@ class CustomerUnitTest {
 
         customer.updatePriceTypeId(newPriceTypeId);
         assertEquals(newPriceTypeId, customer.getPriceTypeId());
-        assertTrue(customer.getUpdatedAt().isAfter(before) || customer.getUpdatedAt().equals(before));
+        assertTrue(customer.getUpdatedAt().isAfter(before)
+                || customer.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -297,21 +282,17 @@ class CustomerUnitTest {
         CustomerId id = CustomerId.generate();
         LocalDateTime now = LocalDateTime.now();
 
-        Customer customer1 = Customer.reconstitute(
-                id, new CustomerCode(1L), new LegalName("Name 1"), CustomerType.BUSINESS,
+        Customer customer1 = Customer.reconstitute(id, new CustomerCode(1L),
+                new LegalName("Name 1"), CustomerType.BUSINESS,
                 new Rif("J-11111111-1"), new CustomerAlias("Alias1"),
                 new CreditDays(30), new CreditLimit(new BigDecimal("1000")),
-                true, now, now, List.of(), List.of(), List.of(),
-                null, null
-        );
+                true, now, now, List.of(), List.of(), List.of(), null, null);
 
-        Customer customer2 = Customer.reconstitute(
-                id, new CustomerCode(2L), new LegalName("Name 2"), CustomerType.INDIVIDUAL,
+        Customer customer2 = Customer.reconstitute(id, new CustomerCode(2L),
+                new LegalName("Name 2"), CustomerType.INDIVIDUAL,
                 new Rif("J-22222222-2"), new CustomerAlias("Alias2"),
                 new CreditDays(60), new CreditLimit(new BigDecimal("2000")),
-                false, now, now, List.of(), List.of(), List.of(),
-                null, null
-        );
+                false, now, now, List.of(), List.of(), List.of(), null, null);
 
         assertEquals(customer1, customer2);
         assertEquals(customer1.hashCode(), customer2.hashCode());
@@ -327,30 +308,28 @@ class CustomerUnitTest {
     @Test
     void should_return_unmodifiable_emails() {
         Customer customer = createTestCustomer();
-        assertThrows(UnsupportedOperationException.class, () -> customer.getEmails().add(null));
+        assertThrows(UnsupportedOperationException.class,
+                () -> customer.getEmails().add(null));
     }
 
     @Test
     void should_return_unmodifiable_phones() {
         Customer customer = createTestCustomer();
-        assertThrows(UnsupportedOperationException.class, () -> customer.getPhones().add(null));
+        assertThrows(UnsupportedOperationException.class,
+                () -> customer.getPhones().add(null));
     }
 
     @Test
     void should_return_unmodifiable_addresses() {
         Customer customer = createTestCustomer();
-        assertThrows(UnsupportedOperationException.class, () -> customer.getAddresses().add(null));
+        assertThrows(UnsupportedOperationException.class,
+                () -> customer.getAddresses().add(null));
     }
 
     private Customer createTestCustomer() {
-        return Customer.create(
-                new CustomerCode(1L),
-                new LegalName("Cashly C.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Cashly"),
-                new CreditDays(30),
-                new CreditLimit(new BigDecimal("1000.00"))
-        );
+        return Customer.create(new CustomerCode(1L),
+                new LegalName("Cashly C.A."), CustomerType.BUSINESS,
+                new Rif("J-12345678-9"), new CustomerAlias("Cashly"),
+                new CreditDays(30), new CreditLimit(new BigDecimal("1000.00")));
     }
 }

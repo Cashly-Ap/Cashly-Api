@@ -9,12 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class EmailAddressUnitTest {
 
     @ParameterizedTest
-    @CsvSource({
-            "test@example.com, test@example.com",
+    @CsvSource({"test@example.com, test@example.com",
             "user.name@domain.org, user.name@domain.org",
             "TEST@EXAMPLE.COM, test@example.com",
-            "  test@example.com  , test@example.com"
-    })
+            "  test@example.com  , test@example.com"})
     void should_create_valid_email(String input, String expected) {
         EmailAddress email = new EmailAddress(input);
         assertEquals(expected, email.getValue());
@@ -22,32 +20,38 @@ class EmailAddressUnitTest {
 
     @Test
     void should_throw_on_null() {
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddress(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EmailAddress(null));
     }
 
     @Test
     void should_throw_on_blank() {
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddress("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EmailAddress("   "));
     }
 
     @Test
     void should_throw_on_empty() {
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddress(""));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EmailAddress(""));
     }
 
     @Test
     void should_throw_on_no_at_sign() {
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddress("testexample.com"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EmailAddress("testexample.com"));
     }
 
     @Test
     void should_throw_on_no_domain() {
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddress("test@"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EmailAddress("test@"));
     }
 
     @Test
     void should_throw_on_spaces_in_email() {
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddress("test @example.com"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EmailAddress("test @example.com"));
     }
 
     @Test

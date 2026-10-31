@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QuoteOrderCreationConfig {
     @Bean
-    public QuoteOrderCreationApi quoteOrderCreationApi(OrderRepository orders, OrderInventoryGateway inventory) {
+    public QuoteOrderCreationApi quoteOrderCreationApi(OrderRepository orders,
+            OrderInventoryGateway inventory) {
         return new QuoteOrderCreationService(orders, inventory);
     }
 }

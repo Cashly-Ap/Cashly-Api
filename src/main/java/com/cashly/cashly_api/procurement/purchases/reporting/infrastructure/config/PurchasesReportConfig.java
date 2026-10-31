@@ -14,15 +14,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PurchasesReportConfig {
     @Bean
-    public PurchasePdfPort purchasePdfPort(PdfBranding branding) { return new PurchasePdfGenerator(branding); }
+    public PurchasePdfPort purchasePdfPort(PdfBranding branding) {
+        return new PurchasePdfGenerator(branding);
+    }
     @Bean
-    public PurchasesReportPdfPort purchasesReportPdfPort(PdfBranding branding) { return new PurchasesReportPdfGenerator(branding); }
+    public PurchasesReportPdfPort purchasesReportPdfPort(PdfBranding branding) {
+        return new PurchasesReportPdfGenerator(branding);
+    }
     @Bean
-    public GeneratePurchasePdfUseCase generatePurchasePdfUseCase(PurchaseReportQueryGateway query, PurchasePdfPort pdf) {
+    public GeneratePurchasePdfUseCase generatePurchasePdfUseCase(
+            PurchaseReportQueryGateway query, PurchasePdfPort pdf) {
         return new GeneratePurchasePdfUseCaseImpl(query, pdf);
     }
     @Bean
-    public GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase(PurchaseReportQueryGateway query, PurchasesReportPdfPort pdf) {
+    public GeneratePurchasesReportPdfUseCase generatePurchasesReportPdfUseCase(
+            PurchaseReportQueryGateway query, PurchasesReportPdfPort pdf) {
         return new GeneratePurchasesReportPdfUseCaseImpl(query, pdf);
     }
 }

@@ -19,12 +19,14 @@ public class SupplierId {
 
     public static SupplierId from(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("Supplier ID string cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "Supplier ID string cannot be null or empty");
         }
         try {
             return new SupplierId(UUID.fromString(value));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Supplier ID format: " + value, e);
+            throw new IllegalArgumentException(
+                    "Invalid Supplier ID format: " + value, e);
         }
     }
 
@@ -34,8 +36,10 @@ public class SupplierId {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         SupplierId that = (SupplierId) obj;
         return Objects.equals(value, that.value);
     }

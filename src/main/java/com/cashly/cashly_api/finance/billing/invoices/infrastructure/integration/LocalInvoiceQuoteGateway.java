@@ -17,7 +17,7 @@ public class LocalInvoiceQuoteGateway implements InvoiceQuoteGateway {
 
     @Override
     public Optional<Quote> findQuote(UUID quoteId) {
-        return quotes.findById(quoteId).map(quote -> new Quote(
-                quote.getId(), quote.getCustomerId(), quote.getStatus().name()));
+        return quotes.findById(quoteId).map(quote -> new Quote(quote.getId(),
+                quote.getCustomerId(), quote.getStatus().name()));
     }
 }

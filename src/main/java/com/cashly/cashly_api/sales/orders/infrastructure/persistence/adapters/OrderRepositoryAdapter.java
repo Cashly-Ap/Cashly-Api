@@ -27,7 +27,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
     private final OrderNumberSequenceJpaRepository sequenceJpaRepository;
 
     public OrderRepositoryAdapter(OrderJpaRepository jpaRepository,
-                                    OrderNumberSequenceJpaRepository sequenceJpaRepository) {
+            OrderNumberSequenceJpaRepository sequenceJpaRepository) {
         this.jpaRepository = jpaRepository;
         this.sequenceJpaRepository = sequenceJpaRepository;
     }
@@ -37,45 +37,54 @@ public class OrderRepositoryAdapter implements OrderRepository {
     public Order save(Order order) {
         OrderEntity entity = OrderJpaMapper.toEntity(order);
         // @MapsId snapshots need their existing key during merge; null identifies a genuinely new snapshot.
-        jpaRepository.findWithLinesById(order.getId().value()).ifPresent(existing -> {
-            var snapshotIds = existing.getLines().stream()
-                    .filter(line -> line.getCategorySnapshot() != null)
-                    .collect(java.util.stream.Collectors.toMap(line -> line.getId(), line -> line.getCategorySnapshot().getId()));
-            entity.getLines().forEach(line -> {
-                if (line.getCategorySnapshot() != null) {
-                    line.getCategorySnapshot().setId(snapshotIds.get(line.getId()));
-                }
-            });
-        });
+        jpaRepository.findWithLinesById(order.getId().value())
+                .ifPresent(existing -> {
+                    var snapshotIds = existing.getLines().stream()
+                            .filter(line -> line.getCategorySnapshot() != null)
+                            .collect(java.util.stream.Collectors
+                                    .toMap(line -> line.getId(), line -> line
+                                            .getCategorySnapshot().getId()));
+                    entity.getLines().forEach(line -> {
+                        if (line.getCategorySnapshot() != null) {
+                            line.getCategorySnapshot()
+                                    .setId(snapshotIds.get(line.getId()));
+                        }
+                    });
+                });
         OrderEntity saved = jpaRepository.save(entity);
         return OrderJpaMapper.toDomain(saved);
     }
 
     @Override
     public Optional<Order> findById(OrderId id) {
-        Optional<OrderEntity> found = jpaRepository.findWithLinesById(id.value());
-        found.ifPresent(order -> jpaRepository.findWithAllocationsForOrder(id.value()));
+        Optional<OrderEntity> found = jpaRepository
+                .findWithLinesById(id.value());
+        found.ifPresent(
+                order -> jpaRepository.findWithAllocationsForOrder(id.value()));
         return found.map(OrderJpaMapper::toDomain);
     }
 
     @Override
     public List<Order> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                           UUID customerId, String status,
-                                           UUID productId, UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
-                                           String orderBy, String orderDir) {
+            UUID customerId, String status, UUID productId, UUID categoryId,
+            java.util.Set<UUID> currentCategoryProductIds, String orderBy,
+            String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
         List<OrderEntity> entities = currentCategoryProductIds.isEmpty()
-                ? jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId)
-                : jpaRepository.findAllWithFilters(from, to, customerId, status, productId, categoryId,
-                        currentCategoryProductIds);
+                ? jpaRepository.findAllWithFilters(from, to, customerId, status,
+                        productId, categoryId)
+                : jpaRepository.findAllWithFilters(from, to, customerId, status,
+                        productId, categoryId, currentCategoryProductIds);
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<OrderEntity> comparator = switch (orderBy) {
             case null -> Comparator.comparing(OrderEntity::getCreatedAt);
-            case "orderNumber" -> Comparator.comparing(OrderEntity::getOrderNumber);
-            case "customerName" -> Comparator.comparing(OrderEntity::getCustomerName);
+            case "orderNumber" ->
+                Comparator.comparing(OrderEntity::getOrderNumber);
+            case "customerName" ->
+                Comparator.comparing(OrderEntity::getCustomerName);
             case "status" -> Comparator.comparing(OrderEntity::getStatus);
             case "subtotal" -> Comparator.comparing(OrderEntity::getSubtotal);
             default -> Comparator.comparing(OrderEntity::getCreatedAt);
@@ -85,16 +94,14 @@ public class OrderRepositoryAdapter implements OrderRepository {
             comparator = comparator.reversed();
         }
 
-        return entities.stream()
-                .sorted(comparator)
-                .map(OrderJpaMapper::toDomain)
-                .toList();
+        return entities.stream().sorted(comparator)
+                .map(OrderJpaMapper::toDomain).toList();
     }
 
     @Override
     public int getNextSequenceForYear(int year) {
-        OrderNumberSequenceEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
-                .orElseGet(() -> {
+        OrderNumberSequenceEntity sequence = sequenceJpaRepository
+                .findByYearForUpdate(year).orElseGet(() -> {
                     OrderNumberSequenceEntity newSeq = new OrderNumberSequenceEntity();
                     newSeq.setYear(year);
                     newSeq.setNextValue(0);

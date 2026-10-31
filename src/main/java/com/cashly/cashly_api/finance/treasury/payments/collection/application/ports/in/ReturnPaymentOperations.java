@@ -7,5 +7,7 @@ public interface ReturnPaymentOperations {
     List<AllocationSnapshot> capture(UUID invoiceId);
     void cancelInvoicePayments(UUID invoiceId);
     void restore(List<AllocationSnapshot> snapshots);
-    record AllocationSnapshot(UUID paymentId, UUID invoiceId, BigDecimal amount) {}
+    record AllocationSnapshot(UUID paymentId, UUID invoiceId,
+            BigDecimal amount) {
+    }
 }

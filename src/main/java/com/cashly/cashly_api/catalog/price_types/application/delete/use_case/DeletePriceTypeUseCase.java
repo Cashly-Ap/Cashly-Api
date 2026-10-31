@@ -13,7 +13,8 @@ public class DeletePriceTypeUseCase {
     private final PriceTypeUsageGateway usageGateway;
     private final PriceTypeRepository priceTypeRepository;
 
-    public DeletePriceTypeUseCase(PriceTypeUsageGateway usageGateway, PriceTypeRepository priceTypeRepository) {
+    public DeletePriceTypeUseCase(PriceTypeUsageGateway usageGateway,
+            PriceTypeRepository priceTypeRepository) {
         this.usageGateway = usageGateway;
         this.priceTypeRepository = priceTypeRepository;
     }

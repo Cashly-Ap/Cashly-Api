@@ -38,11 +38,12 @@ public class Customer {
     private String notes;
     private UUID priceTypeId;
 
-    private Customer(CustomerId id, CustomerCode code, LegalName legalName, CustomerType type,
-                     Rif rif, CustomerAlias alias, CreditDays creditDays, CreditLimit creditLimit,
-                     boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
-                     List<CustomerEmail> emails, List<CustomerPhone> phones, List<CustomerAddress> addresses,
-                     String notes, UUID priceTypeId) {
+    private Customer(CustomerId id, CustomerCode code, LegalName legalName,
+            CustomerType type, Rif rif, CustomerAlias alias,
+            CreditDays creditDays, CreditLimit creditLimit, boolean active,
+            LocalDateTime createdAt, LocalDateTime updatedAt,
+            List<CustomerEmail> emails, List<CustomerPhone> phones,
+            List<CustomerAddress> addresses, String notes, UUID priceTypeId) {
         this.id = id;
         this.code = code;
         this.legalName = legalName;
@@ -56,66 +57,71 @@ public class Customer {
         this.updatedAt = updatedAt;
         this.emails = new ArrayList<>(emails != null ? emails : List.of());
         this.phones = new ArrayList<>(phones != null ? phones : List.of());
-        this.addresses = new ArrayList<>(addresses != null ? addresses : List.of());
+        this.addresses = new ArrayList<>(
+                addresses != null ? addresses : List.of());
         this.notes = notes;
         this.priceTypeId = priceTypeId;
     }
 
-    public static Customer create(CustomerCode code, LegalName legalName, CustomerType type,
-                                   Rif rif, CustomerAlias alias, CreditDays creditDays,
-                                   CreditLimit creditLimit) {
+    public static Customer create(CustomerCode code, LegalName legalName,
+            CustomerType type, Rif rif, CustomerAlias alias,
+            CreditDays creditDays, CreditLimit creditLimit) {
         LocalDateTime now = LocalDateTime.now();
-        return new Customer(
-            CustomerId.generate(), code, legalName, type, rif, alias,
-            creditDays, creditLimit, true, now, now,
-            new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-            null, null
-        );
+        return new Customer(CustomerId.generate(), code, legalName, type, rif,
+                alias, creditDays, creditLimit, true, now, now,
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null,
+                null);
     }
 
-    public static Customer reconstitute(CustomerId id, CustomerCode code, LegalName legalName,
-                                         CustomerType type, Rif rif, CustomerAlias alias,
-                                         CreditDays creditDays, CreditLimit creditLimit,
-                                         boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
-                                         List<CustomerEmail> emails, List<CustomerPhone> phones,
-                                         List<CustomerAddress> addresses,
-                                         String notes, UUID priceTypeId) {
-        return new Customer(id, code, legalName, type, rif, alias, creditDays, creditLimit,
-            active, createdAt, updatedAt, emails, phones, addresses, notes, priceTypeId);
+    public static Customer reconstitute(CustomerId id, CustomerCode code,
+            LegalName legalName, CustomerType type, Rif rif,
+            CustomerAlias alias, CreditDays creditDays, CreditLimit creditLimit,
+            boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
+            List<CustomerEmail> emails, List<CustomerPhone> phones,
+            List<CustomerAddress> addresses, String notes, UUID priceTypeId) {
+        return new Customer(id, code, legalName, type, rif, alias, creditDays,
+                creditLimit, active, createdAt, updatedAt, emails, phones,
+                addresses, notes, priceTypeId);
     }
 
     public void updateLegalName(LegalName legalName) {
-        if (legalName == null) throw new IllegalArgumentException("Legal name cannot be null");
+        if (legalName == null)
+            throw new IllegalArgumentException("Legal name cannot be null");
         this.legalName = legalName;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateRif(Rif rif) {
-        if (rif == null) throw new IllegalArgumentException("RIF cannot be null");
+        if (rif == null)
+            throw new IllegalArgumentException("RIF cannot be null");
         this.rif = rif;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateAlias(CustomerAlias alias) {
-        if (alias == null) throw new IllegalArgumentException("Alias cannot be null");
+        if (alias == null)
+            throw new IllegalArgumentException("Alias cannot be null");
         this.alias = alias;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateCreditDays(CreditDays creditDays) {
-        if (creditDays == null) throw new IllegalArgumentException("Credit days cannot be null");
+        if (creditDays == null)
+            throw new IllegalArgumentException("Credit days cannot be null");
         this.creditDays = creditDays;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateCreditLimit(CreditLimit creditLimit) {
-        if (creditLimit == null) throw new IllegalArgumentException("Credit limit cannot be null");
+        if (creditLimit == null)
+            throw new IllegalArgumentException("Credit limit cannot be null");
         this.creditLimit = creditLimit;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updateType(CustomerType type) {
-        if (type == null) throw new IllegalArgumentException("Customer type cannot be null");
+        if (type == null)
+            throw new IllegalArgumentException("Customer type cannot be null");
         this.type = type;
         this.updatedAt = LocalDateTime.now();
     }
@@ -131,23 +137,26 @@ public class Customer {
     }
 
     public void addEmail(EmailAddress emailAddress) {
-        CustomerEmail customerEmail = CustomerEmail.create(this.id, emailAddress);
+        CustomerEmail customerEmail = CustomerEmail.create(this.id,
+                emailAddress);
         this.emails.add(customerEmail);
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addPhone(PhoneNumber phoneNumber) {
-        CustomerPhone customerPhone = CustomerPhone.create(this.id, phoneNumber);
+        CustomerPhone customerPhone = CustomerPhone.create(this.id,
+                phoneNumber);
         this.phones.add(customerPhone);
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addAddress(String address, boolean billing, boolean active,
-                           String state, String municipality, String postalCode) {
+            String state, String municipality, String postalCode) {
         if (billing) {
             this.addresses.forEach(CustomerAddress::unmarkAsBilling);
         }
-        CustomerAddress customerAddress = CustomerAddress.create(this.id, address, billing, active, state, municipality, postalCode);
+        CustomerAddress customerAddress = CustomerAddress.create(this.id,
+                address, billing, active, state, municipality, postalCode);
         this.addresses.add(customerAddress);
         this.updatedAt = LocalDateTime.now();
     }
@@ -179,40 +188,77 @@ public class Customer {
 
     public PaymentType getPaymentType() {
         return creditLimit.getValue().compareTo(java.math.BigDecimal.ZERO) > 0
-            ? PaymentType.CREDIT
-            : PaymentType.CASH;
+                ? PaymentType.CREDIT
+                : PaymentType.CASH;
     }
 
-    public CustomerId getId() { return id; }
-    public CustomerCode getCode() { return code; }
-    public LegalName getLegalName() { return legalName; }
-    public CustomerType getType() { return type; }
-    public Rif getRif() { return rif; }
-    public CustomerAlias getAlias() { return alias; }
-    public CreditDays getCreditDays() { return creditDays; }
-    public CreditLimit getCreditLimit() { return creditLimit; }
-    public boolean isActive() { return active; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public List<CustomerEmail> getEmails() { return Collections.unmodifiableList(emails); }
-    public List<CustomerPhone> getPhones() { return Collections.unmodifiableList(phones); }
-    public List<CustomerAddress> getAddresses() { return Collections.unmodifiableList(addresses); }
-    public String getNotes() { return notes; }
-    public UUID getPriceTypeId() { return priceTypeId; }
+    public CustomerId getId() {
+        return id;
+    }
+    public CustomerCode getCode() {
+        return code;
+    }
+    public LegalName getLegalName() {
+        return legalName;
+    }
+    public CustomerType getType() {
+        return type;
+    }
+    public Rif getRif() {
+        return rif;
+    }
+    public CustomerAlias getAlias() {
+        return alias;
+    }
+    public CreditDays getCreditDays() {
+        return creditDays;
+    }
+    public CreditLimit getCreditLimit() {
+        return creditLimit;
+    }
+    public boolean isActive() {
+        return active;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    public List<CustomerEmail> getEmails() {
+        return Collections.unmodifiableList(emails);
+    }
+    public List<CustomerPhone> getPhones() {
+        return Collections.unmodifiableList(phones);
+    }
+    public List<CustomerAddress> getAddresses() {
+        return Collections.unmodifiableList(addresses);
+    }
+    public String getNotes() {
+        return notes;
+    }
+    public UUID getPriceTypeId() {
+        return priceTypeId;
+    }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         Customer that = (Customer) obj;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(id); }
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     @Override
     public String toString() {
-        return "Customer{id=" + id + ", code=" + code + ", alias=" + alias + ", active=" + active + "}";
+        return "Customer{id=" + id + ", code=" + code + ", alias=" + alias
+                + ", active=" + active + "}";
     }
 }

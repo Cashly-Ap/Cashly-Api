@@ -9,29 +9,33 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public interface SpringDataProductUsageRepository extends Repository<ProductEntity, UUID> {
+public interface SpringDataProductUsageRepository
+        extends
+            Repository<ProductEntity, UUID> {
     @Query(value = """
-        SELECT COUNT(*) FROM products p
-        WHERE p.category_id = :categoryId AND p.active = true
-        """, nativeQuery = true)
+            SELECT COUNT(*) FROM products p
+            WHERE p.category_id = :categoryId AND p.active = true
+            """, nativeQuery = true)
     long countActiveProductsByCategory(@Param("categoryId") UUID categoryId);
 
     @Query("""
-        SELECT p.categoryId, COUNT(p) FROM ProductEntity p
-        WHERE p.categoryId IN :ids AND p.active = true
-        GROUP BY p.categoryId
-        """)
-    List<Object[]> countActiveProductsByCategoryIds(@Param("ids") Set<UUID> ids);
+            SELECT p.categoryId, COUNT(p) FROM ProductEntity p
+            WHERE p.categoryId IN :ids AND p.active = true
+            GROUP BY p.categoryId
+            """)
+    List<Object[]> countActiveProductsByCategoryIds(
+            @Param("ids") Set<UUID> ids);
 
     @Query("""
-        SELECT COUNT(pp) > 0 FROM ProductPriceEntity pp
-        WHERE pp.priceTypeId = :priceTypeId
-        """)
+            SELECT COUNT(pp) > 0 FROM ProductPriceEntity pp
+            WHERE pp.priceTypeId = :priceTypeId
+            """)
     boolean isInUseByProducts(@Param("priceTypeId") UUID priceTypeId);
 
     @Query("""
-        SELECT DISTINCT pp.priceTypeId FROM ProductPriceEntity pp
-        WHERE pp.priceTypeId IN :priceTypeIds
-        """)
-    Set<UUID> findIdsInUseByProducts(@Param("priceTypeIds") Set<UUID> priceTypeIds);
+            SELECT DISTINCT pp.priceTypeId FROM ProductPriceEntity pp
+            WHERE pp.priceTypeId IN :priceTypeIds
+            """)
+    Set<UUID> findIdsInUseByProducts(
+            @Param("priceTypeIds") Set<UUID> priceTypeIds);
 }

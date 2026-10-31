@@ -10,10 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class ReturnInventoryBoundaryTest {
     @Test
     void shouldRejectWarehouseDependenciesInApplicationConstructors() {
-        for (Class<?> useCase : List.of(CreateReturnUseCase.class, DeleteReturnUseCase.class)) {
+        for (Class<?> useCase : List.of(CreateReturnUseCase.class,
+                DeleteReturnUseCase.class)) {
             for (var constructor : useCase.getConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.inventory.warehouses"), parameter.getName());
+                    assertFalse(parameter.getPackageName().startsWith(
+                            "com.cashly.cashly_api.inventory.warehouses"),
+                            parameter.getName());
                 }
             }
         }

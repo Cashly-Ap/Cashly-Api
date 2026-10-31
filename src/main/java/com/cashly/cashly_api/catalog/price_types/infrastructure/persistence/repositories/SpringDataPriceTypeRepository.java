@@ -10,21 +10,21 @@ import org.springframework.data.repository.query.Param;
 import java.util.Set;
 import java.util.UUID;
 
-public interface SpringDataPriceTypeRepository extends JpaRepository<PriceTypeEntity, UUID> {
+public interface SpringDataPriceTypeRepository
+        extends
+            JpaRepository<PriceTypeEntity, UUID> {
 
     boolean existsByName(String name);
 
     boolean existsByNameAndIdNot(String name, UUID id);
 
     @Query("""
-        SELECT pt FROM PriceTypeEntity pt
-        WHERE (:search IS NULL OR LOWER(pt.name) LIKE LOWER(CONCAT('%', :search, '%'))
-               OR LOWER(pt.description) LIKE LOWER(CONCAT('%', :search, '%')))
-        AND (:active IS NULL OR pt.active = :active)
-        """)
-    Page<PriceTypeEntity> findAllWithFilters(
-            @Param("search") String search,
-            @Param("active") Boolean active,
-            Pageable pageable);
+            SELECT pt FROM PriceTypeEntity pt
+            WHERE (:search IS NULL OR LOWER(pt.name) LIKE LOWER(CONCAT('%', :search, '%'))
+                   OR LOWER(pt.description) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (:active IS NULL OR pt.active = :active)
+            """)
+    Page<PriceTypeEntity> findAllWithFilters(@Param("search") String search,
+            @Param("active") Boolean active, Pageable pageable);
 
 }

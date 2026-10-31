@@ -15,9 +15,14 @@ public class RepositoryStockCatalogQuery implements StockCatalogQuery {
 
     @Override
     public Optional<StockCatalogEntry> findProduct(UUID productId) {
-        return products.findById(productId).map(product -> new StockCatalogEntry(product.getId(), product.getCode(),
-                product.getName(), product.isComposite(), product.getComponents().stream()
-                .map(component -> new StockCatalogEntry.Component(component.getComponentProductId(), component.getQuantity()))
-                .toList()));
+        return products.findById(productId)
+                .map(product -> new StockCatalogEntry(product.getId(),
+                        product.getCode(), product.getName(),
+                        product.isComposite(),
+                        product.getComponents().stream().map(
+                                component -> new StockCatalogEntry.Component(
+                                        component.getComponentProductId(),
+                                        component.getQuantity()))
+                                .toList()));
     }
 }

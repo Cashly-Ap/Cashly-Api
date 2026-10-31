@@ -34,10 +34,10 @@ class DeleteProductUseCaseTest {
     @Test
     void should_DeleteProduct_When_ProductExists() {
         UUID id = UUID.randomUUID();
-        Product product = Product.reconstitute(id, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(id, "PROD-001", "Test Product",
+                "Description", UUID.randomUUID(), false, true, null,
+                new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
 
@@ -60,16 +60,18 @@ class DeleteProductUseCaseTest {
     @Test
     void should_ThrowProductHasAssociatedRecordsException_When_ForeignKeyViolation() {
         UUID id = UUID.randomUUID();
-        Product product = Product.reconstitute(id, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(id, "PROD-001", "Test Product",
+                "Description", UUID.randomUUID(), false, true, null,
+                new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        doThrow(new ProductReferencedException(id, new RuntimeException("FK constraint")))
-                .when(productRepository).delete(id);
+        doThrow(new ProductReferencedException(id,
+                new RuntimeException("FK constraint"))).when(productRepository)
+                .delete(id);
 
-        assertThrows(ProductHasAssociatedRecordsException.class, () -> useCase.execute(id));
+        assertThrows(ProductHasAssociatedRecordsException.class,
+                () -> useCase.execute(id));
         verify(productRepository).deleteComponentReferencesByProductId(id);
         verify(productRepository).delete(id);
     }

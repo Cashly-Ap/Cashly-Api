@@ -52,7 +52,8 @@ class GetUserByIdUseCaseUnitTest {
     @DisplayName("should_ReturnUser_When_UserExists")
     void should_ReturnUser_When_UserExists() {
         String userIdStr = testUserId.getValue().toString();
-        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(testUserId))
+                .thenReturn(Optional.of(testUser));
 
         UserResponse response = getUserByIdUseCase.execute(userIdStr);
 
@@ -66,12 +67,12 @@ class GetUserByIdUseCaseUnitTest {
     @DisplayName("should_ThrowException_When_UserNotFound")
     void should_ThrowException_When_UserNotFound() {
         String userIdStr = testUserId.getValue().toString();
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
-            UserNotFoundException.class,
-            () -> getUserByIdUseCase.execute(userIdStr)
-        );
+                UserNotFoundException.class,
+                () -> getUserByIdUseCase.execute(userIdStr));
 
         assertTrue(exception.getMessage().contains("User not found with ID"));
         verify(userRepository, times(1)).findById(any(UserId.class));
@@ -80,10 +81,7 @@ class GetUserByIdUseCaseUnitTest {
     @Test
     @DisplayName("should_ThrowException_When_UserIdIsNull")
     void should_ThrowException_When_UserIdIsNull() {
-        assertThrows(
-            Exception.class,
-            () -> getUserByIdUseCase.execute(null)
-        );
+        assertThrows(Exception.class, () -> getUserByIdUseCase.execute(null));
 
         verify(userRepository, never()).findById(any());
     }
@@ -92,7 +90,8 @@ class GetUserByIdUseCaseUnitTest {
     @DisplayName("should_ReturnUserData_When_UserFound")
     void should_ReturnUserData_When_UserFound() {
         String userIdStr = testUserId.getValue().toString();
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
 
         UserResponse response = getUserByIdUseCase.execute(userIdStr);
 
@@ -107,7 +106,8 @@ class GetUserByIdUseCaseUnitTest {
     void should_HandleInactiveUser_When_UserIsInactive() {
         String userIdStr = testUserId.getValue().toString();
         testUser.deactivate();
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
 
         UserResponse response = getUserByIdUseCase.execute(userIdStr);
 

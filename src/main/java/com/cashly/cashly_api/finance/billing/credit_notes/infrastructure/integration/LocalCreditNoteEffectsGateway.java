@@ -13,20 +13,24 @@ public class LocalCreditNoteEffectsGateway implements CreditNoteEffectsGateway {
     private final CreditNoteCashApi cash;
     private final CreditNoteBalanceApi balances;
 
-    public LocalCreditNoteEffectsGateway(CreditNoteCashApi cash, CreditNoteBalanceApi balances) {
+    public LocalCreditNoteEffectsGateway(CreditNoteCashApi cash,
+            CreditNoteBalanceApi balances) {
         this.cash = cash;
         this.balances = balances;
     }
 
     @Override
     public void recordCashOut(BigDecimal amount, String noteNumber, UUID noteId,
-                              UUID authenticatedUserId, String createdByName) {
-        cash.recordCreditNoteOut(amount, noteNumber, noteId, authenticatedUserId, createdByName);
+            UUID authenticatedUserId, String createdByName) {
+        cash.recordCreditNoteOut(amount, noteNumber, noteId,
+                authenticatedUserId, createdByName);
     }
 
     @Override
-    public void addCustomerCredit(UUID customerId, BigDecimal amount, UUID noteId,
-                                  String noteNumber, String invoiceNumber, UUID authenticatedUserId) {
-        balances.addCredit(customerId, amount, noteId, noteNumber, invoiceNumber, authenticatedUserId);
+    public void addCustomerCredit(UUID customerId, BigDecimal amount,
+            UUID noteId, String noteNumber, String invoiceNumber,
+            UUID authenticatedUserId) {
+        balances.addCredit(customerId, amount, noteId, noteNumber,
+                invoiceNumber, authenticatedUserId);
     }
 }

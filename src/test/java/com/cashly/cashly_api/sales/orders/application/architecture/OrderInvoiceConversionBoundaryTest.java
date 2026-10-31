@@ -9,9 +9,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OrderInvoiceConversionBoundaryTest {
     @Test
     void should_create_invoices_through_an_owned_contract() {
-        assertThat(Arrays.stream(ConvertToInvoiceUseCase.class.getDeclaredConstructors())
-                .flatMap(constructor -> Arrays.stream(constructor.getParameterTypes()))
+        assertThat(Arrays
+                .stream(ConvertToInvoiceUseCase.class.getDeclaredConstructors())
+                .flatMap(constructor -> Arrays
+                        .stream(constructor.getParameterTypes()))
                 .map(Class::getPackageName))
-                .noneMatch(name -> name.startsWith("com.cashly.cashly_api.finance.billing.invoices"));
+                .noneMatch(name -> name.startsWith(
+                        "com.cashly.cashly_api.finance.billing.invoices"));
     }
 }

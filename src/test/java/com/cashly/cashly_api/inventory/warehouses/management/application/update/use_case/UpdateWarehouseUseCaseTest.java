@@ -39,20 +39,20 @@ class UpdateWarehouseUseCaseTest {
     @Test
     @DisplayName("finds warehouse, updates, saves")
     void shouldUpdateWarehouseAndReturnDetail() {
-        Warehouse existing = Warehouse.reconstitute(
-                warehouseId, "WH-001", "Old Name", "Old Addr",
-                "Old State", "Old Mun", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        Warehouse existing = Warehouse.reconstitute(warehouseId, "WH-001",
+                "Old Name", "Old Addr", "Old State", "Old Mun", "10001", true,
+                LocalDateTime.now(), LocalDateTime.now());
 
-        UpdateWarehouseRequest request = new UpdateWarehouseRequest(
-                "New Name", "New Addr", "New State", "New Mun", "20002", null
-        );
+        UpdateWarehouseRequest request = new UpdateWarehouseRequest("New Name",
+                "New Addr", "New State", "New Mun", "20002", null);
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(existing));
-        when(warehouseRepository.save(any(Warehouse.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(existing));
+        when(warehouseRepository.save(any(Warehouse.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        WarehouseDetailResponse response = useCase.execute(warehouseId, request);
+        WarehouseDetailResponse response = useCase.execute(warehouseId,
+                request);
 
         assertNotNull(response);
         assertEquals("New Name", response.name());
@@ -67,13 +67,14 @@ class UpdateWarehouseUseCaseTest {
     @Test
     @DisplayName("throws WarehouseNotFoundException when not found")
     void shouldThrowWhenWarehouseNotFound() {
-        UpdateWarehouseRequest request = new UpdateWarehouseRequest(
-                "New Name", "New Addr", "New State", "New Mun", "20002", null
-        );
+        UpdateWarehouseRequest request = new UpdateWarehouseRequest("New Name",
+                "New Addr", "New State", "New Mun", "20002", null);
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(warehouseId, request));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(warehouseId, request));
 
         verify(warehouseRepository).findById(warehouseId);
         verify(warehouseRepository, never()).save(any());

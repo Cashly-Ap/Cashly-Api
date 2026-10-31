@@ -14,15 +14,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OrdersReportConfig {
     @Bean
-    public OrderPdfPort orderPdfPort(PdfBranding branding) { return new OrderPdfGenerator(branding); }
+    public OrderPdfPort orderPdfPort(PdfBranding branding) {
+        return new OrderPdfGenerator(branding);
+    }
     @Bean
-    public OrdersReportPdfPort ordersReportPdfPort(PdfBranding branding) { return new OrdersReportPdfGenerator(branding); }
+    public OrdersReportPdfPort ordersReportPdfPort(PdfBranding branding) {
+        return new OrdersReportPdfGenerator(branding);
+    }
     @Bean
-    public GenerateOrderPdfUseCase generateOrderPdfUseCase(OrderReportQueryGateway query, OrderPdfPort pdf) {
+    public GenerateOrderPdfUseCase generateOrderPdfUseCase(
+            OrderReportQueryGateway query, OrderPdfPort pdf) {
         return new GenerateOrderPdfUseCaseImpl(query, pdf);
     }
     @Bean
-    public GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase(OrderReportQueryGateway query, OrdersReportPdfPort pdf) {
+    public GenerateOrdersReportPdfUseCase generateOrdersReportPdfUseCase(
+            OrderReportQueryGateway query, OrdersReportPdfPort pdf) {
         return new GenerateOrdersReportPdfUseCaseImpl(query, pdf);
     }
 }

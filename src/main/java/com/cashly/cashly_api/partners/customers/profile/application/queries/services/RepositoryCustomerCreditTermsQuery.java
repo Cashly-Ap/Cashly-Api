@@ -5,7 +5,9 @@ import com.cashly.cashly_api.partners.customers.profile.domain.repository.Custom
 import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerId;
 import java.util.UUID;
 
-public class RepositoryCustomerCreditTermsQuery implements CustomerCreditTermsQuery {
+public class RepositoryCustomerCreditTermsQuery
+        implements
+            CustomerCreditTermsQuery {
     private final CustomerRepository customers;
 
     public RepositoryCustomerCreditTermsQuery(CustomerRepository customers) {
@@ -15,7 +17,8 @@ public class RepositoryCustomerCreditTermsQuery implements CustomerCreditTermsQu
     @Override
     public int creditDays(UUID customerId) {
         return customers.findById(new CustomerId(customerId))
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Customer not found: " + customerId))
                 .getCreditDays().getValue();
     }
 }

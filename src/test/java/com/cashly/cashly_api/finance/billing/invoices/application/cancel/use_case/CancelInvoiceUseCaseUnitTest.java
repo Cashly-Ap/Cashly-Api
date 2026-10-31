@@ -54,18 +54,22 @@ class CancelInvoiceUseCaseUnitTest {
     void should_CancelInvoice_When_InvoiceExistsAndReasonProvided() {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT);
-        CancelInvoiceRequest request = new CancelInvoiceRequest("Duplicate invoice");
+        CancelInvoiceRequest request = new CancelInvoiceRequest(
+                "Duplicate invoice");
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(invoiceRepository.save(invoice)).thenReturn(invoice);
 
-        InvoiceDetailResponse response = cancelInvoiceUseCase.execute(id, request);
+        InvoiceDetailResponse response = cancelInvoiceUseCase.execute(id,
+                request);
 
         assertNotNull(response);
         assertEquals("CANCELLED", response.status());
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verify(invoiceRepository).save(invoice);
-        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(), eq("INV-2026-00001"), eq("Duplicate invoice"));
+        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(),
+                eq("INV-2026-00001"), eq("Duplicate invoice"));
     }
 
     @Test
@@ -73,14 +77,15 @@ class CancelInvoiceUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         CancelInvoiceRequest request = new CancelInvoiceRequest("Some reason");
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.empty());
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.empty());
 
         InvoiceNotFoundException exception = assertThrows(
                 InvoiceNotFoundException.class,
-                () -> cancelInvoiceUseCase.execute(id, request)
-        );
+                () -> cancelInvoiceUseCase.execute(id, request));
 
-        assertEquals("Invoice not found with id: " + id, exception.getMessage());
+        assertEquals("Invoice not found with id: " + id,
+                exception.getMessage());
         verify(invoiceRepository, never()).save(any());
     }
 
@@ -90,13 +95,15 @@ class CancelInvoiceUseCaseUnitTest {
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT);
         CancelInvoiceRequest request = new CancelInvoiceRequest("Test reason");
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(invoiceRepository.save(invoice)).thenReturn(invoice);
 
         cancelInvoiceUseCase.execute(id, request);
 
         verify(invoiceRepository, times(1)).save(invoice);
-        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(), any(), any());
+        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(),
+                any(), any());
     }
 
     @Test
@@ -105,12 +112,11 @@ class CancelInvoiceUseCaseUnitTest {
         Invoice invoice = buildInvoice(id, InvoiceStatus.CANCELLED);
         CancelInvoiceRequest request = new CancelInvoiceRequest("Reason");
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> cancelInvoiceUseCase.execute(id, request)
-        );
+        assertThrows(IllegalStateException.class,
+                () -> cancelInvoiceUseCase.execute(id, request));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -119,57 +125,48 @@ class CancelInvoiceUseCaseUnitTest {
     void should_release_inventory_for_draft_cancellation() {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT);
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(invoiceRepository.save(invoice)).thenReturn(invoice);
         cancelInvoiceUseCase.execute(id, new CancelInvoiceRequest("Reason"));
-        verify(inventoryGateway).cancelInvoice(argThat(command -> command.invoiceId().equals(id)
-                && command.invoiceNumber().equals("INV-2026-00001")), eq(false));
+        verify(inventoryGateway).cancelInvoice(
+                argThat(command -> command.invoiceId().equals(id)
+                        && command.invoiceNumber().equals("INV-2026-00001")),
+                eq(false));
     }
 
     @Test
     void should_restore_inventory_for_confirmed_cancellation() {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.PAID);
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
         when(invoiceRepository.save(invoice)).thenReturn(invoice);
         cancelInvoiceUseCase.execute(id, new CancelInvoiceRequest("Reason"));
-        verify(inventoryGateway).cancelInvoice(argThat(command -> command.invoiceId().equals(id)), eq(true));
+        verify(inventoryGateway).cancelInvoice(
+                argThat(command -> command.invoiceId().equals(id)), eq(true));
     }
 
     @Test
     void should_stop_cancellation_side_effects_when_inventory_operation_fails() {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT);
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        doThrow(new IllegalStateException("Missing stock")).when(inventoryGateway).cancelInvoice(any(), eq(false));
-        assertThrows(IllegalStateException.class,
-                () -> cancelInvoiceUseCase.execute(id, new CancelInvoiceRequest("Reason")));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        doThrow(new IllegalStateException("Missing stock"))
+                .when(inventoryGateway).cancelInvoice(any(), eq(false));
+        assertThrows(IllegalStateException.class, () -> cancelInvoiceUseCase
+                .execute(id, new CancelInvoiceRequest("Reason")));
         verify(invoiceRepository, never()).save(any());
         verifyNoInteractions(notificationService);
     }
     private Invoice buildInvoice(UUID id, InvoiceStatus status) {
-        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Invoice.reconstitute(
-                InvoiceId.of(id),
-                InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Customer Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                null,
-                null,
-                status,
-                PaymentType.CASH,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+                UUID.randomUUID(), "Customer Name", "J-12345678-9",
+                UUID.randomUUID(), "User Name", null, null, status,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 }

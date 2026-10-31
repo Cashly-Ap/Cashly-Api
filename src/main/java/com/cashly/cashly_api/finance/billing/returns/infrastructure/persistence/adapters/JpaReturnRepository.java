@@ -1,6 +1,5 @@
 package com.cashly.cashly_api.finance.billing.returns.infrastructure.persistence.adapters;
 
-
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.CancelledAllocation;
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.Return;
 import com.cashly.cashly_api.finance.billing.returns.domain.valueobjects.ReturnId;
@@ -39,7 +38,8 @@ public class JpaReturnRepository implements ReturnRepository {
     @Override
     public Return save(Return return_) {
         ReturnEntity entity = toEntity(return_);
-        if (return_.getId() == null || findJpaEntity(return_.getId().value()).isEmpty()) {
+        if (return_.getId() == null
+                || findJpaEntity(return_.getId().value()).isEmpty()) {
             entityManager.persist(entity);
         } else {
             entity = entityManager.merge(entity);
@@ -49,13 +49,12 @@ public class JpaReturnRepository implements ReturnRepository {
 
     @Override
     public Optional<Return> findById(ReturnId id) {
-        return findJpaEntity(id.value())
-                .map(this::toDomain);
+        return findJpaEntity(id.value()).map(this::toDomain);
     }
 
     @Override
     public List<Return> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                            UUID customerId, UUID invoiceId) {
+            UUID customerId, UUID invoiceId) {
         StringBuilder jpql = new StringBuilder("""
                 SELECT DISTINCT r FROM ReturnEntity r
                 LEFT JOIN FETCH r.lines l
@@ -76,7 +75,8 @@ public class JpaReturnRepository implements ReturnRepository {
         }
         jpql.append(" ORDER BY r.createdAt DESC");
 
-        TypedQuery<ReturnEntity> query = entityManager.createQuery(jpql.toString(), ReturnEntity.class);
+        TypedQuery<ReturnEntity> query = entityManager
+                .createQuery(jpql.toString(), ReturnEntity.class);
 
         if (dateFrom != null) {
             query.setParameter("dateFrom", dateFrom.atStartOfDay());
@@ -91,9 +91,7 @@ public class JpaReturnRepository implements ReturnRepository {
             query.setParameter("invoiceId", invoiceId);
         }
 
-        return query.getResultList().stream()
-                .map(this::toDomain)
-                .toList();
+        return query.getResultList().stream().map(this::toDomain).toList();
     }
 
     @Override
@@ -142,21 +140,21 @@ public class JpaReturnRepository implements ReturnRepository {
         entity.setUpdatedAt(return_.getUpdatedAt());
 
         List<ReturnLineEntity> lineEntities = return_.getLines().stream()
-                .map(line -> toLineEntity(line, entity))
-                .toList();
+                .map(line -> toLineEntity(line, entity)).toList();
         entity.getLines().clear();
         entity.getLines().addAll(lineEntities);
 
-        List<ReturnCancelledAllocationEntity> cancelledEntities = return_.getCancelledAllocations().stream()
-                .map(ca -> toCancelledAllocationEntity(ca, entity))
-                .toList();
+        List<ReturnCancelledAllocationEntity> cancelledEntities = return_
+                .getCancelledAllocations().stream()
+                .map(ca -> toCancelledAllocationEntity(ca, entity)).toList();
         entity.getCancelledAllocations().clear();
         entity.getCancelledAllocations().addAll(cancelledEntities);
 
         return entity;
     }
 
-    private ReturnLineEntity toLineEntity(ReturnLine line, ReturnEntity returnEntity) {
+    private ReturnLineEntity toLineEntity(ReturnLine line,
+            ReturnEntity returnEntity) {
         ReturnLineEntity entity = new ReturnLineEntity();
         entity.setId(UUID.randomUUID());
         entity.setReturnEntity(returnEntity);
@@ -166,16 +164,17 @@ public class JpaReturnRepository implements ReturnRepository {
         entity.setUnitPrice(line.getUnitPrice());
         entity.setLineTotal(line.getSubtotal());
 
-        List<ReturnLineAllocationEntity> allocationEntities = line.getAllocations().stream()
-                .map(alloc -> toAllocationEntity(alloc, entity))
-                .toList();
+        List<ReturnLineAllocationEntity> allocationEntities = line
+                .getAllocations().stream()
+                .map(alloc -> toAllocationEntity(alloc, entity)).toList();
         entity.getAllocations().clear();
         entity.getAllocations().addAll(allocationEntities);
 
         return entity;
     }
 
-    private ReturnLineAllocationEntity toAllocationEntity(ReturnLineAllocation allocation, ReturnLineEntity returnLine) {
+    private ReturnLineAllocationEntity toAllocationEntity(
+            ReturnLineAllocation allocation, ReturnLineEntity returnLine) {
         ReturnLineAllocationEntity entity = new ReturnLineAllocationEntity();
         entity.setId(allocation.getId());
         entity.setReturnLine(returnLine);
@@ -186,54 +185,38 @@ public class JpaReturnRepository implements ReturnRepository {
 
     private Return toDomain(ReturnEntity entity) {
         List<ReturnLine> lines = entity.getLines().stream()
-                .map(this::toLineDomain)
-                .toList();
+                .map(this::toLineDomain).toList();
 
-        List<CancelledAllocation> cancelledAllocations = entity.getCancelledAllocations().stream()
-                .map(this::toCancelledAllocationDomain)
-                .toList();
+        List<CancelledAllocation> cancelledAllocations = entity
+                .getCancelledAllocations().stream()
+                .map(this::toCancelledAllocationDomain).toList();
 
-        return Return.reconstitute(
-                ReturnId.of(entity.getId()),
+        return Return.reconstitute(ReturnId.of(entity.getId()),
                 new ReturnNumber(entity.getReturnNumber()),
-                entity.getInvoiceId(),
-                entity.getCustomerId(),
-                ReturnType.valueOf(entity.getReturnType()),
-                entity.getReason(),
-                entity.getTotal(),
-                lines,
-                cancelledAllocations,
-                entity.getCreatedBy(),
-                entity.getCreatedByName(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+                entity.getInvoiceId(), entity.getCustomerId(),
+                ReturnType.valueOf(entity.getReturnType()), entity.getReason(),
+                entity.getTotal(), lines, cancelledAllocations,
+                entity.getCreatedBy(), entity.getCreatedByName(),
+                entity.getCreatedAt(), entity.getUpdatedAt());
     }
 
     private ReturnLine toLineDomain(ReturnLineEntity entity) {
-        List<ReturnLineAllocation> allocations = entity.getAllocations().stream()
-                .map(this::toAllocationDomain)
-                .toList();
+        List<ReturnLineAllocation> allocations = entity.getAllocations()
+                .stream().map(this::toAllocationDomain).toList();
 
-        return ReturnLine.create(
-                entity.getInvoiceLineId(),
-                entity.getProductId(),
-                entity.getQuantity(),
-                entity.getUnitPrice(),
-                entity.getLineTotal(),
-                allocations
-        );
+        return ReturnLine.create(entity.getInvoiceLineId(),
+                entity.getProductId(), entity.getQuantity(),
+                entity.getUnitPrice(), entity.getLineTotal(), allocations);
     }
 
-    private ReturnLineAllocation toAllocationDomain(ReturnLineAllocationEntity entity) {
-        return ReturnLineAllocation.reconstitute(
-                entity.getId(),
-                entity.getWarehouseId(),
-                entity.getAllocated()
-        );
+    private ReturnLineAllocation toAllocationDomain(
+            ReturnLineAllocationEntity entity) {
+        return ReturnLineAllocation.reconstitute(entity.getId(),
+                entity.getWarehouseId(), entity.getAllocated());
     }
 
-    private ReturnCancelledAllocationEntity toCancelledAllocationEntity(CancelledAllocation ca, ReturnEntity returnEntity) {
+    private ReturnCancelledAllocationEntity toCancelledAllocationEntity(
+            CancelledAllocation ca, ReturnEntity returnEntity) {
         ReturnCancelledAllocationEntity entity = new ReturnCancelledAllocationEntity();
         entity.setId(UUID.randomUUID());
         entity.setReturnEntity(returnEntity);
@@ -243,11 +226,9 @@ public class JpaReturnRepository implements ReturnRepository {
         return entity;
     }
 
-    private CancelledAllocation toCancelledAllocationDomain(ReturnCancelledAllocationEntity entity) {
-        return CancelledAllocation.reconstitute(
-                entity.getPaymentId(),
-                entity.getInvoiceId(),
-                entity.getAmount()
-        );
+    private CancelledAllocation toCancelledAllocationDomain(
+            ReturnCancelledAllocationEntity entity) {
+        return CancelledAllocation.reconstitute(entity.getPaymentId(),
+                entity.getInvoiceId(), entity.getAmount());
     }
 }

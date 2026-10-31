@@ -10,8 +10,8 @@ class CashRegisterReportFilterTest {
 
     @Test
     void should_reject_inverted_date_range() {
-        assertThrows(IllegalArgumentException.class, () -> new CashRegisterReportFilter(
-                LocalDate.of(2026, 8, 31), LocalDate.of(2026, 8, 1),
-                null, null, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CashRegisterReportFilter(LocalDate.of(2026, 8, 31),
+                        LocalDate.of(2026, 8, 1), null, null, null));
     }
 }

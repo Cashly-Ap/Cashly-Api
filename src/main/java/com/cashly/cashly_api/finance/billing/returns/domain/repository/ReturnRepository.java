@@ -15,7 +15,7 @@ public interface ReturnRepository {
     Optional<Return> findById(ReturnId id);
 
     List<Return> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                    UUID customerId, UUID invoiceId);
+            UUID customerId, UUID invoiceId);
 
     void delete(ReturnId id);
 

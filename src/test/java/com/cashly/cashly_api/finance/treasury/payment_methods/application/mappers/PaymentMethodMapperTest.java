@@ -16,14 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("PaymentMethodMapper Unit Tests")
 class PaymentMethodMapperTest {
 
-    private PaymentMethod createPaymentMethod(String code, String name, boolean active) {
-        return PaymentMethod.reconstitute(
-                PaymentMethodId.of(UUID.randomUUID()),
-                code, name, "Test description",
-                active,
+    private PaymentMethod createPaymentMethod(String code, String name,
+            boolean active) {
+        return PaymentMethod.reconstitute(PaymentMethodId.of(UUID.randomUUID()),
+                code, name, "Test description", active,
                 LocalDateTime.of(2026, 1, 15, 10, 0),
-                LocalDateTime.of(2026, 1, 15, 10, 0)
-        );
+                LocalDateTime.of(2026, 1, 15, 10, 0));
     }
 
     @Nested
@@ -34,7 +32,8 @@ class PaymentMethodMapperTest {
         void should_MapPaymentMethodToResponse() {
             PaymentMethod pm = createPaymentMethod("CASH", "Efectivo", true);
 
-            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm, false);
+            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm,
+                    false);
 
             assertEquals(pm.getId().value(), response.id());
             assertEquals("CASH", response.code());
@@ -50,7 +49,8 @@ class PaymentMethodMapperTest {
         void should_MapInactivePaymentMethod() {
             PaymentMethod pm = createPaymentMethod("CHQ", "Cheque", false);
 
-            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm, false);
+            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm,
+                    false);
 
             assertFalse(response.isActive());
         }
@@ -58,13 +58,12 @@ class PaymentMethodMapperTest {
         @Test
         void should_MapWithNullDescription() {
             PaymentMethod pm = PaymentMethod.reconstitute(
-                    PaymentMethodId.of(UUID.randomUUID()),
-                    "TRF", "Transferencia", null,
-                    true,
-                    LocalDateTime.now(), LocalDateTime.now()
-            );
+                    PaymentMethodId.of(UUID.randomUUID()), "TRF",
+                    "Transferencia", null, true, LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm, false);
+            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm,
+                    false);
 
             assertNull(response.description());
         }
@@ -73,7 +72,8 @@ class PaymentMethodMapperTest {
         void should_MapHasAssociatedRecordsTrue() {
             PaymentMethod pm = createPaymentMethod("CASH", "Efectivo", true);
 
-            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm, true);
+            PaymentMethodResponse response = PaymentMethodMapper.toResponse(pm,
+                    true);
 
             assertTrue(response.hasAssociatedRecords());
         }
@@ -88,10 +88,10 @@ class PaymentMethodMapperTest {
             List<PaymentMethod> methods = List.of(
                     createPaymentMethod("CASH", "Efectivo", true),
                     createPaymentMethod("CHQ", "Cheque", true),
-                    createPaymentMethod("TRF", "Transferencia", false)
-            );
+                    createPaymentMethod("TRF", "Transferencia", false));
 
-            List<PaymentMethodResponse> responses = PaymentMethodMapper.toResponseList(methods, pm -> false);
+            List<PaymentMethodResponse> responses = PaymentMethodMapper
+                    .toResponseList(methods, pm -> false);
 
             assertEquals(3, responses.size());
             assertEquals("CASH", responses.get(0).code());
@@ -101,7 +101,8 @@ class PaymentMethodMapperTest {
 
         @Test
         void should_ReturnEmptyList_When_InputIsEmpty() {
-            List<PaymentMethodResponse> responses = PaymentMethodMapper.toResponseList(List.of(), pm -> false);
+            List<PaymentMethodResponse> responses = PaymentMethodMapper
+                    .toResponseList(List.of(), pm -> false);
 
             assertTrue(responses.isEmpty());
         }

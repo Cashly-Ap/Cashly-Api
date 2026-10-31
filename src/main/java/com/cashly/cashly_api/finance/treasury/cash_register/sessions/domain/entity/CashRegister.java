@@ -45,19 +45,19 @@ public class CashRegister {
     private LocalDateTime updatedAt;
     private final List<CashRegisterDetail> details;
 
-    private CashRegister(RegisterId id, LocalDate closureDate, RegisterStatus status,
-                        UUID openedBy, String openedByName, LocalDateTime openedAt,
-                        UUID closedBy, String closedByName, LocalDateTime closedAt,
-                        BigDecimal openingBalance,
-                        BigDecimal totalPayments, BigDecimal totalAdvances,
-                        BigDecimal totalReturns, BigDecimal totalCreditNotes, BigDecimal totalDebitNotes,
-                        BigDecimal totalInvoices,
-                        int paymentCount, int advanceCount, int returnCount, int invoiceCount,
-                        BigDecimal expectedClosingBalance, BigDecimal actualClosingBalance,
-                        BigDecimal difference, BigDecimal totalIncome, BigDecimal totalExpense,
-                        String closingNotes,
-                        int version, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        List<CashRegisterDetail> details) {
+    private CashRegister(RegisterId id, LocalDate closureDate,
+            RegisterStatus status, UUID openedBy, String openedByName,
+            LocalDateTime openedAt, UUID closedBy, String closedByName,
+            LocalDateTime closedAt, BigDecimal openingBalance,
+            BigDecimal totalPayments, BigDecimal totalAdvances,
+            BigDecimal totalReturns, BigDecimal totalCreditNotes,
+            BigDecimal totalDebitNotes, BigDecimal totalInvoices,
+            int paymentCount, int advanceCount, int returnCount,
+            int invoiceCount, BigDecimal expectedClosingBalance,
+            BigDecimal actualClosingBalance, BigDecimal difference,
+            BigDecimal totalIncome, BigDecimal totalExpense,
+            String closingNotes, int version, LocalDateTime createdAt,
+            LocalDateTime updatedAt, List<CashRegisterDetail> details) {
         this.id = id;
         this.closureDate = closureDate;
         this.status = status;
@@ -90,111 +90,96 @@ public class CashRegister {
         this.details = details;
     }
 
-    
-
     public static CashRegister open(RegisterId id, LocalDate closureDate,
-                                   UUID openedBy, String openedByName) {
+            UUID openedBy, String openedByName) {
         return open(id, closureDate, openedBy, openedByName, BigDecimal.ZERO);
     }
 
     public static CashRegister open(RegisterId id, LocalDate closureDate,
-                                    UUID openedBy, String openedByName,
-                                    BigDecimal openingBalance) {
+            UUID openedBy, String openedByName, BigDecimal openingBalance) {
         Objects.requireNonNull(id, "RegisterId must not be null");
         Objects.requireNonNull(closureDate, "Closure date must not be null");
         Objects.requireNonNull(openedBy, "Opened by must not be null");
         Objects.requireNonNull(openedByName, "Opened by name must not be null");
         if (openedByName.isBlank()) {
-            throw new IllegalArgumentException("Opened by name must not be blank");
+            throw new IllegalArgumentException(
+                    "Opened by name must not be blank");
         }
-        Objects.requireNonNull(openingBalance, "Opening balance must not be null");
+        Objects.requireNonNull(openingBalance,
+                "Opening balance must not be null");
         if (openingBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Opening balance must not be negative");
+            throw new IllegalArgumentException(
+                    "Opening balance must not be negative");
         }
 
         LocalDateTime now = LocalDateTime.now();
-        return new CashRegister(
-                id, closureDate, RegisterStatus.OPEN,
-                openedBy, openedByName, now,
-                null, null, null, openingBalance,
-                BigDecimal.ZERO, BigDecimal.ZERO,
+        return new CashRegister(id, closureDate, RegisterStatus.OPEN, openedBy,
+                openedByName, now, null, null, null, openingBalance,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                0, 0, 0, 0,
-                openingBalance, null, null, BigDecimal.ZERO, BigDecimal.ZERO, null,
-                0, now, now,
-                new ArrayList<>()
-        );
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 0, 0, 0, 0,
+                openingBalance, null, null, BigDecimal.ZERO, BigDecimal.ZERO,
+                null, 0, now, now, new ArrayList<>());
     }
 
-    
-
-    public static CashRegister reconstitute(
-            RegisterId id, LocalDate closureDate, RegisterStatus status,
-            UUID openedBy, String openedByName, LocalDateTime openedAt,
-            UUID closedBy, String closedByName, LocalDateTime closedAt,
+    public static CashRegister reconstitute(RegisterId id,
+            LocalDate closureDate, RegisterStatus status, UUID openedBy,
+            String openedByName, LocalDateTime openedAt, UUID closedBy,
+            String closedByName, LocalDateTime closedAt,
             BigDecimal totalPayments, BigDecimal totalAdvances,
-            BigDecimal totalReturns, BigDecimal totalCreditNotes, BigDecimal totalDebitNotes,
-            BigDecimal totalInvoices,
-            int paymentCount, int advanceCount, int returnCount, int invoiceCount,
-            BigDecimal expectedClosingBalance, BigDecimal actualClosingBalance,
-            BigDecimal difference, String closingNotes,
-            int version, LocalDateTime createdAt, LocalDateTime updatedAt,
-            List<CashRegisterDetail> details) {
-        return new CashRegister(
-                id, closureDate, status,
-                openedBy, openedByName, openedAt,
-                closedBy, closedByName, closedAt, BigDecimal.ZERO,
-                totalPayments, totalAdvances,
-                totalReturns, totalCreditNotes, totalDebitNotes,
-                totalInvoices,
-                paymentCount, advanceCount, returnCount, invoiceCount,
-                expectedClosingBalance, actualClosingBalance,
-                difference, totalPayments.add(totalAdvances),
-                totalReturns.add(totalCreditNotes), closingNotes,
-                version, createdAt, updatedAt,
-                details != null ? new ArrayList<>(details) : new ArrayList<>()
-        );
-    }
-
-    public static CashRegister reconstitute(
-            RegisterId id, LocalDate closureDate, RegisterStatus status,
-            UUID openedBy, String openedByName, LocalDateTime openedAt,
-            UUID closedBy, String closedByName, LocalDateTime closedAt,
-            BigDecimal openingBalance,
-            BigDecimal totalPayments, BigDecimal totalAdvances,
-            BigDecimal totalReturns, BigDecimal totalCreditNotes, BigDecimal totalDebitNotes,
-            BigDecimal totalInvoices,
-            int paymentCount, int advanceCount, int returnCount, int invoiceCount,
-            BigDecimal expectedClosingBalance, BigDecimal actualClosingBalance,
-            BigDecimal difference, BigDecimal totalIncome, BigDecimal totalExpense,
-            String closingNotes, int version, LocalDateTime createdAt, LocalDateTime updatedAt,
-            List<CashRegisterDetail> details) {
-        return new CashRegister(id, closureDate, status, openedBy, openedByName, openedAt,
-                closedBy, closedByName, closedAt, openingBalance, totalPayments, totalAdvances,
-                totalReturns, totalCreditNotes, totalDebitNotes, totalInvoices, paymentCount,
-                advanceCount, returnCount, invoiceCount, expectedClosingBalance,
-                actualClosingBalance, difference, totalIncome, totalExpense, closingNotes,
-                version, createdAt, updatedAt,
+            BigDecimal totalReturns, BigDecimal totalCreditNotes,
+            BigDecimal totalDebitNotes, BigDecimal totalInvoices,
+            int paymentCount, int advanceCount, int returnCount,
+            int invoiceCount, BigDecimal expectedClosingBalance,
+            BigDecimal actualClosingBalance, BigDecimal difference,
+            String closingNotes, int version, LocalDateTime createdAt,
+            LocalDateTime updatedAt, List<CashRegisterDetail> details) {
+        return new CashRegister(id, closureDate, status, openedBy, openedByName,
+                openedAt, closedBy, closedByName, closedAt, BigDecimal.ZERO,
+                totalPayments, totalAdvances, totalReturns, totalCreditNotes,
+                totalDebitNotes, totalInvoices, paymentCount, advanceCount,
+                returnCount, invoiceCount, expectedClosingBalance,
+                actualClosingBalance, difference,
+                totalPayments.add(totalAdvances),
+                totalReturns.add(totalCreditNotes), closingNotes, version,
+                createdAt, updatedAt,
                 details != null ? new ArrayList<>(details) : new ArrayList<>());
     }
 
-    
-
-    public void applyTotals(
-            BigDecimal totalPayments, int paymentCount,
-            BigDecimal totalAdvances, int advanceCount,
-            BigDecimal totalReturns, int returnCount,
-            BigDecimal totalCreditNotes,
-            BigDecimal totalDebitNotes,
-            BigDecimal totalInvoices, int invoiceCount,
+    public static CashRegister reconstitute(RegisterId id,
+            LocalDate closureDate, RegisterStatus status, UUID openedBy,
+            String openedByName, LocalDateTime openedAt, UUID closedBy,
+            String closedByName, LocalDateTime closedAt,
+            BigDecimal openingBalance, BigDecimal totalPayments,
+            BigDecimal totalAdvances, BigDecimal totalReturns,
+            BigDecimal totalCreditNotes, BigDecimal totalDebitNotes,
+            BigDecimal totalInvoices, int paymentCount, int advanceCount,
+            int returnCount, int invoiceCount,
+            BigDecimal expectedClosingBalance, BigDecimal actualClosingBalance,
+            BigDecimal difference, BigDecimal totalIncome,
+            BigDecimal totalExpense, String closingNotes, int version,
+            LocalDateTime createdAt, LocalDateTime updatedAt,
             List<CashRegisterDetail> details) {
-        if (totalPayments.compareTo(BigDecimal.ZERO) < 0 ||
-            totalAdvances.compareTo(BigDecimal.ZERO) < 0 ||
-            totalReturns.compareTo(BigDecimal.ZERO) < 0 ||
-            totalCreditNotes.compareTo(BigDecimal.ZERO) < 0 ||
-            totalDebitNotes.compareTo(BigDecimal.ZERO) < 0 ||
-            totalInvoices.compareTo(BigDecimal.ZERO) < 0) {
+        return new CashRegister(id, closureDate, status, openedBy, openedByName,
+                openedAt, closedBy, closedByName, closedAt, openingBalance,
+                totalPayments, totalAdvances, totalReturns, totalCreditNotes,
+                totalDebitNotes, totalInvoices, paymentCount, advanceCount,
+                returnCount, invoiceCount, expectedClosingBalance,
+                actualClosingBalance, difference, totalIncome, totalExpense,
+                closingNotes, version, createdAt, updatedAt,
+                details != null ? new ArrayList<>(details) : new ArrayList<>());
+    }
+
+    public void applyTotals(BigDecimal totalPayments, int paymentCount,
+            BigDecimal totalAdvances, int advanceCount, BigDecimal totalReturns,
+            int returnCount, BigDecimal totalCreditNotes,
+            BigDecimal totalDebitNotes, BigDecimal totalInvoices,
+            int invoiceCount, List<CashRegisterDetail> details) {
+        if (totalPayments.compareTo(BigDecimal.ZERO) < 0
+                || totalAdvances.compareTo(BigDecimal.ZERO) < 0
+                || totalReturns.compareTo(BigDecimal.ZERO) < 0
+                || totalCreditNotes.compareTo(BigDecimal.ZERO) < 0
+                || totalDebitNotes.compareTo(BigDecimal.ZERO) < 0
+                || totalInvoices.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Amounts must not be negative");
         }
 
@@ -211,11 +196,8 @@ public class CashRegister {
         this.totalIncome = totalPayments.add(totalAdvances);
         this.totalExpense = totalReturns.add(totalCreditNotes);
 
-        
-        this.expectedClosingBalance = totalPayments
-                .add(totalAdvances)
-                .subtract(totalReturns)
-                .subtract(totalCreditNotes)
+        this.expectedClosingBalance = totalPayments.add(totalAdvances)
+                .subtract(totalReturns).subtract(totalCreditNotes)
                 .add(totalDebitNotes);
 
         this.details.clear();
@@ -226,37 +208,42 @@ public class CashRegister {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void applyMovementTotals(BigDecimal totalIncome, BigDecimal totalExpense) {
+    public void applyMovementTotals(BigDecimal totalIncome,
+            BigDecimal totalExpense) {
         Objects.requireNonNull(totalIncome, "Total income must not be null");
         Objects.requireNonNull(totalExpense, "Total expense must not be null");
-        if (totalIncome.compareTo(BigDecimal.ZERO) < 0 || totalExpense.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Movement totals must not be negative");
+        if (totalIncome.compareTo(BigDecimal.ZERO) < 0
+                || totalExpense.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(
+                    "Movement totals must not be negative");
         }
         this.totalIncome = totalIncome;
         this.totalExpense = totalExpense;
-        this.expectedClosingBalance = openingBalance.add(totalIncome).subtract(totalExpense);
+        this.expectedClosingBalance = openingBalance.add(totalIncome)
+                .subtract(totalExpense);
         this.updatedAt = LocalDateTime.now();
     }
-
-    
 
     public void close(UUID closedBy, String closedByName, String closingNotes) {
         close(closedBy, closedByName, expectedClosingBalance, closingNotes);
     }
 
-    public void close(UUID closedBy, String closedByName, BigDecimal declaredBalance,
-                      String closingNotes) {
+    public void close(UUID closedBy, String closedByName,
+            BigDecimal declaredBalance, String closingNotes) {
         if (status != RegisterStatus.OPEN) {
             throw new IllegalStateException("Only OPEN closures can be closed");
         }
         Objects.requireNonNull(closedBy, "Closed by must not be null");
         Objects.requireNonNull(closedByName, "Closed by name must not be null");
         if (closedByName.isBlank()) {
-            throw new IllegalArgumentException("Closed by name must not be blank");
+            throw new IllegalArgumentException(
+                    "Closed by name must not be blank");
         }
-        Objects.requireNonNull(declaredBalance, "Declared balance must not be null");
+        Objects.requireNonNull(declaredBalance,
+                "Declared balance must not be null");
         if (declaredBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Declared balance must not be negative");
+            throw new IllegalArgumentException(
+                    "Declared balance must not be negative");
         }
 
         this.status = RegisterStatus.CLOSED;
@@ -269,37 +256,93 @@ public class CashRegister {
         this.updatedAt = LocalDateTime.now();
     }
 
-    
-
-    public RegisterId getId() { return id; }
-    public LocalDate getClosureDate() { return closureDate; }
-    public RegisterStatus getStatus() { return status; }
-    public UUID getOpenedBy() { return openedBy; }
-    public String getOpenedByName() { return openedByName; }
-    public LocalDateTime getOpenedAt() { return openedAt; }
-    public BigDecimal getOpeningBalance() { return openingBalance; }
-    public UUID getClosedBy() { return closedBy; }
-    public String getClosedByName() { return closedByName; }
-    public LocalDateTime getClosedAt() { return closedAt; }
-    public BigDecimal getTotalPayments() { return totalPayments; }
-    public BigDecimal getTotalAdvances() { return totalAdvances; }
-    public BigDecimal getTotalReturns() { return totalReturns; }
-    public BigDecimal getTotalCreditNotes() { return totalCreditNotes; }
-    public BigDecimal getTotalDebitNotes() { return totalDebitNotes; }
-    public BigDecimal getTotalInvoices() { return totalInvoices; }
-    public int getPaymentCount() { return paymentCount; }
-    public int getAdvanceCount() { return advanceCount; }
-    public int getReturnCount() { return returnCount; }
-    public int getInvoiceCount() { return invoiceCount; }
-    public BigDecimal getExpectedClosingBalance() { return expectedClosingBalance; }
-    public BigDecimal getActualClosingBalance() { return actualClosingBalance; }
-    public BigDecimal getDifference() { return difference; }
-    public BigDecimal getTotalIncome() { return totalIncome; }
-    public BigDecimal getTotalExpense() { return totalExpense; }
-    public String getClosingNotes() { return closingNotes; }
-    public int getVersion() { return version; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public RegisterId getId() {
+        return id;
+    }
+    public LocalDate getClosureDate() {
+        return closureDate;
+    }
+    public RegisterStatus getStatus() {
+        return status;
+    }
+    public UUID getOpenedBy() {
+        return openedBy;
+    }
+    public String getOpenedByName() {
+        return openedByName;
+    }
+    public LocalDateTime getOpenedAt() {
+        return openedAt;
+    }
+    public BigDecimal getOpeningBalance() {
+        return openingBalance;
+    }
+    public UUID getClosedBy() {
+        return closedBy;
+    }
+    public String getClosedByName() {
+        return closedByName;
+    }
+    public LocalDateTime getClosedAt() {
+        return closedAt;
+    }
+    public BigDecimal getTotalPayments() {
+        return totalPayments;
+    }
+    public BigDecimal getTotalAdvances() {
+        return totalAdvances;
+    }
+    public BigDecimal getTotalReturns() {
+        return totalReturns;
+    }
+    public BigDecimal getTotalCreditNotes() {
+        return totalCreditNotes;
+    }
+    public BigDecimal getTotalDebitNotes() {
+        return totalDebitNotes;
+    }
+    public BigDecimal getTotalInvoices() {
+        return totalInvoices;
+    }
+    public int getPaymentCount() {
+        return paymentCount;
+    }
+    public int getAdvanceCount() {
+        return advanceCount;
+    }
+    public int getReturnCount() {
+        return returnCount;
+    }
+    public int getInvoiceCount() {
+        return invoiceCount;
+    }
+    public BigDecimal getExpectedClosingBalance() {
+        return expectedClosingBalance;
+    }
+    public BigDecimal getActualClosingBalance() {
+        return actualClosingBalance;
+    }
+    public BigDecimal getDifference() {
+        return difference;
+    }
+    public BigDecimal getTotalIncome() {
+        return totalIncome;
+    }
+    public BigDecimal getTotalExpense() {
+        return totalExpense;
+    }
+    public String getClosingNotes() {
+        return closingNotes;
+    }
+    public int getVersion() {
+        return version;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
     public List<CashRegisterDetail> getDetails() {
         return Collections.unmodifiableList(details);
     }

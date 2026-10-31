@@ -7,7 +7,8 @@ import com.cashly.cashly_api.platform.notifications.infrastructure.persistence.e
 
 public class NotificationJpaMapper {
 
-    private NotificationJpaMapper() {}
+    private NotificationJpaMapper() {
+    }
 
     public static NotificationEntity toEntity(Notification notification) {
         NotificationEntity entity = new NotificationEntity();
@@ -29,18 +30,12 @@ public class NotificationJpaMapper {
     }
 
     public static Notification toDomain(NotificationEntity entity) {
-        return Notification.reconstitute(
-                NotificationId.of(entity.getId()),
-                entity.getUserId(),
-                entity.getCustomerId(),
-                NotificationType.valueOf(entity.getType()),
-                entity.getTitle(),
-                entity.getMessage(),
-                entity.getReferenceType(),
-                entity.getReferenceId(),
-                entity.isRead(),
-                entity.getReadAt(),
-                entity.getCreatedAt()
-        ).withTranslation(entity.getTitleKey(), entity.getMessageKey(), entity.getMessageArguments());
+        return Notification.reconstitute(NotificationId.of(entity.getId()),
+                entity.getUserId(), entity.getCustomerId(),
+                NotificationType.valueOf(entity.getType()), entity.getTitle(),
+                entity.getMessage(), entity.getReferenceType(),
+                entity.getReferenceId(), entity.isRead(), entity.getReadAt(),
+                entity.getCreatedAt()).withTranslation(entity.getTitleKey(),
+                        entity.getMessageKey(), entity.getMessageArguments());
     }
 }

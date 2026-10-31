@@ -17,20 +17,27 @@ class LocalPurchaseSupplierGatewayAdapterTest {
     @Test
     void shouldReturnSupplierDirectoryEntriesForOneBatchQuery() {
         PurchaseSupplierQuery query = mock(PurchaseSupplierQuery.class);
-        LocalPurchaseSupplierGatewayAdapter adapter = new LocalPurchaseSupplierGatewayAdapter(query);
+        LocalPurchaseSupplierGatewayAdapter adapter = new LocalPurchaseSupplierGatewayAdapter(
+                query);
         UUID firstId = UUID.randomUUID();
         UUID secondId = UUID.randomUUID();
         List<UUID> supplierIds = List.of(firstId, secondId);
         List<PurchaseSupplierQuery.Entry> directoryEntries = List.of(
-                new PurchaseSupplierQuery.Entry(firstId, "First Supplier", "J-11111111-1"),
-                new PurchaseSupplierQuery.Entry(secondId, "Second Supplier", "J-22222222-2"));
+                new PurchaseSupplierQuery.Entry(firstId, "First Supplier",
+                        "J-11111111-1"),
+                new PurchaseSupplierQuery.Entry(secondId, "Second Supplier",
+                        "J-22222222-2"));
         when(query.findByIds(supplierIds)).thenReturn(directoryEntries);
 
-        List<PurchaseSupplierGateway.Entry> result = adapter.findByIds(supplierIds);
+        List<PurchaseSupplierGateway.Entry> result = adapter
+                .findByIds(supplierIds);
 
         assertEquals(List.of(
-                new PurchaseSupplierGateway.Entry(firstId, "First Supplier", "J-11111111-1"),
-                new PurchaseSupplierGateway.Entry(secondId, "Second Supplier", "J-22222222-2")), result);
+                new PurchaseSupplierGateway.Entry(firstId, "First Supplier",
+                        "J-11111111-1"),
+                new PurchaseSupplierGateway.Entry(secondId, "Second Supplier",
+                        "J-22222222-2")),
+                result);
         verify(query).findByIds(supplierIds);
     }
 }

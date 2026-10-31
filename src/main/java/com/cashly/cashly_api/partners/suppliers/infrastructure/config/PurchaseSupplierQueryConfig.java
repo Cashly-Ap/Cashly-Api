@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PurchaseSupplierQueryConfig {
     @Bean
-    public PurchaseSupplierQuery purchaseSupplierQuery(SupplierRepository suppliers) {
+    public PurchaseSupplierQuery purchaseSupplierQuery(
+            SupplierRepository suppliers) {
         return new SupplierPurchaseDirectoryAdapter(suppliers);
     }
 }

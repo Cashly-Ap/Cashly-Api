@@ -16,13 +16,16 @@ public class GetStockOverviewUseCase {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public StockOverviewResponse execute(UUID warehouseId, UUID categoryId, String search, int page, int size) {
-        return execute(warehouseId, categoryId, search, page, size, StockOverviewGroupBy.NONE);
+    public StockOverviewResponse execute(UUID warehouseId, UUID categoryId,
+            String search, int page, int size) {
+        return execute(warehouseId, categoryId, search, page, size,
+                StockOverviewGroupBy.NONE);
     }
 
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public StockOverviewResponse execute(UUID warehouseId, UUID categoryId, String search, int page, int size,
-                                        StockOverviewGroupBy groupBy) {
-        return gateway.search(new StockOverviewFilter(warehouseId, categoryId, search, page, size, groupBy));
+    public StockOverviewResponse execute(UUID warehouseId, UUID categoryId,
+            String search, int page, int size, StockOverviewGroupBy groupBy) {
+        return gateway.search(new StockOverviewFilter(warehouseId, categoryId,
+                search, page, size, groupBy));
     }
 }

@@ -7,13 +7,18 @@ import java.util.Optional;
 @Component
 public class LocalActorIdentityGateway implements ActorIdentityGateway {
     private final ActorIdentityQuery query;
-    public LocalActorIdentityGateway(ActorIdentityQuery query) { this.query = query; }
+    public LocalActorIdentityGateway(ActorIdentityQuery query) {
+        this.query = query;
+    }
     public Actor requireActor(UUID id) {
-        return findActor(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        return findActor(id).orElseThrow(
+                () -> new IllegalArgumentException("Usuario no encontrado"));
     }
     public Optional<Actor> findActor(UUID id) {
-        return query.findById(id).map(actor -> new Actor(actor.id(), actor.name()));
+        return query.findById(id)
+                .map(actor -> new Actor(actor.id(), actor.name()));
     }
-    public boolean matchesPassword(UUID id, String password) { return query.matchesPassword(id, password); }
+    public boolean matchesPassword(UUID id, String password) {
+        return query.matchesPassword(id, password);
+    }
 }

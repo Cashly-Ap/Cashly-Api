@@ -25,10 +25,10 @@ public class UploadProductPhotoUseCase {
     private final ProductMapper productMapper;
 
     public UploadProductPhotoUseCase(ProductRepository productRepository,
-                                      ProductCategoryGateway categoryRepository,
-                                      ProductPriceTypeGateway priceTypeRepository,
-                                      ProductFileStorageGateway fileStorageService,
-                                      ProductMapper productMapper) {
+            ProductCategoryGateway categoryRepository,
+            ProductPriceTypeGateway priceTypeRepository,
+            ProductFileStorageGateway fileStorageService,
+            ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.priceTypeRepository = priceTypeRepository;
@@ -37,8 +37,9 @@ public class UploadProductPhotoUseCase {
     }
 
     @Transactional
-    public ProductDetailResponse execute(UUID productId, String originalFilename,
-                                          InputStream inputStream, String contentType) {
+    public ProductDetailResponse execute(UUID productId,
+            String originalFilename, InputStream inputStream,
+            String contentType) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
@@ -53,22 +54,20 @@ public class UploadProductPhotoUseCase {
         Product saved = productRepository.save(product);
 
         String categoryName = categoryRepository.findById(saved.getCategoryId())
-                .map(c -> c.name())
-                .orElse("");
+                .map(c -> c.name()).orElse("");
 
         Map<UUID, Product> componentProducts = saved.getComponents().stream()
-                .map(c -> productRepository.findById(c.getComponentProductId()).orElse(null))
+                .map(c -> productRepository.findById(c.getComponentProductId())
+                        .orElse(null))
                 .filter(p -> p != null)
                 .collect(Collectors.toMap(Product::getId, p -> p, (a, b) -> a));
 
         Map<UUID, String> priceTypeNames = saved.getProductPrices().stream()
-                .collect(Collectors.toMap(
-                    ProductPrice::getPriceTypeId,
-                    pp -> priceTypeRepository.findById(pp.getPriceTypeId())
-                        .map(pt -> pt.name())
-                        .orElse("")
-                ));
+                .collect(Collectors.toMap(ProductPrice::getPriceTypeId,
+                        pp -> priceTypeRepository.findById(pp.getPriceTypeId())
+                                .map(pt -> pt.name()).orElse("")));
 
-        return productMapper.toDetailResponse(saved, categoryName, componentProducts, priceTypeNames);
+        return productMapper.toDetailResponse(saved, categoryName,
+                componentProducts, priceTypeNames);
     }
 }

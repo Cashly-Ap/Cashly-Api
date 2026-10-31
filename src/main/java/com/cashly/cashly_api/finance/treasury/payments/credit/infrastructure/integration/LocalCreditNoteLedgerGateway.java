@@ -8,6 +8,10 @@ import java.util.UUID;
 @Component
 public class LocalCreditNoteLedgerGateway implements CreditNoteLedgerGateway {
     private final CreditNoteLedgerQuery query;
-    public LocalCreditNoteLedgerGateway(CreditNoteLedgerQuery query) { this.query = query; }
-    public List<BigDecimal> amountsByInvoiceId(UUID id) { return query.amountsByInvoiceId(id); }
+    public LocalCreditNoteLedgerGateway(CreditNoteLedgerQuery query) {
+        this.query = query;
+    }
+    public List<BigDecimal> amountsByInvoiceId(UUID id) {
+        return query.amountsByInvoiceId(id);
+    }
 }

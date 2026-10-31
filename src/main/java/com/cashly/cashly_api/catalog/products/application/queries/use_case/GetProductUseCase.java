@@ -22,9 +22,9 @@ public class GetProductUseCase {
     private final ProductMapper productMapper;
 
     public GetProductUseCase(ProductRepository productRepository,
-                              ProductCategoryGateway categoryRepository,
-                              ProductPriceTypeGateway priceTypeRepository,
-                              ProductMapper productMapper) {
+            ProductCategoryGateway categoryRepository,
+            ProductPriceTypeGateway priceTypeRepository,
+            ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.priceTypeRepository = priceTypeRepository;
@@ -34,24 +34,24 @@ public class GetProductUseCase {
     @Transactional(readOnly = true)
     public ProductDetailResponse execute(UUID id) {
         Product product = productRepository.findById(id)
-            .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
-        String categoryName = categoryRepository.findById(product.getCategoryId())
-            .map(c -> c.name()).orElse("");
+        String categoryName = categoryRepository
+                .findById(product.getCategoryId()).map(c -> c.name())
+                .orElse("");
 
         Map<UUID, Product> componentProducts = product.getComponents().stream()
-            .map(c -> productRepository.findById(c.getComponentProductId()).orElse(null))
-            .filter(p -> p != null)
-            .collect(Collectors.toMap(Product::getId, p -> p, (a, b) -> a));
+                .map(c -> productRepository.findById(c.getComponentProductId())
+                        .orElse(null))
+                .filter(p -> p != null)
+                .collect(Collectors.toMap(Product::getId, p -> p, (a, b) -> a));
 
         Map<UUID, String> priceTypeNames = product.getProductPrices().stream()
-            .collect(Collectors.toMap(
-                ProductPrice::getPriceTypeId,
-                pp -> priceTypeRepository.findById(pp.getPriceTypeId())
-                    .map(pt -> pt.name())
-                    .orElse("")
-            ));
+                .collect(Collectors.toMap(ProductPrice::getPriceTypeId,
+                        pp -> priceTypeRepository.findById(pp.getPriceTypeId())
+                                .map(pt -> pt.name()).orElse("")));
 
-        return productMapper.toDetailResponse(product, categoryName, componentProducts, priceTypeNames);
+        return productMapper.toDetailResponse(product, categoryName,
+                componentProducts, priceTypeNames);
     }
 }

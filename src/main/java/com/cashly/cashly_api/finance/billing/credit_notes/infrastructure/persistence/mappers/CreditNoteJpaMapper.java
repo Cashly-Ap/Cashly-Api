@@ -7,7 +7,8 @@ import com.cashly.cashly_api.finance.billing.credit_notes.infrastructure.persist
 
 public class CreditNoteJpaMapper {
 
-    private CreditNoteJpaMapper() {}
+    private CreditNoteJpaMapper() {
+    }
 
     public static CreditNoteEntity toEntity(CreditNote creditNote) {
         CreditNoteEntity entity = new CreditNoteEntity();
@@ -25,17 +26,11 @@ public class CreditNoteJpaMapper {
     }
 
     public static CreditNote toDomain(CreditNoteEntity entity) {
-        return CreditNote.reconstitute(
-                CreditNoteId.of(entity.getId()),
+        return CreditNote.reconstitute(CreditNoteId.of(entity.getId()),
                 new CreditNoteNumber(entity.getNoteNumber()),
-                entity.getCustomerId(),
-                entity.getInvoiceId(),
-                entity.getAmount(),
-                entity.getReason(),
-                entity.getCreatedBy(),
-                entity.getCreatedByName(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+                entity.getCustomerId(), entity.getInvoiceId(),
+                entity.getAmount(), entity.getReason(), entity.getCreatedBy(),
+                entity.getCreatedByName(), entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 }

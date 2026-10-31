@@ -39,17 +39,18 @@ class GetPaymentHistoryUseCaseTest {
     @Test
     void should_ReturnPaymentHistory_When_ExecutedWithoutCustomerFilter() {
         PendingPaymentResponse payment = new PendingPaymentResponse(
-                UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(), "Cliente Test",
-                new BigDecimal("500.00"), "Efectivo", "APPLIED", "PAYMENT_METHOD",
-                LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
-        );
-        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
-                List.of(payment), PageRequest.of(0, 20), 1
-        ));
+                UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(),
+                "Cliente Test", new BigDecimal("500.00"), "Efectivo", "APPLIED",
+                "PAYMENT_METHOD", LocalDate.now(), LocalDateTime.now(),
+                "INV-2026-00001");
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(
+                new PageImpl<>(List.of(payment), PageRequest.of(0, 20), 1));
 
-        when(receivablesRepository.findPaymentHistory(null, 0, 20)).thenReturn(paymentPage);
+        when(receivablesRepository.findPaymentHistory(null, 0, 20))
+                .thenReturn(paymentPage);
 
-        PageResponse<PendingPaymentResponse> result = useCase.execute(null, 0, 20);
+        PageResponse<PendingPaymentResponse> result = useCase.execute(null, 0,
+                20);
 
         assertNotNull(result);
         assertFalse(result.empty());
@@ -62,17 +63,18 @@ class GetPaymentHistoryUseCaseTest {
     @Test
     void should_ReturnFilteredPaymentHistory_When_SearchProvided() {
         PendingPaymentResponse payment = new PendingPaymentResponse(
-                UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(), "Cliente Test",
-                new BigDecimal("500.00"), "Efectivo", "APPLIED", "PAYMENT_METHOD",
-                LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
-        );
-        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
-                List.of(payment), PageRequest.of(0, 10), 1
-        ));
+                UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(),
+                "Cliente Test", new BigDecimal("500.00"), "Efectivo", "APPLIED",
+                "PAYMENT_METHOD", LocalDate.now(), LocalDateTime.now(),
+                "INV-2026-00001");
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(
+                new PageImpl<>(List.of(payment), PageRequest.of(0, 10), 1));
 
-        when(receivablesRepository.findPaymentHistory("PAY-2026", 0, 10)).thenReturn(paymentPage);
+        when(receivablesRepository.findPaymentHistory("PAY-2026", 0, 10))
+                .thenReturn(paymentPage);
 
-        PageResponse<PendingPaymentResponse> result = useCase.execute("PAY-2026", 0, 10);
+        PageResponse<PendingPaymentResponse> result = useCase
+                .execute("PAY-2026", 0, 10);
 
         assertEquals(1, result.content().size());
         verify(receivablesRepository).findPaymentHistory("PAY-2026", 0, 10);
@@ -84,47 +86,54 @@ class GetPaymentHistoryUseCaseTest {
         UUID invoiceId = UUID.randomUUID();
         PendingPaymentResponse payment = new PendingPaymentResponse(
                 UUID.randomUUID(), "PAY-2026-00001", customerId, "Cliente Test",
-                new BigDecimal("500.00"), "Transferencia", "APPLIED", "PAYMENT_METHOD",
-                LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
-        );
-        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
-                List.of(payment), PageRequest.of(0, 100), 1
-        ));
+                new BigDecimal("500.00"), "Transferencia", "APPLIED",
+                "PAYMENT_METHOD", LocalDate.now(), LocalDateTime.now(),
+                "INV-2026-00001");
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(
+                new PageImpl<>(List.of(payment), PageRequest.of(0, 100), 1));
 
-        when(receivablesRepository.findCustomerPaymentHistory(customerId, invoiceId, 0, 100))
-                .thenReturn(paymentPage);
+        when(receivablesRepository.findCustomerPaymentHistory(customerId,
+                invoiceId, 0, 100)).thenReturn(paymentPage);
 
-        PageResponse<PendingPaymentResponse> result = useCase.execute(customerId, invoiceId, 0, 100);
+        PageResponse<PendingPaymentResponse> result = useCase
+                .execute(customerId, invoiceId, 0, 100);
 
         assertNotNull(result);
         assertEquals(1, result.content().size());
         assertEquals(customerId, result.content().get(0).customerId());
-        verify(receivablesRepository).findCustomerPaymentHistory(customerId, invoiceId, 0, 100);
+        verify(receivablesRepository).findCustomerPaymentHistory(customerId,
+                invoiceId, 0, 100);
     }
 
     @Test
     void should_ReturnCustomerPaymentHistory_When_OnlyCustomerIdProvided() {
         UUID customerId = UUID.randomUUID();
 
-        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(List.of(), PageRequest.of(0, 100), 0));
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(
+                new PageImpl<>(List.of(), PageRequest.of(0, 100), 0));
 
-        when(receivablesRepository.findCustomerPaymentHistory(customerId, null, 0, 100))
-                .thenReturn(paymentPage);
+        when(receivablesRepository.findCustomerPaymentHistory(customerId, null,
+                0, 100)).thenReturn(paymentPage);
 
-        PageResponse<PendingPaymentResponse> result = useCase.execute(customerId, null, 0, 100);
+        PageResponse<PendingPaymentResponse> result = useCase
+                .execute(customerId, null, 0, 100);
 
         assertTrue(result.empty());
         assertEquals(0, result.totalElements());
-        verify(receivablesRepository).findCustomerPaymentHistory(customerId, null, 0, 100);
+        verify(receivablesRepository).findCustomerPaymentHistory(customerId,
+                null, 0, 100);
     }
 
     @Test
     void should_ReturnEmptyHistory_When_NoPaymentsExist() {
-        PageResponse<PendingPaymentResponse> emptyPage = toPageResponse(org.springframework.data.domain.Page.empty());
+        PageResponse<PendingPaymentResponse> emptyPage = toPageResponse(
+                org.springframework.data.domain.Page.empty());
 
-        when(receivablesRepository.findPaymentHistory(null, 0, 20)).thenReturn(emptyPage);
+        when(receivablesRepository.findPaymentHistory(null, 0, 20))
+                .thenReturn(emptyPage);
 
-        PageResponse<PendingPaymentResponse> result = useCase.execute(null, 0, 20);
+        PageResponse<PendingPaymentResponse> result = useCase.execute(null, 0,
+                20);
 
         assertTrue(result.empty());
         assertEquals(0, result.totalElements());
@@ -134,17 +143,18 @@ class GetPaymentHistoryUseCaseTest {
     @Test
     void should_ReturnCorrectPagination() {
         PendingPaymentResponse payment = new PendingPaymentResponse(
-                UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(), "Cliente Test",
-                new BigDecimal("500.00"), "Efectivo", "APPLIED", "PAYMENT_METHOD",
-                LocalDate.now(), LocalDateTime.now(), "INV-2026-00001"
-        );
-        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(new PageImpl<>(
-                List.of(payment), PageRequest.of(2, 10), 35
-        ));
+                UUID.randomUUID(), "PAY-2026-00001", UUID.randomUUID(),
+                "Cliente Test", new BigDecimal("500.00"), "Efectivo", "APPLIED",
+                "PAYMENT_METHOD", LocalDate.now(), LocalDateTime.now(),
+                "INV-2026-00001");
+        PageResponse<PendingPaymentResponse> paymentPage = toPageResponse(
+                new PageImpl<>(List.of(payment), PageRequest.of(2, 10), 35));
 
-        when(receivablesRepository.findPaymentHistory(null, 2, 10)).thenReturn(paymentPage);
+        when(receivablesRepository.findPaymentHistory(null, 2, 10))
+                .thenReturn(paymentPage);
 
-        PageResponse<PendingPaymentResponse> result = useCase.execute(null, 2, 10);
+        PageResponse<PendingPaymentResponse> result = useCase.execute(null, 2,
+                10);
 
         assertEquals(1, result.content().size());
         assertEquals(35, result.totalElements());
@@ -152,8 +162,10 @@ class GetPaymentHistoryUseCaseTest {
         assertEquals(2, result.number());
         assertFalse(result.first());
     }
-    private static <T> PageResponse<T> toPageResponse(org.springframework.data.domain.Page<T> page) {
-        return new PageResponse<>(page.getContent(), page.getTotalElements(), page.getTotalPages(),
-                page.getSize(), page.getNumber(), page.isFirst(), page.isLast(), page.isEmpty());
+    private static <T> PageResponse<T> toPageResponse(
+            org.springframework.data.domain.Page<T> page) {
+        return new PageResponse<>(page.getContent(), page.getTotalElements(),
+                page.getTotalPages(), page.getSize(), page.getNumber(),
+                page.isFirst(), page.isLast(), page.isEmpty());
     }
 }

@@ -21,10 +21,9 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users", indexes = {
-    @Index(name = "idx_email", columnList = "email"),
-    @Index(name = "idx_active", columnList = "active"),
-    @Index(name = "idx_role", columnList = "role")
-})
+        @Index(name = "idx_email", columnList = "email"),
+        @Index(name = "idx_active", columnList = "active"),
+        @Index(name = "idx_role", columnList = "role")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -47,28 +46,34 @@ public class UserEntity {
     @Column(name = "user_name", length = 100, nullable = false)
     private String userName;
 
-    @Column(name="first_name",nullable=false,length=100)
+    @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
-    @Column(name="last_name",nullable=false,length=100)
+    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
-    @JdbcTypeCode(SqlTypes.JSON) @Column(name="address",columnDefinition="json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "address", columnDefinition = "json")
     private com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile.Address address;
-    @Column(name="phone",length=16)
+    @Column(name = "phone", length = 16)
     private String phone;
-    @JdbcTypeCode(SqlTypes.BINARY) @Column(name="role_id",columnDefinition="binary(16)",nullable=false)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "role_id", columnDefinition = "binary(16)", nullable = false)
     private UUID roleId;
     @org.hibernate.annotations.Formula("(select r.name from auth_roles r where r.id=role_id)")
     private String roleName;
     @org.hibernate.annotations.Formula("(select d.name from auth_departments d where d.id=department_id)")
     private String departmentName;
-    @JdbcTypeCode(SqlTypes.BINARY) @Column(name="department_id",columnDefinition="binary(16)",nullable=false)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "department_id", columnDefinition = "binary(16)", nullable = false)
     private UUID departmentId;
     private void copyProfile(User user) {
-        var profile=user.getProfile();
-        this.firstName=profile.firstName();this.lastName=profile.lastName();this.address=profile.address();this.phone=profile.phone();
-        this.roleId=user.getRoleId();this.departmentId=user.getDepartmentId();
+        var profile = user.getProfile();
+        this.firstName = profile.firstName();
+        this.lastName = profile.lastName();
+        this.address = profile.address();
+        this.phone = profile.phone();
+        this.roleId = user.getRoleId();
+        this.departmentId = user.getDepartmentId();
     }
-
 
     @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
@@ -133,14 +138,15 @@ public class UserEntity {
 
         Set<BusinessModule> incoming = user.getModulePermissions();
 
-        this.modulePermissions.removeIf(existing -> !incoming.contains(existing.getModule()));
+        this.modulePermissions
+                .removeIf(existing -> !incoming.contains(existing.getModule()));
 
         Set<BusinessModule> existing = this.modulePermissions.stream()
                 .map(UserModulePermissionEntity::getModule)
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(BusinessModule.class)));
+                .collect(Collectors.toCollection(
+                        () -> EnumSet.noneOf(BusinessModule.class)));
 
-        incoming.stream()
-                .filter(module -> !existing.contains(module))
+        incoming.stream().filter(module -> !existing.contains(module))
                 .map(module -> UserModulePermissionEntity.of(this, module))
                 .forEach(this.modulePermissions::add);
     }
@@ -151,22 +157,31 @@ public class UserEntity {
         UserName domainUserName = new UserName(this.userName);
         Password domainPassword = Password.fromHash(this.passwordHash);
 
-        User user = new User(userId, domainEmail, domainUserName, domainPassword, this.role);
+        User user = new User(userId, domainEmail, domainUserName,
+                domainPassword, this.role);
 
         Set<BusinessModule> permissions = this.modulePermissions.stream()
                 .map(UserModulePermissionEntity::getModule)
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(BusinessModule.class)));
+                .collect(Collectors.toCollection(
+                        () -> EnumSet.noneOf(BusinessModule.class)));
 
         user.changePhoto(photoPath);
-        user.setAssignmentNames(roleName,departmentName);
-        user.updateProfile(new com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile(firstName,lastName,address,phone),roleId,departmentId);
+        user.setAssignmentNames(roleName, departmentName);
+        user.updateProfile(
+                new com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile(
+                        firstName, lastName, address, phone),
+                roleId, departmentId);
         user.setModulePermissions(permissions);
 
         try {
-            java.lang.reflect.Field activeField = User.class.getDeclaredField("active");
-            java.lang.reflect.Field emailVerifiedField = User.class.getDeclaredField("emailVerified");
-            java.lang.reflect.Field createdAtField = User.class.getDeclaredField("createdAt");
-            java.lang.reflect.Field updatedAtField = User.class.getDeclaredField("updatedAt");
+            java.lang.reflect.Field activeField = User.class
+                    .getDeclaredField("active");
+            java.lang.reflect.Field emailVerifiedField = User.class
+                    .getDeclaredField("emailVerified");
+            java.lang.reflect.Field createdAtField = User.class
+                    .getDeclaredField("createdAt");
+            java.lang.reflect.Field updatedAtField = User.class
+                    .getDeclaredField("updatedAt");
 
             activeField.setAccessible(true);
             emailVerifiedField.setAccessible(true);
@@ -179,9 +194,9 @@ public class UserEntity {
             updatedAtField.set(user, this.updatedAt);
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Failed to set fields on domain entity", e);
+            throw new RuntimeException("Failed to set fields on domain entity",
+                    e);
         }
-
 
         return user;
     }

@@ -11,18 +11,26 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class ProductPricePersistenceBoundaryTest {
     @Test
     void shouldKeepForeignPriceTypeEntitiesAndRepositoriesOutOfProductPersistence() {
-        for (Class<?> type : List.of(ProductEntity.class, ProductPriceEntity.class, JpaProductRepository.class)) {
+        for (Class<?> type : List.of(ProductEntity.class,
+                ProductPriceEntity.class, JpaProductRepository.class)) {
             for (var field : type.getDeclaredFields()) {
-                assertFalse(field.getGenericType().getTypeName().contains("com.cashly.cashly_api.catalog.price_types"), field.toString());
+                assertFalse(
+                        field.getGenericType().getTypeName().contains(
+                                "com.cashly.cashly_api.catalog.price_types"),
+                        field.toString());
             }
             for (var method : type.getDeclaredMethods()) {
                 for (var parameter : method.getGenericParameterTypes()) {
-                    assertFalse(parameter.getTypeName().contains("com.cashly.cashly_api.catalog.price_types"), method.toString());
+                    assertFalse(parameter.getTypeName().contains(
+                            "com.cashly.cashly_api.catalog.price_types"),
+                            method.toString());
                 }
             }
             for (var constructor : type.getConstructors()) {
                 for (var parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.catalog.price_types"), constructor.toString());
+                    assertFalse(parameter.getPackageName().startsWith(
+                            "com.cashly.cashly_api.catalog.price_types"),
+                            constructor.toString());
                 }
             }
         }

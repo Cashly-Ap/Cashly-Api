@@ -5,17 +5,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record QuoteListResponse(
-        UUID id,
-        String quoteNumber,
-        UUID customerId,
-        String customerName,
-        String customerRif,
-        String status,
-        LocalDate expiryDate,
-        BigDecimal subtotal,
-        UUID createdBy,
-        String createdByName,
-        Instant createdAt,
-        Instant updatedAt
-) {}
+public record QuoteListResponse(UUID id, String quoteNumber, UUID customerId,
+        String customerName, String customerRif, String status,
+        LocalDate expiryDate, BigDecimal subtotal, UUID createdBy,
+        String createdByName, Instant createdAt, Instant updatedAt) {
+}

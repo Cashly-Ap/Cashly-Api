@@ -9,14 +9,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class LocalPurchaseSupplierGatewayAdapter implements PurchaseSupplierGateway {
+public class LocalPurchaseSupplierGatewayAdapter
+        implements
+            PurchaseSupplierGateway {
     private final PurchaseSupplierQuery query;
     public LocalPurchaseSupplierGatewayAdapter(PurchaseSupplierQuery query) {
         this.query = query;
     }
     @Override
     public Optional<Entry> findById(UUID id) {
-        return query.findById(id).map(entry -> new Entry(entry.id(), entry.name(), entry.rif()));
+        return query.findById(id)
+                .map(entry -> new Entry(entry.id(), entry.name(), entry.rif()));
     }
 
     @Override

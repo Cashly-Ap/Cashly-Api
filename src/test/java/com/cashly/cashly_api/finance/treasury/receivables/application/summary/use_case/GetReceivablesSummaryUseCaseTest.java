@@ -34,8 +34,7 @@ class GetReceivablesSummaryUseCaseTest {
         ReceivablesSummaryResponse expected = new ReceivablesSummaryResponse(
                 new BigDecimal("50000.00"), 25L, 120L,
                 new BigDecimal("3000.00"), new BigDecimal("15000.00"),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         when(receivablesRepository.findSummary()).thenReturn(expected);
 
@@ -45,7 +44,8 @@ class GetReceivablesSummaryUseCaseTest {
         assertEquals(new BigDecimal("50000.00"), result.totalDebt());
         assertEquals(25L, result.totalCustomersWithDebt());
         assertEquals(120L, result.totalInvoicesWithDebt());
-        assertEquals(new BigDecimal("3000.00"), result.totalPendingValidationAmount());
+        assertEquals(new BigDecimal("3000.00"),
+                result.totalPendingValidationAmount());
         assertEquals(new BigDecimal("15000.00"), result.totalCustomerBalance());
         verify(receivablesRepository).findSummary();
     }

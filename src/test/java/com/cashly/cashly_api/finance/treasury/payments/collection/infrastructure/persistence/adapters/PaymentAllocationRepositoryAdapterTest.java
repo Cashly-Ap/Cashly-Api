@@ -47,15 +47,13 @@ class PaymentAllocationRepositoryAdapterTest {
         @Test
         void should_MapToEntityAndDelegateToJpaRepository() {
             PaymentAllocation allocation = PaymentAllocation.reconstitute(
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    new BigDecimal("500.00"),
-                    LocalDateTime.now()
-            );
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                    new BigDecimal("500.00"), LocalDateTime.now());
 
-            PaymentAllocationEntity expectedEntity = PaymentAllocationJpaMapper.toEntity(allocation);
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            PaymentAllocationEntity expectedEntity = PaymentAllocationJpaMapper
+                    .toEntity(allocation);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             PaymentAllocation saved = adapter.save(allocation);
 
@@ -63,14 +61,16 @@ class PaymentAllocationRepositoryAdapterTest {
             assertEquals(allocation.getId(), saved.getId());
             assertEquals(allocation.getPaymentId(), saved.getPaymentId());
             assertEquals(allocation.getInvoiceId(), saved.getInvoiceId());
-            assertEquals(allocation.getAllocatedAmount(), saved.getAllocatedAmount());
+            assertEquals(allocation.getAllocatedAmount(),
+                    saved.getAllocatedAmount());
             assertEquals(allocation.getCreatedAt(), saved.getCreatedAt());
 
             PaymentAllocationEntity captured = entityCaptor.getValue();
             assertEquals(allocation.getId(), captured.getId());
             assertEquals(allocation.getPaymentId(), captured.getPaymentId());
             assertEquals(allocation.getInvoiceId(), captured.getInvoiceId());
-            assertEquals(allocation.getAllocatedAmount(), captured.getAllocatedAmount());
+            assertEquals(allocation.getAllocatedAmount(),
+                    captured.getAllocatedAmount());
             assertEquals(allocation.getCreatedAt(), captured.getCreatedAt());
 
             verify(jpaRepository).save(any(PaymentAllocationEntity.class));
@@ -84,16 +84,16 @@ class PaymentAllocationRepositoryAdapterTest {
 
             PaymentAllocation original = PaymentAllocation.reconstitute(
                     allocationId, paymentId, invoiceId,
-                    new BigDecimal("500.00"), LocalDateTime.now().minusDays(1)
-            );
+                    new BigDecimal("500.00"), LocalDateTime.now().minusDays(1));
 
             PaymentAllocation updated = PaymentAllocation.reconstitute(
                     allocationId, paymentId, invoiceId,
-                    new BigDecimal("750.00"), LocalDateTime.now()
-            );
+                    new BigDecimal("750.00"), LocalDateTime.now());
 
-            PaymentAllocationEntity expectedEntity = PaymentAllocationJpaMapper.toEntity(updated);
-            when(jpaRepository.save(any(PaymentAllocationEntity.class))).thenReturn(expectedEntity);
+            PaymentAllocationEntity expectedEntity = PaymentAllocationJpaMapper
+                    .toEntity(updated);
+            when(jpaRepository.save(any(PaymentAllocationEntity.class)))
+                    .thenReturn(expectedEntity);
 
             PaymentAllocation saved = adapter.save(updated);
 
@@ -112,14 +112,13 @@ class PaymentAllocationRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObjects_When_EntitiesFound() {
             UUID paymentId = UUID.randomUUID();
-            PaymentAllocationEntity entity = PaymentAllocationJpaMapper.toEntity(
-                    PaymentAllocation.reconstitute(
-                            UUID.randomUUID(), paymentId, UUID.randomUUID(),
-                            new BigDecimal("500.00"), LocalDateTime.now()
-                    )
-            );
+            PaymentAllocationEntity entity = PaymentAllocationJpaMapper
+                    .toEntity(PaymentAllocation.reconstitute(UUID.randomUUID(),
+                            paymentId, UUID.randomUUID(),
+                            new BigDecimal("500.00"), LocalDateTime.now()));
 
-            when(jpaRepository.findByPaymentId(paymentId)).thenReturn(List.of(entity));
+            when(jpaRepository.findByPaymentId(paymentId))
+                    .thenReturn(List.of(entity));
 
             List<PaymentAllocation> result = adapter.findByPaymentId(paymentId);
 
@@ -132,7 +131,8 @@ class PaymentAllocationRepositoryAdapterTest {
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
             UUID paymentId = UUID.randomUUID();
-            when(jpaRepository.findByPaymentId(paymentId)).thenReturn(List.of());
+            when(jpaRepository.findByPaymentId(paymentId))
+                    .thenReturn(List.of());
 
             List<PaymentAllocation> result = adapter.findByPaymentId(paymentId);
 
@@ -149,14 +149,13 @@ class PaymentAllocationRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObjects_When_EntitiesFound() {
             UUID invoiceId = UUID.randomUUID();
-            PaymentAllocationEntity entity = PaymentAllocationJpaMapper.toEntity(
-                    PaymentAllocation.reconstitute(
-                            UUID.randomUUID(), UUID.randomUUID(), invoiceId,
-                            new BigDecimal("500.00"), LocalDateTime.now()
-                    )
-            );
+            PaymentAllocationEntity entity = PaymentAllocationJpaMapper
+                    .toEntity(PaymentAllocation.reconstitute(UUID.randomUUID(),
+                            UUID.randomUUID(), invoiceId,
+                            new BigDecimal("500.00"), LocalDateTime.now()));
 
-            when(jpaRepository.findByInvoiceId(invoiceId)).thenReturn(List.of(entity));
+            when(jpaRepository.findByInvoiceId(invoiceId))
+                    .thenReturn(List.of(entity));
 
             List<PaymentAllocation> result = adapter.findByInvoiceId(invoiceId);
 
@@ -169,7 +168,8 @@ class PaymentAllocationRepositoryAdapterTest {
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
             UUID invoiceId = UUID.randomUUID();
-            when(jpaRepository.findByInvoiceId(invoiceId)).thenReturn(List.of());
+            when(jpaRepository.findByInvoiceId(invoiceId))
+                    .thenReturn(List.of());
 
             List<PaymentAllocation> result = adapter.findByInvoiceId(invoiceId);
 
@@ -201,9 +201,11 @@ class PaymentAllocationRepositoryAdapterTest {
         void should_ReturnSumOfAllocatedAmounts() {
             UUID invoiceId = UUID.randomUUID();
             BigDecimal expectedSum = new BigDecimal("1250.00");
-            when(jpaRepository.sumAllocatedAmountByInvoiceId(invoiceId)).thenReturn(expectedSum);
+            when(jpaRepository.sumAllocatedAmountByInvoiceId(invoiceId))
+                    .thenReturn(expectedSum);
 
-            BigDecimal result = adapter.getAllocatedAmountByInvoiceId(invoiceId);
+            BigDecimal result = adapter
+                    .getAllocatedAmountByInvoiceId(invoiceId);
 
             assertEquals(expectedSum, result);
             verify(jpaRepository).sumAllocatedAmountByInvoiceId(invoiceId);
@@ -212,9 +214,11 @@ class PaymentAllocationRepositoryAdapterTest {
         @Test
         void should_ReturnZero_When_NoAllocations() {
             UUID invoiceId = UUID.randomUUID();
-            when(jpaRepository.sumAllocatedAmountByInvoiceId(invoiceId)).thenReturn(BigDecimal.ZERO);
+            when(jpaRepository.sumAllocatedAmountByInvoiceId(invoiceId))
+                    .thenReturn(BigDecimal.ZERO);
 
-            BigDecimal result = adapter.getAllocatedAmountByInvoiceId(invoiceId);
+            BigDecimal result = adapter
+                    .getAllocatedAmountByInvoiceId(invoiceId);
 
             assertEquals(BigDecimal.ZERO, result);
             verify(jpaRepository).sumAllocatedAmountByInvoiceId(invoiceId);

@@ -20,12 +20,15 @@ public class LocalOrderNotificationAdapter implements OrderNotificationGateway {
     }
 
     @Override
-    public void notifyCustomerOrderRejected(UUID customerId, UUID orderId, String reason) {
+    public void notifyCustomerOrderRejected(UUID customerId, UUID orderId,
+            String reason) {
         notifications.notifyCustomerOrderRejected(customerId, orderId, reason);
     }
 
     @Override
-    public void notifyCustomerOrderConvertedToInvoice(UUID customerId, UUID orderId, String invoiceNumber) {
-        notifications.notifyCustomerOrderConvertedToInvoice(customerId, orderId, invoiceNumber);
+    public void notifyCustomerOrderConvertedToInvoice(UUID customerId,
+            UUID orderId, String invoiceNumber) {
+        notifications.notifyCustomerOrderConvertedToInvoice(customerId, orderId,
+                invoiceNumber);
     }
 }

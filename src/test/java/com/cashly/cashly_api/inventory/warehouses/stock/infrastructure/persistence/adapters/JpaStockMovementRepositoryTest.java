@@ -46,22 +46,9 @@ class JpaStockMovementRepositoryTest {
     }
 
     private StockMovement createSampleMovement() {
-        return new StockMovement(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                MovementType.ENTRY,
-                10,
-                100,
-                110,
-                null,
-                null,
-                null,
-                null,
-                null,
-                "Initial stock entry",
-                LocalDateTime.now()
-        );
+        return new StockMovement(UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), MovementType.ENTRY, 10, 100, 110, null, null,
+                null, null, null, "Initial stock entry", LocalDateTime.now());
     }
 
     @Nested
@@ -72,8 +59,10 @@ class JpaStockMovementRepositoryTest {
         void should_CreateEntityFromDomainAndDelegateToSpringDataRepository() {
             StockMovement movement = createSampleMovement();
 
-            StockMovementEntity expectedEntity = StockMovementEntity.fromDomain(movement);
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            StockMovementEntity expectedEntity = StockMovementEntity
+                    .fromDomain(movement);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             StockMovement saved = adapter.save(movement);
 
@@ -91,9 +80,11 @@ class JpaStockMovementRepositoryTest {
             assertEquals(movement.getId(), captured.getId());
             assertEquals(movement.getWarehouseId(), captured.getWarehouseId());
             assertEquals(movement.getProductId(), captured.getProductId());
-            assertEquals(movement.getMovementType(), captured.getMovementType());
+            assertEquals(movement.getMovementType(),
+                    captured.getMovementType());
             assertEquals(movement.getQuantity(), captured.getQuantity());
-            assertEquals(movement.getPreviousStock(), captured.getPreviousStock());
+            assertEquals(movement.getPreviousStock(),
+                    captured.getPreviousStock());
             assertEquals(movement.getNewStock(), captured.getNewStock());
             assertEquals(movement.getNotes(), captured.getNotes());
             assertEquals(movement.getCreatedAt(), captured.getCreatedAt());
@@ -103,20 +94,14 @@ class JpaStockMovementRepositoryTest {
 
         @Test
         void should_SaveWithGeneratedId_When_DomainHasNullId() {
-            StockMovement movement = StockMovement.create(
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    MovementType.EXIT,
-                    5,
-                    110,
-                    105,
-                    null,
-                    null,
-                    "Sale exit"
-            );
+            StockMovement movement = StockMovement.create(UUID.randomUUID(),
+                    UUID.randomUUID(), MovementType.EXIT, 5, 110, 105, null,
+                    null, "Sale exit");
 
-            StockMovementEntity expectedEntity = StockMovementEntity.fromDomain(movement);
-            when(springDataRepository.save(any(StockMovementEntity.class))).thenReturn(expectedEntity);
+            StockMovementEntity expectedEntity = StockMovementEntity
+                    .fromDomain(movement);
+            when(springDataRepository.save(any(StockMovementEntity.class)))
+                    .thenReturn(expectedEntity);
 
             StockMovement saved = adapter.save(movement);
 
@@ -137,23 +122,22 @@ class JpaStockMovementRepositoryTest {
         void should_ReturnPageResponseWithDomainObjects_When_EntitiesFound() {
             UUID warehouseId = UUID.randomUUID();
             UUID productId = UUID.randomUUID();
-            StockMovement movement = new StockMovement(
-                    UUID.randomUUID(), warehouseId, productId,
-                    MovementType.ENTRY, 10, 100, 110,
-                    null, null, null, null, null,
-                    "Entry", LocalDateTime.now()
-            );
+            StockMovement movement = new StockMovement(UUID.randomUUID(),
+                    warehouseId, productId, MovementType.ENTRY, 10, 100, 110,
+                    null, null, null, null, null, "Entry", LocalDateTime.now());
 
-            StockMovementEntity entity = StockMovementEntity.fromDomain(movement);
-            Page<StockMovementEntity> page = new PageImpl<>(
-                    List.of(entity), PageRequest.of(0, 10), 1);
+            StockMovementEntity entity = StockMovementEntity
+                    .fromDomain(movement);
+            Page<StockMovementEntity> page = new PageImpl<>(List.of(entity),
+                    PageRequest.of(0, 10), 1);
 
             when(springDataRepository.findByWarehouseIdAndProductId(
                     eq(warehouseId), eq(productId), any(Pageable.class)))
                     .thenReturn(page);
 
-            PageResponse<StockMovement> result = adapter.findByWarehouseIdAndProductId(
-                    warehouseId, productId, 0, 10);
+            PageResponse<StockMovement> result = adapter
+                    .findByWarehouseIdAndProductId(warehouseId, productId, 0,
+                            10);
 
             assertNotNull(result);
             assertEquals(1, result.content().size());
@@ -185,8 +169,9 @@ class JpaStockMovementRepositoryTest {
                     eq(warehouseId), eq(productId), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
-            PageResponse<StockMovement> result = adapter.findByWarehouseIdAndProductId(
-                    warehouseId, productId, 0, 10);
+            PageResponse<StockMovement> result = adapter
+                    .findByWarehouseIdAndProductId(warehouseId, productId, 0,
+                            10);
 
             assertNotNull(result);
             assertTrue(result.content().isEmpty());
@@ -205,21 +190,21 @@ class JpaStockMovementRepositoryTest {
         @Test
         void should_ReturnPageResponseWithDomainObjects_When_EntitiesFound() {
             UUID warehouseId = UUID.randomUUID();
-            StockMovement movement = new StockMovement(
-                    UUID.randomUUID(), warehouseId, UUID.randomUUID(),
-                    MovementType.ENTRY, 10, 100, 110,
-                    null, null, null, null, null,
-                    "Entry", LocalDateTime.now()
-            );
+            StockMovement movement = new StockMovement(UUID.randomUUID(),
+                    warehouseId, UUID.randomUUID(), MovementType.ENTRY, 10, 100,
+                    110, null, null, null, null, null, "Entry",
+                    LocalDateTime.now());
 
-            StockMovementEntity entity = StockMovementEntity.fromDomain(movement);
-            Page<StockMovementEntity> page = new PageImpl<>(
-                    List.of(entity), PageRequest.of(0, 10), 1);
+            StockMovementEntity entity = StockMovementEntity
+                    .fromDomain(movement);
+            Page<StockMovementEntity> page = new PageImpl<>(List.of(entity),
+                    PageRequest.of(0, 10), 1);
 
-            when(springDataRepository.findByWarehouseId(eq(warehouseId), any(Pageable.class)))
-                    .thenReturn(page);
+            when(springDataRepository.findByWarehouseId(eq(warehouseId),
+                    any(Pageable.class))).thenReturn(page);
 
-            PageResponse<StockMovement> result = adapter.findByWarehouseId(warehouseId, 0, 10);
+            PageResponse<StockMovement> result = adapter
+                    .findByWarehouseId(warehouseId, 0, 10);
 
             assertNotNull(result);
             assertEquals(1, result.content().size());
@@ -229,7 +214,8 @@ class JpaStockMovementRepositoryTest {
             assertEquals(movement.getId(), result.content().get(0).getId());
             assertEquals(warehouseId, result.content().get(0).getWarehouseId());
 
-            verify(springDataRepository).findByWarehouseId(eq(warehouseId), any(Pageable.class));
+            verify(springDataRepository).findByWarehouseId(eq(warehouseId),
+                    any(Pageable.class));
         }
 
         @Test
@@ -237,17 +223,19 @@ class JpaStockMovementRepositoryTest {
             UUID warehouseId = UUID.randomUUID();
             Page<StockMovementEntity> emptyPage = Page.empty();
 
-            when(springDataRepository.findByWarehouseId(eq(warehouseId), any(Pageable.class)))
-                    .thenReturn(emptyPage);
+            when(springDataRepository.findByWarehouseId(eq(warehouseId),
+                    any(Pageable.class))).thenReturn(emptyPage);
 
-            PageResponse<StockMovement> result = adapter.findByWarehouseId(warehouseId, 0, 10);
+            PageResponse<StockMovement> result = adapter
+                    .findByWarehouseId(warehouseId, 0, 10);
 
             assertNotNull(result);
             assertTrue(result.content().isEmpty());
             assertTrue(result.empty());
             assertEquals(0, result.totalElements());
 
-            verify(springDataRepository).findByWarehouseId(eq(warehouseId), any(Pageable.class));
+            verify(springDataRepository).findByWarehouseId(eq(warehouseId),
+                    any(Pageable.class));
         }
     }
 
@@ -258,24 +246,26 @@ class JpaStockMovementRepositoryTest {
         @Test
         void should_FilterByMovementTypeBeforeMappingThePage() {
             UUID warehouseId = UUID.randomUUID();
-            StockMovement movement = new StockMovement(
-                    UUID.randomUUID(), warehouseId, UUID.randomUUID(),
-                    MovementType.EXIT, 4, 10, 6,
-                    null, null, null, null, null,
-                    "Exit", LocalDateTime.now()
-            );
+            StockMovement movement = new StockMovement(UUID.randomUUID(),
+                    warehouseId, UUID.randomUUID(), MovementType.EXIT, 4, 10, 6,
+                    null, null, null, null, null, "Exit", LocalDateTime.now());
             Page<StockMovementEntity> page = new PageImpl<>(
-                    List.of(StockMovementEntity.fromDomain(movement)), PageRequest.of(0, 10), 1);
+                    List.of(StockMovementEntity.fromDomain(movement)),
+                    PageRequest.of(0, 10), 1);
             when(springDataRepository.findByWarehouseIdAndMovementType(
-                    eq(warehouseId), eq(MovementType.EXIT), any(Pageable.class))).thenReturn(page);
+                    eq(warehouseId), eq(MovementType.EXIT),
+                    any(Pageable.class))).thenReturn(page);
 
-            PageResponse<StockMovement> result = adapter.findByWarehouseIdAndMovementType(
-                    warehouseId, MovementType.EXIT, 0, 10);
+            PageResponse<StockMovement> result = adapter
+                    .findByWarehouseIdAndMovementType(warehouseId,
+                            MovementType.EXIT, 0, 10);
 
             assertEquals(1, result.totalElements());
-            assertEquals(MovementType.EXIT, result.content().getFirst().getMovementType());
+            assertEquals(MovementType.EXIT,
+                    result.content().getFirst().getMovementType());
             verify(springDataRepository).findByWarehouseIdAndMovementType(
-                    eq(warehouseId), eq(MovementType.EXIT), any(Pageable.class));
+                    eq(warehouseId), eq(MovementType.EXIT),
+                    any(Pageable.class));
         }
     }
 

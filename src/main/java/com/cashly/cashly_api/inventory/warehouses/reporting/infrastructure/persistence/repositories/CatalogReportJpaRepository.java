@@ -11,7 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.UUID;
 
-public interface CatalogReportJpaRepository extends JpaRepository<WarehouseStockEntity, UUID> {
+public interface CatalogReportJpaRepository
+        extends
+            JpaRepository<WarehouseStockEntity, UUID> {
 
     @Query(value = """
             SELECT
@@ -34,8 +36,7 @@ public interface CatalogReportJpaRepository extends JpaRepository<WarehouseStock
               AND (:warehouseId IS NULL OR ws.warehouse_id = UNHEX(REPLACE(:warehouseId, '-', '')))
               AND (:composite IS NULL OR p.composite = :composite)
               AND (:withStock IS NULL OR (:withStock = TRUE AND ws.quantity > 0) OR (:withStock = FALSE))
-            """,
-            countQuery = """
+            """, countQuery = """
             SELECT COUNT(*)
             FROM warehouse_stock ws
             JOIN products p ON p.id = ws.product_id
@@ -46,13 +47,10 @@ public interface CatalogReportJpaRepository extends JpaRepository<WarehouseStock
               AND (:warehouseId IS NULL OR ws.warehouse_id = UNHEX(REPLACE(:warehouseId, '-', '')))
               AND (:composite IS NULL OR p.composite = :composite)
               AND (:withStock IS NULL OR (:withStock = TRUE AND ws.quantity > 0) OR (:withStock = FALSE))
-            """,
-            nativeQuery = true)
-    Page<CatalogReportProjection> findCatalog(
-            @Param("search") String search,
+            """, nativeQuery = true)
+    Page<CatalogReportProjection> findCatalog(@Param("search") String search,
             @Param("categoryId") String categoryId,
             @Param("warehouseId") String warehouseId,
             @Param("composite") Boolean composite,
-            @Param("withStock") Boolean withStock,
-            Pageable pageable);
+            @Param("withStock") Boolean withStock, Pageable pageable);
 }

@@ -32,18 +32,21 @@ class CommercialCatalogControllerTest {
     void should_get_commercial_catalog_pdf() {
         byte[] pdfContent = "Commercial catalog PDF".getBytes();
 
-        when(generateCommercialCatalogPdfUseCase.execute(any(CommercialCatalogQuery.class)))
+        when(generateCommercialCatalogPdfUseCase
+                .execute(any(CommercialCatalogQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getCatalogPdf(
-                "search", UUID.randomUUID(), UUID.randomUUID(), true);
+        ResponseEntity<byte[]> result = controller.getCatalogPdf("search",
+                UUID.randomUUID(), UUID.randomUUID(), true);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("catalogo-comercial.pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("catalogo-comercial.pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
-        verify(generateCommercialCatalogPdfUseCase).execute(any(CommercialCatalogQuery.class));
+        verify(generateCommercialCatalogPdfUseCase)
+                .execute(any(CommercialCatalogQuery.class));
     }
 
     @Test
@@ -51,12 +54,15 @@ class CommercialCatalogControllerTest {
     void should_get_commercial_catalog_pdf_without_optional_params() {
         byte[] pdfContent = "PDF without filters".getBytes();
 
-        when(generateCommercialCatalogPdfUseCase.execute(any(CommercialCatalogQuery.class)))
+        when(generateCommercialCatalogPdfUseCase
+                .execute(any(CommercialCatalogQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getCatalogPdf(null, null, null, null);
+        ResponseEntity<byte[]> result = controller.getCatalogPdf(null, null,
+                null, null);
 
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateCommercialCatalogPdfUseCase).execute(any(CommercialCatalogQuery.class));
+        verify(generateCommercialCatalogPdfUseCase)
+                .execute(any(CommercialCatalogQuery.class));
     }
 }

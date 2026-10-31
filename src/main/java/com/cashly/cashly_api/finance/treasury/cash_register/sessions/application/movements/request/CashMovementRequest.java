@@ -9,10 +9,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record CashMovementRequest(
-        @NotNull CashMovementDirection direction,
-        @NotNull CashMovementType type,
-        @NotNull @Positive BigDecimal amount,
-        UUID paymentMethodId,
-        @NotBlank String description
-) {}
+public record CashMovementRequest(@NotNull CashMovementDirection direction,
+        @NotNull CashMovementType type, @NotNull @Positive BigDecimal amount,
+        UUID paymentMethodId, @NotBlank String description) {
+}

@@ -23,7 +23,8 @@ class PaymentStatusTest {
     @Test
     void should_HaveCancelledValue() {
         assertNotNull(PaymentStatus.valueOf("CANCELLED"));
-        assertEquals(PaymentStatus.CANCELLED, PaymentStatus.valueOf("CANCELLED"));
+        assertEquals(PaymentStatus.CANCELLED,
+                PaymentStatus.valueOf("CANCELLED"));
     }
 
     @Test

@@ -3,14 +3,7 @@ package com.cashly.cashly_api.catalog.products.reporting.application.dto.respons
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record CommercialCatalogResponse(
-        UUID productId,
-        String productName,
-        String sku,
-        String description,
-        String photo,
-        UUID categoryId,
-        String categoryName,
-        BigDecimal price,
-        String priceTypeName
-) {}
+public record CommercialCatalogResponse(UUID productId, String productName,
+        String sku, String description, String photo, UUID categoryId,
+        String categoryName, BigDecimal price, String priceTypeName) {
+}

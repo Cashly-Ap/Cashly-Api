@@ -38,7 +38,8 @@ class PaymentAllocationServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new PaymentAllocationService(paymentRepository, allocationRepository);
+        service = new PaymentAllocationService(paymentRepository,
+                allocationRepository);
         paymentId = UUID.randomUUID();
         payment = mock(Payment.class);
     }
@@ -53,23 +54,28 @@ class PaymentAllocationServiceTest {
             when(payment.getStatus()).thenReturn(PaymentStatus.APPLIED);
             when(payment.getAmount()).thenReturn(new BigDecimal("500.00"));
             when(payment.getAppliedAmount()).thenReturn(BigDecimal.ZERO);
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
-            List<PaymentAllocationService.AllocationRequest> allocations = List.of(
-                    new PaymentAllocationService.AllocationRequest(invoiceId, new BigDecimal("300.00")),
-                    new PaymentAllocationService.AllocationRequest(UUID.randomUUID(), new BigDecimal("200.00"))
-            );
+            List<PaymentAllocationService.AllocationRequest> allocations = List
+                    .of(new PaymentAllocationService.AllocationRequest(
+                            invoiceId, new BigDecimal("300.00")),
+                            new PaymentAllocationService.AllocationRequest(
+                                    UUID.randomUUID(),
+                                    new BigDecimal("200.00")));
 
             service.applyPaymentToInvoices(paymentId, allocations);
 
-            verify(allocationRepository, times(2)).save(any(PaymentAllocation.class));
+            verify(allocationRepository, times(2))
+                    .save(any(PaymentAllocation.class));
             verify(payment).apply(new BigDecimal("500.00"));
             verify(paymentRepository).save(payment);
         }
 
         @Test
         void should_ThrowException_When_PaymentNotFound() {
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.empty());
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.empty());
 
             assertThrows(IllegalArgumentException.class,
                     () -> service.applyPaymentToInvoices(paymentId, List.of()));
@@ -78,7 +84,8 @@ class PaymentAllocationServiceTest {
         @Test
         void should_ThrowException_When_PaymentIsCancelled() {
             when(payment.getStatus()).thenReturn(PaymentStatus.CANCELLED);
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
             assertThrows(IllegalStateException.class,
                     () -> service.applyPaymentToInvoices(paymentId, List.of()));
@@ -88,15 +95,17 @@ class PaymentAllocationServiceTest {
         void should_ThrowException_When_AllocationExceedsRemaining() {
             UUID invoiceId = UUID.randomUUID();
             when(payment.getAmount()).thenReturn(new BigDecimal("500.00"));
-            when(payment.getAppliedAmount()).thenReturn(new BigDecimal("400.00"));
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(payment.getAppliedAmount())
+                    .thenReturn(new BigDecimal("400.00"));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
-            List<PaymentAllocationService.AllocationRequest> allocations = List.of(
-                    new PaymentAllocationService.AllocationRequest(invoiceId, new BigDecimal("200.00"))
-            );
+            List<PaymentAllocationService.AllocationRequest> allocations = List
+                    .of(new PaymentAllocationService.AllocationRequest(
+                            invoiceId, new BigDecimal("200.00")));
 
-            assertThrows(IllegalArgumentException.class,
-                    () -> service.applyPaymentToInvoices(paymentId, allocations));
+            assertThrows(IllegalArgumentException.class, () -> service
+                    .applyPaymentToInvoices(paymentId, allocations));
         }
     }
 
@@ -106,7 +115,8 @@ class PaymentAllocationServiceTest {
 
         @Test
         void should_CancelPayment_When_ItExists() {
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
             service.cancelPayment(paymentId);
 
@@ -117,7 +127,8 @@ class PaymentAllocationServiceTest {
 
         @Test
         void should_ThrowException_When_PaymentNotFound() {
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.empty());
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.empty());
 
             assertThrows(IllegalArgumentException.class,
                     () -> service.cancelPayment(paymentId));
@@ -133,10 +144,13 @@ class PaymentAllocationServiceTest {
             UUID invoiceId = UUID.randomUUID();
             when(payment.getStatus()).thenReturn(PaymentStatus.APPLIED);
             when(payment.getAmount()).thenReturn(new BigDecimal("1000.00"));
-            when(payment.getAppliedAmount()).thenReturn(new BigDecimal("200.00"));
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(payment.getAppliedAmount())
+                    .thenReturn(new BigDecimal("200.00"));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
-            service.applyAdvanceToInvoice(paymentId, invoiceId, new BigDecimal("300.00"));
+            service.applyAdvanceToInvoice(paymentId, invoiceId,
+                    new BigDecimal("300.00"));
 
             verify(allocationRepository).save(any(PaymentAllocation.class));
             verify(payment).apply(new BigDecimal("300.00"));
@@ -145,30 +159,37 @@ class PaymentAllocationServiceTest {
 
         @Test
         void should_ThrowException_When_AdvanceNotFound() {
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.empty());
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.empty());
 
             assertThrows(IllegalArgumentException.class,
-                    () -> service.applyAdvanceToInvoice(paymentId, UUID.randomUUID(), BigDecimal.TEN));
+                    () -> service.applyAdvanceToInvoice(paymentId,
+                            UUID.randomUUID(), BigDecimal.TEN));
         }
 
         @Test
         void should_ThrowException_When_AdvanceIsCancelled() {
             when(payment.getStatus()).thenReturn(PaymentStatus.CANCELLED);
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
             assertThrows(IllegalStateException.class,
-                    () -> service.applyAdvanceToInvoice(paymentId, UUID.randomUUID(), BigDecimal.TEN));
+                    () -> service.applyAdvanceToInvoice(paymentId,
+                            UUID.randomUUID(), BigDecimal.TEN));
         }
 
         @Test
         void should_ThrowException_When_AmountExceedsRemaining() {
             UUID invoiceId = UUID.randomUUID();
             when(payment.getAmount()).thenReturn(new BigDecimal("500.00"));
-            when(payment.getAppliedAmount()).thenReturn(new BigDecimal("400.00"));
-            when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
+            when(payment.getAppliedAmount())
+                    .thenReturn(new BigDecimal("400.00"));
+            when(paymentRepository.findById(PaymentId.of(paymentId)))
+                    .thenReturn(Optional.of(payment));
 
             assertThrows(IllegalArgumentException.class,
-                    () -> service.applyAdvanceToInvoice(paymentId, invoiceId, new BigDecimal("200.00")));
+                    () -> service.applyAdvanceToInvoice(paymentId, invoiceId,
+                            new BigDecimal("200.00")));
         }
     }
 
@@ -180,46 +201,55 @@ class PaymentAllocationServiceTest {
         void should_AllocateExactAmount_When_PaymentExactlyCoversTotalDebt() {
             UUID invoice1Id = UUID.randomUUID();
             UUID invoice2Id = UUID.randomUUID();
-            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, new BigDecimal("300.00")),
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
-            );
+            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List
+                    .of(new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                            invoice1Id, new BigDecimal("300.00")),
+                            new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                                    invoice2Id, new BigDecimal("200.00")));
 
-            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("500.00"));
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(
+                    paymentId, invoices, new BigDecimal("500.00"));
 
             assertEquals(2, allocations.size());
             assertEquals(invoice1Id, allocations.get(0).getInvoiceId());
-            assertEquals(new BigDecimal("300.00"), allocations.get(0).getAllocatedAmount());
+            assertEquals(new BigDecimal("300.00"),
+                    allocations.get(0).getAllocatedAmount());
             assertEquals(invoice2Id, allocations.get(1).getInvoiceId());
-            assertEquals(new BigDecimal("200.00"), allocations.get(1).getAllocatedAmount());
+            assertEquals(new BigDecimal("200.00"),
+                    allocations.get(1).getAllocatedAmount());
         }
 
         @Test
         void should_AllocateOnlyToOldestInvoice_When_AmountIsSmallerThanTotalDebt() {
             UUID invoice1Id = UUID.randomUUID();
             UUID invoice2Id = UUID.randomUUID();
-            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, new BigDecimal("300.00")),
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
-            );
+            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List
+                    .of(new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                            invoice1Id, new BigDecimal("300.00")),
+                            new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                                    invoice2Id, new BigDecimal("200.00")));
 
-            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("250.00"));
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(
+                    paymentId, invoices, new BigDecimal("250.00"));
 
             assertEquals(1, allocations.size());
             assertEquals(invoice1Id, allocations.get(0).getInvoiceId());
-            assertEquals(new BigDecimal("250.00"), allocations.get(0).getAllocatedAmount());
+            assertEquals(new BigDecimal("250.00"),
+                    allocations.get(0).getAllocatedAmount());
         }
 
         @Test
         void should_AllocateOnlyUpToTotalDebt_When_AmountExceedsTotalDebt() {
             UUID invoice1Id = UUID.randomUUID();
             UUID invoice2Id = UUID.randomUUID();
-            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, new BigDecimal("300.00")),
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
-            );
+            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List
+                    .of(new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                            invoice1Id, new BigDecimal("300.00")),
+                            new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                                    invoice2Id, new BigDecimal("200.00")));
 
-            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("700.00"));
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(
+                    paymentId, invoices, new BigDecimal("700.00"));
 
             BigDecimal totalAllocated = allocations.stream()
                     .map(PaymentAllocation::getAllocatedAmount)
@@ -230,7 +260,8 @@ class PaymentAllocationServiceTest {
 
         @Test
         void should_ReturnEmptyList_When_NoInvoicesProvided() {
-            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, List.of(), new BigDecimal("100.00"));
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(
+                    paymentId, List.of(), new BigDecimal("100.00"));
 
             assertTrue(allocations.isEmpty());
         }
@@ -238,26 +269,30 @@ class PaymentAllocationServiceTest {
         @Test
         void should_AllocateFullAmount_When_SingleInvoiceProvided() {
             UUID invoiceId = UUID.randomUUID();
-            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoiceId, new BigDecimal("500.00"))
-            );
+            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List
+                    .of(new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                            invoiceId, new BigDecimal("500.00")));
 
-            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("500.00"));
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(
+                    paymentId, invoices, new BigDecimal("500.00"));
 
             assertEquals(1, allocations.size());
-            assertEquals(new BigDecimal("500.00"), allocations.get(0).getAllocatedAmount());
+            assertEquals(new BigDecimal("500.00"),
+                    allocations.get(0).getAllocatedAmount());
         }
 
         @Test
         void should_SkipInvoice_When_RemainingAmountIsZero() {
             UUID invoice1Id = UUID.randomUUID();
             UUID invoice2Id = UUID.randomUUID();
-            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List.of(
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice1Id, BigDecimal.ZERO),
-                    new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(invoice2Id, new BigDecimal("200.00"))
-            );
+            List<com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance> invoices = List
+                    .of(new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                            invoice1Id, BigDecimal.ZERO),
+                            new com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.InvoiceRemainingBalance(
+                                    invoice2Id, new BigDecimal("200.00")));
 
-            List<PaymentAllocation> allocations = service.allocateOldestFirst(paymentId, invoices, new BigDecimal("200.00"));
+            List<PaymentAllocation> allocations = service.allocateOldestFirst(
+                    paymentId, invoices, new BigDecimal("200.00"));
 
             assertEquals(1, allocations.size());
             assertEquals(invoice2Id, allocations.get(0).getInvoiceId());

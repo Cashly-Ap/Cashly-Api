@@ -16,7 +16,7 @@ public class DeleteDebitNoteUseCase {
     private final DebitNoteInvoiceGateway invoices;
 
     public DeleteDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
-                                  DebitNoteInvoiceGateway invoices) {
+            DebitNoteInvoiceGateway invoices) {
         this.debitNoteRepository = debitNoteRepository;
         this.invoices = invoices;
     }
@@ -25,7 +25,8 @@ public class DeleteDebitNoteUseCase {
     public void execute(UUID noteId) {
         DebitNoteId id = new DebitNoteId(noteId);
         DebitNote debitNote = debitNoteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Debit note not found: " + noteId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Debit note not found: " + noteId));
 
         UUID invoiceId = debitNote.getInvoiceId();
         debitNoteRepository.delete(id);

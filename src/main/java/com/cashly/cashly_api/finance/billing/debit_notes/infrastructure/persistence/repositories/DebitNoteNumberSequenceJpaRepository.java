@@ -9,9 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface DebitNoteNumberSequenceJpaRepository extends JpaRepository<DebitNoteNumberSequenceEntity, Integer> {
+public interface DebitNoteNumberSequenceJpaRepository
+        extends
+            JpaRepository<DebitNoteNumberSequenceEntity, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM DebitNoteNumberSequenceEntity s WHERE s.year = :year")
-    Optional<DebitNoteNumberSequenceEntity> findByYearForUpdate(@Param("year") int year);
+    Optional<DebitNoteNumberSequenceEntity> findByYearForUpdate(
+            @Param("year") int year);
 }

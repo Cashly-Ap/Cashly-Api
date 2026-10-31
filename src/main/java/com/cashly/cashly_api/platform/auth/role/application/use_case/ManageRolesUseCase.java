@@ -22,16 +22,22 @@ public class ManageRolesUseCase {
     private final AccessRepository repository;
     private final AccessService access;
 
-    public ManageRolesUseCase(AccessRepository repository, AccessService access) {
+    public ManageRolesUseCase(AccessRepository repository,
+            AccessService access) {
         this.repository = repository;
         this.access = access;
     }
 
-    public record Request(String name, String description, Boolean active, Long version,
-                          Map<BusinessModule, Set<PermissionAction>> permissions) {}
-    public record Option(UUID id, String name) {}
+    public record Request(String name, String description, Boolean active,
+            Long version,
+            Map<BusinessModule, Set<PermissionAction>> permissions) {
+    }
+    public record Option(UUID id, String name) {
+    }
 
-    public enum ListAction { EDIT }
+    public enum ListAction {
+        EDIT
+    }
 
     public List<Role> list() {
         return list(null);
@@ -41,7 +47,8 @@ public class ManageRolesUseCase {
         access.require(BusinessModule.ROLES, PermissionAction.READ);
         if (action == ListAction.EDIT) {
             access.require(BusinessModule.ROLES, PermissionAction.UPDATE);
-            return repository.editableRoles().stream().filter(this::assignable).toList();
+            return repository.editableRoles().stream().filter(this::assignable)
+                    .toList();
         }
         return repository.roles();
     }
@@ -53,7 +60,8 @@ public class ManageRolesUseCase {
 
     public List<Option> options() {
         requireAssignment();
-        return repository.roles().stream().filter(Role::active).filter(this::assignable)
+        return repository.roles().stream().filter(Role::active)
+                .filter(this::assignable)
                 .map(role -> new Option(role.id(), role.name())).toList();
     }
 
@@ -67,9 +75,11 @@ public class ManageRolesUseCase {
     }
 
     private void requireAssignment() {
-        var permissions = access.current().permissions().getOrDefault(BusinessModule.USERS, Set.of());
+        var permissions = access.current().permissions()
+                .getOrDefault(BusinessModule.USERS, Set.of());
         if (!permissions.contains(PermissionAction.READ)
-                || (!permissions.contains(PermissionAction.CREATE) && !permissions.contains(PermissionAction.UPDATE))) {
+                || (!permissions.contains(PermissionAction.CREATE)
+                        && !permissions.contains(PermissionAction.UPDATE))) {
             throw new AccessDeniedException("User administration required");
         }
     }
@@ -78,25 +88,31 @@ public class ManageRolesUseCase {
     public Role save(UUID id, Request request) {
         repository.lockAdministration();
         boolean create = id == null;
-        access.require(BusinessModule.ROLES, create ? PermissionAction.CREATE : PermissionAction.UPDATE);
+        access.require(BusinessModule.ROLES,
+                create ? PermissionAction.CREATE : PermissionAction.UPDATE);
         if (!create) {
             var previous = existing(id);
             if (previous.systemAdministrator()) {
-                throw new AccessConflictException("Protected system role cannot be changed");
+                throw new AccessConflictException(
+                        "Protected system role cannot be changed");
             }
             access.delegable(previous);
         }
         if (!create && request.version() == null) {
             throw new IllegalArgumentException("Version is required");
         }
-        var role = new Role(create ? UUID.randomUUID() : id, request.name(), request.description(),
-                request.active() == null || request.active(), create ? 0 : request.version(), null, request.permissions());
-        if (repository.roles().stream().anyMatch(other -> !other.id().equals(role.id())
-                && other.name().equalsIgnoreCase(role.name()))) {
+        var role = new Role(create ? UUID.randomUUID() : id, request.name(),
+                request.description(),
+                request.active() == null || request.active(),
+                create ? 0 : request.version(), null, request.permissions());
+        if (repository.roles().stream()
+                .anyMatch(other -> !other.id().equals(role.id())
+                        && other.name().equalsIgnoreCase(role.name()))) {
             throw new AccessConflictException("Role name already exists");
         }
         if (!role.active() && repository.roleReferenced(role.id())) {
-            throw new AccessConflictException("Reassign users before deactivating role");
+            throw new AccessConflictException(
+                    "Reassign users before deactivating role");
         }
         access.delegable(role);
         repository.saveRole(role, create);
@@ -109,13 +125,15 @@ public class ManageRolesUseCase {
         access.require(BusinessModule.ROLES, PermissionAction.DELETE);
         var role = existing(id);
         if (role.systemAdministrator() || repository.roleReferenced(id)) {
-            throw new AccessConflictException("Protected or referenced role cannot be deleted");
+            throw new AccessConflictException(
+                    "Protected or referenced role cannot be deleted");
         }
         access.delegable(role);
         repository.deleteRole(id);
     }
 
     private Role existing(UUID id) {
-        return repository.role(id).orElseThrow(() -> new AccessReferenceNotFoundException("Role not found"));
+        return repository.role(id).orElseThrow(
+                () -> new AccessReferenceNotFoundException("Role not found"));
     }
 }

@@ -43,45 +43,24 @@ class JpaQuoteRepositoryAdapterTest {
         sequenceJpaRepository = mock(QuoteNumberSequenceJpaRepository.class);
         mapper = mock(QuoteJpaMapper.class);
         entityCaptor = ArgumentCaptor.forClass(QuoteJpaEntity.class);
-        adapter = new JpaQuoteRepositoryAdapter(jpaRepository, sequenceJpaRepository, mapper);
+        adapter = new JpaQuoteRepositoryAdapter(jpaRepository,
+                sequenceJpaRepository, mapper);
     }
 
     private QuoteLine createTestLine() {
-        return QuoteLine.reconstitute(
-                QuoteLineId.of(UUID.randomUUID()),
-                UUID.randomUUID(),
-                "Test Product",
-                "PRD-001",
-                new BigDecimal("2"),
-                new BigDecimal("50.00"),
-                new BigDecimal("100.00"),
-                List.of()
-        );
+        return QuoteLine.reconstitute(QuoteLineId.of(UUID.randomUUID()),
+                UUID.randomUUID(), "Test Product", "PRD-001",
+                new BigDecimal("2"), new BigDecimal("50.00"),
+                new BigDecimal("100.00"), List.of());
     }
 
     private Quote createTestQuote() {
-        return Quote.reconstitute(
-                UUID.randomUUID(),
-                QuoteNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Test Customer",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "John Doe",
-                QuoteStatus.DRAFT,
-                LocalDate.now().plusDays(30),
-                "Test notes",
-                new BigDecimal("100.00"),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                List.of(createTestLine()),
-                Instant.now(),
-                Instant.now()
-        );
+        return Quote.reconstitute(UUID.randomUUID(), QuoteNumber.of(2026, 1),
+                UUID.randomUUID(), "Test Customer", "J-12345678-9",
+                UUID.randomUUID(), "John Doe", QuoteStatus.DRAFT,
+                LocalDate.now().plusDays(30), "Test notes",
+                new BigDecimal("100.00"), null, null, null, null, null, null,
+                List.of(createTestLine()), Instant.now(), Instant.now());
     }
 
     @Nested
@@ -97,7 +76,8 @@ class JpaQuoteRepositoryAdapterTest {
             jpaEntity.setCustomerId(quote.getCustomerId());
 
             when(mapper.toJpa(quote)).thenReturn(jpaEntity);
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(jpaEntity);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(jpaEntity);
             when(mapper.toDomain(jpaEntity)).thenReturn(quote);
 
             Quote saved = adapter.save(quote);
@@ -108,7 +88,8 @@ class JpaQuoteRepositoryAdapterTest {
 
             QuoteJpaEntity captured = entityCaptor.getValue();
             assertEquals(quote.getId(), captured.getId());
-            assertEquals(quote.getQuoteNumber().value(), captured.getQuoteNumber());
+            assertEquals(quote.getQuoteNumber().value(),
+                    captured.getQuoteNumber());
             assertEquals(quote.getCustomerId(), captured.getCustomerId());
 
             verify(mapper).toJpa(quote);
@@ -127,7 +108,8 @@ class JpaQuoteRepositoryAdapterTest {
             QuoteJpaEntity jpaEntity = new QuoteJpaEntity();
             jpaEntity.setId(quote.getId());
 
-            when(jpaRepository.findByIdWithLines(quote.getId())).thenReturn(Optional.of(jpaEntity));
+            when(jpaRepository.findByIdWithLines(quote.getId()))
+                    .thenReturn(Optional.of(jpaEntity));
             when(mapper.toDomain(jpaEntity)).thenReturn(quote);
 
             Optional<Quote> result = adapter.findById(quote.getId());
@@ -142,7 +124,8 @@ class JpaQuoteRepositoryAdapterTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             UUID id = UUID.randomUUID();
-            when(jpaRepository.findByIdWithLines(id)).thenReturn(Optional.empty());
+            when(jpaRepository.findByIdWithLines(id))
+                    .thenReturn(Optional.empty());
 
             Optional<Quote> result = adapter.findById(id);
 
@@ -162,7 +145,8 @@ class JpaQuoteRepositoryAdapterTest {
             QuoteJpaEntity jpaEntity = new QuoteJpaEntity();
             jpaEntity.setId(quote.getId());
 
-            when(jpaRepository.findAllWithLines()).thenReturn(List.of(jpaEntity));
+            when(jpaRepository.findAllWithLines())
+                    .thenReturn(List.of(jpaEntity));
             when(mapper.toDomain(jpaEntity)).thenReturn(quote);
 
             List<Quote> result = adapter.findAll();
@@ -197,77 +181,51 @@ class JpaQuoteRepositoryAdapterTest {
             QuoteJpaEntity jpaEntity = new QuoteJpaEntity();
             jpaEntity.setId(quote.getId());
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(jpaEntity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(jpaEntity));
             when(mapper.toDomain(jpaEntity)).thenReturn(quote);
 
-            List<Quote> result = adapter.findAllWithFilters(null, null, null, null, null, null, null, null);
+            List<Quote> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, null);
 
             assertNotNull(result);
             assertEquals(1, result.size());
             assertEquals(quote.getId(), result.getFirst().getId());
-            verify(jpaRepository).findAllWithFilters(null, null, null, null, null, null);
+            verify(jpaRepository).findAllWithFilters(null, null, null, null,
+                    null, null);
         }
 
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of());
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of());
 
-            List<Quote> result = adapter.findAllWithFilters(null, null, null, null, null, null, null, null);
+            List<Quote> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, null);
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
-            verify(jpaRepository).findAllWithFilters(null, null, null, null, null, null);
+            verify(jpaRepository).findAllWithFilters(null, null, null, null,
+                    null, null);
         }
 
         @Test
         void should_ApplySorting_When_OrderByIsProvided() {
-            Quote quote1 = Quote.reconstitute(
-                    UUID.randomUUID(),
-                    QuoteNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    QuoteStatus.DRAFT,
-                    LocalDate.now().plusDays(30),
-                    "Notes",
-                    new BigDecimal("100.00"),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    Instant.now(),
-                    Instant.now()
-            );
+            Quote quote1 = Quote.reconstitute(UUID.randomUUID(),
+                    QuoteNumber.of(2026, 1), UUID.randomUUID(), "A Customer",
+                    "J-11111111-1", UUID.randomUUID(), "John Doe",
+                    QuoteStatus.DRAFT, LocalDate.now().plusDays(30), "Notes",
+                    new BigDecimal("100.00"), null, null, null, null, null,
+                    null, List.of(createTestLine()), Instant.now(),
+                    Instant.now());
 
-            Quote quote2 = Quote.reconstitute(
-                    UUID.randomUUID(),
-                    QuoteNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    QuoteStatus.DRAFT,
-                    LocalDate.now().plusDays(15),
-                    "Notes",
-                    new BigDecimal("200.00"),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    Instant.now(),
-                    Instant.now()
-            );
+            Quote quote2 = Quote.reconstitute(UUID.randomUUID(),
+                    QuoteNumber.of(2026, 2), UUID.randomUUID(), "B Customer",
+                    "J-22222222-2", UUID.randomUUID(), "Jane Doe",
+                    QuoteStatus.DRAFT, LocalDate.now().plusDays(15), "Notes",
+                    new BigDecimal("200.00"), null, null, null, null, null,
+                    null, List.of(createTestLine()), Instant.now(),
+                    Instant.now());
 
             QuoteJpaEntity entity1 = new QuoteJpaEntity();
             entity1.setId(quote1.getId());
@@ -281,13 +239,13 @@ class JpaQuoteRepositoryAdapterTest {
             entity2.setCustomerName(quote2.getCustomerName());
             entity2.setSubtotal(quote2.getSubtotal());
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity2, entity1));
             when(mapper.toDomain(entity1)).thenReturn(quote1);
             when(mapper.toDomain(entity2)).thenReturn(quote2);
 
-            List<Quote> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "customerName", "asc");
+            List<Quote> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "customerName", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -303,7 +261,8 @@ class JpaQuoteRepositoryAdapterTest {
         @Test
         void should_ReturnTrue_When_QuoteNumberExists() {
             QuoteNumber quoteNumber = QuoteNumber.of(2026, 1);
-            when(jpaRepository.existsByQuoteNumber(quoteNumber.value())).thenReturn(true);
+            when(jpaRepository.existsByQuoteNumber(quoteNumber.value()))
+                    .thenReturn(true);
 
             boolean exists = adapter.existsByQuoteNumber(quoteNumber);
 
@@ -314,7 +273,8 @@ class JpaQuoteRepositoryAdapterTest {
         @Test
         void should_ReturnFalse_When_QuoteNumberDoesNotExist() {
             QuoteNumber quoteNumber = QuoteNumber.of(2026, 9999);
-            when(jpaRepository.existsByQuoteNumber(quoteNumber.value())).thenReturn(false);
+            when(jpaRepository.existsByQuoteNumber(quoteNumber.value()))
+                    .thenReturn(false);
 
             boolean exists = adapter.existsByQuoteNumber(quoteNumber);
 
@@ -348,7 +308,8 @@ class JpaQuoteRepositoryAdapterTest {
             existingSeq.setYear(year);
             existingSeq.setNextValue(5);
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.of(existingSeq));
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.of(existingSeq));
 
             int next = adapter.getNextSequenceForYear(year);
 
@@ -362,13 +323,15 @@ class JpaQuoteRepositoryAdapterTest {
         void should_CreateNewSequenceAndReturnOne_When_NoExistingSequence() {
             int year = LocalDate.now().getYear();
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.empty());
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.empty());
 
             int next = adapter.getNextSequenceForYear(year);
 
             assertEquals(1, next);
             verify(sequenceJpaRepository).findByYearForUpdate(year);
-            verify(sequenceJpaRepository).save(any(QuoteNumberSequenceJpaEntity.class));
+            verify(sequenceJpaRepository)
+                    .save(any(QuoteNumberSequenceJpaEntity.class));
         }
     }
 }

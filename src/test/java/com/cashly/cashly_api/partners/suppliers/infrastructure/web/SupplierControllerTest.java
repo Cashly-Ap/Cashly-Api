@@ -54,42 +54,48 @@ class SupplierControllerTest {
     @DisplayName("should create supplier and return 201")
     void should_create_supplier_and_return_201() {
         String supplierId = UUID.randomUUID().toString();
-        SupplierCreateResponse response = new SupplierCreateResponse(
-                supplierId, 1001L, "Proveedor C.A.", "Proveedor", "JURIDICO", "J-12345678-9");
+        SupplierCreateResponse response = new SupplierCreateResponse(supplierId,
+                1001L, "Proveedor C.A.", "Proveedor", "JURIDICO",
+                "J-12345678-9");
 
-        when(registerSupplierUseCase.execute(any(CreateSupplierRequest.class))).thenReturn(response);
+        when(registerSupplierUseCase.execute(any(CreateSupplierRequest.class)))
+                .thenReturn(response);
 
         CreateSupplierRequest request = new CreateSupplierRequest(
-                "Proveedor C.A.", "JURIDICO", "J-12345678-9", "Proveedor",
-                null, List.of(), List.of(), List.of());
+                "Proveedor C.A.", "JURIDICO", "J-12345678-9", "Proveedor", null,
+                List.of(), List.of(), List.of());
 
-        ResponseEntity<SupplierCreateResponse> result = supplierController.create(request);
+        ResponseEntity<SupplierCreateResponse> result = supplierController
+                .create(request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(supplierId, result.getBody().id());
-        verify(registerSupplierUseCase).execute(any(CreateSupplierRequest.class));
+        verify(registerSupplierUseCase)
+                .execute(any(CreateSupplierRequest.class));
     }
 
     @Test
     @DisplayName("should get all suppliers and return 200")
     void should_get_all_suppliers_and_return_200() {
         SupplierListResponse supplier = new SupplierListResponse(
-                UUID.randomUUID().toString(), 1001L, "Proveedor C.A.", "Proveedor",
-                "JURIDICO", "J-12345678-9", true, LocalDateTime.now().toString(), false);
+                UUID.randomUUID().toString(), 1001L, "Proveedor C.A.",
+                "Proveedor", "JURIDICO", "J-12345678-9", true,
+                LocalDateTime.now().toString(), false);
 
         PageResponse<SupplierListResponse> pageResponse = new PageResponse<>(
                 List.of(supplier), 1L, 1, 10, 0, true, true, false);
 
-        when(listSuppliersUseCase.execute(any(), any(), any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(pageResponse);
+        when(listSuppliersUseCase.execute(any(), any(), any(), any(), anyInt(),
+                anyInt(), anyString(), anyString())).thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<SupplierListResponse>> result = supplierController.getAll(
-                null, null, null, null, 0, 10, "legalName", "asc");
+        ResponseEntity<PageResponse<SupplierListResponse>> result = supplierController
+                .getAll(null, null, null, null, 0, 10, "legalName", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(listSuppliersUseCase).execute(null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listSuppliersUseCase).execute(null, null, null, null, 0, 10,
+                "legalName", "asc");
     }
 
     @Test
@@ -98,28 +104,30 @@ class SupplierControllerTest {
         PageResponse<SupplierListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(listSuppliersUseCase.execute(any(), any(), any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(emptyPage);
+        when(listSuppliersUseCase.execute(any(), any(), any(), any(), anyInt(),
+                anyInt(), anyString(), anyString())).thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<SupplierListResponse>> result = supplierController.getAll(
-                null, null, null, null, 0, 10, "legalName", "asc");
+        ResponseEntity<PageResponse<SupplierListResponse>> result = supplierController
+                .getAll(null, null, null, null, 0, 10, "legalName", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listSuppliersUseCase).execute(null, null, null, null, 0, 10, "legalName", "asc");
+        verify(listSuppliersUseCase).execute(null, null, null, null, 0, 10,
+                "legalName", "asc");
     }
 
     @Test
     @DisplayName("should get supplier by id and return 200")
     void should_get_supplier_by_id_and_return_200() {
         String id = UUID.randomUUID().toString();
-        SupplierDetailResponse response = new SupplierDetailResponse(
-                id, 1001L, "Proveedor C.A.", "Proveedor", "JURIDICO", "J-12345678-9",
-                true, null, LocalDateTime.now(), List.of(), List.of(), List.of());
+        SupplierDetailResponse response = new SupplierDetailResponse(id, 1001L,
+                "Proveedor C.A.", "Proveedor", "JURIDICO", "J-12345678-9", true,
+                null, LocalDateTime.now(), List.of(), List.of(), List.of());
 
         when(getSupplierUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<SupplierDetailResponse> result = supplierController.getById(id);
+        ResponseEntity<SupplierDetailResponse> result = supplierController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -130,21 +138,24 @@ class SupplierControllerTest {
     @DisplayName("should update supplier and return 200")
     void should_update_supplier_and_return_200() {
         String id = UUID.randomUUID().toString();
-        SupplierDetailResponse response = new SupplierDetailResponse(
-                id, 1001L, "Updated C.A.", "Updated", "NATURAL", "V-87654321-1",
-                true, null, LocalDateTime.now(), List.of(), List.of(), List.of());
+        SupplierDetailResponse response = new SupplierDetailResponse(id, 1001L,
+                "Updated C.A.", "Updated", "NATURAL", "V-87654321-1", true,
+                null, LocalDateTime.now(), List.of(), List.of(), List.of());
 
-        when(updateSupplierUseCase.execute(eq(id), any(UpdateSupplierRequest.class))).thenReturn(response);
+        when(updateSupplierUseCase.execute(eq(id),
+                any(UpdateSupplierRequest.class))).thenReturn(response);
 
         UpdateSupplierRequest request = new UpdateSupplierRequest(
-                "Updated C.A.", "NATURAL", "V-87654321-1", "Updated",
-                true, null, List.of(), List.of(), List.of());
+                "Updated C.A.", "NATURAL", "V-87654321-1", "Updated", true,
+                null, List.of(), List.of(), List.of());
 
-        ResponseEntity<SupplierDetailResponse> result = supplierController.update(id, request);
+        ResponseEntity<SupplierDetailResponse> result = supplierController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
-        verify(updateSupplierUseCase).execute(eq(id), any(UpdateSupplierRequest.class));
+        verify(updateSupplierUseCase).execute(eq(id),
+                any(UpdateSupplierRequest.class));
     }
 
     @Test

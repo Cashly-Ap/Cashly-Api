@@ -29,17 +29,25 @@ public class QuoteLineCategorySnapshotJpaEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID categoryId;
 
-    protected QuoteLineCategorySnapshotJpaEntity() {}
+    protected QuoteLineCategorySnapshotJpaEntity() {
+    }
 
-    public QuoteLineCategorySnapshotJpaEntity(QuoteLineJpaEntity line, UUID categoryId) {
+    public QuoteLineCategorySnapshotJpaEntity(QuoteLineJpaEntity line,
+            UUID categoryId) {
         this.line = line;
         this.categoryId = categoryId;
     }
 
-    public UUID getId() { return id; }
+    public UUID getId() {
+        return id;
+    }
 
     /** Restore the persisted shared key before merging an existing snapshot. New snapshots keep a null id. */
-    public void setId(UUID id) { this.id = id; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public UUID getCategoryId() { return categoryId; }
+    public UUID getCategoryId() {
+        return categoryId;
+    }
 }

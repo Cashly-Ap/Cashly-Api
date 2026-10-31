@@ -16,13 +16,18 @@ class InvoiceIssuanceArchitectureTest {
             "src/main/java/com/cashly/cashly_api/finance/billing/invoices/application");
     private static final Pattern NON_CODE = Pattern.compile(
             "\"(?:\\\\.|[^\"\\\\])*\"|/\\*[\\s\\S]*?\\*/|//[^\\r\\n]*");
-    private static final Pattern CONFIRM = Pattern.compile("\\.\\s*confirm\\s*\\(");
+    private static final Pattern CONFIRM = Pattern
+            .compile("\\.\\s*confirm\\s*\\(");
 
     @Test
-    void only_shared_issuance_may_transition_an_invoice_to_confirmed() throws IOException {
+    void only_shared_issuance_may_transition_an_invoice_to_confirmed()
+            throws IOException {
         try (var paths = Files.walk(APPLICATION)) {
-            var sources = paths.filter(path -> path.toString().endsWith(".java")).toList();
-            assertThat(sources).as("Guard must inspect production application sources").isNotEmpty();
+            var sources = paths
+                    .filter(path -> path.toString().endsWith(".java")).toList();
+            assertThat(sources)
+                    .as("Guard must inspect production application sources")
+                    .isNotEmpty();
             var violations = new java.util.ArrayList<Path>();
             for (var source : sources) {
                 if (!source.startsWith(APPLICATION.resolve("issue"))
@@ -30,7 +35,9 @@ class InvoiceIssuanceArchitectureTest {
                     violations.add(APPLICATION.relativize(source));
                 }
             }
-            assertThat(violations).as("Invoice confirmation must have one shared orchestration owner").isEmpty();
+            assertThat(violations).as(
+                    "Invoice confirmation must have one shared orchestration owner")
+                    .isEmpty();
         }
     }
 
@@ -41,22 +48,30 @@ class InvoiceIssuanceArchitectureTest {
 
     @Test
     void ignores_confirmation_mentions_in_comments_and_messages() {
-        assertThat(containsConfirmation("// invoice.confirm();\nString text = \"invoice.confirm()\";")).isFalse();
+        assertThat(containsConfirmation(
+                "// invoice.confirm();\nString text = \"invoice.confirm()\";"))
+                .isFalse();
     }
 
     @Test
-    void validation_does_not_apply_financial_or_inventory_writes() throws IOException {
-        String validator = Files.readString(APPLICATION.resolve("issue/validation/InvoiceIssueValidator.java"));
-        assertThat(containsMutation(validator)).as("Validation may check conditions but must not apply effects").isFalse();
+    void validation_does_not_apply_financial_or_inventory_writes()
+            throws IOException {
+        String validator = Files.readString(APPLICATION
+                .resolve("issue/validation/InvoiceIssueValidator.java"));
+        assertThat(containsMutation(validator)).as(
+                "Validation may check conditions but must not apply effects")
+                .isFalse();
     }
 
     @Test
     void detects_a_financial_write_hidden_in_a_validator() {
-        assertThat(containsMutation("balances.consumeInvoiceBalance(command);")).isTrue();
+        assertThat(containsMutation("balances.consumeInvoiceBalance(command);"))
+                .isTrue();
     }
 
     private static boolean containsMutation(String source) {
-        return Pattern.compile("\\.\\s*(?:consumeInvoiceBalance|settleCashInvoice|recordInvoice|save|deduct|confirmInvoice)\\s*\\(")
+        return Pattern.compile(
+                "\\.\\s*(?:consumeInvoiceBalance|settleCashInvoice|recordInvoice|save|deduct|confirmInvoice)\\s*\\(")
                 .matcher(NON_CODE.matcher(source).replaceAll(" ")).find();
     }
 

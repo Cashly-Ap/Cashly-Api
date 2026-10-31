@@ -40,7 +40,8 @@ public class TotpCryptography implements MfaCryptography {
     }
 
     public String randomToken() {
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes(TOKEN_BYTES));
+        return Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(randomBytes(TOKEN_BYTES));
     }
 
     public String newSecret() {
@@ -66,7 +67,8 @@ public class TotpCryptography implements MfaCryptography {
             }
             return new SecretKeySpec(key, "AES");
         } catch (IllegalArgumentException exception) {
-            throw new IllegalStateException("Configure MFA_ENCRYPTION_KEY with a Base64 encoded 32 byte key before enabling MFA");
+            throw new IllegalStateException(
+                    "Configure MFA_ENCRYPTION_KEY with a Base64 encoded 32 byte key before enabling MFA");
         }
     }
 
@@ -74,10 +76,13 @@ public class TotpCryptography implements MfaCryptography {
         try {
             byte[] nonce = randomBytes(NONCE_BYTES);
             Cipher cipher = Cipher.getInstance(CIPHER);
-            cipher.init(Cipher.ENCRYPT_MODE, encryptionKey(), new GCMParameterSpec(GCM_TAG_BITS, nonce));
-            byte[] ciphertext = cipher.doFinal(secret.getBytes(StandardCharsets.US_ASCII));
-            byte[] encrypted = ByteBuffer.allocate(nonce.length + ciphertext.length)
-                .put(nonce).put(ciphertext).array();
+            cipher.init(Cipher.ENCRYPT_MODE, encryptionKey(),
+                    new GCMParameterSpec(GCM_TAG_BITS, nonce));
+            byte[] ciphertext = cipher
+                    .doFinal(secret.getBytes(StandardCharsets.US_ASCII));
+            byte[] encrypted = ByteBuffer
+                    .allocate(nonce.length + ciphertext.length).put(nonce)
+                    .put(ciphertext).array();
             return Base64.getEncoder().encodeToString(encrypted);
         } catch (IllegalStateException exception) {
             throw exception;
@@ -91,8 +96,10 @@ public class TotpCryptography implements MfaCryptography {
             byte[] encrypted = Base64.getDecoder().decode(ciphertext);
             Cipher cipher = Cipher.getInstance(CIPHER);
             cipher.init(Cipher.DECRYPT_MODE, encryptionKey(),
-                new GCMParameterSpec(GCM_TAG_BITS, encrypted, 0, NONCE_BYTES));
-            byte[] secret = cipher.doFinal(encrypted, NONCE_BYTES, encrypted.length - NONCE_BYTES);
+                    new GCMParameterSpec(GCM_TAG_BITS, encrypted, 0,
+                            NONCE_BYTES));
+            byte[] secret = cipher.doFinal(encrypted, NONCE_BYTES,
+                    encrypted.length - NONCE_BYTES);
             return new String(secret, StandardCharsets.US_ASCII);
         } catch (Exception exception) {
             throw new IllegalStateException("MFA decryption failed", exception);
@@ -101,21 +108,26 @@ public class TotpCryptography implements MfaCryptography {
 
     public String hash(String value) {
         try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
-            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+            byte[] digest = MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding()
+                    .encodeToString(digest);
         } catch (Exception exception) {
             throw new IllegalStateException(exception);
         }
     }
 
-    public long verifyStep(String secret, String code, Instant now, long lastStep) {
+    public long verifyStep(String secret, String code, Instant now,
+            long lastStep) {
         if (code == null || !code.matches("[0-9]{6}")) {
             return -1;
         }
         long currentStep = now.getEpochSecond() / STEP_SECONDS;
         byte[] submitted = code.getBytes(StandardCharsets.US_ASCII);
         for (long step = currentStep - 1; step <= currentStep + 1; step++) {
-            if (step > lastStep && MessageDigest.isEqual(totp(secret, step).getBytes(StandardCharsets.US_ASCII), submitted)) {
+            if (step > lastStep && MessageDigest.isEqual(
+                    totp(secret, step).getBytes(StandardCharsets.US_ASCII),
+                    submitted)) {
                 return step;
             }
         }
@@ -126,13 +138,17 @@ public class TotpCryptography implements MfaCryptography {
         try {
             Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(new SecretKeySpec(decodeBase32(secret), "HmacSHA1"));
-            byte[] hash = mac.doFinal(ByteBuffer.allocate(Long.BYTES).putLong(step).array());
+            byte[] hash = mac.doFinal(
+                    ByteBuffer.allocate(Long.BYTES).putLong(step).array());
             int offset = hash[hash.length - 1] & 15;
-            int truncated = ((hash[offset] & 127) << 24) | ((hash[offset + 1] & 255) << 16)
-                | ((hash[offset + 2] & 255) << 8) | (hash[offset + 3] & 255);
+            int truncated = ((hash[offset] & 127) << 24)
+                    | ((hash[offset + 1] & 255) << 16)
+                    | ((hash[offset + 2] & 255) << 8)
+                    | (hash[offset + 3] & 255);
             return String.format(Locale.ROOT, "%06d", truncated % CODE_MODULUS);
         } catch (Exception exception) {
-            throw new IllegalStateException("TOTP validation failed", exception);
+            throw new IllegalStateException("TOTP validation failed",
+                    exception);
         }
     }
 

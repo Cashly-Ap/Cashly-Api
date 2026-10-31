@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CustomerCreditTermsConfig {
     @Bean
-    public CustomerCreditTermsQuery customerCreditTermsQuery(CustomerRepository customers) {
+    public CustomerCreditTermsQuery customerCreditTermsQuery(
+            CustomerRepository customers) {
         return new RepositoryCustomerCreditTermsQuery(customers);
     }
 }

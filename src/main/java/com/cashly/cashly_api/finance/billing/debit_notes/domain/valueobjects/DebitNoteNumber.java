@@ -10,14 +10,17 @@ public record DebitNoteNumber(String value) {
     public DebitNoteNumber {
         Objects.requireNonNull(value, "DebitNoteNumber cannot be null");
         if (value.isBlank()) {
-            throw new IllegalArgumentException("DebitNoteNumber cannot be blank");
+            throw new IllegalArgumentException(
+                    "DebitNoteNumber cannot be blank");
         }
     }
 
     public static DebitNoteNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
-        return new DebitNoteNumber(String.format(FORMAT, PREFIX, year, sequence));
+        return new DebitNoteNumber(
+                String.format(FORMAT, PREFIX, year, sequence));
     }
 }

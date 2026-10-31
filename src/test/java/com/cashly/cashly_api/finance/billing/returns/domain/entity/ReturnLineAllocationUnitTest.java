@@ -16,7 +16,8 @@ class ReturnLineAllocationUnitTest {
         UUID warehouseId = UUID.randomUUID();
         BigDecimal allocated = BigDecimal.TEN;
 
-        ReturnLineAllocation allocation = ReturnLineAllocation.create(warehouseId, allocated);
+        ReturnLineAllocation allocation = ReturnLineAllocation
+                .create(warehouseId, allocated);
 
         assertNotNull(allocation.getId());
         assertEquals(warehouseId, allocation.getWarehouseId());
@@ -29,7 +30,8 @@ class ReturnLineAllocationUnitTest {
         UUID warehouseId = UUID.randomUUID();
         BigDecimal allocated = BigDecimal.TEN;
 
-        ReturnLineAllocation allocation = ReturnLineAllocation.reconstitute(id, warehouseId, allocated);
+        ReturnLineAllocation allocation = ReturnLineAllocation.reconstitute(id,
+                warehouseId, allocated);
 
         assertEquals(id, allocation.getId());
         assertEquals(warehouseId, allocation.getWarehouseId());
@@ -38,8 +40,10 @@ class ReturnLineAllocationUnitTest {
 
     @Test
     void should_GenerateUniqueId_When_CreateCalled() {
-        ReturnLineAllocation allocation1 = ReturnLineAllocation.create(UUID.randomUUID(), BigDecimal.ONE);
-        ReturnLineAllocation allocation2 = ReturnLineAllocation.create(UUID.randomUUID(), BigDecimal.ONE);
+        ReturnLineAllocation allocation1 = ReturnLineAllocation
+                .create(UUID.randomUUID(), BigDecimal.ONE);
+        ReturnLineAllocation allocation2 = ReturnLineAllocation
+                .create(UUID.randomUUID(), BigDecimal.ONE);
 
         assertNotEquals(allocation1.getId(), allocation2.getId());
     }

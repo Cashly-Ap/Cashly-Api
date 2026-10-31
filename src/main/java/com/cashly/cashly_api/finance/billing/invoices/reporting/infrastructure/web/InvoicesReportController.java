@@ -22,9 +22,9 @@ public class InvoicesReportController {
     private final GenerateInvoicePdfUseCase generateInvoicePdfUseCase;
     private final GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase;
 
-
-    public InvoicesReportController(GenerateInvoicePdfUseCase generateInvoicePdfUseCase,
-                                     GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase) {
+    public InvoicesReportController(
+            GenerateInvoicePdfUseCase generateInvoicePdfUseCase,
+            GenerateInvoicesReportPdfUseCase generateInvoicesReportPdfUseCase) {
         this.generateInvoicePdfUseCase = generateInvoicePdfUseCase;
         this.generateInvoicesReportPdfUseCase = generateInvoicesReportPdfUseCase;
 
@@ -34,9 +34,9 @@ public class InvoicesReportController {
     @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getInvoicePdf(@PathVariable UUID id) {
         byte[] pdf = generateInvoicePdfUseCase.execute(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"nota-" + id + ".pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"nota-" + id + ".pdf\"")
                 .body(pdf);
     }
 
@@ -51,13 +51,15 @@ public class InvoicesReportController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "SIMPLE") String mode) {
 
-        InvoiceReportFilter filter = new InvoiceReportFilter(dateFrom, dateTo, customerId, status, productId, categoryId);
+        InvoiceReportFilter filter = new InvoiceReportFilter(dateFrom, dateTo,
+                customerId, status, productId, categoryId);
         byte[] pdf = generateInvoicesReportPdfUseCase.execute(filter, mode);
 
-        String filename = "reporte-facturas-" + LocalDate.now().toString() + ".pdf";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+        String filename = "reporte-facturas-" + LocalDate.now().toString()
+                + ".pdf";
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .body(pdf);
     }
 }

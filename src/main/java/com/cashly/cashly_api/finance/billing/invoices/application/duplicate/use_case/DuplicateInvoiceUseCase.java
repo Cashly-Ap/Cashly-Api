@@ -29,9 +29,9 @@ public class DuplicateInvoiceUseCase {
     private final InvoiceCustomerGateway customerRepository;
 
     public DuplicateInvoiceUseCase(InvoiceRepository invoiceRepository,
-                                    InventoryGateway inventoryGateway,
-                                    InvoiceCatalogGateway productRepository,
-                                    InvoiceCustomerGateway customerRepository) {
+            InventoryGateway inventoryGateway,
+            InvoiceCatalogGateway productRepository,
+            InvoiceCustomerGateway customerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.inventoryGateway = inventoryGateway;
         this.productRepository = productRepository;
@@ -48,7 +48,8 @@ public class DuplicateInvoiceUseCase {
         String customerRif = original.getCustomerRif();
 
         if (newCustomerId != null) {
-            InvoiceCustomerGateway.Customer customer = customerRepository.findCustomer(newCustomerId)
+            InvoiceCustomerGateway.Customer customer = customerRepository
+                    .findCustomer(newCustomerId)
                     .orElseThrow(() -> new IllegalArgumentException(
                             "Customer not found: " + newCustomerId));
             customerId = customer.id();
@@ -62,48 +63,38 @@ public class DuplicateInvoiceUseCase {
 
         List<InvoiceLine> copiedLines = original.getLines().stream()
                 .map(line -> {
-                    InvoiceCatalogGateway.Product product = productRepository.findProduct(line.getProductId())
+                    InvoiceCatalogGateway.Product product = productRepository
+                            .findProduct(line.getProductId())
                             .orElseThrow(() -> new IllegalArgumentException(
-                                    "Product not found: " + line.getProductId()));
+                                    "Product not found: "
+                                            + line.getProductId()));
 
                     BigDecimal currentPrice = line.getUnitPrice();
 
-                    List<InvoiceLineAllocation> copiedAllocations = applyStockAllocations(line);
+                    List<InvoiceLineAllocation> copiedAllocations = applyStockAllocations(
+                            line);
 
-                    return InvoiceLine.create(
-                            line.getProductId(),
-                            product.name(),
-                            product.code(),
-                            line.getQuantity(),
-                            currentPrice,
-                            copiedAllocations
-                    );
-                })
-                .toList();
+                    return InvoiceLine.create(line.getProductId(),
+                            product.name(), product.code(), line.getQuantity(),
+                            currentPrice, copiedAllocations);
+                }).toList();
 
-        Invoice duplicate = Invoice.create(
-                newNumber,
-                customerId,
-                customerName,
-                customerRif,
-                original.getCreatedBy(),
-                original.getCreatedByName(),
-                null,
-                null,
-                original.getPaymentType(),
-                original.getNotes(),
-                copiedLines
-        );
+        Invoice duplicate = Invoice.create(newNumber, customerId, customerName,
+                customerRif, original.getCreatedBy(),
+                original.getCreatedByName(), null, null,
+                original.getPaymentType(), original.getNotes(), copiedLines);
 
         Invoice saved = invoiceRepository.save(duplicate);
         return InvoiceMapper.toDetailResponse(saved);
     }
 
-    private List<InvoiceLineAllocation> applyStockAllocations(InvoiceLine line) {
+    private List<InvoiceLineAllocation> applyStockAllocations(
+            InvoiceLine line) {
         inventoryGateway.reserveAllocations(line.getAllocations().stream()
-                .map(a -> new InventoryGateway.Allocation(a.getWarehouseId(), line.getProductId(),
-                        a.getAllocated().intValue())).toList());
-        return line.getAllocations().stream()
-                .map(a -> InvoiceLineAllocation.create(a.getWarehouseId(), a.getAllocated())).toList();
+                .map(a -> new InventoryGateway.Allocation(a.getWarehouseId(),
+                        line.getProductId(), a.getAllocated().intValue()))
+                .toList());
+        return line.getAllocations().stream().map(a -> InvoiceLineAllocation
+                .create(a.getWarehouseId(), a.getAllocated())).toList();
     }
 }

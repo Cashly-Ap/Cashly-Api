@@ -42,14 +42,16 @@ class AuthenticationDomainServiceUnitTest {
 
     @Test
     void should_ReturnTrue_When_ActiveUserCanAuthenticate() {
-        boolean canAuthenticate = authenticationDomainService.canUserAuthenticate(activeUser);
+        boolean canAuthenticate = authenticationDomainService
+                .canUserAuthenticate(activeUser);
 
         assertTrue(canAuthenticate);
     }
 
     @Test
     void should_ReturnFalse_When_InactiveUserCannotAuthenticate() {
-        boolean canAuthenticate = authenticationDomainService.canUserAuthenticate(inactiveUser);
+        boolean canAuthenticate = authenticationDomainService
+                .canUserAuthenticate(inactiveUser);
 
         assertFalse(canAuthenticate);
     }
@@ -57,29 +59,31 @@ class AuthenticationDomainServiceUnitTest {
     @Test
     void should_ThrowException_When_NullUserProvidedForCanAuthenticate() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> authenticationDomainService.canUserAuthenticate(null)
-        );
+                IllegalArgumentException.class,
+                () -> authenticationDomainService.canUserAuthenticate(null));
         assertEquals("User cannot be null", exception.getMessage());
     }
 
     @Test
     void should_ReturnTrue_When_ActiveVerifiedUserCanPerformSensitiveOperations() {
-        boolean canPerform = authenticationDomainService.canPerformSensitiveOperations(activeUser);
+        boolean canPerform = authenticationDomainService
+                .canPerformSensitiveOperations(activeUser);
 
         assertTrue(canPerform);
     }
 
     @Test
     void should_ReturnFalse_When_InactiveUserCannotPerformSensitiveOperations() {
-        boolean canPerform = authenticationDomainService.canPerformSensitiveOperations(inactiveUser);
+        boolean canPerform = authenticationDomainService
+                .canPerformSensitiveOperations(inactiveUser);
 
         assertFalse(canPerform);
     }
 
     @Test
     void should_ReturnFalse_When_UnverifiedUserCannotPerformSensitiveOperations() {
-        boolean canPerform = authenticationDomainService.canPerformSensitiveOperations(unverifiedUser);
+        boolean canPerform = authenticationDomainService
+                .canPerformSensitiveOperations(unverifiedUser);
 
         assertFalse(canPerform);
     }
@@ -87,9 +91,9 @@ class AuthenticationDomainServiceUnitTest {
     @Test
     void should_ThrowException_When_NullUserProvidedForSensitiveOperations() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> authenticationDomainService.canPerformSensitiveOperations(null)
-        );
+                IllegalArgumentException.class,
+                () -> authenticationDomainService
+                        .canPerformSensitiveOperations(null));
         assertEquals("User cannot be null", exception.getMessage());
     }
 }

@@ -38,12 +38,11 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public List<Payment> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                             UUID customerId, String status) {
-        return jpaRepository.findAllWithFilters(dateFrom, dateTo, customerId, status)
-                .stream()
-                .map(PaymentJpaMapper::toDomain)
-                .toList();
+    public List<Payment> findAllWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, String status) {
+        return jpaRepository
+                .findAllWithFilters(dateFrom, dateTo, customerId, status)
+                .stream().map(PaymentJpaMapper::toDomain).toList();
     }
 
     @Override
@@ -58,12 +57,10 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public int getNextSequenceForYear(int year) {
-        
-        
+
         List<PaymentEntity> yearPayments = jpaRepository.findAllWithFilters(
-                LocalDate.of(year, 1, 1),
-                LocalDate.of(year, 12, 31),
-                null, null);
+                LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31), null,
+                null);
         return yearPayments.size() + 1;
     }
 }

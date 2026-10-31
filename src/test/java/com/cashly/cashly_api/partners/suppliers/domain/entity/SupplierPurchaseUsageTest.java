@@ -25,10 +25,13 @@ class SupplierPurchaseUsageTest {
 
     @Test
     void shouldRejectForeignModuleDependenciesInApplicationConstructors() {
-        for (Class<?> type : List.of(DeleteSupplierUseCase.class, ListSuppliersUseCase.class)) {
+        for (Class<?> type : List.of(DeleteSupplierUseCase.class,
+                ListSuppliersUseCase.class)) {
             for (var constructor : type.getConstructors()) {
                 for (Class<?> dependency : constructor.getParameterTypes()) {
-                    assertFalse(dependency.getPackageName().startsWith("com.cashly.cashly_api.procurement.purchases"), dependency.getName());
+                    assertFalse(dependency.getPackageName().startsWith(
+                            "com.cashly.cashly_api.procurement.purchases"),
+                            dependency.getName());
                 }
             }
         }
@@ -36,7 +39,8 @@ class SupplierPurchaseUsageTest {
 
     @Test
     void shouldDeleteSupplierWithoutPurchases() {
-        when(suppliers.existsById(SupplierId.from(id.toString()))).thenReturn(true);
+        when(suppliers.existsById(SupplierId.from(id.toString())))
+                .thenReturn(true);
         new DeleteSupplierUseCase(suppliers, usage).execute(id.toString());
         verify(usage).hasPurchases(id);
         verify(suppliers).delete(SupplierId.from(id.toString()));
@@ -44,15 +48,20 @@ class SupplierPurchaseUsageTest {
 
     @Test
     void shouldRejectDeletionWhenPurchasesExist() {
-        when(suppliers.existsById(SupplierId.from(id.toString()))).thenReturn(true);
+        when(suppliers.existsById(SupplierId.from(id.toString())))
+                .thenReturn(true);
         when(usage.hasPurchases(id)).thenReturn(true);
-        assertThrows(SupplierHasAssociatedRecordsException.class, () -> new DeleteSupplierUseCase(suppliers, usage).execute(id.toString()));
+        assertThrows(SupplierHasAssociatedRecordsException.class,
+                () -> new DeleteSupplierUseCase(suppliers, usage)
+                        .execute(id.toString()));
         verify(suppliers, never()).delete(any());
     }
 
     @Test
     void shouldRejectMissingSupplierWithoutQueryingPurchases() {
-        assertThrows(SupplierNotFoundException.class, () -> new DeleteSupplierUseCase(suppliers, usage).execute(id.toString()));
+        assertThrows(SupplierNotFoundException.class,
+                () -> new DeleteSupplierUseCase(suppliers, usage)
+                        .execute(id.toString()));
         verifyNoInteractions(usage);
         verify(suppliers, never()).delete(any());
     }
@@ -64,11 +73,15 @@ class SupplierPurchaseUsageTest {
         Supplier second = mock(Supplier.class);
         when(first.getId()).thenReturn(SupplierId.from(id.toString()));
         when(second.getId()).thenReturn(SupplierId.from(otherId.toString()));
-        when(usage.findSupplierIdsWithPurchases(Set.of(id, otherId))).thenReturn(Set.of(id));
+        when(usage.findSupplierIdsWithPurchases(Set.of(id, otherId)))
+                .thenReturn(Set.of(id));
         SupplierMapper mapper = mock(SupplierMapper.class);
-        when(suppliers.findAllWithFilters(null, null, null, null, 1, 2, "code", "asc"))
-                .thenReturn(new PageResponse<>(List.of(first, second), 5, 3, 2, 1, false, false, false));
-        var result = new ListSuppliersUseCase(suppliers, mapper, usage).execute(null, null, null, null, 1, 2, "code", "asc");
+        when(suppliers.findAllWithFilters(null, null, null, null, 1, 2, "code",
+                "asc"))
+                .thenReturn(new PageResponse<>(List.of(first, second), 5, 3, 2,
+                        1, false, false, false));
+        var result = new ListSuppliersUseCase(suppliers, mapper, usage)
+                .execute(null, null, null, null, 1, 2, "code", "asc");
         verify(mapper).toListResponse(first, true);
         verify(mapper).toListResponse(second, false);
         verify(usage).findSupplierIdsWithPurchases(Set.of(id, otherId));
@@ -83,17 +96,26 @@ class SupplierPurchaseUsageTest {
 
     @Test
     void shouldNotDeleteWhenUsageLookupFails() {
-        when(suppliers.existsById(SupplierId.from(id.toString()))).thenReturn(true);
-        IllegalStateException failure = new IllegalStateException("Purchase lookup failed");
+        when(suppliers.existsById(SupplierId.from(id.toString())))
+                .thenReturn(true);
+        IllegalStateException failure = new IllegalStateException(
+                "Purchase lookup failed");
         when(usage.hasPurchases(id)).thenThrow(failure);
-        assertSame(failure, assertThrows(IllegalStateException.class, () -> new DeleteSupplierUseCase(suppliers, usage).execute(id.toString())));
+        assertSame(failure,
+                assertThrows(IllegalStateException.class,
+                        () -> new DeleteSupplierUseCase(suppliers, usage)
+                                .execute(id.toString())));
         verify(suppliers, never()).delete(any());
     }
     @Test
     void shouldAvoidPurchaseQueriesForEmptyListing() {
-        when(suppliers.findAllWithFilters(null, null, null, null, 0, 10, "code", "asc"))
-                .thenReturn(new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true));
-        var result = new ListSuppliersUseCase(suppliers, mock(SupplierMapper.class), usage).execute(null, null, null, null, 0, 10, "code", "asc");
+        when(suppliers.findAllWithFilters(null, null, null, null, 0, 10, "code",
+                "asc"))
+                .thenReturn(new PageResponse<>(List.of(), 0, 0, 10, 0, true,
+                        true, true));
+        var result = new ListSuppliersUseCase(suppliers,
+                mock(SupplierMapper.class), usage)
+                .execute(null, null, null, null, 0, 10, "code", "asc");
         assertTrue(result.empty());
         verifyNoInteractions(usage);
     }

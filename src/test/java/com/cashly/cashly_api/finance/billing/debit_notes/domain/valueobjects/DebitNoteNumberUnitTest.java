@@ -38,22 +38,26 @@ class DebitNoteNumberUnitTest {
 
     @Test
     void should_ThrowException_When_NullValueProvided() {
-        assertThrows(NullPointerException.class, () -> new DebitNoteNumber(null));
+        assertThrows(NullPointerException.class,
+                () -> new DebitNoteNumber(null));
     }
 
     @Test
     void should_ThrowException_When_BlankValueProvided() {
-        assertThrows(IllegalArgumentException.class, () -> new DebitNoteNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new DebitNoteNumber("   "));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> DebitNoteNumber.of(2026, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> DebitNoteNumber.of(2026, 0));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> DebitNoteNumber.of(2026, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> DebitNoteNumber.of(2026, -1));
     }
 
     @Test

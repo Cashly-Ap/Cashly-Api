@@ -18,6 +18,7 @@ public class LocalPaymentActorGateway implements PaymentActorGateway {
 
     @Override
     public Optional<String> findName(UUID actorId) {
-        return users.findById(new UserId(actorId)).map(user -> user.getUserName().getValue());
+        return users.findById(new UserId(actorId))
+                .map(user -> user.getUserName().getValue());
     }
 }

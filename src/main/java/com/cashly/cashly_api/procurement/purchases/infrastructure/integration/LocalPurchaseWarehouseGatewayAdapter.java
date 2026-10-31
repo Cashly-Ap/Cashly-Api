@@ -8,21 +8,30 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class LocalPurchaseWarehouseGatewayAdapter implements PurchaseWarehouseGateway {
+public class LocalPurchaseWarehouseGatewayAdapter
+        implements
+            PurchaseWarehouseGateway {
     private final PurchaseWarehouseQuery query;
     public LocalPurchaseWarehouseGatewayAdapter(PurchaseWarehouseQuery query) {
         this.query = query;
     }
     @Override
     public Optional<Warehouse> findById(UUID id) {
-        return query.findById(id).map(warehouse -> new Warehouse(warehouse.id(), warehouse.code(), warehouse.name()));
+        return query.findById(id).map(warehouse -> new Warehouse(warehouse.id(),
+                warehouse.code(), warehouse.name()));
     }
     @Override
     public List<Warehouse> activeWarehouses() {
-        return query.activeWarehouses().stream().map(warehouse -> new Warehouse(warehouse.id(), warehouse.code(), warehouse.name())).toList();
+        return query.activeWarehouses().stream()
+                .map(warehouse -> new Warehouse(warehouse.id(),
+                        warehouse.code(), warehouse.name()))
+                .toList();
     }
     @Override
     public List<Stock> findByProductId(UUID productId) {
-        return query.findByProductId(productId).stream().map(stock -> new Stock(stock.warehouseId(), stock.quantity(), stock.reserved(), stock.available())).toList();
+        return query.findByProductId(productId).stream()
+                .map(stock -> new Stock(stock.warehouseId(), stock.quantity(),
+                        stock.reserved(), stock.available()))
+                .toList();
     }
 }

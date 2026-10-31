@@ -41,6 +41,7 @@ class OrderStatusUnitTest {
 
     @Test
     void should_ThrowException_When_InvalidStatusName() {
-        assertThrows(IllegalArgumentException.class, () -> OrderStatus.valueOf("INVALID"));
+        assertThrows(IllegalArgumentException.class,
+                () -> OrderStatus.valueOf("INVALID"));
     }
 }

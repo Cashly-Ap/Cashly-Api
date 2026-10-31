@@ -25,7 +25,8 @@ public class CompanyController {
     private final CompanyService service;
     private final CompanyPdfPreview preview;
 
-    public CompanyController(CompanyService service, CompanyPdfPreview preview) {
+    public CompanyController(CompanyService service,
+            CompanyPdfPreview preview) {
         this.service = service;
         this.preview = preview;
     }
@@ -44,7 +45,8 @@ public class CompanyController {
 
     @PostMapping(value = "/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
-    public Company upload(@RequestParam("file") MultipartFile file) throws IOException {
+    public Company upload(@RequestParam("file") MultipartFile file)
+            throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Upload a PNG or JPEG image");
         }
@@ -69,7 +71,8 @@ public class CompanyController {
     }
     @PostMapping(value = "/pdf-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
-    public Company uploadPdfLogo(@RequestParam("file") MultipartFile file) throws IOException {
+    public Company uploadPdfLogo(@RequestParam("file") MultipartFile file)
+            throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Upload a PNG or JPEG image");
         }
@@ -92,22 +95,26 @@ public class CompanyController {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
                 .header("X-Content-Type-Options", "nosniff").body(bytes);
     }
-    @PostMapping(value = "/pdf-logo/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_PDF_VALUE)
+    @PostMapping(value = "/pdf-logo/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
     @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
     public ResponseEntity<byte[]> previewPdfLogo(
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "companyLogo", required = false) MultipartFile companyLogo,
             @RequestParam(value = "removePdfLogo", defaultValue = "false") boolean removePdfLogo,
-            @RequestParam(value = "removeLogo", defaultValue = "false") boolean removeLogo) throws IOException {
-        var bytes = preview.generate(previewBytes(file), removePdfLogo, previewBytes(companyLogo), removeLogo);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).cacheControl(CacheControl.noStore())
-                .header("Content-Disposition", "inline; filename=company-logo-preview.pdf")
+            @RequestParam(value = "removeLogo", defaultValue = "false") boolean removeLogo)
+            throws IOException {
+        var bytes = preview.generate(previewBytes(file), removePdfLogo,
+                previewBytes(companyLogo), removeLogo);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .cacheControl(CacheControl.noStore())
+                .header("Content-Disposition",
+                        "inline; filename=company-logo-preview.pdf")
                 .header("X-Content-Type-Options", "nosniff").body(bytes);
     }
 
     private static byte[] previewBytes(MultipartFile file) throws IOException {
-        if (file == null) return null;
+        if (file == null)
+            return null;
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Upload a PNG or JPEG image");
         }

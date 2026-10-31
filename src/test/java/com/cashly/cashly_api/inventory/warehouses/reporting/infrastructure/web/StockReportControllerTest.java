@@ -41,12 +41,13 @@ class StockReportControllerTest {
         when(generateStockPdfUseCase.execute(any(StockPdfQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getStockPdf(
-                warehouseId, categoryId, true, false);
+        ResponseEntity<byte[]> result = controller.getStockPdf(warehouseId,
+                categoryId, true, false);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("stock-almacenes.pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("stock-almacenes.pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         verify(generateStockPdfUseCase).execute(any(StockPdfQuery.class));
@@ -60,8 +61,8 @@ class StockReportControllerTest {
         when(generateStockPdfUseCase.execute(any(StockPdfQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getStockPdf(
-                null, null, null, null);
+        ResponseEntity<byte[]> result = controller.getStockPdf(null, null, null,
+                null);
 
         assertArrayEquals(pdfContent, result.getBody());
         verify(generateStockPdfUseCase).execute(any(StockPdfQuery.class));
@@ -77,12 +78,13 @@ class StockReportControllerTest {
         when(generateStockExcelUseCase.execute(any(StockPdfQuery.class)))
                 .thenReturn(excelContent);
 
-        ResponseEntity<byte[]> result = controller.getStockExcel(
-                warehouseId, categoryId, true, false);
+        ResponseEntity<byte[]> result = controller.getStockExcel(warehouseId,
+                categoryId, true, false);
 
-        assertEquals(MediaType.APPLICATION_OCTET_STREAM, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("stock-almacenes.xlsx"));
+        assertEquals(MediaType.APPLICATION_OCTET_STREAM,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("stock-almacenes.xlsx"));
         assertArrayEquals(excelContent, result.getBody());
         verify(generateStockExcelUseCase).execute(any(StockPdfQuery.class));
     }

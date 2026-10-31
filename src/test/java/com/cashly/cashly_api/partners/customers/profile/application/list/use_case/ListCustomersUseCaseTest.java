@@ -48,72 +48,60 @@ class ListCustomersUseCaseTest {
         Customer customer = CustomerTestHelper.buildCustomer(id);
         CustomerListResponse listResponse = new CustomerListResponse(
                 id.toString(), 1001L, "Test", "Test Corp", "J-12345678-9",
-                "BUSINESS", true, PaymentType.CASH, false
-        );
+                "BUSINESS", true, PaymentType.CASH, false);
 
-        PageResponse<Customer> page = new PageResponse<>(
-                List.of(customer), 1L, 1, 10, 0, true, true, false
-        );
+        PageResponse<Customer> page = new PageResponse<>(List.of(customer), 1L,
+                1, 10, 0, true, true, false);
 
-        when(customerRepository.findAllWithFilters(
-                eq("search"), eq("J-123"), eq("BUSINESS"), eq(true),
-                isNull(), isNull(), isNull(), isNull(),
-                eq(0), eq(10), isNull(), isNull()
-        )).thenReturn(page);
-        when(mapper.toListResponse(eq(customer), anyBoolean())).thenReturn(listResponse);
+        when(customerRepository.findAllWithFilters(eq("search"), eq("J-123"),
+                eq("BUSINESS"), eq(true), isNull(), isNull(), isNull(),
+                isNull(), eq(0), eq(10), isNull(), isNull())).thenReturn(page);
+        when(mapper.toListResponse(eq(customer), anyBoolean()))
+                .thenReturn(listResponse);
 
-        PageResponse<CustomerListResponse> response = useCase.execute(
-                "search", "J-123", "BUSINESS", true, null, null, null, null, 0, 10, null, null
-        );
+        PageResponse<CustomerListResponse> response = useCase.execute("search",
+                "J-123", "BUSINESS", true, null, null, null, null, 0, 10, null,
+                null);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
         assertEquals(1L, response.totalElements());
         assertEquals("Test", response.content().get(0).alias());
-        verify(customerRepository).findAllWithFilters(
-                "search", "J-123", "BUSINESS", true, null, null, null, null, 0, 10, null, null
-        );
+        verify(customerRepository).findAllWithFilters("search", "J-123",
+                "BUSINESS", true, null, null, null, null, 0, 10, null, null);
     }
 
     @Test
     @DisplayName("should default active filter to true when null")
     void shouldDefaultActiveFilterToTrue() {
-        PageResponse<Customer> page = new PageResponse<>(
-                List.of(), 0L, 0, 10, 0, true, true, true
-        );
+        PageResponse<Customer> page = new PageResponse<>(List.of(), 0L, 0, 10,
+                0, true, true, true);
 
-        when(customerRepository.findAllWithFilters(
-            isNull(), isNull(), isNull(), eq(true),
-            isNull(), isNull(), isNull(), isNull(),
-            eq(0), eq(10), isNull(), isNull()
-        )).thenReturn(page);
+        when(customerRepository.findAllWithFilters(isNull(), isNull(), isNull(),
+                eq(true), isNull(), isNull(), isNull(), isNull(), eq(0), eq(10),
+                isNull(), isNull())).thenReturn(page);
 
-        PageResponse<CustomerListResponse> response = useCase.execute(
-                null, null, null, null, null, null, null, null, 0, 10, null, null
-        );
+        PageResponse<CustomerListResponse> response = useCase.execute(null,
+                null, null, null, null, null, null, null, 0, 10, null, null);
 
         assertNotNull(response);
         assertTrue(response.empty());
-        verify(customerRepository).findAllWithFilters(
-                null, null, null, true, null, null, null, null, 0, 10, null, null
-        );
+        verify(customerRepository).findAllWithFilters(null, null, null, true,
+                null, null, null, null, 0, 10, null, null);
     }
 
     @Test
     @DisplayName("should return empty page when no results")
     void shouldReturnEmptyPageWhenNoResults() {
-        PageResponse<Customer> page = new PageResponse<>(
-                List.of(), 0L, 0, 10, 0, true, true, true
-        );
+        PageResponse<Customer> page = new PageResponse<>(List.of(), 0L, 0, 10,
+                0, true, true, true);
 
-        when(customerRepository.findAllWithFilters(
-            any(), any(), any(), anyBoolean(), any(), any(), any(), any(),
-            anyInt(), anyInt(), any(), any()
-        )).thenReturn(page);
+        when(customerRepository.findAllWithFilters(any(), any(), any(),
+                anyBoolean(), any(), any(), any(), any(), anyInt(), anyInt(),
+                any(), any())).thenReturn(page);
 
-        PageResponse<CustomerListResponse> response = useCase.execute(
-                null, null, null, true, null, null, null, null, 0, 10, null, null
-        );
+        PageResponse<CustomerListResponse> response = useCase.execute(null,
+                null, null, true, null, null, null, null, 0, 10, null, null);
 
         assertNotNull(response);
         assertTrue(response.content().isEmpty());

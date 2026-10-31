@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ReturnBalanceMutationConfig {
     @Bean
-    public ReturnBalanceMutation returnBalanceMutation(AddToCustomerBalanceUseCase add, ConsumeCustomerBalanceUseCase consume) {
+    public ReturnBalanceMutation returnBalanceMutation(
+            AddToCustomerBalanceUseCase add,
+            ConsumeCustomerBalanceUseCase consume) {
         return new ReturnBalanceMutationService(add, consume);
     }
 }

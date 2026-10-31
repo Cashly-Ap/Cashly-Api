@@ -12,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-public class RepositoryInvoiceReturnAdjustments implements InvoiceReturnAdjustments {
+public class RepositoryInvoiceReturnAdjustments
+        implements
+            InvoiceReturnAdjustments {
     private final InvoiceRepository invoiceRepository;
 
-    public RepositoryInvoiceReturnAdjustments(InvoiceRepository invoiceRepository) {
+    public RepositoryInvoiceReturnAdjustments(
+            InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
     }
 
@@ -29,20 +32,27 @@ public class RepositoryInvoiceReturnAdjustments implements InvoiceReturnAdjustme
 
     @Override
     @Transactional
-    public void reverse(InvoiceReturnCommand command, BigDecimal totalPaid, BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
+    public void reverse(InvoiceReturnCommand command, BigDecimal totalPaid,
+            BigDecimal totalDebitNotes, BigDecimal totalCreditNotes) {
         Invoice invoice = find(command);
         invoice.revertReturn(adjustment(command));
-        invoice.recalculatePaymentStatus(totalPaid, totalDebitNotes, totalCreditNotes);
+        invoice.recalculatePaymentStatus(totalPaid, totalDebitNotes,
+                totalCreditNotes);
         invoiceRepository.save(invoice);
     }
 
     private Invoice find(InvoiceReturnCommand command) {
         return invoiceRepository.findById(InvoiceId.of(command.invoiceId()))
-                .orElseThrow(() -> new InvoiceNotFoundException(command.invoiceId()));
+                .orElseThrow(() -> new InvoiceNotFoundException(
+                        command.invoiceId()));
     }
 
     private InvoiceReturnAdjustment adjustment(InvoiceReturnCommand command) {
-        return new InvoiceReturnAdjustment(command.invoiceId(), command.total(), command.lines().stream()
-                .map(line -> new InvoiceReturnAdjustment.Line(line.invoiceLineId(), line.quantity())).toList(), command.closeInvoice());
+        return new InvoiceReturnAdjustment(command.invoiceId(), command.total(),
+                command.lines().stream()
+                        .map(line -> new InvoiceReturnAdjustment.Line(
+                                line.invoiceLineId(), line.quantity()))
+                        .toList(),
+                command.closeInvoice());
     }
 }

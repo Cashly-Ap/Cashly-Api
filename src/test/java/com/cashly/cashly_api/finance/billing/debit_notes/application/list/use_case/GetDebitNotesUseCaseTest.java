@@ -23,11 +23,14 @@ class GetDebitNotesUseCaseTest {
         DebitNoteRepository notes = mock(DebitNoteRepository.class);
         DebitNoteInvoiceGateway invoices = mock(DebitNoteInvoiceGateway.class);
         UUID invoiceId = UUID.randomUUID();
-        when(notes.findAllWithFilters(null, null, null)).thenReturn(List.of(note(invoiceId)));
-        when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of(invoiceId,
-                new DebitNoteInvoiceGateway.InvoiceContext(invoiceId, "FAC-1", "PAID", "Pagada", "Acme", "RIF")));
+        when(notes.findAllWithFilters(null, null, null))
+                .thenReturn(List.of(note(invoiceId)));
+        when(invoices.findAll(Set.of(invoiceId))).thenReturn(
+                Map.of(invoiceId, new DebitNoteInvoiceGateway.InvoiceContext(
+                        invoiceId, "FAC-1", "PAID", "Pagada", "Acme", "RIF")));
 
-        var result = new GetDebitNotesUseCase(notes, invoices).execute(null, null, null);
+        var result = new GetDebitNotesUseCase(notes, invoices).execute(null,
+                null, null);
 
         assertEquals("Acme", result.getFirst().customerName());
         assertEquals("RIF", result.getFirst().customerRif());
@@ -40,10 +43,12 @@ class GetDebitNotesUseCaseTest {
         DebitNoteRepository notes = mock(DebitNoteRepository.class);
         DebitNoteInvoiceGateway invoices = mock(DebitNoteInvoiceGateway.class);
         UUID invoiceId = UUID.randomUUID();
-        when(notes.findAllWithFilters(null, null, null)).thenReturn(List.of(note(invoiceId)));
+        when(notes.findAllWithFilters(null, null, null))
+                .thenReturn(List.of(note(invoiceId)));
         when(invoices.findAll(Set.of(invoiceId))).thenReturn(Map.of());
 
-        var result = new GetDebitNotesUseCase(notes, invoices).execute(null, null, null);
+        var result = new GetDebitNotesUseCase(notes, invoices).execute(null,
+                null, null);
 
         assertNull(result.getFirst().customerName());
         assertNull(result.getFirst().customerRif());
@@ -57,15 +62,17 @@ class GetDebitNotesUseCaseTest {
         when(notes.findAllWithFilters(null, null, null)).thenReturn(List.of());
         when(invoices.findAll(Set.of())).thenReturn(Map.of());
 
-        var result = new GetDebitNotesUseCase(notes, invoices).execute(null, null, null);
+        var result = new GetDebitNotesUseCase(notes, invoices).execute(null,
+                null, null);
 
         assertTrue(result.isEmpty());
         verify(invoices).findAll(Set.of());
     }
 
     private DebitNote note(UUID invoiceId) {
-        return DebitNote.reconstitute(DebitNoteId.generate(), DebitNoteNumber.of(2026, 1),
-                UUID.randomUUID(), invoiceId, new BigDecimal("15.00"), "Reason", UUID.randomUUID(),
-                "User", LocalDateTime.now(), LocalDateTime.now());
+        return DebitNote.reconstitute(DebitNoteId.generate(),
+                DebitNoteNumber.of(2026, 1), UUID.randomUUID(), invoiceId,
+                new BigDecimal("15.00"), "Reason", UUID.randomUUID(), "User",
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

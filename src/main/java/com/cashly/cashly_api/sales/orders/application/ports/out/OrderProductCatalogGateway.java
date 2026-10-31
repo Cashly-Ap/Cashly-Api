@@ -13,19 +13,24 @@ public interface OrderProductCatalogGateway {
 
     Set<UUID> findProductIdsByCurrentCategory(UUID categoryId);
 
-    PageResponse<ProductEntry> findForCustomer(UUID customerId, String search, UUID categoryId,
-                                                Boolean composite, Boolean withStock, int page, int size);
+    PageResponse<ProductEntry> findForCustomer(UUID customerId, String search,
+            UUID categoryId, Boolean composite, Boolean withStock, int page,
+            int size);
 
-    record ProductReference(UUID id, String code, String name, UUID categoryId) {}
+    record ProductReference(UUID id, String code, String name,
+            UUID categoryId) {
+    }
 
-    record ProductEntry(UUID id, String code, String name, UUID categoryId, String categoryName,
-                        boolean composite, boolean active, String photo, BigDecimal customerPrice,
-                        int totalStock, List<Stock> stock) {
+    record ProductEntry(UUID id, String code, String name, UUID categoryId,
+            String categoryName, boolean composite, boolean active,
+            String photo, BigDecimal customerPrice, int totalStock,
+            List<Stock> stock) {
         public ProductEntry {
             stock = List.copyOf(stock);
         }
     }
 
     record Stock(UUID warehouseId, String warehouseCode, String warehouseName,
-                 int quantity, int reserved, int available) {}
+            int quantity, int reserved, int available) {
+    }
 }

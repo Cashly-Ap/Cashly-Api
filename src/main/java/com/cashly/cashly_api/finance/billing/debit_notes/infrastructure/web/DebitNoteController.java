@@ -28,9 +28,9 @@ public class DebitNoteController {
     private final DeleteDebitNoteUseCase deleteDebitNoteUseCase;
 
     public DebitNoteController(CreateDebitNoteUseCase createDebitNoteUseCase,
-                                GetDebitNotesUseCase getDebitNotesUseCase,
-                                GetDebitNoteByIdUseCase getDebitNoteByIdUseCase,
-                                DeleteDebitNoteUseCase deleteDebitNoteUseCase) {
+            GetDebitNotesUseCase getDebitNotesUseCase,
+            GetDebitNoteByIdUseCase getDebitNoteByIdUseCase,
+            DeleteDebitNoteUseCase deleteDebitNoteUseCase) {
         this.createDebitNoteUseCase = createDebitNoteUseCase;
         this.getDebitNotesUseCase = getDebitNotesUseCase;
         this.getDebitNoteByIdUseCase = getDebitNoteByIdUseCase;
@@ -43,7 +43,8 @@ public class DebitNoteController {
             @Valid @RequestBody CreateDebitNoteRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        DebitNoteResponse response = createDebitNoteUseCase.execute(request, userId);
+        DebitNoteResponse response = createDebitNoteUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -53,7 +54,8 @@ public class DebitNoteController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId) {
-        List<DebitNoteResponse> debitNotes = getDebitNotesUseCase.execute(dateFrom, dateTo, customerId);
+        List<DebitNoteResponse> debitNotes = getDebitNotesUseCase
+                .execute(dateFrom, dateTo, customerId);
         return ResponseEntity.ok(debitNotes);
     }
 

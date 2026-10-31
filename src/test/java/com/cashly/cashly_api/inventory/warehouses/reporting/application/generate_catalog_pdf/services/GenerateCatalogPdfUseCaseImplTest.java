@@ -39,41 +39,45 @@ class GenerateCatalogPdfUseCaseImplTest {
     @Test
     @DisplayName("should generate catalog PDF from query")
     void should_generate_catalog_pdf() {
-        CatalogPdfQuery query = new CatalogPdfQuery(
-                "search", UUID.randomUUID(), UUID.randomUUID(), true, true, false);
-        List<CatalogReportResponse> items = List.of(
-                new CatalogReportResponse(UUID.randomUUID(), "Product A", "SKU001",
-                        UUID.randomUUID(), "Category", false,
+        CatalogPdfQuery query = new CatalogPdfQuery("search", UUID.randomUUID(),
+                UUID.randomUUID(), true, true, false);
+        List<CatalogReportResponse> items = List
+                .of(new CatalogReportResponse(UUID.randomUUID(), "Product A",
+                        "SKU001", UUID.randomUUID(), "Category", false,
                         UUID.randomUUID(), "Warehouse", BigDecimal.TEN, true));
         byte[] expectedPdf = "Catalog PDF".getBytes();
 
-        when(catalogReportRepositoryPort.findCatalog(any(CatalogReportQuery.class)))
+        when(catalogReportRepositoryPort
+                .findCatalog(any(CatalogReportQuery.class)))
                 .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
         when(catalogPdfPort.generatePdf(items)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(query);
 
         assertArrayEquals(expectedPdf, result);
-        verify(catalogReportRepositoryPort).findCatalog(any(CatalogReportQuery.class));
+        verify(catalogReportRepositoryPort)
+                .findCatalog(any(CatalogReportQuery.class));
         verify(catalogPdfPort).generatePdf(items);
     }
 
     @Test
     @DisplayName("should generate catalog PDF with empty result")
     void should_generate_catalog_pdf_with_empty_result() {
-        CatalogPdfQuery query = new CatalogPdfQuery(
-                null, null, null, null, null, null);
+        CatalogPdfQuery query = new CatalogPdfQuery(null, null, null, null,
+                null, null);
         List<CatalogReportResponse> items = List.of();
         byte[] expectedPdf = "Empty PDF".getBytes();
 
-        when(catalogReportRepositoryPort.findCatalog(any(CatalogReportQuery.class)))
+        when(catalogReportRepositoryPort
+                .findCatalog(any(CatalogReportQuery.class)))
                 .thenReturn(PageResponseMapper.from(new PageImpl<>(items)));
         when(catalogPdfPort.generatePdf(items)).thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(query);
 
         assertArrayEquals(expectedPdf, result);
-        verify(catalogReportRepositoryPort).findCatalog(any(CatalogReportQuery.class));
+        verify(catalogReportRepositoryPort)
+                .findCatalog(any(CatalogReportQuery.class));
         verify(catalogPdfPort).generatePdf(items);
     }
 }

@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CustomerProductPricingConfig {
     @Bean
-    public CustomerProductPricingQuery customerProductPricingQuery(CustomerRepository customers) {
+    public CustomerProductPricingQuery customerProductPricingQuery(
+            CustomerRepository customers) {
         return new RepositoryCustomerProductPricingQuery(customers);
     }
 }

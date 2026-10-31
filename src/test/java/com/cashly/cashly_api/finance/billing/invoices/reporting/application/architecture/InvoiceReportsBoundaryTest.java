@@ -10,11 +10,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class InvoiceReportsBoundaryTest {
     @Test
     void applicationContractsDoNotExposeInvoiceModuleDtosOrConcreteUseCases() {
-        for (Class<?> type : new Class<?>[]{InvoicePdfPort.class, InvoicesReportPdfPort.class, GenerateInvoicePdfUseCaseImpl.class}) {
-            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays.stream(method.getGenericParameterTypes()).forEach(parameter ->
-                    assertFalse(parameter.getTypeName().matches(".*cashly_api.finance.billing.invoices.(?!reporting\\.).*"), parameter.getTypeName())));
-            Arrays.stream(type.getDeclaredFields()).forEach(field ->
-                    assertFalse(field.getGenericType().getTypeName().matches(".*cashly_api.finance.billing.invoices.(?!reporting\\.).*"), field.toString()));
+        for (Class<?> type : new Class<?>[]{InvoicePdfPort.class,
+                InvoicesReportPdfPort.class,
+                GenerateInvoicePdfUseCaseImpl.class}) {
+            Arrays.stream(type.getDeclaredMethods()).forEach(method -> Arrays
+                    .stream(method.getGenericParameterTypes())
+                    .forEach(parameter -> assertFalse(
+                            parameter.getTypeName().matches(
+                                    ".*cashly_api.finance.billing.invoices.(?!reporting\\.).*"),
+                            parameter.getTypeName())));
+            Arrays.stream(type.getDeclaredFields())
+                    .forEach(field -> assertFalse(
+                            field.getGenericType().getTypeName().matches(
+                                    ".*cashly_api.finance.billing.invoices.(?!reporting\\.).*"),
+                            field.toString()));
         }
     }
 }

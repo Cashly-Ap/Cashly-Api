@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 
-public interface AccessRepository  {
+public interface AccessRepository {
     Optional<Role> role(UUID id);
     List<Role> roles();
     List<Role> editableRoles();
@@ -22,6 +22,6 @@ public interface AccessRepository  {
     void lockAdministration();
     long activeSystemAdministrators();
     Optional<Assignment> assignment(UUID userId);
-    record Assignment(UUID roleId, UUID departmentId, boolean active)  {
+    record Assignment(UUID roleId, UUID departmentId, boolean active) {
     }
 }

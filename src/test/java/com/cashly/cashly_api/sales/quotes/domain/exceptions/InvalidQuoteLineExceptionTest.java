@@ -11,15 +11,16 @@ class InvalidQuoteLineExceptionTest {
     void should_throw_with_correct_message() {
         String message = "Line quantity must be greater than zero";
         InvalidQuoteLineException exception = assertThrows(
-                InvalidQuoteLineException.class,
-                () -> { throw new InvalidQuoteLineException(message); }
-        );
+                InvalidQuoteLineException.class, () -> {
+                    throw new InvalidQuoteLineException(message);
+                });
         assertEquals(message, exception.getMessage());
     }
 
     @Test
     void should_extend_runtime_exception() {
-        InvalidQuoteLineException exception = new InvalidQuoteLineException("test");
+        InvalidQuoteLineException exception = new InvalidQuoteLineException(
+                "test");
         assertInstanceOf(RuntimeException.class, exception);
     }
 }

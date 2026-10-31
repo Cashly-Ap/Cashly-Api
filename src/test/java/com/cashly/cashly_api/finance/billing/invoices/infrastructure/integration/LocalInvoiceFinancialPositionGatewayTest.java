@@ -15,16 +15,20 @@ import static org.mockito.Mockito.*;
 class LocalInvoiceFinancialPositionGatewayTest {
     @Test
     void givenCreditDebitAndPaymentLedgers_whenRequested_thenReturnsTheirTotals() {
-        InvoicePaymentTotalQuery payments = mock(InvoicePaymentTotalQuery.class);
+        InvoicePaymentTotalQuery payments = mock(
+                InvoicePaymentTotalQuery.class);
         DebitNoteLedgerQuery debits = mock(DebitNoteLedgerQuery.class);
         CreditNoteLedgerQuery credits = mock(CreditNoteLedgerQuery.class);
         UUID invoiceId = UUID.randomUUID();
-        when(payments.totalAllocatedByInvoiceId(invoiceId)).thenReturn(new BigDecimal("50.00"));
-        when(debits.amountsByInvoiceId(invoiceId)).thenReturn(Arrays.asList(new BigDecimal("10.00"), null));
-        when(credits.amountsByInvoiceId(invoiceId)).thenReturn(Arrays.asList(new BigDecimal("4.00"), null));
+        when(payments.totalAllocatedByInvoiceId(invoiceId))
+                .thenReturn(new BigDecimal("50.00"));
+        when(debits.amountsByInvoiceId(invoiceId))
+                .thenReturn(Arrays.asList(new BigDecimal("10.00"), null));
+        when(credits.amountsByInvoiceId(invoiceId))
+                .thenReturn(Arrays.asList(new BigDecimal("4.00"), null));
 
-        var position = new LocalInvoiceFinancialPositionGateway(payments, debits, credits)
-                .findByInvoiceId(invoiceId);
+        var position = new LocalInvoiceFinancialPositionGateway(payments,
+                debits, credits).findByInvoiceId(invoiceId);
 
         assertEquals(new BigDecimal("50.00"), position.paid());
         assertEquals(new BigDecimal("10.00"), position.debitNotes());

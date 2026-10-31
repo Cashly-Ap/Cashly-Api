@@ -13,20 +13,28 @@ import org.springframework.stereotype.Component;
 public class InvoicePaymentService {
     private final CustomerBalanceGateway balances;
     private final InvoicePaymentSettlementGateway settlements;
-    public InvoicePaymentService(CustomerBalanceGateway balances, InvoicePaymentSettlementGateway settlements) {
+    public InvoicePaymentService(CustomerBalanceGateway balances,
+            InvoicePaymentSettlementGateway settlements) {
         this.balances = balances;
         this.settlements = settlements;
     }
-    public void apply(Invoice invoice, InvoiceIssueValidator.CashPaymentPlan plan,
-                      IssueInvoiceCommand command, ActorIdentityGateway.Actor actor) {
+    public void apply(Invoice invoice,
+            InvoiceIssueValidator.CashPaymentPlan plan,
+            IssueInvoiceCommand command, ActorIdentityGateway.Actor actor) {
         if (plan.balanceAmount().signum() > 0) {
-            balances.consumeInvoiceBalance(new CustomerBalanceGateway.Consumption(invoice.getCustomerId(),
-                    plan.balanceAmount(), invoice.getId().value(), invoice.getInvoiceNumber().value(), actor.id()));
+            balances.consumeInvoiceBalance(
+                    new CustomerBalanceGateway.Consumption(
+                            invoice.getCustomerId(), plan.balanceAmount(),
+                            invoice.getId().value(),
+                            invoice.getInvoiceNumber().value(), actor.id()));
         }
         if (plan.remainingAmount().signum() > 0) {
-            settlements.settleCashInvoice(new InvoicePaymentSettlementGateway.Settlement(invoice.getCustomerId(),
-                    invoice.getId().value(), invoice.getInvoiceNumber().value(), plan.remainingAmount(),
-                    command.paymentMethodId(), actor.id(), actor.name()));
+            settlements.settleCashInvoice(
+                    new InvoicePaymentSettlementGateway.Settlement(
+                            invoice.getCustomerId(), invoice.getId().value(),
+                            invoice.getInvoiceNumber().value(),
+                            plan.remainingAmount(), command.paymentMethodId(),
+                            actor.id(), actor.name()));
         }
     }
 }

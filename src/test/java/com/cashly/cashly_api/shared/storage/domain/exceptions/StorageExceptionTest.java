@@ -39,7 +39,8 @@ class StorageExceptionTest {
     @Test
     void should_PreserveCauseMessage() {
         Throwable cause = new RuntimeException("Disk full");
-        StorageException exception = new StorageException("Failed to store file", cause);
+        StorageException exception = new StorageException(
+                "Failed to store file", cause);
 
         assertEquals("Disk full", exception.getCause().getMessage());
     }

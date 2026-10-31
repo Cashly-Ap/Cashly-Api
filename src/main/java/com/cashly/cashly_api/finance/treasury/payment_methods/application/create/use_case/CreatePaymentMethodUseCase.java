@@ -21,7 +21,8 @@ public class CreatePaymentMethodUseCase {
     public PaymentMethodResponse execute(CreatePaymentMethodRequest request) {
         String code = generateNextCode();
 
-        PaymentMethod paymentMethod = PaymentMethod.create(code, request.name(), request.description());
+        PaymentMethod paymentMethod = PaymentMethod.create(code, request.name(),
+                request.description());
         PaymentMethod saved = repository.save(paymentMethod);
 
         return PaymentMethodMapper.toResponse(saved, false);

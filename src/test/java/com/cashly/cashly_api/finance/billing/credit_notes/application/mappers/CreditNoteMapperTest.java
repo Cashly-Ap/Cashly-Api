@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CreditNoteMapper Unit Tests")
 class CreditNoteMapperTest {
 
-    private static final CreditNoteNumber NOTE_NUMBER = CreditNoteNumber.of(2026, 1);
+    private static final CreditNoteNumber NOTE_NUMBER = CreditNoteNumber
+            .of(2026, 1);
     private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final UUID INVOICE_ID = UUID.randomUUID();
     private static final BigDecimal AMOUNT = new BigDecimal("150.00");
@@ -29,8 +30,8 @@ class CreditNoteMapperTest {
     private static final String INVOICE_NUMBER = "FAC-001";
 
     private CreditNote createCreditNote() {
-        return CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+        return CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID, AMOUNT,
+                REASON, CREATED_BY, CREATED_BY_NAME);
     }
 
     @Nested
@@ -42,8 +43,7 @@ class CreditNoteMapperTest {
             CreditNote creditNote = createCreditNote();
 
             CreditNoteResponse response = CreditNoteMapper.toCreditNoteResponse(
-                    creditNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER
-            );
+                    creditNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER);
 
             assertEquals(creditNote.getId().value(), response.id());
             assertEquals(NOTE_NUMBER.value(), response.noteNumber());
@@ -64,9 +64,8 @@ class CreditNoteMapperTest {
         void should_MapWithNullRelations() {
             CreditNote creditNote = createCreditNote();
 
-            CreditNoteResponse response = CreditNoteMapper.toCreditNoteResponse(
-                    creditNote, null, null, null
-            );
+            CreditNoteResponse response = CreditNoteMapper
+                    .toCreditNoteResponse(creditNote, null, null, null);
 
             assertNull(response.customerName());
             assertNull(response.customerRif());
@@ -78,8 +77,7 @@ class CreditNoteMapperTest {
             CreditNote creditNote = createCreditNote();
 
             CreditNoteResponse response = CreditNoteMapper.toCreditNoteResponse(
-                    creditNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER
-            );
+                    creditNote, CUSTOMER_NAME, CUSTOMER_RIF, INVOICE_NUMBER);
 
             assertEquals(AMOUNT, response.amount());
             assertEquals(REASON, response.reason());

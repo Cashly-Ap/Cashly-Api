@@ -4,5 +4,7 @@ import java.util.UUID;
 public interface ReturnBalanceMutation {
     void credit(Command command);
     void debit(Command command);
-    record Command(UUID customerId, BigDecimal amount, UUID returnId, String returnNumber, String invoiceNumber, UUID actorId) {}
+    record Command(UUID customerId, BigDecimal amount, UUID returnId,
+            String returnNumber, String invoiceNumber, UUID actorId) {
+    }
 }

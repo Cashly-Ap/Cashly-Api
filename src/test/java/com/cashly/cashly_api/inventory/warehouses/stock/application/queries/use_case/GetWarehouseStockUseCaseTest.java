@@ -45,27 +45,32 @@ class GetWarehouseStockUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GetWarehouseStockUseCase(warehouseRepository, warehouseStockRepository,
-                new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(productRepository)));
+        useCase = new GetWarehouseStockUseCase(warehouseRepository,
+                warehouseStockRepository, new LocalStockCatalogGatewayAdapter(
+                        new RepositoryStockCatalogQuery(productRepository)));
     }
 
     @Test
     @DisplayName("returns paginated stock with product names")
     void shouldReturnPaginatedStockWithProductInfo() {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
-        Product product = buildProduct(productId, "PROD-001", "Test Product", true);
+        Product product = buildProduct(productId, "PROD-001", "Test Product",
+                true);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
         stock.addStock(50);
 
-        PageResponse<WarehouseStock> page = new PageResponse<>(
-                List.of(stock), 1L, 1, 10, 0, true, true, false
-        );
+        PageResponse<WarehouseStock> page = new PageResponse<>(List.of(stock),
+                1L, 1, 10, 0, true, true, false);
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(warehouseStockRepository.findByWarehouseIdPaged(warehouseId, 0, 10)).thenReturn(page);
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(warehouseStockRepository.findByWarehouseIdPaged(warehouseId, 0,
+                10)).thenReturn(page);
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
 
-        PageResponse<WarehouseStockResponse> response = useCase.execute(warehouseId, 0, 10);
+        PageResponse<WarehouseStockResponse> response = useCase
+                .execute(warehouseId, 0, 10);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
@@ -74,18 +79,22 @@ class GetWarehouseStockUseCaseTest {
         assertTrue(response.content().get(0).composite());
         assertEquals(50, response.content().get(0).quantity());
         verify(warehouseRepository).findById(warehouseId);
-        verify(warehouseStockRepository).findByWarehouseIdPaged(warehouseId, 0, 10);
+        verify(warehouseStockRepository).findByWarehouseIdPaged(warehouseId, 0,
+                10);
     }
 
     @Test
     @DisplayName("throws WarehouseNotFoundException when warehouse not found")
     void shouldThrowWhenWarehouseNotFound() {
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(warehouseId, 0, 10));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(warehouseId, 0, 10));
 
         verify(warehouseRepository).findById(warehouseId);
-        verify(warehouseStockRepository, never()).findByWarehouseIdPaged(any(), anyInt(), anyInt());
+        verify(warehouseStockRepository, never()).findByWarehouseIdPaged(any(),
+                anyInt(), anyInt());
     }
 
     @Test
@@ -95,15 +104,18 @@ class GetWarehouseStockUseCaseTest {
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
         stock.addStock(25);
 
-        PageResponse<WarehouseStock> page = new PageResponse<>(
-                List.of(stock), 1L, 1, 10, 0, true, true, false
-        );
+        PageResponse<WarehouseStock> page = new PageResponse<>(List.of(stock),
+                1L, 1, 10, 0, true, true, false);
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
-        when(warehouseStockRepository.findByWarehouseIdPaged(warehouseId, 0, 10)).thenReturn(page);
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
+        when(warehouseStockRepository.findByWarehouseIdPaged(warehouseId, 0,
+                10)).thenReturn(page);
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        PageResponse<WarehouseStockResponse> response = useCase.execute(warehouseId, 0, 10);
+        PageResponse<WarehouseStockResponse> response = useCase
+                .execute(warehouseId, 0, 10);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
@@ -112,17 +124,14 @@ class GetWarehouseStockUseCaseTest {
     }
 
     private Warehouse buildActiveWarehouse(UUID id) {
-        return Warehouse.reconstitute(
-                id, "WH-001", "Main", "Addr", "State", "Mun", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Warehouse.reconstitute(id, "WH-001", "Main", "Addr", "State",
+                "Mun", "10001", true, LocalDateTime.now(), LocalDateTime.now());
     }
 
-    private Product buildProduct(UUID id, String code, String name, boolean composite) {
-        return Product.reconstitute(
-                id, code, name, "Desc", null, composite, true, null,
-                BigDecimal.ZERO,
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
-        );
+    private Product buildProduct(UUID id, String code, String name,
+            boolean composite) {
+        return Product.reconstitute(id, code, name, "Desc", null, composite,
+                true, null, BigDecimal.ZERO, List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

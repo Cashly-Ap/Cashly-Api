@@ -16,8 +16,8 @@ class CatalogPdfQueryTest {
         UUID categoryId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
 
-        var query = new CatalogPdfQuery(
-                "search term", categoryId, warehouseId, true, true, false);
+        var query = new CatalogPdfQuery("search term", categoryId, warehouseId,
+                true, true, false);
 
         assertEquals("search term", query.search());
         assertEquals(categoryId, query.categoryId());

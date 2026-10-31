@@ -13,20 +13,25 @@ class PaymentMethodUsageWiringTest {
     @Test
     void should_wire_both_module_queries_without_component_name_collision() {
         PaymentJpaRepository payments = mock(PaymentJpaRepository.class);
-        CashRegisterJpaRepository cashregister = mock(CashRegisterJpaRepository.class);
+        CashRegisterJpaRepository cashregister = mock(
+                CashRegisterJpaRepository.class);
         UUID id = UUID.randomUUID();
         when(payments.countByPaymentMethodId(id)).thenReturn(0L);
         when(cashregister.countDetailsByPaymentMethodId(id)).thenReturn(1L);
         try (var context = new AnnotationConfigApplicationContext()) {
             context.registerBean(PaymentJpaRepository.class, () -> payments);
-            context.registerBean(CashRegisterJpaRepository.class, () -> cashregister);
-            context.register(com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.queries.JpaPaymentMethodUsageQuery.class,
+            context.registerBean(CashRegisterJpaRepository.class,
+                    () -> cashregister);
+            context.register(
+                    com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.queries.JpaPaymentMethodUsageQuery.class,
                     com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.persistence.queries.JpaPaymentMethodUsageQuery.class,
                     LocalPaymentMethodUsageGateway.class);
             context.refresh();
-            assertTrue(context.getBean(PaymentMethodUsageGateway.class).hasAssociatedRecords(id));
+            assertTrue(context.getBean(PaymentMethodUsageGateway.class)
+                    .hasAssociatedRecords(id));
             assertTrue(context.containsBean("paymentsPaymentMethodUsageQuery"));
-            assertTrue(context.containsBean("cashregisterPaymentMethodUsageQuery"));
+            assertTrue(context
+                    .containsBean("cashregisterPaymentMethodUsageQuery"));
         }
     }
 }

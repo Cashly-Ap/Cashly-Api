@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class AuthNotificationRecipientAdapter implements NotificationRecipientGateway {
+public class AuthNotificationRecipientAdapter
+        implements
+            NotificationRecipientGateway {
     private final NotificationRecipientsQuery recipientsQuery;
 
-    public AuthNotificationRecipientAdapter(NotificationRecipientsQuery recipientsQuery) {
+    public AuthNotificationRecipientAdapter(
+            NotificationRecipientsQuery recipientsQuery) {
         this.recipientsQuery = recipientsQuery;
     }
 

@@ -21,12 +21,8 @@ public final class CustomerBalanceJpaMapper {
     }
 
     public static CustomerBalance toDomain(CustomerBalanceEntity entity) {
-        return CustomerBalance.reconstitute(
-            entity.getId(),
-            entity.getCustomerId(),
-            entity.getTotalBalance(),
-            entity.getCreatedAt(),
-            entity.getUpdatedAt()
-        );
+        return CustomerBalance.reconstitute(entity.getId(),
+                entity.getCustomerId(), entity.getTotalBalance(),
+                entity.getCreatedAt(), entity.getUpdatedAt());
     }
 }

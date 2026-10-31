@@ -48,20 +48,24 @@ class ManualStockConcurrencyIT {
     private final WarehouseStockRepository stocks;
     private final SpringDataWarehouseStockRepository persistedStocks;
     private final PlatformTransactionManager transactionManager;
-    private final WarehouseRepository warehouses = mock(WarehouseRepository.class);
+    private final WarehouseRepository warehouses = mock(
+            WarehouseRepository.class);
     private final ProductRepository products = mock(ProductRepository.class);
-    private final StockMovementRepository movements = mock(StockMovementRepository.class);
+    private final StockMovementRepository movements = mock(
+            StockMovementRepository.class);
     private UUID warehouseId;
     private UUID productId;
 
     @org.springframework.test.context.DynamicPropertySource
-    static void properties(org.springframework.test.context.DynamicPropertyRegistry registry) {
+    static void properties(
+            org.springframework.test.context.DynamicPropertyRegistry registry) {
         InvoiceInventoryConcurrencyIT.properties(registry);
     }
 
     @Autowired
-    ManualStockConcurrencyIT(WarehouseStockRepository stocks, SpringDataWarehouseStockRepository persistedStocks,
-                             PlatformTransactionManager transactionManager) {
+    ManualStockConcurrencyIT(WarehouseStockRepository stocks,
+            SpringDataWarehouseStockRepository persistedStocks,
+            PlatformTransactionManager transactionManager) {
         this.stocks = stocks;
         this.persistedStocks = persistedStocks;
         this.transactionManager = transactionManager;
@@ -71,20 +75,26 @@ class ManualStockConcurrencyIT {
         warehouseId = UUID.randomUUID();
         productId = UUID.randomUUID();
         var now = LocalDateTime.now();
-        persistedStocks.saveAndFlush(WarehouseStockEntity.fromDomain(new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, INITIAL_QUANTITY, 0, now, now)));
+        persistedStocks.saveAndFlush(WarehouseStockEntity
+                .fromDomain(new WarehouseStock(UUID.randomUUID(), warehouseId,
+                        productId, INITIAL_QUANTITY, 0, now, now)));
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.isActive()).thenReturn(true);
-        when(warehouses.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(warehouses.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
         Product product = mock(Product.class);
         when(product.getId()).thenReturn(productId);
         when(products.findById(productId)).thenReturn(Optional.of(product));
-        when(movements.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(movements.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
-    void shouldWaitForCompetingMutationAndRejectExitAgainstUpdatedStock() throws Exception {
-        StockExitUseCase exit = new StockExitUseCase(warehouses, stocks, movements, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(products)));
+    void shouldWaitForCompetingMutationAndRejectExitAgainstUpdatedStock()
+            throws Exception {
+        StockExitUseCase exit = new StockExitUseCase(warehouses, stocks,
+                movements, new LocalStockCatalogGatewayAdapter(
+                        new RepositoryStockCatalogQuery(products)));
         var productRead = new CountDownLatch(1);
         Product product = products.findById(productId).orElseThrow();
         when(products.findById(productId)).thenAnswer(invocation -> {
@@ -93,30 +103,47 @@ class ManualStockConcurrencyIT {
         });
         try (var executor = Executors.newSingleThreadExecutor()) {
             var task = new java.util.concurrent.atomic.AtomicReference<java.util.concurrent.Future<Throwable>>();
-            new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
-                WarehouseStock locked = stocks.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId).orElseThrow();
-                task.set(executor.submit(() -> {
-                    try {
-                        new TransactionTemplate(transactionManager).executeWithoutResult(workerStatus -> exit.execute(warehouseId,
-                                new StockExitRequest(List.of(new StockBatchItem(productId, REQUESTED_QUANTITY, "Exit")))));
-                        return null;
-                    } catch (Throwable failure) {
-                        return failure;
-                    }
-                }));
-                try {
-                    assertTrue(productRead.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
-                    assertThrows(TimeoutException.class, () -> task.get().get(BLOCK_CHECK_MILLISECONDS, TimeUnit.MILLISECONDS));
-                } catch (InterruptedException interrupted) {
-                    Thread.currentThread().interrupt();
-                    throw new IllegalStateException(interrupted);
-                }
-                locked.removeStock(REQUESTED_QUANTITY);
-                stocks.save(locked);
-            });
-            assertInstanceOf(InsufficientStockException.class, task.get().get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
-            assertEquals(INITIAL_QUANTITY - REQUESTED_QUANTITY,
-                    persistedStocks.findByWarehouseIdAndProductId(warehouseId, productId).orElseThrow().getQuantity());
+            new TransactionTemplate(transactionManager)
+                    .executeWithoutResult(status -> {
+                        WarehouseStock locked = stocks
+                                .findByWarehouseIdAndProductIdForUpdate(
+                                        warehouseId, productId)
+                                .orElseThrow();
+                        task.set(executor.submit(() -> {
+                            try {
+                                new TransactionTemplate(transactionManager)
+                                        .executeWithoutResult(
+                                                workerStatus -> exit.execute(
+                                                        warehouseId,
+                                                        new StockExitRequest(
+                                                                List.of(new StockBatchItem(
+                                                                        productId,
+                                                                        REQUESTED_QUANTITY,
+                                                                        "Exit")))));
+                                return null;
+                            } catch (Throwable failure) {
+                                return failure;
+                            }
+                        }));
+                        try {
+                            assertTrue(productRead.await(TIMEOUT_SECONDS,
+                                    TimeUnit.SECONDS));
+                            assertThrows(TimeoutException.class,
+                                    () -> task.get().get(
+                                            BLOCK_CHECK_MILLISECONDS,
+                                            TimeUnit.MILLISECONDS));
+                        } catch (InterruptedException interrupted) {
+                            Thread.currentThread().interrupt();
+                            throw new IllegalStateException(interrupted);
+                        }
+                        locked.removeStock(REQUESTED_QUANTITY);
+                        stocks.save(locked);
+                    });
+            assertInstanceOf(InsufficientStockException.class,
+                    task.get().get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+            assertEquals(INITIAL_QUANTITY - REQUESTED_QUANTITY, persistedStocks
+                    .findByWarehouseIdAndProductId(warehouseId, productId)
+                    .orElseThrow().getQuantity());
             verify(movements, never()).save(any());
         }
     }
@@ -124,13 +151,22 @@ class ManualStockConcurrencyIT {
     @Test
     void shouldRollBackEarlierEntryWhenLaterCatalogProductIsMissing() {
         UUID missingProductId = UUID.randomUUID();
-        StockEntryUseCase entry = new StockEntryUseCase(warehouses, stocks, movements, new LocalStockCatalogGatewayAdapter(new RepositoryStockCatalogQuery(products)));
-        assertThrows(ProductNotFoundException.class, () -> new TransactionTemplate(transactionManager)
-                .executeWithoutResult(status -> entry.execute(warehouseId, new StockEntryRequest(List.of(
-                        new StockBatchItem(productId, REQUESTED_QUANTITY, "Entry"),
-                        new StockBatchItem(missingProductId, 1, "Missing"))))));
+        StockEntryUseCase entry = new StockEntryUseCase(warehouses, stocks,
+                movements, new LocalStockCatalogGatewayAdapter(
+                        new RepositoryStockCatalogQuery(products)));
+        assertThrows(ProductNotFoundException.class,
+                () -> new TransactionTemplate(transactionManager)
+                        .executeWithoutResult(status -> entry.execute(
+                                warehouseId,
+                                new StockEntryRequest(List.of(
+                                        new StockBatchItem(productId,
+                                                REQUESTED_QUANTITY, "Entry"),
+                                        new StockBatchItem(missingProductId, 1,
+                                                "Missing"))))));
         assertEquals(INITIAL_QUANTITY,
-                persistedStocks.findByWarehouseIdAndProductId(warehouseId, productId).orElseThrow().getQuantity());
+                persistedStocks
+                        .findByWarehouseIdAndProductId(warehouseId, productId)
+                        .orElseThrow().getQuantity());
         verify(movements).save(any(StockMovement.class));
     }
 }

@@ -18,17 +18,28 @@ public class OrderStockAvailabilityAdapter implements StockAvailabilityGateway {
 
     @Override
     public List<EnrichedStock> enrich(List<AllocationData> allocations) {
-        var command = allocations.stream().map(item -> new StockAvailabilityQuery.AllocationData(
-                item.warehouseId(), item.productId(), item.allocated())).toList();
-        return query.enrich(command).stream().map(item -> new EnrichedStock(item.warehouseId(),
-                item.productId(), item.warehouseCode(), item.warehouseName(), item.availableStock())).toList();
+        var command = allocations.stream()
+                .map(item -> new StockAvailabilityQuery.AllocationData(
+                        item.warehouseId(), item.productId(), item.allocated()))
+                .toList();
+        return query.enrich(command).stream()
+                .map(item -> new EnrichedStock(item.warehouseId(),
+                        item.productId(), item.warehouseCode(),
+                        item.warehouseName(), item.availableStock()))
+                .toList();
     }
 
     @Override
-    public Map<UUID, List<WarehouseStockInfo>> getAllStockByProducts(UUID customerId, List<UUID> productIds) {
-        return query.getAllStockByProducts(customerId, productIds).entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey, entry -> entry.getValue().stream().map(item -> new WarehouseStockInfo(
-                        item.warehouseId(), item.warehouseCode(), item.warehouseName(),
-                        item.quantity(), item.reserved(), item.available())).toList()));
+    public Map<UUID, List<WarehouseStockInfo>> getAllStockByProducts(
+            UUID customerId, List<UUID> productIds) {
+        return query.getAllStockByProducts(customerId, productIds).entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry
+                        .getValue().stream()
+                        .map(item -> new WarehouseStockInfo(item.warehouseId(),
+                                item.warehouseCode(), item.warehouseName(),
+                                item.quantity(), item.reserved(),
+                                item.available()))
+                        .toList()));
     }
 }

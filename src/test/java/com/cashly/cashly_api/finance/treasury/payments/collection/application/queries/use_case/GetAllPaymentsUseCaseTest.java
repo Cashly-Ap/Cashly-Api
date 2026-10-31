@@ -44,7 +44,8 @@ class GetAllPaymentsUseCaseTest {
         when(paymentRepository.findAllWithFilters(null, null, null, null))
                 .thenReturn(List.of(payment));
 
-        List<PaymentListResponse> result = useCase.execute(null, null, null, null, null);
+        List<PaymentListResponse> result = useCase.execute(null, null, null,
+                null, null);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -60,10 +61,12 @@ class GetAllPaymentsUseCaseTest {
         when(paymentRepository.findAllWithFilters(dateFrom, dateTo, null, null))
                 .thenReturn(List.of());
 
-        List<PaymentListResponse> result = useCase.execute(dateFrom, dateTo, null, null, null);
+        List<PaymentListResponse> result = useCase.execute(dateFrom, dateTo,
+                null, null, null);
 
         assertTrue(result.isEmpty());
-        verify(paymentRepository).findAllWithFilters(dateFrom, dateTo, null, null);
+        verify(paymentRepository).findAllWithFilters(dateFrom, dateTo, null,
+                null);
     }
 
     @Test
@@ -98,10 +101,12 @@ class GetAllPaymentsUseCaseTest {
         when(paymentRepository.findAllWithFilters(null, null, customerId, null))
                 .thenReturn(List.of());
 
-        List<PaymentListResponse> result = useCase.execute(null, null, customerId, null, null);
+        List<PaymentListResponse> result = useCase.execute(null, null,
+                customerId, null, null);
 
         assertTrue(result.isEmpty());
-        verify(paymentRepository).findAllWithFilters(null, null, customerId, null);
+        verify(paymentRepository).findAllWithFilters(null, null, customerId,
+                null);
     }
 
     @Test
@@ -112,7 +117,8 @@ class GetAllPaymentsUseCaseTest {
         when(paymentRepository.findAllWithFilters(null, null, null, null))
                 .thenReturn(List.of(payment1, payment2));
 
-        List<PaymentListResponse> result = useCase.execute(null, null, null, null, null);
+        List<PaymentListResponse> result = useCase.execute(null, null, null,
+                null, null);
 
         assertEquals(2, result.size());
         assertNotNull(result.get(0).paymentNumber());
@@ -122,29 +128,23 @@ class GetAllPaymentsUseCaseTest {
 
     @Test
     void actionSelectorsOnlyQueryPendingPaymentsEvenIfAnotherStatusIsRequested() {
-        when(paymentRepository.findAllWithFilters(null, null, null, "PENDING")).thenReturn(List.of());
-        useCase.execute(null, null, null, null, "APPLIED", GetAllPaymentsUseCase.ListAction.APPROVE);
-        useCase.execute(null, null, null, null, "APPLIED", GetAllPaymentsUseCase.ListAction.REJECT);
-        verify(paymentRepository, org.mockito.Mockito.times(2)).findAllWithFilters(null, null, null, "PENDING");
+        when(paymentRepository.findAllWithFilters(null, null, null, "PENDING"))
+                .thenReturn(List.of());
+        useCase.execute(null, null, null, null, "APPLIED",
+                GetAllPaymentsUseCase.ListAction.APPROVE);
+        useCase.execute(null, null, null, null, "APPLIED",
+                GetAllPaymentsUseCase.ListAction.REJECT);
+        verify(paymentRepository, org.mockito.Mockito.times(2))
+                .findAllWithFilters(null, null, null, "PENDING");
     }
 
     private Payment buildPayment() {
-        return Payment.reconstitute(
-                PaymentId.generate(),
-                PaymentNumber.of(2026, 1),
-                UUID.randomUUID(),
-                new BigDecimal("500.00"),
-                UUID.randomUUID(),
-                PaymentSource.PAYMENT_METHOD,
-                "REF-001",
-                LocalDate.now(),
-                "Test payment",
-                PaymentStatus.APPLIED,
-                BigDecimal.ZERO,
-                UUID.randomUUID(),
-                "Test User",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        return Payment.reconstitute(PaymentId.generate(),
+                PaymentNumber.of(2026, 1), UUID.randomUUID(),
+                new BigDecimal("500.00"), UUID.randomUUID(),
+                PaymentSource.PAYMENT_METHOD, "REF-001", LocalDate.now(),
+                "Test payment", PaymentStatus.APPLIED, BigDecimal.ZERO,
+                UUID.randomUUID(), "Test User", LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

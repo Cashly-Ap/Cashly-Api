@@ -36,7 +36,8 @@ class GeneratePaymentPdfUseCaseImplTest {
         byte[] expectedPdf = "Payment PDF".getBytes();
 
         when(getPaymentByIdUseCase.find(paymentId)).thenReturn(payment);
-        when(paymentPdfPort.generatePaymentPdf(payment)).thenReturn(expectedPdf);
+        when(paymentPdfPort.generatePaymentPdf(payment))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(paymentId);
 

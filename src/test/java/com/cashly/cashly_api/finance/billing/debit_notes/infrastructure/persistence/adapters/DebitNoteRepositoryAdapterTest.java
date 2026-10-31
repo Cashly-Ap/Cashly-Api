@@ -47,7 +47,8 @@ class DebitNoteRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new DebitNoteRepositoryAdapter(jpaRepository, sequenceJpaRepository);
+        adapter = new DebitNoteRepositoryAdapter(jpaRepository,
+                sequenceJpaRepository);
     }
 
     @Nested
@@ -58,19 +59,15 @@ class DebitNoteRepositoryAdapterTest {
         void should_MapToEntityAndDelegateToJpaRepository() {
             DebitNote debitNote = DebitNote.reconstitute(
                     DebitNoteId.of(UUID.randomUUID()),
-                    DebitNoteNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    new BigDecimal("150.00"),
-                    "Product damaged",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    DebitNoteNumber.of(2026, 1), UUID.randomUUID(),
+                    UUID.randomUUID(), new BigDecimal("150.00"),
+                    "Product damaged", UUID.randomUUID(), "John Doe",
+                    LocalDateTime.now(), LocalDateTime.now());
 
-            DebitNoteEntity expectedEntity = DebitNoteJpaMapper.toEntity(debitNote);
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            DebitNoteEntity expectedEntity = DebitNoteJpaMapper
+                    .toEntity(debitNote);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             DebitNote saved = adapter.save(debitNote);
 
@@ -82,13 +79,15 @@ class DebitNoteRepositoryAdapterTest {
 
             DebitNoteEntity captured = entityCaptor.getValue();
             assertEquals(debitNote.getId().value(), captured.getId());
-            assertEquals(debitNote.getNoteNumber().value(), captured.getNoteNumber());
+            assertEquals(debitNote.getNoteNumber().value(),
+                    captured.getNoteNumber());
             assertEquals(debitNote.getCustomerId(), captured.getCustomerId());
             assertEquals(debitNote.getInvoiceId(), captured.getInvoiceId());
             assertEquals(debitNote.getAmount(), captured.getAmount());
             assertEquals(debitNote.getReason(), captured.getReason());
             assertEquals(debitNote.getCreatedBy(), captured.getCreatedBy());
-            assertEquals(debitNote.getCreatedByName(), captured.getCreatedByName());
+            assertEquals(debitNote.getCreatedByName(),
+                    captured.getCreatedByName());
             assertEquals(debitNote.getCreatedAt(), captured.getCreatedAt());
             assertEquals(debitNote.getUpdatedAt(), captured.getUpdatedAt());
 
@@ -103,22 +102,15 @@ class DebitNoteRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObject_When_EntityFound() {
             DebitNoteId id = DebitNoteId.generate();
-            DebitNoteEntity entity = DebitNoteJpaMapper.toEntity(
-                    DebitNote.reconstitute(
-                            id,
-                            DebitNoteNumber.of(2026, 1),
-                            UUID.randomUUID(),
-                            UUID.randomUUID(),
-                            new BigDecimal("150.00"),
-                            "Product damaged",
-                            UUID.randomUUID(),
-                            "John Doe",
-                            LocalDateTime.now(),
-                            LocalDateTime.now()
-                    )
-            );
+            DebitNoteEntity entity = DebitNoteJpaMapper
+                    .toEntity(DebitNote.reconstitute(id,
+                            DebitNoteNumber.of(2026, 1), UUID.randomUUID(),
+                            UUID.randomUUID(), new BigDecimal("150.00"),
+                            "Product damaged", UUID.randomUUID(), "John Doe",
+                            LocalDateTime.now(), LocalDateTime.now()));
 
-            when(jpaRepository.findById(id.value())).thenReturn(Optional.of(entity));
+            when(jpaRepository.findById(id.value()))
+                    .thenReturn(Optional.of(entity));
 
             Optional<DebitNote> result = adapter.findById(id);
 
@@ -130,7 +122,8 @@ class DebitNoteRepositoryAdapterTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             DebitNoteId id = DebitNoteId.generate();
-            when(jpaRepository.findById(id.value())).thenReturn(Optional.empty());
+            when(jpaRepository.findById(id.value()))
+                    .thenReturn(Optional.empty());
 
             Optional<DebitNote> result = adapter.findById(id);
 
@@ -149,24 +142,18 @@ class DebitNoteRepositoryAdapterTest {
             LocalDate dateTo = LocalDate.of(2026, 12, 31);
             UUID customerId = UUID.randomUUID();
 
-            DebitNoteEntity entity = DebitNoteJpaMapper.toEntity(
-                    DebitNote.reconstitute(
-                            DebitNoteId.generate(),
-                            DebitNoteNumber.of(2026, 1),
-                            customerId,
-                            UUID.randomUUID(),
-                            new BigDecimal("150.00"),
-                            "Product damaged",
-                            UUID.randomUUID(),
-                            "John Doe",
-                            LocalDateTime.now(),
-                            LocalDateTime.now()
-                    )
-            );
+            DebitNoteEntity entity = DebitNoteJpaMapper
+                    .toEntity(DebitNote.reconstitute(DebitNoteId.generate(),
+                            DebitNoteNumber.of(2026, 1), customerId,
+                            UUID.randomUUID(), new BigDecimal("150.00"),
+                            "Product damaged", UUID.randomUUID(), "John Doe",
+                            LocalDateTime.now(), LocalDateTime.now()));
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any()))
+                    .thenReturn(List.of(entity));
 
-            List<DebitNote> result = adapter.findAllWithFilters(dateFrom, dateTo, customerId);
+            List<DebitNote> result = adapter.findAllWithFilters(dateFrom,
+                    dateTo, customerId);
 
             assertNotNull(result);
             assertEquals(1, result.size());
@@ -174,31 +161,26 @@ class DebitNoteRepositoryAdapterTest {
 
             LocalDateTime expectedFrom = dateFrom.atStartOfDay();
             LocalDateTime expectedTo = dateTo.atTime(23, 59, 59);
-            verify(jpaRepository).findAllWithFilters(expectedFrom, expectedTo, customerId);
+            verify(jpaRepository).findAllWithFilters(expectedFrom, expectedTo,
+                    customerId);
         }
 
         @Test
         void should_ReturnDomainObjects_When_PartialFiltersProvided() {
             UUID customerId = UUID.randomUUID();
 
-            DebitNoteEntity entity = DebitNoteJpaMapper.toEntity(
-                    DebitNote.reconstitute(
-                            DebitNoteId.generate(),
-                            DebitNoteNumber.of(2026, 1),
-                            customerId,
-                            UUID.randomUUID(),
-                            new BigDecimal("150.00"),
-                            "Product damaged",
-                            UUID.randomUUID(),
-                            "John Doe",
-                            LocalDateTime.now(),
-                            LocalDateTime.now()
-                    )
-            );
+            DebitNoteEntity entity = DebitNoteJpaMapper
+                    .toEntity(DebitNote.reconstitute(DebitNoteId.generate(),
+                            DebitNoteNumber.of(2026, 1), customerId,
+                            UUID.randomUUID(), new BigDecimal("150.00"),
+                            "Product damaged", UUID.randomUUID(), "John Doe",
+                            LocalDateTime.now(), LocalDateTime.now()));
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any()))
+                    .thenReturn(List.of(entity));
 
-            List<DebitNote> result = adapter.findAllWithFilters(null, null, customerId);
+            List<DebitNote> result = adapter.findAllWithFilters(null, null,
+                    customerId);
 
             assertNotNull(result);
             assertEquals(1, result.size());
@@ -207,9 +189,11 @@ class DebitNoteRepositoryAdapterTest {
 
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
-            when(jpaRepository.findAllWithFilters(any(), any(), any())).thenReturn(List.of());
+            when(jpaRepository.findAllWithFilters(any(), any(), any()))
+                    .thenReturn(List.of());
 
-            List<DebitNote> result = adapter.findAllWithFilters(null, null, null);
+            List<DebitNote> result = adapter.findAllWithFilters(null, null,
+                    null);
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
@@ -224,22 +208,15 @@ class DebitNoteRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObjects_When_EntitiesFound() {
             UUID invoiceId = UUID.randomUUID();
-            DebitNoteEntity entity = DebitNoteJpaMapper.toEntity(
-                    DebitNote.reconstitute(
-                            DebitNoteId.generate(),
-                            DebitNoteNumber.of(2026, 1),
-                            UUID.randomUUID(),
-                            invoiceId,
-                            new BigDecimal("150.00"),
-                            "Product damaged",
-                            UUID.randomUUID(),
-                            "John Doe",
-                            LocalDateTime.now(),
-                            LocalDateTime.now()
-                    )
-            );
+            DebitNoteEntity entity = DebitNoteJpaMapper
+                    .toEntity(DebitNote.reconstitute(DebitNoteId.generate(),
+                            DebitNoteNumber.of(2026, 1), UUID.randomUUID(),
+                            invoiceId, new BigDecimal("150.00"),
+                            "Product damaged", UUID.randomUUID(), "John Doe",
+                            LocalDateTime.now(), LocalDateTime.now()));
 
-            when(jpaRepository.findByInvoiceId(invoiceId)).thenReturn(List.of(entity));
+            when(jpaRepository.findByInvoiceId(invoiceId))
+                    .thenReturn(List.of(entity));
 
             List<DebitNote> result = adapter.findByInvoiceId(invoiceId);
 
@@ -252,7 +229,8 @@ class DebitNoteRepositoryAdapterTest {
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
             UUID invoiceId = UUID.randomUUID();
-            when(jpaRepository.findByInvoiceId(invoiceId)).thenReturn(List.of());
+            when(jpaRepository.findByInvoiceId(invoiceId))
+                    .thenReturn(List.of());
 
             List<DebitNote> result = adapter.findByInvoiceId(invoiceId);
 
@@ -272,16 +250,21 @@ class DebitNoteRepositoryAdapterTest {
             UUID invoiceId2 = UUID.randomUUID();
             List<UUID> invoiceIds = List.of(invoiceId1, invoiceId2);
 
-            Object[] row1 = new Object[]{invoiceId1, BigDecimal.valueOf(100.00)};
-            Object[] row2 = new Object[]{invoiceId2, BigDecimal.valueOf(250.50)};
-            when(jpaRepository.sumByInvoiceIds(invoiceIds)).thenReturn(List.of(row1, row2));
+            Object[] row1 = new Object[]{invoiceId1,
+                    BigDecimal.valueOf(100.00)};
+            Object[] row2 = new Object[]{invoiceId2,
+                    BigDecimal.valueOf(250.50)};
+            when(jpaRepository.sumByInvoiceIds(invoiceIds))
+                    .thenReturn(List.of(row1, row2));
 
             Map<UUID, BigDecimal> result = adapter.sumByInvoiceIds(invoiceIds);
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertEquals(0, BigDecimal.valueOf(100.00).compareTo(result.get(invoiceId1)));
-            assertEquals(0, BigDecimal.valueOf(250.50).compareTo(result.get(invoiceId2)));
+            assertEquals(0, BigDecimal.valueOf(100.00)
+                    .compareTo(result.get(invoiceId1)));
+            assertEquals(0, BigDecimal.valueOf(250.50)
+                    .compareTo(result.get(invoiceId2)));
             verify(jpaRepository).sumByInvoiceIds(invoiceIds);
         }
 
@@ -320,7 +303,8 @@ class DebitNoteRepositoryAdapterTest {
             existingSeq.setYear(year);
             existingSeq.setNextValue(5);
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.of(existingSeq));
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.of(existingSeq));
 
             int next = adapter.getNextSequenceForYear(year);
 
@@ -334,13 +318,15 @@ class DebitNoteRepositoryAdapterTest {
         void should_CreateNewSequenceAndReturnOne_When_NoExistingSequence() {
             int year = LocalDate.now().getYear();
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.empty());
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.empty());
 
             int next = adapter.getNextSequenceForYear(year);
 
             assertEquals(1, next);
             verify(sequenceJpaRepository).findByYearForUpdate(year);
-            verify(sequenceJpaRepository).save(any(DebitNoteNumberSequenceEntity.class));
+            verify(sequenceJpaRepository)
+                    .save(any(DebitNoteNumberSequenceEntity.class));
         }
     }
 }

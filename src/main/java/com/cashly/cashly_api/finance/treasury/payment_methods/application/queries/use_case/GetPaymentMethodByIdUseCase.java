@@ -16,7 +16,8 @@ public class GetPaymentMethodByIdUseCase {
     private final PaymentMethodRepository repository;
     private final PaymentMethodUsageGateway usageGateway;
 
-    public GetPaymentMethodByIdUseCase(PaymentMethodRepository repository, PaymentMethodUsageGateway usageGateway) {
+    public GetPaymentMethodByIdUseCase(PaymentMethodRepository repository,
+            PaymentMethodUsageGateway usageGateway) {
         this.repository = repository;
         this.usageGateway = usageGateway;
     }
@@ -24,9 +25,12 @@ public class GetPaymentMethodByIdUseCase {
     public PaymentMethodResponse execute(UUID id) {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
         PaymentMethod paymentMethod = repository.findById(paymentMethodId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment method not found: " + id));
 
-        boolean hasAssociatedRecords = usageGateway.hasAssociatedRecords(paymentMethodId.value());
-        return PaymentMethodMapper.toResponse(paymentMethod, hasAssociatedRecords);
+        boolean hasAssociatedRecords = usageGateway
+                .hasAssociatedRecords(paymentMethodId.value());
+        return PaymentMethodMapper.toResponse(paymentMethod,
+                hasAssociatedRecords);
     }
 }

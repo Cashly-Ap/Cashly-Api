@@ -24,13 +24,13 @@ class BalanceTransactionJpaMapperTest {
         UUID createdBy = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        BalanceTransaction domain = BalanceTransaction.reconstitute(
-                id, customerId, BalanceType.ADVANCED, new BigDecimal("150.00"),
+        BalanceTransaction domain = BalanceTransaction.reconstitute(id,
+                customerId, BalanceType.ADVANCED, new BigDecimal("150.00"),
                 BalanceType.INVOICES, referenceId, "TX-001", "INV-001",
-                createdBy, now
-        );
+                createdBy, now);
 
-        BalanceTransactionEntity entity = BalanceTransactionJpaMapper.toEntity(domain);
+        BalanceTransactionEntity entity = BalanceTransactionJpaMapper
+                .toEntity(domain);
 
         assertEquals(id, entity.getId());
         assertEquals(customerId, entity.getCustomerId());
@@ -51,13 +51,12 @@ class BalanceTransactionJpaMapperTest {
         UUID createdBy = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        BalanceTransaction domain = BalanceTransaction.reconstitute(
-                id, customerId, BalanceType.RETURNS, new BigDecimal("75.50"),
-                BalanceType.REFUND, null, null, null,
-                createdBy, now
-        );
+        BalanceTransaction domain = BalanceTransaction.reconstitute(id,
+                customerId, BalanceType.RETURNS, new BigDecimal("75.50"),
+                BalanceType.REFUND, null, null, null, createdBy, now);
 
-        BalanceTransactionEntity entity = BalanceTransactionJpaMapper.toEntity(domain);
+        BalanceTransactionEntity entity = BalanceTransactionJpaMapper
+                .toEntity(domain);
 
         assertEquals(id, entity.getId());
         assertEquals(customerId, entity.getCustomerId());
@@ -90,7 +89,8 @@ class BalanceTransactionJpaMapperTest {
         entity.setCreatedBy(createdBy);
         entity.setCreatedAt(now);
 
-        BalanceTransaction domain = BalanceTransactionJpaMapper.toDomain(entity);
+        BalanceTransaction domain = BalanceTransactionJpaMapper
+                .toDomain(entity);
 
         assertEquals(id, domain.getId());
         assertEquals(customerId, domain.getCustomerId());
@@ -121,7 +121,8 @@ class BalanceTransactionJpaMapperTest {
             entity.setCreatedBy(createdBy);
             entity.setCreatedAt(now);
 
-            BalanceTransaction domain = BalanceTransactionJpaMapper.toDomain(entity);
+            BalanceTransaction domain = BalanceTransactionJpaMapper
+                    .toDomain(entity);
 
             assertEquals(balanceType, domain.getType());
             assertEquals(balanceType, domain.getReferenceType());
@@ -136,14 +137,15 @@ class BalanceTransactionJpaMapperTest {
         UUID createdBy = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        BalanceTransaction original = BalanceTransaction.reconstitute(
-                id, customerId, BalanceType.CREDIT_NOTE, new BigDecimal("200.00"),
-                BalanceType.REFUND, referenceId, "TX-004", "CN-001",
-                createdBy, now
-        );
+        BalanceTransaction original = BalanceTransaction.reconstitute(id,
+                customerId, BalanceType.CREDIT_NOTE, new BigDecimal("200.00"),
+                BalanceType.REFUND, referenceId, "TX-004", "CN-001", createdBy,
+                now);
 
-        BalanceTransactionEntity entity = BalanceTransactionJpaMapper.toEntity(original);
-        BalanceTransaction restored = BalanceTransactionJpaMapper.toDomain(entity);
+        BalanceTransactionEntity entity = BalanceTransactionJpaMapper
+                .toEntity(original);
+        BalanceTransaction restored = BalanceTransactionJpaMapper
+                .toDomain(entity);
 
         assertEquals(original.getId(), restored.getId());
         assertEquals(original.getCustomerId(), restored.getCustomerId());
@@ -152,7 +154,8 @@ class BalanceTransactionJpaMapperTest {
         assertEquals(original.getReferenceType(), restored.getReferenceType());
         assertEquals(original.getReferenceId(), restored.getReferenceId());
         assertEquals(original.getNumber(), restored.getNumber());
-        assertEquals(original.getReferenceNumber(), restored.getReferenceNumber());
+        assertEquals(original.getReferenceNumber(),
+                restored.getReferenceNumber());
         assertEquals(original.getCreatedBy(), restored.getCreatedBy());
         assertEquals(original.getCreatedAt(), restored.getCreatedAt());
     }

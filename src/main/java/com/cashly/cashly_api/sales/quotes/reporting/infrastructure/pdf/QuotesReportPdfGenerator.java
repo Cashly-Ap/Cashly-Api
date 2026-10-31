@@ -38,9 +38,13 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
 
     private final PdfBranding branding;
 
-    public QuotesReportPdfGenerator() { this(new PdfBranding()); }
+    public QuotesReportPdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public QuotesReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public QuotesReportPdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
     private static final DeviceRgb GRAY_ROW = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
@@ -58,28 +62,40 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
-            Paragraph title = new Paragraph(ReportMessages.text("sales.quotes.reports.quotesReport"))
-                    .setFont(bold)
-                    .setFontSize(18)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(4);
+            Paragraph title = new Paragraph(
+                    ReportMessages.text("sales.quotes.reports.quotesReport"))
+                    .setFont(bold).setFontSize(18)
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(4);
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(title);
 
-            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
-            String modeLabel = detailed ? ReportMessages.text("sales.quotes.reports.detailed") : ReportMessages.text("sales.quotes.reports.simple");
-            Paragraph subtitle = new Paragraph(ReportMessages.text("sales.quotes.reports.generatedOn") + fecha + ReportMessages.text("sales.quotes.reports.mode") + modeLabel + ReportMessages.text("sales.quotes.reports.totalLabel") + quotes.size() + ReportMessages.text("sales.quotes.reports.quotes"))
-                    .setFont(regular)
-                    .setFontSize(10)
+            String fecha = LocalDate.now()
+                    .format(ReportMessages.dateFormatter());
+            String modeLabel = detailed
+                    ? ReportMessages.text("sales.quotes.reports.detailed")
+                    : ReportMessages.text("sales.quotes.reports.simple");
+            Paragraph subtitle = new Paragraph(
+                    ReportMessages.text("sales.quotes.reports.generatedOn")
+                            + fecha
+                            + ReportMessages.text("sales.quotes.reports.mode")
+                            + modeLabel
+                            + ReportMessages
+                                    .text("sales.quotes.reports.totalLabel")
+                            + quotes.size()
+                            + ReportMessages
+                                    .text("sales.quotes.reports.quotes"))
+                    .setFont(regular).setFontSize(10)
                     .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMarginBottom(16);
+                    .setTextAlignment(TextAlignment.LEFT).setMarginBottom(16);
 
             document.add(subtitle);
 
@@ -90,15 +106,30 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
                     .useAllAvailableWidth();
 
             String[] headers = detailed
-                    ? new String[]{ReportMessages.text("sales.quotes.reports.quoteNoLabel"), ReportMessages.text("sales.quotes.reports.customerLabel"), ReportMessages.text("sales.quotes.reports.status"), ReportMessages.text("sales.quotes.reports.total"), ReportMessages.text("sales.quotes.reports.dateLabel")}
-                    : new String[]{ReportMessages.text("sales.quotes.reports.quoteNoLabel"), ReportMessages.text("sales.quotes.reports.customerLabel"), ReportMessages.text("sales.quotes.reports.total"), ReportMessages.text("sales.quotes.reports.dateLabel")};
+                    ? new String[]{
+                            ReportMessages
+                                    .text("sales.quotes.reports.quoteNoLabel"),
+                            ReportMessages
+                                    .text("sales.quotes.reports.customerLabel"),
+                            ReportMessages.text("sales.quotes.reports.status"),
+                            ReportMessages.text("sales.quotes.reports.total"),
+                            ReportMessages
+                                    .text("sales.quotes.reports.dateLabel")}
+                    : new String[]{
+                            ReportMessages
+                                    .text("sales.quotes.reports.quoteNoLabel"),
+                            ReportMessages
+                                    .text("sales.quotes.reports.customerLabel"),
+                            ReportMessages.text("sales.quotes.reports.total"),
+                            ReportMessages
+                                    .text("sales.quotes.reports.dateLabel")};
 
             for (String h : headers) {
                 Cell headerCell = new Cell()
-                        .add(new Paragraph(h).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                        .add(new Paragraph(h).setFont(bold).setFontSize(9)
+                                .setFontColor(HEADER_TEXT))
                         .setBackgroundColor(HEADER_BG)
-                        .setTextAlignment(TextAlignment.CENTER)
-                        .setPadding(6);
+                        .setTextAlignment(TextAlignment.CENTER).setPadding(6);
                 table.addHeaderCell(headerCell);
             }
 
@@ -107,46 +138,57 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
                 boolean even = i % 2 == 0;
                 DeviceRgb rowColor = even ? null : GRAY_ROW;
 
-                addCell(table, quote.quoteNumber(), regular, rowColor, TextAlignment.LEFT);
-                addCell(table, quote.customerName(), regular, rowColor, TextAlignment.LEFT);
+                addCell(table, quote.quoteNumber(), regular, rowColor,
+                        TextAlignment.LEFT);
+                addCell(table, quote.customerName(), regular, rowColor,
+                        TextAlignment.LEFT);
 
                 if (detailed) {
-                    addStatusCell(table, formatStatus(quote.status()), regular, rowColor, TextAlignment.CENTER, quote.status());
+                    addStatusCell(table, formatStatus(quote.status()), regular,
+                            rowColor, TextAlignment.CENTER, quote.status());
                 }
 
-                addCell(table, "$" + formatDecimal(quote.subtotal()), regular, rowColor, TextAlignment.RIGHT);
-                addCell(table, quote.createdAt().atZone(ZoneId.systemDefault()).format(ReportMessages.dateTimeFormatter()), regular, rowColor, TextAlignment.CENTER);
+                addCell(table, "$" + formatDecimal(quote.subtotal()), regular,
+                        rowColor, TextAlignment.RIGHT);
+                addCell(table,
+                        quote.createdAt().atZone(ZoneId.systemDefault())
+                                .format(ReportMessages.dateTimeFormatter()),
+                        regular, rowColor, TextAlignment.CENTER);
             }
 
             document.add(table);
 
-            Paragraph totalLabel = new Paragraph(ReportMessages.text("sales.quotes.reports.totalQuotes") + quotes.size())
-                    .setFont(bold)
-                    .setFontSize(11)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setMarginTop(16);
+            Paragraph totalLabel = new Paragraph(
+                    ReportMessages.text("sales.quotes.reports.totalQuotes")
+                            + quotes.size())
+                    .setFont(bold).setFontSize(11)
+                    .setTextAlignment(TextAlignment.RIGHT).setMarginTop(16);
             document.add(totalLabel);
 
-            long draft = quotes.stream().filter(q -> "DRAFT".equals(q.status())).count();
-            long convertedToOrder = quotes.stream().filter(q -> "CONVERTED_TO_ORDER".equals(q.status())).count();
-            long convertedToInvoice = quotes.stream().filter(q -> "CONVERTED_TO_INVOICE".equals(q.status())).count();
-            long cancelled = quotes.stream().filter(q -> "CANCELLED".equals(q.status())).count();
+            long draft = quotes.stream().filter(q -> "DRAFT".equals(q.status()))
+                    .count();
+            long convertedToOrder = quotes.stream()
+                    .filter(q -> "CONVERTED_TO_ORDER".equals(q.status()))
+                    .count();
+            long convertedToInvoice = quotes.stream()
+                    .filter(q -> "CONVERTED_TO_INVOICE".equals(q.status()))
+                    .count();
+            long cancelled = quotes.stream()
+                    .filter(q -> "CANCELLED".equals(q.status())).count();
 
-            Paragraph summary = new Paragraph(String.format(ReportMessages.text("sales.quotes.reports.draftDConvertedToOrderDConvertedToInvoiceDCancelledD"),
+            Paragraph summary = new Paragraph(String.format(ReportMessages.text(
+                    "sales.quotes.reports.draftDConvertedToOrderDConvertedToInvoiceDCancelledD"),
                     draft, convertedToOrder, convertedToInvoice, cancelled))
-                    .setFont(regular)
-                    .setFontSize(9)
+                    .setFont(regular).setFontSize(9)
                     .setFontColor(ColorConstants.DARK_GRAY)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setMarginTop(8);
+                    .setTextAlignment(TextAlignment.RIGHT).setMarginTop(8);
             document.add(summary);
 
-            Paragraph footer = new Paragraph(ReportMessages.text("sales.quotes.reports.documentAutomaticallyGeneratedByCashly"))
-                    .setFont(regular)
-                    .setFontSize(8)
+            Paragraph footer = new Paragraph(ReportMessages.text(
+                    "sales.quotes.reports.documentAutomaticallyGeneratedByCashly"))
+                    .setFont(regular).setFontSize(8)
                     .setFontColor(ColorConstants.GRAY)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginTop(30);
+                    .setTextAlignment(TextAlignment.CENTER).setMarginTop(30);
             document.add(footer);
 
             document.close();
@@ -161,41 +203,41 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
     }
 
     private String formatStatus(String status) {
-        if (status == null) return "-";
+        if (status == null)
+            return "-";
         return switch (status) {
             case "DRAFT" -> ReportMessages.text("sales.quotes.reports.draft");
-            case "CONVERTED_TO_ORDER" -> ReportMessages.text("sales.quotes.reports.order");
-            case "CONVERTED_TO_INVOICE" -> ReportMessages.text("sales.quotes.reports.invoice");
-            case "CANCELLED" -> ReportMessages.text("sales.quotes.reports.cancelled");
+            case "CONVERTED_TO_ORDER" ->
+                ReportMessages.text("sales.quotes.reports.order");
+            case "CONVERTED_TO_INVOICE" ->
+                ReportMessages.text("sales.quotes.reports.invoice");
+            case "CANCELLED" ->
+                ReportMessages.text("sales.quotes.reports.cancelled");
             default -> status;
         };
     }
 
-    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addCell(Table table, String text, PdfFont font, DeviceRgb bg,
+            TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "-").setFont(font).setFontSize(8))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(5)
-                .setPaddingRight(5);
+                .add(new Paragraph(text != null ? text : "-").setFont(font)
+                        .setFontSize(8))
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(5).setPaddingRight(5);
         if (bg != null) {
             cell.setBackgroundColor(bg);
         }
         table.addCell(cell);
     }
 
-    private void addStatusCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align, String status) {
+    private void addStatusCell(Table table, String text, PdfFont font,
+            DeviceRgb bg, TextAlignment align, String status) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "-")
-                        .setFont(font)
+                .add(new Paragraph(text != null ? text : "-").setFont(font)
                         .setFontSize(8)
                         .setFontColor(PdfStatusColors.forStatus(status)))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(5)
-                .setPaddingRight(5);
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(5).setPaddingRight(5);
         if (bg != null) {
             cell.setBackgroundColor(bg);
         }
@@ -218,19 +260,21 @@ public class QuotesReportPdfGenerator implements QuotesReportPdfPort {
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
                 layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("sales.quotes.reports.page") + pageNumber + ReportMessages.text("sales.quotes.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
+                        new Paragraph(
+                                ReportMessages.text("sales.quotes.reports.page")
+                                        + pageNumber
+                                        + ReportMessages
+                                                .text("sales.quotes.reports.of")
+                                        + totalPages)
+                                .setFont(font).setFontSize(8)
                                 .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

@@ -28,9 +28,9 @@ public class CreditNoteController {
     private final DeleteCreditNoteUseCase deleteCreditNoteUseCase;
 
     public CreditNoteController(CreateCreditNoteUseCase createCreditNoteUseCase,
-                                GetCreditNotesUseCase getCreditNotesUseCase,
-                                GetCreditNoteByIdUseCase getCreditNoteByIdUseCase,
-                                DeleteCreditNoteUseCase deleteCreditNoteUseCase) {
+            GetCreditNotesUseCase getCreditNotesUseCase,
+            GetCreditNoteByIdUseCase getCreditNoteByIdUseCase,
+            DeleteCreditNoteUseCase deleteCreditNoteUseCase) {
         this.createCreditNoteUseCase = createCreditNoteUseCase;
         this.getCreditNotesUseCase = getCreditNotesUseCase;
         this.getCreditNoteByIdUseCase = getCreditNoteByIdUseCase;
@@ -43,7 +43,8 @@ public class CreditNoteController {
             @Valid @RequestBody CreateCreditNoteRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        CreditNoteResponse response = createCreditNoteUseCase.execute(request, userId);
+        CreditNoteResponse response = createCreditNoteUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -53,7 +54,8 @@ public class CreditNoteController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId) {
-        List<CreditNoteResponse> creditNotes = getCreditNotesUseCase.execute(dateFrom, dateTo, customerId);
+        List<CreditNoteResponse> creditNotes = getCreditNotesUseCase
+                .execute(dateFrom, dateTo, customerId);
         return ResponseEntity.ok(creditNotes);
     }
 

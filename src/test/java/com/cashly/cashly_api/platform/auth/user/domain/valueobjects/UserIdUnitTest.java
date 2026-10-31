@@ -2,7 +2,6 @@ package com.cashly.cashly_api.platform.auth.user.domain.valueobjects;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserIdUnitTest;
 
-
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -24,9 +23,7 @@ class UserIdUnitTest {
     @Test
     void should_ThrowException_When_NullUuidProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new UserId(null)
-        );
+                IllegalArgumentException.class, () -> new UserId(null));
         assertEquals("User ID cannot be null", exception.getMessage());
     }
 
@@ -55,28 +52,24 @@ class UserIdUnitTest {
         String invalidUuid = "invalid-uuid";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> UserId.from(invalidUuid)
-        );
+                IllegalArgumentException.class, () -> UserId.from(invalidUuid));
         assertTrue(exception.getMessage().contains("Invalid User ID format"));
     }
 
     @Test
     void should_ThrowException_When_NullStringProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> UserId.from(null)
-        );
-        assertEquals("User ID string cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class, () -> UserId.from(null));
+        assertEquals("User ID string cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_EmptyStringProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> UserId.from("   ")
-        );
-        assertEquals("User ID string cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class, () -> UserId.from("   "));
+        assertEquals("User ID string cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test

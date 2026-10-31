@@ -21,10 +21,9 @@ public class BalanceTransaction {
     private final LocalDateTime createdAt;
 
     private BalanceTransaction(UUID id, UUID customerId, BalanceType type,
-                               BigDecimal amount, BalanceType referenceType,
-                               UUID referenceId, String number,
-                               String referenceNumber, UUID createdBy,
-                               LocalDateTime createdAt) {
+            BigDecimal amount, BalanceType referenceType, UUID referenceId,
+            String number, String referenceNumber, UUID createdBy,
+            LocalDateTime createdAt) {
         this.id = id;
         this.customerId = customerId;
         this.type = type;
@@ -38,53 +37,65 @@ public class BalanceTransaction {
     }
 
     public static BalanceTransaction create(UUID customerId, BalanceType type,
-                                             BigDecimal amount, BalanceType referenceType,
-                                             UUID referenceId, String number,
-                                             String referenceNumber, UUID createdBy) {
+            BigDecimal amount, BalanceType referenceType, UUID referenceId,
+            String number, String referenceNumber, UUID createdBy) {
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(type, "Type cannot be null");
         Objects.requireNonNull(amount, "Amount cannot be null");
         Objects.requireNonNull(referenceType, "Reference type cannot be null");
         Objects.requireNonNull(createdBy, "Created by cannot be null");
 
-        return new BalanceTransaction(
-                UUID.randomUUID(),
-                customerId,
-                type,
-                amount,
-                referenceType,
-                referenceId,
-                number,
-                referenceNumber,
-                createdBy,
-                LocalDateTime.now()
-        );
+        return new BalanceTransaction(UUID.randomUUID(), customerId, type,
+                amount, referenceType, referenceId, number, referenceNumber,
+                createdBy, LocalDateTime.now());
     }
 
-    public static BalanceTransaction reconstitute(UUID id, UUID customerId, BalanceType type,
-                                                   BigDecimal amount, BalanceType referenceType,
-                                                   UUID referenceId, String number,
-                                                   String referenceNumber, UUID createdBy,
-                                                   LocalDateTime createdAt) {
+    public static BalanceTransaction reconstitute(UUID id, UUID customerId,
+            BalanceType type, BigDecimal amount, BalanceType referenceType,
+            UUID referenceId, String number, String referenceNumber,
+            UUID createdBy, LocalDateTime createdAt) {
         return new BalanceTransaction(id, customerId, type, amount,
-                referenceType, referenceId, number, referenceNumber, createdBy, createdAt);
+                referenceType, referenceId, number, referenceNumber, createdBy,
+                createdAt);
     }
 
-    public UUID getId() { return id; }
-    public UUID getCustomerId() { return customerId; }
-    public BalanceType getType() { return type; }
-    public BigDecimal getAmount() { return amount; }
-    public BalanceType getReferenceType() { return referenceType; }
-    public UUID getReferenceId() { return referenceId; }
-    public String getNumber() { return number; }
-    public String getReferenceNumber() { return referenceNumber; }
-    public UUID getCreatedBy() { return createdBy; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public UUID getId() {
+        return id;
+    }
+    public UUID getCustomerId() {
+        return customerId;
+    }
+    public BalanceType getType() {
+        return type;
+    }
+    public BigDecimal getAmount() {
+        return amount;
+    }
+    public BalanceType getReferenceType() {
+        return referenceType;
+    }
+    public UUID getReferenceId() {
+        return referenceId;
+    }
+    public String getNumber() {
+        return number;
+    }
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         BalanceTransaction that = (BalanceTransaction) o;
         return Objects.equals(id, that.id);
     }

@@ -19,8 +19,8 @@ public class ConfirmOrderUseCase {
     private final OrderNotificationGateway notifications;
 
     public ConfirmOrderUseCase(OrderRepository orderRepository,
-                                OrderInventoryGateway inventory,
-                                OrderNotificationGateway notifications) {
+            OrderInventoryGateway inventory,
+            OrderNotificationGateway notifications) {
         this.orderRepository = orderRepository;
         this.inventory = inventory;
         this.notifications = notifications;
@@ -32,13 +32,20 @@ public class ConfirmOrderUseCase {
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
         order.confirm();
-        inventory.deductReservations(order.getLines().stream().flatMap(line -> line.getAllocations().stream()
-                .map(allocation -> new OrderInventoryGateway.Allocation(allocation.getWarehouseId(),
-                        line.getProductId(), allocation.getAllocated().intValue()))).toList(),
-                new OrderInventoryGateway.Reference(order.getId().value(), order.getOrderNumber().value(), "Order confirmed"));
+        inventory.deductReservations(
+                order.getLines().stream().flatMap(line -> line.getAllocations()
+                        .stream()
+                        .map(allocation -> new OrderInventoryGateway.Allocation(
+                                allocation.getWarehouseId(),
+                                line.getProductId(),
+                                allocation.getAllocated().intValue())))
+                        .toList(),
+                new OrderInventoryGateway.Reference(order.getId().value(),
+                        order.getOrderNumber().value(), "Order confirmed"));
 
         Order saved = orderRepository.save(order);
-        notifications.notifyCustomerOrderApproved(order.getCustomerId(), saved.getId().value());
+        notifications.notifyCustomerOrderApproved(order.getCustomerId(),
+                saved.getId().value());
         return OrderMapper.toDetailResponse(saved);
     }
 

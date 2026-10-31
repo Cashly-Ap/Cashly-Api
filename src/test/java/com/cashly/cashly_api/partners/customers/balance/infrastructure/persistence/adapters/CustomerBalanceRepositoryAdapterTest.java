@@ -55,7 +55,8 @@ class CustomerBalanceRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new CustomerBalanceRepositoryAdapter(jpaRepository, entityManager);
+        adapter = new CustomerBalanceRepositoryAdapter(jpaRepository,
+                entityManager);
     }
 
     @Nested
@@ -66,22 +67,26 @@ class CustomerBalanceRepositoryAdapterTest {
         void should_MapToEntityAndDelegateToJpaRepository() {
             CustomerBalance balance = createTestBalance();
 
-            CustomerBalanceEntity expectedEntity = CustomerBalanceJpaMapper.toEntity(balance);
-            when(jpaRepository.save(balanceEntityCaptor.capture())).thenReturn(expectedEntity);
+            CustomerBalanceEntity expectedEntity = CustomerBalanceJpaMapper
+                    .toEntity(balance);
+            when(jpaRepository.save(balanceEntityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             CustomerBalance saved = adapter.save(balance);
 
             assertNotNull(saved);
             assertEquals(balance.getId(), saved.getId());
             assertEquals(balance.getCustomerId(), saved.getCustomerId());
-            assertEquals(0, balance.getTotalBalance().compareTo(saved.getTotalBalance()));
+            assertEquals(0, balance.getTotalBalance()
+                    .compareTo(saved.getTotalBalance()));
             assertEquals(balance.getCreatedAt(), saved.getCreatedAt());
             assertEquals(balance.getUpdatedAt(), saved.getUpdatedAt());
 
             CustomerBalanceEntity captured = balanceEntityCaptor.getValue();
             assertEquals(balance.getId(), captured.getId());
             assertEquals(balance.getCustomerId(), captured.getCustomerId());
-            assertEquals(0, balance.getTotalBalance().compareTo(captured.getTotalBalance()));
+            assertEquals(0, balance.getTotalBalance()
+                    .compareTo(captured.getTotalBalance()));
             assertEquals(balance.getCreatedAt(), captured.getCreatedAt());
             assertEquals(balance.getUpdatedAt(), captured.getUpdatedAt());
 
@@ -96,16 +101,20 @@ class CustomerBalanceRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObject_When_EntityFound() {
             CustomerBalance balance = createTestBalance();
-            CustomerBalanceEntity entity = CustomerBalanceJpaMapper.toEntity(balance);
+            CustomerBalanceEntity entity = CustomerBalanceJpaMapper
+                    .toEntity(balance);
 
-            when(jpaRepository.findByCustomerId(balance.getCustomerId())).thenReturn(Optional.of(entity));
+            when(jpaRepository.findByCustomerId(balance.getCustomerId()))
+                    .thenReturn(Optional.of(entity));
 
-            Optional<CustomerBalance> result = adapter.findByCustomerId(balance.getCustomerId());
+            Optional<CustomerBalance> result = adapter
+                    .findByCustomerId(balance.getCustomerId());
 
             assertTrue(result.isPresent());
             assertEquals(balance.getId(), result.get().getId());
             assertEquals(balance.getCustomerId(), result.get().getCustomerId());
-            assertEquals(0, balance.getTotalBalance().compareTo(result.get().getTotalBalance()));
+            assertEquals(0, balance.getTotalBalance()
+                    .compareTo(result.get().getTotalBalance()));
 
             verify(jpaRepository).findByCustomerId(balance.getCustomerId());
         }
@@ -113,9 +122,11 @@ class CustomerBalanceRepositoryAdapterTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             UUID customerId = UUID.randomUUID();
-            when(jpaRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
+            when(jpaRepository.findByCustomerId(customerId))
+                    .thenReturn(Optional.empty());
 
-            Optional<CustomerBalance> result = adapter.findByCustomerId(customerId);
+            Optional<CustomerBalance> result = adapter
+                    .findByCustomerId(customerId);
 
             assertTrue(result.isEmpty());
             verify(jpaRepository).findByCustomerId(customerId);
@@ -136,25 +147,33 @@ class CustomerBalanceRepositoryAdapterTest {
             assertEquals(transaction.getId(), result.getId());
             assertEquals(transaction.getCustomerId(), result.getCustomerId());
             assertEquals(transaction.getType(), result.getType());
-            assertEquals(0, transaction.getAmount().compareTo(result.getAmount()));
-            assertEquals(transaction.getReferenceType(), result.getReferenceType());
+            assertEquals(0,
+                    transaction.getAmount().compareTo(result.getAmount()));
+            assertEquals(transaction.getReferenceType(),
+                    result.getReferenceType());
             assertEquals(transaction.getReferenceId(), result.getReferenceId());
             assertEquals(transaction.getNumber(), result.getNumber());
-            assertEquals(transaction.getReferenceNumber(), result.getReferenceNumber());
+            assertEquals(transaction.getReferenceNumber(),
+                    result.getReferenceNumber());
             assertEquals(transaction.getCreatedBy(), result.getCreatedBy());
             assertEquals(transaction.getCreatedAt(), result.getCreatedAt());
 
             verify(entityManager).persist(transactionEntityCaptor.capture());
-            BalanceTransactionEntity captured = transactionEntityCaptor.getValue();
+            BalanceTransactionEntity captured = transactionEntityCaptor
+                    .getValue();
 
             assertEquals(transaction.getId(), captured.getId());
             assertEquals(transaction.getCustomerId(), captured.getCustomerId());
             assertEquals(transaction.getType().name(), captured.getType());
-            assertEquals(0, transaction.getAmount().compareTo(captured.getAmount()));
-            assertEquals(transaction.getReferenceType().name(), captured.getReferenceType());
-            assertEquals(transaction.getReferenceId(), captured.getReferenceId());
+            assertEquals(0,
+                    transaction.getAmount().compareTo(captured.getAmount()));
+            assertEquals(transaction.getReferenceType().name(),
+                    captured.getReferenceType());
+            assertEquals(transaction.getReferenceId(),
+                    captured.getReferenceId());
             assertEquals(transaction.getNumber(), captured.getNumber());
-            assertEquals(transaction.getReferenceNumber(), captured.getReferenceNumber());
+            assertEquals(transaction.getReferenceNumber(),
+                    captured.getReferenceNumber());
             assertEquals(transaction.getCreatedBy(), captured.getCreatedBy());
             assertEquals(transaction.getCreatedAt(), captured.getCreatedAt());
         }
@@ -162,17 +181,9 @@ class CustomerBalanceRepositoryAdapterTest {
         @Test
         void should_HandleNullableFields() {
             BalanceTransaction transaction = BalanceTransaction.reconstitute(
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    BalanceType.RETURNS,
-                    new BigDecimal("50.00"),
-                    BalanceType.REFUND,
-                    null,
-                    null,
-                    null,
-                    UUID.randomUUID(),
-                    LocalDateTime.now()
-            );
+                    UUID.randomUUID(), UUID.randomUUID(), BalanceType.RETURNS,
+                    new BigDecimal("50.00"), BalanceType.REFUND, null, null,
+                    null, UUID.randomUUID(), LocalDateTime.now());
 
             BalanceTransaction result = adapter.saveTransaction(transaction);
 
@@ -193,37 +204,46 @@ class CustomerBalanceRepositoryAdapterTest {
         @Test
         void should_ReturnPagedTransactions_When_Found() {
             BalanceTransaction transaction = createTestTransaction();
-            BalanceTransactionEntity entity = BalanceTransactionJpaMapper.toEntity(transaction);
+            BalanceTransactionEntity entity = BalanceTransactionJpaMapper
+                    .toEntity(transaction);
 
-            Page<BalanceTransactionEntity> entityPage = new PageImpl<>(List.of(entity));
+            Page<BalanceTransactionEntity> entityPage = new PageImpl<>(
+                    List.of(entity));
 
-            when(jpaRepository.findTransactionsByCustomerId(any(UUID.class), any(Pageable.class)))
-                    .thenReturn(entityPage);
+            when(jpaRepository.findTransactionsByCustomerId(any(UUID.class),
+                    any(Pageable.class))).thenReturn(entityPage);
 
             UUID customerId = UUID.randomUUID();
             Pageable pageable = PageRequest.of(0, 20);
-            PageResponse<BalanceTransaction> result = adapter.findTransactionsByCustomerId(customerId, pageable.getPageNumber(), pageable.getPageSize());
+            PageResponse<BalanceTransaction> result = adapter
+                    .findTransactionsByCustomerId(customerId,
+                            pageable.getPageNumber(), pageable.getPageSize());
 
             assertNotNull(result);
             assertEquals(1, result.content().size());
             assertEquals(transaction.getId(), result.content().get(0).getId());
-            verify(jpaRepository).findTransactionsByCustomerId(customerId, pageable);
+            verify(jpaRepository).findTransactionsByCustomerId(customerId,
+                    pageable);
         }
 
         @Test
         void should_ReturnEmptyPage_When_NoTransactions() {
-            Page<BalanceTransactionEntity> entityPage = new PageImpl<>(List.of());
+            Page<BalanceTransactionEntity> entityPage = new PageImpl<>(
+                    List.of());
 
-            when(jpaRepository.findTransactionsByCustomerId(any(UUID.class), any(Pageable.class)))
-                    .thenReturn(entityPage);
+            when(jpaRepository.findTransactionsByCustomerId(any(UUID.class),
+                    any(Pageable.class))).thenReturn(entityPage);
 
             UUID customerId = UUID.randomUUID();
             Pageable pageable = PageRequest.of(0, 20);
-            PageResponse<BalanceTransaction> result = adapter.findTransactionsByCustomerId(customerId, pageable.getPageNumber(), pageable.getPageSize());
+            PageResponse<BalanceTransaction> result = adapter
+                    .findTransactionsByCustomerId(customerId,
+                            pageable.getPageNumber(), pageable.getPageSize());
 
             assertNotNull(result);
             assertTrue(result.content().isEmpty());
-            verify(jpaRepository).findTransactionsByCustomerId(customerId, pageable);
+            verify(jpaRepository).findTransactionsByCustomerId(customerId,
+                    pageable);
         }
     }
 
@@ -234,7 +254,8 @@ class CustomerBalanceRepositoryAdapterTest {
         @Test
         void should_ReturnCountFromRepository() {
             UUID customerId = UUID.randomUUID();
-            when(jpaRepository.countTransactionsByCustomerId(customerId)).thenReturn(5L);
+            when(jpaRepository.countTransactionsByCustomerId(customerId))
+                    .thenReturn(5L);
 
             long count = adapter.countTransactionsByCustomerId(customerId);
 
@@ -245,7 +266,8 @@ class CustomerBalanceRepositoryAdapterTest {
         @Test
         void should_ReturnZero_When_NoTransactions() {
             UUID customerId = UUID.randomUUID();
-            when(jpaRepository.countTransactionsByCustomerId(customerId)).thenReturn(0L);
+            when(jpaRepository.countTransactionsByCustomerId(customerId))
+                    .thenReturn(0L);
 
             long count = adapter.countTransactionsByCustomerId(customerId);
 
@@ -255,27 +277,16 @@ class CustomerBalanceRepositoryAdapterTest {
     }
 
     private CustomerBalance createTestBalance() {
-        return CustomerBalance.reconstitute(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                new BigDecimal("5000.00"),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        return CustomerBalance.reconstitute(UUID.randomUUID(),
+                UUID.randomUUID(), new BigDecimal("5000.00"),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 
     private BalanceTransaction createTestTransaction() {
-        return BalanceTransaction.reconstitute(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                BalanceType.ADVANCED,
-                new BigDecimal("150.00"),
-                BalanceType.INVOICES,
-                UUID.randomUUID(),
-                "TX-001",
-                "INV-001",
-                UUID.randomUUID(),
-                LocalDateTime.now()
-        );
+        return BalanceTransaction.reconstitute(UUID.randomUUID(),
+                UUID.randomUUID(), BalanceType.ADVANCED,
+                new BigDecimal("150.00"), BalanceType.INVOICES,
+                UUID.randomUUID(), "TX-001", "INV-001", UUID.randomUUID(),
+                LocalDateTime.now());
     }
 }

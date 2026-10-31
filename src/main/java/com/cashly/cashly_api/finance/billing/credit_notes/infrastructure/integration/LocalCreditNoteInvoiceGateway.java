@@ -20,18 +20,23 @@ public class LocalCreditNoteInvoiceGateway implements CreditNoteInvoiceGateway {
     @Override
     public CreditNoteInvoiceContext find(UUID invoiceId) {
         InvoiceNoteApi.Context context = invoices.find(invoiceId);
-        return new CreditNoteInvoiceContext(context.id(), context.number(), context.status(),
-                context.statusLabel(), context.customerName(), context.customerRif(), context.totalBeforeNotes());
+        return new CreditNoteInvoiceContext(context.id(), context.number(),
+                context.status(), context.statusLabel(), context.customerName(),
+                context.customerRif(), context.totalBeforeNotes());
     }
 
     @Override
     public Map<UUID, CreditNoteInvoiceContext> findAll(Set<UUID> invoiceIds) {
-        return invoices.findAll(invoiceIds).entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> new CreditNoteInvoiceContext(entry.getValue().id(), entry.getValue().number(),
-                        entry.getValue().status(), entry.getValue().statusLabel(),
-                        entry.getValue().customerName(), entry.getValue().customerRif(),
-                        entry.getValue().totalBeforeNotes())));
+        return invoices.findAll(invoiceIds).entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> new CreditNoteInvoiceContext(
+                                entry.getValue().id(),
+                                entry.getValue().number(),
+                                entry.getValue().status(),
+                                entry.getValue().statusLabel(),
+                                entry.getValue().customerName(),
+                                entry.getValue().customerRif(),
+                                entry.getValue().totalBeforeNotes())));
     }
 
     @Override

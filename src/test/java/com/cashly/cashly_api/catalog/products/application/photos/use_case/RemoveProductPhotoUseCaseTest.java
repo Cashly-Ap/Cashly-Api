@@ -36,12 +36,13 @@ class RemoveProductPhotoUseCaseTest {
     @Test
     void should_RemovePhoto_When_ProductHasPhoto() {
         UUID productId = UUID.randomUUID();
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, "products/photo.jpg",
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", UUID.randomUUID(), false, true,
+                "products/photo.jpg", new BigDecimal("5.00"), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
 
         useCase.execute(productId);
 
@@ -53,9 +54,11 @@ class RemoveProductPhotoUseCaseTest {
     void should_ThrowException_When_ProductNotFound() {
         UUID productId = UUID.randomUUID();
 
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, () -> useCase.execute(productId));
+        assertThrows(ProductNotFoundException.class,
+                () -> useCase.execute(productId));
         verify(fileStorageService, never()).remove(any());
         verify(productRepository, never()).save(any());
     }
@@ -63,12 +66,13 @@ class RemoveProductPhotoUseCaseTest {
     @Test
     void should_NotCallFileStorage_When_ProductHasNoPhoto() {
         UUID productId = UUID.randomUUID();
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", UUID.randomUUID(), false, true,
+                null, new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
 
         useCase.execute(productId);
 
@@ -79,14 +83,17 @@ class RemoveProductPhotoUseCaseTest {
     @Test
     void should_PropagateRemovalFailure_WithoutSavingProduct() {
         UUID productId = UUID.randomUUID();
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, "products/photo.jpg", new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", UUID.randomUUID(), false, true,
+                "products/photo.jpg", new BigDecimal("5.00"), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
         var failure = new IllegalStateException("Storage unavailable");
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         doThrow(failure).when(fileStorageService).remove("products/photo.jpg");
 
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> useCase.execute(productId));
+        IllegalStateException thrown = assertThrows(IllegalStateException.class,
+                () -> useCase.execute(productId));
 
         assertSame(failure, thrown);
         verify(productRepository, never()).save(any());

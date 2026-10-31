@@ -43,10 +43,13 @@ class UpdatePaymentUseCaseTest {
         UUID id = UUID.randomUUID();
         Payment payment = buildPayment(id);
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.of(payment));
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.of(payment));
+        when(paymentRepository.save(any(Payment.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        UpdatePaymentRequest request = new UpdatePaymentRequest("REF-UPDATED", null, null, null);
+        UpdatePaymentRequest request = new UpdatePaymentRequest("REF-UPDATED",
+                null, null, null);
 
         PaymentResponse result = useCase.execute(id, request);
 
@@ -60,14 +63,15 @@ class UpdatePaymentUseCaseTest {
     void should_ThrowException_When_PaymentDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.empty());
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.empty());
 
-        UpdatePaymentRequest request = new UpdatePaymentRequest("REF-UPDATED", null, null, null);
+        UpdatePaymentRequest request = new UpdatePaymentRequest("REF-UPDATED",
+                null, null, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> useCase.execute(id, request)
-        );
+                () -> useCase.execute(id, request));
 
         assertEquals("Payment not found: " + id, exception.getMessage());
         verify(paymentRepository).findById(PaymentId.of(id));
@@ -79,10 +83,13 @@ class UpdatePaymentUseCaseTest {
         UUID id = UUID.randomUUID();
         Payment payment = buildPayment(id);
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.of(payment));
-        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.of(payment));
+        when(paymentRepository.save(any(Payment.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        UpdatePaymentRequest request = new UpdatePaymentRequest(null, null, null, null);
+        UpdatePaymentRequest request = new UpdatePaymentRequest(null, null,
+                null, null);
 
         PaymentResponse result = useCase.execute(id, request);
 
@@ -92,22 +99,11 @@ class UpdatePaymentUseCaseTest {
     }
 
     private Payment buildPayment(UUID id) {
-        return Payment.reconstitute(
-                PaymentId.of(id),
-                PaymentNumber.of(2026, 1),
-                UUID.randomUUID(),
-                new BigDecimal("500.00"),
-                UUID.randomUUID(),
-                PaymentSource.PAYMENT_METHOD,
-                "REF-001",
-                LocalDate.now(),
-                "Test notes",
-                PaymentStatus.APPLIED,
-                BigDecimal.ZERO,
-                UUID.randomUUID(),
-                "Test User",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        return Payment.reconstitute(PaymentId.of(id), PaymentNumber.of(2026, 1),
+                UUID.randomUUID(), new BigDecimal("500.00"), UUID.randomUUID(),
+                PaymentSource.PAYMENT_METHOD, "REF-001", LocalDate.now(),
+                "Test notes", PaymentStatus.APPLIED, BigDecimal.ZERO,
+                UUID.randomUUID(), "Test User", LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

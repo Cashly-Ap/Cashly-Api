@@ -36,9 +36,9 @@ class GetOverdueInvoicesUseCaseTest {
                 new OverdueInvoiceResponse("FAC-001", new BigDecimal("500.00"),
                         LocalDate.now().minusDays(10), 10),
                 new OverdueInvoiceResponse("FAC-002", new BigDecimal("300.00"),
-                        LocalDate.now().minusDays(5), 5)
-        );
-        when(creditValidationGateway.findAllOverdueInvoices()).thenReturn(expectedInvoices);
+                        LocalDate.now().minusDays(5), 5));
+        when(creditValidationGateway.findAllOverdueInvoices())
+                .thenReturn(expectedInvoices);
 
         List<OverdueInvoiceResponse> result = useCase.execute();
 
@@ -50,7 +50,8 @@ class GetOverdueInvoicesUseCaseTest {
 
     @Test
     void should_ReturnEmptyList_When_NoOverdueInvoices() {
-        when(creditValidationGateway.findAllOverdueInvoices()).thenReturn(List.of());
+        when(creditValidationGateway.findAllOverdueInvoices())
+                .thenReturn(List.of());
 
         List<OverdueInvoiceResponse> result = useCase.execute();
 

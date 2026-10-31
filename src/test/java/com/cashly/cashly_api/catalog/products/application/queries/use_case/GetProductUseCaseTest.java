@@ -49,26 +49,35 @@ class GetProductUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GetProductUseCase(productRepository, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categoryRepository)), new LocalProductPriceTypeGatewayAdapter(new RepositoryProductPriceTypeQuery(priceTypeRepository)), productMapper);
+        useCase = new GetProductUseCase(productRepository,
+                new LocalProductCategoryGatewayAdapter(
+                        new RepositoryProductCategoryQuery(categoryRepository)),
+                new LocalProductPriceTypeGatewayAdapter(
+                        new RepositoryProductPriceTypeQuery(
+                                priceTypeRepository)),
+                productMapper);
     }
 
     @Test
     void should_ReturnProduct_When_ProductExists() {
         UUID id = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
-        Product product = Product.reconstitute(id, "PROD-001", "Test Product", "Description",
-                categoryId, false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(id, "PROD-001", "Test Product",
+                "Description", categoryId, false, true, null,
+                new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Electronics");
 
-        ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
+        ProductDetailResponse expectedResponse = mock(
+                ProductDetailResponse.class);
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productMapper.toDetailResponse(any(), anyString(), any(), any())).thenReturn(expectedResponse);
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(category));
+        when(productMapper.toDetailResponse(any(), anyString(), any(), any()))
+                .thenReturn(expectedResponse);
 
         ProductDetailResponse result = useCase.execute(id);
 

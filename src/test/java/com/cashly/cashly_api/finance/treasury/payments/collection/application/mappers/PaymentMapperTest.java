@@ -37,13 +37,10 @@ class PaymentMapperTest {
     private final LocalDateTime updatedAt = LocalDateTime.now();
 
     private Payment createPayment() {
-        return Payment.reconstitute(
-                paymentId, paymentNumber, customerId, amount,
-                paymentMethodId, PaymentSource.PAYMENT_METHOD,
-                referenceNumber, paymentDate, notes,
-                status, appliedAmount,
-                createdBy, createdByName, createdAt, updatedAt
-        );
+        return Payment.reconstitute(paymentId, paymentNumber, customerId,
+                amount, paymentMethodId, PaymentSource.PAYMENT_METHOD,
+                referenceNumber, paymentDate, notes, status, appliedAmount,
+                createdBy, createdByName, createdAt, updatedAt);
     }
 
     @Test
@@ -90,13 +87,10 @@ class PaymentMapperTest {
 
     @Test
     void should_MapPaymentWithNullOptionalFields_When_SomeFieldsAreNull() {
-        Payment payment = Payment.reconstitute(
-                paymentId, paymentNumber, customerId, amount,
-                null, PaymentSource.PAYMENT_METHOD,
-                null, paymentDate, null,
-                status, BigDecimal.ZERO,
-                createdBy, createdByName, createdAt, updatedAt
-        );
+        Payment payment = Payment.reconstitute(paymentId, paymentNumber,
+                customerId, amount, null, PaymentSource.PAYMENT_METHOD, null,
+                paymentDate, null, status, BigDecimal.ZERO, createdBy,
+                createdByName, createdAt, updatedAt);
 
         PaymentResponse response = PaymentMapper.toResponse(payment);
 
@@ -107,13 +101,11 @@ class PaymentMapperTest {
 
     @Test
     void should_MapPaymentWithCancelledStatus_When_StatusIsCancelled() {
-        Payment payment = Payment.reconstitute(
-                paymentId, paymentNumber, customerId, amount,
-                paymentMethodId, PaymentSource.PAYMENT_METHOD,
-                referenceNumber, paymentDate, notes,
-                PaymentStatus.CANCELLED, BigDecimal.ZERO,
-                createdBy, createdByName, createdAt, updatedAt
-        );
+        Payment payment = Payment.reconstitute(paymentId, paymentNumber,
+                customerId, amount, paymentMethodId,
+                PaymentSource.PAYMENT_METHOD, referenceNumber, paymentDate,
+                notes, PaymentStatus.CANCELLED, BigDecimal.ZERO, createdBy,
+                createdByName, createdAt, updatedAt);
 
         PaymentResponse response = PaymentMapper.toResponse(payment);
 

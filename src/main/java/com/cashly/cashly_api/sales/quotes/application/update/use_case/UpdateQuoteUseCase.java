@@ -24,8 +24,9 @@ public class UpdateQuoteUseCase {
     private final QuoteProductCatalogGateway products;
     private final QuoteWarehouseGateway warehouses;
 
-    public UpdateQuoteUseCase(QuoteRepository quoteRepository, QuoteProductCatalogGateway products,
-                              QuoteWarehouseGateway warehouses) {
+    public UpdateQuoteUseCase(QuoteRepository quoteRepository,
+            QuoteProductCatalogGateway products,
+            QuoteWarehouseGateway warehouses) {
         this.quoteRepository = quoteRepository;
         this.products = products;
         this.warehouses = warehouses;
@@ -37,7 +38,8 @@ public class UpdateQuoteUseCase {
                 .orElseThrow(() -> new QuoteNotFoundException(id));
 
         if (!quote.canBeModified()) {
-            throw new QuoteStateException("Quote can only be modified in DRAFT status");
+            throw new QuoteStateException(
+                    "Quote can only be modified in DRAFT status");
         }
 
         List<QuoteLine> oldLines = new ArrayList<>(quote.getLines());
@@ -45,27 +47,32 @@ public class UpdateQuoteUseCase {
             quote.removeLine(oldLine.getId());
         }
 
-        for (CreateQuoteRequest.QuoteLineRequest lineRequest : request.lines()) {
+        for (CreateQuoteRequest.QuoteLineRequest lineRequest : request
+                .lines()) {
             var product = products.findProduct(lineRequest.productId())
-                    .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Product not found: " + lineRequest.productId()));
 
-            QuoteLine newLine = new QuoteLine(product.id(), product.name(), product.code(), product.categoryId(),
+            QuoteLine newLine = new QuoteLine(product.id(), product.name(),
+                    product.code(), product.categoryId(),
                     lineRequest.quantity(), lineRequest.unitPrice());
 
-            List<CreateQuoteRequest.WarehouseAllocationRequest> allocationRequests =
-                    lineRequest.warehouseAllocations() != null ? lineRequest.warehouseAllocations() : List.of();
+            List<CreateQuoteRequest.WarehouseAllocationRequest> allocationRequests = lineRequest
+                    .warehouseAllocations() != null
+                            ? lineRequest.warehouseAllocations()
+                            : List.of();
 
             allocationRequests.forEach(allocationRequest -> {
-                String warehouseName = warehouses.findById(allocationRequest.warehouseId())
+                String warehouseName = warehouses
+                        .findById(allocationRequest.warehouseId())
                         .map(QuoteWarehouseGateway.Warehouse::name)
-                        .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + allocationRequest.warehouseId()));
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Warehouse not found: "
+                                        + allocationRequest.warehouseId()));
 
-                QuoteAllocation allocation = new QuoteAllocation(
-                        product.id(),
-                        allocationRequest.warehouseId(),
-                        warehouseName,
-                        allocationRequest.allocatedQuantity()
-                );
+                QuoteAllocation allocation = new QuoteAllocation(product.id(),
+                        allocationRequest.warehouseId(), warehouseName,
+                        allocationRequest.allocatedQuantity());
                 newLine.addAllocation(allocation);
             });
 

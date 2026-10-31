@@ -11,14 +11,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class LocalWarehouseDirectoryGatewayTest {
-    private final WarehouseDirectoryQuery query = mock(WarehouseDirectoryQuery.class);
-    private final LocalWarehouseDirectoryGateway gateway = new LocalWarehouseDirectoryGateway(query);
+    private final WarehouseDirectoryQuery query = mock(
+            WarehouseDirectoryQuery.class);
+    private final LocalWarehouseDirectoryGateway gateway = new LocalWarehouseDirectoryGateway(
+            query);
 
     @Test
     void should_map_public_warehouse_projection_to_customer_snapshot() {
         UUID id = UUID.randomUUID();
-        when(query.findById(id)).thenReturn(Optional.of(new WarehouseDirectoryEntry(id, "Warehouse")));
-        assertEquals(new WarehouseSnapshot(id, "Warehouse"), gateway.requireById(id));
+        when(query.findById(id)).thenReturn(
+                Optional.of(new WarehouseDirectoryEntry(id, "Warehouse")));
+        assertEquals(new WarehouseSnapshot(id, "Warehouse"),
+                gateway.requireById(id));
     }
 
     @Test
@@ -26,7 +30,8 @@ class LocalWarehouseDirectoryGatewayTest {
         UUID id = UUID.randomUUID();
         when(query.findById(id)).thenReturn(Optional.empty());
         assertEquals("Warehouse not found with id: " + id,
-                assertThrows(WarehouseNotFoundException.class, () -> gateway.requireById(id)).getMessage());
+                assertThrows(WarehouseNotFoundException.class,
+                        () -> gateway.requireById(id)).getMessage());
     }
 
     @Test

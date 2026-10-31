@@ -20,17 +20,20 @@ public class UpdateSupplierUseCase {
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
 
-    public UpdateSupplierUseCase(SupplierRepository supplierRepository, SupplierMapper supplierMapper) {
+    public UpdateSupplierUseCase(SupplierRepository supplierRepository,
+            SupplierMapper supplierMapper) {
         this.supplierRepository = supplierRepository;
         this.supplierMapper = supplierMapper;
     }
 
     @Transactional
-    public SupplierDetailResponse execute(String id, UpdateSupplierRequest request) {
+    public SupplierDetailResponse execute(String id,
+            UpdateSupplierRequest request) {
         SupplierId supplierId = SupplierId.from(id);
 
         Supplier supplier = supplierRepository.findById(supplierId)
-            .orElseThrow(() -> new SupplierNotFoundException("Supplier not found with id: " + id));
+                .orElseThrow(() -> new SupplierNotFoundException(
+                        "Supplier not found with id: " + id));
 
         supplier.updateLegalName(new LegalName(request.legalName()));
         supplier.updateType(SupplierType.valueOf(request.type()));
@@ -48,12 +51,14 @@ public class UpdateSupplierUseCase {
         supplier.clearPhones();
         supplier.clearAddresses();
 
-        request.emails().forEach(e -> supplier.addEmail(new EmailAddress(e.email())));
-        request.phones().forEach(p -> supplier.addPhone(new PhoneNumber(p.phone())));
-        request.addresses().forEach(a -> supplier.addAddress(
-            a.address(), a.billing(), a.active(),
-            a.state(), a.municipality(), a.postalCode()
-        ));
+        request.emails()
+                .forEach(e -> supplier.addEmail(new EmailAddress(e.email())));
+        request.phones()
+                .forEach(p -> supplier.addPhone(new PhoneNumber(p.phone())));
+        request.addresses()
+                .forEach(a -> supplier.addAddress(a.address(), a.billing(),
+                        a.active(), a.state(), a.municipality(),
+                        a.postalCode()));
 
         Supplier saved = supplierRepository.save(supplier);
         return supplierMapper.toDetailResponse(saved);

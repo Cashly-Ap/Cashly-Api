@@ -12,10 +12,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StockReadBoundaryTest {
     @Test
     void should_read_stock_through_owned_contracts() {
-        assertThat(Stream.of(GetInvoiceByIdUseCase.class, UpdateInvoiceUseCase.class, GetOrderByIdUseCase.class)
+        assertThat(Stream
+                .of(GetInvoiceByIdUseCase.class, UpdateInvoiceUseCase.class,
+                        GetOrderByIdUseCase.class)
                 .flatMap(type -> Arrays.stream(type.getDeclaredConstructors()))
-                .flatMap(constructor -> Arrays.stream(constructor.getParameterTypes()))
+                .flatMap(constructor -> Arrays
+                        .stream(constructor.getParameterTypes()))
                 .map(Class::getName))
-                .noneMatch(name -> name.equals("com.cashly.cashly_api.shared.application.StockEnrichmentService"));
+                .noneMatch(name -> name.equals(
+                        "com.cashly.cashly_api.shared.application.StockEnrichmentService"));
     }
 }

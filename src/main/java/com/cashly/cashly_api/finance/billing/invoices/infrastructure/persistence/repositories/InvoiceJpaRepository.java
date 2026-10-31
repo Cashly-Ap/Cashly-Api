@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID> {
+public interface InvoiceJpaRepository
+        extends
+            JpaRepository<InvoiceEntity, UUID> {
 
     @Query("""
             SELECT DISTINCT i FROM InvoiceEntity i
@@ -45,18 +47,12 @@ public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID>
             @Param("returnStatus") List<String> returnStatus,
             @Param("dueStatus") String dueStatus,
             @Param("productId") UUID productId,
-            @Param("categoryId") UUID categoryId
-    );
+            @Param("categoryId") UUID categoryId);
 
-    default List<InvoiceEntity> findAllWithFilters(
-            LocalDateTime dateFrom,
-            LocalDateTime dateTo,
-            UUID customerId,
-            List<String> statuses,
-            List<String> returnStatus,
-            UUID productId,
-            UUID categoryId
-    ) {
-        return findAllWithFilters(dateFrom, dateTo, customerId, statuses, returnStatus, null, productId, categoryId);
+    default List<InvoiceEntity> findAllWithFilters(LocalDateTime dateFrom,
+            LocalDateTime dateTo, UUID customerId, List<String> statuses,
+            List<String> returnStatus, UUID productId, UUID categoryId) {
+        return findAllWithFilters(dateFrom, dateTo, customerId, statuses,
+                returnStatus, null, productId, categoryId);
     }
 }

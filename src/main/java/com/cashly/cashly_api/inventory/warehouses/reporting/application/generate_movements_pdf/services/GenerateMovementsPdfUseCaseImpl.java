@@ -9,12 +9,16 @@ import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.quer
 
 import java.util.List;
 
-public class GenerateMovementsPdfUseCaseImpl implements GenerateMovementsPdfUseCase {
+public class GenerateMovementsPdfUseCaseImpl
+        implements
+            GenerateMovementsPdfUseCase {
 
     private final MovementsReportRepositoryPort repository;
     private final MovementsPdfPort pdfPort;
 
-    public GenerateMovementsPdfUseCaseImpl(MovementsReportRepositoryPort repository, MovementsPdfPort pdfPort) {
+    public GenerateMovementsPdfUseCaseImpl(
+            MovementsReportRepositoryPort repository,
+            MovementsPdfPort pdfPort) {
         this.repository = repository;
         this.pdfPort = pdfPort;
     }

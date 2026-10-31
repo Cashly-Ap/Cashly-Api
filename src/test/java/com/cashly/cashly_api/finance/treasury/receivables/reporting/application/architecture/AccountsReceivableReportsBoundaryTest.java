@@ -4,7 +4,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 class AccountsReceivableReportsBoundaryTest {
-    @Test void reportDoesNotDependOnReceivablesInternalContracts() {
-        Arrays.stream(GenerateAccountsReceivableReportPdfUseCaseImpl.class.getDeclaredFields()).forEach(field -> assertFalse(field.getType().getName().matches(".*cashly_api.finance.treasury.receivables.(?!reporting\\.).*"), field.toString()));
+    @Test
+    void reportDoesNotDependOnReceivablesInternalContracts() {
+        Arrays.stream(GenerateAccountsReceivableReportPdfUseCaseImpl.class
+                .getDeclaredFields())
+                .forEach(field -> assertFalse(field.getType().getName().matches(
+                        ".*cashly_api.finance.treasury.receivables.(?!reporting\\.).*"),
+                        field.toString()));
     }
 }

@@ -12,15 +12,18 @@ import static org.mockito.Mockito.*;
 class LocalCreditNoteBalanceApiTest {
     @Test
     void whenAddingCreditNoteSurplus_thenUsesCreditNoteBalanceTypes() {
-        AddToCustomerBalanceUseCase balances = mock(AddToCustomerBalanceUseCase.class);
+        AddToCustomerBalanceUseCase balances = mock(
+                AddToCustomerBalanceUseCase.class);
         LocalCreditNoteBalanceApi api = new LocalCreditNoteBalanceApi(balances);
         UUID customerId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        api.addCredit(customerId, new BigDecimal("7.00"), noteId, "CN-1", "FAC-1", userId);
+        api.addCredit(customerId, new BigDecimal("7.00"), noteId, "CN-1",
+                "FAC-1", userId);
 
-        verify(balances).execute(customerId, BalanceType.CREDIT_NOTE, new BigDecimal("7.00"),
-                BalanceType.CREDIT_NOTE, noteId, "CN-1", "FAC-1", userId);
+        verify(balances).execute(customerId, BalanceType.CREDIT_NOTE,
+                new BigDecimal("7.00"), BalanceType.CREDIT_NOTE, noteId, "CN-1",
+                "FAC-1", userId);
     }
 }

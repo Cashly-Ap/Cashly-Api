@@ -4,7 +4,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Rif {
-    private static final Pattern RIF_PATTERN = Pattern.compile("^[VJGECP]-\\d{8}-\\d$");
+    private static final Pattern RIF_PATTERN = Pattern
+            .compile("^[VJGECP]-\\d{8}-\\d$");
 
     private final String value;
 
@@ -14,7 +15,8 @@ public class Rif {
         }
         String trimmed = value.trim().toUpperCase();
         if (!RIF_PATTERN.matcher(trimmed).matches()) {
-            throw new IllegalArgumentException("Invalid RIF format. Expected format: X-XXXXXXXX-X (e.g., J-12345678-9)");
+            throw new IllegalArgumentException(
+                    "Invalid RIF format. Expected format: X-XXXXXXXX-X (e.g., J-12345678-9)");
         }
         this.value = trimmed;
     }
@@ -25,8 +27,10 @@ public class Rif {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         Rif that = (Rif) obj;
         return Objects.equals(value, that.value);
     }

@@ -10,13 +10,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "warehouses",
-    indexes = {
+@Table(name = "warehouses", indexes = {
         @Index(name = "idx_warehouse_code", columnList = "code"),
-        @Index(name = "idx_warehouse_active", columnList = "active")
-    }
-)
+        @Index(name = "idx_warehouse_active", columnList = "active")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -82,7 +78,7 @@ public class WarehouseEntity {
     }
 
     public Warehouse toDomain() {
-        return Warehouse.reconstitute(id, code, name, address, state, municipality,
-                postalCode, active, createdAt, updatedAt);
+        return Warehouse.reconstitute(id, code, name, address, state,
+                municipality, postalCode, active, createdAt, updatedAt);
     }
 }

@@ -41,15 +41,13 @@ public class AuthController {
     private final LogoutUserUseCase logoutUserUseCase;
     private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
 
-    public AuthController(
-        RegisterUserUseCase registerUserUseCase,
-        LoginUserUseCase loginUserUseCase,
-        RefreshTokenUseCase refreshTokenUseCase,
-        LogoutUserUseCase logoutUserUseCase,
-        UpdateUserPasswordUseCase updateUserPasswordUseCase,
-        GetUserByIdUseCase getUserByIdUseCase,
-        UpdateOwnProfileUseCase updateOwnProfileUseCase
-    ) {
+    public AuthController(RegisterUserUseCase registerUserUseCase,
+            LoginUserUseCase loginUserUseCase,
+            RefreshTokenUseCase refreshTokenUseCase,
+            LogoutUserUseCase logoutUserUseCase,
+            UpdateUserPasswordUseCase updateUserPasswordUseCase,
+            GetUserByIdUseCase getUserByIdUseCase,
+            UpdateOwnProfileUseCase updateOwnProfileUseCase) {
         this.updateOwnProfileUseCase = updateOwnProfileUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
@@ -61,36 +59,43 @@ public class AuthController {
 
     @GetMapping("/profile")
     public ResponseEntity<UserResponse> profile(Authentication authentication) {
-        return ResponseEntity.ok(getUserByIdUseCase.execute(authentication.getName()));
+        return ResponseEntity
+                .ok(getUserByIdUseCase.execute(authentication.getName()));
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<UserResponse> updateProfile(Authentication authentication,
+    public ResponseEntity<UserResponse> updateProfile(
+            Authentication authentication,
             @Valid @RequestBody UpdateOwnProfileRequest request) {
-        return ResponseEntity.ok(updateOwnProfileUseCase.execute(authentication.getName(), request));
+        return ResponseEntity.ok(updateOwnProfileUseCase
+                .execute(authentication.getName(), request));
     }
 
     @PostMapping("/register")
     @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('USERS:CREATE')")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest request) {
+    public ResponseEntity<UserResponse> register(
+            @Valid @RequestBody RegisterUserRequest request) {
         UserResponse response = registerUserUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(
+            @Valid @RequestBody LoginRequest request) {
         AuthenticationResponse response = loginUserUseCase.execute(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<AuthenticationResponse> refresh(
+            @Valid @RequestBody RefreshTokenRequest request) {
         AuthenticationResponse response = refreshTokenUseCase.execute(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
+    public ResponseEntity<Void> logout(
+            @Valid @RequestBody LogoutRequest request) {
         logoutUserUseCase.execute(request);
         return ResponseEntity.noContent().build();
     }
@@ -100,7 +105,8 @@ public class AuthController {
             Authentication authentication,
             @Valid @RequestBody UpdateUserPasswordRequest request) {
         String userId = (String) authentication.getPrincipal();
-        UserResponse response = updateUserPasswordUseCase.executeSelf(userId, request);
+        UserResponse response = updateUserPasswordUseCase.executeSelf(userId,
+                request);
         return ResponseEntity.ok(response);
     }
 }

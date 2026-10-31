@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AccountsReceivableReportQueryConfig {
     @Bean
-    public AccountsReceivableReportQuery accountsReceivableReportQuery(ReceivablesQueryGateway query) {
+    public AccountsReceivableReportQuery accountsReceivableReportQuery(
+            ReceivablesQueryGateway query) {
         return new AccountsReceivableReportQueryService(query);
     }
 }

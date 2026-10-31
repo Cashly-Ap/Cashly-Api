@@ -40,25 +40,23 @@ class LogoutUserUseCaseUnitTest {
         String tokenString = UUID.randomUUID().toString();
         validRequest = new LogoutRequest(tokenString);
 
-        validRefreshToken = new RefreshToken(
-            RefreshTokenId.generate(),
-            UserId.generate(),
-            tokenString,
-            LocalDateTime.now().plusDays(7)
-        );
+        validRefreshToken = new RefreshToken(RefreshTokenId.generate(),
+                UserId.generate(), tokenString,
+                LocalDateTime.now().plusDays(7));
     }
 
     @Test
     @DisplayName("should_RevokeRefreshToken_When_ValidTokenProvided")
     void should_RevokeRefreshToken_When_ValidTokenProvided() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
+                .thenReturn(Optional.of(validRefreshToken));
         when(refreshTokenRepository.save(any(RefreshToken.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         logoutUserUseCase.execute(validRequest);
 
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
     }
 
@@ -66,15 +64,15 @@ class LogoutUserUseCaseUnitTest {
     @DisplayName("should_ThrowException_When_RefreshTokenNotFound")
     void should_ThrowException_When_RefreshTokenNotFound() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         InvalidTokenException exception = assertThrows(
-            InvalidTokenException.class,
-            () -> logoutUserUseCase.execute(validRequest)
-        );
+                InvalidTokenException.class,
+                () -> logoutUserUseCase.execute(validRequest));
 
         assertEquals("Invalid refresh token", exception.getMessage());
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verify(refreshTokenRepository, never()).save(any());
     }
 
@@ -82,13 +80,13 @@ class LogoutUserUseCaseUnitTest {
     @DisplayName("should_MarkTokenAsRevoked_When_LoggingOut")
     void should_MarkTokenAsRevoked_When_LoggingOut() {
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
+                .thenReturn(Optional.of(validRefreshToken));
         when(refreshTokenRepository.save(any(RefreshToken.class)))
-            .thenAnswer(invocation -> {
-                RefreshToken token = invocation.getArgument(0);
-                assertTrue(token.isRevoked());
-                return token;
-            });
+                .thenAnswer(invocation -> {
+                    RefreshToken token = invocation.getArgument(0);
+                    assertTrue(token.isRevoked());
+                    return token;
+                });
 
         logoutUserUseCase.execute(validRequest);
 
@@ -100,42 +98,42 @@ class LogoutUserUseCaseUnitTest {
     void should_HandleAlreadyRevokedToken_When_LoggingOut() {
         validRefreshToken.revoke();
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(validRefreshToken));
+                .thenReturn(Optional.of(validRefreshToken));
         when(refreshTokenRepository.save(any(RefreshToken.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         logoutUserUseCase.execute(validRequest);
 
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
     }
 
     @Test
     @DisplayName("should_HandleExpiredToken_When_LoggingOut")
     void should_HandleExpiredToken_When_LoggingOut() {
-        RefreshToken token = new RefreshToken(
-            RefreshTokenId.generate(),
-            UserId.generate(),
-            UUID.randomUUID().toString(),
-            LocalDateTime.now().plusDays(1) 
-        );
+        RefreshToken token = new RefreshToken(RefreshTokenId.generate(),
+                UserId.generate(), UUID.randomUUID().toString(),
+                LocalDateTime.now().plusDays(1));
 
         try {
-            java.lang.reflect.Field expiresAtField = RefreshToken.class.getDeclaredField("expiresAt");
+            java.lang.reflect.Field expiresAtField = RefreshToken.class
+                    .getDeclaredField("expiresAt");
             expiresAtField.setAccessible(true);
-            expiresAtField.set(token, LocalDateTime.now().minusDays(1)); 
+            expiresAtField.set(token, LocalDateTime.now().minusDays(1));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         when(refreshTokenRepository.findByToken(validRequest.refreshToken()))
-            .thenReturn(Optional.of(token));
+                .thenReturn(Optional.of(token));
         when(refreshTokenRepository.save(any(RefreshToken.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         logoutUserUseCase.execute(validRequest);
 
-        verify(refreshTokenRepository, times(1)).findByToken(validRequest.refreshToken());
+        verify(refreshTokenRepository, times(1))
+                .findByToken(validRequest.refreshToken());
         verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
     }
 }

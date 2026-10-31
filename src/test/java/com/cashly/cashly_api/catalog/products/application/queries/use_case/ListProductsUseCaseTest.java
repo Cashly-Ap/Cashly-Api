@@ -46,35 +46,42 @@ class ListProductsUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new ListProductsUseCase(productRepository, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categoryRepository)), productMapper);
+        useCase = new ListProductsUseCase(productRepository,
+                new LocalProductCategoryGatewayAdapter(
+                        new RepositoryProductCategoryQuery(categoryRepository)),
+                productMapper);
     }
 
     @Test
     void should_ReturnPaginatedList_When_ProductsExist() {
         UUID categoryId = UUID.randomUUID();
-        Product product = Product.reconstitute(UUID.randomUUID(), "PROD-001", "Test Product", "Description",
-                categoryId, false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(UUID.randomUUID(), "PROD-001",
+                "Test Product", "Description", categoryId, false, true, null,
+                new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Electronics");
-        when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
+        when(categoryRepository.findById(any()))
+                .thenReturn(Optional.of(category));
 
         ProductListResponse listResponse = new ProductListResponse(
-                product.getId().toString(), product.getCode(), product.getName(),
-                categoryId.toString(), "Electronics", false, true,
-                new BigDecimal("10.00"), List.of(), true);
+                product.getId().toString(), product.getCode(),
+                product.getName(), categoryId.toString(), "Electronics", false,
+                true, new BigDecimal("10.00"), List.of(), true);
 
-        PageResponse<Product> page = new PageResponse<>(
-                List.of(product), 1L, 1, 10, 0, true, true, false);
+        PageResponse<Product> page = new PageResponse<>(List.of(product), 1L, 1,
+                10, 0, true, true, false);
 
-        when(productRepository.findAllWithFilters(null, null, null, null, 0, 10, "name", "asc"))
-                .thenReturn(page);
-        when(productRepository.findIdsWithReferences(any())).thenReturn(Set.of());
-        when(productMapper.toListResponse(any(Product.class), anyString(), anyBoolean())).thenReturn(listResponse);
+        when(productRepository.findAllWithFilters(null, null, null, null, 0, 10,
+                "name", "asc")).thenReturn(page);
+        when(productRepository.findIdsWithReferences(any()))
+                .thenReturn(Set.of());
+        when(productMapper.toListResponse(any(Product.class), anyString(),
+                anyBoolean())).thenReturn(listResponse);
 
-        PageResponse<ProductListResponse> result = useCase.execute(null, null, null, null, 0, 10, "name", "asc");
+        PageResponse<ProductListResponse> result = useCase.execute(null, null,
+                null, null, 0, 10, "name", "asc");
 
         assertNotNull(result);
         assertEquals(1, result.content().size());
@@ -84,13 +91,14 @@ class ListProductsUseCaseTest {
 
     @Test
     void should_ReturnEmptyPage_When_NoProducts() {
-        PageResponse<Product> emptyPage = new PageResponse<>(
-                List.of(), 0L, 0, 10, 0, true, true, true);
+        PageResponse<Product> emptyPage = new PageResponse<>(List.of(), 0L, 0,
+                10, 0, true, true, true);
 
-        when(productRepository.findAllWithFilters(null, null, null, null, 0, 10, "name", "asc"))
-                .thenReturn(emptyPage);
+        when(productRepository.findAllWithFilters(null, null, null, null, 0, 10,
+                "name", "asc")).thenReturn(emptyPage);
 
-        PageResponse<ProductListResponse> result = useCase.execute(null, null, null, null, 0, 10, "name", "asc");
+        PageResponse<ProductListResponse> result = useCase.execute(null, null,
+                null, null, 0, 10, "name", "asc");
 
         assertNotNull(result);
         assertTrue(result.content().isEmpty());

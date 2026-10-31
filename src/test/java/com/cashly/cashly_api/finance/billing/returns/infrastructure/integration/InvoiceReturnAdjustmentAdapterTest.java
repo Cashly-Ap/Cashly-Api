@@ -21,24 +21,32 @@ class InvoiceReturnAdjustmentAdapterTest {
     @Test
     void shouldTranslateAutomaticReturnToPublicInvoiceCommand() {
         Return returned = returned(ReturnType.AUTOMATIC);
-        InvoiceReturnAdjustments provider = mock(InvoiceReturnAdjustments.class);
+        InvoiceReturnAdjustments provider = mock(
+                InvoiceReturnAdjustments.class);
         new InvoiceReturnAdjustmentAdapter(provider).apply(returned);
-        ArgumentCaptor<InvoiceReturnCommand> command = ArgumentCaptor.forClass(InvoiceReturnCommand.class);
+        ArgumentCaptor<InvoiceReturnCommand> command = ArgumentCaptor
+                .forClass(InvoiceReturnCommand.class);
         verify(provider).apply(command.capture());
         assertEquals(returned.getInvoiceId(), command.getValue().invoiceId());
         assertEquals(returned.getTotal(), command.getValue().total());
-        assertEquals(returned.getLines().getFirst().getInvoiceLineId(), command.getValue().lines().getFirst().invoiceLineId());
-        assertEquals(returned.getLines().getFirst().getQuantity(), command.getValue().lines().getFirst().quantity());
+        assertEquals(returned.getLines().getFirst().getInvoiceLineId(),
+                command.getValue().lines().getFirst().invoiceLineId());
+        assertEquals(returned.getLines().getFirst().getQuantity(),
+                command.getValue().lines().getFirst().quantity());
         assertTrue(command.getValue().closeInvoice());
     }
 
     @Test
     void shouldTranslateManualReversalAndPreserveFinancialTotals() {
         Return returned = returned(ReturnType.MANUAL);
-        InvoiceReturnAdjustments provider = mock(InvoiceReturnAdjustments.class);
-        new InvoiceReturnAdjustmentAdapter(provider).reverse(returned, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO);
-        ArgumentCaptor<InvoiceReturnCommand> command = ArgumentCaptor.forClass(InvoiceReturnCommand.class);
-        verify(provider).reverse(command.capture(), eq(BigDecimal.TEN), eq(BigDecimal.ONE), eq(BigDecimal.ZERO));
+        InvoiceReturnAdjustments provider = mock(
+                InvoiceReturnAdjustments.class);
+        new InvoiceReturnAdjustmentAdapter(provider).reverse(returned,
+                BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO);
+        ArgumentCaptor<InvoiceReturnCommand> command = ArgumentCaptor
+                .forClass(InvoiceReturnCommand.class);
+        verify(provider).reverse(command.capture(), eq(BigDecimal.TEN),
+                eq(BigDecimal.ONE), eq(BigDecimal.ZERO));
         assertFalse(command.getValue().closeInvoice());
         assertEquals(returned.getInvoiceId(), command.getValue().invoiceId());
     }

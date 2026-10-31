@@ -8,7 +8,8 @@ public class RefreshTokenId {
 
     public RefreshTokenId(UUID value) {
         if (value == null) {
-            throw new IllegalArgumentException("RefreshToken ID cannot be null");
+            throw new IllegalArgumentException(
+                    "RefreshToken ID cannot be null");
         }
         this.value = value;
     }
@@ -19,12 +20,14 @@ public class RefreshTokenId {
 
     public static RefreshTokenId from(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("RefreshToken ID string cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "RefreshToken ID string cannot be null or empty");
         }
         try {
             return new RefreshTokenId(UUID.fromString(value));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid RefreshToken ID format: " + value, e);
+            throw new IllegalArgumentException(
+                    "Invalid RefreshToken ID format: " + value, e);
         }
     }
 
@@ -34,8 +37,10 @@ public class RefreshTokenId {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         RefreshTokenId that = (RefreshTokenId) obj;
         return Objects.equals(value, that.value);
     }

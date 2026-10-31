@@ -11,8 +11,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CashRegisterJpaRepository
-        extends JpaRepository<CashRegisterJpaEntity, UUID>,
-                JpaSpecificationExecutor<CashRegisterJpaEntity> {
+        extends
+            JpaRepository<CashRegisterJpaEntity, UUID>,
+            JpaSpecificationExecutor<CashRegisterJpaEntity> {
 
     Optional<CashRegisterJpaEntity> findByClosureDate(LocalDate closureDate);
 
@@ -20,8 +21,10 @@ public interface CashRegisterJpaRepository
     Optional<CashRegisterJpaEntity> findActiveClosure();
 
     @Query("SELECT c FROM CashRegisterJpaEntity c WHERE c.status = :status ORDER BY c.openedAt DESC")
-    Optional<CashRegisterJpaEntity> findLatestByStatus(@Param("status") String status);
+    Optional<CashRegisterJpaEntity> findLatestByStatus(
+            @Param("status") String status);
 
     @Query(value = "SELECT COUNT(*) FROM cash_register_details crd WHERE crd.payment_method_id = :paymentMethodId", nativeQuery = true)
-    long countDetailsByPaymentMethodId(@Param("paymentMethodId") UUID paymentMethodId);
+    long countDetailsByPaymentMethodId(
+            @Param("paymentMethodId") UUID paymentMethodId);
 }

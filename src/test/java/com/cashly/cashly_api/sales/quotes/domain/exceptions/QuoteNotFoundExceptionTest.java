@@ -13,9 +13,9 @@ class QuoteNotFoundExceptionTest {
     void should_throw_with_correct_message() {
         UUID id = UUID.randomUUID();
         QuoteNotFoundException exception = assertThrows(
-                QuoteNotFoundException.class,
-                () -> { throw new QuoteNotFoundException(id); }
-        );
+                QuoteNotFoundException.class, () -> {
+                    throw new QuoteNotFoundException(id);
+                });
         assertTrue(exception.getMessage().contains(id.toString()));
     }
 

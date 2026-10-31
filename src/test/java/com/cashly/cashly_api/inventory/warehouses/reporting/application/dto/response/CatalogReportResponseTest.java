@@ -18,10 +18,9 @@ class CatalogReportResponseTest {
         UUID categoryId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
 
-        var response = new CatalogReportResponse(
-                productId, "Product A", "SKU001",
-                categoryId, "Electronics", true,
-                warehouseId, "Main Warehouse", BigDecimal.valueOf(50), true);
+        var response = new CatalogReportResponse(productId, "Product A",
+                "SKU001", categoryId, "Electronics", true, warehouseId,
+                "Main Warehouse", BigDecimal.valueOf(50), true);
 
         assertEquals(productId, response.productId());
         assertEquals("Product A", response.productName());
@@ -38,10 +37,9 @@ class CatalogReportResponseTest {
     @Test
     @DisplayName("should create catalog report response with null values")
     void should_create_catalog_report_response_with_null_values() {
-        var response = new CatalogReportResponse(
-                UUID.randomUUID(), "Product B", "SKU002",
-                UUID.randomUUID(), null, null,
-                UUID.randomUUID(), null, null, null);
+        var response = new CatalogReportResponse(UUID.randomUUID(), "Product B",
+                "SKU002", UUID.randomUUID(), null, null, UUID.randomUUID(),
+                null, null, null);
 
         assertNull(response.categoryName());
         assertNull(response.composite());

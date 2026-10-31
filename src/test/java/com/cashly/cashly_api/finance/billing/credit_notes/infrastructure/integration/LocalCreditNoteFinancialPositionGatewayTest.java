@@ -19,18 +19,22 @@ class LocalCreditNoteFinancialPositionGatewayTest {
     void givenPaymentAndNotes_whenReadingPosition_thenSumsCreditAndDebitAmounts() {
         CreditNoteRepository credits = mock(CreditNoteRepository.class);
         DebitNoteLedgerQuery debits = mock(DebitNoteLedgerQuery.class);
-        InvoicePaymentTotalQuery payments = mock(InvoicePaymentTotalQuery.class);
+        InvoicePaymentTotalQuery payments = mock(
+                InvoicePaymentTotalQuery.class);
         UUID invoiceId = UUID.randomUUID();
         CreditNote first = mock(CreditNote.class);
         CreditNote second = mock(CreditNote.class);
         when(first.getAmount()).thenReturn(new BigDecimal("12.50"));
         when(second.getAmount()).thenReturn(new BigDecimal("7.50"));
-        when(credits.findByInvoiceId(invoiceId)).thenReturn(List.of(first, second));
-        when(debits.amountsByInvoiceId(invoiceId)).thenReturn(Arrays.asList(new BigDecimal("4.00"), null));
-        when(payments.totalAllocatedByInvoiceId(invoiceId)).thenReturn(new BigDecimal("90.00"));
+        when(credits.findByInvoiceId(invoiceId))
+                .thenReturn(List.of(first, second));
+        when(debits.amountsByInvoiceId(invoiceId))
+                .thenReturn(Arrays.asList(new BigDecimal("4.00"), null));
+        when(payments.totalAllocatedByInvoiceId(invoiceId))
+                .thenReturn(new BigDecimal("90.00"));
 
-        var position = new LocalCreditNoteFinancialPositionGateway(credits, debits, payments)
-                .findByInvoiceId(invoiceId);
+        var position = new LocalCreditNoteFinancialPositionGateway(credits,
+                debits, payments).findByInvoiceId(invoiceId);
 
         assertEquals(new BigDecimal("90.00"), position.paid());
         assertEquals(new BigDecimal("20.00"), position.creditNotes());

@@ -14,17 +14,41 @@ import org.springframework.stereotype.Component;
 @Component
 public class V18CreditNotesSeed implements SeedStep {
     private final EntityManager entityManager;
-    public V18CreditNotesSeed(EntityManager entityManager) { this.entityManager = entityManager; }
-    @Override public int version() { return 18; }
-    @Override public void seed() {
+    public V18CreditNotesSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    @Override
+    public int version() {
+        return 18;
+    }
+    @Override
+    public void seed() {
         note("one", "CN-2025-0001", CUSTOMER_ONE, INVOICE_ONE, "1.50");
         note("two", "CN-2025-0002", CUSTOMER_TWO, INVOICE_TWO, "0.50");
-        if (entityManager.find(CreditNoteNumberSequenceEntity.class, 2025) == null) { var s = new CreditNoteNumberSequenceEntity(); s.setYear(2025); s.setNextValue(3); entityManager.persist(s); }
+        if (entityManager.find(CreditNoteNumberSequenceEntity.class,
+                2025) == null) {
+            var s = new CreditNoteNumberSequenceEntity();
+            s.setYear(2025);
+            s.setNextValue(3);
+            entityManager.persist(s);
+        }
     }
-    private void note(String key, String number, UUID customerId, UUID invoiceId, String amount) {
-        UUID id = id("credit-note." + key); if (entityManager.find(CreditNoteEntity.class, id) != null) return;
-        var note = new CreditNoteEntity(); note.setId(id); note.setNoteNumber(number); note.setCustomerId(customerId); note.setInvoiceId(invoiceId);
-        note.setAmount(new BigDecimal(amount)); note.setReason("Seed commercial adjustment"); note.setCreatedBy(ADMIN_USER); note.setCreatedByName("Cashly Administrator");
-        note.setCreatedAt(LocalDateTime.of(2025, 1, 12, 8, 0)); note.setUpdatedAt(LocalDateTime.of(2025, 1, 12, 8, 0)); entityManager.persist(note);
+    private void note(String key, String number, UUID customerId,
+            UUID invoiceId, String amount) {
+        UUID id = id("credit-note." + key);
+        if (entityManager.find(CreditNoteEntity.class, id) != null)
+            return;
+        var note = new CreditNoteEntity();
+        note.setId(id);
+        note.setNoteNumber(number);
+        note.setCustomerId(customerId);
+        note.setInvoiceId(invoiceId);
+        note.setAmount(new BigDecimal(amount));
+        note.setReason("Seed commercial adjustment");
+        note.setCreatedBy(ADMIN_USER);
+        note.setCreatedByName("Cashly Administrator");
+        note.setCreatedAt(LocalDateTime.of(2025, 1, 12, 8, 0));
+        note.setUpdatedAt(LocalDateTime.of(2025, 1, 12, 8, 0));
+        entityManager.persist(note);
     }
 }

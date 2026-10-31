@@ -7,10 +7,13 @@ import org.springframework.data.repository.query.Param;
 import java.util.Set;
 import java.util.UUID;
 
-public interface SpringDataAvailableStockProductsRepository extends Repository<WarehouseStockEntity, UUID> {
+public interface SpringDataAvailableStockProductsRepository
+        extends
+            Repository<WarehouseStockEntity, UUID> {
     @Query("""
             SELECT DISTINCT s.productId FROM WarehouseStockEntity s
             WHERE s.warehouseId IN :warehouseIds AND (s.quantity - s.reserved) > 0
             """)
-    Set<UUID> findAvailableProductIds(@Param("warehouseIds") Set<UUID> warehouseIds);
+    Set<UUID> findAvailableProductIds(
+            @Param("warehouseIds") Set<UUID> warehouseIds);
 }

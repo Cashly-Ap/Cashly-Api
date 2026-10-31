@@ -10,13 +10,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "categories",
-    indexes = {
+@Table(name = "categories", indexes = {
         @Index(name = "idx_categories_name", columnList = "name"),
-        @Index(name = "idx_categories_active", columnList = "active")
-    }
-)
+        @Index(name = "idx_categories_active", columnList = "active")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -63,6 +59,7 @@ public class CategoryEntity {
     }
 
     public Category toDomain() {
-        return Category.reconstitute(id, name, description, active, createdAt, updatedAt);
+        return Category.reconstitute(id, name, description, active, createdAt,
+                updatedAt);
     }
 }

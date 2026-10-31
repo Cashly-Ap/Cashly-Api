@@ -12,13 +12,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "customer_warehouse_access",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_customer_warehouse",
-                columnNames = {"customer_id", "warehouse_id"}
-        )
-)
+@Table(name = "customer_warehouse_access", uniqueConstraints = @UniqueConstraint(name = "uk_customer_warehouse", columnNames = {
+        "customer_id", "warehouse_id"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -44,9 +39,12 @@ public class CustomerWarehouseAccessEntity {
     @Column(name = "granted_by", nullable = false, columnDefinition = "BINARY(16)")
     private UUID grantedBy;
 
-    public static CustomerWarehouseAccessEntity fromDomain(CustomerWarehouseAccess access) {
+    public static CustomerWarehouseAccessEntity fromDomain(
+            CustomerWarehouseAccess access) {
         CustomerWarehouseAccessEntity entity = new CustomerWarehouseAccessEntity();
-        entity.id = (access.getId() != null) ? access.getId() : UUID.randomUUID();
+        entity.id = (access.getId() != null)
+                ? access.getId()
+                : UUID.randomUUID();
         entity.customerId = access.getCustomerId();
         entity.warehouseId = access.getWarehouseId();
         entity.grantedAt = access.getGrantedAt();
@@ -55,6 +53,7 @@ public class CustomerWarehouseAccessEntity {
     }
 
     public CustomerWarehouseAccess toDomain() {
-        return new CustomerWarehouseAccess(id, customerId, warehouseId, grantedAt, grantedBy);
+        return new CustomerWarehouseAccess(id, customerId, warehouseId,
+                grantedAt, grantedBy);
     }
 }

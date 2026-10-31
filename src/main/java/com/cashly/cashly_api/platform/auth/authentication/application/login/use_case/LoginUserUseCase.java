@@ -21,13 +21,10 @@ public class LoginUserUseCase {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public LoginUserUseCase(
-        AuthenticableResolver authenticableResolver,
-        RefreshTokenRepository refreshTokenRepository,
-        TokenService tokenService,
-        PasswordEncoder passwordEncoder,
-        com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa
-    ) {
+    public LoginUserUseCase(AuthenticableResolver authenticableResolver,
+            RefreshTokenRepository refreshTokenRepository,
+            TokenService tokenService, PasswordEncoder passwordEncoder,
+            com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa) {
         this.mfa = mfa;
         this.authenticableResolver = authenticableResolver;
         this.refreshTokenRepository = refreshTokenRepository;
@@ -39,32 +36,34 @@ public class LoginUserUseCase {
     public AuthenticationResponse execute(LoginRequest request) {
         String email = normalizeEmail(request.email());
 
-        Authenticable authenticable = authenticableResolver.resolveByEmail(email)
-            .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+        Authenticable authenticable = authenticableResolver
+                .resolveByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException(
+                        "Invalid email or password"));
 
         if (!authenticable.canAuthenticate()) {
             throw new InvalidCredentialsException("Account is not active");
         }
 
-        if (!passwordEncoder.matches(request.password(), authenticable.getHashedPassword())) {
+        if (!passwordEncoder.matches(request.password(),
+                authenticable.getHashedPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
         var challenge = mfa.challengeIfEnabled(authenticable);
-        if (challenge != null) return challenge;
+        if (challenge != null)
+            return challenge;
 
         String accessToken = tokenService.generateAccessToken(authenticable);
 
-        RefreshToken refreshToken = tokenService.generateRefreshToken(authenticable);
+        RefreshToken refreshToken = tokenService
+                .generateRefreshToken(authenticable);
         refreshTokenRepository.save(refreshToken);
 
-        AuthenticatedEntityResponse entityResponse = AuthenticatedEntityResponse.from(authenticable);
-        return AuthenticationResponse.of(
-            accessToken,
-            refreshToken.getToken(),
-            tokenService.getAccessTokenExpiration(),
-            entityResponse
-        );
+        AuthenticatedEntityResponse entityResponse = AuthenticatedEntityResponse
+                .from(authenticable);
+        return AuthenticationResponse.of(accessToken, refreshToken.getToken(),
+                tokenService.getAccessTokenExpiration(), entityResponse);
     }
 
     private String normalizeEmail(String email) {

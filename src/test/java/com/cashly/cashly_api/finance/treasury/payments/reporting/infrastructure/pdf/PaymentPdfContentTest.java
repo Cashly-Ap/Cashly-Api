@@ -12,14 +12,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 class PaymentPdfContentTest {
     private String text(byte[] bytes) throws Exception {
-        try (var pdf = new PdfDocument(new PdfReader(new ByteArrayInputStream(bytes)))) {
+        try (var pdf = new PdfDocument(
+                new PdfReader(new ByteArrayInputStream(bytes)))) {
             var text = new StringBuilder();
-            for (int i = 1; i <= pdf.getNumberOfPages(); i++) text.append(PdfTextExtractor.getTextFromPage(pdf.getPage(i)));
+            for (int i = 1; i <= pdf.getNumberOfPages(); i++)
+                text.append(PdfTextExtractor.getTextFromPage(pdf.getPage(i)));
             return text.toString();
         }
     }
     @Test
-    void paymentPdfPreservesNumberDateAmountReferenceStatusAndNotes() throws Exception {
+    void paymentPdfPreservesNumberDateAmountReferenceStatusAndNotes()
+            throws Exception {
         var data = mock(PaymentReportData.class);
         when(data.paymentNumber()).thenReturn("PAY-123");
         when(data.createdAt()).thenReturn(LocalDateTime.of(2026, 1, 2, 10, 30));
@@ -28,7 +31,10 @@ class PaymentPdfContentTest {
         when(data.status()).thenReturn("VERIFIED");
         when(data.notes()).thenReturn("Payment instructions");
         var content = text(new PaymentPdfGenerator().generatePaymentPdf(data));
-        for (var expected : List.of("PAY-123", "02/01/2026 10:30", "123,45", "REF-123", "VERIFIED", "Payment instructions")) assertTrue(content.contains(expected), expected + " missing: " + content);
+        for (var expected : List.of("PAY-123", "02/01/2026 10:30", "123,45",
+                "REF-123", "VERIFIED", "Payment instructions"))
+            assertTrue(content.contains(expected),
+                    expected + " missing: " + content);
     }
     @Test
     void paymentPdfSupportsMissingReferenceStatusAndNotes() throws Exception {

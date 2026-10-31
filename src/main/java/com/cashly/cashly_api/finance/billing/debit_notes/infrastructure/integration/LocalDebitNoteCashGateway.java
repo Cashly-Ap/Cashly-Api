@@ -17,7 +17,8 @@ public class LocalDebitNoteCashGateway implements DebitNoteCashGateway {
 
     @Override
     public void recordCashIn(BigDecimal amount, String noteNumber, UUID noteId,
-                             UUID authenticatedUserId, String createdByName) {
-        cash.recordDebitNoteIn(amount, noteNumber, noteId, authenticatedUserId, createdByName);
+            UUID authenticatedUserId, String createdByName) {
+        cash.recordDebitNoteIn(amount, noteNumber, noteId, authenticatedUserId,
+                createdByName);
     }
 }

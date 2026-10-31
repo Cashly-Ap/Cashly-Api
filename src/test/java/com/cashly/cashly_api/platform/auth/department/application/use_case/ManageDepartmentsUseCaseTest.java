@@ -16,7 +16,8 @@ import static org.mockito.Mockito.*;
 class ManageDepartmentsUseCaseTest {
     private final AccessRepository repository = mock(AccessRepository.class);
     private final AccessService access = mock(AccessService.class);
-    private final ManageDepartmentsUseCase useCase = new ManageDepartmentsUseCase(repository, access);
+    private final ManageDepartmentsUseCase useCase = new ManageDepartmentsUseCase(
+            repository, access);
     private final UUID id = UUID.randomUUID();
 
     @Test
@@ -25,13 +26,18 @@ class ManageDepartmentsUseCaseTest {
         when(repository.department(id)).thenReturn(Optional.of(department));
         when(repository.departments()).thenReturn(List.of(department));
         when(repository.departmentReferenced(id)).thenReturn(true);
-        assertThatThrownBy(() -> useCase.save(null,
-                new ManageDepartmentsUseCase.Request(" operations ", null, true, null)))
+        assertThatThrownBy(
+                () -> useCase.save(null,
+                        new ManageDepartmentsUseCase.Request(" operations ",
+                                null, true, null)))
                 .isInstanceOf(AccessConflictException.class);
-        assertThatThrownBy(() -> useCase.save(id,
-                new ManageDepartmentsUseCase.Request("Operations", null, false, 0L)))
+        assertThatThrownBy(
+                () -> useCase.save(id,
+                        new ManageDepartmentsUseCase.Request("Operations", null,
+                                false, 0L)))
                 .isInstanceOf(AccessConflictException.class);
-        assertThatThrownBy(() -> useCase.delete(id)).isInstanceOf(AccessConflictException.class);
+        assertThatThrownBy(() -> useCase.delete(id))
+                .isInstanceOf(AccessConflictException.class);
         verify(repository, never()).saveDepartment(any(), anyBoolean());
         verify(repository, never()).deleteDepartment(any());
     }

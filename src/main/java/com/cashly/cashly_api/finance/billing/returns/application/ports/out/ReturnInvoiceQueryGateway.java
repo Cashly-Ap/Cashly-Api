@@ -8,9 +8,13 @@ public interface ReturnInvoiceQueryGateway {
     InvoiceSnapshot requireById(UUID invoiceId);
     List<BigDecimal> creditNoteAmounts(UUID invoiceId);
     List<BigDecimal> debitNoteAmounts(UUID invoiceId);
-    record InvoiceSnapshot(String number, boolean cancelled, BigDecimal baseTotal, boolean hasSubtotal) {
-        public BigDecimal calculateTotal(BigDecimal credits, BigDecimal debits) {
-            return hasSubtotal ? baseTotal.subtract(credits).add(debits) : BigDecimal.ZERO;
+    record InvoiceSnapshot(String number, boolean cancelled,
+            BigDecimal baseTotal, boolean hasSubtotal) {
+        public BigDecimal calculateTotal(BigDecimal credits,
+                BigDecimal debits) {
+            return hasSubtotal
+                    ? baseTotal.subtract(credits).add(debits)
+                    : BigDecimal.ZERO;
         }
     }
 }

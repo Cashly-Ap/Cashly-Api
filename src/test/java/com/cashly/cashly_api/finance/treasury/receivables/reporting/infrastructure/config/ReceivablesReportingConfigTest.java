@@ -28,12 +28,12 @@ class ReceivablesReportingConfigTest {
     void should_create_use_case_beans() {
         var config = new ReceivablesReportingConfig();
 
-
-        var arUseCase = config.generateAccountsReceivableReportPdfUseCase(receivablesRepository, accountsReceivableReportPdfPort);
+        var arUseCase = config.generateAccountsReceivableReportPdfUseCase(
+                receivablesRepository, accountsReceivableReportPdfPort);
         assertNotNull(arUseCase);
 
-
-        var collUseCase = config.generateCollectionsReportPdfUseCase(collectionsReportPdfPort);
+        var collUseCase = config
+                .generateCollectionsReportPdfUseCase(collectionsReportPdfPort);
         assertNotNull(collUseCase);
     }
 
@@ -42,7 +42,8 @@ class ReceivablesReportingConfigTest {
     void should_create_port_beans() {
         var config = new ReceivablesReportingConfig();
 
-        assertNotNull(config.accountsReceivableReportPdfPort(new PdfBranding()));
+        assertNotNull(
+                config.accountsReceivableReportPdfPort(new PdfBranding()));
         assertNotNull(config.collectionsReportPdfPort(new PdfBranding()));
     }
 }

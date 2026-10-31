@@ -36,17 +36,20 @@ class PaymentNumberUnitTest {
 
     @Test
     void should_ThrowException_When_BlankValueProvided() {
-        assertThrows(IllegalArgumentException.class, () -> new PaymentNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new PaymentNumber("   "));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> PaymentNumber.of(2026, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> PaymentNumber.of(2026, 0));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> PaymentNumber.of(2026, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> PaymentNumber.of(2026, -1));
     }
 
     @Test
@@ -70,6 +73,7 @@ class PaymentNumberUnitTest {
     void should_ReturnValue_When_ToStringCalled() {
         PaymentNumber paymentNumber = PaymentNumber.of(2026, 1);
 
-        assertEquals("PaymentNumber[value=PAY-2026-0001]", paymentNumber.toString());
+        assertEquals("PaymentNumber[value=PAY-2026-0001]",
+                paymentNumber.toString());
     }
 }

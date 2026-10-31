@@ -13,20 +13,24 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ConditionalOnProperty(name = "cashly.seed.enabled", havingValue = "true")
 public class DatabaseSeedRunner implements CommandLineRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseSeedRunner.class);
+    private static final Logger log = LoggerFactory
+            .getLogger(DatabaseSeedRunner.class);
 
     private final List<SeedStep> steps;
     private final TransactionTemplate transactions;
 
-    public DatabaseSeedRunner(List<SeedStep> steps, TransactionTemplate transactions) {
-        this.steps = steps.stream().sorted(Comparator.comparingInt(SeedStep::version)).toList();
+    public DatabaseSeedRunner(List<SeedStep> steps,
+            TransactionTemplate transactions) {
+        this.steps = steps.stream()
+                .sorted(Comparator.comparingInt(SeedStep::version)).toList();
         this.transactions = transactions;
     }
 
     @Override
     public void run(String... args) {
         for (SeedStep step : steps) {
-            log.info("Running database seed step V{}", String.format("%02d", step.version()));
+            log.info("Running database seed step V{}",
+                    String.format("%02d", step.version()));
             transactions.executeWithoutResult(status -> step.seed());
         }
         log.info("Database seed completed ({} steps)", steps.size());

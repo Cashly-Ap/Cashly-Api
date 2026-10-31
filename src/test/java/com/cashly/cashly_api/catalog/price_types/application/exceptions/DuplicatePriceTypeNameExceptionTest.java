@@ -12,7 +12,8 @@ class DuplicatePriceTypeNameExceptionTest {
     void should_CreateException_WithNameInMessage() {
         String name = "Mayorista";
 
-        DuplicatePriceTypeNameException exception = new DuplicatePriceTypeNameException(name);
+        DuplicatePriceTypeNameException exception = new DuplicatePriceTypeNameException(
+                name);
 
         assertTrue(exception.getMessage().contains(name));
         assertTrue(exception.getMessage().contains("already exists"));
@@ -20,14 +21,16 @@ class DuplicatePriceTypeNameExceptionTest {
 
     @Test
     void should_BeRuntimeException() {
-        DuplicatePriceTypeNameException exception = new DuplicatePriceTypeNameException("test");
+        DuplicatePriceTypeNameException exception = new DuplicatePriceTypeNameException(
+                "test");
 
         assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
     void should_NotBeNull() {
-        DuplicatePriceTypeNameException exception = new DuplicatePriceTypeNameException("Premium");
+        DuplicatePriceTypeNameException exception = new DuplicatePriceTypeNameException(
+                "Premium");
 
         assertNotNull(exception);
     }

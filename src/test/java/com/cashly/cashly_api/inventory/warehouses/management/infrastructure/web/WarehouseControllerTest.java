@@ -53,35 +53,40 @@ class WarehouseControllerTest {
     @DisplayName("should create warehouse and return created response")
     void should_create_warehouse_and_return_created_response() {
         String id = UUID.randomUUID().toString();
-        WarehouseDetailResponse response = new WarehouseDetailResponse(
-                id, "WH-01", "Main Warehouse", "Address", "State",
-                "Municipality", "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
+        WarehouseDetailResponse response = new WarehouseDetailResponse(id,
+                "WH-01", "Main Warehouse", "Address", "State", "Municipality",
+                "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
 
-        when(createWarehouseUseCase.execute(any(CreateWarehouseRequest.class))).thenReturn(response);
+        when(createWarehouseUseCase.execute(any(CreateWarehouseRequest.class)))
+                .thenReturn(response);
 
-        CreateWarehouseRequest request = new CreateWarehouseRequest(
-                "WH-01", "Main Warehouse", "Address", "State", "Municipality", "1000");
+        CreateWarehouseRequest request = new CreateWarehouseRequest("WH-01",
+                "Main Warehouse", "Address", "State", "Municipality", "1000");
 
-        ResponseEntity<WarehouseDetailResponse> result = warehouseController.create(request);
+        ResponseEntity<WarehouseDetailResponse> result = warehouseController
+                .create(request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(id, result.getBody().id());
         assertEquals("Main Warehouse", result.getBody().name());
-        verify(createWarehouseUseCase).execute(any(CreateWarehouseRequest.class));
+        verify(createWarehouseUseCase)
+                .execute(any(CreateWarehouseRequest.class));
     }
 
     @Test
     @DisplayName("should get warehouse by id")
     void should_get_warehouse_by_id() {
         String id = UUID.randomUUID().toString();
-        WarehouseDetailResponse response = new WarehouseDetailResponse(
-                id, "WH-01", "Main", "Addr", "State",
-                "Municipality", "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
+        WarehouseDetailResponse response = new WarehouseDetailResponse(id,
+                "WH-01", "Main", "Addr", "State", "Municipality", "1000", true,
+                true, LocalDateTime.now(), LocalDateTime.now());
 
-        when(getWarehouseUseCase.execute(UUID.fromString(id))).thenReturn(response);
+        when(getWarehouseUseCase.execute(UUID.fromString(id)))
+                .thenReturn(response);
 
-        ResponseEntity<WarehouseDetailResponse> result = warehouseController.getById(UUID.fromString(id));
+        ResponseEntity<WarehouseDetailResponse> result = warehouseController
+                .getById(UUID.fromString(id));
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -99,10 +104,11 @@ class WarehouseControllerTest {
         PageResponse<WarehouseListResponse> pageResponse = new PageResponse<>(
                 List.of(wh), 1L, 1, 20, 0, true, true, false);
 
-        when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(pageResponse);
+        when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(),
+                anyString(), anyString())).thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController.list(null, null, 0, 20, "name", "asc");
+        ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController
+                .list(null, null, 0, 20, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -116,10 +122,11 @@ class WarehouseControllerTest {
         PageResponse<WarehouseListResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 20, 0, true, true, true);
 
-        when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(emptyPage);
+        when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(),
+                anyString(), anyString())).thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController.list(null, null, 0, 20, "name", "asc");
+        ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController
+                .list(null, null, 0, 20, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -132,22 +139,26 @@ class WarehouseControllerTest {
     void should_update_warehouse() {
         UUID uuid = UUID.randomUUID();
         String id = uuid.toString();
-        WarehouseDetailResponse response = new WarehouseDetailResponse(
-                id, "WH-01", "Updated Warehouse", "Addr", "State",
-                "Municipality", "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
+        WarehouseDetailResponse response = new WarehouseDetailResponse(id,
+                "WH-01", "Updated Warehouse", "Addr", "State", "Municipality",
+                "1000", true, true, LocalDateTime.now(), LocalDateTime.now());
 
-        when(updateWarehouseUseCase.execute(eq(uuid), any(UpdateWarehouseRequest.class))).thenReturn(response);
+        when(updateWarehouseUseCase.execute(eq(uuid),
+                any(UpdateWarehouseRequest.class))).thenReturn(response);
 
         UpdateWarehouseRequest request = new UpdateWarehouseRequest(
-                "Updated Warehouse", "Addr", "State", "Municipality", "1000", true);
+                "Updated Warehouse", "Addr", "State", "Municipality", "1000",
+                true);
 
-        ResponseEntity<WarehouseDetailResponse> result = warehouseController.update(uuid, request);
+        ResponseEntity<WarehouseDetailResponse> result = warehouseController
+                .update(uuid, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(id, result.getBody().id());
         assertEquals("Updated Warehouse", result.getBody().name());
-        verify(updateWarehouseUseCase).execute(eq(uuid), any(UpdateWarehouseRequest.class));
+        verify(updateWarehouseUseCase).execute(eq(uuid),
+                any(UpdateWarehouseRequest.class));
     }
 
     @Test

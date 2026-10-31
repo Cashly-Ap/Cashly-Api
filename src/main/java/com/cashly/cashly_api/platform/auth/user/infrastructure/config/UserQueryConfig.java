@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserQueryConfig {
     @Bean
-    public NotificationRecipientsQuery notificationRecipientsQuery(UserRepository userRepository) {
+    public NotificationRecipientsQuery notificationRecipientsQuery(
+            UserRepository userRepository) {
         return new RepositoryNotificationRecipientsQuery(userRepository);
     }
 }

@@ -26,12 +26,14 @@ class PhoneNumberUnitTest {
 
     @Test
     void should_throw_on_null() {
-        assertThrows(IllegalArgumentException.class, () -> new PhoneNumber(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new PhoneNumber(null));
     }
 
     @Test
     void should_throw_on_blank() {
-        assertThrows(IllegalArgumentException.class, () -> new PhoneNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new PhoneNumber("   "));
     }
 
     @Test

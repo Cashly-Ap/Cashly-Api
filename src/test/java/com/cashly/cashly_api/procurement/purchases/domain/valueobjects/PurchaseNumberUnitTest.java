@@ -38,22 +38,26 @@ class PurchaseNumberUnitTest {
 
     @Test
     void should_ThrowException_When_NullValueProvided() {
-        assertThrows(NullPointerException.class, () -> new PurchaseNumber(null));
+        assertThrows(NullPointerException.class,
+                () -> new PurchaseNumber(null));
     }
 
     @Test
     void should_ThrowException_When_BlankValueProvided() {
-        assertThrows(IllegalArgumentException.class, () -> new PurchaseNumber("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new PurchaseNumber("   "));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> PurchaseNumber.of(2026, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> PurchaseNumber.of(2026, 0));
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> PurchaseNumber.of(2026, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> PurchaseNumber.of(2026, -1));
     }
 
     @Test

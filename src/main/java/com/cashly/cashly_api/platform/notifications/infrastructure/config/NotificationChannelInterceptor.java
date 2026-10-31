@@ -19,23 +19,27 @@ public class NotificationChannelInterceptor implements ChannelInterceptor {
     private final TokenService tokens;
     private final AccessService access;
 
-    public NotificationChannelInterceptor(TokenService tokens, AccessService access) {
+    public NotificationChannelInterceptor(TokenService tokens,
+            AccessService access) {
         this.tokens = tokens;
         this.access = access;
     }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        var headers = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        var headers = MessageHeaderAccessor.getAccessor(message,
+                StompHeaderAccessor.class);
         if (headers == null || headers.getCommand() == null) {
             return message;
         }
         var command = headers.getCommand();
-        if (command == StompCommand.DISCONNECT || command == StompCommand.UNSUBSCRIBE) {
+        if (command == StompCommand.DISCONNECT
+                || command == StompCommand.UNSUBSCRIBE) {
             return message;
         }
         if (command == StompCommand.CONNECT) {
-            String authorization = headers.getFirstNativeHeader("Authorization");
+            String authorization = headers
+                    .getFirstNativeHeader("Authorization");
             if (authorization == null || !authorization.startsWith("Bearer ")) {
                 throw new AccessDeniedException("Authentication required");
             }
@@ -45,7 +49,8 @@ public class NotificationChannelInterceptor implements ChannelInterceptor {
             }
             String subject = tokens.extractSubjectId(token);
             access.resolve(UUID.fromString(subject));
-            headers.setUser(new UsernamePasswordAuthenticationToken(subject, null, List.of()));
+            headers.setUser(new UsernamePasswordAuthenticationToken(subject,
+                    null, List.of()));
             return message;
         }
         if (headers.getUser() == null) {
@@ -54,11 +59,14 @@ public class NotificationChannelInterceptor implements ChannelInterceptor {
         String subject = headers.getUser().getName();
         access.resolve(UUID.fromString(subject));
         if (command == StompCommand.SUBSCRIBE
-                && !String.format("/topic/notifications/user/%s", subject).equals(headers.getDestination())) {
-            throw new AccessDeniedException("Only your own notifications can be subscribed");
+                && !String.format("/topic/notifications/user/%s", subject)
+                        .equals(headers.getDestination())) {
+            throw new AccessDeniedException(
+                    "Only your own notifications can be subscribed");
         }
         if (command == StompCommand.SEND) {
-            throw new AccessDeniedException("Notifications do not accept client operations");
+            throw new AccessDeniedException(
+                    "Notifications do not accept client operations");
         }
         return message;
     }

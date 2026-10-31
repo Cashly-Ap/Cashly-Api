@@ -18,7 +18,8 @@ public class PaymentReportsController {
     private final GeneratePaymentPdfUseCase generatePaymentPdfUseCase;
     private final GeneratePaymentHistoryReportPdfUseCase generatePaymentHistoryReportPdfUseCase;
 
-    public PaymentReportsController(GeneratePaymentPdfUseCase generatePaymentPdfUseCase,
+    public PaymentReportsController(
+            GeneratePaymentPdfUseCase generatePaymentPdfUseCase,
             GeneratePaymentHistoryReportPdfUseCase generatePaymentHistoryReportPdfUseCase) {
         this.generatePaymentPdfUseCase = generatePaymentPdfUseCase;
         this.generatePaymentHistoryReportPdfUseCase = generatePaymentHistoryReportPdfUseCase;
@@ -28,9 +29,9 @@ public class PaymentReportsController {
     @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
     public ResponseEntity<byte[]> getPaymentPdf(@PathVariable UUID id) {
         byte[] pdf = generatePaymentPdfUseCase.execute(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"pago-" + id + ".pdf\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"pago-" + id + ".pdf\"")
                 .body(pdf);
     }
 
@@ -42,11 +43,13 @@ public class PaymentReportsController {
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String method) {
-        byte[] pdf = generatePaymentHistoryReportPdfUseCase.execute(dateFrom, dateTo, customerId, type, method);
-        String filename = "historial-pagos-" + LocalDate.now().toString() + ".pdf";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+        byte[] pdf = generatePaymentHistoryReportPdfUseCase.execute(dateFrom,
+                dateTo, customerId, type, method);
+        String filename = "historial-pagos-" + LocalDate.now().toString()
+                + ".pdf";
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .body(pdf);
     }
 }

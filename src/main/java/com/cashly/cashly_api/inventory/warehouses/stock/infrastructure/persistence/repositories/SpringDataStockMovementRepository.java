@@ -11,17 +11,22 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.UUID;
 
-public interface SpringDataStockMovementRepository extends JpaRepository<StockMovementEntity, UUID> {
+public interface SpringDataStockMovementRepository
+        extends
+            JpaRepository<StockMovementEntity, UUID> {
 
-    Page<StockMovementEntity> findByWarehouseIdAndProductId(UUID warehouseId, UUID productId, Pageable pageable);
+    Page<StockMovementEntity> findByWarehouseIdAndProductId(UUID warehouseId,
+            UUID productId, Pageable pageable);
 
-    Page<StockMovementEntity> findByWarehouseIdAndMovementType(
-            UUID warehouseId, MovementType movementType, Pageable pageable);
+    Page<StockMovementEntity> findByWarehouseIdAndMovementType(UUID warehouseId,
+            MovementType movementType, Pageable pageable);
 
     Page<StockMovementEntity> findByWarehouseIdAndProductIdAndMovementType(
-            UUID warehouseId, UUID productId, MovementType movementType, Pageable pageable);
+            UUID warehouseId, UUID productId, MovementType movementType,
+            Pageable pageable);
 
-    Page<StockMovementEntity> findByWarehouseId(UUID warehouseId, Pageable pageable);
+    Page<StockMovementEntity> findByWarehouseId(UUID warehouseId,
+            Pageable pageable);
 
     @Modifying
     @Query("DELETE FROM StockMovementEntity s WHERE s.productId = :productId")

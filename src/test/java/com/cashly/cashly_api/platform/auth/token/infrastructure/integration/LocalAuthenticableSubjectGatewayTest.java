@@ -13,8 +13,10 @@ import static org.mockito.Mockito.*;
 
 class LocalAuthenticableSubjectGatewayTest {
     private final UserRepository users = mock(UserRepository.class);
-    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access = mock(com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService.class);
-    private final LocalAuthenticableSubjectGateway gateway = new LocalAuthenticableSubjectGateway(users, access);
+    private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access = mock(
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService.class);
+    private final LocalAuthenticableSubjectGateway gateway = new LocalAuthenticableSubjectGateway(
+            users, access);
 
     @Test
     void should_resolve_user_without_querying_customers() {
@@ -31,7 +33,9 @@ class LocalAuthenticableSubjectGatewayTest {
     void should_preserve_user_not_found_error() {
         String id = UUID.randomUUID().toString();
         when(users.findById(UserId.from(id))).thenReturn(Optional.empty());
-        assertEquals("User not found", assertThrows(UserNotFoundException.class,
-                () -> gateway.resolve(id, AuthenticableType.USER)).getMessage());
+        assertEquals("User not found",
+                assertThrows(UserNotFoundException.class,
+                        () -> gateway.resolve(id, AuthenticableType.USER))
+                        .getMessage());
     }
 }

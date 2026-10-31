@@ -68,7 +68,16 @@ class DuplicateInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         duplicateInvoiceUseCase = new DuplicateInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(productRepository)), new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryInvoiceCustomerQuery(customerRepository)));
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
+                        new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
+                                warehouseStockRepository,
+                                mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))),
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCatalogGateway(
+                        new com.cashly.cashly_api.catalog.products.application.queries.services.RepositoryStockCatalogQuery(
+                                productRepository)),
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(
+                        new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryInvoiceCustomerQuery(
+                                customerRepository)));
     }
 
     @Test
@@ -78,12 +87,16 @@ class DuplicateInvoiceUseCaseTest {
         Invoice original = buildInvoice(id, productId);
         Product product = buildProduct(productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(2);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        InvoiceDetailResponse response = duplicateInvoiceUseCase.execute(id, null);
+        InvoiceDetailResponse response = duplicateInvoiceUseCase.execute(id,
+                null);
 
         assertNotNull(response);
         verify(invoiceRepository).save(any(Invoice.class));
@@ -93,12 +106,11 @@ class DuplicateInvoiceUseCaseTest {
     void should_ThrowInvoiceNotFoundException_When_InvoiceNotFound() {
         UUID id = UUID.randomUUID();
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.empty());
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                InvoiceNotFoundException.class,
-                () -> duplicateInvoiceUseCase.execute(id, null)
-        );
+        assertThrows(InvoiceNotFoundException.class,
+                () -> duplicateInvoiceUseCase.execute(id, null));
 
         verify(invoiceRepository, never()).save(any());
     }
@@ -110,10 +122,13 @@ class DuplicateInvoiceUseCaseTest {
         Invoice original = buildInvoice(id, productId);
         Product product = buildProduct(productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(99);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         duplicateInvoiceUseCase.execute(id, null);
 
@@ -126,27 +141,33 @@ class DuplicateInvoiceUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
 
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, BigDecimal.valueOf(5));
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Invoice original = Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "User", null, null,
-                InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(warehouseId, BigDecimal.valueOf(5));
+        InvoiceLine line = InvoiceLine.create(productId, "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN,
+                List.of(allocation));
+        Invoice original = Invoice.reconstitute(InvoiceId.of(id),
+                InvoiceNumber.of(2026, 1), UUID.randomUUID(), "Customer",
+                "J-12345678-9", UUID.randomUUID(), "User", null, null,
+                InvoiceStatus.DRAFT, PaymentType.CASH, null, BigDecimal.ZERO,
+                null, null, null, List.of(line), LocalDateTime.now(),
+                LocalDateTime.now());
 
         Product product = buildProduct(productId);
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 0,
-                LocalDateTime.now(), LocalDateTime.now());
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 50, 0, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(2);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         duplicateInvoiceUseCase.execute(id, null);
 
@@ -160,14 +181,14 @@ class DuplicateInvoiceUseCaseTest {
         UUID productId = UUID.randomUUID();
         Invoice original = buildInvoice(id, productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(2);
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> duplicateInvoiceUseCase.execute(id, null)
-        );
+        assertThrows(IllegalArgumentException.class,
+                () -> duplicateInvoiceUseCase.execute(id, null));
 
         verify(invoiceRepository).getNextSequenceForYear(anyInt());
         verify(invoiceRepository, never()).save(any());
@@ -178,21 +199,23 @@ class DuplicateInvoiceUseCaseTest {
         UUID id = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
         UUID originalCustomerId = UUID.randomUUID();
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        Invoice original = Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
-                originalCustomerId, "Original Customer", "J-11111111-1",
-                UUID.randomUUID(), "User Name", null, null,
-                InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+        InvoiceLine line = InvoiceLine.create(productId, "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        Invoice original = Invoice.reconstitute(InvoiceId.of(id),
+                InvoiceNumber.of(2026, 1), originalCustomerId,
+                "Original Customer", "J-11111111-1", UUID.randomUUID(),
+                "User Name", null, null, InvoiceStatus.DRAFT, PaymentType.CASH,
+                null, BigDecimal.ZERO, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
         Product product = buildProduct(productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(2);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         duplicateInvoiceUseCase.execute(id, null);
 
@@ -214,21 +237,21 @@ class DuplicateInvoiceUseCaseTest {
 
         Customer newCustomer = Customer.reconstitute(
                 new CustomerId(newCustomerUuid), new CustomerCode(100L),
-                new LegalName("New Customer SA"),
-                CustomerType.BUSINESS, new Rif("J-22222222-2"),
-                new CustomerAlias("NewCo"), new CreditDays(30),
-                new CreditLimit(BigDecimal.valueOf(50000)),
-                true, LocalDateTime.now(), LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+                new LegalName("New Customer SA"), CustomerType.BUSINESS,
+                new Rif("J-22222222-2"), new CustomerAlias("NewCo"),
+                new CreditDays(30), new CreditLimit(BigDecimal.valueOf(50000)),
+                true, LocalDateTime.now(), LocalDateTime.now(), List.of(),
+                List.of(), List.of(), null, null);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
         when(customerRepository.findById(new CustomerId(newCustomerUuid)))
                 .thenReturn(Optional.of(newCustomer));
         when(invoiceRepository.getNextSequenceForYear(anyInt())).thenReturn(2);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(any(Invoice.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         duplicateInvoiceUseCase.execute(id, newCustomerUuid);
 
@@ -246,36 +269,31 @@ class DuplicateInvoiceUseCaseTest {
         UUID nonExistentCustomerId = UUID.randomUUID();
         Invoice original = buildInvoice(id, productId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(original));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(original));
         when(customerRepository.findById(new CustomerId(nonExistentCustomerId)))
                 .thenReturn(Optional.empty());
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> duplicateInvoiceUseCase.execute(id, nonExistentCustomerId)
-        );
+        assertThrows(IllegalArgumentException.class,
+                () -> duplicateInvoiceUseCase.execute(id,
+                        nonExistentCustomerId));
 
         verify(invoiceRepository, never()).save(any());
     }
 
     private Invoice buildInvoice(UUID id, UUID productId) {
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+        InvoiceLine line = InvoiceLine.create(productId, "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name", null, null,
-                InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+                UUID.randomUUID(), "User Name", null, null, InvoiceStatus.DRAFT,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Product buildProduct(UUID productId) {
-        return Product.reconstitute(
-                productId, "PROD-001", "Product A",
-                null, null, false, true, null,
-                BigDecimal.valueOf(8),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Product.reconstitute(productId, "PROD-001", "Product A", null,
+                null, false, true, null, BigDecimal.valueOf(8), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
     }
 }

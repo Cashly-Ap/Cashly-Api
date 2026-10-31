@@ -48,17 +48,14 @@ class PaymentMethodRepositoryAdapterTest {
         @Test
         void should_MapToEntityAndDelegateToJpaRepository() {
             PaymentMethod paymentMethod = PaymentMethod.reconstitute(
-                    PaymentMethodId.of(UUID.randomUUID()),
-                    "PM-001",
-                    "Cash",
-                    "Cash payment method",
-                    true,
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+                    PaymentMethodId.of(UUID.randomUUID()), "PM-001", "Cash",
+                    "Cash payment method", true, LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            PaymentMethodEntity expectedEntity = PaymentMethodJpaMapper.toEntity(paymentMethod);
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            PaymentMethodEntity expectedEntity = PaymentMethodJpaMapper
+                    .toEntity(paymentMethod);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             PaymentMethod saved = adapter.save(paymentMethod);
 
@@ -66,7 +63,8 @@ class PaymentMethodRepositoryAdapterTest {
             assertEquals(paymentMethod.getId(), saved.getId());
             assertEquals(paymentMethod.getCode(), saved.getCode());
             assertEquals(paymentMethod.getName(), saved.getName());
-            assertEquals(paymentMethod.getDescription(), saved.getDescription());
+            assertEquals(paymentMethod.getDescription(),
+                    saved.getDescription());
             assertEquals(paymentMethod.isActive(), saved.isActive());
             assertEquals(paymentMethod.getCreatedAt(), saved.getCreatedAt());
             assertEquals(paymentMethod.getUpdatedAt(), saved.getUpdatedAt());
@@ -75,7 +73,8 @@ class PaymentMethodRepositoryAdapterTest {
             assertEquals(paymentMethod.getId().value(), captured.getId());
             assertEquals(paymentMethod.getCode(), captured.getCode());
             assertEquals(paymentMethod.getName(), captured.getName());
-            assertEquals(paymentMethod.getDescription(), captured.getDescription());
+            assertEquals(paymentMethod.getDescription(),
+                    captured.getDescription());
             assertEquals(paymentMethod.isActive(), captured.isActive());
             assertEquals(paymentMethod.getCreatedAt(), captured.getCreatedAt());
             assertEquals(paymentMethod.getUpdatedAt(), captured.getUpdatedAt());
@@ -86,15 +85,17 @@ class PaymentMethodRepositoryAdapterTest {
         @Test
         void should_ReturnUpdatedObject_When_SavingExistingEntity() {
             PaymentMethodId id = PaymentMethodId.of(UUID.randomUUID());
-            PaymentMethod existing = PaymentMethod.reconstitute(
-                    id, "PM-001", "Cash", "Cash payment method",
-                    true, LocalDateTime.now().minusDays(1), LocalDateTime.now().minusDays(1)
-            );
+            PaymentMethod existing = PaymentMethod.reconstitute(id, "PM-001",
+                    "Cash", "Cash payment method", true,
+                    LocalDateTime.now().minusDays(1),
+                    LocalDateTime.now().minusDays(1));
 
             existing.update("Updated Cash", "Updated description", false);
 
-            PaymentMethodEntity expectedEntity = PaymentMethodJpaMapper.toEntity(existing);
-            when(jpaRepository.save(any(PaymentMethodEntity.class))).thenReturn(expectedEntity);
+            PaymentMethodEntity expectedEntity = PaymentMethodJpaMapper
+                    .toEntity(existing);
+            when(jpaRepository.save(any(PaymentMethodEntity.class)))
+                    .thenReturn(expectedEntity);
 
             PaymentMethod saved = adapter.save(existing);
 
@@ -114,14 +115,13 @@ class PaymentMethodRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObject_When_EntityFound() {
             PaymentMethodId id = PaymentMethodId.generate();
-            PaymentMethodEntity entity = PaymentMethodJpaMapper.toEntity(
-                    PaymentMethod.reconstitute(
-                            id, "PM-001", "Cash", "Cash payment",
-                            true, LocalDateTime.now(), LocalDateTime.now()
-                    )
-            );
+            PaymentMethodEntity entity = PaymentMethodJpaMapper
+                    .toEntity(PaymentMethod.reconstitute(id, "PM-001", "Cash",
+                            "Cash payment", true, LocalDateTime.now(),
+                            LocalDateTime.now()));
 
-            when(jpaRepository.findById(id.value())).thenReturn(Optional.of(entity));
+            when(jpaRepository.findById(id.value()))
+                    .thenReturn(Optional.of(entity));
 
             Optional<PaymentMethod> result = adapter.findById(id);
 
@@ -134,7 +134,8 @@ class PaymentMethodRepositoryAdapterTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             PaymentMethodId id = PaymentMethodId.generate();
-            when(jpaRepository.findById(id.value())).thenReturn(Optional.empty());
+            when(jpaRepository.findById(id.value()))
+                    .thenReturn(Optional.empty());
 
             Optional<PaymentMethod> result = adapter.findById(id);
 
@@ -150,11 +151,9 @@ class PaymentMethodRepositoryAdapterTest {
         @Test
         void should_ReturnDomainObjects_When_EntitiesFound() {
             PaymentMethodEntity entity = PaymentMethodJpaMapper.toEntity(
-                    PaymentMethod.reconstitute(
-                            PaymentMethodId.generate(), "PM-001", "Cash", "Cash payment",
-                            true, LocalDateTime.now(), LocalDateTime.now()
-                    )
-            );
+                    PaymentMethod.reconstitute(PaymentMethodId.generate(),
+                            "PM-001", "Cash", "Cash payment", true,
+                            LocalDateTime.now(), LocalDateTime.now()));
 
             when(jpaRepository.findAllActive(true)).thenReturn(List.of(entity));
 
@@ -169,11 +168,9 @@ class PaymentMethodRepositoryAdapterTest {
         @Test
         void should_ReturnAll_When_ActiveParamIsNull() {
             PaymentMethodEntity entity = PaymentMethodJpaMapper.toEntity(
-                    PaymentMethod.reconstitute(
-                            PaymentMethodId.generate(), "PM-001", "Cash", "Cash payment",
-                            true, LocalDateTime.now(), LocalDateTime.now()
-                    )
-            );
+                    PaymentMethod.reconstitute(PaymentMethodId.generate(),
+                            "PM-001", "Cash", "Cash payment", true,
+                            LocalDateTime.now(), LocalDateTime.now()));
 
             when(jpaRepository.findAllActive(null)).thenReturn(List.of(entity));
 
@@ -204,13 +201,12 @@ class PaymentMethodRepositoryAdapterTest {
         void should_ReturnDomainObject_When_EntityFound() {
             String code = "PM-001";
             PaymentMethodEntity entity = PaymentMethodJpaMapper.toEntity(
-                    PaymentMethod.reconstitute(
-                            PaymentMethodId.generate(), code, "Cash", "Cash payment",
-                            true, LocalDateTime.now(), LocalDateTime.now()
-                    )
-            );
+                    PaymentMethod.reconstitute(PaymentMethodId.generate(), code,
+                            "Cash", "Cash payment", true, LocalDateTime.now(),
+                            LocalDateTime.now()));
 
-            when(jpaRepository.findByCode(code)).thenReturn(Optional.of(entity));
+            when(jpaRepository.findByCode(code))
+                    .thenReturn(Optional.of(entity));
 
             Optional<PaymentMethod> result = adapter.findByCode(code);
 

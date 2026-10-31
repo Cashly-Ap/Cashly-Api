@@ -20,19 +20,14 @@ class CashRegisterMetricsTest {
         @Test
         void should_CreateWithAllFields() {
             List<RevenueSummaryItem> revenue = List.of(
-                    new RevenueSummaryItem("Cash", new BigDecimal("1000.00"))
-            );
-            List<ExpenseSummaryItem> expenses = List.of(
-                    new ExpenseSummaryItem("Devoluciones", new BigDecimal("50.00"))
-            );
+                    new RevenueSummaryItem("Cash", new BigDecimal("1000.00")));
+            List<ExpenseSummaryItem> expenses = List.of(new ExpenseSummaryItem(
+                    "Devoluciones", new BigDecimal("50.00")));
 
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    new BigDecimal("2000.00"),
-                    new BigDecimal("1000.00"),
-                    new BigDecimal("50.00"),
-                    new BigDecimal("950.00"),
-                    revenue, expenses
-            );
+                    new BigDecimal("2000.00"), new BigDecimal("1000.00"),
+                    new BigDecimal("50.00"), new BigDecimal("950.00"), revenue,
+                    expenses);
 
             assertEquals(new BigDecimal("2000.00"), metrics.totalInvoiced());
             assertEquals(new BigDecimal("1000.00"), metrics.totalRevenue());
@@ -50,12 +45,8 @@ class CashRegisterMetricsTest {
         @Test
         void should_CalculateBalance_When_NullProvided() {
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    new BigDecimal("2000.00"),
-                    new BigDecimal("1000.00"),
-                    new BigDecimal("100.00"),
-                    null,
-                    List.of(), List.of()
-            );
+                    new BigDecimal("2000.00"), new BigDecimal("1000.00"),
+                    new BigDecimal("100.00"), null, List.of(), List.of());
 
             assertEquals(new BigDecimal("900.00"), metrics.balance());
         }
@@ -63,26 +54,19 @@ class CashRegisterMetricsTest {
         @Test
         void should_RoundBalanceToTwoDecimals() {
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    new BigDecimal("2000.00"),
-                    new BigDecimal("100.00"),
-                    new BigDecimal("33.33"),
-                    null,
-                    List.of(), List.of()
-            );
+                    new BigDecimal("2000.00"), new BigDecimal("100.00"),
+                    new BigDecimal("33.33"), null, List.of(), List.of());
 
-            BigDecimal expected = new BigDecimal("66.67").setScale(2, RoundingMode.HALF_UP);
+            BigDecimal expected = new BigDecimal("66.67").setScale(2,
+                    RoundingMode.HALF_UP);
             assertEquals(expected, metrics.balance());
         }
 
         @Test
         void should_ReturnZeroBalance_When_RevenueAndExpensesAreNull() {
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    new BigDecimal("2000.00"),
-                    null,
-                    null,
-                    null,
-                    List.of(), List.of()
-            );
+                    new BigDecimal("2000.00"), null, null, null, List.of(),
+                    List.of());
 
             assertEquals(BigDecimal.ZERO, metrics.balance());
         }
@@ -90,12 +74,9 @@ class CashRegisterMetricsTest {
         @Test
         void should_PreserveExplicitBalance_When_Provided() {
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    new BigDecimal("2000.00"),
-                    new BigDecimal("1000.00"),
-                    new BigDecimal("100.00"),
-                    new BigDecimal("500.00"),
-                    List.of(), List.of()
-            );
+                    new BigDecimal("2000.00"), new BigDecimal("1000.00"),
+                    new BigDecimal("100.00"), new BigDecimal("500.00"),
+                    List.of(), List.of());
 
             assertEquals(new BigDecimal("500.00"), metrics.balance());
         }
@@ -108,9 +89,8 @@ class CashRegisterMetricsTest {
         @Test
         void should_AcceptEmptyRevenueSummary() {
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    List.of(), List.of()
-            );
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, List.of(), List.of());
 
             assertTrue(metrics.revenueSummary().isEmpty());
         }
@@ -118,9 +98,8 @@ class CashRegisterMetricsTest {
         @Test
         void should_AcceptEmptyExpenseSummary() {
             CashRegisterMetrics metrics = new CashRegisterMetrics(
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                    List.of(), List.of()
-            );
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, List.of(), List.of());
 
             assertTrue(metrics.expenseSummary().isEmpty());
         }
@@ -137,14 +116,12 @@ class CashRegisterMetricsTest {
 
         @Test
         void should_ImplementEqualsAndHashCode() {
-            CashRegisterMetrics m1 = new CashRegisterMetrics(
-                    BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ONE,
-                    List.of(), List.of()
-            );
-            CashRegisterMetrics m2 = new CashRegisterMetrics(
-                    BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ONE,
-                    List.of(), List.of()
-            );
+            CashRegisterMetrics m1 = new CashRegisterMetrics(BigDecimal.TEN,
+                    BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ONE, List.of(),
+                    List.of());
+            CashRegisterMetrics m2 = new CashRegisterMetrics(BigDecimal.TEN,
+                    BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ONE, List.of(),
+                    List.of());
 
             assertEquals(m1, m2);
             assertEquals(m1.hashCode(), m2.hashCode());

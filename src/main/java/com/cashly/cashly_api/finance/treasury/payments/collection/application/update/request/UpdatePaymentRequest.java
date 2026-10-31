@@ -15,7 +15,7 @@ public record UpdatePaymentRequest(
 
         UUID paymentMethodId,
 
-        @Size(max = 1000, message = "Notes must be at most 1000 characters")
-        String notes
+        @Size(max = 1000, message = "Notes must be at most 1000 characters") String notes
 
-) {}
+) {
+}

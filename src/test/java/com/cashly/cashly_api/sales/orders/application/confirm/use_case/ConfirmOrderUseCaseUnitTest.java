@@ -29,9 +29,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ConfirmOrderUseCaseUnitTest {
-    @Mock private OrderRepository orders;
-    @Mock private OrderInventoryGateway inventory;
-    @Mock private OrderNotificationGateway notifications;
+    @Mock
+    private OrderRepository orders;
+    @Mock
+    private OrderInventoryGateway inventory;
+    @Mock
+    private OrderNotificationGateway notifications;
     private ConfirmOrderUseCase useCase;
 
     @BeforeEach
@@ -46,14 +49,19 @@ class ConfirmOrderUseCaseUnitTest {
         UUID warehouseId = UUID.randomUUID();
         Order order = order(id, OrderStatus.DRAFT, productId, warehouseId);
         when(orders.findById(OrderId.of(id))).thenReturn(Optional.of(order));
-        when(orders.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orders.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         var result = useCase.execute(id);
 
         assertEquals("CONFIRMED", result.status());
-        verify(inventory).deductReservations(List.of(new OrderInventoryGateway.Allocation(warehouseId, productId, 4)),
-                new OrderInventoryGateway.Reference(id, "ORD-2026-00001", "Order confirmed"));
-        verify(notifications).notifyCustomerOrderApproved(order.getCustomerId(), id);
+        verify(inventory).deductReservations(
+                List.of(new OrderInventoryGateway.Allocation(warehouseId,
+                        productId, 4)),
+                new OrderInventoryGateway.Reference(id, "ORD-2026-00001",
+                        "Order confirmed"));
+        verify(notifications).notifyCustomerOrderApproved(order.getCustomerId(),
+                id);
     }
 
     @Test
@@ -66,11 +74,15 @@ class ConfirmOrderUseCaseUnitTest {
         verifyNoInteractions(inventory, notifications);
     }
 
-    private Order order(UUID id, OrderStatus status, UUID productId, UUID warehouseId) {
-        var line = OrderLine.create(productId, "Product", "SKU", BigDecimal.valueOf(4), BigDecimal.TEN,
-                List.of(OrderLineAllocation.create(warehouseId, BigDecimal.valueOf(4))));
-        return Order.reconstitute(OrderId.of(id), OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer", "RIF",
-                UUID.randomUUID(), "Actor", status, null, null, null, null, null, List.of(line),
+    private Order order(UUID id, OrderStatus status, UUID productId,
+            UUID warehouseId) {
+        var line = OrderLine.create(productId, "Product", "SKU",
+                BigDecimal.valueOf(4), BigDecimal.TEN,
+                List.of(OrderLineAllocation.create(warehouseId,
+                        BigDecimal.valueOf(4))));
+        return Order.reconstitute(OrderId.of(id), OrderNumber.of(2026, 1),
+                UUID.randomUUID(), "Customer", "RIF", UUID.randomUUID(),
+                "Actor", status, null, null, null, null, null, List.of(line),
                 LocalDateTime.now(), LocalDateTime.now());
     }
 }

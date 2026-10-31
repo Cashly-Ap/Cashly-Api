@@ -6,7 +6,9 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import java.util.Optional;
 import java.util.UUID;
 
-public class RepositoryWarehouseDirectoryQuery implements WarehouseDirectoryQuery {
+public class RepositoryWarehouseDirectoryQuery
+        implements
+            WarehouseDirectoryQuery {
     private final WarehouseRepository warehouses;
 
     public RepositoryWarehouseDirectoryQuery(WarehouseRepository warehouses) {
@@ -15,7 +17,8 @@ public class RepositoryWarehouseDirectoryQuery implements WarehouseDirectoryQuer
 
     @Override
     public Optional<WarehouseDirectoryEntry> findById(UUID warehouseId) {
-        return warehouses.findById(warehouseId).map(warehouse ->
-                new WarehouseDirectoryEntry(warehouse.getId(), warehouse.getName(), warehouse.getAddress()));
+        return warehouses.findById(warehouseId)
+                .map(warehouse -> new WarehouseDirectoryEntry(warehouse.getId(),
+                        warehouse.getName(), warehouse.getAddress()));
     }
 }

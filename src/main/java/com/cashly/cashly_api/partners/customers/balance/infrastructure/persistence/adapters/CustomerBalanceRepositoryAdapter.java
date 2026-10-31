@@ -19,13 +19,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class CustomerBalanceRepositoryAdapter implements CustomerBalanceRepository {
+public class CustomerBalanceRepositoryAdapter
+        implements
+            CustomerBalanceRepository {
 
     private final CustomerBalanceJpaRepository jpaRepository;
     private final EntityManager entityManager;
 
-    public CustomerBalanceRepositoryAdapter(CustomerBalanceJpaRepository jpaRepository,
-                                             EntityManager entityManager) {
+    public CustomerBalanceRepositoryAdapter(
+            CustomerBalanceJpaRepository jpaRepository,
+            EntityManager entityManager) {
         this.jpaRepository = jpaRepository;
         this.entityManager = entityManager;
     }
@@ -40,7 +43,7 @@ public class CustomerBalanceRepositoryAdapter implements CustomerBalanceReposito
     @Override
     public Optional<CustomerBalance> findByCustomerId(UUID customerId) {
         return jpaRepository.findByCustomerId(customerId)
-            .map(CustomerBalanceJpaMapper::toDomain);
+                .map(CustomerBalanceJpaMapper::toDomain);
     }
 
     @Override
@@ -52,9 +55,12 @@ public class CustomerBalanceRepositoryAdapter implements CustomerBalanceReposito
     }
 
     @Override
-    public PageResponse<BalanceTransaction> findTransactionsByCustomerId(UUID customerId, int page, int size) {
-        return PageResponseMapper.from(jpaRepository.findTransactionsByCustomerId(customerId, PageRequest.of(page, size))
-            .map(BalanceTransactionJpaMapper::toDomain));
+    public PageResponse<BalanceTransaction> findTransactionsByCustomerId(
+            UUID customerId, int page, int size) {
+        return PageResponseMapper.from(jpaRepository
+                .findTransactionsByCustomerId(customerId,
+                        PageRequest.of(page, size))
+                .map(BalanceTransactionJpaMapper::toDomain));
     }
 
     @Override

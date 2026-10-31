@@ -14,9 +14,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JpaProductUsageQueriesTest {
-    @Mock private SpringDataProductUsageRepository springDataRepository;
+    @Mock
+    private SpringDataProductUsageRepository springDataRepository;
     private JpaProductUsageQueries repository;
-    @BeforeEach void setUp() {
+    @BeforeEach
+    void setUp() {
         repository = new JpaProductUsageQueries(springDataRepository);
     }
     @Nested
@@ -26,23 +28,27 @@ class JpaProductUsageQueriesTest {
         @Test
         void should_DelegateToSpringDataRepository() {
             UUID categoryId = UUID.randomUUID();
-            when(springDataRepository.countActiveProductsByCategory(categoryId)).thenReturn(5L);
+            when(springDataRepository.countActiveProductsByCategory(categoryId))
+                    .thenReturn(5L);
 
             long result = repository.countActiveProductsByCategory(categoryId);
 
             assertEquals(5L, result);
-            verify(springDataRepository).countActiveProductsByCategory(categoryId);
+            verify(springDataRepository)
+                    .countActiveProductsByCategory(categoryId);
         }
 
         @Test
         void should_ReturnZero_When_NoActiveProducts() {
             UUID categoryId = UUID.randomUUID();
-            when(springDataRepository.countActiveProductsByCategory(categoryId)).thenReturn(0L);
+            when(springDataRepository.countActiveProductsByCategory(categoryId))
+                    .thenReturn(0L);
 
             long result = repository.countActiveProductsByCategory(categoryId);
 
             assertEquals(0L, result);
-            verify(springDataRepository).countActiveProductsByCategory(categoryId);
+            verify(springDataRepository)
+                    .countActiveProductsByCategory(categoryId);
         }
     }
 
@@ -79,8 +85,10 @@ class JpaProductUsageQueriesTest {
         UUID second = UUID.randomUUID();
         Set<UUID> ids = Set.of(first, second);
         when(springDataRepository.countActiveProductsByCategoryIds(ids))
-                .thenReturn(List.of(new Object[]{first, 5L}, new Object[]{second, 2}));
-        assertEquals(Map.of(first, 5L, second, 2L), repository.countActiveProductsByCategoryIds(ids));
+                .thenReturn(List.of(new Object[]{first, 5L},
+                        new Object[]{second, 2}));
+        assertEquals(Map.of(first, 5L, second, 2L),
+                repository.countActiveProductsByCategoryIds(ids));
         verify(springDataRepository).countActiveProductsByCategoryIds(ids);
         verifyNoMoreInteractions(springDataRepository);
     }
@@ -90,7 +98,8 @@ class JpaProductUsageQueriesTest {
         UUID used = UUID.randomUUID();
         UUID unused = UUID.randomUUID();
         Set<UUID> ids = Set.of(used, unused);
-        when(springDataRepository.findIdsInUseByProducts(ids)).thenReturn(Set.of(used));
+        when(springDataRepository.findIdsInUseByProducts(ids))
+                .thenReturn(Set.of(used));
         assertEquals(Set.of(used), repository.findIdsInUseByProducts(ids));
         verify(springDataRepository).findIdsInUseByProducts(ids);
         verifyNoMoreInteractions(springDataRepository);
@@ -98,7 +107,8 @@ class JpaProductUsageQueriesTest {
 
     @Test
     void shouldSkipUsageQueriesForEmptyInput() {
-        assertEquals(Map.of(), repository.countActiveProductsByCategoryIds(Set.of()));
+        assertEquals(Map.of(),
+                repository.countActiveProductsByCategoryIds(Set.of()));
         assertEquals(Set.of(), repository.findIdsInUseByProducts(Set.of()));
         verifyNoInteractions(springDataRepository);
     }

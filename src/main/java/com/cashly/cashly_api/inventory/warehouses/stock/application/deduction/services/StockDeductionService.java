@@ -16,9 +16,13 @@ public class StockDeductionService implements StockDeductionApi {
     @Transactional
     public void deduct(List<Allocation> allocations) {
         for (Allocation allocation : allocations) {
-            var stock = stocks.findByWarehouseIdAndProductIdForUpdate(allocation.warehouseId(), allocation.productId())
-                    .orElseThrow(() -> new IllegalStateException("No stock found for product " + allocation.productId()
-                            + " in warehouse " + allocation.warehouseId()));
+            var stock = stocks
+                    .findByWarehouseIdAndProductIdForUpdate(
+                            allocation.warehouseId(), allocation.productId())
+                    .orElseThrow(() -> new IllegalStateException(
+                            "No stock found for product "
+                                    + allocation.productId() + " in warehouse "
+                                    + allocation.warehouseId()));
             stock.removeStock(allocation.quantity());
             stocks.save(stock);
         }

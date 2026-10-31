@@ -13,7 +13,8 @@ public class GetReturnByIdUseCase {
     private final ReturnRepository returnRepository;
     private final ReturnResponseAssembler responses;
 
-    public GetReturnByIdUseCase(ReturnRepository returnRepository, ReturnResponseAssembler responses) {
+    public GetReturnByIdUseCase(ReturnRepository returnRepository,
+            ReturnResponseAssembler responses) {
         this.returnRepository = returnRepository;
         this.responses = responses;
     }

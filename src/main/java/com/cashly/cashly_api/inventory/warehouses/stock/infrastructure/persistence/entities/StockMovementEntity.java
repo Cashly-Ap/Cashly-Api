@@ -12,16 +12,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "stock_movements",
-    indexes = {
+@Table(name = "stock_movements", indexes = {
         @Index(name = "idx_stock_movement_warehouse", columnList = "warehouse_id"),
         @Index(name = "idx_stock_movement_product", columnList = "product_id"),
         @Index(name = "idx_stock_movement_type", columnList = "movement_type"),
         @Index(name = "idx_stock_movement_batch", columnList = "transfer_batch_id"),
-        @Index(name = "idx_sm_ref_type_id", columnList = "reference_type, reference_id")
-    }
-)
+        @Index(name = "idx_sm_ref_type_id", columnList = "reference_type, reference_id")})
 @Getter
 @Setter
 @NoArgsConstructor

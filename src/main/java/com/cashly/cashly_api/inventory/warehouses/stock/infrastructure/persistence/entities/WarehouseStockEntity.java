@@ -10,17 +10,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "warehouse_stock",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_warehouse_stock_product",
-        columnNames = {"warehouse_id", "product_id"}
-    ),
-    indexes = {
-        @Index(name = "idx_warehouse_stock_warehouse", columnList = "warehouse_id"),
-        @Index(name = "idx_warehouse_stock_product", columnList = "product_id")
-    }
-)
+@Table(name = "warehouse_stock", uniqueConstraints = @UniqueConstraint(name = "uk_warehouse_stock_product", columnNames = {
+        "warehouse_id", "product_id"}), indexes = {
+                @Index(name = "idx_warehouse_stock_warehouse", columnList = "warehouse_id"),
+                @Index(name = "idx_warehouse_stock_product", columnList = "product_id")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -73,6 +66,7 @@ public class WarehouseStockEntity {
     }
 
     public WarehouseStock toDomain() {
-        return new WarehouseStock(id, warehouseId, productId, quantity, reserved, lastMovementAt, updatedAt);
+        return new WarehouseStock(id, warehouseId, productId, quantity,
+                reserved, lastMovementAt, updatedAt);
     }
 }

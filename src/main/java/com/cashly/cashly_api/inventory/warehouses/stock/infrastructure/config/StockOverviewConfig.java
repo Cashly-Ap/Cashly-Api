@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StockOverviewConfig {
     @Bean
-    public GetStockOverviewUseCase getStockOverviewUseCase(StockOverviewQueryGateway gateway) {
+    public GetStockOverviewUseCase getStockOverviewUseCase(
+            StockOverviewQueryGateway gateway) {
         return new GetStockOverviewUseCase(gateway);
     }
 }

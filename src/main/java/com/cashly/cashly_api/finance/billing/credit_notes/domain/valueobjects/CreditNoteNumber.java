@@ -10,14 +10,17 @@ public record CreditNoteNumber(String value) {
     public CreditNoteNumber {
         Objects.requireNonNull(value, "CreditNoteNumber cannot be null");
         if (value.isBlank()) {
-            throw new IllegalArgumentException("CreditNoteNumber cannot be blank");
+            throw new IllegalArgumentException(
+                    "CreditNoteNumber cannot be blank");
         }
     }
 
     public static CreditNoteNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
-        return new CreditNoteNumber(String.format(FORMAT, PREFIX, year, sequence));
+        return new CreditNoteNumber(
+                String.format(FORMAT, PREFIX, year, sequence));
     }
 }

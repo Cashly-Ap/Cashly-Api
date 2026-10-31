@@ -2,7 +2,6 @@ package com.cashly.cashly_api.sales.quotes.reporting.application.generate_quote_
 
 import java.util.UUID;
 
-
 public interface GenerateQuotePdfUseCase {
     byte[] execute(UUID quoteId);
 }

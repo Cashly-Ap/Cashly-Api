@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CreditNote Domain Entity Unit Tests")
 class CreditNoteUnitTest {
 
-    private static final CreditNoteNumber NOTE_NUMBER = CreditNoteNumber.of(2026, 1);
+    private static final CreditNoteNumber NOTE_NUMBER = CreditNoteNumber
+            .of(2026, 1);
     private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final UUID INVOICE_ID = UUID.randomUUID();
     private static final BigDecimal AMOUNT = new BigDecimal("150.00");
@@ -29,8 +30,8 @@ class CreditNoteUnitTest {
 
         @Test
         void should_CreateCreditNote_When_ValidDataProvided() {
-            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             assertNotNull(creditNote.getId());
             assertEquals(NOTE_NUMBER, creditNote.getNoteNumber());
@@ -47,86 +48,96 @@ class CreditNoteUnitTest {
 
         @Test
         void should_ThrowException_When_NoteNumberIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(null, CUSTOMER_ID, INVOICE_ID,
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(null, CUSTOMER_ID, INVOICE_ID,
                             AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME));
         }
 
         @Test
         void should_ThrowException_When_CustomerIdIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, null, INVOICE_ID,
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, null, INVOICE_ID,
                             AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME));
         }
 
         @Test
         void should_ThrowException_When_InvoiceIdIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, null,
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, null,
                             AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME));
         }
 
         @Test
         void should_ThrowException_When_AmountIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            null, REASON, CREATED_BY, CREATED_BY_NAME));
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, null, REASON, CREATED_BY,
+                            CREATED_BY_NAME));
         }
 
         @Test
         void should_ThrowException_When_AmountIsZero() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            BigDecimal.ZERO, REASON, CREATED_BY, CREATED_BY_NAME));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, BigDecimal.ZERO, REASON, CREATED_BY,
+                            CREATED_BY_NAME));
 
-            assertEquals("Amount must be greater than zero", exception.getMessage());
+            assertEquals("Amount must be greater than zero",
+                    exception.getMessage());
         }
 
         @Test
         void should_ThrowException_When_AmountIsNegative() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            new BigDecimal("-50.00"), REASON, CREATED_BY, CREATED_BY_NAME));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, new BigDecimal("-50.00"), REASON,
+                            CREATED_BY, CREATED_BY_NAME));
 
-            assertEquals("Amount must be greater than zero", exception.getMessage());
+            assertEquals("Amount must be greater than zero",
+                    exception.getMessage());
         }
 
         @Test
         void should_ThrowException_When_ReasonIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            AMOUNT, null, CREATED_BY, CREATED_BY_NAME));
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, AMOUNT, null, CREATED_BY,
+                            CREATED_BY_NAME));
         }
 
         @Test
         void should_ThrowException_When_ReasonIsBlank() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            AMOUNT, "   ", CREATED_BY, CREATED_BY_NAME));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, AMOUNT, "   ", CREATED_BY,
+                            CREATED_BY_NAME));
 
             assertEquals("Reason cannot be blank", exception.getMessage());
         }
 
         @Test
         void should_ThrowException_When_CreatedByIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            AMOUNT, REASON, null, CREATED_BY_NAME));
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, AMOUNT, REASON, null, CREATED_BY_NAME));
         }
 
         @Test
         void should_ThrowException_When_CreatedByNameIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                            AMOUNT, REASON, CREATED_BY, null));
+            assertThrows(NullPointerException.class,
+                    () -> CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                            INVOICE_ID, AMOUNT, REASON, CREATED_BY, null));
         }
 
         @Test
         void should_GenerateDifferentIds_When_CreatingMultipleNotes() {
-            CreditNote first = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
-            CreditNote second = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote first = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote second = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             assertNotEquals(first.getId(), second.getId());
         }
@@ -141,8 +152,9 @@ class CreditNoteUnitTest {
             CreditNoteId id = CreditNoteId.generate();
             LocalDateTime now = LocalDateTime.now();
 
-            CreditNote creditNote = CreditNote.reconstitute(id, NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME, now, now);
+            CreditNote creditNote = CreditNote.reconstitute(id, NOTE_NUMBER,
+                    CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON, CREATED_BY,
+                    CREATED_BY_NAME, now, now);
 
             assertEquals(id, creditNote.getId());
             assertEquals(NOTE_NUMBER, creditNote.getNoteNumber());
@@ -162,8 +174,9 @@ class CreditNoteUnitTest {
             LocalDateTime createdAt = LocalDateTime.of(2026, 1, 15, 10, 0);
             LocalDateTime updatedAt = LocalDateTime.of(2026, 1, 16, 14, 30);
 
-            CreditNote creditNote = CreditNote.reconstitute(id, NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME, createdAt, updatedAt);
+            CreditNote creditNote = CreditNote.reconstitute(id, NOTE_NUMBER,
+                    CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON, CREATED_BY,
+                    CREATED_BY_NAME, createdAt, updatedAt);
 
             assertEquals(createdAt, creditNote.getCreatedAt());
             assertEquals(updatedAt, creditNote.getUpdatedAt());
@@ -176,8 +189,8 @@ class CreditNoteUnitTest {
 
         @Test
         void should_ReturnGeneratedId() {
-            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             assertNotNull(creditNote.getId());
             assertInstanceOf(CreditNoteId.class, creditNote.getId());
@@ -185,24 +198,24 @@ class CreditNoteUnitTest {
 
         @Test
         void should_ReturnNoteNumber() {
-            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             assertEquals(NOTE_NUMBER, creditNote.getNoteNumber());
         }
 
         @Test
         void should_ReturnAmount() {
-            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             assertEquals(AMOUNT, creditNote.getAmount());
         }
 
         @Test
         void should_ReturnReason() {
-            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             assertEquals(REASON, creditNote.getReason());
         }
@@ -217,11 +230,14 @@ class CreditNoteUnitTest {
             CreditNoteId id = CreditNoteId.generate();
             LocalDateTime now = LocalDateTime.now();
 
-            CreditNote first = CreditNote.reconstitute(id, NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME, now, now);
-            CreditNote second = CreditNote.reconstitute(id, CreditNoteNumber.of(2026, 2),
-                    UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("200.00"),
-                    "Another reason", UUID.randomUUID(), "Another user", now, now);
+            CreditNote first = CreditNote.reconstitute(id, NOTE_NUMBER,
+                    CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON, CREATED_BY,
+                    CREATED_BY_NAME, now, now);
+            CreditNote second = CreditNote.reconstitute(id,
+                    CreditNoteNumber.of(2026, 2), UUID.randomUUID(),
+                    UUID.randomUUID(), new BigDecimal("200.00"),
+                    "Another reason", UUID.randomUUID(), "Another user", now,
+                    now);
 
             assertEquals(first, second);
             assertEquals(first.hashCode(), second.hashCode());
@@ -231,10 +247,12 @@ class CreditNoteUnitTest {
         void should_NotBeEqual_When_DifferentIds() {
             LocalDateTime now = LocalDateTime.now();
 
-            CreditNote first = CreditNote.reconstitute(CreditNoteId.generate(), NOTE_NUMBER,
-                    CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME, now, now);
-            CreditNote second = CreditNote.reconstitute(CreditNoteId.generate(), NOTE_NUMBER,
-                    CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME, now, now);
+            CreditNote first = CreditNote.reconstitute(CreditNoteId.generate(),
+                    NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON,
+                    CREATED_BY, CREATED_BY_NAME, now, now);
+            CreditNote second = CreditNote.reconstitute(CreditNoteId.generate(),
+                    NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID, AMOUNT, REASON,
+                    CREATED_BY, CREATED_BY_NAME, now, now);
 
             assertNotEquals(first, second);
         }
@@ -246,8 +264,8 @@ class CreditNoteUnitTest {
 
         @Test
         void should_IncludeIdAndNoteNumberAndAmountInToString() {
-            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID, INVOICE_ID,
-                    AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
+            CreditNote creditNote = CreditNote.create(NOTE_NUMBER, CUSTOMER_ID,
+                    INVOICE_ID, AMOUNT, REASON, CREATED_BY, CREATED_BY_NAME);
 
             String result = creditNote.toString();
 

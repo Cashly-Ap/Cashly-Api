@@ -6,11 +6,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class LocalPaymentMethodUsageGatewayTest {
-    private final com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.in.QueryPaymentMethodUsage payments =
-            mock(com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.in.QueryPaymentMethodUsage.class);
-    private final com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.QueryPaymentMethodUsage cashregister =
-            mock(com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.QueryPaymentMethodUsage.class);
-    private final LocalPaymentMethodUsageGateway gateway = new LocalPaymentMethodUsageGateway(payments, cashregister);
+    private final com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.in.QueryPaymentMethodUsage payments = mock(
+            com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.in.QueryPaymentMethodUsage.class);
+    private final com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.QueryPaymentMethodUsage cashregister = mock(
+            com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.QueryPaymentMethodUsage.class);
+    private final LocalPaymentMethodUsageGateway gateway = new LocalPaymentMethodUsageGateway(
+            payments, cashregister);
 
     @Test
     void should_ReturnTrue_When_PaymentExists() {

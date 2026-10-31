@@ -7,10 +7,14 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valu
 import org.springframework.transaction.annotation.Transactional;
 public class ReturnCashRecordingService implements ReturnCashRecording {
     private final CashMovementService movements;
-    public ReturnCashRecordingService(CashMovementService movements) { this.movements = movements; }
+    public ReturnCashRecordingService(CashMovementService movements) {
+        this.movements = movements;
+    }
     @Transactional
     public void record(Command command) {
-        movements.record(CashMovementDirection.OUT, CashMovementType.RETURN, command.amount(), null,
-                "Devolución " + command.returnNumber(), "RETURN", command.returnId(), command.actorId(), command.actorName());
+        movements.record(CashMovementDirection.OUT, CashMovementType.RETURN,
+                command.amount(), null, "Devolución " + command.returnNumber(),
+                "RETURN", command.returnId(), command.actorId(),
+                command.actorName());
     }
 }

@@ -32,19 +32,25 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class AccountsReceivableReportPdfGenerator implements AccountsReceivableReportPdfPort {
+public class AccountsReceivableReportPdfGenerator
+        implements
+            AccountsReceivableReportPdfPort {
 
     private final PdfBranding branding;
 
-    public AccountsReceivableReportPdfGenerator() { this(new PdfBranding()); }
+    public AccountsReceivableReportPdfGenerator() {
+        this(new PdfBranding());
+    }
 
-    public AccountsReceivableReportPdfGenerator(PdfBranding branding) { this.branding = branding; }
+    public AccountsReceivableReportPdfGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
-    private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245, 245);
+    private static final DeviceRgb LIGHT_GRAY_ROW = new DeviceRgb(245, 245,
+            245);
     private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
     private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
-
 
     @Override
     public byte[] generateReport(AccountsReceivableReportData data) {
@@ -57,10 +63,13 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
             Document document = new Document(pdfDoc);
             document.setMargins(40, 40, 50, 40);
 
-            PdfFont bold = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
+            PdfFont bold = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD);
+            PdfFont regular = PdfFontFactory.createFont(
+                    com.itextpdf.io.font.constants.StandardFonts.HELVETICA);
 
-            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, new PageFooterHandler(regular));
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE,
+                    new PageFooterHandler(regular));
 
             document.add(branding.logo().setMarginBottom(12));
             document.add(buildTitle(bold));
@@ -70,33 +79,47 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
 
             document.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error generating accounts receivable report PDF", e);
+            throw new RuntimeException(
+                    "Error generating accounts receivable report PDF", e);
         }
         return baos.toByteArray();
     }
 
     private Paragraph buildTitle(PdfFont bold) {
-        return new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.accountsReceivable"))
-                .setFont(bold)
-                .setFontSize(18)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(10);
+        return new Paragraph(ReportMessages.text(
+                "finance.treasury.receivables.reports.accountsReceivable"))
+                .setFont(bold).setFontSize(18)
+                .setTextAlignment(TextAlignment.CENTER).setMarginBottom(10);
     }
 
-    private Paragraph buildDate(AccountsReceivableReportData data, PdfFont regular) {
-        return new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.date") + data.reportDate().format(ReportMessages.dateFormatter()))
-                .setFont(regular)
-                .setFontSize(10)
+    private Paragraph buildDate(AccountsReceivableReportData data,
+            PdfFont regular) {
+        return new Paragraph(ReportMessages
+                .text("finance.treasury.receivables.reports.date")
+                + data.reportDate().format(ReportMessages.dateFormatter()))
+                .setFont(regular).setFontSize(10)
                 .setFontColor(ColorConstants.DARK_GRAY)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(20);
+                .setTextAlignment(TextAlignment.CENTER).setMarginBottom(20);
     }
 
-    private Table buildMainTable(AccountsReceivableReportData data, PdfFont bold, PdfFont regular) {
+    private Table buildMainTable(AccountsReceivableReportData data,
+            PdfFont bold, PdfFont regular) {
         float[] columnWidths = {4f, 2.5f, 2.5f, 2.5f, 2.5f, 2f, 2f, 2f, 2f, 2f};
-        Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+        Table table = new Table(UnitValue.createPercentArray(columnWidths))
+                .useAllAvailableWidth();
 
-        String[] headers = {ReportMessages.text("finance.treasury.receivables.reports.customer"), ReportMessages.text("finance.treasury.receivables.reports.taxId"), ReportMessages.text("finance.treasury.receivables.reports.creditLimit"), ReportMessages.text("finance.treasury.receivables.reports.outstandingBalance"), ReportMessages.text("finance.treasury.receivables.reports.available"), "0-30", "31-60", "61-90", "91-120", "120+"};
+        String[] headers = {
+                ReportMessages
+                        .text("finance.treasury.receivables.reports.customer"),
+                ReportMessages
+                        .text("finance.treasury.receivables.reports.taxId"),
+                ReportMessages.text(
+                        "finance.treasury.receivables.reports.creditLimit"),
+                ReportMessages.text(
+                        "finance.treasury.receivables.reports.outstandingBalance"),
+                ReportMessages
+                        .text("finance.treasury.receivables.reports.available"),
+                "0-30", "31-60", "61-90", "91-120", "120+"};
         for (String h : headers) {
             table.addHeaderCell(createHeaderCell(h, bold));
         }
@@ -105,16 +128,26 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
             var row = data.rows().get(i);
             DeviceRgb rowBg = (i % 2 != 0) ? LIGHT_GRAY_ROW : null;
 
-            addTableCell(table, row.customerName(), regular, rowBg, TextAlignment.LEFT);
-            addTableCell(table, row.rif() != null ? row.rif() : "-", regular, rowBg, TextAlignment.CENTER);
-            addTableCell(table, "$ " + formatDecimal(row.creditLimit()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.pendingBalance()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.available()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.age0_30()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.age31_60()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.age61_90()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.age91_120()), regular, rowBg, TextAlignment.RIGHT);
-            addTableCell(table, "$ " + formatDecimal(row.age120Plus()), regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table, row.customerName(), regular, rowBg,
+                    TextAlignment.LEFT);
+            addTableCell(table, row.rif() != null ? row.rif() : "-", regular,
+                    rowBg, TextAlignment.CENTER);
+            addTableCell(table, "$ " + formatDecimal(row.creditLimit()),
+                    regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.pendingBalance()),
+                    regular, rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.available()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.age0_30()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.age31_60()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.age61_90()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.age91_120()), regular,
+                    rowBg, TextAlignment.RIGHT);
+            addTableCell(table, "$ " + formatDecimal(row.age120Plus()), regular,
+                    rowBg, TextAlignment.RIGHT);
         }
 
         return table;
@@ -122,21 +155,20 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
 
     private Cell createHeaderCell(String text, PdfFont bold) {
         return new Cell()
-                .add(new Paragraph(text).setFont(bold).setFontSize(9).setFontColor(HEADER_TEXT))
+                .add(new Paragraph(text).setFont(bold).setFontSize(9)
+                        .setFontColor(HEADER_TEXT))
                 .setBackgroundColor(HEADER_BG)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setPadding(6)
+                .setTextAlignment(TextAlignment.CENTER).setPadding(6)
                 .setBorder(Border.NO_BORDER);
     }
 
-    private void addTableCell(Table table, String text, PdfFont font, DeviceRgb bg, TextAlignment align) {
+    private void addTableCell(Table table, String text, PdfFont font,
+            DeviceRgb bg, TextAlignment align) {
         Cell cell = new Cell()
-                .add(new Paragraph(text != null ? text : "").setFont(font).setFontSize(8))
-                .setTextAlignment(align)
-                .setPaddingTop(4)
-                .setPaddingBottom(4)
-                .setPaddingLeft(4)
-                .setPaddingRight(4)
+                .add(new Paragraph(text != null ? text : "").setFont(font)
+                        .setFontSize(8))
+                .setTextAlignment(align).setPaddingTop(4).setPaddingBottom(4)
+                .setPaddingLeft(4).setPaddingRight(4)
                 .setBorder(Border.NO_BORDER);
         if (bg != null) {
             cell.setBackgroundColor(bg);
@@ -144,26 +176,42 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
         table.addCell(cell);
     }
 
-    private Table buildSummary(AccountsReceivableReportData.Summary summary, PdfFont bold, PdfFont regular) {
-        Table table = new Table(UnitValue.createPercentArray(new float[]{50f, 50f})).useAllAvailableWidth();
+    private Table buildSummary(AccountsReceivableReportData.Summary summary,
+            PdfFont bold, PdfFont regular) {
+        Table table = new Table(
+                UnitValue.createPercentArray(new float[]{50f, 50f}))
+                .useAllAvailableWidth();
         table.setMarginTop(20);
 
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.totalAccountsReceivable"), "$ " + formatDecimal(summary.totalReceivable()), bold, regular));
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.notYetDue"), "$ " + formatDecimal(summary.notYetDue()), bold, regular));
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.overdue"), "$ " + formatDecimal(summary.overdue()), bold, regular));
-        table.addCell(buildSummaryCell(ReportMessages.text("finance.treasury.receivables.reports.customersOverCreditLimit"), String.valueOf(summary.customersExceededCredit()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text(
+                "finance.treasury.receivables.reports.totalAccountsReceivable"),
+                "$ " + formatDecimal(summary.totalReceivable()), bold,
+                regular));
+        table.addCell(buildSummaryCell(
+                ReportMessages
+                        .text("finance.treasury.receivables.reports.notYetDue"),
+                "$ " + formatDecimal(summary.notYetDue()), bold, regular));
+        table.addCell(buildSummaryCell(
+                ReportMessages
+                        .text("finance.treasury.receivables.reports.overdue"),
+                "$ " + formatDecimal(summary.overdue()), bold, regular));
+        table.addCell(buildSummaryCell(ReportMessages.text(
+                "finance.treasury.receivables.reports.customersOverCreditLimit"),
+                String.valueOf(summary.customersExceededCredit()), bold,
+                regular));
 
         return table;
     }
 
-    private Cell buildSummaryCell(String label, String value, PdfFont bold, PdfFont regular) {
+    private Cell buildSummaryCell(String label, String value, PdfFont bold,
+            PdfFont regular) {
         Paragraph p = new Paragraph()
-                .add(new com.itextpdf.layout.element.Text(label).setFont(bold).setFontSize(10))
-                .add(new com.itextpdf.layout.element.Text(" " + value).setFont(regular).setFontSize(10));
+                .add(new com.itextpdf.layout.element.Text(label).setFont(bold)
+                        .setFontSize(10))
+                .add(new com.itextpdf.layout.element.Text(" " + value)
+                        .setFont(regular).setFontSize(10));
 
-        return new Cell()
-                .add(p)
-                .setPadding(6)
+        return new Cell().add(p).setPadding(6)
                 .setBorder(new SolidBorder(BORDER_COLOR, 1))
                 .setBackgroundColor(LIGHT_GRAY_ROW);
     }
@@ -188,19 +236,19 @@ public class AccountsReceivableReportPdfGenerator implements AccountsReceivableR
             int pageNumber = pdfDoc.getPageNumber(page);
             int totalPages = pdfDoc.getNumberOfPages();
 
-            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(),
+                    page.getResources(), pdfDoc);
             com.itextpdf.kernel.geom.Rectangle pageSize = page.getPageSize();
 
             try (Canvas layoutCanvas = new Canvas(canvas, pageSize)) {
-                layoutCanvas.showTextAligned(
-                        new Paragraph(ReportMessages.text("finance.treasury.receivables.reports.page") + pageNumber + ReportMessages.text("finance.treasury.receivables.reports.of") + totalPages)
-                                .setFont(font)
-                                .setFontSize(8)
-                                .setFontColor(ColorConstants.GRAY),
-                        pageSize.getWidth() / 2,
-                        20,
-                        TextAlignment.CENTER
-                );
+                layoutCanvas.showTextAligned(new Paragraph(ReportMessages
+                        .text("finance.treasury.receivables.reports.page")
+                        + pageNumber
+                        + ReportMessages
+                                .text("finance.treasury.receivables.reports.of")
+                        + totalPages).setFont(font).setFontSize(8)
+                        .setFontColor(ColorConstants.GRAY),
+                        pageSize.getWidth() / 2, 20, TextAlignment.CENTER);
             }
         }
     }

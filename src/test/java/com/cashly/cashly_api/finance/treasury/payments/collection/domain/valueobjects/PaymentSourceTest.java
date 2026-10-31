@@ -17,13 +17,15 @@ class PaymentSourceTest {
     @Test
     void should_HavePaymentMethodValue() {
         assertNotNull(PaymentSource.valueOf("PAYMENT_METHOD"));
-        assertEquals(PaymentSource.PAYMENT_METHOD, PaymentSource.valueOf("PAYMENT_METHOD"));
+        assertEquals(PaymentSource.PAYMENT_METHOD,
+                PaymentSource.valueOf("PAYMENT_METHOD"));
     }
 
     @Test
     void should_HaveCustomerBalanceValue() {
         assertNotNull(PaymentSource.valueOf("CUSTOMER_BALANCE"));
-        assertEquals(PaymentSource.CUSTOMER_BALANCE, PaymentSource.valueOf("CUSTOMER_BALANCE"));
+        assertEquals(PaymentSource.CUSTOMER_BALANCE,
+                PaymentSource.valueOf("CUSTOMER_BALANCE"));
     }
 
     @Test

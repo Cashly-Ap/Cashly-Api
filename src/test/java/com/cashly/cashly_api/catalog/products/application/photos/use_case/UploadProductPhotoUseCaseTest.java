@@ -56,7 +56,13 @@ class UploadProductPhotoUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new UploadProductPhotoUseCase(productRepository, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categoryRepository)), new LocalProductPriceTypeGatewayAdapter(new RepositoryProductPriceTypeQuery(priceTypeRepository)), fileStorageService, productMapper);
+        useCase = new UploadProductPhotoUseCase(productRepository,
+                new LocalProductCategoryGatewayAdapter(
+                        new RepositoryProductCategoryQuery(categoryRepository)),
+                new LocalProductPriceTypeGatewayAdapter(
+                        new RepositoryProductPriceTypeQuery(
+                                priceTypeRepository)),
+                fileStorageService, productMapper);
     }
 
     @Test
@@ -64,35 +70,43 @@ class UploadProductPhotoUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                categoryId, false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", categoryId, false, true, null,
+                new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Electronics");
 
-        Product savedProduct = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                categoryId, false, true, "products/image.jpg",
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product savedProduct = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", categoryId, false, true,
+                "products/image.jpg", new BigDecimal("5.00"), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
 
-        ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
+        ProductDetailResponse expectedResponse = mock(
+                ProductDetailResponse.class);
 
         InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(fileStorageService.store(eq("products/image.jpg"), any(InputStream.class), eq("image/jpeg")))
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(fileStorageService.store(eq("products/image.jpg"),
+                any(InputStream.class), eq("image/jpeg")))
                 .thenReturn("products/image.jpg");
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productMapper.toDetailResponse(any(), anyString(), any(), any())).thenReturn(expectedResponse);
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(savedProduct);
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(category));
+        when(productMapper.toDetailResponse(any(), anyString(), any(), any()))
+                .thenReturn(expectedResponse);
 
-        ProductDetailResponse result = useCase.execute(productId, "image.jpg", inputStream, "image/jpeg");
+        ProductDetailResponse result = useCase.execute(productId, "image.jpg",
+                inputStream, "image/jpeg");
 
         assertNotNull(result);
         assertEquals(expectedResponse, result);
-        verify(fileStorageService).store(eq("products/image.jpg"), any(InputStream.class), eq("image/jpeg"));
+        verify(fileStorageService).store(eq("products/image.jpg"),
+                any(InputStream.class), eq("image/jpeg"));
         verify(productRepository).save(any(Product.class));
     }
 
@@ -101,10 +115,11 @@ class UploadProductPhotoUseCaseTest {
         UUID productId = UUID.randomUUID();
         InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, () ->
-                useCase.execute(productId, "image.jpg", inputStream, "image/jpeg"));
+        assertThrows(ProductNotFoundException.class, () -> useCase
+                .execute(productId, "image.jpg", inputStream, "image/jpeg"));
         verify(fileStorageService, never()).store(any(), any(), any());
     }
 
@@ -113,49 +128,61 @@ class UploadProductPhotoUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                categoryId, false, true, "products/old-photo.jpg",
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", categoryId, false, true,
+                "products/old-photo.jpg", new BigDecimal("5.00"), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
 
         Category category = mock(Category.class);
         when(category.getName()).thenReturn("Electronics");
 
-        Product savedProduct = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                categoryId, false, true, "products/new-photo.jpg",
-                new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product savedProduct = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", categoryId, false, true,
+                "products/new-photo.jpg", new BigDecimal("5.00"), List.of(),
+                List.of(), LocalDateTime.now(), LocalDateTime.now());
 
-        ProductDetailResponse expectedResponse = mock(ProductDetailResponse.class);
+        ProductDetailResponse expectedResponse = mock(
+                ProductDetailResponse.class);
 
         InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(fileStorageService.store(eq("products/new-photo.jpg"), any(InputStream.class), eq("image/jpeg")))
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(fileStorageService.store(eq("products/new-photo.jpg"),
+                any(InputStream.class), eq("image/jpeg")))
                 .thenReturn("products/new-photo.jpg");
-        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productMapper.toDetailResponse(any(), anyString(), any(), any())).thenReturn(expectedResponse);
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(savedProduct);
+        when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(category));
+        when(productMapper.toDetailResponse(any(), anyString(), any(), any()))
+                .thenReturn(expectedResponse);
 
-        ProductDetailResponse result = useCase.execute(productId, "new-photo.jpg", inputStream, "image/jpeg");
+        ProductDetailResponse result = useCase.execute(productId,
+                "new-photo.jpg", inputStream, "image/jpeg");
 
         assertNotNull(result);
         verify(fileStorageService).remove("products/old-photo.jpg");
-        verify(fileStorageService).store(eq("products/new-photo.jpg"), any(InputStream.class), eq("image/jpeg"));
+        verify(fileStorageService).store(eq("products/new-photo.jpg"),
+                any(InputStream.class), eq("image/jpeg"));
     }
 
     @Test
     void should_PropagateStorageFailure_WithoutSavingProduct() {
         UUID productId = UUID.randomUUID();
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, null, new BigDecimal("5.00"),
-                List.of(), List.of(), LocalDateTime.now(), LocalDateTime.now());
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", UUID.randomUUID(), false, true,
+                null, new BigDecimal("5.00"), List.of(), List.of(),
+                LocalDateTime.now(), LocalDateTime.now());
         var failure = new IllegalStateException("Storage unavailable");
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(fileStorageService.store(anyString(), any(InputStream.class), anyString())).thenThrow(failure);
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(fileStorageService.store(anyString(), any(InputStream.class),
+                anyString())).thenThrow(failure);
 
         IllegalStateException thrown = assertThrows(IllegalStateException.class,
-                () -> useCase.execute(productId, "image.jpg", new ByteArrayInputStream(new byte[0]), "image/jpeg"));
+                () -> useCase.execute(productId, "image.jpg",
+                        new ByteArrayInputStream(new byte[0]), "image/jpeg"));
 
         assertSame(failure, thrown);
         verify(productRepository, never()).save(any());

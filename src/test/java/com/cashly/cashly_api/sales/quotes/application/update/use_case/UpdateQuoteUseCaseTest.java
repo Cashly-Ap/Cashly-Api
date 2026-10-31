@@ -30,9 +30,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateQuoteUseCaseTest {
-    @Mock QuoteRepository quotes;
-    @Mock QuoteProductCatalogGateway products;
-    @Mock QuoteWarehouseGateway warehouses;
+    @Mock
+    QuoteRepository quotes;
+    @Mock
+    QuoteProductCatalogGateway products;
+    @Mock
+    QuoteWarehouseGateway warehouses;
     private UpdateQuoteUseCase useCase;
 
     @BeforeEach
@@ -46,40 +49,49 @@ class UpdateQuoteUseCaseTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
-        Quote quote = Quote.create(QuoteNumber.of(2026, 1), UUID.randomUUID(), "Acme", "RIF",
-                UUID.randomUUID(), "Actor", LocalDate.now(), null,
-                List.of(new QuoteLine(UUID.randomUUID(), "Old", "OLD", BigDecimal.ONE, BigDecimal.TEN)));
+        Quote quote = Quote.create(QuoteNumber.of(2026, 1), UUID.randomUUID(),
+                "Acme", "RIF", UUID.randomUUID(), "Actor", LocalDate.now(),
+                null, List.of(new QuoteLine(UUID.randomUUID(), "Old", "OLD",
+                        BigDecimal.ONE, BigDecimal.TEN)));
         AtomicReference<Quote> saved = new AtomicReference<>();
         when(quotes.findById(quoteId)).thenReturn(Optional.of(quote));
-        when(products.findProduct(productId)).thenReturn(Optional.of(
-                new QuoteProductCatalogGateway.ProductReference(productId, "P-1", "Product", categoryId)));
-        when(warehouses.findById(warehouseId)).thenReturn(Optional.of(
-                new QuoteWarehouseGateway.Warehouse(warehouseId, "Main", "Address")));
+        when(products.findProduct(productId)).thenReturn(
+                Optional.of(new QuoteProductCatalogGateway.ProductReference(
+                        productId, "P-1", "Product", categoryId)));
+        when(warehouses.findById(warehouseId)).thenReturn(
+                Optional.of(new QuoteWarehouseGateway.Warehouse(warehouseId,
+                        "Main", "Address")));
         when(quotes.save(any(Quote.class))).thenAnswer(invocation -> {
             Quote value = invocation.getArgument(0);
             saved.set(value);
             return value;
         });
-        var request = new UpdateQuoteRequest(null, "New notes", List.of(
-                new CreateQuoteRequest.QuoteLineRequest(productId, BigDecimal.valueOf(2), BigDecimal.TEN, List.of(
-                        new CreateQuoteRequest.WarehouseAllocationRequest(warehouseId, BigDecimal.valueOf(2))))));
+        var request = new UpdateQuoteRequest(null, "New notes",
+                List.of(new CreateQuoteRequest.QuoteLineRequest(productId,
+                        BigDecimal.valueOf(2), BigDecimal.TEN,
+                        List.of(new CreateQuoteRequest.WarehouseAllocationRequest(
+                                warehouseId, BigDecimal.valueOf(2))))));
 
         var response = useCase.execute(quoteId, request);
 
-        assertThat(response.lines()).singleElement().extracting("productName").isEqualTo("Product");
-        assertThat(saved.get().getLines()).singleElement().extracting("categoryId").isEqualTo(categoryId);
+        assertThat(response.lines()).singleElement().extracting("productName")
+                .isEqualTo("Product");
+        assertThat(saved.get().getLines()).singleElement()
+                .extracting("categoryId").isEqualTo(categoryId);
     }
 
     @Test
     void shouldRejectUpdateWhenQuoteIsNotDraft() {
         UUID quoteId = UUID.randomUUID();
-        Quote quote = Quote.create(QuoteNumber.of(2026, 1), UUID.randomUUID(), "Acme", "RIF",
-                UUID.randomUUID(), "Actor", LocalDate.now(), null, List.of(new QuoteLine(
-                        UUID.randomUUID(), "Product", "P-1", BigDecimal.ONE, BigDecimal.TEN)));
+        Quote quote = Quote.create(QuoteNumber.of(2026, 1), UUID.randomUUID(),
+                "Acme", "RIF", UUID.randomUUID(), "Actor", LocalDate.now(),
+                null, List.of(new QuoteLine(UUID.randomUUID(), "Product", "P-1",
+                        BigDecimal.ONE, BigDecimal.TEN)));
         quote.cancel("reason");
         when(quotes.findById(quoteId)).thenReturn(Optional.of(quote));
 
-        assertThatThrownBy(() -> useCase.execute(quoteId, new UpdateQuoteRequest(null, null, List.of())))
+        assertThatThrownBy(() -> useCase.execute(quoteId,
+                new UpdateQuoteRequest(null, null, List.of())))
                 .isInstanceOf(QuoteStateException.class);
         verify(quotes, never()).save(any());
     }
@@ -89,7 +101,8 @@ class UpdateQuoteUseCaseTest {
         UUID quoteId = UUID.randomUUID();
         when(quotes.findById(quoteId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> useCase.execute(quoteId, new UpdateQuoteRequest(null, null, List.of())))
+        assertThatThrownBy(() -> useCase.execute(quoteId,
+                new UpdateQuoteRequest(null, null, List.of())))
                 .isInstanceOf(QuoteNotFoundException.class);
     }
 }

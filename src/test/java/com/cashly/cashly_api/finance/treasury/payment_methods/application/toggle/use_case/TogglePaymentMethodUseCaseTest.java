@@ -44,12 +44,13 @@ class TogglePaymentMethodUseCaseTest {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
         LocalDateTime now = LocalDateTime.now();
 
-        PaymentMethod existing = PaymentMethod.reconstitute(
-                paymentMethodId, "PM-0001", "Cash", "Cash payment",
-                true, now, now);
+        PaymentMethod existing = PaymentMethod.reconstitute(paymentMethodId,
+                "PM-0001", "Cash", "Cash payment", true, now, now);
 
-        when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
-        when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(paymentMethodId))
+                .thenReturn(Optional.of(existing));
+        when(repository.save(any(PaymentMethod.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
@@ -68,12 +69,13 @@ class TogglePaymentMethodUseCaseTest {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
         LocalDateTime now = LocalDateTime.now();
 
-        PaymentMethod existing = PaymentMethod.reconstitute(
-                paymentMethodId, "PM-0001", "Cash", "Cash payment",
-                false, now, now);
+        PaymentMethod existing = PaymentMethod.reconstitute(paymentMethodId,
+                "PM-0001", "Cash", "Cash payment", false, now, now);
 
-        when(repository.findById(paymentMethodId)).thenReturn(Optional.of(existing));
-        when(repository.save(any(PaymentMethod.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(paymentMethodId))
+                .thenReturn(Optional.of(existing));
+        when(repository.save(any(PaymentMethod.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         when(usageGateway.hasAssociatedRecords(any())).thenReturn(false);
 
         PaymentMethodResponse result = useCase.execute(id);
@@ -93,8 +95,8 @@ class TogglePaymentMethodUseCaseTest {
 
         when(repository.findById(paymentMethodId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> useCase.execute(id));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> useCase.execute(id));
 
         assertTrue(exception.getMessage().contains("Payment method not found"));
         assertTrue(exception.getMessage().contains(id.toString()));

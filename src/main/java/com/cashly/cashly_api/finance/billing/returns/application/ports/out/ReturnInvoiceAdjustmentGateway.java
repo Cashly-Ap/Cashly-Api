@@ -6,5 +6,6 @@ import java.math.BigDecimal;
 
 public interface ReturnInvoiceAdjustmentGateway {
     void apply(Return returned);
-    void reverse(Return returned, BigDecimal totalPaid, BigDecimal totalDebitNotes, BigDecimal totalCreditNotes);
+    void reverse(Return returned, BigDecimal totalPaid,
+            BigDecimal totalDebitNotes, BigDecimal totalCreditNotes);
 }

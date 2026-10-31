@@ -18,29 +18,33 @@ public class ListPurchasesUseCase {
         this.purchaseRepository = purchaseRepository;
     }
 
-    public List<PurchaseListResponse> execute(LocalDate fromDate, LocalDate toDate,
-                                                UUID supplierId, String status,
-                                                UUID productId, UUID categoryId,
-                                                String orderBy, String orderDir) {
-        return purchaseRepository.findAllWithFilters(fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir)
-                .stream()
-                .map(PurchaseMapper::toListResponse)
-                .toList();
+    public List<PurchaseListResponse> execute(LocalDate fromDate,
+            LocalDate toDate, UUID supplierId, String status, UUID productId,
+            UUID categoryId, String orderBy, String orderDir) {
+        return purchaseRepository
+                .findAllWithFilters(fromDate, toDate, supplierId, status,
+                        productId, categoryId, orderBy, orderDir)
+                .stream().map(PurchaseMapper::toListResponse).toList();
     }
-    public List<PurchaseListResponse> execute(LocalDate fromDate, LocalDate toDate,
-                                              UUID supplierId, String status,
-                                              UUID productId, UUID categoryId,
-                                              String orderBy, String orderDir, DocumentAction action) {
-        if (action == null) return execute(fromDate, toDate, supplierId, status, productId, categoryId, orderBy, orderDir);
+    public List<PurchaseListResponse> execute(LocalDate fromDate,
+            LocalDate toDate, UUID supplierId, String status, UUID productId,
+            UUID categoryId, String orderBy, String orderDir,
+            DocumentAction action) {
+        if (action == null)
+            return execute(fromDate, toDate, supplierId, status, productId,
+                    categoryId, orderBy, orderDir);
         String eligibleStatus = switch (action) {
             case EDIT, CONFIRM -> "DRAFT";
             case CANCEL -> "CONFIRMED";
-            default -> throw new IllegalArgumentException("Unsupported purchase action: " + action);
+            default -> throw new IllegalArgumentException(
+                    "Unsupported purchase action: " + action);
         };
-        if (status != null && !status.isBlank() && !"ALL".equals(status) && !eligibleStatus.equals(status)) {
+        if (status != null && !status.isBlank() && !"ALL".equals(status)
+                && !eligibleStatus.equals(status)) {
             return List.of();
         }
-        return execute(fromDate, toDate, supplierId, eligibleStatus, productId, categoryId, orderBy, orderDir);
+        return execute(fromDate, toDate, supplierId, eligibleStatus, productId,
+                categoryId, orderBy, orderDir);
     }
 
 }

@@ -27,7 +27,8 @@ public final class BusinessModulePaths {
             Map.entry("suppliers", "partners/suppliers"),
             Map.entry("warehouses", "inventory/warehouses"));
 
-    private BusinessModulePaths() {}
+    private BusinessModulePaths() {
+    }
 
     public static Path modulePath(String owner) {
         return Path.of(MODULES.getOrDefault(owner, owner));
@@ -48,6 +49,8 @@ public final class BusinessModulePaths {
     }
 
     public static String ownerOfReference(String reference) {
-        return owner(Path.of(reference.substring("com.cashly.cashly_api.".length()).replace('.', '/')));
+        return owner(
+                Path.of(reference.substring("com.cashly.cashly_api.".length())
+                        .replace('.', '/')));
     }
 }

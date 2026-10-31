@@ -2,8 +2,6 @@ package com.cashly.cashly_api.partners.customers.balance.application.dto.respons
 
 import java.util.UUID;
 
-public record CustomerBalanceMutationResponse(
-        CustomerBalanceResponse balance,
-        UUID transactionId
-) {
+public record CustomerBalanceMutationResponse(CustomerBalanceResponse balance,
+        UUID transactionId) {
 }

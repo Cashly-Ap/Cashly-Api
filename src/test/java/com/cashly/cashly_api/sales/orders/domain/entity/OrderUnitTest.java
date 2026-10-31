@@ -28,16 +28,15 @@ class OrderUnitTest {
 
     @BeforeEach
     void setUp() {
-        validLines = List.of(
-                OrderLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"), List.of())
-        );
+        validLines = List.of(OrderLine.create(UUID.randomUUID(), "Producto A",
+                "PROD-001", new BigDecimal("2"), new BigDecimal("10.00"),
+                List.of()));
     }
 
     @Test
     void should_CreateOrder_When_ValidDataProvided() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, "Notas", validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, "Notas", validLines);
 
         assertNotNull(order.getId());
         assertEquals(ORDER_NUMBER, order.getOrderNumber());
@@ -60,8 +59,8 @@ class OrderUnitTest {
 
     @Test
     void should_AllowNullNotes_When_Creating() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
 
         assertNull(order.getNotes());
     }
@@ -70,100 +69,107 @@ class OrderUnitTest {
     void should_CalculateSubtotal_When_MultipleLines() {
         List<OrderLine> lines = List.of(
                 OrderLine.create(UUID.randomUUID(), "Producto A", "PROD-001",
-                        new BigDecimal("2"), new BigDecimal("10.00"), List.of()),
+                        new BigDecimal("2"), new BigDecimal("10.00"),
+                        List.of()),
                 OrderLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
-                        new BigDecimal("3"), new BigDecimal("5.00"), List.of())
-        );
+                        new BigDecimal("3"), new BigDecimal("5.00"),
+                        List.of()));
 
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, lines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, lines);
 
         assertEquals(new BigDecimal("35.00"), order.getSubtotal());
     }
 
     @Test
     void should_ThrowException_When_OrderNumberIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Order.create(null, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Order.create(null, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                        validLines));
     }
 
     @Test
     void should_ThrowException_When_CustomerIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Order.create(ORDER_NUMBER, null, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Order.create(ORDER_NUMBER, null, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                        validLines));
     }
 
     @Test
     void should_ThrowException_When_CustomerNameIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Order.create(ORDER_NUMBER, CUSTOMER_ID, null, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Order.create(ORDER_NUMBER, CUSTOMER_ID, null,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                        validLines));
     }
 
     @Test
     void should_ThrowException_When_CustomerRifIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, null,
-                        CREATED_BY, CREATED_BY_NAME, null, validLines));
+        assertThrows(NullPointerException.class,
+                () -> Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        null, CREATED_BY, CREATED_BY_NAME, null, validLines));
     }
 
     @Test
     void should_AllowNullCreatedBy_When_Creating() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                null, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, null, CREATED_BY_NAME, null, validLines);
 
         assertNull(order.getCreatedBy());
     }
 
     @Test
     void should_AllowNullCreatedByName_When_Creating() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, null, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, null, null, validLines);
 
         assertNull(order.getCreatedByName());
     }
 
     @Test
     void should_ThrowException_When_LinesIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, null));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, null));
 
-        assertEquals("Order must have at least one line", exception.getMessage());
+        assertEquals("Order must have at least one line",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_LinesIsEmpty() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                        CREATED_BY, CREATED_BY_NAME, null, List.of()));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                        CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null,
+                        List.of()));
 
-        assertEquals("Order must have at least one line", exception.getMessage());
+        assertEquals("Order must have at least one line",
+                exception.getMessage());
     }
 
     @Test
     void should_ReturnUnmodifiableLines_When_GetLinesCalled() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                order.getLines().add(validLines.get(0)));
+        assertThrows(UnsupportedOperationException.class,
+                () -> order.getLines().add(validLines.get(0)));
     }
-
-    
 
     @Test
     void should_UpdateOrder_When_StatusIsPending() throws InterruptedException {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, "original", validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, "original",
+                validLines);
         LocalDateTime beforeUpdate = order.getUpdatedAt();
 
-        List<OrderLine> newLines = List.of(
-                OrderLine.create(UUID.randomUUID(), "Producto B", "PROD-002",
-                        new BigDecimal("5"), new BigDecimal("3.00"), List.of())
-        );
+        List<OrderLine> newLines = List.of(OrderLine.create(UUID.randomUUID(),
+                "Producto B", "PROD-002", new BigDecimal("5"),
+                new BigDecimal("3.00"), List.of()));
 
         Thread.sleep(10);
         order.update("actualizado", newLines);
@@ -176,32 +182,32 @@ class OrderUnitTest {
 
     @Test
     void should_ThrowException_When_UpdatingNonPendingOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         order.cancel("Motivo válido");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                order.update(null, validLines));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> order.update(null, validLines));
 
-        assertEquals("Only DRAFT orders can be updated", exception.getMessage());
+        assertEquals("Only DRAFT orders can be updated",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_UpdatingWithEmptyLines() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                order.update(null, List.of()));
+        assertThrows(IllegalArgumentException.class,
+                () -> order.update(null, List.of()));
     }
-
-    
 
     @Test
     void should_CancelOrder_When_StatusIsDraft() throws InterruptedException {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         LocalDateTime beforeCancel = order.getUpdatedAt();
 
         Thread.sleep(10);
@@ -209,14 +215,16 @@ class OrderUnitTest {
 
         assertEquals(OrderStatus.CANCELLED, order.getStatus());
         assertNotNull(order.getCancelledAt());
-        assertEquals("Cliente solicitó cancelación", order.getCancelledReason());
+        assertEquals("Cliente solicitó cancelación",
+                order.getCancelledReason());
         assertTrue(order.getUpdatedAt().isAfter(beforeCancel));
     }
 
     @Test
-    void should_CancelOrder_When_StatusIsConfirmed() throws InterruptedException {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+    void should_CancelOrder_When_StatusIsConfirmed()
+            throws InterruptedException {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         LocalDateTime beforeCancel = order.getUpdatedAt();
 
@@ -225,39 +233,44 @@ class OrderUnitTest {
 
         assertEquals(OrderStatus.CANCELLED, order.getStatus());
         assertNotNull(order.getCancelledAt());
-        assertEquals("Cliente solicitó cancelación", order.getCancelledReason());
+        assertEquals("Cliente solicitó cancelación",
+                order.getCancelledReason());
         assertTrue(order.getUpdatedAt().isAfter(beforeCancel));
     }
 
     @Test
     void should_ThrowException_When_CancellingInvoicedOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         order.markAsInvoiced(UUID.randomUUID(), "FAC-001");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                order.cancel("Razón de cancelación"));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> order.cancel("Razón de cancelación"));
 
-        assertTrue(exception.getMessage().contains("Only DRAFT or CONFIRMED orders can be cancelled"));
+        assertTrue(exception.getMessage()
+                .contains("Only DRAFT or CONFIRMED orders can be cancelled"));
     }
 
     @Test
     void should_ThrowException_When_CancellingAlreadyCancelledOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.cancel("Primera cancelación");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                order.cancel("Segunda cancelación"));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> order.cancel("Segunda cancelación"));
 
-        assertTrue(exception.getMessage().contains("Only DRAFT or CONFIRMED orders can be cancelled"));
+        assertTrue(exception.getMessage()
+                .contains("Only DRAFT or CONFIRMED orders can be cancelled"));
     }
 
     @Test
     void should_ThrowException_When_CancelReasonIsNull() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
 
         assertThrows(NullPointerException.class, () -> order.cancel(null));
@@ -265,22 +278,22 @@ class OrderUnitTest {
 
     @Test
     void should_ThrowException_When_CancelReasonIsBlank() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                order.cancel("   "));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> order.cancel("   "));
 
-        assertEquals("Cancellation reason cannot be blank", exception.getMessage());
+        assertEquals("Cancellation reason cannot be blank",
+                exception.getMessage());
     }
 
-    
-
     @Test
-    void should_MarkAsInvoiced_When_StatusIsConfirmed() throws InterruptedException {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+    void should_MarkAsInvoiced_When_StatusIsConfirmed()
+            throws InterruptedException {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         UUID invoiceId = UUID.randomUUID();
         LocalDateTime beforeInvoice = order.getUpdatedAt();
@@ -296,43 +309,44 @@ class OrderUnitTest {
 
     @Test
     void should_ThrowException_When_InvoicingNonPendingOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         order.cancel("Cancelado");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                order.markAsInvoiced(UUID.randomUUID(), "FAC-2026-00001"));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, () -> order
+                        .markAsInvoiced(UUID.randomUUID(), "FAC-2026-00001"));
 
-        assertEquals("Only CONFIRMED orders can be invoiced", exception.getMessage());
+        assertEquals("Only CONFIRMED orders can be invoiced",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_InvoiceIdIsNull() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
 
-        assertThrows(NullPointerException.class, () ->
-                order.markAsInvoiced(null, "FAC-2026-00001"));
+        assertThrows(NullPointerException.class,
+                () -> order.markAsInvoiced(null, "FAC-2026-00001"));
     }
 
     @Test
     void should_ThrowException_When_InvoiceNumberIsNull() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
 
-        assertThrows(NullPointerException.class, () ->
-                order.markAsInvoiced(UUID.randomUUID(), null));
+        assertThrows(NullPointerException.class,
+                () -> order.markAsInvoiced(UUID.randomUUID(), null));
     }
 
-    
-
     @Test
-    void should_RevertFromInvoiced_When_StatusIsInvoiced() throws InterruptedException {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+    void should_RevertFromInvoiced_When_StatusIsInvoiced()
+            throws InterruptedException {
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         UUID invoiceId = UUID.randomUUID();
         order.markAsInvoiced(invoiceId, "FAC-2026-00001");
@@ -349,59 +363,58 @@ class OrderUnitTest {
 
     @Test
     void should_ThrowException_When_RevertingDraftOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                order::revertFromInvoiced);
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, order::revertFromInvoiced);
 
-        assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
+        assertEquals("Only INVOICED orders can be reverted from invoiced",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_RevertingConfirmedOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                order::revertFromInvoiced);
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, order::revertFromInvoiced);
 
-        assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
+        assertEquals("Only INVOICED orders can be reverted from invoiced",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_RevertingCancelledOrder() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
         order.confirm();
         order.cancel("Cancelado");
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                order::revertFromInvoiced);
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, order::revertFromInvoiced);
 
-        assertEquals("Only INVOICED orders can be reverted from invoiced", exception.getMessage());
+        assertEquals("Only INVOICED orders can be reverted from invoiced",
+                exception.getMessage());
     }
-
-    
 
     @Test
     void should_ReturnTrue_When_UserIsOwner() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
 
         assertTrue(order.isOwnedBy(CREATED_BY));
     }
 
     @Test
     void should_ReturnFalse_When_UserIsNotOwner() {
-        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_RIF,
-                CREATED_BY, CREATED_BY_NAME, null, validLines);
+        Order order = Order.create(ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
+                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, null, validLines);
 
         assertFalse(order.isOwnedBy(UUID.randomUUID()));
     }
-
-    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
@@ -409,9 +422,9 @@ class OrderUnitTest {
         LocalDateTime now = LocalDateTime.now();
         UUID invoiceId = UUID.randomUUID();
 
-        Order order = Order.reconstitute(id, ORDER_NUMBER, CUSTOMER_ID, CUSTOMER_NAME,
-                CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME, OrderStatus.INVOICED,
-                "notas", invoiceId, "FAC-2026-00001",
+        Order order = Order.reconstitute(id, ORDER_NUMBER, CUSTOMER_ID,
+                CUSTOMER_NAME, CUSTOMER_RIF, CREATED_BY, CREATED_BY_NAME,
+                OrderStatus.INVOICED, "notas", invoiceId, "FAC-2026-00001",
                 null, null, validLines, now, now);
 
         assertEquals(id, order.getId());

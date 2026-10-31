@@ -23,50 +23,34 @@ public final class CustomerTestHelper {
     }
 
     public static Customer buildCustomer(UUID id) {
-        return Customer.reconstitute(
-                new CustomerId(id),
-                new CustomerCode(1001L),
-                new LegalName("Test Corp"),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Test"),
-                new CreditDays(30),
-                new CreditLimit(BigDecimal.ZERO),
-                true,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+        return Customer.reconstitute(new CustomerId(id),
+                new CustomerCode(1001L), new LegalName("Test Corp"),
+                CustomerType.BUSINESS, new Rif("J-12345678-9"),
+                new CustomerAlias("Test"), new CreditDays(30),
+                new CreditLimit(BigDecimal.ZERO), true, LocalDateTime.now(),
+                LocalDateTime.now(), List.of(), List.of(), List.of(), null,
+                null);
     }
 
     public static Customer buildCustomer(UUID id, boolean active) {
-        return Customer.reconstitute(
-                new CustomerId(id),
-                new CustomerCode(1001L),
-                new LegalName("Test Corp"),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Test"),
-                new CreditDays(30),
-                new CreditLimit(BigDecimal.ZERO),
-                active,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                null, null
-        );
+        return Customer.reconstitute(new CustomerId(id),
+                new CustomerCode(1001L), new LegalName("Test Corp"),
+                CustomerType.BUSINESS, new Rif("J-12345678-9"),
+                new CustomerAlias("Test"), new CreditDays(30),
+                new CreditLimit(BigDecimal.ZERO), active, LocalDateTime.now(),
+                LocalDateTime.now(), List.of(), List.of(), List.of(), null,
+                null);
     }
 
     public static Warehouse buildWarehouse(UUID id) {
-        return Warehouse.reconstitute(
-                id, "WH-001", "Main Warehouse", "123 Main St",
-                "State", "Municipality", "1000", true,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+        return Warehouse.reconstitute(id, "WH-001", "Main Warehouse",
+                "123 Main St", "State", "Municipality", "1000", true,
+                LocalDateTime.now(), LocalDateTime.now());
     }
 
-    public static CustomerWarehouseAccess buildAccess(UUID customerId, UUID warehouseId) {
-        return CustomerWarehouseAccess.create(customerId, warehouseId, UUID.randomUUID());
+    public static CustomerWarehouseAccess buildAccess(UUID customerId,
+            UUID warehouseId) {
+        return CustomerWarehouseAccess.create(customerId, warehouseId,
+                UUID.randomUUID());
     }
 }

@@ -9,7 +9,9 @@ public interface UserPreferencesRepository {
     default UserPreferences preferencesFor(UUID userId) {
         return findByUserId(userId).orElseGet(UserPreferences::defaults);
     }
-    default String languageFor(UUID userId) { return preferencesFor(userId).language(); }
+    default String languageFor(UUID userId) {
+        return preferencesFor(userId).language();
+    }
     default void updateLanguage(UUID userId, String language) {
         save(userId, preferencesFor(userId).withLanguage(language));
     }

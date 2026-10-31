@@ -15,15 +15,17 @@ import java.util.UUID;
 
 @Component
 public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
-    private static final List<String> UNPAID_STATUSES = List.of("PENDING_PAYMENT", "PARTIALLY_PAID");
+    private static final List<String> UNPAID_STATUSES = List
+            .of("PENDING_PAYMENT", "PARTIALLY_PAID");
 
     private final InvoiceRepository invoices;
     private final InvoiceStatusService statuses;
     private final CreditNoteLedgerQuery credits;
     private final DebitNoteLedgerQuery debits;
 
-    public LocalPaymentInvoiceGateway(InvoiceRepository invoices, InvoiceStatusService statuses,
-                                     CreditNoteLedgerQuery credits, DebitNoteLedgerQuery debits) {
+    public LocalPaymentInvoiceGateway(InvoiceRepository invoices,
+            InvoiceStatusService statuses, CreditNoteLedgerQuery credits,
+            DebitNoteLedgerQuery debits) {
         this.invoices = invoices;
         this.statuses = statuses;
         this.credits = credits;
@@ -37,8 +39,10 @@ public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
 
     @Override
     public List<InvoiceSnapshot> findUnpaidByCustomerId(UUID customerId) {
-        return invoices.findAllWithFilters(null, null, customerId, UNPAID_STATUSES,
-                null, null, null, null, null).stream().map(this::snapshot).toList();
+        return invoices
+                .findAllWithFilters(null, null, customerId, UNPAID_STATUSES,
+                        null, null, null, null, null)
+                .stream().map(this::snapshot).toList();
     }
 
     @Override
@@ -46,7 +50,8 @@ public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
         statuses.recalculate(invoiceId);
     }
 
-    private InvoiceSnapshot snapshot(com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice invoice) {
+    private InvoiceSnapshot snapshot(
+            com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice invoice) {
         UUID id = invoice.getId().value();
         BigDecimal creditTotal = credits.amountsByInvoiceId(id).stream()
                 .map(amount -> amount == null ? BigDecimal.ZERO : amount)
@@ -54,7 +59,8 @@ public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
         BigDecimal debitTotal = debits.amountsByInvoiceId(id).stream()
                 .map(amount -> amount == null ? BigDecimal.ZERO : amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return new InvoiceSnapshot(id, invoice.getCustomerId(), invoice.getInvoiceNumber().value(),
+        return new InvoiceSnapshot(id, invoice.getCustomerId(),
+                invoice.getInvoiceNumber().value(),
                 invoice.calculateTotal(creditTotal, debitTotal));
     }
 }

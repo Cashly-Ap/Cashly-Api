@@ -29,15 +29,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "customers",
-    indexes = {
+@Table(name = "customers", indexes = {
         @Index(name = "idx_customers_code", columnList = "code"),
         @Index(name = "idx_customers_rif", columnList = "rif"),
         @Index(name = "idx_customers_active", columnList = "active"),
-        @Index(name = "idx_customers_type", columnList = "type")
-    }
-)
+        @Index(name = "idx_customers_type", columnList = "type")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -194,51 +190,30 @@ public class CustomerEntity {
 
     public Customer toDomain() {
         List<CustomerEmail> domainEmails = this.emails.stream()
-            .map(e -> new CustomerEmail(
-                new EmailId(e.getId()),
-                new CustomerId(e.getCustomerId()),
-                new EmailAddress(e.getEmail())
-            ))
-            .toList();
+                .map(e -> new CustomerEmail(new EmailId(e.getId()),
+                        new CustomerId(e.getCustomerId()),
+                        new EmailAddress(e.getEmail())))
+                .toList();
 
         List<CustomerPhone> domainPhones = this.phones.stream()
-            .map(p -> new CustomerPhone(
-                new PhoneId(p.getId()),
-                new CustomerId(p.getCustomerId()),
-                new PhoneNumber(p.getPhone())
-            ))
-            .toList();
+                .map(p -> new CustomerPhone(new PhoneId(p.getId()),
+                        new CustomerId(p.getCustomerId()),
+                        new PhoneNumber(p.getPhone())))
+                .toList();
 
         List<CustomerAddress> domainAddresses = this.addresses.stream()
-            .map(a -> new CustomerAddress(
-                new AddressId(a.getId()),
-                new CustomerId(a.getCustomerId()),
-                a.getAddress(),
-                a.isBilling(),
-                a.isActive(),
-                a.getState(),
-                a.getMunicipality(),
-                a.getPostalCode()
-            ))
-            .toList();
+                .map(a -> new CustomerAddress(new AddressId(a.getId()),
+                        new CustomerId(a.getCustomerId()), a.getAddress(),
+                        a.isBilling(), a.isActive(), a.getState(),
+                        a.getMunicipality(), a.getPostalCode()))
+                .toList();
 
-        return Customer.reconstitute(
-            new CustomerId(this.id),
-            new CustomerCode(this.code),
-            new LegalName(this.legalName),
-            CustomerType.valueOf(this.type),
-            new Rif(this.rif),
-            new CustomerAlias(this.alias),
-            new CreditDays(this.creditDays),
-            new CreditLimit(this.creditLimit),
-            this.active,
-            this.createdAt,
-            this.updatedAt,
-            domainEmails,
-            domainPhones,
-            domainAddresses,
-            this.notes,
-            this.priceTypeId
-        );
+        return Customer.reconstitute(new CustomerId(this.id),
+                new CustomerCode(this.code), new LegalName(this.legalName),
+                CustomerType.valueOf(this.type), new Rif(this.rif),
+                new CustomerAlias(this.alias), new CreditDays(this.creditDays),
+                new CreditLimit(this.creditLimit), this.active, this.createdAt,
+                this.updatedAt, domainEmails, domainPhones, domainAddresses,
+                this.notes, this.priceTypeId);
     }
 }

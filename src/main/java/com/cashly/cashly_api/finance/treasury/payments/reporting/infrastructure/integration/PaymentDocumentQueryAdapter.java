@@ -7,9 +7,13 @@ import java.util.UUID;
 @Component
 public class PaymentDocumentQueryAdapter implements PaymentReportQueryGateway {
     private final PaymentDocumentQuery query;
-    public PaymentDocumentQueryAdapter(PaymentDocumentQuery query) { this.query = query; }
+    public PaymentDocumentQueryAdapter(PaymentDocumentQuery query) {
+        this.query = query;
+    }
     public PaymentReportData find(UUID id) {
         var payment = query.find(id);
-        return new PaymentReportData(payment.id(), payment.paymentNumber(), payment.amount(), payment.referenceNumber(), payment.notes(), payment.status(), payment.createdAt());
+        return new PaymentReportData(payment.id(), payment.paymentNumber(),
+                payment.amount(), payment.referenceNumber(), payment.notes(),
+                payment.status(), payment.createdAt());
     }
 }

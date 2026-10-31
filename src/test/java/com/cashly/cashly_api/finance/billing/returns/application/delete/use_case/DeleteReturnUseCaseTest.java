@@ -57,21 +57,33 @@ import static org.mockito.Mockito.*;
 @DisplayName("DeleteReturnUseCase Unit Tests")
 class DeleteReturnUseCaseTest {
 
-    @Mock private ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
-    @Mock private ReturnRepository returnRepository;
-    @Mock private InvoiceRepository invoiceRepository;
-    @Mock private WarehouseStockRepository warehouseStockRepository;
-    @Mock private StockMovementRepository stockMovementRepository;
-    @Mock private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
-    @Mock private PaymentRepository paymentRepository;
-    @Mock private PaymentAllocationRepository allocationRepository;
-    @Mock private CreditNoteRepository creditNoteRepository;
-    @Mock private DebitNoteRepository debitNoteRepository;
+    @Mock
+    private ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
+    @Mock
+    private ReturnRepository returnRepository;
+    @Mock
+    private InvoiceRepository invoiceRepository;
+    @Mock
+    private WarehouseStockRepository warehouseStockRepository;
+    @Mock
+    private StockMovementRepository stockMovementRepository;
+    @Mock
+    private ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase;
+    @Mock
+    private PaymentRepository paymentRepository;
+    @Mock
+    private PaymentAllocationRepository allocationRepository;
+    @Mock
+    private CreditNoteRepository creditNoteRepository;
+    @Mock
+    private DebitNoteRepository debitNoteRepository;
 
     private DeleteReturnUseCase useCase;
 
-    @Captor private ArgumentCaptor<StockMovement> stockMovementCaptor;
-    @Captor private ArgumentCaptor<PaymentAllocation> paymentAllocationCaptor;
+    @Captor
+    private ArgumentCaptor<StockMovement> stockMovementCaptor;
+    @Captor
+    private ArgumentCaptor<PaymentAllocation> paymentAllocationCaptor;
 
     private static final UUID RETURN_ID = UUID.randomUUID();
     private static final UUID INVOICE_ID = UUID.randomUUID();
@@ -89,18 +101,28 @@ class DeleteReturnUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new DeleteReturnUseCase(invoiceAdjustmentGateway, returnRepository,
+        useCase = new DeleteReturnUseCase(invoiceAdjustmentGateway,
+                returnRepository,
                 new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnInvoiceQueryGateway(
-                        new com.cashly.cashly_api.finance.billing.invoices.application.queries.services.RepositoryReturnInvoiceQuery(invoiceRepository),
-                        new com.cashly.cashly_api.finance.billing.credit_notes.application.queries.services.RepositoryCreditNoteLedgerQuery(creditNoteRepository),
-                        new com.cashly.cashly_api.finance.billing.debit_notes.application.queries.services.RepositoryDebitNoteLedgerQuery(debitNoteRepository)),
-                new LocalReturnInventoryGatewayAdapter(new ReturnInventoryService(warehouseStockRepository, stockMovementRepository)),
+                        new com.cashly.cashly_api.finance.billing.invoices.application.queries.services.RepositoryReturnInvoiceQuery(
+                                invoiceRepository),
+                        new com.cashly.cashly_api.finance.billing.credit_notes.application.queries.services.RepositoryCreditNoteLedgerQuery(
+                                creditNoteRepository),
+                        new com.cashly.cashly_api.finance.billing.debit_notes.application.queries.services.RepositoryDebitNoteLedgerQuery(
+                                debitNoteRepository)),
+                new LocalReturnInventoryGatewayAdapter(
+                        new ReturnInventoryService(warehouseStockRepository,
+                                stockMovementRepository)),
                 new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnPaymentSettlementGateway(
-                        new com.cashly.cashly_api.finance.treasury.payments.collection.application.services.ReturnPaymentOperationsService(paymentRepository, allocationRepository,
-                                new com.cashly.cashly_api.finance.treasury.payments.collection.domain.services.PaymentAllocationService(paymentRepository, allocationRepository))),
+                        new com.cashly.cashly_api.finance.treasury.payments.collection.application.services.ReturnPaymentOperationsService(
+                                paymentRepository, allocationRepository,
+                                new com.cashly.cashly_api.finance.treasury.payments.collection.domain.services.PaymentAllocationService(
+                                        paymentRepository,
+                                        allocationRepository))),
                 new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnBalanceGateway(
                         new com.cashly.cashly_api.partners.customers.balance.application.services.ReturnBalanceMutationService(
-                                mock(com.cashly.cashly_api.partners.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase.class), consumeCustomerBalanceUseCase)));
+                                mock(com.cashly.cashly_api.partners.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase.class),
+                                consumeCustomerBalanceUseCase)));
     }
 
     // ------------------------------------------------------------------------
@@ -111,7 +133,8 @@ class DeleteReturnUseCaseTest {
         // Given
         Return return_ = buildManualReturn();
         WarehouseStock stock = givenStockExists(10);
-        Invoice invoice = mockInvoice(InvoiceStatus.PAID, BigDecimal.valueOf(100));
+        Invoice invoice = mockInvoice(InvoiceStatus.PAID,
+                BigDecimal.valueOf(100));
 
         stubReturnFindById(return_);
         stubStockFind(WAREHOUSE_ID, PRODUCT_ID, stock);
@@ -139,25 +162,22 @@ class DeleteReturnUseCaseTest {
         assertTrue(movement.getNotes().contains("Return deleted:"));
 
         // Then — invoice reverted
-        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
+                any());
         verify(invoiceAdjustmentGateway).reverse(eq(return_),
-                eq(BigDecimal.valueOf(150)),
-                eq(BigDecimal.ZERO),
-                eq(BigDecimal.ZERO)
-        );
-        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+                eq(BigDecimal.valueOf(150)), eq(BigDecimal.ZERO),
+                eq(BigDecimal.ZERO));
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
+                any());
 
         // Then — customer balance consumed with surplus = 150 - 100 = 50
-        verify(consumeCustomerBalanceUseCase).execute(
-                eq(CUSTOMER_ID),
+        verify(consumeCustomerBalanceUseCase).execute(eq(CUSTOMER_ID),
                 eq(BalanceType.RETURNS),
-                argThat(v -> ((BigDecimal) v).compareTo(BigDecimal.valueOf(50)) == 0),
-                eq(BalanceType.RETURNS),
-                eq(RETURN_ID),
-                eq("REV-" + RETURN_NUMBER_STR),
-                eq(INVOICE_NUMBER_STR),
-                eq(CREATED_BY)
-        );
+                argThat(v -> ((BigDecimal) v)
+                        .compareTo(BigDecimal.valueOf(50)) == 0),
+                eq(BalanceType.RETURNS), eq(RETURN_ID),
+                eq("REV-" + RETURN_NUMBER_STR), eq(INVOICE_NUMBER_STR),
+                eq(CREATED_BY));
 
         // Then — return deleted
         verify(returnRepository).delete(returnIdObj);
@@ -172,11 +192,11 @@ class DeleteReturnUseCaseTest {
         UUID paymentId = UUID.randomUUID();
         BigDecimal cancelledAmount = BigDecimal.valueOf(50);
 
-        Return return_ = buildAutomaticReturn(List.of(
-                CancelledAllocation.create(paymentId, INVOICE_ID, cancelledAmount)
-        ));
+        Return return_ = buildAutomaticReturn(List.of(CancelledAllocation
+                .create(paymentId, INVOICE_ID, cancelledAmount)));
         WarehouseStock stock = givenStockExists(5);
-        Invoice invoice = mockInvoice(InvoiceStatus.PAID, BigDecimal.valueOf(100));
+        Invoice invoice = mockInvoice(InvoiceStatus.PAID,
+                BigDecimal.valueOf(100));
         Payment payment = mockPayment();
 
         stubReturnFindById(return_);
@@ -187,8 +207,10 @@ class DeleteReturnUseCaseTest {
         stubCreditNotes(List.of());
         stubDebitNotes(List.of());
         stubCalculateTotal(invoice, BigDecimal.valueOf(100));
-        when(paymentRepository.findById(PaymentId.of(paymentId))).thenReturn(Optional.of(payment));
-        when(allocationRepository.save(any(PaymentAllocation.class))).thenAnswer(a -> a.getArgument(0));
+        when(paymentRepository.findById(PaymentId.of(paymentId)))
+                .thenReturn(Optional.of(payment));
+        when(allocationRepository.save(any(PaymentAllocation.class)))
+                .thenAnswer(a -> a.getArgument(0));
 
         // When
         useCase.execute(RETURN_ID, CREATED_BY, USER_NAME);
@@ -199,37 +221,39 @@ class DeleteReturnUseCaseTest {
 
         // Then — CANCEL_ENTRY movement saved
         verify(stockMovementRepository).save(stockMovementCaptor.capture());
-        assertEquals(MovementType.CANCEL_ENTRY, stockMovementCaptor.getValue().getMovementType());
+        assertEquals(MovementType.CANCEL_ENTRY,
+                stockMovementCaptor.getValue().getMovementType());
 
         // Then — invoice reverted
-        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
-        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
+                any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
+                any());
 
         // Then — payment reactivated
         verify(payment).reactivate();
         verify(paymentRepository).save(payment);
 
         // Then — PaymentAllocation created and saved for each cancelled allocation
-        verify(allocationRepository, atLeastOnce()).save(paymentAllocationCaptor.capture());
+        verify(allocationRepository, atLeastOnce())
+                .save(paymentAllocationCaptor.capture());
         PaymentAllocation pa = paymentAllocationCaptor.getAllValues().stream()
-                .filter(a -> a.getPaymentId().equals(paymentId))
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("PaymentAllocation for payment " + paymentId + " not found"));
+                .filter(a -> a.getPaymentId().equals(paymentId)).findFirst()
+                .orElseThrow(() -> new AssertionError(
+                        "PaymentAllocation for payment " + paymentId
+                                + " not found"));
         assertEquals(INVOICE_ID, pa.getInvoiceId());
         assertEquals(0, cancelledAmount.compareTo(pa.getAllocatedAmount()),
                 "Allocated amount should match cancelled amount");
 
         // Then — customer balance consumed with surplus = 200 - 100 = 100
-        verify(consumeCustomerBalanceUseCase).execute(
-                eq(CUSTOMER_ID),
+        verify(consumeCustomerBalanceUseCase).execute(eq(CUSTOMER_ID),
                 eq(BalanceType.RETURNS),
-                argThat(v -> ((BigDecimal) v).compareTo(BigDecimal.valueOf(100)) == 0),
-                eq(BalanceType.RETURNS),
-                eq(RETURN_ID),
-                eq("REV-" + RETURN_NUMBER_STR),
-                eq(INVOICE_NUMBER_STR),
-                eq(CREATED_BY)
-        );
+                argThat(v -> ((BigDecimal) v)
+                        .compareTo(BigDecimal.valueOf(100)) == 0),
+                eq(BalanceType.RETURNS), eq(RETURN_ID),
+                eq("REV-" + RETURN_NUMBER_STR), eq(INVOICE_NUMBER_STR),
+                eq(CREATED_BY));
 
         // Then — return deleted
         verify(returnRepository).delete(returnIdObj);
@@ -241,29 +265,24 @@ class DeleteReturnUseCaseTest {
     @Test
     void should_ThrowException_When_ReturnNotFound() {
         // Given
-        when(returnRepository.findById(returnIdObj)).thenReturn(Optional.empty());
+        when(returnRepository.findById(returnIdObj))
+                .thenReturn(Optional.empty());
 
         // When
         GetReturnByIdUseCase.ReturnNotFoundException exception = assertThrows(
                 GetReturnByIdUseCase.ReturnNotFoundException.class,
-                () -> useCase.execute(RETURN_ID, CREATED_BY, USER_NAME)
-        );
+                () -> useCase.execute(RETURN_ID, CREATED_BY, USER_NAME));
 
         // Then
-        assertEquals("Return not found with id: " + RETURN_ID, exception.getMessage());
+        assertEquals("Return not found with id: " + RETURN_ID,
+                exception.getMessage());
         verify(returnRepository).findById(returnIdObj);
 
         // No other repository should be called
-        verifyNoInteractions(
-                invoiceRepository,
-                warehouseStockRepository,
-                stockMovementRepository,
-                consumeCustomerBalanceUseCase,
-                paymentRepository,
-                allocationRepository,
-                creditNoteRepository,
-                debitNoteRepository
-        );
+        verifyNoInteractions(invoiceRepository, warehouseStockRepository,
+                stockMovementRepository, consumeCustomerBalanceUseCase,
+                paymentRepository, allocationRepository, creditNoteRepository,
+                debitNoteRepository);
         verify(returnRepository, never()).delete(any());
     }
 
@@ -275,7 +294,8 @@ class DeleteReturnUseCaseTest {
         // Given
         Return return_ = buildManualReturn();
         WarehouseStock stock = givenStockExists(5);
-        Invoice invoice = mockInvoice(InvoiceStatus.CANCELLED, BigDecimal.valueOf(100));
+        Invoice invoice = mockInvoice(InvoiceStatus.CANCELLED,
+                BigDecimal.valueOf(100));
 
         stubReturnFindById(return_);
         stubStockFind(WAREHOUSE_ID, PRODUCT_ID, stock);
@@ -312,7 +332,8 @@ class DeleteReturnUseCaseTest {
         // Given
         Return return_ = buildManualReturn();
         WarehouseStock stock = givenStockExists(8);
-        Invoice invoice = mockInvoice(InvoiceStatus.PAID, BigDecimal.valueOf(200));
+        Invoice invoice = mockInvoice(InvoiceStatus.PAID,
+                BigDecimal.valueOf(200));
 
         stubReturnFindById(return_);
         stubStockFind(WAREHOUSE_ID, PRODUCT_ID, stock);
@@ -332,13 +353,14 @@ class DeleteReturnUseCaseTest {
         assertEquals(7, stock.getQuantity());
 
         // Then — invoice reverted normally
-        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
-        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(), any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
+                any());
+        verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
+                any());
 
         // Then — customer balance NOT consumed
-        verify(consumeCustomerBalanceUseCase, never()).execute(
-                any(), any(), any(), any(), any(), any(), any(), any()
-        );
+        verify(consumeCustomerBalanceUseCase, never()).execute(any(), any(),
+                any(), any(), any(), any(), any(), any());
 
         // Then — return deleted
         verify(returnRepository).delete(returnIdObj);
@@ -352,37 +374,23 @@ class DeleteReturnUseCaseTest {
         return buildReturn(ReturnType.MANUAL, List.of());
     }
 
-    private Return buildAutomaticReturn(List<CancelledAllocation> cancelledAllocations) {
+    private Return buildAutomaticReturn(
+            List<CancelledAllocation> cancelledAllocations) {
         return buildReturn(ReturnType.AUTOMATIC, cancelledAllocations);
     }
 
-    private Return buildReturn(ReturnType type, List<CancelledAllocation> cancelledAllocations) {
-        ReturnLineAllocation allocation = ReturnLineAllocation.reconstitute(
-                UUID.randomUUID(), WAREHOUSE_ID, BigDecimal.ONE
-        );
-        ReturnLine line = ReturnLine.create(
-                INVOICE_LINE_ID,
-                PRODUCT_ID,
-                BigDecimal.ONE,
-                BigDecimal.valueOf(50),
-                BigDecimal.valueOf(50),
-                List.of(allocation)
-        );
-        return Return.reconstitute(
-                returnIdObj,
-                ReturnNumber.of(2026, 1),
-                invoiceIdObj.value(),
-                CUSTOMER_ID,
-                type,
-                "Test reason",
-                BigDecimal.valueOf(50),
-                List.of(line),
-                cancelledAllocations,
-                CREATED_BY,
-                "Test User",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+    private Return buildReturn(ReturnType type,
+            List<CancelledAllocation> cancelledAllocations) {
+        ReturnLineAllocation allocation = ReturnLineAllocation
+                .reconstitute(UUID.randomUUID(), WAREHOUSE_ID, BigDecimal.ONE);
+        ReturnLine line = ReturnLine.create(INVOICE_LINE_ID, PRODUCT_ID,
+                BigDecimal.ONE, BigDecimal.valueOf(50), BigDecimal.valueOf(50),
+                List.of(allocation));
+        return Return.reconstitute(returnIdObj, ReturnNumber.of(2026, 1),
+                invoiceIdObj.value(), CUSTOMER_ID, type, "Test reason",
+                BigDecimal.valueOf(50), List.of(line), cancelledAllocations,
+                CREATED_BY, "Test User", LocalDateTime.now(),
+                LocalDateTime.now());
     }
 
     // ========================================================================
@@ -390,21 +398,23 @@ class DeleteReturnUseCaseTest {
     // ========================================================================
 
     private void stubReturnFindById(Return return_) {
-        when(returnRepository.findById(returnIdObj)).thenReturn(Optional.of(return_));
+        when(returnRepository.findById(returnIdObj))
+                .thenReturn(Optional.of(return_));
     }
 
     private WarehouseStock givenStockExists(int initialQuantity) {
-        WarehouseStock stock = new WarehouseStock(
-                UUID.randomUUID(), WAREHOUSE_ID, PRODUCT_ID,
-                initialQuantity, 0,
-                LocalDateTime.now(), LocalDateTime.now()
-        );
-        when(warehouseStockRepository.save(any(WarehouseStock.class))).thenReturn(stock);
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                WAREHOUSE_ID, PRODUCT_ID, initialQuantity, 0,
+                LocalDateTime.now(), LocalDateTime.now());
+        when(warehouseStockRepository.save(any(WarehouseStock.class)))
+                .thenReturn(stock);
         return stock;
     }
 
-    private void stubStockFind(UUID warehouseId, UUID productId, WarehouseStock stock) {
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+    private void stubStockFind(UUID warehouseId, UUID productId,
+            WarehouseStock stock) {
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
     }
 
@@ -413,34 +423,41 @@ class DeleteReturnUseCaseTest {
                 .thenAnswer(a -> a.getArgument(0));
     }
 
-    private Invoice mockInvoice(InvoiceStatus status, BigDecimal effectiveTotal) {
+    private Invoice mockInvoice(InvoiceStatus status,
+            BigDecimal effectiveTotal) {
         Invoice invoice = mock(Invoice.class);
         when(invoice.getStatus()).thenReturn(status);
-        lenient().when(invoice.getInvoiceNumber()).thenReturn(InvoiceNumber.of(2026, 1));
+        lenient().when(invoice.getInvoiceNumber())
+                .thenReturn(InvoiceNumber.of(2026, 1));
         // calculateTotal will be stubbed individually per test
         return invoice;
     }
 
-    private void stubCalculateTotal(Invoice invoice, BigDecimal effectiveTotal) {
+    private void stubCalculateTotal(Invoice invoice,
+            BigDecimal effectiveTotal) {
         when(invoice.getSubtotal()).thenReturn(effectiveTotal);
-        when(invoice.calculateTotal(any(BigDecimal.class), any(BigDecimal.class)))
-                .thenReturn(effectiveTotal);
+        when(invoice.calculateTotal(any(BigDecimal.class),
+                any(BigDecimal.class))).thenReturn(effectiveTotal);
     }
 
     private void stubInvoiceFindById(Invoice invoice) {
-        when(invoiceRepository.findById(invoiceIdObj)).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(invoiceIdObj))
+                .thenReturn(Optional.of(invoice));
     }
 
     private void stubAllocatedAmount(BigDecimal amount) {
-        when(allocationRepository.getAllocatedAmountByInvoiceId(INVOICE_ID)).thenReturn(amount);
+        when(allocationRepository.getAllocatedAmountByInvoiceId(INVOICE_ID))
+                .thenReturn(amount);
     }
 
     private void stubCreditNotes(List<?> notes) {
-        when(creditNoteRepository.findByInvoiceId(INVOICE_ID)).thenReturn(List.of());
+        when(creditNoteRepository.findByInvoiceId(INVOICE_ID))
+                .thenReturn(List.of());
     }
 
     private void stubDebitNotes(List<?> notes) {
-        when(debitNoteRepository.findByInvoiceId(INVOICE_ID)).thenReturn(List.of());
+        when(debitNoteRepository.findByInvoiceId(INVOICE_ID))
+                .thenReturn(List.of());
     }
 
     private Payment mockPayment() {

@@ -60,10 +60,12 @@ class JpaCustomerRepositoryTest {
         void should_CreateNewCustomer_When_NotExisting() {
             Customer customer = createTestCustomer();
 
-            when(springDataRepository.findById(customer.getId().getValue())).thenReturn(Optional.empty());
+            when(springDataRepository.findById(customer.getId().getValue()))
+                    .thenReturn(Optional.empty());
 
             CustomerEntity savedEntity = CustomerEntity.fromDomain(customer);
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(savedEntity);
 
             Customer result = adapter.save(customer);
 
@@ -76,7 +78,8 @@ class JpaCustomerRepositoryTest {
             CustomerEntity captured = entityCaptor.getValue();
             assertEquals(customer.getId().getValue(), captured.getId());
             assertEquals(customer.getCode().getValue(), captured.getCode());
-            assertEquals(customer.getLegalName().getValue(), captured.getLegalName());
+            assertEquals(customer.getLegalName().getValue(),
+                    captured.getLegalName());
 
             verify(springDataRepository).findById(customer.getId().getValue());
             verify(springDataRepository).save(any(CustomerEntity.class));
@@ -87,8 +90,10 @@ class JpaCustomerRepositoryTest {
             Customer customer = createTestCustomer();
             CustomerEntity existingEntity = CustomerEntity.fromDomain(customer);
 
-            when(springDataRepository.findById(customer.getId().getValue())).thenReturn(Optional.of(existingEntity));
-            when(springDataRepository.save(entityCaptor.capture())).thenReturn(existingEntity);
+            when(springDataRepository.findById(customer.getId().getValue()))
+                    .thenReturn(Optional.of(existingEntity));
+            when(springDataRepository.save(entityCaptor.capture()))
+                    .thenReturn(existingEntity);
 
             Customer result = adapter.save(customer);
 
@@ -96,7 +101,8 @@ class JpaCustomerRepositoryTest {
             assertEquals(customer.getId(), result.getId());
 
             CustomerEntity captured = entityCaptor.getValue();
-            assertEquals(customer.getLegalName().getValue(), captured.getLegalName());
+            assertEquals(customer.getLegalName().getValue(),
+                    captured.getLegalName());
             assertEquals(customer.getRif().getValue(), captured.getRif());
 
             verify(springDataRepository).findById(customer.getId().getValue());
@@ -113,7 +119,8 @@ class JpaCustomerRepositoryTest {
             Customer customer = createTestCustomer();
             CustomerEntity entity = CustomerEntity.fromDomain(customer);
 
-            when(springDataRepository.findById(customer.getId().getValue())).thenReturn(Optional.of(entity));
+            when(springDataRepository.findById(customer.getId().getValue()))
+                    .thenReturn(Optional.of(entity));
 
             Optional<Customer> result = adapter.findById(customer.getId());
 
@@ -126,7 +133,8 @@ class JpaCustomerRepositoryTest {
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             CustomerId id = CustomerId.generate();
-            when(springDataRepository.findById(id.getValue())).thenReturn(Optional.empty());
+            when(springDataRepository.findById(id.getValue()))
+                    .thenReturn(Optional.empty());
 
             Optional<Customer> result = adapter.findById(id);
 
@@ -142,7 +150,8 @@ class JpaCustomerRepositoryTest {
         @Test
         void should_CheckWhetherRifExists() {
             Rif rif = new Rif("J-12345678-9");
-            when(springDataRepository.existsByRif(rif.getValue())).thenReturn(true);
+            when(springDataRepository.existsByRif(rif.getValue()))
+                    .thenReturn(true);
 
             assertTrue(adapter.existsByRif(rif));
 
@@ -153,12 +162,13 @@ class JpaCustomerRepositoryTest {
         void should_ExcludeCurrentCustomer_WhenCheckingRif() {
             Rif rif = new Rif("J-12345678-9");
             CustomerId customerId = CustomerId.generate();
-            when(springDataRepository.existsByRifAndIdNot(rif.getValue(), customerId.getValue()))
-                    .thenReturn(false);
+            when(springDataRepository.existsByRifAndIdNot(rif.getValue(),
+                    customerId.getValue())).thenReturn(false);
 
             assertFalse(adapter.existsByRifAndIdNot(rif, customerId));
 
-            verify(springDataRepository).existsByRifAndIdNot(rif.getValue(), customerId.getValue());
+            verify(springDataRepository).existsByRifAndIdNot(rif.getValue(),
+                    customerId.getValue());
         }
     }
 
@@ -203,19 +213,20 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, 0, 20, "legalName", "asc");
+            PageResponse<Customer> result = adapter.findAllWithFilters(null,
+                    null, null, null, null, null, null, null, 0, 20,
+                    "legalName", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(1, result.content().size());
             assertEquals(customer.getId(), result.content().get(0).getId());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -234,18 +245,19 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(true);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, 0, 20, "legalName", "asc");
+            PageResponse<Customer> result = adapter.findAllWithFilters(null,
+                    null, null, null, null, null, null, null, 0, 20,
+                    "legalName", "asc");
 
             assertNotNull(result);
             assertTrue(result.empty());
             assertTrue(result.content().isEmpty());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -265,17 +277,18 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, 0, 20, "invalidField", "asc");
+            PageResponse<Customer> result = adapter.findAllWithFilters(null,
+                    null, null, null, null, null, null, null, 0, 20,
+                    "invalidField", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class));
         }
 
         @SuppressWarnings("unchecked")
@@ -295,18 +308,19 @@ class JpaCustomerRepositoryTest {
             when(mappedPage.isLast()).thenReturn(true);
             when(mappedPage.isEmpty()).thenReturn(false);
 
-            when(springDataRepository.findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class)))
+            when(springDataRepository.findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class)))
                     .thenReturn(entityPage);
 
-            PageResponse<Customer> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, null, null, 0, 20, "legalName", "desc");
+            PageResponse<Customer> result = adapter.findAllWithFilters(null,
+                    null, null, null, null, null, null, null, 0, 20,
+                    "legalName", "desc");
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(customer.getId(), result.content().get(0).getId());
-            verify(springDataRepository).findAllWithFilters(
-                    any(), any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+            verify(springDataRepository).findAllWithFilters(any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(PageRequest.class));
         }
     }
 
@@ -317,7 +331,8 @@ class JpaCustomerRepositoryTest {
         @Test
         void should_ReturnTrue_When_CustomerExists() {
             CustomerId id = CustomerId.generate();
-            when(springDataRepository.existsById(id.getValue())).thenReturn(true);
+            when(springDataRepository.existsById(id.getValue()))
+                    .thenReturn(true);
 
             boolean result = adapter.existsById(id);
 
@@ -328,7 +343,8 @@ class JpaCustomerRepositoryTest {
         @Test
         void should_ReturnFalse_When_CustomerDoesNotExist() {
             CustomerId id = CustomerId.generate();
-            when(springDataRepository.existsById(id.getValue())).thenReturn(false);
+            when(springDataRepository.existsById(id.getValue()))
+                    .thenReturn(false);
 
             boolean result = adapter.existsById(id);
 
@@ -357,7 +373,8 @@ class JpaCustomerRepositoryTest {
 
         @Test
         void should_ReturnMaxCodePlusOne_When_MaxCodeExists() {
-            when(springDataRepository.findMaxCode()).thenReturn(Optional.of(42L));
+            when(springDataRepository.findMaxCode())
+                    .thenReturn(Optional.of(42L));
 
             long next = adapter.getNextCode();
 
@@ -367,7 +384,8 @@ class JpaCustomerRepositoryTest {
 
         @Test
         void should_ReturnOne_When_NoMaxCode() {
-            when(springDataRepository.findMaxCode()).thenReturn(Optional.empty());
+            when(springDataRepository.findMaxCode())
+                    .thenReturn(Optional.empty());
 
             long next = adapter.getNextCode();
 
@@ -377,23 +395,12 @@ class JpaCustomerRepositoryTest {
     }
 
     private Customer createTestCustomer() {
-        return Customer.reconstitute(
-                CustomerId.generate(),
-                new CustomerCode(1L),
-                new LegalName("Test Customer S.A."),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("TestCustomer"),
-                new CreditDays(30),
-                new CreditLimit(new BigDecimal("50000.00")),
-                true,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of(),
-                List.of(),
-                List.of(),
-                null,
-                null
-        );
+        return Customer.reconstitute(CustomerId.generate(),
+                new CustomerCode(1L), new LegalName("Test Customer S.A."),
+                CustomerType.BUSINESS, new Rif("J-12345678-9"),
+                new CustomerAlias("TestCustomer"), new CreditDays(30),
+                new CreditLimit(new BigDecimal("50000.00")), true,
+                LocalDateTime.now(), LocalDateTime.now(), List.of(), List.of(),
+                List.of(), null, null);
     }
 }

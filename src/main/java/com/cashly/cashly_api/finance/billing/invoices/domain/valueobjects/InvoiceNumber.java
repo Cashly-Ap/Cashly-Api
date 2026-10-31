@@ -16,7 +16,8 @@ public record InvoiceNumber(String value) {
 
     public static InvoiceNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
         return new InvoiceNumber(String.format(FORMAT, PREFIX, year, sequence));
     }

@@ -18,7 +18,8 @@ public class ReceivablesReportsController {
     private final GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase;
     private final GenerateCollectionsReportPdfUseCase generateCollectionsReportPdfUseCase;
 
-    public ReceivablesReportsController(GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase,
+    public ReceivablesReportsController(
+            GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase,
             GenerateCollectionsReportPdfUseCase generateCollectionsReportPdfUseCase) {
         this.generateAccountsReceivableReportPdfUseCase = generateAccountsReceivableReportPdfUseCase;
         this.generateCollectionsReportPdfUseCase = generateCollectionsReportPdfUseCase;
@@ -29,11 +30,13 @@ public class ReceivablesReportsController {
     public ResponseEntity<byte[]> getAccountsReceivablePdf(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(defaultValue = "false") boolean overdueOnly) {
-        byte[] pdf = generateAccountsReceivableReportPdfUseCase.execute(customerId, overdueOnly);
-        String filename = "cuentas-por-cobrar-" + LocalDate.now().toString() + ".pdf";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+        byte[] pdf = generateAccountsReceivableReportPdfUseCase
+                .execute(customerId, overdueOnly);
+        String filename = "cuentas-por-cobrar-" + LocalDate.now().toString()
+                + ".pdf";
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .body(pdf);
     }
 
@@ -42,11 +45,12 @@ public class ReceivablesReportsController {
     public ResponseEntity<byte[]> getCollectionsPdf(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate agingFrom) {
-        byte[] pdf = generateCollectionsReportPdfUseCase.execute(customerId, agingFrom);
+        byte[] pdf = generateCollectionsReportPdfUseCase.execute(customerId,
+                agingFrom);
         String filename = "cobranzas-" + LocalDate.now().toString() + ".pdf";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .body(pdf);
     }
 }

@@ -36,10 +36,12 @@ class MovementsReportConfigTest {
     void should_create_use_case_beans() {
         var config = new MovementsReportConfig();
 
-        var pdfUseCase = config.generateMovementsPdfUseCase(movementsReportRepositoryPort, movementsPdfPort);
+        var pdfUseCase = config.generateMovementsPdfUseCase(
+                movementsReportRepositoryPort, movementsPdfPort);
         assertNotNull(pdfUseCase);
 
-        var excelUseCase = config.generateMovementsExcelUseCase(movementsReportRepositoryPort, movementsExcelPort);
+        var excelUseCase = config.generateMovementsExcelUseCase(
+                movementsReportRepositoryPort, movementsExcelPort);
         assertNotNull(excelUseCase);
     }
 
@@ -48,7 +50,8 @@ class MovementsReportConfigTest {
     void should_create_port_and_adapter_beans() {
         var config = new MovementsReportConfig();
 
-        assertNotNull(config.movementsReportRepositoryPort(movementsReportJpaRepository));
+        assertNotNull(config
+                .movementsReportRepositoryPort(movementsReportJpaRepository));
         assertNotNull(config.movementsPdfPort(new PdfBranding()));
         assertNotNull(config.movementsExcelPort());
     }

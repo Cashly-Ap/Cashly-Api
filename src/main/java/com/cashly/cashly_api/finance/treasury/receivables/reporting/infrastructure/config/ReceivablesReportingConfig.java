@@ -17,12 +17,14 @@ import org.springframework.context.annotation.Configuration;
 public class ReceivablesReportingConfig {
 
     @Bean
-    public AccountsReceivableReportPdfPort accountsReceivableReportPdfPort(PdfBranding branding) {
+    public AccountsReceivableReportPdfPort accountsReceivableReportPdfPort(
+            PdfBranding branding) {
         return new AccountsReceivableReportPdfGenerator(branding);
     }
 
     @Bean
-    public CollectionsReportPdfPort collectionsReportPdfPort(PdfBranding branding) {
+    public CollectionsReportPdfPort collectionsReportPdfPort(
+            PdfBranding branding) {
         return new CollectionsReportPdfGenerator(branding);
     }
 
@@ -30,7 +32,8 @@ public class ReceivablesReportingConfig {
     public GenerateAccountsReceivableReportPdfUseCase generateAccountsReceivableReportPdfUseCase(
             AccountsReceivableQueryGateway receivablesRepository,
             AccountsReceivableReportPdfPort pdfPort) {
-        return new GenerateAccountsReceivableReportPdfUseCaseImpl(receivablesRepository, pdfPort);
+        return new GenerateAccountsReceivableReportPdfUseCaseImpl(
+                receivablesRepository, pdfPort);
     }
 
     @Bean

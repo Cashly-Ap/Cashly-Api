@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface MovementsReportJpaRepository extends JpaRepository<StockMovementEntity, UUID> {
+public interface MovementsReportJpaRepository
+        extends
+            JpaRepository<StockMovementEntity, UUID> {
 
     @Query(value = """
             SELECT
@@ -34,8 +36,7 @@ public interface MovementsReportJpaRepository extends JpaRepository<StockMovemen
               AND (:dateFrom IS NULL OR DATE(sm.created_at) >= :dateFrom)
               AND (:dateTo IS NULL OR DATE(sm.created_at) <= :dateTo)
             ORDER BY sm.created_at DESC
-            """,
-            nativeQuery = true)
+            """, nativeQuery = true)
     List<MovementsReportProjection> findAllForPdf(
             @Param("warehouseId") String warehouseId,
             @Param("productId") String productId,

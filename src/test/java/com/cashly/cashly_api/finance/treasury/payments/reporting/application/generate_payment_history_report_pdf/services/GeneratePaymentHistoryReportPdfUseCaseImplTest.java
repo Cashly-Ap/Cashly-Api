@@ -34,7 +34,8 @@ class GeneratePaymentHistoryReportPdfUseCaseImplTest {
 
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(dateFrom, dateTo, customerId, "APPLIED", "CASH");
+        byte[] result = useCase.execute(dateFrom, dateTo, customerId, "APPLIED",
+                "CASH");
 
         assertArrayEquals(expectedPdf, result);
         verify(pdfPort).generateReport(any());

@@ -24,7 +24,8 @@ class DebitNoteUnitTest {
 
     @Test
     void should_CreateDebitNote_When_ValidParametersProvided() {
-        DebitNote note = DebitNote.create(noteNumber, customerId, invoiceId, amount, reason, createdBy, createdByName);
+        DebitNote note = DebitNote.create(noteNumber, customerId, invoiceId,
+                amount, reason, createdBy, createdByName);
 
         assertNotNull(note.getId());
         assertEquals(noteNumber, note.getNoteNumber());
@@ -41,62 +42,73 @@ class DebitNoteUnitTest {
 
     @Test
     void should_ThrowException_When_NullNoteNumber() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(null, customerId, invoiceId, amount, reason, createdBy, createdByName));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(null, customerId, invoiceId, amount,
+                        reason, createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_NullCustomerId() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(noteNumber, null, invoiceId, amount, reason, createdBy, createdByName));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(noteNumber, null, invoiceId, amount,
+                        reason, createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_NullInvoiceId() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(noteNumber, customerId, null, amount, reason, createdBy, createdByName));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(noteNumber, customerId, null, amount,
+                        reason, createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_NullAmount() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, null, reason, createdBy, createdByName));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId, null,
+                        reason, createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_AmountIsZero() {
-        assertThrows(IllegalArgumentException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, BigDecimal.ZERO, reason, createdBy, createdByName));
+        assertThrows(IllegalArgumentException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId,
+                        BigDecimal.ZERO, reason, createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_AmountIsNegative() {
-        assertThrows(IllegalArgumentException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, BigDecimal.valueOf(-100), reason, createdBy, createdByName));
+        assertThrows(IllegalArgumentException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId,
+                        BigDecimal.valueOf(-100), reason, createdBy,
+                        createdByName));
     }
 
     @Test
     void should_ThrowException_When_NullReason() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, amount, null, createdBy, createdByName));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId,
+                        amount, null, createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_ReasonIsBlank() {
-        assertThrows(IllegalArgumentException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, amount, "   ", createdBy, createdByName));
+        assertThrows(IllegalArgumentException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId,
+                        amount, "   ", createdBy, createdByName));
     }
 
     @Test
     void should_ThrowException_When_NullCreatedBy() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, amount, reason, null, createdByName));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId,
+                        amount, reason, null, createdByName));
     }
 
     @Test
     void should_ThrowException_When_NullCreatedByName() {
-        assertThrows(NullPointerException.class, () ->
-                DebitNote.create(noteNumber, customerId, invoiceId, amount, reason, createdBy, null));
+        assertThrows(NullPointerException.class,
+                () -> DebitNote.create(noteNumber, customerId, invoiceId,
+                        amount, reason, createdBy, null));
     }
 
     @Test
@@ -105,10 +117,9 @@ class DebitNoteUnitTest {
         LocalDateTime createdAt = LocalDateTime.of(2026, 1, 15, 10, 30);
         LocalDateTime updatedAt = LocalDateTime.of(2026, 1, 16, 14, 0);
 
-        DebitNote note = DebitNote.reconstitute(
-                id, noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, createdAt, updatedAt
-        );
+        DebitNote note = DebitNote.reconstitute(id, noteNumber, customerId,
+                invoiceId, amount, reason, createdBy, createdByName, createdAt,
+                updatedAt);
 
         assertEquals(id, note.getId());
         assertEquals(noteNumber, note.getNoteNumber());
@@ -125,12 +136,12 @@ class DebitNoteUnitTest {
     @Test
     void should_BeEqual_When_SameId() {
         DebitNoteId id = DebitNoteId.generate();
-        DebitNote first = DebitNote.reconstitute(
-                id, noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, LocalDateTime.now(), LocalDateTime.now());
-        DebitNote second = DebitNote.reconstitute(
-                id, noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, LocalDateTime.now(), LocalDateTime.now());
+        DebitNote first = DebitNote.reconstitute(id, noteNumber, customerId,
+                invoiceId, amount, reason, createdBy, createdByName,
+                LocalDateTime.now(), LocalDateTime.now());
+        DebitNote second = DebitNote.reconstitute(id, noteNumber, customerId,
+                invoiceId, amount, reason, createdBy, createdByName,
+                LocalDateTime.now(), LocalDateTime.now());
 
         assertEquals(first, second);
         assertEquals(first.hashCode(), second.hashCode());
@@ -138,19 +149,20 @@ class DebitNoteUnitTest {
 
     @Test
     void should_NotBeEqual_When_DifferentId() {
-        DebitNote first = DebitNote.reconstitute(
-                DebitNoteId.generate(), noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, LocalDateTime.now(), LocalDateTime.now());
-        DebitNote second = DebitNote.reconstitute(
-                DebitNoteId.generate(), noteNumber, customerId, invoiceId, amount, reason,
-                createdBy, createdByName, LocalDateTime.now(), LocalDateTime.now());
+        DebitNote first = DebitNote.reconstitute(DebitNoteId.generate(),
+                noteNumber, customerId, invoiceId, amount, reason, createdBy,
+                createdByName, LocalDateTime.now(), LocalDateTime.now());
+        DebitNote second = DebitNote.reconstitute(DebitNoteId.generate(),
+                noteNumber, customerId, invoiceId, amount, reason, createdBy,
+                createdByName, LocalDateTime.now(), LocalDateTime.now());
 
         assertNotEquals(first, second);
     }
 
     @Test
     void should_ToString_IncludeIdAndNumberAndAmount() {
-        DebitNote note = DebitNote.create(noteNumber, customerId, invoiceId, amount, reason, createdBy, createdByName);
+        DebitNote note = DebitNote.create(noteNumber, customerId, invoiceId,
+                amount, reason, createdBy, createdByName);
 
         String str = note.toString();
 

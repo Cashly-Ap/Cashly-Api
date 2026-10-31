@@ -18,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Payment Domain Entity Unit Tests")
 class PaymentUnitTest {
 
-    private static final PaymentNumber PAYMENT_NUMBER = PaymentNumber.of(2026, 1);
+    private static final PaymentNumber PAYMENT_NUMBER = PaymentNumber.of(2026,
+            1);
     private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final BigDecimal AMOUNT = new BigDecimal("1000.00");
     private static final UUID PAYMENT_METHOD_ID = UUID.randomUUID();
@@ -61,17 +62,17 @@ class PaymentUnitTest {
 
         @Test
         void should_AllowNullNotes_When_Creating() {
-            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, null,
-                    CREATED_BY, CREATED_BY_NAME, STATUS);
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                    AMOUNT, PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                    null, CREATED_BY, CREATED_BY_NAME, STATUS);
 
             assertNull(payment.getNotes());
         }
 
         @Test
         void should_AllowNullReferenceNumber_When_Creating() {
-            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, null, PAYMENT_DATE, NOTES,
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                    AMOUNT, PAYMENT_METHOD_ID, null, PAYMENT_DATE, NOTES,
                     CREATED_BY, CREATED_BY_NAME, STATUS);
 
             assertNull(payment.getReferenceNumber());
@@ -79,86 +80,90 @@ class PaymentUnitTest {
 
         @Test
         void should_ThrowException_When_PaymentNumberIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(null, CUSTOMER_ID, AMOUNT,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, CREATED_BY_NAME, STATUS));
+            assertThrows(NullPointerException.class,
+                    () -> Payment.create(null, CUSTOMER_ID, AMOUNT,
+                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                            NOTES, CREATED_BY, CREATED_BY_NAME, STATUS));
         }
 
         @Test
         void should_ThrowException_When_CustomerIdIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, null, AMOUNT,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, CREATED_BY_NAME, STATUS));
+            assertThrows(NullPointerException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, null, AMOUNT,
+                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                            NOTES, CREATED_BY, CREATED_BY_NAME, STATUS));
         }
 
         @Test
         void should_ThrowException_When_AmountIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, null,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, CREATED_BY_NAME, STATUS));
+            assertThrows(NullPointerException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, null,
+                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                            NOTES, CREATED_BY, CREATED_BY_NAME, STATUS));
         }
 
         @Test
         void should_ThrowException_When_AmountIsZero() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, BigDecimal.ZERO,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, CREATED_BY_NAME, STATUS));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                            BigDecimal.ZERO, PAYMENT_METHOD_ID,
+                            REFERENCE_NUMBER, PAYMENT_DATE, NOTES, CREATED_BY,
+                            CREATED_BY_NAME, STATUS));
 
-            assertEquals("Amount must be greater than zero", exception.getMessage());
+            assertEquals("Amount must be greater than zero",
+                    exception.getMessage());
         }
 
         @Test
         void should_ThrowException_When_AmountIsNegative() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, new BigDecimal("-100.00"),
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, CREATED_BY_NAME, STATUS));
+            assertThrows(IllegalArgumentException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                            new BigDecimal("-100.00"), PAYMENT_METHOD_ID,
+                            REFERENCE_NUMBER, PAYMENT_DATE, NOTES, CREATED_BY,
+                            CREATED_BY_NAME, STATUS));
         }
 
         @Test
         void should_ThrowException_When_PaymentMethodIdIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+            assertThrows(NullPointerException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
                             null, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
                             CREATED_BY, CREATED_BY_NAME, STATUS));
         }
 
         @Test
         void should_ThrowException_When_PaymentDateIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+            assertThrows(NullPointerException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
                             PAYMENT_METHOD_ID, REFERENCE_NUMBER, null, NOTES,
                             CREATED_BY, CREATED_BY_NAME, STATUS));
         }
 
         @Test
         void should_AllowNullCreatedBy_When_Creating() {
-            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    null, CREATED_BY_NAME, STATUS);
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                    AMOUNT, PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                    NOTES, null, CREATED_BY_NAME, STATUS);
 
             assertNull(payment.getCreatedBy());
         }
 
         @Test
         void should_AllowNullCreatedByName_When_Creating() {
-            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    CREATED_BY, null, STATUS);
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                    AMOUNT, PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                    NOTES, CREATED_BY, null, STATUS);
 
             assertNull(payment.getCreatedByName());
         }
 
         @Test
         void should_ThrowException_When_StatusIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                            CREATED_BY, CREATED_BY_NAME, null));
+            assertThrows(NullPointerException.class,
+                    () -> Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
+                            PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                            NOTES, CREATED_BY, CREATED_BY_NAME, null));
         }
     }
 
@@ -193,10 +198,11 @@ class PaymentUnitTest {
             payment.apply(AMOUNT);
             payment.cancel();
 
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::cancel);
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class, payment::cancel);
 
-            assertEquals("Payment is already cancelled", exception.getMessage());
+            assertEquals("Payment is already cancelled",
+                    exception.getMessage());
         }
     }
 
@@ -219,22 +225,24 @@ class PaymentUnitTest {
         void should_ThrowException_When_PaymentIsNotCancelled() {
             Payment payment = createValidPayment();
 
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::reactivate);
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class, payment::reactivate);
 
-            assertEquals("Only cancelled payments can be reactivated", exception.getMessage());
+            assertEquals("Only cancelled payments can be reactivated",
+                    exception.getMessage());
         }
 
         @Test
         void should_ThrowException_When_PaymentIsRefund() {
-            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    CREATED_BY, CREATED_BY_NAME, PaymentStatus.REFUND);
+            Payment payment = Payment.create(PAYMENT_NUMBER, CUSTOMER_ID,
+                    AMOUNT, PAYMENT_METHOD_ID, REFERENCE_NUMBER, PAYMENT_DATE,
+                    NOTES, CREATED_BY, CREATED_BY_NAME, PaymentStatus.REFUND);
 
-            IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    payment::reactivate);
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class, payment::reactivate);
 
-            assertEquals("Only cancelled payments can be reactivated", exception.getMessage());
+            assertEquals("Only cancelled payments can be reactivated",
+                    exception.getMessage());
         }
     }
 
@@ -291,10 +299,12 @@ class PaymentUnitTest {
             Payment payment = createValidPayment();
             payment.apply(new BigDecimal("600.00"));
 
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    payment.apply(new BigDecimal("500.00")));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> payment.apply(new BigDecimal("500.00")));
 
-            assertEquals("Applied amount cannot exceed payment total", exception.getMessage());
+            assertEquals("Applied amount cannot exceed payment total",
+                    exception.getMessage());
         }
 
         @Test
@@ -308,15 +318,16 @@ class PaymentUnitTest {
         void should_ThrowException_When_AmountIsZero() {
             Payment payment = createValidPayment();
 
-            assertThrows(IllegalArgumentException.class, () -> payment.apply(BigDecimal.ZERO));
+            assertThrows(IllegalArgumentException.class,
+                    () -> payment.apply(BigDecimal.ZERO));
         }
 
         @Test
         void should_ThrowException_When_AmountIsNegative() {
             Payment payment = createValidPayment();
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    payment.apply(new BigDecimal("-100.00")));
+            assertThrows(IllegalArgumentException.class,
+                    () -> payment.apply(new BigDecimal("-100.00")));
         }
 
         @Test
@@ -324,10 +335,12 @@ class PaymentUnitTest {
             Payment payment = createValidPayment();
             payment.apply(AMOUNT);
 
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    payment.apply(BigDecimal.ONE));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> payment.apply(BigDecimal.ONE));
 
-            assertEquals("Applied amount cannot exceed payment total", exception.getMessage());
+            assertEquals("Applied amount cannot exceed payment total",
+                    exception.getMessage());
         }
 
         @Test
@@ -336,10 +349,12 @@ class PaymentUnitTest {
             payment.apply(AMOUNT);
             payment.cancel();
 
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                    payment.apply(BigDecimal.ONE));
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class,
+                    () -> payment.apply(BigDecimal.ONE));
 
-            assertEquals("Cannot apply to a cancelled payment", exception.getMessage());
+            assertEquals("Cannot apply to a cancelled payment",
+                    exception.getMessage());
         }
     }
 
@@ -352,11 +367,11 @@ class PaymentUnitTest {
             PaymentId id = PaymentId.generate();
             LocalDateTime now = LocalDateTime.now();
 
-            Payment payment = Payment.reconstitute(
-                    id, PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
-                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    PaymentStatus.APPLIED, AMOUNT, CREATED_BY, CREATED_BY_NAME, now, now);
+            Payment payment = Payment.reconstitute(id, PAYMENT_NUMBER,
+                    CUSTOMER_ID, AMOUNT, PAYMENT_METHOD_ID,
+                    PaymentSource.PAYMENT_METHOD, REFERENCE_NUMBER,
+                    PAYMENT_DATE, NOTES, PaymentStatus.APPLIED, AMOUNT,
+                    CREATED_BY, CREATED_BY_NAME, now, now);
 
             assertEquals(id, payment.getId());
             assertEquals(PAYMENT_NUMBER, payment.getPaymentNumber());
@@ -384,12 +399,12 @@ class PaymentUnitTest {
         void should_BeEqual_When_SameId() {
             Payment payment1 = createValidPayment();
             PaymentId id = payment1.getId();
-            Payment payment2 = Payment.reconstitute(
-                    id, PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
-                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    PaymentStatus.APPLIED, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
-                    payment1.getCreatedAt(), LocalDateTime.now());
+            Payment payment2 = Payment.reconstitute(id, PAYMENT_NUMBER,
+                    CUSTOMER_ID, AMOUNT, PAYMENT_METHOD_ID,
+                    PaymentSource.PAYMENT_METHOD, REFERENCE_NUMBER,
+                    PAYMENT_DATE, NOTES, PaymentStatus.APPLIED, BigDecimal.ZERO,
+                    CREATED_BY, CREATED_BY_NAME, payment1.getCreatedAt(),
+                    LocalDateTime.now());
 
             assertEquals(payment1, payment2);
             assertEquals(payment1.hashCode(), payment2.hashCode());
@@ -443,12 +458,12 @@ class PaymentUnitTest {
 
         @Test
         void should_ReturnAllFields_ThroughGetters() {
-            Payment payment = Payment.reconstitute(
-                    PaymentId.generate(), PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT,
-                    PAYMENT_METHOD_ID, PaymentSource.PAYMENT_METHOD,
-                    REFERENCE_NUMBER, PAYMENT_DATE, NOTES,
-                    PaymentStatus.APPLIED, BigDecimal.ZERO, CREATED_BY, CREATED_BY_NAME,
-                    LocalDateTime.now(), LocalDateTime.now());
+            Payment payment = Payment.reconstitute(PaymentId.generate(),
+                    PAYMENT_NUMBER, CUSTOMER_ID, AMOUNT, PAYMENT_METHOD_ID,
+                    PaymentSource.PAYMENT_METHOD, REFERENCE_NUMBER,
+                    PAYMENT_DATE, NOTES, PaymentStatus.APPLIED, BigDecimal.ZERO,
+                    CREATED_BY, CREATED_BY_NAME, LocalDateTime.now(),
+                    LocalDateTime.now());
 
             assertNotNull(payment.getId());
             assertNotNull(payment.getPaymentNumber());

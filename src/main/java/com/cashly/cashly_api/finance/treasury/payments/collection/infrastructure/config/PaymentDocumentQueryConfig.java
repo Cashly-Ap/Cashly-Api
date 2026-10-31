@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PaymentDocumentQueryConfig {
     @Bean
-    public PaymentDocumentQuery paymentDocumentQuery(GetPaymentByIdUseCase query) {
+    public PaymentDocumentQuery paymentDocumentQuery(
+            GetPaymentByIdUseCase query) {
         return new PaymentDocumentQueryService(query);
     }
 }

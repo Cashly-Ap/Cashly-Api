@@ -20,45 +20,42 @@ public class ConvertToInvoiceUseCase {
     private final OrderNotificationGateway notifications;
 
     public ConvertToInvoiceUseCase(OrderRepository orderRepository,
-                                    InvoiceCreationGateway invoiceCreationGateway,
-                                    OrderNotificationGateway notifications) {
+            InvoiceCreationGateway invoiceCreationGateway,
+            OrderNotificationGateway notifications) {
         this.orderRepository = orderRepository;
         this.invoiceCreationGateway = invoiceCreationGateway;
         this.notifications = notifications;
     }
 
     @Transactional
-    public ConvertToInvoiceResponse execute(UUID orderId, ConvertToInvoiceRequest request, UUID authenticatedUserId) {
+    public ConvertToInvoiceResponse execute(UUID orderId,
+            ConvertToInvoiceRequest request, UUID authenticatedUserId) {
         Order order = orderRepository.findById(OrderId.of(orderId))
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
         if (order.getStatus() != OrderStatus.CONFIRMED) {
-            throw new IllegalStateException("Only CONFIRMED orders can be invoiced");
+            throw new IllegalStateException(
+                    "Only CONFIRMED orders can be invoiced");
         }
 
         InvoiceCreationGateway.Command createRequest = new InvoiceCreationGateway.Command(
-                order.getId().value(),
-                request.paymentType(),
-                request.useBalance(),
-                request.balanceAmount(),
-                request.paymentMethodId(),
-                request.confirmationPassword(),
-                request.issueDate()
-        );
+                order.getId().value(), request.paymentType(),
+                request.useBalance(), request.balanceAmount(),
+                request.paymentMethodId(), request.confirmationPassword(),
+                request.issueDate());
 
-        InvoiceCreationGateway.CreatedInvoice invoice = invoiceCreationGateway.create(createRequest, authenticatedUserId);
+        InvoiceCreationGateway.CreatedInvoice invoice = invoiceCreationGateway
+                .create(createRequest, authenticatedUserId);
 
         order.markAsInvoiced(invoice.id(), invoice.invoiceNumber());
         orderRepository.save(order);
 
-        notifications.notifyCustomerOrderConvertedToInvoice(order.getCustomerId(), order.getId().value(), invoice.invoiceNumber());
+        notifications.notifyCustomerOrderConvertedToInvoice(
+                order.getCustomerId(), order.getId().value(),
+                invoice.invoiceNumber());
 
-        return new ConvertToInvoiceResponse(
-                order.getId().value(),
-                order.getOrderNumber().value(),
-                order.getStatus().name(),
-                invoice.id(),
-                invoice.invoiceNumber()
-        );
+        return new ConvertToInvoiceResponse(order.getId().value(),
+                order.getOrderNumber().value(), order.getStatus().name(),
+                invoice.id(), invoice.invoiceNumber());
     }
 }

@@ -3,10 +3,7 @@ package com.cashly.cashly_api.finance.treasury.cash_register.sessions.applicatio
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record CashRegisterDetailResponse(
-        UUID id,
-        UUID paymentMethodId,
-        String paymentMethodName,
-        int transactionCount,
-        BigDecimal expectedAmount
-) {}
+public record CashRegisterDetailResponse(UUID id, UUID paymentMethodId,
+        String paymentMethodName, int transactionCount,
+        BigDecimal expectedAmount) {
+}

@@ -5,10 +5,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocalReturnBalanceGateway implements ReturnBalanceGateway {
     private final ReturnBalanceMutation mutation;
-    public LocalReturnBalanceGateway(ReturnBalanceMutation mutation) { this.mutation = mutation; }
-    public void credit(Command command) { mutation.credit(map(command)); }
-    public void debit(Command command) { mutation.debit(map(command)); }
+    public LocalReturnBalanceGateway(ReturnBalanceMutation mutation) {
+        this.mutation = mutation;
+    }
+    public void credit(Command command) {
+        mutation.credit(map(command));
+    }
+    public void debit(Command command) {
+        mutation.debit(map(command));
+    }
     private ReturnBalanceMutation.Command map(Command command) {
-        return new ReturnBalanceMutation.Command(command.customerId(), command.amount(), command.returnId(), command.returnNumber(), command.invoiceNumber(), command.actorId());
+        return new ReturnBalanceMutation.Command(command.customerId(),
+                command.amount(), command.returnId(), command.returnNumber(),
+                command.invoiceNumber(), command.actorId());
     }
 }

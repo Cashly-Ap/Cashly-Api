@@ -45,15 +45,17 @@ class MovementsReportControllerTest {
         when(generateMovementsPdfUseCase.execute(any(MovementsPdfQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getMovementsPdf(
-                warehouseId, productId, movementType, dateFrom, dateTo);
+        ResponseEntity<byte[]> result = controller.getMovementsPdf(warehouseId,
+                productId, movementType, dateFrom, dateTo);
 
-        assertEquals(MediaType.APPLICATION_PDF, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("historial-movimientos.pdf"));
+        assertEquals(MediaType.APPLICATION_PDF,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("historial-movimientos.pdf"));
         assertArrayEquals(pdfContent, result.getBody());
         assertEquals(200, result.getStatusCodeValue());
-        verify(generateMovementsPdfUseCase).execute(any(MovementsPdfQuery.class));
+        verify(generateMovementsPdfUseCase)
+                .execute(any(MovementsPdfQuery.class));
     }
 
     @Test
@@ -64,11 +66,12 @@ class MovementsReportControllerTest {
         when(generateMovementsPdfUseCase.execute(any(MovementsPdfQuery.class)))
                 .thenReturn(pdfContent);
 
-        ResponseEntity<byte[]> result = controller.getMovementsPdf(
-                null, null, null, null, null);
+        ResponseEntity<byte[]> result = controller.getMovementsPdf(null, null,
+                null, null, null);
 
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateMovementsPdfUseCase).execute(any(MovementsPdfQuery.class));
+        verify(generateMovementsPdfUseCase)
+                .execute(any(MovementsPdfQuery.class));
     }
 
     @Test
@@ -78,17 +81,20 @@ class MovementsReportControllerTest {
         UUID productId = UUID.randomUUID();
         byte[] excelContent = "Excel content".getBytes();
 
-        when(generateMovementsExcelUseCase.execute(any(MovementsPdfQuery.class)))
+        when(generateMovementsExcelUseCase
+                .execute(any(MovementsPdfQuery.class)))
                 .thenReturn(excelContent);
 
         ResponseEntity<byte[]> result = controller.getMovementsExcel(
-                warehouseId, productId, "EXIT",
-                LocalDate.of(2026, 1, 1), LocalDate.of(2026, 12, 31));
+                warehouseId, productId, "EXIT", LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 12, 31));
 
-        assertEquals(MediaType.APPLICATION_OCTET_STREAM, result.getHeaders().getContentType());
-        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0)
-                .contains("historial-movimientos.xlsx"));
+        assertEquals(MediaType.APPLICATION_OCTET_STREAM,
+                result.getHeaders().getContentType());
+        assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
+                .get(0).contains("historial-movimientos.xlsx"));
         assertArrayEquals(excelContent, result.getBody());
-        verify(generateMovementsExcelUseCase).execute(any(MovementsPdfQuery.class));
+        verify(generateMovementsExcelUseCase)
+                .execute(any(MovementsPdfQuery.class));
     }
 }

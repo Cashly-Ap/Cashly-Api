@@ -19,8 +19,8 @@ class MovementsPdfQueryTest {
         LocalDate dateFrom = LocalDate.of(2026, 1, 1);
         LocalDate dateTo = LocalDate.of(2026, 12, 31);
 
-        var query = new MovementsPdfQuery(
-                warehouseId, productId, "ENTRY", dateFrom, dateTo);
+        var query = new MovementsPdfQuery(warehouseId, productId, "ENTRY",
+                dateFrom, dateTo);
 
         assertEquals(warehouseId, query.warehouseId());
         assertEquals(productId, query.productId());

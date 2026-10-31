@@ -37,10 +37,13 @@ class OpenRegisterUseCaseUnitTest {
 
     @Test
     void should_OpenRegisterWithOpeningBalance_When_NoRegisterIsOpen() {
-        when(closureRepository.findActiveClosure()).thenReturn(Optional.empty());
-        when(closureRepository.save(any(CashRegister.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(closureRepository.findActiveClosure())
+                .thenReturn(Optional.empty());
+        when(closureRepository.save(any(CashRegister.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        var response = useCase.execute(userId, userName, new BigDecimal("125.50"));
+        var response = useCase.execute(userId, userName,
+                new BigDecimal("125.50"));
 
         assertNotNull(response);
         assertEquals(userId, response.openedBy());
@@ -59,8 +62,7 @@ class OpenRegisterUseCaseUnitTest {
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> useCase.execute(userId, userName, BigDecimal.ZERO)
-        );
+                () -> useCase.execute(userId, userName, BigDecimal.ZERO));
 
         assertTrue(exception.getMessage().contains("already open"));
         verify(closureRepository, never()).save(any());
@@ -68,8 +70,10 @@ class OpenRegisterUseCaseUnitTest {
 
     @Test
     void should_AllowAnotherSessionOnSameDay_When_PreviousSessionIsClosed() {
-        when(closureRepository.findActiveClosure()).thenReturn(Optional.empty());
-        when(closureRepository.save(any(CashRegister.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(closureRepository.findActiveClosure())
+                .thenReturn(Optional.empty());
+        when(closureRepository.save(any(CashRegister.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = useCase.execute(userId, userName, BigDecimal.ZERO);
 

@@ -11,19 +11,33 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V05PriceTypesSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 2, 8, 0);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 2,
+            8, 0);
     private final EntityManager entityManager;
-    public V05PriceTypesSeed(EntityManager entityManager) { this.entityManager = entityManager; }
-    @Override public int version() { return 5; }
-    @Override public void seed() {
+    public V05PriceTypesSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    @Override
+    public int version() {
+        return 5;
+    }
+    @Override
+    public void seed() {
         persist(id("price-type.base"), "Base", "Default retail price");
         persist(id("price-type.wholesale"), "Wholesale", "Volume sales price");
-        persist(id("price-type.special"), "Special", "Preferred customer price");
+        persist(id("price-type.special"), "Special",
+                "Preferred customer price");
     }
     private void persist(UUID id, String name, String description) {
-        if (entityManager.find(PriceTypeEntity.class, id) != null) return;
-        var entity = new PriceTypeEntity(); entity.setId(id); entity.setName(name); entity.setDescription(description);
-        entity.setActive(true); entity.setCreatedAt(CREATED_AT); entity.setUpdatedAt(CREATED_AT);
+        if (entityManager.find(PriceTypeEntity.class, id) != null)
+            return;
+        var entity = new PriceTypeEntity();
+        entity.setId(id);
+        entity.setName(name);
+        entity.setDescription(description);
+        entity.setActive(true);
+        entity.setCreatedAt(CREATED_AT);
+        entity.setUpdatedAt(CREATED_AT);
         entityManager.persist(entity);
     }
 }

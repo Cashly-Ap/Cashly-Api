@@ -19,8 +19,8 @@ class BalanceTransactionTest {
         UUID customerId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-                customerId, BalanceType.ADVANCED, new BigDecimal("500.00"),
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                BalanceType.ADVANCED, new BigDecimal("500.00"),
                 BalanceType.ADVANCED, null, null, null, createdBy);
 
         assertNotNull(transaction.getId());
@@ -41,8 +41,8 @@ class BalanceTransactionTest {
         UUID customerId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-                customerId, BalanceType.REFUND, new BigDecimal("200.00"),
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                BalanceType.REFUND, new BigDecimal("200.00"),
                 BalanceType.REFUND, null, null, null, createdBy);
 
         assertEquals(BalanceType.REFUND, transaction.getType());
@@ -56,8 +56,8 @@ class BalanceTransactionTest {
         UUID customerId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-                customerId, BalanceType.RETURNS, new BigDecimal("150.00"),
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                BalanceType.RETURNS, new BigDecimal("150.00"),
                 BalanceType.RETURNS, null, null, null, createdBy);
 
         assertEquals(BalanceType.RETURNS, transaction.getType());
@@ -70,8 +70,8 @@ class BalanceTransactionTest {
         UUID customerId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-                customerId, BalanceType.PAYMENTS, new BigDecimal("1000.00"),
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                BalanceType.PAYMENTS, new BigDecimal("1000.00"),
                 BalanceType.PAYMENTS, null, null, null, createdBy);
 
         assertEquals(BalanceType.PAYMENTS, transaction.getType());
@@ -85,9 +85,10 @@ class BalanceTransactionTest {
         UUID referenceId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-                customerId, BalanceType.INVOICES, new BigDecimal("750.00"),
-                BalanceType.INVOICES, referenceId, "INV-001", "INV-001", createdBy);
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                BalanceType.INVOICES, new BigDecimal("750.00"),
+                BalanceType.INVOICES, referenceId, "INV-001", "INV-001",
+                createdBy);
 
         assertEquals(BalanceType.INVOICES, transaction.getType());
         assertEquals(referenceId, transaction.getReferenceId());
@@ -102,9 +103,10 @@ class BalanceTransactionTest {
         UUID referenceId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction transaction = BalanceTransaction.create(
-                customerId, BalanceType.CREDIT_NOTE, new BigDecimal("300.00"),
-                BalanceType.CREDIT_NOTE, referenceId, "NC-001", "INV-001", createdBy);
+        BalanceTransaction transaction = BalanceTransaction.create(customerId,
+                BalanceType.CREDIT_NOTE, new BigDecimal("300.00"),
+                BalanceType.CREDIT_NOTE, referenceId, "NC-001", "INV-001",
+                createdBy);
 
         assertEquals(BalanceType.CREDIT_NOTE, transaction.getType());
         assertEquals(referenceId, transaction.getReferenceId());
@@ -120,9 +122,10 @@ class BalanceTransactionTest {
         UUID createdBy = UUID.randomUUID();
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
 
-        BalanceTransaction transaction = BalanceTransaction.reconstitute(
-                id, customerId, BalanceType.ADVANCED, new BigDecimal("500.00"),
-                BalanceType.ADVANCED, null, "ADV-001", null, createdBy, createdAt);
+        BalanceTransaction transaction = BalanceTransaction.reconstitute(id,
+                customerId, BalanceType.ADVANCED, new BigDecimal("500.00"),
+                BalanceType.ADVANCED, null, "ADV-001", null, createdBy,
+                createdAt);
 
         assertEquals(id, transaction.getId());
         assertEquals(customerId, transaction.getCustomerId());
@@ -136,41 +139,46 @@ class BalanceTransactionTest {
     @Test
     @DisplayName("should throw when customer id is null")
     void should_throw_when_customer_id_is_null() {
-        assertThrows(NullPointerException.class, () -> BalanceTransaction.create(
-                null, BalanceType.ADVANCED, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, UUID.randomUUID()));
+        assertThrows(NullPointerException.class,
+                () -> BalanceTransaction.create(null, BalanceType.ADVANCED,
+                        BigDecimal.TEN, BalanceType.ADVANCED, null, null, null,
+                        UUID.randomUUID()));
     }
 
     @Test
     @DisplayName("should throw when type is null")
     void should_throw_when_type_is_null() {
-        assertThrows(NullPointerException.class, () -> BalanceTransaction.create(
-                UUID.randomUUID(), null, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, UUID.randomUUID()));
+        assertThrows(NullPointerException.class,
+                () -> BalanceTransaction.create(UUID.randomUUID(), null,
+                        BigDecimal.TEN, BalanceType.ADVANCED, null, null, null,
+                        UUID.randomUUID()));
     }
 
     @Test
     @DisplayName("should throw when amount is null")
     void should_throw_when_amount_is_null() {
-        assertThrows(NullPointerException.class, () -> BalanceTransaction.create(
-                UUID.randomUUID(), BalanceType.ADVANCED, null,
-                BalanceType.ADVANCED, null, null, null, UUID.randomUUID()));
+        assertThrows(NullPointerException.class,
+                () -> BalanceTransaction.create(UUID.randomUUID(),
+                        BalanceType.ADVANCED, null, BalanceType.ADVANCED, null,
+                        null, null, UUID.randomUUID()));
     }
 
     @Test
     @DisplayName("should throw when reference type is null")
     void should_throw_when_reference_type_is_null() {
-        assertThrows(NullPointerException.class, () -> BalanceTransaction.create(
-                UUID.randomUUID(), BalanceType.ADVANCED, BigDecimal.TEN,
-                null, null, null, null, UUID.randomUUID()));
+        assertThrows(NullPointerException.class,
+                () -> BalanceTransaction.create(UUID.randomUUID(),
+                        BalanceType.ADVANCED, BigDecimal.TEN, null, null, null,
+                        null, UUID.randomUUID()));
     }
 
     @Test
     @DisplayName("should throw when created by is null")
     void should_throw_when_created_by_is_null() {
-        assertThrows(NullPointerException.class, () -> BalanceTransaction.create(
-                UUID.randomUUID(), BalanceType.ADVANCED, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, null));
+        assertThrows(NullPointerException.class,
+                () -> BalanceTransaction.create(UUID.randomUUID(),
+                        BalanceType.ADVANCED, BigDecimal.TEN,
+                        BalanceType.ADVANCED, null, null, null, null));
     }
 
     @Test
@@ -179,12 +187,14 @@ class BalanceTransactionTest {
         UUID id = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction tx1 = BalanceTransaction.reconstitute(
-                id, UUID.randomUUID(), BalanceType.ADVANCED, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, createdBy, LocalDateTime.now());
-        BalanceTransaction tx2 = BalanceTransaction.reconstitute(
-                id, UUID.randomUUID(), BalanceType.REFUND, BigDecimal.ONE,
-                BalanceType.REFUND, null, null, null, createdBy, LocalDateTime.now());
+        BalanceTransaction tx1 = BalanceTransaction.reconstitute(id,
+                UUID.randomUUID(), BalanceType.ADVANCED, BigDecimal.TEN,
+                BalanceType.ADVANCED, null, null, null, createdBy,
+                LocalDateTime.now());
+        BalanceTransaction tx2 = BalanceTransaction.reconstitute(id,
+                UUID.randomUUID(), BalanceType.REFUND, BigDecimal.ONE,
+                BalanceType.REFUND, null, null, null, createdBy,
+                LocalDateTime.now());
 
         assertEquals(tx1, tx2);
         assertEquals(tx1.hashCode(), tx2.hashCode());
@@ -195,12 +205,12 @@ class BalanceTransactionTest {
     void should_not_be_equal_for_different_ids() {
         UUID createdBy = UUID.randomUUID();
 
-        BalanceTransaction tx1 = BalanceTransaction.create(
-                UUID.randomUUID(), BalanceType.ADVANCED, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, createdBy);
-        BalanceTransaction tx2 = BalanceTransaction.create(
-                UUID.randomUUID(), BalanceType.ADVANCED, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, createdBy);
+        BalanceTransaction tx1 = BalanceTransaction.create(UUID.randomUUID(),
+                BalanceType.ADVANCED, BigDecimal.TEN, BalanceType.ADVANCED,
+                null, null, null, createdBy);
+        BalanceTransaction tx2 = BalanceTransaction.create(UUID.randomUUID(),
+                BalanceType.ADVANCED, BigDecimal.TEN, BalanceType.ADVANCED,
+                null, null, null, createdBy);
 
         assertNotEquals(tx1, tx2);
     }

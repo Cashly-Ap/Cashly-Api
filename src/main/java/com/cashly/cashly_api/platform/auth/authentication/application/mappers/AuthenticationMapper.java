@@ -9,18 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthenticationMapper {
 
-    public AuthenticationResponse toAuthenticationResponse(
-        String accessToken,
-        RefreshToken refreshToken,
-        long expiresIn,
-        Authenticable authenticable
-    ) {
-        return new AuthenticationResponse(
-            accessToken,
-            refreshToken.getToken(),
-            "Bearer",
-            expiresIn,
-            AuthenticatedEntityResponse.from(authenticable)
-        );
+    public AuthenticationResponse toAuthenticationResponse(String accessToken,
+            RefreshToken refreshToken, long expiresIn,
+            Authenticable authenticable) {
+        return new AuthenticationResponse(accessToken, refreshToken.getToken(),
+                "Bearer", expiresIn,
+                AuthenticatedEntityResponse.from(authenticable));
     }
 }

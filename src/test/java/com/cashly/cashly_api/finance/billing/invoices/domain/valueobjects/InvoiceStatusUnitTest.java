@@ -33,26 +33,31 @@ class InvoiceStatusUnitTest {
 
     @Test
     void should_ReturnPendingPayment_When_ValueOfPendingPayment() {
-        assertEquals(InvoiceStatus.PENDING_PAYMENT, InvoiceStatus.valueOf("PENDING_PAYMENT"));
+        assertEquals(InvoiceStatus.PENDING_PAYMENT,
+                InvoiceStatus.valueOf("PENDING_PAYMENT"));
     }
 
     @Test
     void should_ReturnPartiallyPaid_When_ValueOfPartiallyPaid() {
-        assertEquals(InvoiceStatus.PARTIALLY_PAID, InvoiceStatus.valueOf("PARTIALLY_PAID"));
+        assertEquals(InvoiceStatus.PARTIALLY_PAID,
+                InvoiceStatus.valueOf("PARTIALLY_PAID"));
     }
 
     @Test
     void should_ReturnCancelled_When_ValueOfCancelled() {
-        assertEquals(InvoiceStatus.CANCELLED, InvoiceStatus.valueOf("CANCELLED"));
+        assertEquals(InvoiceStatus.CANCELLED,
+                InvoiceStatus.valueOf("CANCELLED"));
     }
 
     @Test
     void should_ReturnFullyReturned_When_ValueOfFullyReturned() {
-        assertEquals(InvoiceStatus.FULLY_RETURNED, InvoiceStatus.valueOf("FULLY_RETURNED"));
+        assertEquals(InvoiceStatus.FULLY_RETURNED,
+                InvoiceStatus.valueOf("FULLY_RETURNED"));
     }
 
     @Test
     void should_ThrowException_When_InvalidStatusName() {
-        assertThrows(IllegalArgumentException.class, () -> InvoiceStatus.valueOf("INVALID"));
+        assertThrows(IllegalArgumentException.class,
+                () -> InvoiceStatus.valueOf("INVALID"));
     }
 }

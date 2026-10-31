@@ -19,12 +19,11 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "refresh_tokens", indexes = {
-    @Index(name = "idx_subject_id", columnList = "subject_id"),
-    @Index(name = "idx_subject_type", columnList = "subject_type"),
-    @Index(name = "idx_token", columnList = "token"),
-    @Index(name = "idx_expires_at", columnList = "expires_at"),
-    @Index(name = "idx_revoked", columnList = "revoked")
-})
+        @Index(name = "idx_subject_id", columnList = "subject_id"),
+        @Index(name = "idx_subject_type", columnList = "subject_type"),
+        @Index(name = "idx_token", columnList = "token"),
+        @Index(name = "idx_expires_at", columnList = "expires_at"),
+        @Index(name = "idx_revoked", columnList = "revoked")})
 public class RefreshTokenEntity {
 
     @Id
@@ -83,17 +82,14 @@ public class RefreshTokenEntity {
     public RefreshToken toDomain() {
         RefreshTokenId tokenId = new RefreshTokenId(this.id);
 
-        LocalDateTime safeExpiresAt = this.expiresAt.isBefore(LocalDateTime.now())
-            ? LocalDateTime.now().plusDays(1)
-            : this.expiresAt;
+        LocalDateTime safeExpiresAt = this.expiresAt
+                .isBefore(LocalDateTime.now())
+                        ? LocalDateTime.now().plusDays(1)
+                        : this.expiresAt;
 
-        RefreshToken refreshToken = new RefreshToken(
-            tokenId,
-            this.subjectId.toString(),
-            this.subjectType,
-            this.token,
-            safeExpiresAt
-        );
+        RefreshToken refreshToken = new RefreshToken(tokenId,
+                this.subjectId.toString(), this.subjectType, this.token,
+                safeExpiresAt);
 
         refreshToken.setRevoked(this.revoked);
         refreshToken.setCreatedAt(this.createdAt);
@@ -160,8 +156,10 @@ public class RefreshTokenEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         RefreshTokenEntity that = (RefreshTokenEntity) obj;
         return id != null && id.equals(that.id);
     }
@@ -173,14 +171,9 @@ public class RefreshTokenEntity {
 
     @Override
     public String toString() {
-        return "RefreshTokenEntity{" +
-                "id='" + id + '\'' +
-                ", subjectId='" + subjectId + '\'' +
-                ", subjectType=" + subjectType +
-                ", token='***'" +
-                ", expiresAt=" + expiresAt +
-                ", revoked=" + revoked +
-                ", createdAt=" + createdAt +
-                '}';
+        return "RefreshTokenEntity{" + "id='" + id + '\'' + ", subjectId='"
+                + subjectId + '\'' + ", subjectType=" + subjectType
+                + ", token='***'" + ", expiresAt=" + expiresAt + ", revoked="
+                + revoked + ", createdAt=" + createdAt + '}';
     }
 }

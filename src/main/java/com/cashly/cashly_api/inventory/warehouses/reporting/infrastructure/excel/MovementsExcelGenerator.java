@@ -14,7 +14,19 @@ import java.util.List;
 
 public class MovementsExcelGenerator implements MovementsExcelPort {
 
-    private static String[] headers() { return new String[]{ReportMessages.text("inventory.warehouses.reports.date"), ReportMessages.text("inventory.warehouses.reports.warehouse"), ReportMessages.text("inventory.warehouses.reports.product"), ReportMessages.text("inventory.warehouses.reports.sku"), ReportMessages.text("inventory.warehouses.reports.type"), ReportMessages.text("inventory.warehouses.reports.quantity"), ReportMessages.text("inventory.warehouses.reports.previousStock"), ReportMessages.text("inventory.warehouses.reports.newStock"), ReportMessages.text("inventory.warehouses.reports.notes")}; }
+    private static String[] headers() {
+        return new String[]{
+                ReportMessages.text("inventory.warehouses.reports.date"),
+                ReportMessages.text("inventory.warehouses.reports.warehouse"),
+                ReportMessages.text("inventory.warehouses.reports.product"),
+                ReportMessages.text("inventory.warehouses.reports.sku"),
+                ReportMessages.text("inventory.warehouses.reports.type"),
+                ReportMessages.text("inventory.warehouses.reports.quantity"),
+                ReportMessages
+                        .text("inventory.warehouses.reports.previousStock"),
+                ReportMessages.text("inventory.warehouses.reports.newStock"),
+                ReportMessages.text("inventory.warehouses.reports.notes")};
+    }
 
     @Override
     public byte[] generateExcel(List<MovementReportResponse> items) {
@@ -22,7 +34,8 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
-            Sheet sheet = workbook.createSheet(ReportMessages.text("inventory.warehouses.reports.stockMovementHistory"));
+            Sheet sheet = workbook.createSheet(ReportMessages
+                    .text("inventory.warehouses.reports.stockMovementHistory"));
 
             CellStyle headerStyle = createHeaderStyle(workbook);
             CellStyle cellStyle = createCellStyle(workbook);
@@ -30,14 +43,18 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
 
             Row titleRow = sheet.createRow(0);
             Cell titleCell = titleRow.createCell(0);
-            titleCell.setCellValue(ReportMessages.text("inventory.warehouses.reports.stockMovementHistory"));
+            titleCell.setCellValue(ReportMessages
+                    .text("inventory.warehouses.reports.stockMovementHistory"));
             titleCell.setCellStyle(createTitleStyle(workbook));
-            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0, 0, 0, headers().length - 1));
+            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0,
+                    0, 0, headers().length - 1));
 
-            String fecha = LocalDate.now().format(ReportMessages.dateFormatter());
+            String fecha = LocalDate.now()
+                    .format(ReportMessages.dateFormatter());
             Row dateRow = sheet.createRow(1);
             Cell dateCell = dateRow.createCell(0);
-            dateCell.setCellValue(ReportMessages.text("inventory.warehouses.reports.generatedOn") + fecha);
+            dateCell.setCellValue(ReportMessages
+                    .text("inventory.warehouses.reports.generatedOn") + fecha);
             dateCell.setCellStyle(dateStyle);
 
             Row headerRow = sheet.createRow(3);
@@ -53,15 +70,21 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
                 Row row = sheet.createRow(4 + i);
                 MovementReportResponse item = items.get(i);
 
-                createStringCell(row, 0, item.createdAt() != null ? item.createdAt().format(dtf) : "-", cellStyle);
+                createStringCell(row, 0,
+                        item.createdAt() != null
+                                ? item.createdAt().format(dtf)
+                                : "-",
+                        cellStyle);
                 createStringCell(row, 1, item.warehouseName(), cellStyle);
                 createStringCell(row, 2, item.productName(), cellStyle);
                 createStringCell(row, 3, item.sku(), cellStyle);
-                createStringCell(row, 4, ReportMessages.code(item.movementType()), cellStyle);
+                createStringCell(row, 4,
+                        ReportMessages.code(item.movementType()), cellStyle);
                 createNumericCell(row, 5, item.quantity(), cellStyle);
                 createNumericCell(row, 6, item.previousStock(), cellStyle);
                 createNumericCell(row, 7, item.newStock(), cellStyle);
-                createStringCell(row, 8, item.notes() != null ? item.notes() : "-", cellStyle);
+                createStringCell(row, 8,
+                        item.notes() != null ? item.notes() : "-", cellStyle);
             }
 
             sheet.setColumnWidth(0, 5000);
@@ -131,13 +154,15 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
         return style;
     }
 
-    private void createStringCell(Row row, int col, String value, CellStyle style) {
+    private void createStringCell(Row row, int col, String value,
+            CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellValue(value != null ? value : "");
         cell.setCellStyle(style);
     }
 
-    private void createNumericCell(Row row, int col, int value, CellStyle style) {
+    private void createNumericCell(Row row, int col, int value,
+            CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellValue(value);
         cell.setCellStyle(style);

@@ -8,18 +8,23 @@ import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFo
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
 
-public class LocalAuthenticableSubjectGateway implements AuthenticableSubjectGateway {
+public class LocalAuthenticableSubjectGateway
+        implements
+            AuthenticableSubjectGateway {
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
-    public LocalAuthenticableSubjectGateway(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public LocalAuthenticableSubjectGateway(UserRepository userRepository,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
         this.userRepository = userRepository;
-        this.access=access;
+        this.access = access;
     }
 
     @Override
-    public Authenticable resolve(String subjectId, AuthenticableType subjectType) {
+    public Authenticable resolve(String subjectId,
+            AuthenticableType subjectType) {
         access.resolve(java.util.UUID.fromString(subjectId));
-        return new UserAuthenticableAdapter(userRepository.findById(UserId.from(subjectId))
-                .orElseThrow(() -> new UserNotFoundException("User not found")));
+        return new UserAuthenticableAdapter(
+                userRepository.findById(UserId.from(subjectId)).orElseThrow(
+                        () -> new UserNotFoundException("User not found")));
     }
 }

@@ -25,16 +25,19 @@ class PurchaseStatusUnitTest {
 
     @Test
     void should_ReturnConfirmed_When_ValueOfConfirmed() {
-        assertEquals(PurchaseStatus.CONFIRMED, PurchaseStatus.valueOf("CONFIRMED"));
+        assertEquals(PurchaseStatus.CONFIRMED,
+                PurchaseStatus.valueOf("CONFIRMED"));
     }
 
     @Test
     void should_ReturnCancelled_When_ValueOfCancelled() {
-        assertEquals(PurchaseStatus.CANCELLED, PurchaseStatus.valueOf("CANCELLED"));
+        assertEquals(PurchaseStatus.CANCELLED,
+                PurchaseStatus.valueOf("CANCELLED"));
     }
 
     @Test
     void should_ThrowException_When_InvalidStatusName() {
-        assertThrows(IllegalArgumentException.class, () -> PurchaseStatus.valueOf("INVALID"));
+        assertThrows(IllegalArgumentException.class,
+                () -> PurchaseStatus.valueOf("INVALID"));
     }
 }

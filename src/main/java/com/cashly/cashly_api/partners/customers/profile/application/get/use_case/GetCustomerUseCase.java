@@ -12,7 +12,8 @@ public class GetCustomerUseCase {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public GetCustomerUseCase(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    public GetCustomerUseCase(CustomerRepository customerRepository,
+            CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
     }
@@ -21,7 +22,9 @@ public class GetCustomerUseCase {
     public CustomerDetailResponse execute(String id) {
         CustomerId customerId = CustomerId.from(id);
         return customerRepository.findById(customerId)
-            .map(c -> customerMapper.toDetailResponse(c, !customerRepository.hasAssociatedRecords(customerId)))
-            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
+                .map(c -> customerMapper.toDetailResponse(c,
+                        !customerRepository.hasAssociatedRecords(customerId)))
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        "Customer not found with id: " + id));
     }
 }

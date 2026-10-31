@@ -42,40 +42,25 @@ class OrderRepositoryAdapterTest {
         jpaRepository = mock(OrderJpaRepository.class);
         sequenceJpaRepository = mock(OrderNumberSequenceJpaRepository.class);
         entityCaptor = ArgumentCaptor.forClass(OrderEntity.class);
-        adapter = new OrderRepositoryAdapter(jpaRepository, sequenceJpaRepository);
+        adapter = new OrderRepositoryAdapter(jpaRepository,
+                sequenceJpaRepository);
     }
 
     private OrderLine createTestLine() {
-        return OrderLine.reconstitute(
-                OrderLineId.of(UUID.randomUUID()),
-                UUID.randomUUID(),
-                "Test Product",
-                "PRD-001",
-                new BigDecimal("2"),
-                new BigDecimal("50.00"),
-                List.of(OrderLineAllocation.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("2")))
-        );
+        return OrderLine.reconstitute(OrderLineId.of(UUID.randomUUID()),
+                UUID.randomUUID(), "Test Product", "PRD-001",
+                new BigDecimal("2"), new BigDecimal("50.00"),
+                List.of(OrderLineAllocation.reconstitute(UUID.randomUUID(),
+                        UUID.randomUUID(), new BigDecimal("2"))));
     }
 
     private Order createTestOrder() {
-        return Order.reconstitute(
-                OrderId.of(UUID.randomUUID()),
-                OrderNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Test Customer",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "John Doe",
-                OrderStatus.DRAFT,
-                "Test notes",
-                null,
-                null,
-                null,
-                null,
-                List.of(createTestLine()),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        return Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Test Customer",
+                "J-12345678-9", UUID.randomUUID(), "John Doe",
+                OrderStatus.DRAFT, "Test notes", null, null, null, null,
+                List.of(createTestLine()), LocalDateTime.now(),
+                LocalDateTime.now());
     }
 
     @Nested
@@ -87,7 +72,8 @@ class OrderRepositoryAdapterTest {
             Order order = createTestOrder();
 
             OrderEntity expectedEntity = OrderJpaMapper.toEntity(order);
-            when(jpaRepository.save(entityCaptor.capture())).thenReturn(expectedEntity);
+            when(jpaRepository.save(entityCaptor.capture()))
+                    .thenReturn(expectedEntity);
 
             Order saved = adapter.save(order);
 
@@ -102,7 +88,8 @@ class OrderRepositoryAdapterTest {
 
             OrderEntity captured = entityCaptor.getValue();
             assertEquals(order.getId().value(), captured.getId());
-            assertEquals(order.getOrderNumber().value(), captured.getOrderNumber());
+            assertEquals(order.getOrderNumber().value(),
+                    captured.getOrderNumber());
             assertEquals(order.getCustomerId(), captured.getCustomerId());
             assertEquals(order.getCustomerName(), captured.getCustomerName());
             assertEquals(order.getCustomerRif(), captured.getCustomerRif());
@@ -124,8 +111,11 @@ class OrderRepositoryAdapterTest {
             Order order = createTestOrder();
             OrderEntity entity = OrderJpaMapper.toEntity(order);
 
-            when(jpaRepository.findWithLinesById(order.getId().value())).thenReturn(Optional.of(entity));
-            when(jpaRepository.findWithAllocationsForOrder(order.getId().value())).thenReturn(List.of());
+            when(jpaRepository.findWithLinesById(order.getId().value()))
+                    .thenReturn(Optional.of(entity));
+            when(jpaRepository
+                    .findWithAllocationsForOrder(order.getId().value()))
+                    .thenReturn(List.of());
 
             Optional<Order> result = adapter.findById(order.getId());
 
@@ -136,13 +126,15 @@ class OrderRepositoryAdapterTest {
             assertEquals(order.getStatus(), result.get().getStatus());
 
             verify(jpaRepository).findWithLinesById(order.getId().value());
-            verify(jpaRepository).findWithAllocationsForOrder(order.getId().value());
+            verify(jpaRepository)
+                    .findWithAllocationsForOrder(order.getId().value());
         }
 
         @Test
         void should_ReturnEmpty_When_EntityNotFound() {
             OrderId id = OrderId.generate();
-            when(jpaRepository.findWithLinesById(id.value())).thenReturn(Optional.empty());
+            when(jpaRepository.findWithLinesById(id.value()))
+                    .thenReturn(Optional.empty());
 
             Optional<Order> result = adapter.findById(id);
 
@@ -161,77 +153,57 @@ class OrderRepositoryAdapterTest {
             Order order = createTestOrder();
             OrderEntity entity = OrderJpaMapper.toEntity(order);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity));
 
-            List<Order> result = adapter.findAllWithFilters(null, null, null, null, null, null, null, null);
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, null);
 
             assertNotNull(result);
             assertEquals(1, result.size());
             assertEquals(order.getId(), result.getFirst().getId());
-            verify(jpaRepository).findAllWithFilters(null, null, null, null, null, null);
+            verify(jpaRepository).findAllWithFilters(null, null, null, null,
+                    null, null);
         }
 
         @Test
         void should_ReturnEmptyList_When_NoEntitiesFound() {
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of());
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of());
 
-            List<Order> result = adapter.findAllWithFilters(null, null, null, null, null, null, null, null);
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, null, null);
 
             assertNotNull(result);
             assertTrue(result.isEmpty());
-            verify(jpaRepository).findAllWithFilters(null, null, null, null, null, null);
+            verify(jpaRepository).findAllWithFilters(null, null, null, null,
+                    null, null);
         }
 
         @Test
         void should_ApplySorting_When_OrderByIsProvided() {
-            Order order1 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order1 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 1), UUID.randomUUID(), "A Customer",
+                    "J-11111111-1", UUID.randomUUID(), "John Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            Order order2 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order2 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 2), UUID.randomUUID(), "B Customer",
+                    "J-22222222-2", UUID.randomUUID(), "Jane Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             OrderEntity entity1 = OrderJpaMapper.toEntity(order1);
             OrderEntity entity2 = OrderJpaMapper.toEntity(order2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Order> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "customerName", "asc");
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "customerName", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -247,124 +219,76 @@ class OrderRepositoryAdapterTest {
             LocalDate dateFrom = LocalDate.of(2026, 1, 1);
             LocalDate dateTo = LocalDate.of(2026, 12, 31);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity));
 
-            List<Order> result = adapter.findAllWithFilters(dateFrom, dateTo, null, null, null, null, null, null);
+            List<Order> result = adapter.findAllWithFilters(dateFrom, dateTo,
+                    null, null, null, null, null, null);
 
             assertNotNull(result);
             assertEquals(1, result.size());
 
-            verify(jpaRepository).findAllWithFilters(
-                    dateFrom.atStartOfDay(),
-                    dateTo.atTime(23, 59, 59),
-                    null, null, null, null
-            );
+            verify(jpaRepository).findAllWithFilters(dateFrom.atStartOfDay(),
+                    dateTo.atTime(23, 59, 59), null, null, null, null);
         }
 
         @Test
         void should_SortByOrderNumber() {
-            Order order1 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order1 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 1), UUID.randomUUID(), "B Customer",
+                    "J-11111111-1", UUID.randomUUID(), "John Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            Order order2 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order2 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 2), UUID.randomUUID(), "A Customer",
+                    "J-22222222-2", UUID.randomUUID(), "Jane Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             OrderEntity entity1 = OrderJpaMapper.toEntity(order1);
             OrderEntity entity2 = OrderJpaMapper.toEntity(order2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Order> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "orderNumber", "asc");
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "orderNumber", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertEquals(order1.getOrderNumber(), result.getFirst().getOrderNumber());
-            assertEquals(order2.getOrderNumber(), result.getLast().getOrderNumber());
+            assertEquals(order1.getOrderNumber(),
+                    result.getFirst().getOrderNumber());
+            assertEquals(order2.getOrderNumber(),
+                    result.getLast().getOrderNumber());
         }
 
         @Test
         void should_SortByStatus() {
-            Order order1 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order1 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 1), UUID.randomUUID(), "B Customer",
+                    "J-11111111-1", UUID.randomUUID(), "John Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            Order order2 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    OrderStatus.CONFIRMED,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order2 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 2), UUID.randomUUID(), "A Customer",
+                    "J-22222222-2", UUID.randomUUID(), "Jane Doe",
+                    OrderStatus.CONFIRMED, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             OrderEntity entity1 = OrderJpaMapper.toEntity(order1);
             OrderEntity entity2 = OrderJpaMapper.toEntity(order2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Order> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "status", "asc");
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "status", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -375,75 +299,44 @@ class OrderRepositoryAdapterTest {
         @Test
         void should_SortBySubtotal() {
             OrderLine line1 = OrderLine.reconstitute(
-                    OrderLineId.of(UUID.randomUUID()),
-                    UUID.randomUUID(),
-                    "Product A",
-                    "PRD-001",
-                    new BigDecimal("3"),
+                    OrderLineId.of(UUID.randomUUID()), UUID.randomUUID(),
+                    "Product A", "PRD-001", new BigDecimal("3"),
                     new BigDecimal("100.00"),
-                    List.of(OrderLineAllocation.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("3")))
-            );
+                    List.of(OrderLineAllocation.reconstitute(UUID.randomUUID(),
+                            UUID.randomUUID(), new BigDecimal("3"))));
 
             OrderLine line2 = OrderLine.reconstitute(
-                    OrderLineId.of(UUID.randomUUID()),
-                    UUID.randomUUID(),
-                    "Product B",
-                    "PRD-002",
-                    new BigDecimal("5"),
+                    OrderLineId.of(UUID.randomUUID()), UUID.randomUUID(),
+                    "Product B", "PRD-002", new BigDecimal("5"),
                     new BigDecimal("200.00"),
-                    List.of(OrderLineAllocation.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("5")))
-            );
+                    List.of(OrderLineAllocation.reconstitute(UUID.randomUUID(),
+                            UUID.randomUUID(), new BigDecimal("5"))));
 
-            Order order1 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(line1),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order1 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 1), UUID.randomUUID(), "B Customer",
+                    "J-11111111-1", UUID.randomUUID(), "John Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(line1), LocalDateTime.now(), LocalDateTime.now());
 
-            Order order2 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(line2),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order2 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 2), UUID.randomUUID(), "A Customer",
+                    "J-22222222-2", UUID.randomUUID(), "Jane Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(line2), LocalDateTime.now(), LocalDateTime.now());
 
             OrderEntity entity1 = OrderJpaMapper.toEntity(order1);
             OrderEntity entity2 = OrderJpaMapper.toEntity(order2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity2, entity1));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity2, entity1));
 
-            List<Order> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "subtotal", "asc");
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "subtotal", "asc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertTrue(result.getFirst().getSubtotal().compareTo(result.getLast().getSubtotal()) < 0);
+            assertTrue(result.getFirst().getSubtotal()
+                    .compareTo(result.getLast().getSubtotal()) < 0);
         }
 
         @Test
@@ -451,11 +344,11 @@ class OrderRepositoryAdapterTest {
             Order order = createTestOrder();
             OrderEntity entity = OrderJpaMapper.toEntity(order);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity));
 
-            List<Order> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "unknownField", "asc");
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "unknownField", "asc");
 
             assertNotNull(result);
             assertEquals(1, result.size());
@@ -463,52 +356,28 @@ class OrderRepositoryAdapterTest {
 
         @Test
         void should_ApplyDescendingSort() {
-            Order order1 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 1),
-                    UUID.randomUUID(),
-                    "A Customer",
-                    "J-11111111-1",
-                    UUID.randomUUID(),
-                    "John Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order1 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 1), UUID.randomUUID(), "A Customer",
+                    "J-11111111-1", UUID.randomUUID(), "John Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
-            Order order2 = Order.reconstitute(
-                    OrderId.of(UUID.randomUUID()),
-                    OrderNumber.of(2026, 2),
-                    UUID.randomUUID(),
-                    "B Customer",
-                    "J-22222222-2",
-                    UUID.randomUUID(),
-                    "Jane Doe",
-                    OrderStatus.DRAFT,
-                    "Notes",
-                    null,
-                    null,
-                    null,
-                    null,
-                    List.of(createTestLine()),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
+            Order order2 = Order.reconstitute(OrderId.of(UUID.randomUUID()),
+                    OrderNumber.of(2026, 2), UUID.randomUUID(), "B Customer",
+                    "J-22222222-2", UUID.randomUUID(), "Jane Doe",
+                    OrderStatus.DRAFT, "Notes", null, null, null, null,
+                    List.of(createTestLine()), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             OrderEntity entity1 = OrderJpaMapper.toEntity(order1);
             OrderEntity entity2 = OrderJpaMapper.toEntity(order2);
 
-            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(), any(), any()))
-                    .thenReturn(List.of(entity1, entity2));
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of(entity1, entity2));
 
-            List<Order> result = adapter.findAllWithFilters(
-                    null, null, null, null, null, null, "customerName", "desc");
+            List<Order> result = adapter.findAllWithFilters(null, null, null,
+                    null, null, null, "customerName", "desc");
 
             assertNotNull(result);
             assertEquals(2, result.size());
@@ -542,7 +411,8 @@ class OrderRepositoryAdapterTest {
             existingSeq.setYear(year);
             existingSeq.setNextValue(5);
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.of(existingSeq));
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.of(existingSeq));
 
             int next = adapter.getNextSequenceForYear(year);
 
@@ -556,13 +426,15 @@ class OrderRepositoryAdapterTest {
         void should_CreateNewSequenceAndReturnOne_When_NoExistingSequence() {
             int year = LocalDate.now().getYear();
 
-            when(sequenceJpaRepository.findByYearForUpdate(year)).thenReturn(Optional.empty());
+            when(sequenceJpaRepository.findByYearForUpdate(year))
+                    .thenReturn(Optional.empty());
 
             int next = adapter.getNextSequenceForYear(year);
 
             assertEquals(1, next);
             verify(sequenceJpaRepository).findByYearForUpdate(year);
-            verify(sequenceJpaRepository).save(any(OrderNumberSequenceEntity.class));
+            verify(sequenceJpaRepository)
+                    .save(any(OrderNumberSequenceEntity.class));
         }
     }
 }

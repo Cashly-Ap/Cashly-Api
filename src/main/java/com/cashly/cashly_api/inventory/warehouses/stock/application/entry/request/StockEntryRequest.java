@@ -8,8 +8,5 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record StockEntryRequest(
-    @NotNull
-    @NotEmpty(message = "At least one item is required")
-    @Valid
-    List<StockBatchItem> items
-) {}
+        @NotNull @NotEmpty(message = "At least one item is required") @Valid List<StockBatchItem> items) {
+}

@@ -15,11 +15,16 @@ public class SupplierAddress {
     private String municipality;
     private String postalCode;
 
-    public SupplierAddress(AddressId id, SupplierId supplierId, String address, boolean billing, boolean active,
-                           String state, String municipality, String postalCode) {
-        if (id == null) throw new IllegalArgumentException("Address ID cannot be null");
-        if (supplierId == null) throw new IllegalArgumentException("Supplier ID cannot be null");
-        if (address == null || address.isBlank()) throw new IllegalArgumentException("Address cannot be null or blank");
+    public SupplierAddress(AddressId id, SupplierId supplierId, String address,
+            boolean billing, boolean active, String state, String municipality,
+            String postalCode) {
+        if (id == null)
+            throw new IllegalArgumentException("Address ID cannot be null");
+        if (supplierId == null)
+            throw new IllegalArgumentException("Supplier ID cannot be null");
+        if (address == null || address.isBlank())
+            throw new IllegalArgumentException(
+                    "Address cannot be null or blank");
 
         this.id = id;
         this.supplierId = supplierId;
@@ -31,9 +36,11 @@ public class SupplierAddress {
         this.postalCode = postalCode;
     }
 
-    public static SupplierAddress create(SupplierId supplierId, String address, boolean billing, boolean active,
-                                         String state, String municipality, String postalCode) {
-        return new SupplierAddress(AddressId.generate(), supplierId, address, billing, active, state, municipality, postalCode);
+    public static SupplierAddress create(SupplierId supplierId, String address,
+            boolean billing, boolean active, String state, String municipality,
+            String postalCode) {
+        return new SupplierAddress(AddressId.generate(), supplierId, address,
+                billing, active, state, municipality, postalCode);
     }
 
     public void markAsBilling() {
@@ -52,23 +59,43 @@ public class SupplierAddress {
         this.active = false;
     }
 
-    public AddressId getId() { return id; }
-    public SupplierId getSupplierId() { return supplierId; }
-    public String getAddress() { return address; }
-    public boolean isBilling() { return billing; }
-    public boolean isActive() { return active; }
-    public String getState() { return state; }
-    public String getMunicipality() { return municipality; }
-    public String getPostalCode() { return postalCode; }
+    public AddressId getId() {
+        return id;
+    }
+    public SupplierId getSupplierId() {
+        return supplierId;
+    }
+    public String getAddress() {
+        return address;
+    }
+    public boolean isBilling() {
+        return billing;
+    }
+    public boolean isActive() {
+        return active;
+    }
+    public String getState() {
+        return state;
+    }
+    public String getMunicipality() {
+        return municipality;
+    }
+    public String getPostalCode() {
+        return postalCode;
+    }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         SupplierAddress that = (SupplierAddress) obj;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(id); }
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

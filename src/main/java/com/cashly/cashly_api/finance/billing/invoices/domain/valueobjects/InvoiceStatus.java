@@ -1,12 +1,7 @@
 package com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects;
 
 public enum InvoiceStatus {
-    DRAFT,
-    PAID,
-    PENDING_PAYMENT,
-    PARTIALLY_PAID,
-    FULLY_RETURNED,
-    CANCELLED;
+    DRAFT, PAID, PENDING_PAYMENT, PARTIALLY_PAID, FULLY_RETURNED, CANCELLED;
 
     public String label() {
         return switch (this) {

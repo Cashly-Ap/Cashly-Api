@@ -15,15 +15,18 @@ class WarehouseNotFoundExceptionTest {
     void should_create_exception_with_correct_message() {
         UUID id = UUID.randomUUID();
 
-        WarehouseNotFoundException exception = new WarehouseNotFoundException(id);
+        WarehouseNotFoundException exception = new WarehouseNotFoundException(
+                id);
 
-        assertEquals("Warehouse not found with id: " + id, exception.getMessage());
+        assertEquals("Warehouse not found with id: " + id,
+                exception.getMessage());
     }
 
     @Test
     @DisplayName("should be runtime exception")
     void should_be_runtime_exception() {
-        WarehouseNotFoundException exception = new WarehouseNotFoundException(UUID.randomUUID());
+        WarehouseNotFoundException exception = new WarehouseNotFoundException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }
@@ -31,8 +34,10 @@ class WarehouseNotFoundExceptionTest {
     @Test
     @DisplayName("should preserve id in message when null")
     void should_preserve_id_in_message_when_null() {
-        WarehouseNotFoundException exception = new WarehouseNotFoundException(null);
+        WarehouseNotFoundException exception = new WarehouseNotFoundException(
+                null);
 
-        assertEquals("Warehouse not found with id: null", exception.getMessage());
+        assertEquals("Warehouse not found with id: null",
+                exception.getMessage());
     }
 }

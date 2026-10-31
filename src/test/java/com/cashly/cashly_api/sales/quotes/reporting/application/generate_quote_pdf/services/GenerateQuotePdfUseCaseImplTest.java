@@ -42,13 +42,16 @@ class GenerateQuotePdfUseCaseImplTest {
     @Mock
     private QuoteProductCatalogGateway quoteProductCatalogGateway;
 
-
     private GenerateQuotePdfUseCaseImpl useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GenerateQuotePdfUseCaseImpl(new QuoteDocumentQueryAdapter(new QuoteDocumentQueryService(
-                quoteRepository, new GetQuotesUseCase(quoteRepository, quoteProductCatalogGateway))), quotePdfPort);
+        useCase = new GenerateQuotePdfUseCaseImpl(
+                new QuoteDocumentQueryAdapter(
+                        new QuoteDocumentQueryService(quoteRepository,
+                                new GetQuotesUseCase(quoteRepository,
+                                        quoteProductCatalogGateway))),
+                quotePdfPort);
     }
 
     @Test
@@ -80,21 +83,24 @@ class GenerateQuotePdfUseCaseImplTest {
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
         byte[] expectedPdf = "Quote PDF".getBytes();
-        when(quotePdfPort.generatePdf(any(QuoteReportData.class))).thenReturn(expectedPdf);
+        when(quotePdfPort.generatePdf(any(QuoteReportData.class)))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(quoteId);
 
         assertArrayEquals(expectedPdf, result);
         verify(quoteRepository).findById(quoteId);
         verify(quotePdfPort).generatePdf(any(QuoteReportData.class));
-        var projection = org.mockito.ArgumentCaptor.forClass(QuoteReportData.class);
+        var projection = org.mockito.ArgumentCaptor
+                .forClass(QuoteReportData.class);
         verify(quotePdfPort).generatePdf(projection.capture());
         assertEquals("Customer A", projection.getValue().customerName());
         assertEquals("J-12345678", projection.getValue().customerRif());
         assertEquals("Some notes", projection.getValue().notes());
         assertEquals(BigDecimal.valueOf(500), projection.getValue().subtotal());
         assertTrue(projection.getValue().lines().isEmpty());
-        assertThrows(UnsupportedOperationException.class, () -> projection.getValue().lines().clear());
+        assertThrows(UnsupportedOperationException.class,
+                () -> projection.getValue().lines().clear());
     }
 
     @Test
@@ -104,7 +110,8 @@ class GenerateQuotePdfUseCaseImplTest {
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
 
-        assertThrows(QuoteNotFoundException.class, () -> useCase.execute(quoteId));
+        assertThrows(QuoteNotFoundException.class,
+                () -> useCase.execute(quoteId));
         verify(quoteRepository).findById(quoteId);
         verifyNoInteractions(quotePdfPort);
     }

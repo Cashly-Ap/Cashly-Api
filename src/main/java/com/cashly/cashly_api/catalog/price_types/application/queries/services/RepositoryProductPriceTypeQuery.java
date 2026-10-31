@@ -14,6 +14,7 @@ public class RepositoryProductPriceTypeQuery implements ProductPriceTypeQuery {
 
     @Override
     public Optional<Entry> findById(UUID id) {
-        return repository.findById(id).map(entity -> new Entry(entity.getId(), entity.getName()));
+        return repository.findById(id)
+                .map(entity -> new Entry(entity.getId(), entity.getName()));
     }
 }

@@ -16,8 +16,9 @@ public class ConvertQuoteToOrderUseCase {
     private final ActorIdentityGateway actors;
     private final QuoteConversionNotificationGateway notifications;
 
-    public ConvertQuoteToOrderUseCase(QuoteRepository quotes, OrderCreationGateway orders,
-                                     ActorIdentityGateway actors, QuoteConversionNotificationGateway notifications) {
+    public ConvertQuoteToOrderUseCase(QuoteRepository quotes,
+            OrderCreationGateway orders, ActorIdentityGateway actors,
+            QuoteConversionNotificationGateway notifications) {
         this.quotes = quotes;
         this.orders = orders;
         this.actors = actors;
@@ -25,21 +26,38 @@ public class ConvertQuoteToOrderUseCase {
     }
 
     @Transactional
-    public QuoteConvertedToOrderResponse execute(UUID quoteId, UUID authenticatedUserId) {
-        var quote = quotes.findById(quoteId).orElseThrow(() -> new QuoteNotFoundException(quoteId));
+    public QuoteConvertedToOrderResponse execute(UUID quoteId,
+            UUID authenticatedUserId) {
+        var quote = quotes.findById(quoteId)
+                .orElseThrow(() -> new QuoteNotFoundException(quoteId));
         if (quote.getStatus() != QuoteStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT quotes can be converted to orders");
+            throw new IllegalStateException(
+                    "Only DRAFT quotes can be converted to orders");
         }
-        var actor = authenticatedUserId == null ? null : actors.requireActor(authenticatedUserId);
-        var lines = quote.getLines().stream().map(line -> new OrderCreationGateway.Line(line.getProductId(),
-                line.getProductName(), line.getProductCode(), line.getCategoryId(), line.getQuantity(), line.getUnitPrice(),
-                line.getAllocations().stream().map(allocation -> new OrderCreationGateway.Allocation(
-                        allocation.getWarehouseId(), allocation.getProductId(), allocation.getAllocatedQuantity())).toList())).toList();
-        var order = orders.create(new OrderCreationGateway.Command(quote.getCustomerId(), quote.getCustomerName(),
-                quote.getCustomerRif(), actor == null ? null : actor.id(), actor == null ? null : actor.name(), lines));
+        var actor = authenticatedUserId == null
+                ? null
+                : actors.requireActor(authenticatedUserId);
+        var lines = quote.getLines().stream()
+                .map(line -> new OrderCreationGateway.Line(line.getProductId(),
+                        line.getProductName(), line.getProductCode(),
+                        line.getCategoryId(), line.getQuantity(),
+                        line.getUnitPrice(),
+                        line.getAllocations().stream().map(
+                                allocation -> new OrderCreationGateway.Allocation(
+                                        allocation.getWarehouseId(),
+                                        allocation.getProductId(),
+                                        allocation.getAllocatedQuantity()))
+                                .toList()))
+                .toList();
+        var order = orders.create(new OrderCreationGateway.Command(
+                quote.getCustomerId(), quote.getCustomerName(),
+                quote.getCustomerRif(), actor == null ? null : actor.id(),
+                actor == null ? null : actor.name(), lines));
         quote.markConvertedToOrder(order.id(), order.number());
         quotes.save(quote);
-        notifications.convertedToOrder(quote.getCustomerId(), quote.getId(), order.number());
-        return new QuoteConvertedToOrderResponse(quote.getId(), quote.getQuoteNumber().value(), order.id(), order.number());
+        notifications.convertedToOrder(quote.getCustomerId(), quote.getId(),
+                order.number());
+        return new QuoteConvertedToOrderResponse(quote.getId(),
+                quote.getQuoteNumber().value(), order.id(), order.number());
     }
 }

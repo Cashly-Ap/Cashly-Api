@@ -30,7 +30,8 @@ class ListPriceTypesUseCaseTest {
     @Mock
     private PriceTypeRepository priceTypeRepository;
 
-    @Mock private PriceTypeUsageGateway usageGateway;
+    @Mock
+    private PriceTypeUsageGateway usageGateway;
 
     @InjectMocks
     private ListPriceTypesUseCase useCase;
@@ -41,73 +42,86 @@ class ListPriceTypesUseCaseTest {
     @BeforeEach
     void setUp() {
         LocalDateTime now = LocalDateTime.now();
-        priceType1 = PriceType.reconstitute(UUID.randomUUID(), "Mayorista", "Wholesale pricing", true, now, now);
-        priceType2 = PriceType.reconstitute(UUID.randomUUID(), "Minorista", "Retail pricing", true, now, now);
+        priceType1 = PriceType.reconstitute(UUID.randomUUID(), "Mayorista",
+                "Wholesale pricing", true, now, now);
+        priceType2 = PriceType.reconstitute(UUID.randomUUID(), "Minorista",
+                "Retail pricing", true, now, now);
     }
 
     private static PageResponse<PriceType> pageOf(List<PriceType> items) {
-        return new PageResponse<>(items, items.size(), 1, 10, 0, true, true, items.isEmpty());
+        return new PageResponse<>(items, items.size(), 1, 10, 0, true, true,
+                items.isEmpty());
     }
 
     @Test
     @DisplayName("should_ReturnList_When_PriceTypesExist")
     void should_ReturnList_When_PriceTypesExist() {
-        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
-            .thenReturn(pageOf(List.of(priceType1, priceType2)));
+        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0),
+                eq(10), eq("name"), eq("asc")))
+                .thenReturn(pageOf(List.of(priceType1, priceType2)));
         when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
-        PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
+        PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0,
+                10, "name", "asc");
 
         assertNotNull(result);
         assertEquals(2, result.content().size());
         assertEquals("Mayorista", result.content().get(0).name());
         assertEquals("Minorista", result.content().get(1).name());
-        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc"));
+        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(),
+                eq(0), eq(10), eq("name"), eq("asc"));
     }
 
     @Test
     @DisplayName("should_ReturnEmptyList_When_NoPriceTypesFound")
     void should_ReturnEmptyList_When_NoPriceTypesFound() {
-        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
-            .thenReturn(pageOf(List.of()));
+        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0),
+                eq(10), eq("name"), eq("asc"))).thenReturn(pageOf(List.of()));
         when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
-        PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0, 10, "name", "asc");
+        PageResponse<PriceTypeResponse> result = useCase.execute(null, null, 0,
+                10, "name", "asc");
 
         assertNotNull(result);
         assertTrue(result.content().isEmpty());
-        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc"));
+        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(),
+                eq(0), eq(10), eq("name"), eq("asc"));
     }
 
     @Test
     @DisplayName("should_PassOrderByToRepository")
     void should_PassOrderByToRepository() {
-        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc")))
-            .thenReturn(pageOf(List.of()));
+        when(priceTypeRepository.findAllWithFilters(isNull(), isNull(), eq(0),
+                eq(10), eq("createdAt"), eq("desc")))
+                .thenReturn(pageOf(List.of()));
         when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
         useCase.execute(null, null, 0, 10, "createdAt", "desc");
 
-        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(), eq(0), eq(10), eq("createdAt"), eq("desc"));
+        verify(priceTypeRepository).findAllWithFilters(isNull(), isNull(),
+                eq(0), eq(10), eq("createdAt"), eq("desc"));
     }
 
     @Test
     @DisplayName("should_PassSearchAndActiveFiltersToRepository")
     void should_PassSearchAndActiveFiltersToRepository() {
-        when(priceTypeRepository.findAllWithFilters(eq("Mayo"), eq(true), eq(1), eq(5), eq("name"), eq("asc")))
-            .thenReturn(pageOf(List.of(priceType1)));
+        when(priceTypeRepository.findAllWithFilters(eq("Mayo"), eq(true), eq(1),
+                eq(5), eq("name"), eq("asc")))
+                .thenReturn(pageOf(List.of(priceType1)));
         when(usageGateway.findIdsInUseByProducts(any())).thenReturn(Set.of());
 
         useCase.execute("Mayo", true, 1, 5, "name", "asc");
 
-        verify(priceTypeRepository).findAllWithFilters(eq("Mayo"), eq(true), eq(1), eq(5), eq("name"), eq("asc"));
+        verify(priceTypeRepository).findAllWithFilters(eq("Mayo"), eq(true),
+                eq(1), eq(5), eq("name"), eq("asc"));
     }
     @Test
     void shouldPreserveDeletabilityUsingOneUsageBatchForReturnedPage() {
         Set<UUID> ids = Set.of(priceType1.getId(), priceType2.getId());
-        when(priceTypeRepository.findAllWithFilters(null, null, 0, 10, "name", "asc"))
-                .thenReturn(pageOf(List.of(priceType1, priceType2)));
-        when(usageGateway.findIdsInUseByProducts(ids)).thenReturn(Set.of(priceType1.getId()));
+        when(priceTypeRepository.findAllWithFilters(null, null, 0, 10, "name",
+                "asc")).thenReturn(pageOf(List.of(priceType1, priceType2)));
+        when(usageGateway.findIdsInUseByProducts(ids))
+                .thenReturn(Set.of(priceType1.getId()));
         var result = useCase.execute(null, null, 0, 10, "name", "asc");
         assertFalse(result.content().get(0).deletable());
         assertTrue(result.content().get(1).deletable());

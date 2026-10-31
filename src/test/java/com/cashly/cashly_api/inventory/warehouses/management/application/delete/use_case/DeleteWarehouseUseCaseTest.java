@@ -37,14 +37,14 @@ class DeleteWarehouseUseCaseTest {
     @Test
     @DisplayName("finds warehouse, deactivates, saves (soft delete)")
     void shouldDeactivateWarehouse() {
-        Warehouse existing = Warehouse.reconstitute(
-                warehouseId, "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        Warehouse existing = Warehouse.reconstitute(warehouseId, "WH-001",
+                "Main Warehouse", "123 Main St", "State A", "Municipality B",
+                "10001", true, LocalDateTime.now(), LocalDateTime.now());
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(existing));
-        when(warehouseRepository.save(any(Warehouse.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(existing));
+        when(warehouseRepository.save(any(Warehouse.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         useCase.execute(warehouseId);
 
@@ -56,9 +56,11 @@ class DeleteWarehouseUseCaseTest {
     @Test
     @DisplayName("throws WarehouseNotFoundException when not found")
     void shouldThrowWhenWarehouseNotFound() {
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(warehouseId));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(warehouseId));
 
         verify(warehouseRepository).findById(warehouseId);
         verify(warehouseRepository, never()).save(any());

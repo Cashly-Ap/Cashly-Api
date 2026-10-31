@@ -36,10 +36,11 @@ class WarehouseStockTest {
         stock.reserve(60);
         assertEquals(40, stock.getAvailableQuantity());
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> stock.reserve(50));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, () -> stock.reserve(50));
 
-        assertTrue(exception.getMessage().contains("Insufficient available stock"));
+        assertTrue(exception.getMessage()
+                .contains("Insufficient available stock"));
         assertEquals(60, stock.getReserved());
     }
 
@@ -64,17 +65,20 @@ class WarehouseStockTest {
     void should_ThrowException_When_ReleasingMoreThanReserved() {
         stock.reserve(20);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> stock.releaseReserved(30));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, () -> stock.releaseReserved(30));
 
-        assertTrue(exception.getMessage().contains("Cannot release more than reserved"));
+        assertTrue(exception.getMessage()
+                .contains("Cannot release more than reserved"));
         assertEquals(20, stock.getReserved());
     }
 
     @Test
     void should_ThrowException_When_ReleasingZeroOrNegative() {
-        assertThrows(IllegalArgumentException.class, () -> stock.releaseReserved(0));
-        assertThrows(IllegalArgumentException.class, () -> stock.releaseReserved(-1));
+        assertThrows(IllegalArgumentException.class,
+                () -> stock.releaseReserved(0));
+        assertThrows(IllegalArgumentException.class,
+                () -> stock.releaseReserved(-1));
     }
 
     @Test
@@ -92,16 +96,19 @@ class WarehouseStockTest {
     void should_ThrowException_When_DeductingMoreThanReserved() {
         stock.reserve(30);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> stock.deductReserved(40));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class, () -> stock.deductReserved(40));
 
-        assertTrue(exception.getMessage().contains("Cannot deduct more than reserved"));
+        assertTrue(exception.getMessage()
+                .contains("Cannot deduct more than reserved"));
     }
 
     @Test
     void should_ThrowException_When_DeductingZeroOrNegative() {
-        assertThrows(IllegalArgumentException.class, () -> stock.deductReserved(0));
-        assertThrows(IllegalArgumentException.class, () -> stock.deductReserved(-1));
+        assertThrows(IllegalArgumentException.class,
+                () -> stock.deductReserved(0));
+        assertThrows(IllegalArgumentException.class,
+                () -> stock.deductReserved(-1));
     }
 
     @Test
@@ -119,14 +126,17 @@ class WarehouseStockTest {
     }
 
     @Test
-    void should_UpdateTimestamps_When_ReservingStock() throws InterruptedException {
-        WarehouseStock freshStock = WarehouseStock.create(UUID.randomUUID(), UUID.randomUUID());
+    void should_UpdateTimestamps_When_ReservingStock()
+            throws InterruptedException {
+        WarehouseStock freshStock = WarehouseStock.create(UUID.randomUUID(),
+                UUID.randomUUID());
         freshStock.addStock(50);
         Thread.sleep(5);
 
         freshStock.reserve(10);
 
         assertNotNull(freshStock.getUpdatedAt());
-        assertTrue(freshStock.getUpdatedAt().isAfter(freshStock.getLastMovementAt()));
+        assertTrue(freshStock.getUpdatedAt()
+                .isAfter(freshStock.getLastMovementAt()));
     }
 }

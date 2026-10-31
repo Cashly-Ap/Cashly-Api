@@ -46,14 +46,14 @@ public class QuoteController {
     private final ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase;
 
     public QuoteController(CreateQuoteUseCase createQuoteUseCase,
-                            GetQuotesUseCase getQuotesUseCase,
-                            GetQuoteByIdUseCase getQuoteByIdUseCase,
-                            UpdateQuoteUseCase updateQuoteUseCase,
-                            DeleteQuoteUseCase deleteQuoteUseCase,
-                            CancelQuoteUseCase cancelQuoteUseCase,
-                            GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
-                            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
-                            ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
+            GetQuotesUseCase getQuotesUseCase,
+            GetQuoteByIdUseCase getQuoteByIdUseCase,
+            UpdateQuoteUseCase updateQuoteUseCase,
+            DeleteQuoteUseCase deleteQuoteUseCase,
+            CancelQuoteUseCase cancelQuoteUseCase,
+            GetWarehousesForQuoteUseCase getWarehousesForQuoteUseCase,
+            ConvertQuoteToOrderUseCase convertQuoteToOrderUseCase,
+            ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase) {
         this.createQuoteUseCase = createQuoteUseCase;
         this.getQuotesUseCase = getQuotesUseCase;
         this.getQuoteByIdUseCase = getQuoteByIdUseCase;
@@ -71,7 +71,8 @@ public class QuoteController {
             @Valid @RequestBody CreateQuoteRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        QuoteDetailResponse response = createQuoteUseCase.execute(request, userId);
+        QuoteDetailResponse response = createQuoteUseCase.execute(request,
+                userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -88,24 +89,31 @@ public class QuoteController {
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
-        List<QuoteListResponse> quotes = action == null ? getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir) : getQuotesUseCase.execute(dateFrom, dateTo, customerId, status, productId, categoryId, orderBy, orderDir, action);
+        List<QuoteListResponse> quotes = action == null
+                ? getQuotesUseCase.execute(dateFrom, dateTo, customerId, status,
+                        productId, categoryId, orderBy, orderDir)
+                : getQuotesUseCase.execute(dateFrom, dateTo, customerId, status,
+                        productId, categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(quotes.stream()
-                .filter(quote -> matchesSearch(search, quote.quoteNumber(), quote.customerName(), quote.customerRif()))
+                .filter(quote -> matchesSearch(search, quote.quoteNumber(),
+                        quote.customerName(), quote.customerRif()))
                 .toList());
     }
 
     private boolean matchesSearch(String search, String... values) {
-        if (search == null || search.isBlank()) return true;
+        if (search == null || search.isBlank())
+            return true;
         String term = search.trim().toLowerCase();
         return java.util.Arrays.stream(values)
                 .filter(java.util.Objects::nonNull)
                 .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
-    public ResponseEntity<List<QuoteListResponse>> list(
-            LocalDate dateFrom, LocalDate dateTo, UUID customerId, String status,
-            UUID productId, UUID categoryId, String orderBy, String orderDir) {
-        return list(dateFrom, dateTo, customerId, status, productId, categoryId, null, orderBy, orderDir, null);
+    public ResponseEntity<List<QuoteListResponse>> list(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, String status, UUID productId,
+            UUID categoryId, String orderBy, String orderDir) {
+        return list(dateFrom, dateTo, customerId, status, productId, categoryId,
+                null, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")
@@ -117,8 +125,7 @@ public class QuoteController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:READ')")
-    public ResponseEntity<QuoteDetailResponse> update(
-            @PathVariable UUID id,
+    public ResponseEntity<QuoteDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateQuoteRequest request) {
         QuoteDetailResponse response = updateQuoteUseCase.execute(id, request);
         return ResponseEntity.ok(response);
@@ -133,8 +140,7 @@ public class QuoteController {
 
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('SALES:EXECUTE')")
-    public ResponseEntity<Void> cancel(
-            @PathVariable UUID id,
+    public ResponseEntity<Void> cancel(@PathVariable UUID id,
             @Valid @RequestBody CancelQuoteRequest request) {
         cancelQuoteUseCase.execute(id, request);
         return ResponseEntity.ok().build();
@@ -144,17 +150,18 @@ public class QuoteController {
     @PreAuthorize("hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')")
     public ResponseEntity<List<QuoteWarehouseResponse>> getWarehouses(
             @RequestParam UUID customerId) {
-        List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase.execute(customerId);
+        List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase
+                .execute(customerId);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/{id}/convert-to-order")
     @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
     public ResponseEntity<QuoteConvertedToOrderResponse> convertToOrder(
-            @PathVariable UUID id,
-            Authentication authentication) {
+            @PathVariable UUID id, Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        QuoteConvertedToOrderResponse response = convertQuoteToOrderUseCase.execute(id, userId);
+        QuoteConvertedToOrderResponse response = convertQuoteToOrderUseCase
+                .execute(id, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -165,7 +172,8 @@ public class QuoteController {
             @Valid @RequestBody ConvertQuoteToInvoiceRequest request,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        QuoteConvertedToInvoiceResponse response = convertQuoteToInvoiceUseCase.execute(id, request, userId);
+        QuoteConvertedToInvoiceResponse response = convertQuoteToInvoiceUseCase
+                .execute(id, request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

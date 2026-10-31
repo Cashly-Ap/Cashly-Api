@@ -25,9 +25,9 @@ public class StockAdjustmentUseCase {
     private final StockCatalogGateway catalog;
 
     public StockAdjustmentUseCase(WarehouseRepository warehouseRepository,
-                                   WarehouseStockRepository warehouseStockRepository,
-                                   StockMovementRepository stockMovementRepository,
-                                   StockCatalogGateway catalog) {
+            WarehouseStockRepository warehouseStockRepository,
+            StockMovementRepository stockMovementRepository,
+            StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
@@ -35,7 +35,8 @@ public class StockAdjustmentUseCase {
     }
 
     @Transactional
-    public StockMovementResponse execute(UUID warehouseId, StockAdjustmentRequest request) {
+    public StockMovementResponse execute(UUID warehouseId,
+            StockAdjustmentRequest request) {
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
         if (!warehouse.isActive()) {
@@ -45,19 +46,19 @@ public class StockAdjustmentUseCase {
         CatalogProduct product = catalog.getProduct(request.productId());
 
         WarehouseStock stock = warehouseStockRepository
-                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId, product.id());
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                        product.id());
 
         int prevQty = stock.getQuantity();
         int delta = Math.abs(request.newQuantity() - prevQty);
         stock.adjustStock(request.newQuantity());
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
-        StockMovement movement = StockMovement.create(
-                warehouseId, product.id(), MovementType.ADJUSTMENT,
-                delta, prevQty, savedStock.getQuantity(),
-                null, null, request.notes()
-        );
+        StockMovement movement = StockMovement.create(warehouseId, product.id(),
+                MovementType.ADJUSTMENT, delta, prevQty,
+                savedStock.getQuantity(), null, null, request.notes());
         StockMovement saved = stockMovementRepository.save(movement);
-        return StockMovementResponse.from(saved, product.code(), product.name());
+        return StockMovementResponse.from(saved, product.code(),
+                product.name());
     }
 }

@@ -11,17 +11,31 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V07CategoriesSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 4, 8, 0);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 4,
+            8, 0);
     private final EntityManager entityManager;
-    public V07CategoriesSeed(EntityManager entityManager) { this.entityManager = entityManager; }
-    @Override public int version() { return 7; }
-    @Override public void seed() {
+    public V07CategoriesSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    @Override
+    public int version() {
+        return 7;
+    }
+    @Override
+    public void seed() {
         persist(CATEGORY_FOOD, "Food", "Packaged foods");
         persist(CATEGORY_DRINKS, "Drinks", "Hot and cold beverages");
     }
     private void persist(UUID id, String name, String description) {
-        if (entityManager.find(CategoryEntity.class, id) != null) return;
-        var entity = new CategoryEntity(); entity.setId(id); entity.setName(name); entity.setDescription(description);
-        entity.setActive(true); entity.setCreatedAt(CREATED_AT); entity.setUpdatedAt(CREATED_AT); entityManager.persist(entity);
+        if (entityManager.find(CategoryEntity.class, id) != null)
+            return;
+        var entity = new CategoryEntity();
+        entity.setId(id);
+        entity.setName(name);
+        entity.setDescription(description);
+        entity.setActive(true);
+        entity.setCreatedAt(CREATED_AT);
+        entity.setUpdatedAt(CREATED_AT);
+        entityManager.persist(entity);
     }
 }

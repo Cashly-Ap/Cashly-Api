@@ -5,5 +5,6 @@ public interface ActorIdentityGateway {
     Actor requireActor(UUID id);
     Optional<Actor> findActor(UUID id);
     boolean matchesPassword(UUID id, String password);
-    record Actor(UUID id, String name) {}
+    record Actor(UUID id, String name) {
+    }
 }

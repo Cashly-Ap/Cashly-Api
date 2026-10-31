@@ -22,14 +22,16 @@ class OrderNotFoundExceptionTest {
 
     @Test
     void should_BeRuntimeException() {
-        OrderNotFoundException exception = new OrderNotFoundException(UUID.randomUUID());
+        OrderNotFoundException exception = new OrderNotFoundException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
     void should_NotBeNull() {
-        OrderNotFoundException exception = new OrderNotFoundException(UUID.randomUUID());
+        OrderNotFoundException exception = new OrderNotFoundException(
+                UUID.randomUUID());
 
         assertNotNull(exception);
     }

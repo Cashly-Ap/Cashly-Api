@@ -33,13 +33,17 @@ class LocalPaymentInvoiceGatewayTest {
         InvoiceRepository invoices = mock(InvoiceRepository.class);
         CreditNoteLedgerQuery credits = mock(CreditNoteLedgerQuery.class);
         DebitNoteLedgerQuery debits = mock(DebitNoteLedgerQuery.class);
-        LocalPaymentInvoiceGateway gateway = new LocalPaymentInvoiceGateway(invoices,
-                mock(InvoiceStatusService.class), credits, debits);
-        when(invoices.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.of(invoice));
-        when(credits.amountsByInvoiceId(invoiceId)).thenReturn(List.of(new BigDecimal("50.00")));
-        when(debits.amountsByInvoiceId(invoiceId)).thenReturn(List.of(new BigDecimal("20.00")));
+        LocalPaymentInvoiceGateway gateway = new LocalPaymentInvoiceGateway(
+                invoices, mock(InvoiceStatusService.class), credits, debits);
+        when(invoices.findById(InvoiceId.of(invoiceId)))
+                .thenReturn(Optional.of(invoice));
+        when(credits.amountsByInvoiceId(invoiceId))
+                .thenReturn(List.of(new BigDecimal("50.00")));
+        when(debits.amountsByInvoiceId(invoiceId))
+                .thenReturn(List.of(new BigDecimal("20.00")));
 
-        PaymentInvoiceGateway.InvoiceSnapshot snapshot = gateway.findById(invoiceId).orElseThrow();
+        PaymentInvoiceGateway.InvoiceSnapshot snapshot = gateway
+                .findById(invoiceId).orElseThrow();
 
         assertEquals(new BigDecimal("470.00"), snapshot.total());
         assertEquals(invoiceId, snapshot.id());
@@ -50,8 +54,10 @@ class LocalPaymentInvoiceGatewayTest {
     void status_recalculation_is_delegated_to_invoice_module() {
         UUID invoiceId = UUID.randomUUID();
         InvoiceStatusService statuses = mock(InvoiceStatusService.class);
-        LocalPaymentInvoiceGateway gateway = new LocalPaymentInvoiceGateway(mock(InvoiceRepository.class),
-                statuses, mock(CreditNoteLedgerQuery.class), mock(DebitNoteLedgerQuery.class));
+        LocalPaymentInvoiceGateway gateway = new LocalPaymentInvoiceGateway(
+                mock(InvoiceRepository.class), statuses,
+                mock(CreditNoteLedgerQuery.class),
+                mock(DebitNoteLedgerQuery.class));
 
         gateway.recalculateStatus(invoiceId);
 
@@ -59,10 +65,12 @@ class LocalPaymentInvoiceGatewayTest {
     }
 
     private Invoice invoice(UUID invoiceId, UUID customerId) {
-        return Invoice.reconstitute(InvoiceId.of(invoiceId), InvoiceNumber.of(2026, 1), customerId,
-                "Test Customer", "J-12345678-9", UUID.randomUUID(), "Creator", null, null,
-                InvoiceStatus.PENDING_PAYMENT, PaymentType.CREDIT, null, BigDecimal.ZERO,
-                null, null, null, List.of(InvoiceLine.create(UUID.randomUUID(), "Product", "P001",
+        return Invoice.reconstitute(InvoiceId.of(invoiceId),
+                InvoiceNumber.of(2026, 1), customerId, "Test Customer",
+                "J-12345678-9", UUID.randomUUID(), "Creator", null, null,
+                InvoiceStatus.PENDING_PAYMENT, PaymentType.CREDIT, null,
+                BigDecimal.ZERO, null, null, null,
+                List.of(InvoiceLine.create(UUID.randomUUID(), "Product", "P001",
                         BigDecimal.ONE, new BigDecimal("500.00"), List.of())),
                 LocalDate.now().atStartOfDay(), LocalDate.now().atStartOfDay());
     }

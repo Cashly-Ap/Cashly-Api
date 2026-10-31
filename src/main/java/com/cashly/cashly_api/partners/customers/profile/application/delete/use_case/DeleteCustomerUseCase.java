@@ -18,7 +18,8 @@ public class DeleteCustomerUseCase {
     public void execute(String id) {
         CustomerId customerId = CustomerId.from(id);
         if (!customerRepository.existsById(customerId)) {
-            throw new CustomerNotFoundException("Customer not found with id: " + id);
+            throw new CustomerNotFoundException(
+                    "Customer not found with id: " + id);
         }
         if (customerRepository.hasAssociatedRecords(customerId)) {
             throw new CustomerHasAssociatedRecordsException(id);

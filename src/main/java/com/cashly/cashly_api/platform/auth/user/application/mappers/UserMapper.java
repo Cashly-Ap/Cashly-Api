@@ -10,10 +10,12 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     private final UserPreferencesRepository preferences;
 
-
-    public UserMapper(UserPreferencesRepository preferences) { this.preferences = preferences; }
+    public UserMapper(UserPreferencesRepository preferences) {
+        this.preferences = preferences;
+    }
 
     public UserResponse toResponse(User user) {
-        return UserResponse.from(user).withLanguage(preferences.languageFor(user.getId().getValue()));
+        return UserResponse.from(user)
+                .withLanguage(preferences.languageFor(user.getId().getValue()));
     }
 }

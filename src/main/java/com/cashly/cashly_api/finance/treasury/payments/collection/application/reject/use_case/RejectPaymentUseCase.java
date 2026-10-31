@@ -17,15 +17,17 @@ public class RejectPaymentUseCase {
     private final PaymentNotificationGateway notifications;
 
     public RejectPaymentUseCase(PaymentRepository paymentRepository,
-                                  PaymentNotificationGateway notifications) {
+            PaymentNotificationGateway notifications) {
         this.paymentRepository = paymentRepository;
         this.notifications = notifications;
     }
 
     @Transactional
-    public PaymentResponse execute(UUID id, RejectPaymentRequest request, UUID userId, String userName) {
+    public PaymentResponse execute(UUID id, RejectPaymentRequest request,
+            UUID userId, String userName) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + id));
 
         payment.reject(request.reason(), userId, userName);
 

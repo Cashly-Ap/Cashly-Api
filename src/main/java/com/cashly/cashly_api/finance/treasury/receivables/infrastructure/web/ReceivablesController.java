@@ -24,11 +24,12 @@ public class ReceivablesController {
     private final GetCustomerInvoicesUseCase getCustomerInvoicesUseCase;
     private final GetPaymentHistoryUseCase getPaymentHistoryUseCase;
 
-    public ReceivablesController(GetReceivablesSummaryUseCase getReceivablesSummaryUseCase,
-                                  SearchCustomerDebtUseCase searchCustomerDebtUseCase,
-                                  GetCustomerDebtUseCase getCustomerDebtUseCase,
-                                  GetCustomerInvoicesUseCase getCustomerInvoicesUseCase,
-                                  GetPaymentHistoryUseCase getPaymentHistoryUseCase) {
+    public ReceivablesController(
+            GetReceivablesSummaryUseCase getReceivablesSummaryUseCase,
+            SearchCustomerDebtUseCase searchCustomerDebtUseCase,
+            GetCustomerDebtUseCase getCustomerDebtUseCase,
+            GetCustomerInvoicesUseCase getCustomerInvoicesUseCase,
+            GetPaymentHistoryUseCase getPaymentHistoryUseCase) {
         this.getReceivablesSummaryUseCase = getReceivablesSummaryUseCase;
         this.searchCustomerDebtUseCase = searchCustomerDebtUseCase;
         this.getCustomerDebtUseCase = getCustomerDebtUseCase;
@@ -39,7 +40,8 @@ public class ReceivablesController {
     @GetMapping("/summary")
     @PreAuthorize("hasAuthority('FINANCES:READ')")
     public ResponseEntity<ReceivablesSummaryResponse> getSummary() {
-        ReceivablesSummaryResponse response = getReceivablesSummaryUseCase.execute();
+        ReceivablesSummaryResponse response = getReceivablesSummaryUseCase
+                .execute();
         return ResponseEntity.ok(response);
     }
 
@@ -51,19 +53,24 @@ public class ReceivablesController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) com.cashly.cashly_api.finance.treasury.receivables.application.customer_debt.use_case.CustomerDebtAction action) {
-        PageResponse<?> response = action == null ? searchCustomerDebtUseCase.execute(search, page, size, sort)
-                : searchCustomerDebtUseCase.execute(search, page, size, sort, action);
+        PageResponse<?> response = action == null
+                ? searchCustomerDebtUseCase.execute(search, page, size, sort)
+                : searchCustomerDebtUseCase.execute(search, page, size, sort,
+                        action);
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<PageResponse<?>> getCustomersWithDebt(String search, int page, int size, String sort) {
+    public ResponseEntity<PageResponse<?>> getCustomersWithDebt(String search,
+            int page, int size, String sort) {
         return getCustomersWithDebt(search, page, size, sort, null);
     }
 
     @GetMapping("/customers/{id}")
     @PreAuthorize("hasAuthority('FINANCES:READ')")
-    public ResponseEntity<CustomerDebtSummaryResponse> getCustomerDebt(@PathVariable UUID id) {
-        CustomerDebtSummaryResponse response = getCustomerDebtUseCase.execute(id);
+    public ResponseEntity<CustomerDebtSummaryResponse> getCustomerDebt(
+            @PathVariable UUID id) {
+        CustomerDebtSummaryResponse response = getCustomerDebtUseCase
+                .execute(id);
         return ResponseEntity.ok(response);
     }
 
@@ -75,7 +82,8 @@ public class ReceivablesController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        PageResponse<?> response = getCustomerInvoicesUseCase.execute(id, search, status, page, size);
+        PageResponse<?> response = getCustomerInvoicesUseCase.execute(id,
+                search, status, page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -85,7 +93,8 @@ public class ReceivablesController {
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        PageResponse<?> response = getPaymentHistoryUseCase.execute(search, page, size);
+        PageResponse<?> response = getPaymentHistoryUseCase.execute(search,
+                page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -96,7 +105,8 @@ public class ReceivablesController {
             @RequestParam(required = false) UUID invoiceId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size) {
-        PageResponse<?> response = getPaymentHistoryUseCase.execute(id, invoiceId, page, size);
+        PageResponse<?> response = getPaymentHistoryUseCase.execute(id,
+                invoiceId, page, size);
         return ResponseEntity.ok(response);
     }
 }

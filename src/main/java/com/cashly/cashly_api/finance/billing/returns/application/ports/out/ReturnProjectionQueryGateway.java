@@ -4,5 +4,7 @@ import java.util.UUID;
 public interface ReturnProjectionQueryGateway {
     Optional<InvoiceLabels> findInvoice(UUID invoiceId);
     Optional<String> findWarehouseName(UUID warehouseId);
-    record InvoiceLabels(String number, String customerName, String customerRif) {}
+    record InvoiceLabels(String number, String customerName,
+            String customerRif) {
+    }
 }

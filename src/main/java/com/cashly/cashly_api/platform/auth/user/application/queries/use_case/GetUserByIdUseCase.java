@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class GetUserByIdUseCase {
     private final UserPreferencesRepository preferences;
 
-
     private final UserRepository userRepository;
 
-    public GetUserByIdUseCase(UserRepository userRepository, UserPreferencesRepository preferences) {
+    public GetUserByIdUseCase(UserRepository userRepository,
+            UserPreferencesRepository preferences) {
         this.preferences = preferences;
         this.userRepository = userRepository;
     }
@@ -26,8 +26,10 @@ public class GetUserByIdUseCase {
     public UserResponse execute(String userId) {
         UserId id = UserId.from(userId);
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(
+                        "User not found with ID: " + userId));
 
-        return UserResponse.from(user).withLanguage(preferences.languageFor(user.getId().getValue()));
+        return UserResponse.from(user)
+                .withLanguage(preferences.languageFor(user.getId().getValue()));
     }
 }

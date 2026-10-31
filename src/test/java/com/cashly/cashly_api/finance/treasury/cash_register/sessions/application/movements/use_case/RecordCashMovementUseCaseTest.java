@@ -25,46 +25,60 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RecordCashMovementUseCaseTest {
-    private final CashRegisterRepository registers = mock(CashRegisterRepository.class);
-    private final CashRegisterActorGateway actors = mock(CashRegisterActorGateway.class);
-    private final CashMovementService movements = mock(CashMovementService.class);
-    private final RecordCashMovementUseCase useCase = new RecordCashMovementUseCase(registers, actors, movements);
+    private final CashRegisterRepository registers = mock(
+            CashRegisterRepository.class);
+    private final CashRegisterActorGateway actors = mock(
+            CashRegisterActorGateway.class);
+    private final CashMovementService movements = mock(
+            CashMovementService.class);
+    private final RecordCashMovementUseCase useCase = new RecordCashMovementUseCase(
+            registers, actors, movements);
 
     @Test
     void shouldRecordMovementWithActorNameFromCashRegisterContract() {
         UUID registerId = UUID.randomUUID();
         UUID actorId = UUID.randomUUID();
-        var register = CashRegister.open(RegisterId.of(registerId), LocalDate.now(), actorId, "Opener", BigDecimal.ZERO);
-        var request = new CashMovementRequest(CashMovementDirection.IN, CashMovementType.PAYMENT, BigDecimal.TEN,
-                null, "Manual income");
+        var register = CashRegister.open(RegisterId.of(registerId),
+                LocalDate.now(), actorId, "Opener", BigDecimal.ZERO);
+        var request = new CashMovementRequest(CashMovementDirection.IN,
+                CashMovementType.PAYMENT, BigDecimal.TEN, null,
+                "Manual income");
         when(registers.findActiveClosure()).thenReturn(Optional.of(register));
-        when(actors.findById(actorId)).thenReturn(Optional.of(new CashRegisterActorGateway.Actor(actorId, "Operator")));
-        CashMovement movement = CashMovement.create(register.getId(), request.direction(), request.type(), request.amount(),
-                null, "Sin método", request.description(), "MANUAL", null, actorId, "Operator");
-        when(movements.record(request.direction(), request.type(), request.amount(), null, request.description(),
-                "MANUAL", null, actorId, "Operator")).thenReturn(movement);
+        when(actors.findById(actorId)).thenReturn(Optional
+                .of(new CashRegisterActorGateway.Actor(actorId, "Operator")));
+        CashMovement movement = CashMovement.create(register.getId(),
+                request.direction(), request.type(), request.amount(), null,
+                "Sin método", request.description(), "MANUAL", null, actorId,
+                "Operator");
+        when(movements.record(request.direction(), request.type(),
+                request.amount(), null, request.description(), "MANUAL", null,
+                actorId, "Operator")).thenReturn(movement);
 
         var response = useCase.execute(registerId, request, actorId);
 
         assertThat(response.createdByName()).isEqualTo("Operator");
         assertThat(response.paymentMethodName()).isEqualTo("Sin método");
-        verify(movements).record(request.direction(), request.type(), request.amount(), null,
-                request.description(), "MANUAL", null, actorId, "Operator");
+        verify(movements).record(request.direction(), request.type(),
+                request.amount(), null, request.description(), "MANUAL", null,
+                actorId, "Operator");
     }
 
     @Test
     void shouldRejectUnknownActorBeforeRecordingMovement() {
         UUID registerId = UUID.randomUUID();
         UUID actorId = UUID.randomUUID();
-        var register = CashRegister.open(RegisterId.of(registerId), LocalDate.now(), actorId, "Opener", BigDecimal.ZERO);
+        var register = CashRegister.open(RegisterId.of(registerId),
+                LocalDate.now(), actorId, "Opener", BigDecimal.ZERO);
         when(registers.findActiveClosure()).thenReturn(Optional.of(register));
         when(actors.findById(actorId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(registerId,
-                new CashMovementRequest(CashMovementDirection.IN, CashMovementType.PAYMENT,
-                        BigDecimal.TEN, null, "Manual income"), actorId))
-                .isInstanceOf(IllegalArgumentException.class)
+                new CashMovementRequest(CashMovementDirection.IN,
+                        CashMovementType.PAYMENT, BigDecimal.TEN, null,
+                        "Manual income"),
+                actorId)).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("User not found: " + actorId);
-        verify(movements, never()).record(any(), any(), any(), any(), any(), any(), any(), any(), any());
+        verify(movements, never()).record(any(), any(), any(), any(), any(),
+                any(), any(), any(), any());
     }
 }

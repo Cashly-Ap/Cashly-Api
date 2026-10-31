@@ -19,11 +19,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GetProductsForTransactionUseCaseTest {
-    private final CustomerProductContextGateway customers = mock(CustomerProductContextGateway.class);
-    private final ProductWarehouseStockGateway stocks = mock(ProductWarehouseStockGateway.class);
+    private final CustomerProductContextGateway customers = mock(
+            CustomerProductContextGateway.class);
+    private final ProductWarehouseStockGateway stocks = mock(
+            ProductWarehouseStockGateway.class);
     private final ProductRepository products = mock(ProductRepository.class);
-    private final CategoryRepository categories = mock(CategoryRepository.class);
-    private final GetProductsForTransactionUseCase useCase = new GetProductsForTransactionUseCase(customers, products, new LocalProductCategoryGatewayAdapter(new RepositoryProductCategoryQuery(categories)), stocks);
+    private final CategoryRepository categories = mock(
+            CategoryRepository.class);
+    private final GetProductsForTransactionUseCase useCase = new GetProductsForTransactionUseCase(
+            customers, products, new LocalProductCategoryGatewayAdapter(
+                    new RepositoryProductCategoryQuery(categories)),
+            stocks);
     private final UUID customerId = UUID.randomUUID();
     private final UUID productId = UUID.randomUUID();
     private final UUID categoryId = UUID.randomUUID();
@@ -37,17 +43,26 @@ class GetProductsForTransactionUseCaseTest {
         UUID missingWarehouseId = UUID.randomUUID();
         List<UUID> customerIds = List.of(customerId, secondCustomerId);
         when(customers.requirePriceType(customerIds)).thenReturn(priceTypeId);
-        when(customers.accessibleWarehouseIds(customerId)).thenReturn(Set.of(warehouseId, missingWarehouseId));
-        when(customers.accessibleWarehouseIds(secondCustomerId)).thenReturn(Set.of(secondWarehouseId));
-        Set<UUID> allowed = Set.of(warehouseId, secondWarehouseId, missingWarehouseId);
+        when(customers.accessibleWarehouseIds(customerId))
+                .thenReturn(Set.of(warehouseId, missingWarehouseId));
+        when(customers.accessibleWarehouseIds(secondCustomerId))
+                .thenReturn(Set.of(secondWarehouseId));
+        Set<UUID> allowed = Set.of(warehouseId, secondWarehouseId,
+                missingWarehouseId);
         Product product = product();
-        when(product.getProductPrices()).thenReturn(List.of(ProductPrice.create(priceTypeId, BigDecimal.TEN, null)));
-        when(products.findAllForOrder("Search", categoryId, false, true, allowed, 1, 2))
-                .thenReturn(new PageResponse<>(List.of(product), 5, 3, 2, 1, false, false, false));
-        when(stocks.findByProductId(productId)).thenReturn(List.of(
-                stock(warehouseId, true, 10), stock(secondWarehouseId, true, 20),
-                stock(missingWarehouseId, false, 30), stock(UUID.randomUUID(), true, 40)));
-        var response = useCase.execute(customerIds, "Search", categoryId, false, true, 1, 2);
+        when(product.getProductPrices()).thenReturn(List
+                .of(ProductPrice.create(priceTypeId, BigDecimal.TEN, null)));
+        when(products.findAllForOrder("Search", categoryId, false, true,
+                allowed, 1, 2))
+                .thenReturn(new PageResponse<>(List.of(product), 5, 3, 2, 1,
+                        false, false, false));
+        when(stocks.findByProductId(productId))
+                .thenReturn(List.of(stock(warehouseId, true, 10),
+                        stock(secondWarehouseId, true, 20),
+                        stock(missingWarehouseId, false, 30),
+                        stock(UUID.randomUUID(), true, 40)));
+        var response = useCase.execute(customerIds, "Search", categoryId, false,
+                true, 1, 2);
         var item = response.content().getFirst();
         assertEquals(BigDecimal.TEN, item.customerPrice());
         assertEquals(30, item.totalStock());
@@ -72,13 +87,19 @@ class GetProductsForTransactionUseCaseTest {
     }
 
     private void assertPurchasePriceFallback(UUID pricing) {
-        when(customers.requirePriceType(List.of(customerId))).thenReturn(pricing);
-        when(customers.accessibleWarehouseIds(customerId)).thenReturn(Set.of(warehouseId));
+        when(customers.requirePriceType(List.of(customerId)))
+                .thenReturn(pricing);
+        when(customers.accessibleWarehouseIds(customerId))
+                .thenReturn(Set.of(warehouseId));
         Product product = product();
-        when(products.findAllForOrder(null, null, null, null, Set.of(warehouseId), 0, 10))
-                .thenReturn(new PageResponse<>(List.of(product), 1, 1, 10, 0, true, true, false));
-        var response = useCase.execute(customerId, null, null, null, null, 0, 10);
-        assertEquals(new BigDecimal("5"), response.content().getFirst().customerPrice());
+        when(products.findAllForOrder(null, null, null, null,
+                Set.of(warehouseId), 0, 10))
+                .thenReturn(new PageResponse<>(List.of(product), 1, 1, 10, 0,
+                        true, true, false));
+        var response = useCase.execute(customerId, null, null, null, null, 0,
+                10);
+        assertEquals(new BigDecimal("5"),
+                response.content().getFirst().customerPrice());
         assertEquals(0, response.content().getFirst().totalStock());
         assertTrue(response.content().getFirst().stock().isEmpty());
     }
@@ -91,8 +112,9 @@ class GetProductsForTransactionUseCaseTest {
         return product;
     }
 
-    private ProductWarehouseStockGateway.Stock stock(UUID id, boolean exists, int quantity) {
-        return new ProductWarehouseStockGateway.Stock(id, "WH", "Warehouse", exists, quantity, 2,
-                quantity - 2, LocalDateTime.now());
+    private ProductWarehouseStockGateway.Stock stock(UUID id, boolean exists,
+            int quantity) {
+        return new ProductWarehouseStockGateway.Stock(id, "WH", "Warehouse",
+                exists, quantity, 2, quantity - 2, LocalDateTime.now());
     }
 }

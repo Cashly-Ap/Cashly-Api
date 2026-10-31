@@ -5,8 +5,7 @@ import java.util.regex.Pattern;
 
 public class Email {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
-        "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
-    );
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
 
     private final String value;
 
@@ -18,11 +17,13 @@ public class Email {
         String trimmedValue = value.trim();
 
         if (!EMAIL_PATTERN.matcher(trimmedValue).matches()) {
-            throw new IllegalArgumentException("Invalid email format: " + trimmedValue);
+            throw new IllegalArgumentException(
+                    "Invalid email format: " + trimmedValue);
         }
 
         if (trimmedValue.length() > 255) {
-            throw new IllegalArgumentException("Email cannot exceed 255 characters");
+            throw new IllegalArgumentException(
+                    "Email cannot exceed 255 characters");
         }
 
         this.value = trimmedValue.toLowerCase();
@@ -34,8 +35,10 @@ public class Email {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         Email email = (Email) obj;
         return Objects.equals(value, email.value);
     }

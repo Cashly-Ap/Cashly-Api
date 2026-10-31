@@ -5,7 +5,8 @@ import java.util.regex.Pattern;
 public record QuoteNumber(String value) {
 
     private static final String PREFIX = "PRE";
-    private static final Pattern FORMAT = Pattern.compile("^PRE-\\d{4}-\\d{4}$");
+    private static final Pattern FORMAT = Pattern
+            .compile("^PRE-\\d{4}-\\d{4}$");
     private static final String FORMAT_STRING = "PRE-%d-%04d";
 
     public QuoteNumber {
@@ -17,13 +18,15 @@ public record QuoteNumber(String value) {
         }
         if (!FORMAT.matcher(value).matches()) {
             throw new IllegalArgumentException(
-                    "QuoteNumber must match format PRE-YYYY-NNNN, got: " + value);
+                    "QuoteNumber must match format PRE-YYYY-NNNN, got: "
+                            + value);
         }
     }
 
     public static QuoteNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
         if (sequence > 9999) {
             throw new IllegalArgumentException("Sequence must be at most 9999");

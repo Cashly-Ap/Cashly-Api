@@ -45,26 +45,29 @@ class ReturnNumberUnitTest {
 
     @Test
     void should_ThrowException_When_ValueIsBlank() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new ReturnNumber("  "));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new ReturnNumber("  "));
 
         assertEquals("ReturnNumber cannot be blank", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_SequenceIsZero() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> ReturnNumber.of(2026, 0));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> ReturnNumber.of(2026, 0));
 
-        assertEquals("Sequence must be greater than zero", exception.getMessage());
+        assertEquals("Sequence must be greater than zero",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_SequenceIsNegative() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
                 () -> ReturnNumber.of(2026, -1));
 
-        assertEquals("Sequence must be greater than zero", exception.getMessage());
+        assertEquals("Sequence must be greater than zero",
+                exception.getMessage());
     }
 
     @Test

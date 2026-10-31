@@ -24,20 +24,30 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DisplayName("ReturnConfig Unit Tests")
 class ReturnConfigTest {
 
-    @Mock private ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
-    @Mock private ReturnRepository returnRepository;
-    @Mock private ReturnResponseAssembler returnMapper;
-    @Mock private ReturnInventoryGateway inventoryGateway;
-    @Mock private ReturnInvoiceQueryGateway invoices;
-    @Mock private ReturnPaymentSettlementGateway payments;
-    @Mock private ReturnBalanceGateway balances;
-    @Mock private ReturnCashGateway cash;
+    @Mock
+    private ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway;
+    @Mock
+    private ReturnRepository returnRepository;
+    @Mock
+    private ReturnResponseAssembler returnMapper;
+    @Mock
+    private ReturnInventoryGateway inventoryGateway;
+    @Mock
+    private ReturnInvoiceQueryGateway invoices;
+    @Mock
+    private ReturnPaymentSettlementGateway payments;
+    @Mock
+    private ReturnBalanceGateway balances;
+    @Mock
+    private ReturnCashGateway cash;
 
     @Test
     void should_CreateCreateReturnUseCase() {
         ReturnConfig config = new ReturnConfig(returnRepository);
 
-        CreateReturnUseCase useCase = config.createReturnUseCase(invoiceAdjustmentGateway, returnMapper, invoices, payments, balances, inventoryGateway, cash);
+        CreateReturnUseCase useCase = config.createReturnUseCase(
+                invoiceAdjustmentGateway, returnMapper, invoices, payments,
+                balances, inventoryGateway, cash);
 
         assertNotNull(useCase);
     }
@@ -46,7 +56,8 @@ class ReturnConfigTest {
     void should_CreateGetAllReturnsUseCase() {
         ReturnConfig config = new ReturnConfig(returnRepository);
 
-        GetAllReturnsUseCase useCase = config.getAllReturnsUseCase(returnMapper);
+        GetAllReturnsUseCase useCase = config
+                .getAllReturnsUseCase(returnMapper);
 
         assertNotNull(useCase);
     }
@@ -55,7 +66,8 @@ class ReturnConfigTest {
     void should_CreateGetReturnByIdUseCase() {
         ReturnConfig config = new ReturnConfig(returnRepository);
 
-        GetReturnByIdUseCase useCase = config.getReturnByIdUseCase(returnMapper);
+        GetReturnByIdUseCase useCase = config
+                .getReturnByIdUseCase(returnMapper);
 
         assertNotNull(useCase);
     }
@@ -64,7 +76,9 @@ class ReturnConfigTest {
     void should_CreateDeleteReturnUseCase() {
         ReturnConfig config = new ReturnConfig(returnRepository);
 
-        DeleteReturnUseCase useCase = config.deleteReturnUseCase(invoiceAdjustmentGateway, invoices, inventoryGateway, payments, balances);
+        DeleteReturnUseCase useCase = config.deleteReturnUseCase(
+                invoiceAdjustmentGateway, invoices, inventoryGateway, payments,
+                balances);
 
         assertNotNull(useCase);
     }

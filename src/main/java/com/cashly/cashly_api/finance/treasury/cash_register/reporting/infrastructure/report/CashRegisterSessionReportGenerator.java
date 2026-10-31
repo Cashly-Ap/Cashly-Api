@@ -30,33 +30,67 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class CashRegisterSessionReportGenerator implements CashRegisterReportPort {
+public class CashRegisterSessionReportGenerator
+        implements
+            CashRegisterReportPort {
 
     private final PdfBranding branding;
 
-    public CashRegisterSessionReportGenerator() { this(new PdfBranding()); }
+    public CashRegisterSessionReportGenerator() {
+        this(new PdfBranding());
+    }
 
     @Autowired
-    public CashRegisterSessionReportGenerator(PdfBranding branding) { this.branding = branding; }
-
-
+    public CashRegisterSessionReportGenerator(PdfBranding branding) {
+        this.branding = branding;
+    }
 
     @Override
-    public byte[] generateExcel(CashRegisterResponse register, ReportType type) {
-        try (var workbook = new XSSFWorkbook(); var output = new ByteArrayOutputStream()) {
-            var summary = workbook.createSheet(ReportMessages.text("finance.treasury.cash_register.reports.summary"));
+    public byte[] generateExcel(CashRegisterResponse register,
+            ReportType type) {
+        try (var workbook = new XSSFWorkbook();
+                var output = new ByteArrayOutputStream()) {
+            var summary = workbook.createSheet(ReportMessages
+                    .text("finance.treasury.cash_register.reports.summary"));
             CellStyle header = headerStyle(workbook);
-            addSummaryRow(summary.createRow(0), ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterReport"), register.id().toString(), header);
-            addSummaryRow(summary.createRow(1), ReportMessages.text("finance.treasury.cash_register.reports.status"), ReportMessages.code(register.status().name()), null);
-            addSummaryRow(summary.createRow(2), ReportMessages.text("finance.treasury.cash_register.reports.opened"), format(register.openedAt()), null);
-            addSummaryRow(summary.createRow(3), ReportMessages.text("finance.treasury.cash_register.reports.closed"), format(register.closedAt()), null);
-            addMoneyRow(summary.createRow(4), ReportMessages.text("finance.treasury.cash_register.reports.netInvoicing"), register.totalInvoiced());
-            addMoneyRow(summary.createRow(5), ReportMessages.text("finance.treasury.cash_register.reports.openingBalance"), register.openingBalance());
-            addMoneyRow(summary.createRow(6), ReportMessages.text("finance.treasury.cash_register.reports.inflows"), register.totalIncome());
-            addMoneyRow(summary.createRow(7), ReportMessages.text("finance.treasury.cash_register.reports.outflows"), register.totalExpense());
-            addMoneyRow(summary.createRow(8), ReportMessages.text("finance.treasury.cash_register.reports.expectedBalance"), register.expectedBalance());
-            addMoneyRow(summary.createRow(9), ReportMessages.text("finance.treasury.cash_register.reports.declaredBalance"), register.declaredBalance());
-            addMoneyRow(summary.createRow(10), ReportMessages.text("finance.treasury.cash_register.reports.difference"), register.difference());
+            addSummaryRow(summary.createRow(0), ReportMessages.text(
+                    "finance.treasury.cash_register.reports.cashRegisterReport"),
+                    register.id().toString(), header);
+            addSummaryRow(summary.createRow(1),
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.status"),
+                    ReportMessages.code(register.status().name()), null);
+            addSummaryRow(summary.createRow(2),
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.opened"),
+                    format(register.openedAt()), null);
+            addSummaryRow(summary.createRow(3),
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.closed"),
+                    format(register.closedAt()), null);
+            addMoneyRow(summary.createRow(4), ReportMessages.text(
+                    "finance.treasury.cash_register.reports.netInvoicing"),
+                    register.totalInvoiced());
+            addMoneyRow(summary.createRow(5), ReportMessages.text(
+                    "finance.treasury.cash_register.reports.openingBalance"),
+                    register.openingBalance());
+            addMoneyRow(summary.createRow(6),
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.inflows"),
+                    register.totalIncome());
+            addMoneyRow(summary.createRow(7),
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.outflows"),
+                    register.totalExpense());
+            addMoneyRow(summary.createRow(8), ReportMessages.text(
+                    "finance.treasury.cash_register.reports.expectedBalance"),
+                    register.expectedBalance());
+            addMoneyRow(summary.createRow(9), ReportMessages.text(
+                    "finance.treasury.cash_register.reports.declaredBalance"),
+                    register.declaredBalance());
+            addMoneyRow(summary.createRow(10), ReportMessages
+                    .text("finance.treasury.cash_register.reports.difference"),
+                    register.difference());
             summary.autoSizeColumn(0);
             summary.autoSizeColumn(1);
 
@@ -66,7 +100,8 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
             workbook.write(output);
             return output.toByteArray();
         } catch (IOException exception) {
-            throw new IllegalStateException("Could not generate cash register Excel report", exception);
+            throw new IllegalStateException(
+                    "Could not generate cash register Excel report", exception);
         }
     }
 
@@ -77,32 +112,78 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
             Document document = new Document(pdf, PageSize.A4.rotate());
             var bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
             document.add(branding.logo().setMarginBottom(12));
-            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.cashRegisterReport")).setFont(bold).setFontSize(18));
-            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.session") + register.id()));
-            document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.opened") + format(register.openedAt())
-                    + ReportMessages.text("finance.treasury.cash_register.reports.closed") + format(register.closedAt())));
+            document.add(new Paragraph(ReportMessages.text(
+                    "finance.treasury.cash_register.reports.cashRegisterReport"))
+                    .setFont(bold).setFontSize(18));
+            document.add(new Paragraph(ReportMessages
+                    .text("finance.treasury.cash_register.reports.session")
+                    + register.id()));
+            document.add(new Paragraph(ReportMessages
+                    .text("finance.treasury.cash_register.reports.opened")
+                    + format(register.openedAt())
+                    + ReportMessages.text(
+                            "finance.treasury.cash_register.reports.closed")
+                    + format(register.closedAt())));
 
-            Table summary = new Table(UnitValue.createPercentArray(new float[]{2, 1})).useAllAvailableWidth();
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.netInvoicing"), register.totalInvoiced());
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.openingBalance"), register.openingBalance());
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.inflows"), register.totalIncome());
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.outflows"), register.totalExpense());
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.expectedBalance"), register.expectedBalance());
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.declaredBalance"), register.declaredBalance());
-            addPdfSummary(summary, ReportMessages.text("finance.treasury.cash_register.reports.difference"), register.difference());
+            Table summary = new Table(
+                    UnitValue.createPercentArray(new float[]{2, 1}))
+                    .useAllAvailableWidth();
+            addPdfSummary(summary, ReportMessages.text(
+                    "finance.treasury.cash_register.reports.netInvoicing"),
+                    register.totalInvoiced());
+            addPdfSummary(summary, ReportMessages.text(
+                    "finance.treasury.cash_register.reports.openingBalance"),
+                    register.openingBalance());
+            addPdfSummary(summary,
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.inflows"),
+                    register.totalIncome());
+            addPdfSummary(summary,
+                    ReportMessages.text(
+                            "finance.treasury.cash_register.reports.outflows"),
+                    register.totalExpense());
+            addPdfSummary(summary, ReportMessages.text(
+                    "finance.treasury.cash_register.reports.expectedBalance"),
+                    register.expectedBalance());
+            addPdfSummary(summary, ReportMessages.text(
+                    "finance.treasury.cash_register.reports.declaredBalance"),
+                    register.declaredBalance());
+            addPdfSummary(summary, ReportMessages
+                    .text("finance.treasury.cash_register.reports.difference"),
+                    register.difference());
             document.add(summary);
 
             if (type == ReportType.DETAILED) {
-                document.add(new Paragraph(ReportMessages.text("finance.treasury.cash_register.reports.movements")).setFont(bold).setFontSize(14));
+                document.add(new Paragraph(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.movements"))
+                        .setFont(bold).setFontSize(14));
                 Table details = new Table(UnitValue.createPercentArray(
-                        new float[]{1.4f, 1.1f, 1.2f, 1.2f, 1.2f, 2.4f, 1.5f})).useAllAvailableWidth();
-                for (String title : new String[]{ReportMessages.text("finance.treasury.cash_register.reports.date"), ReportMessages.text("finance.treasury.cash_register.reports.direction"), ReportMessages.text("finance.treasury.cash_register.reports.type"), ReportMessages.text("finance.treasury.cash_register.reports.method"), ReportMessages.text("finance.treasury.cash_register.reports.amount"), ReportMessages.text("finance.treasury.cash_register.reports.description"), ReportMessages.text("finance.treasury.cash_register.reports.user")}) {
-                    details.addHeaderCell(new Cell().add(new Paragraph(title).setFont(bold)));
+                        new float[]{1.4f, 1.1f, 1.2f, 1.2f, 1.2f, 2.4f, 1.5f}))
+                        .useAllAvailableWidth();
+                for (String title : new String[]{
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.date"),
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.direction"),
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.type"),
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.method"),
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.amount"),
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.description"),
+                        ReportMessages.text(
+                                "finance.treasury.cash_register.reports.user")}) {
+                    details.addHeaderCell(
+                            new Cell().add(new Paragraph(title).setFont(bold)));
                 }
                 for (CashMovementResponse movement : register.movements()) {
                     details.addCell(format(movement.occurredAt()));
-                    details.addCell(ReportMessages.code(movement.direction().name()));
-                    details.addCell(ReportMessages.code(movement.type().name()));
+                    details.addCell(
+                            ReportMessages.code(movement.direction().name()));
+                    details.addCell(
+                            ReportMessages.code(movement.type().name()));
                     details.addCell(value(movement.paymentMethodName()));
                     details.addCell(money(movement.amount()));
                     details.addCell(value(movement.description()));
@@ -113,14 +194,33 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
             document.close();
             return output.toByteArray();
         } catch (IOException exception) {
-            throw new IllegalStateException("Could not generate cash register PDF report", exception);
+            throw new IllegalStateException(
+                    "Could not generate cash register PDF report", exception);
         }
     }
 
-    private void addMovementSheet(XSSFWorkbook workbook, CashRegisterResponse register, CellStyle header) {
-        var sheet = workbook.createSheet(ReportMessages.text("finance.treasury.cash_register.reports.details"));
+    private void addMovementSheet(XSSFWorkbook workbook,
+            CashRegisterResponse register, CellStyle header) {
+        var sheet = workbook.createSheet(ReportMessages
+                .text("finance.treasury.cash_register.reports.details"));
         Row titles = sheet.createRow(0);
-        String[] columns = {ReportMessages.text("finance.treasury.cash_register.reports.date"), ReportMessages.text("finance.treasury.cash_register.reports.direction"), ReportMessages.text("finance.treasury.cash_register.reports.type"), ReportMessages.text("finance.treasury.cash_register.reports.method"), ReportMessages.text("finance.treasury.cash_register.reports.amount"), ReportMessages.text("finance.treasury.cash_register.reports.description"), ReportMessages.text("finance.treasury.cash_register.reports.source"), ReportMessages.text("finance.treasury.cash_register.reports.user")};
+        String[] columns = {
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.date"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.direction"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.type"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.method"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.amount"),
+                ReportMessages.text(
+                        "finance.treasury.cash_register.reports.description"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.source"),
+                ReportMessages
+                        .text("finance.treasury.cash_register.reports.user")};
         for (int i = 0; i < columns.length; i++) {
             titles.createCell(i).setCellValue(columns[i]);
             titles.getCell(i).setCellStyle(header);
@@ -129,8 +229,10 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
         for (CashMovementResponse movement : register.movements()) {
             Row row = sheet.createRow(rowIndex++);
             row.createCell(0).setCellValue(format(movement.occurredAt()));
-            row.createCell(1).setCellValue(ReportMessages.code(movement.direction().name()));
-            row.createCell(2).setCellValue(ReportMessages.code(movement.type().name()));
+            row.createCell(1).setCellValue(
+                    ReportMessages.code(movement.direction().name()));
+            row.createCell(2)
+                    .setCellValue(ReportMessages.code(movement.type().name()));
             row.createCell(3).setCellValue(value(movement.paymentMethodName()));
             row.createCell(4).setCellValue(movement.amount().doubleValue());
             row.createCell(5).setCellValue(value(movement.description()));
@@ -153,7 +255,8 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
         return style;
     }
 
-    private void addSummaryRow(Row row, String label, String value, CellStyle style) {
+    private void addSummaryRow(Row row, String label, String value,
+            CellStyle style) {
         row.createCell(0).setCellValue(label);
         row.createCell(1).setCellValue(value);
         if (style != null) {
@@ -173,11 +276,14 @@ public class CashRegisterSessionReportGenerator implements CashRegisterReportPor
     }
 
     private String format(java.time.LocalDateTime dateTime) {
-        return dateTime == null ? "—" : ReportMessages.dateTimeFormatter().format(dateTime);
+        return dateTime == null
+                ? "—"
+                : ReportMessages.dateTimeFormatter().format(dateTime);
     }
 
     private String money(BigDecimal amount) {
-        return orZero(amount).setScale(2, java.math.RoundingMode.HALF_UP).toPlainString();
+        return orZero(amount).setScale(2, java.math.RoundingMode.HALF_UP)
+                .toPlainString();
     }
 
     private BigDecimal orZero(BigDecimal amount) {

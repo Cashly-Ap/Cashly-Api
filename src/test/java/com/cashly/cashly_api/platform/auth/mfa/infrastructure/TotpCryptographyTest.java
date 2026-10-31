@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TotpCryptographyTest {
-    private final TotpCryptography crypto = new TotpCryptography(Base64.getEncoder().encodeToString(new byte[32]));
+    private final TotpCryptography crypto = new TotpCryptography(
+            Base64.getEncoder().encodeToString(new byte[32]));
     private static final String RFC_SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
 
     @Test
@@ -20,10 +21,14 @@ class TotpCryptographyTest {
     @Test
     void permits_one_step_clock_skew_but_rejects_replay_and_invalid_format() {
         Instant now = Instant.ofEpochSecond(120);
-        assertEquals(3, crypto.verifyStep(RFC_SECRET, crypto.totp(RFC_SECRET, 3), now, -1));
-        assertEquals(5, crypto.verifyStep(RFC_SECRET, crypto.totp(RFC_SECRET, 5), now, -1));
-        assertEquals(-1, crypto.verifyStep(RFC_SECRET, crypto.totp(RFC_SECRET, 4), now, 4));
-        assertEquals(-1, crypto.verifyStep(RFC_SECRET, crypto.totp(RFC_SECRET, 2), now, -1));
+        assertEquals(3, crypto.verifyStep(RFC_SECRET,
+                crypto.totp(RFC_SECRET, 3), now, -1));
+        assertEquals(5, crypto.verifyStep(RFC_SECRET,
+                crypto.totp(RFC_SECRET, 5), now, -1));
+        assertEquals(-1, crypto.verifyStep(RFC_SECRET,
+                crypto.totp(RFC_SECRET, 4), now, 4));
+        assertEquals(-1, crypto.verifyStep(RFC_SECRET,
+                crypto.totp(RFC_SECRET, 2), now, -1));
         assertEquals(-1, crypto.verifyStep(RFC_SECRET, "12345x", now, -1));
     }
 
@@ -35,8 +40,10 @@ class TotpCryptographyTest {
         assertFalse(encrypted.contains(RFC_SECRET));
         byte[] modified = Base64.getDecoder().decode(encrypted);
         modified[modified.length - 1] ^= 1;
-        assertThrows(IllegalStateException.class, () -> crypto.decrypt(Base64.getEncoder().encodeToString(modified)));
-        assertThrows(IllegalStateException.class, () -> new TotpCryptography("").encrypt(RFC_SECRET));
+        assertThrows(IllegalStateException.class, () -> crypto
+                .decrypt(Base64.getEncoder().encodeToString(modified)));
+        assertThrows(IllegalStateException.class,
+                () -> new TotpCryptography("").encrypt(RFC_SECRET));
     }
 
     @Test

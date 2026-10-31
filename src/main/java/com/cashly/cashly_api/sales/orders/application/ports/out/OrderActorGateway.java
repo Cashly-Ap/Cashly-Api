@@ -6,5 +6,6 @@ import java.util.UUID;
 public interface OrderActorGateway {
     Optional<Actor> findById(UUID actorId);
 
-    record Actor(UUID id, String name) {}
+    record Actor(UUID id, String name) {
+    }
 }

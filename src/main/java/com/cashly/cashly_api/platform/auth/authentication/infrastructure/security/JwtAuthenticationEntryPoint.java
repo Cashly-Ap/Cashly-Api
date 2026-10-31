@@ -25,11 +25,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
 
     @Override
-    public void commence(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        AuthenticationException authException
-    ) throws IOException {
+    public void commence(HttpServletRequest request,
+            HttpServletResponse response, AuthenticationException authException)
+            throws IOException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -37,13 +35,19 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         Map<String, Object> errorDetails = new HashMap<>();
         errorDetails.put("timestamp", LocalDateTime.now().toString());
         errorDetails.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        var locale = java.util.Locale.forLanguageTag(com.cashly.cashly_api.shared.infrastructure.i18n.RequestLanguageFilter.requestedLanguage(request.getHeader("Accept-Language")));
+        var locale = java.util.Locale.forLanguageTag(
+                com.cashly.cashly_api.shared.infrastructure.i18n.RequestLanguageFilter
+                        .requestedLanguage(
+                                request.getHeader("Accept-Language")));
         response.setHeader("Content-Language", locale.getLanguage());
         errorDetails.put("code", "AUTHENTICATION_REQUIRED");
-        errorDetails.put("error", translator.translate("auth.unauthorized", locale));
-        errorDetails.put("message", translator.translate("auth.authentication_required", locale));
+        errorDetails.put("error",
+                translator.translate("auth.unauthorized", locale));
+        errorDetails.put("message",
+                translator.translate("auth.authentication_required", locale));
         errorDetails.put("path", request.getServletPath());
 
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(errorDetails));
+        response.getOutputStream()
+                .write(objectMapper.writeValueAsBytes(errorDetails));
     }
 }

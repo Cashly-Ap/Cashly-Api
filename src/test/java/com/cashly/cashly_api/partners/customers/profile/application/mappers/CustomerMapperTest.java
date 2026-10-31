@@ -58,7 +58,8 @@ class CustomerMapperTest {
     void should_map_customer_to_detail_response() {
         Customer customer = buildCustomerWithContacts();
 
-        CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
+        CustomerDetailResponse response = mapper.toDetailResponse(customer,
+                true);
 
         assertNotNull(response);
         assertEquals(customer.getId().toString(), response.id());
@@ -67,8 +68,10 @@ class CustomerMapperTest {
         assertEquals(customer.getType().name(), response.type());
         assertEquals(customer.getRif().getValue(), response.rif());
         assertEquals(customer.getAlias().getValue(), response.alias());
-        assertEquals(customer.getCreditDays().getValue(), response.creditDays());
-        assertEquals(customer.getCreditLimit().getValue(), response.creditLimit());
+        assertEquals(customer.getCreditDays().getValue(),
+                response.creditDays());
+        assertEquals(customer.getCreditLimit().getValue(),
+                response.creditLimit());
         assertEquals(customer.isActive(), response.active());
         assertEquals(customer.getPaymentType(), response.paymentType());
         assertEquals(customer.getCreatedAt(), response.createdAt());
@@ -90,8 +93,10 @@ class CustomerMapperTest {
         assertEquals(customer.getType().name(), response.type());
         assertEquals(customer.getRif().getValue(), response.rif());
         assertEquals(customer.getAlias().getValue(), response.alias());
-        assertEquals(customer.getCreditDays().getValue(), response.creditDays());
-        assertEquals(customer.getCreditLimit().getValue(), response.creditLimit());
+        assertEquals(customer.getCreditDays().getValue(),
+                response.creditDays());
+        assertEquals(customer.getCreditLimit().getValue(),
+                response.creditLimit());
         assertEquals(customer.isActive(), response.active());
         assertEquals(customer.getPaymentType(), response.paymentType());
         assertEquals(customer.getCreatedAt(), response.createdAt());
@@ -104,7 +109,8 @@ class CustomerMapperTest {
     void should_map_customer_with_emails_phones_and_addresses() {
         Customer customer = buildCustomerWithContacts();
 
-        CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
+        CustomerDetailResponse response = mapper.toDetailResponse(customer,
+                true);
 
         assertEquals(1, response.emails().size());
         assertEquals("test@example.com", response.emails().getFirst().email());
@@ -117,29 +123,24 @@ class CustomerMapperTest {
         assertTrue(response.addresses().getFirst().billing());
         assertTrue(response.addresses().getFirst().active());
         assertEquals("State", response.addresses().getFirst().state());
-        assertEquals("Municipality", response.addresses().getFirst().municipality());
+        assertEquals("Municipality",
+                response.addresses().getFirst().municipality());
         assertEquals("1000", response.addresses().getFirst().postalCode());
     }
 
     @Test
     @DisplayName("should map customer with empty collections")
     void should_map_customer_with_empty_collections() {
-        Customer customer = Customer.reconstitute(
-                CustomerId.generate(),
-                new CustomerCode(1001L),
-                new LegalName("Test Corp"),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Test"),
-                new CreditDays(30),
-                new CreditLimit(BigDecimal.ZERO),
-                true,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of(), List.of(), List.of(),
-                null, null);
+        Customer customer = Customer.reconstitute(CustomerId.generate(),
+                new CustomerCode(1001L), new LegalName("Test Corp"),
+                CustomerType.BUSINESS, new Rif("J-12345678-9"),
+                new CustomerAlias("Test"), new CreditDays(30),
+                new CreditLimit(BigDecimal.ZERO), true, LocalDateTime.now(),
+                LocalDateTime.now(), List.of(), List.of(), List.of(), null,
+                null);
 
-        CustomerDetailResponse response = mapper.toDetailResponse(customer, true);
+        CustomerDetailResponse response = mapper.toDetailResponse(customer,
+                true);
 
         assertTrue(response.emails().isEmpty());
         assertTrue(response.phones().isEmpty());
@@ -151,31 +152,19 @@ class CustomerMapperTest {
         CustomerId id = new CustomerId(customerId);
         LocalDateTime now = LocalDateTime.now();
 
-        List<CustomerEmail> emails = List.of(
-                new CustomerEmail(EmailId.generate(), id, new EmailAddress("test@example.com")));
-        List<CustomerPhone> phones = List.of(
-                new CustomerPhone(PhoneId.generate(), id, new PhoneNumber("+58-212-555-1234")));
-        List<CustomerAddress> addresses = List.of(
-                new CustomerAddress(AddressId.generate(), id, "123 Main St", true, true,
-                        "State", "Municipality", "1000"));
+        List<CustomerEmail> emails = List.of(new CustomerEmail(
+                EmailId.generate(), id, new EmailAddress("test@example.com")));
+        List<CustomerPhone> phones = List.of(new CustomerPhone(
+                PhoneId.generate(), id, new PhoneNumber("+58-212-555-1234")));
+        List<CustomerAddress> addresses = List
+                .of(new CustomerAddress(AddressId.generate(), id, "123 Main St",
+                        true, true, "State", "Municipality", "1000"));
 
-        return Customer.reconstitute(
-                id,
-                new CustomerCode(1001L),
-                new LegalName("Test Corp"),
-                CustomerType.BUSINESS,
-                new Rif("J-12345678-9"),
-                new CustomerAlias("Test"),
-                new CreditDays(30),
-                new CreditLimit(new BigDecimal("5000.00")),
-                true,
-                now,
-                now,
-                emails,
-                phones,
-                addresses,
-                "Important notes",
-                UUID.randomUUID()
-        );
+        return Customer.reconstitute(id, new CustomerCode(1001L),
+                new LegalName("Test Corp"), CustomerType.BUSINESS,
+                new Rif("J-12345678-9"), new CustomerAlias("Test"),
+                new CreditDays(30), new CreditLimit(new BigDecimal("5000.00")),
+                true, now, now, emails, phones, addresses, "Important notes",
+                UUID.randomUUID());
     }
 }

@@ -16,7 +16,8 @@ public record OrderNumber(String value) {
 
     public static OrderNumber of(int year, int sequence) {
         if (sequence <= 0) {
-            throw new IllegalArgumentException("Sequence must be greater than zero");
+            throw new IllegalArgumentException(
+                    "Sequence must be greater than zero");
         }
         return new OrderNumber(String.format(FORMAT, PREFIX, year, sequence));
     }

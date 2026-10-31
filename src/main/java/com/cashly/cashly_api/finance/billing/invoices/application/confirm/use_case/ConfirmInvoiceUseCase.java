@@ -21,17 +21,22 @@ public class ConfirmInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final IssueInvoiceService issuance;
 
-    public ConfirmInvoiceUseCase(InvoiceRepository invoiceRepository, IssueInvoiceService issuance) {
+    public ConfirmInvoiceUseCase(InvoiceRepository invoiceRepository,
+            IssueInvoiceService issuance) {
         this.invoiceRepository = invoiceRepository;
         this.issuance = issuance;
     }
 
     @Transactional
-    public InvoiceDetailResponse execute(UUID id, ConfirmInvoiceRequest request, UUID authenticatedUserId) {
+    public InvoiceDetailResponse execute(UUID id, ConfirmInvoiceRequest request,
+            UUID authenticatedUserId) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
-        Invoice saved = issuance.issue(invoice, new IssueInvoiceCommand(request.confirmationPassword(), request.useBalance(),
-                request.balanceAmount(), request.paymentMethodId()), InvoiceOrigin.MANUAL_DRAFT, authenticatedUserId);
+        Invoice saved = issuance.issue(invoice,
+                new IssueInvoiceCommand(request.confirmationPassword(),
+                        request.useBalance(), request.balanceAmount(),
+                        request.paymentMethodId()),
+                InvoiceOrigin.MANUAL_DRAFT, authenticatedUserId);
         return InvoiceMapper.toDetailResponse(saved);
     }
 }

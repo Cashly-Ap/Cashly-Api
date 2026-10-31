@@ -57,6 +57,7 @@ class PaymentMethodIdUnitTest {
 
     @Test
     void should_ThrowException_When_ValueIsNull() {
-        assertThrows(NullPointerException.class, () -> PaymentMethodId.of(null));
+        assertThrows(NullPointerException.class,
+                () -> PaymentMethodId.of(null));
     }
 }

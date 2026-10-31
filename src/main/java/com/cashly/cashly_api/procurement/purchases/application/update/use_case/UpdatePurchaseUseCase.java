@@ -1,8 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.application.update.use_case;
 
-
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseProductGateway;
-
 
 import com.cashly.cashly_api.procurement.purchases.application.update.request.UpdatePurchaseRequest;
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
@@ -25,37 +23,35 @@ public class UpdatePurchaseUseCase {
     private final PurchaseDetailResponseAssembler responseAssembler;
 
     public UpdatePurchaseUseCase(PurchaseRepository purchaseRepository,
-                                  PurchaseProductGateway productRepository,
-                                  PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseProductGateway productRepository,
+            PurchaseDetailResponseAssembler responseAssembler) {
         this.purchaseRepository = purchaseRepository;
         this.productRepository = productRepository;
         this.responseAssembler = responseAssembler;
     }
 
     @Transactional
-    public PurchaseDetailResponse execute(UUID id, UpdatePurchaseRequest request) {
+    public PurchaseDetailResponse execute(UUID id,
+            UpdatePurchaseRequest request) {
         Purchase purchase = purchaseRepository.findById(PurchaseId.of(id))
                 .orElseThrow(() -> new PurchaseNotFoundException(id));
 
-        List<PurchaseLine> lines = request.lines().stream()
-                .map(lineRequest -> {
-                    PurchaseProductGateway.Entry product = productRepository.findById(lineRequest.productId())
-                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + lineRequest.productId()));
+        List<PurchaseLine> lines = request.lines().stream().map(lineRequest -> {
+            PurchaseProductGateway.Entry product = productRepository
+                    .findById(lineRequest.productId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Product not found: " + lineRequest.productId()));
 
-                    List<PurchaseLineAllocation> allocations = lineRequest.warehouseAllocations().stream()
-                            .map(a -> PurchaseLineAllocation.create(a.warehouseId(), a.quantity()))
-                            .toList();
+            List<PurchaseLineAllocation> allocations = lineRequest
+                    .warehouseAllocations().stream()
+                    .map(a -> PurchaseLineAllocation.create(a.warehouseId(),
+                            a.quantity()))
+                    .toList();
 
-                    return PurchaseLine.create(
-                            product.id(),
-                            product.name(),
-                            product.code(),
-                            lineRequest.quantity(),
-                            lineRequest.unitCost(),
-                            allocations
-                    );
-                })
-                .toList();
+            return PurchaseLine.create(product.id(), product.name(),
+                    product.code(), lineRequest.quantity(),
+                    lineRequest.unitCost(), allocations);
+        }).toList();
 
         purchase.update(request.notes(), lines);
 

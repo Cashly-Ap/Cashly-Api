@@ -14,15 +14,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QuotesReportConfig {
     @Bean
-    public QuotePdfPort quotePdfPort(PdfBranding branding) { return new QuotePdfGenerator(branding); }
+    public QuotePdfPort quotePdfPort(PdfBranding branding) {
+        return new QuotePdfGenerator(branding);
+    }
     @Bean
-    public QuotesReportPdfPort quotesReportPdfPort(PdfBranding branding) { return new QuotesReportPdfGenerator(branding); }
+    public QuotesReportPdfPort quotesReportPdfPort(PdfBranding branding) {
+        return new QuotesReportPdfGenerator(branding);
+    }
     @Bean
-    public GenerateQuotePdfUseCase generateQuotePdfUseCase(QuoteReportQueryGateway query, QuotePdfPort pdf) {
+    public GenerateQuotePdfUseCase generateQuotePdfUseCase(
+            QuoteReportQueryGateway query, QuotePdfPort pdf) {
         return new GenerateQuotePdfUseCaseImpl(query, pdf);
     }
     @Bean
-    public GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase(QuoteReportQueryGateway query, QuotesReportPdfPort pdf) {
+    public GenerateQuotesReportPdfUseCase generateQuotesReportPdfUseCase(
+            QuoteReportQueryGateway query, QuotesReportPdfPort pdf) {
         return new GenerateQuotesReportPdfUseCaseImpl(query, pdf);
     }
 }

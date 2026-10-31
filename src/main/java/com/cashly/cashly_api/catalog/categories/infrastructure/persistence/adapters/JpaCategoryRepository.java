@@ -21,11 +21,13 @@ import java.util.UUID;
 @Component
 public class JpaCategoryRepository implements CategoryRepository {
 
-    private static final Set<String> ALLOWED_ORDER_BY = Set.of("name", "createdAt", "updatedAt");
+    private static final Set<String> ALLOWED_ORDER_BY = Set.of("name",
+            "createdAt", "updatedAt");
 
     private final SpringDataCategoryRepository springDataRepository;
 
-    public JpaCategoryRepository(SpringDataCategoryRepository springDataRepository) {
+    public JpaCategoryRepository(
+            SpringDataCategoryRepository springDataRepository) {
         this.springDataRepository = springDataRepository;
     }
 
@@ -33,14 +35,14 @@ public class JpaCategoryRepository implements CategoryRepository {
     public Category save(Category category) {
         if (category.getId() != null) {
             return springDataRepository.findById(category.getId())
-                .map(entity -> {
-                    entity.updateFromDomain(category);
-                    return springDataRepository.save(entity).toDomain();
-                })
-                .orElseGet(() -> {
-                    CategoryEntity entity = CategoryEntity.fromDomain(category);
-                    return springDataRepository.save(entity).toDomain();
-                });
+                    .map(entity -> {
+                        entity.updateFromDomain(category);
+                        return springDataRepository.save(entity).toDomain();
+                    }).orElseGet(() -> {
+                        CategoryEntity entity = CategoryEntity
+                                .fromDomain(category);
+                        return springDataRepository.save(entity).toDomain();
+                    });
         }
         CategoryEntity entity = CategoryEntity.fromDomain(category);
         entity.setId(UUID.randomUUID());
@@ -49,15 +51,13 @@ public class JpaCategoryRepository implements CategoryRepository {
 
     @Override
     public Optional<Category> findById(UUID id) {
-        return springDataRepository.findById(id)
-            .map(CategoryEntity::toDomain);
+        return springDataRepository.findById(id).map(CategoryEntity::toDomain);
     }
 
     @Override
     public List<Category> findAllById(Set<UUID> ids) {
         return springDataRepository.findAllById(ids).stream()
-            .map(CategoryEntity::toDomain)
-            .toList();
+                .map(CategoryEntity::toDomain).toList();
     }
 
     @Override
@@ -71,14 +71,17 @@ public class JpaCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public PageResponse<Category> findAllWithFilters(String search, Boolean active,
-                                                              int page, int size,
-                                                              String orderBy, String orderDir) {
+    public PageResponse<Category> findAllWithFilters(String search,
+            Boolean active, int page, int size, String orderBy,
+            String orderDir) {
         String field = ALLOWED_ORDER_BY.contains(orderBy) ? orderBy : "name";
-        Sort sort = "desc".equalsIgnoreCase(orderDir) ? Sort.by(field).descending() : Sort.by(field).ascending();
+        Sort sort = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.by(field).descending()
+                : Sort.by(field).ascending();
         PageRequest pageable = PageRequest.of(page, size, sort);
 
-        Page<CategoryEntity> result = springDataRepository.findAllWithFilters(search, active, pageable);
+        Page<CategoryEntity> result = springDataRepository
+                .findAllWithFilters(search, active, pageable);
 
         Page<Category> mapped = result.map(CategoryEntity::toDomain);
 

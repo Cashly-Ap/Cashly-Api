@@ -21,7 +21,8 @@ public class MovementsReportConfig {
     @Bean
     public MovementsReportRepositoryPort movementsReportRepositoryPort(
             MovementsReportJpaRepository movementsReportJpaRepository) {
-        return new MovementsReportRepositoryAdapter(movementsReportJpaRepository);
+        return new MovementsReportRepositoryAdapter(
+                movementsReportJpaRepository);
     }
 
     @Bean
@@ -38,13 +39,15 @@ public class MovementsReportConfig {
     public GenerateMovementsPdfUseCase generateMovementsPdfUseCase(
             MovementsReportRepositoryPort movementsReportRepositoryPort,
             MovementsPdfPort movementsPdfPort) {
-        return new GenerateMovementsPdfUseCaseImpl(movementsReportRepositoryPort, movementsPdfPort);
+        return new GenerateMovementsPdfUseCaseImpl(
+                movementsReportRepositoryPort, movementsPdfPort);
     }
 
     @Bean
     public GenerateMovementsExcelUseCase generateMovementsExcelUseCase(
             MovementsReportRepositoryPort movementsReportRepositoryPort,
             MovementsExcelPort movementsExcelPort) {
-        return new GenerateMovementsExcelUseCaseImpl(movementsReportRepositoryPort, movementsExcelPort);
+        return new GenerateMovementsExcelUseCaseImpl(
+                movementsReportRepositoryPort, movementsExcelPort);
     }
 }

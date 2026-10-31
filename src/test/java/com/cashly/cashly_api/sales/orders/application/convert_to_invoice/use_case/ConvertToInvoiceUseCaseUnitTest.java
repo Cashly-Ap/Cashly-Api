@@ -55,7 +55,10 @@ class ConvertToInvoiceUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        convertToInvoiceUseCase = new ConvertToInvoiceUseCase(orderRepository, new LocalInvoiceCreationGateway(new OrderInvoiceCreationService(createInvoiceUseCase)), notificationService);
+        convertToInvoiceUseCase = new ConvertToInvoiceUseCase(orderRepository,
+                new LocalInvoiceCreationGateway(
+                        new OrderInvoiceCreationService(createInvoiceUseCase)),
+                notificationService);
     }
 
     @Test
@@ -66,13 +69,17 @@ class ConvertToInvoiceUseCaseUnitTest {
 
         InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
-        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId)))
-                .thenReturn(invoiceResponse);
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
+        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class),
+                eq(authenticatedUserId))).thenReturn(invoiceResponse);
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
-        ConvertToInvoiceResponse response = convertToInvoiceUseCase.execute(orderId, request, authenticatedUserId);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH",
+                null, null, null, null);
+        ConvertToInvoiceResponse response = convertToInvoiceUseCase
+                .execute(orderId, request, authenticatedUserId);
 
         assertNotNull(response);
         assertEquals(orderId, response.orderId());
@@ -89,15 +96,19 @@ class ConvertToInvoiceUseCaseUnitTest {
 
         InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
-        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId)))
-                .thenReturn(invoiceResponse);
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
+        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class),
+                eq(authenticatedUserId))).thenReturn(invoiceResponse);
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CREDIT", null, null, null, null);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CREDIT",
+                null, null, null, null);
         convertToInvoiceUseCase.execute(orderId, request, authenticatedUserId);
 
-        verify(createInvoiceUseCase).execute(invoiceRequestCaptor.capture(), eq(authenticatedUserId));
+        verify(createInvoiceUseCase).execute(invoiceRequestCaptor.capture(),
+                eq(authenticatedUserId));
         CreateInvoiceRequest captured = invoiceRequestCaptor.getValue();
 
         assertEquals(orderId, captured.orderId());
@@ -108,13 +119,13 @@ class ConvertToInvoiceUseCaseUnitTest {
     void should_ThrowOrderNotFoundException_When_OrderDoesNotExist() {
         UUID orderId = UUID.randomUUID();
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.empty());
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.empty());
 
-        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
-        assertThrows(
-                OrderNotFoundException.class,
-                () -> convertToInvoiceUseCase.execute(orderId, request, UUID.randomUUID())
-        );
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH",
+                null, null, null, null);
+        assertThrows(OrderNotFoundException.class, () -> convertToInvoiceUseCase
+                .execute(orderId, request, UUID.randomUUID()));
 
         verifyNoInteractions(createInvoiceUseCase);
         verify(orderRepository, never()).save(any());
@@ -123,23 +134,21 @@ class ConvertToInvoiceUseCaseUnitTest {
     @Test
     void should_ThrowIllegalStateException_When_OrderIsNotConfirmed() {
         UUID orderId = UUID.randomUUID();
-        Order order = Order.reconstitute(
-                OrderId.of(orderId), OrderNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "Creator Name",
+        Order order = Order.reconstitute(OrderId.of(orderId),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
                 OrderStatus.DRAFT, null, null, null, null, null,
-                List.of(OrderLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                        BigDecimal.ONE, BigDecimal.TEN, List.of())),
-                LocalDateTime.now(), LocalDateTime.now()
-        );
+                List.of(OrderLine.create(UUID.randomUUID(), "Product A",
+                        "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of())),
+                LocalDateTime.now(), LocalDateTime.now());
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
 
-        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
-        assertThrows(
-                IllegalStateException.class,
-                () -> convertToInvoiceUseCase.execute(orderId, request, UUID.randomUUID())
-        );
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH",
+                null, null, null, null);
+        assertThrows(IllegalStateException.class, () -> convertToInvoiceUseCase
+                .execute(orderId, request, UUID.randomUUID()));
 
         verify(orderRepository, never()).save(any());
         verifyNoInteractions(createInvoiceUseCase);
@@ -153,46 +162,38 @@ class ConvertToInvoiceUseCaseUnitTest {
 
         InvoiceDetailResponse invoiceResponse = buildInvoiceResponse(orderId);
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
-        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class), eq(authenticatedUserId)))
-                .thenReturn(invoiceResponse);
-        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
+        when(createInvoiceUseCase.execute(any(CreateInvoiceRequest.class),
+                eq(authenticatedUserId))).thenReturn(invoiceResponse);
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH", null, null, null, null);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CASH",
+                null, null, null, null);
         convertToInvoiceUseCase.execute(orderId, request, authenticatedUserId);
 
         verify(orderRepository, times(1)).save(any(Order.class));
     }
 
     private InvoiceDetailResponse buildInvoiceResponse(UUID orderId) {
-        return new InvoiceDetailResponse(
-                UUID.randomUUID(), "INV-2026-00001",
+        return new InvoiceDetailResponse(UUID.randomUUID(), "INV-2026-00001",
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                orderId, "ORD-2026-00001",
-                "PAID", "Pagada", "CASH", null,
-                BigDecimal.valueOf(10),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.TEN,
-                List.of(),
-                null, null,
-                LocalDateTime.now(), LocalDateTime.now(),
-                List.of(),
-                BigDecimal.ZERO, null, List.of()
-        );
+                UUID.randomUUID(), "User Name", orderId, "ORD-2026-00001",
+                "PAID", "Pagada", "CASH", null, BigDecimal.valueOf(10),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.TEN, List.of(),
+                null, null, LocalDateTime.now(), LocalDateTime.now(), List.of(),
+                BigDecimal.ZERO, null, List.of());
     }
 
     private Order buildConfirmedOrder(UUID orderId) {
-        OrderLine line = OrderLine.create(
-                UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of()
-        );
-        Order order = Order.reconstitute(
-                OrderId.of(orderId), OrderNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "Creator Name",
+        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        Order order = Order.reconstitute(OrderId.of(orderId),
+                OrderNumber.of(2026, 1), UUID.randomUUID(), "Customer Name",
+                "J-12345678-9", UUID.randomUUID(), "Creator Name",
                 OrderStatus.CONFIRMED, null, null, null, null, null,
-                List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
         return order;
     }
 }

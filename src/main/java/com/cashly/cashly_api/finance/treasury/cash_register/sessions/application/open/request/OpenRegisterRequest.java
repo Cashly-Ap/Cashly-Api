@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record OpenRegisterRequest(
-        @NotBlank String openedByName,
-        @NotNull @DecimalMin("0.00") BigDecimal openingBalance
-) {}
+public record OpenRegisterRequest(@NotBlank String openedByName,
+        @NotNull @DecimalMin("0.00") BigDecimal openingBalance) {
+}

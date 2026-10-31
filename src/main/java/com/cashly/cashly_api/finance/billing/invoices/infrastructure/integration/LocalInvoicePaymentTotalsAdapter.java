@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-public class LocalInvoicePaymentTotalsAdapter implements InvoicePaymentTotalsGateway {
+public class LocalInvoicePaymentTotalsAdapter
+        implements
+            InvoicePaymentTotalsGateway {
     private final InvoicePaymentTotalsQuery payments;
 
-    public LocalInvoicePaymentTotalsAdapter(InvoicePaymentTotalsQuery payments) {
+    public LocalInvoicePaymentTotalsAdapter(
+            InvoicePaymentTotalsQuery payments) {
         this.payments = payments;
     }
 

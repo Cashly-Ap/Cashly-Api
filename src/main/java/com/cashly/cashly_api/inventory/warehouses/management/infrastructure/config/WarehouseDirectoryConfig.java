@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WarehouseDirectoryConfig {
     @Bean
-    public WarehouseDirectoryQuery warehouseDirectoryQuery(WarehouseRepository warehouses) {
+    public WarehouseDirectoryQuery warehouseDirectoryQuery(
+            WarehouseRepository warehouses) {
         return new RepositoryWarehouseDirectoryQuery(warehouses);
     }
 }

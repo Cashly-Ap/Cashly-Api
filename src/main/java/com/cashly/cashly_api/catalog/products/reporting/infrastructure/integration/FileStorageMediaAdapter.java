@@ -6,6 +6,10 @@ import java.io.IOException;
 @Component
 public class FileStorageMediaAdapter implements MediaGateway {
     private final FileStorageService storage;
-    public FileStorageMediaAdapter(FileStorageService storage) { this.storage = storage; }
-    public byte[] load(String path) throws IOException { return storage.load(path); }
+    public FileStorageMediaAdapter(FileStorageService storage) {
+        this.storage = storage;
+    }
+    public byte[] load(String path) throws IOException {
+        return storage.load(path);
+    }
 }

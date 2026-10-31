@@ -45,7 +45,8 @@ class ListCustomerWarehousesUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new ListCustomerWarehousesUseCase(accessRepository, customerRepository, warehouseRepository);
+        useCase = new ListCustomerWarehousesUseCase(accessRepository,
+                customerRepository, warehouseRepository);
     }
 
     @Test
@@ -55,18 +56,27 @@ class ListCustomerWarehousesUseCaseTest {
         UUID warehouseId1 = UUID.randomUUID();
         UUID warehouseId2 = UUID.randomUUID();
 
-        CustomerWarehouseAccess access1 = CustomerTestHelper.buildAccess(customerId, warehouseId1);
-        CustomerWarehouseAccess access2 = CustomerTestHelper.buildAccess(customerId, warehouseId2);
+        CustomerWarehouseAccess access1 = CustomerTestHelper
+                .buildAccess(customerId, warehouseId1);
+        CustomerWarehouseAccess access2 = CustomerTestHelper
+                .buildAccess(customerId, warehouseId2);
 
-        WarehouseSnapshot warehouse1 = new WarehouseSnapshot(warehouseId1, "Main Warehouse");
-        WarehouseSnapshot warehouse2 = new WarehouseSnapshot(warehouseId2, "Main Warehouse");
+        WarehouseSnapshot warehouse1 = new WarehouseSnapshot(warehouseId1,
+                "Main Warehouse");
+        WarehouseSnapshot warehouse2 = new WarehouseSnapshot(warehouseId2,
+                "Main Warehouse");
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(accessRepository.findByCustomerId(customerId)).thenReturn(List.of(access1, access2));
-        when(warehouseRepository.findById(warehouseId1)).thenReturn(Optional.of(warehouse1));
-        when(warehouseRepository.findById(warehouseId2)).thenReturn(Optional.of(warehouse2));
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(accessRepository.findByCustomerId(customerId))
+                .thenReturn(List.of(access1, access2));
+        when(warehouseRepository.findById(warehouseId1))
+                .thenReturn(Optional.of(warehouse1));
+        when(warehouseRepository.findById(warehouseId2))
+                .thenReturn(Optional.of(warehouse2));
 
-        List<CustomerWarehouseAccessResponse> response = useCase.execute(customerId);
+        List<CustomerWarehouseAccessResponse> response = useCase
+                .execute(customerId);
 
         assertNotNull(response);
         assertEquals(2, response.size());
@@ -79,7 +89,8 @@ class ListCustomerWarehousesUseCaseTest {
     @Test
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.empty());
 
         assertThrows(CustomerNotFoundException.class,
                 () -> useCase.execute(customerId));
@@ -94,13 +105,18 @@ class ListCustomerWarehousesUseCaseTest {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
         UUID warehouseId = UUID.randomUUID();
 
-        CustomerWarehouseAccess access = CustomerTestHelper.buildAccess(customerId, warehouseId);
+        CustomerWarehouseAccess access = CustomerTestHelper
+                .buildAccess(customerId, warehouseId);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(accessRepository.findByCustomerId(customerId)).thenReturn(List.of(access));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(accessRepository.findByCustomerId(customerId))
+                .thenReturn(List.of(access));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        List<CustomerWarehouseAccessResponse> response = useCase.execute(customerId);
+        List<CustomerWarehouseAccessResponse> response = useCase
+                .execute(customerId);
 
         assertNotNull(response);
         assertEquals(1, response.size());

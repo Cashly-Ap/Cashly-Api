@@ -38,14 +38,16 @@ class CustomerCreditControllerTest {
     @DisplayName("should get credit status and return 200")
     void should_get_credit_status_and_return_200() {
         UUID customerId = UUID.randomUUID();
-        CreditStatusResponse response = new CreditStatusResponse(
-                customerId, "Test Corp", "J-12345678-9",
-                BigDecimal.valueOf(10000), BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(10000), List.of(), false, true);
+        CreditStatusResponse response = new CreditStatusResponse(customerId,
+                "Test Corp", "J-12345678-9", BigDecimal.valueOf(10000),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.valueOf(10000),
+                List.of(), false, true);
 
-        when(getCustomerCreditStatusUseCase.execute(customerId)).thenReturn(response);
+        when(getCustomerCreditStatusUseCase.execute(customerId))
+                .thenReturn(response);
 
-        ResponseEntity<CreditStatusResponse> result = customerCreditController.getCreditStatus(customerId);
+        ResponseEntity<CreditStatusResponse> result = customerCreditController
+                .getCreditStatus(customerId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(customerId, result.getBody().customerId());
@@ -58,15 +60,18 @@ class CustomerCreditControllerTest {
     void should_return_credit_with_overdue_invoices() {
         UUID customerId = UUID.randomUUID();
         List<OverdueInvoiceResponse> overdue = List.of(
-                new OverdueInvoiceResponse("INV-001", BigDecimal.valueOf(500), LocalDate.now().minusDays(30), 30));
-        CreditStatusResponse response = new CreditStatusResponse(
-                customerId, "Test Corp", "J-12345678-9",
-                BigDecimal.valueOf(10000), BigDecimal.valueOf(500), BigDecimal.ZERO,
+                new OverdueInvoiceResponse("INV-001", BigDecimal.valueOf(500),
+                        LocalDate.now().minusDays(30), 30));
+        CreditStatusResponse response = new CreditStatusResponse(customerId,
+                "Test Corp", "J-12345678-9", BigDecimal.valueOf(10000),
+                BigDecimal.valueOf(500), BigDecimal.ZERO,
                 BigDecimal.valueOf(9500), overdue, true, false);
 
-        when(getCustomerCreditStatusUseCase.execute(customerId)).thenReturn(response);
+        when(getCustomerCreditStatusUseCase.execute(customerId))
+                .thenReturn(response);
 
-        ResponseEntity<CreditStatusResponse> result = customerCreditController.getCreditStatus(customerId);
+        ResponseEntity<CreditStatusResponse> result = customerCreditController
+                .getCreditStatus(customerId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().hasOverdue());
@@ -79,12 +84,15 @@ class CustomerCreditControllerTest {
     @DisplayName("should get overdue invoices and return 200")
     void should_get_overdue_invoices_and_return_200() {
         List<OverdueInvoiceResponse> response = List.of(
-                new OverdueInvoiceResponse("INV-001", BigDecimal.valueOf(500), LocalDate.now().minusDays(30), 30),
-                new OverdueInvoiceResponse("INV-002", BigDecimal.valueOf(250), LocalDate.now().minusDays(15), 15));
+                new OverdueInvoiceResponse("INV-001", BigDecimal.valueOf(500),
+                        LocalDate.now().minusDays(30), 30),
+                new OverdueInvoiceResponse("INV-002", BigDecimal.valueOf(250),
+                        LocalDate.now().minusDays(15), 15));
 
         when(getOverdueInvoicesUseCase.execute()).thenReturn(response);
 
-        ResponseEntity<List<OverdueInvoiceResponse>> result = customerCreditController.getOverdueInvoices();
+        ResponseEntity<List<OverdueInvoiceResponse>> result = customerCreditController
+                .getOverdueInvoices();
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(2, result.getBody().size());
@@ -96,7 +104,8 @@ class CustomerCreditControllerTest {
     void should_get_empty_overdue_invoices_list() {
         when(getOverdueInvoicesUseCase.execute()).thenReturn(List.of());
 
-        ResponseEntity<List<OverdueInvoiceResponse>> result = customerCreditController.getOverdueInvoices();
+        ResponseEntity<List<OverdueInvoiceResponse>> result = customerCreditController
+                .getOverdueInvoices();
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());

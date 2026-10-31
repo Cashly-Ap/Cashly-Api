@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserPreferencesConfig {
     @Bean
-    UserPreferencesService userPreferencesService(UserPreferencesRepository repository, CurrentActor actor) {
+    UserPreferencesService userPreferencesService(
+            UserPreferencesRepository repository, CurrentActor actor) {
         return new UserPreferencesService(repository, actor);
     }
 }

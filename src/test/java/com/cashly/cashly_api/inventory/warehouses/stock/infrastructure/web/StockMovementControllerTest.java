@@ -36,14 +36,15 @@ class StockMovementControllerTest {
         PageResponse<StockMovementResponse> pageResponse = new PageResponse<>(
                 List.of(movement), 1L, 1, 20, 0, true, true, false);
 
-        when(getStockMovementsUseCase.execute(eq(warehouseId), any(), any(), anyInt(), anyInt()))
-                .thenReturn(pageResponse);
+        when(getStockMovementsUseCase.execute(eq(warehouseId), any(), any(),
+                anyInt(), anyInt())).thenReturn(pageResponse);
 
-        PageResponse<StockMovementResponse> result = stockMovementController.getMovements(
-                warehouseId, null, null, 0, 20);
+        PageResponse<StockMovementResponse> result = stockMovementController
+                .getMovements(warehouseId, null, null, 0, 20);
 
         assertEquals(1, result.content().size());
-        verify(getStockMovementsUseCase).execute(warehouseId, null, null, 0, 20);
+        verify(getStockMovementsUseCase).execute(warehouseId, null, null, 0,
+                20);
     }
 
     @Test
@@ -55,14 +56,15 @@ class StockMovementControllerTest {
         PageResponse<StockMovementResponse> pageResponse = new PageResponse<>(
                 List.of(movement), 1L, 1, 20, 0, true, true, false);
 
-        when(getStockMovementsUseCase.execute(eq(warehouseId), eq(productId), any(), anyInt(), anyInt()))
-                .thenReturn(pageResponse);
+        when(getStockMovementsUseCase.execute(eq(warehouseId), eq(productId),
+                any(), anyInt(), anyInt())).thenReturn(pageResponse);
 
-        PageResponse<StockMovementResponse> result = stockMovementController.getMovements(
-                warehouseId, productId, null, 0, 20);
+        PageResponse<StockMovementResponse> result = stockMovementController
+                .getMovements(warehouseId, productId, null, 0, 20);
 
         assertEquals(1, result.content().size());
-        verify(getStockMovementsUseCase).execute(warehouseId, productId, null, 0, 20);
+        verify(getStockMovementsUseCase).execute(warehouseId, productId, null,
+                0, 20);
     }
 
     @Test
@@ -72,13 +74,14 @@ class StockMovementControllerTest {
         PageResponse<StockMovementResponse> pageResponse = new PageResponse<>(
                 List.of(), 0L, 0, 20, 0, true, true, true);
 
-        when(getStockMovementsUseCase.execute(
-                warehouseId, null, MovementType.EXIT, 0, 20)).thenReturn(pageResponse);
+        when(getStockMovementsUseCase.execute(warehouseId, null,
+                MovementType.EXIT, 0, 20)).thenReturn(pageResponse);
 
-        stockMovementController.getMovements(warehouseId, null, MovementType.EXIT, 0, 20);
+        stockMovementController.getMovements(warehouseId, null,
+                MovementType.EXIT, 0, 20);
 
-        verify(getStockMovementsUseCase).execute(
-                warehouseId, null, MovementType.EXIT, 0, 20);
+        verify(getStockMovementsUseCase).execute(warehouseId, null,
+                MovementType.EXIT, 0, 20);
     }
 
     @Test
@@ -88,13 +91,14 @@ class StockMovementControllerTest {
         PageResponse<StockMovementResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 20, 0, true, true, true);
 
-        when(getStockMovementsUseCase.execute(eq(warehouseId), any(), any(), anyInt(), anyInt()))
-                .thenReturn(emptyPage);
+        when(getStockMovementsUseCase.execute(eq(warehouseId), any(), any(),
+                anyInt(), anyInt())).thenReturn(emptyPage);
 
-        PageResponse<StockMovementResponse> result = stockMovementController.getMovements(
-                warehouseId, null, null, 0, 20);
+        PageResponse<StockMovementResponse> result = stockMovementController
+                .getMovements(warehouseId, null, null, 0, 20);
 
         assertTrue(result.content().isEmpty());
-        verify(getStockMovementsUseCase).execute(warehouseId, null, null, 0, 20);
+        verify(getStockMovementsUseCase).execute(warehouseId, null, null, 0,
+                20);
     }
 }

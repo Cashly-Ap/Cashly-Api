@@ -22,7 +22,8 @@ public class ProductCategoryUsageAdapter implements CategoryUsageGateway {
     }
 
     @Override
-    public Map<UUID, Long> countActiveProductsByCategoryIds(Set<UUID> categoryIds) {
+    public Map<UUID, Long> countActiveProductsByCategoryIds(
+            Set<UUID> categoryIds) {
         return usageApi.countActiveProductsByCategoryIds(categoryIds);
     }
 }

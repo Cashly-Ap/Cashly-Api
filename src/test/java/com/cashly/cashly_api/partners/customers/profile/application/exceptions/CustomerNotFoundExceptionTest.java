@@ -12,14 +12,16 @@ class CustomerNotFoundExceptionTest {
     void should_CreateException_WithMessage() {
         String message = "Customer not found with id: 123";
 
-        CustomerNotFoundException exception = new CustomerNotFoundException(message);
+        CustomerNotFoundException exception = new CustomerNotFoundException(
+                message);
 
         assertEquals(message, exception.getMessage());
     }
 
     @Test
     void should_BeRuntimeException() {
-        CustomerNotFoundException exception = new CustomerNotFoundException("test");
+        CustomerNotFoundException exception = new CustomerNotFoundException(
+                "test");
 
         assertInstanceOf(RuntimeException.class, exception);
     }

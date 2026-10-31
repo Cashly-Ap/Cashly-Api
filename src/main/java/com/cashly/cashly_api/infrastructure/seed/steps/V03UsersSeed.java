@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class V03UsersSeed implements SeedStep {
 
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 1, 8, 0);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 1,
+            8, 0);
     private static final String ADMIN_PASSWORD_HASH = "$2a$10$WTOBvAu4GKi0O13UQiL3n.62XjcFaQvBiC0awMpv8t.biw7zBR1J.";
     private static final String OPERATOR_PASSWORD_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
     private final EntityManager entityManager;
@@ -32,16 +33,18 @@ public class V03UsersSeed implements SeedStep {
 
     @Override
     public void seed() {
-        persistUser(ADMIN_USER, "gabriel@gmail.com", "gabriel", "Gabriel", "Administrator",
-                SYSTEM_ADMIN_ROLE, ADMINISTRATION_DEPARTMENT, UserRole.SUPER_ADMIN, BusinessModule.USERS,
+        persistUser(ADMIN_USER, "gabriel@gmail.com", "gabriel", "Gabriel",
+                "Administrator", SYSTEM_ADMIN_ROLE, ADMINISTRATION_DEPARTMENT,
+                UserRole.SUPER_ADMIN, BusinessModule.USERS,
                 ADMIN_PASSWORD_HASH);
-        persistUser(OPERATOR_USER, "operator@cashly.local", "operator", "Sales", "Operator",
-                OPERATOR_ROLE, SALES_DEPARTMENT, UserRole.OPERATOR, BusinessModule.SALES,
-                OPERATOR_PASSWORD_HASH);
+        persistUser(OPERATOR_USER, "operator@cashly.local", "operator", "Sales",
+                "Operator", OPERATOR_ROLE, SALES_DEPARTMENT, UserRole.OPERATOR,
+                BusinessModule.SALES, OPERATOR_PASSWORD_HASH);
     }
 
-    private void persistUser(UUID id, String email, String username, String firstName, String lastName,
-            UUID roleId, UUID departmentId, UserRole role, BusinessModule module, String passwordHash) {
+    private void persistUser(UUID id, String email, String username,
+            String firstName, String lastName, UUID roleId, UUID departmentId,
+            UserRole role, BusinessModule module, String passwordHash) {
         var user = entityManager.find(UserEntity.class, id);
         var newUser = user == null;
         if (newUser) {
@@ -62,7 +65,8 @@ public class V03UsersSeed implements SeedStep {
         user.setUpdatedAt(CREATED_AT);
         if (newUser) {
             var permission = new UserModulePermissionEntity();
-            permission.setId(id("user-permission." + module.name().toLowerCase()));
+            permission.setId(
+                    id("user-permission." + module.name().toLowerCase()));
             permission.setUser(user);
             permission.setModule(module);
             user.setModulePermissions(new HashSet<>());

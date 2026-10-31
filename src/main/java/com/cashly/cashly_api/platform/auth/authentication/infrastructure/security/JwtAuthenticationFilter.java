@@ -37,18 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService accessService;
     public JwtAuthenticationFilter(TokenService tokenService,
-                                   UserRepository userRepository, com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService accessService) {
+            UserRepository userRepository,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService accessService) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
-        this.accessService=accessService;
+        this.accessService = accessService;
     }
 
     @Override
-    protected void doFilterInternal(
-        @NonNull HttpServletRequest request,
-        @NonNull HttpServletResponse response,
-        @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
         try {
             String jwt = extractJwtFromRequest(request);
@@ -71,14 +71,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authenticateUser(request, subjectId);
     }
 
-    private void authenticateUser(HttpServletRequest request, String subjectId) {
-        var access=accessService.resolve(UUID.fromString(subjectId));
-        List<GrantedAuthority> authorities=new ArrayList<>();
+    private void authenticateUser(HttpServletRequest request,
+            String subjectId) {
+        var access = accessService.resolve(UUID.fromString(subjectId));
+        List<GrantedAuthority> authorities = new ArrayList<>();
         // Legacy enum/claims never decide access. Only persisted current grants do.
-        access.permissions().forEach((module,actions)->actions.forEach(action->
-            authorities.add(new SimpleGrantedAuthority(module.name()+":"+action.name()))));
-        var authentication=new UsernamePasswordAuthenticationToken(subjectId,null,authorities);
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        access.permissions()
+                .forEach((module, actions) -> actions.forEach(
+                        action -> authorities.add(new SimpleGrantedAuthority(
+                                module.name() + ":" + action.name()))));
+        var authentication = new UsernamePasswordAuthenticationToken(subjectId,
+                null, authorities);
+        authentication.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

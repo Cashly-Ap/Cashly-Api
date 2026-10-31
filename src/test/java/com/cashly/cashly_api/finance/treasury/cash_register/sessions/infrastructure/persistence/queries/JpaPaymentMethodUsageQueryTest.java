@@ -10,7 +10,8 @@ class JpaPaymentMethodUsageQueryTest {
     @Test
     void should_report_usage_when_owned_records_exist() {
         UUID id = UUID.randomUUID();
-        CashRegisterJpaRepository repository = mock(CashRegisterJpaRepository.class);
+        CashRegisterJpaRepository repository = mock(
+                CashRegisterJpaRepository.class);
         when(repository.countDetailsByPaymentMethodId(id)).thenReturn(2L);
         assertTrue(new JpaPaymentMethodUsageQuery(repository).hasUsage(id));
         verify(repository).countDetailsByPaymentMethodId(id);
@@ -19,7 +20,8 @@ class JpaPaymentMethodUsageQueryTest {
     @Test
     void should_report_no_usage_when_owned_records_are_absent() {
         UUID id = UUID.randomUUID();
-        CashRegisterJpaRepository repository = mock(CashRegisterJpaRepository.class);
+        CashRegisterJpaRepository repository = mock(
+                CashRegisterJpaRepository.class);
         when(repository.countDetailsByPaymentMethodId(id)).thenReturn(0L);
         assertFalse(new JpaPaymentMethodUsageQuery(repository).hasUsage(id));
         verify(repository).countDetailsByPaymentMethodId(id);

@@ -46,7 +46,8 @@ class GetProductStockUseCaseTest {
         useCase = new GetProductStockUseCase(productRepository,
                 new LocalProductWarehouseStockGatewayAdapter(
                         new RepositoryProductStockQuery(
-                                warehouseStockRepository, warehouseRepository)));
+                                warehouseStockRepository,
+                                warehouseRepository)));
     }
 
     @Test
@@ -55,22 +56,25 @@ class GetProductStockUseCaseTest {
         UUID warehouseId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), now, now);
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", UUID.randomUUID(), false, true,
+                null, new BigDecimal("5.00"), List.of(), List.of(), now, now);
 
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId,
-                100, 0, now, now);
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 100, 0, now, now);
 
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.getName()).thenReturn("Main Warehouse");
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByProductId(productId)).thenReturn(List.of(stock));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(warehouse));
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository.findByProductId(productId))
+                .thenReturn(List.of(stock));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(warehouse));
 
-        List<ProductStockByWarehouseResponse> result = useCase.execute(productId);
+        List<ProductStockByWarehouseResponse> result = useCase
+                .execute(productId);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -82,9 +86,11 @@ class GetProductStockUseCaseTest {
     void should_ThrowException_When_ProductNotFound() {
         UUID productId = UUID.randomUUID();
 
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, () -> useCase.execute(productId));
+        assertThrows(ProductNotFoundException.class,
+                () -> useCase.execute(productId));
         verify(warehouseStockRepository, never()).findByProductId(any());
     }
 
@@ -94,19 +100,22 @@ class GetProductStockUseCaseTest {
         UUID warehouseId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        Product product = Product.reconstitute(productId, "PROD-001", "Test Product", "Description",
-                UUID.randomUUID(), false, true, null,
-                new BigDecimal("5.00"),
-                List.of(), List.of(), now, now);
+        Product product = Product.reconstitute(productId, "PROD-001",
+                "Test Product", "Description", UUID.randomUUID(), false, true,
+                null, new BigDecimal("5.00"), List.of(), List.of(), now, now);
 
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId,
-                50, 0, now, now);
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 50, 0, now, now);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(warehouseStockRepository.findByProductId(productId)).thenReturn(List.of(stock));
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(warehouseStockRepository.findByProductId(productId))
+                .thenReturn(List.of(stock));
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        List<ProductStockByWarehouseResponse> result = useCase.execute(productId);
+        List<ProductStockByWarehouseResponse> result = useCase
+                .execute(productId);
 
         assertNotNull(result);
         assertEquals(1, result.size());

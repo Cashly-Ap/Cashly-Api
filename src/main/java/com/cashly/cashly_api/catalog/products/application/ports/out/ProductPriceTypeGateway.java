@@ -6,5 +6,6 @@ import java.util.UUID;
 public interface ProductPriceTypeGateway {
     Optional<Entry> findById(UUID id);
     Entry require(UUID id);
-    record Entry(UUID id, String name) {}
+    record Entry(UUID id, String name) {
+    }
 }

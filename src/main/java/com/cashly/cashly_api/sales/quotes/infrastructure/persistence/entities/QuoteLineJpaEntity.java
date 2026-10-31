@@ -54,10 +54,14 @@ public class QuoteLineJpaEntity {
     private List<QuoteAllocationJpaEntity> allocations = new ArrayList<>();
 
     public void setCategorySnapshot(UUID categoryId) {
-        categorySnapshot = categoryId == null ? null : new QuoteLineCategorySnapshotJpaEntity(this, categoryId);
+        categorySnapshot = categoryId == null
+                ? null
+                : new QuoteLineCategorySnapshotJpaEntity(this, categoryId);
     }
 
     public UUID getCategoryIdSnapshot() {
-        return categorySnapshot == null ? null : categorySnapshot.getCategoryId();
+        return categorySnapshot == null
+                ? null
+                : categorySnapshot.getCategoryId();
     }
 }

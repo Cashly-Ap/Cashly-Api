@@ -38,14 +38,14 @@ class GetWarehouseUseCaseTest {
     @Test
     @DisplayName("returns detail response when found")
     void shouldReturnWarehouseDetail() {
-        Warehouse existing = Warehouse.reconstitute(
-                warehouseId, "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
+        Warehouse existing = Warehouse.reconstitute(warehouseId, "WH-001",
+                "Main Warehouse", "123 Main St", "State A", "Municipality B",
+                "10001", true, LocalDateTime.now(), LocalDateTime.now());
 
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(existing));
-        when(warehouseRepository.findIdsWithActiveStock(Set.of(warehouseId))).thenReturn(Set.of());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(existing));
+        when(warehouseRepository.findIdsWithActiveStock(Set.of(warehouseId)))
+                .thenReturn(Set.of());
 
         WarehouseDetailResponse response = useCase.execute(warehouseId);
 
@@ -66,12 +66,11 @@ class GetWarehouseUseCaseTest {
     @Test
     @DisplayName("marks warehouse as non-deletable when it has active stock")
     void shouldMarkWarehouseAsNonDeletableWhenItHasActiveStock() {
-        Warehouse existing = Warehouse.reconstitute(
-                warehouseId, "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001",
-                true, LocalDateTime.now(), LocalDateTime.now()
-        );
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.of(existing));
+        Warehouse existing = Warehouse.reconstitute(warehouseId, "WH-001",
+                "Main Warehouse", "123 Main St", "State A", "Municipality B",
+                "10001", true, LocalDateTime.now(), LocalDateTime.now());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.of(existing));
         when(warehouseRepository.findIdsWithActiveStock(Set.of(warehouseId)))
                 .thenReturn(Set.of(warehouseId));
 
@@ -83,9 +82,11 @@ class GetWarehouseUseCaseTest {
     @Test
     @DisplayName("throws WarehouseNotFoundException when not found")
     void shouldThrowWhenWarehouseNotFound() {
-        when(warehouseRepository.findById(warehouseId)).thenReturn(Optional.empty());
+        when(warehouseRepository.findById(warehouseId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(WarehouseNotFoundException.class, () -> useCase.execute(warehouseId));
+        assertThrows(WarehouseNotFoundException.class,
+                () -> useCase.execute(warehouseId));
 
         verify(warehouseRepository).findById(warehouseId);
     }

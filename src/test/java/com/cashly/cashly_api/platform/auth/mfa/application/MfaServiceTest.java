@@ -21,20 +21,30 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MfaServiceTest {
-    @Mock MfaStore store;
-    @Mock MfaCryptography crypto;
-    @Mock AuthenticableSubjectGateway subjects;
-    @Mock PasswordEncoder passwords;
-    @Mock RefreshTokenRepository refresh;
-    @Mock TokenService tokens;
-    @Mock Authenticable subject;
+    @Mock
+    MfaStore store;
+    @Mock
+    MfaCryptography crypto;
+    @Mock
+    AuthenticableSubjectGateway subjects;
+    @Mock
+    PasswordEncoder passwords;
+    @Mock
+    RefreshTokenRepository refresh;
+    @Mock
+    TokenService tokens;
+    @Mock
+    Authenticable subject;
     MfaService service;
     MfaAccount account;
 
     @BeforeEach
     void setup() {
-        service = new MfaService(store, crypto, subjects, passwords, refresh, tokens);
-        account = new MfaAccount("subject", true, "encrypted", null, -1, List.of("recovery-hash"), "challenge-hash", Instant.now().plusSeconds(300), 0, null);
+        service = new MfaService(store, crypto, subjects, passwords, refresh,
+                tokens);
+        account = new MfaAccount("subject", true, "encrypted", null, -1,
+                List.of("recovery-hash"), "challenge-hash",
+                Instant.now().plusSeconds(300), 0, null);
     }
 
     @Test
@@ -67,14 +77,17 @@ class MfaServiceTest {
         when(crypto.hash("challenge")).thenReturn("challenge-hash");
         when(store.lockByChallenge("challenge-hash")).thenReturn(account);
         when(crypto.decrypt("encrypted")).thenReturn("secret");
-        when(crypto.verifyStep(eq("secret"), eq("000000"), any(), eq(-1L))).thenReturn(-1L);
+        when(crypto.verifyStep(eq("secret"), eq("000000"), any(), eq(-1L)))
+                .thenReturn(-1L);
         for (int attempt = 0; attempt < 5; attempt++) {
-            assertThrows(InvalidCredentialsException.class, () -> service.verify("challenge", "000000"));
+            assertThrows(InvalidCredentialsException.class,
+                    () -> service.verify("challenge", "000000"));
         }
         assertTrue(account.lockedAt(Instant.now()));
         when(subject.getSubjectId()).thenReturn("subject");
         when(store.lock("subject")).thenReturn(account);
-        assertThrows(InvalidCredentialsException.class, () -> service.challengeIfEnabled(subject));
+        assertThrows(InvalidCredentialsException.class,
+                () -> service.challengeIfEnabled(subject));
         verify(store, times(5)).save(account);
         verifyNoInteractions(tokens, refresh);
     }
@@ -84,7 +97,8 @@ class MfaServiceTest {
         account.challenge("challenge-hash", Instant.now().minusSeconds(1));
         when(crypto.hash("challenge")).thenReturn("challenge-hash");
         when(store.lockByChallenge("challenge-hash")).thenReturn(account);
-        assertThrows(InvalidCredentialsException.class, () -> service.verify("challenge", "123456"));
+        assertThrows(InvalidCredentialsException.class,
+                () -> service.verify("challenge", "123456"));
         assertEquals(1, account.recoveryHashes().size());
         verifyNoInteractions(tokens, refresh);
         verify(crypto, never()).decrypt(anyString());
@@ -93,12 +107,14 @@ class MfaServiceTest {
     @Test
     void disable_requires_password_and_consumes_recovery_code_and_revokes_sessions() {
         when(store.lock("subject")).thenReturn(account);
-        when(subjects.resolve("subject", AuthenticableType.USER)).thenReturn(subject);
+        when(subjects.resolve("subject", AuthenticableType.USER))
+                .thenReturn(subject);
         when(subject.canAuthenticate()).thenReturn(true);
         when(subject.getHashedPassword()).thenReturn("password-hash");
         when(passwords.matches("password", "password-hash")).thenReturn(true);
         when(crypto.decrypt("encrypted")).thenReturn("secret");
-        when(crypto.verifyStep(eq("secret"), eq("recovery"), any(), eq(-1L))).thenReturn(-1L);
+        when(crypto.verifyStep(eq("secret"), eq("recovery"), any(), eq(-1L)))
+                .thenReturn(-1L);
         when(crypto.hash("recovery")).thenReturn("recovery-hash");
         service.disable("subject", "password", "recovery");
         assertFalse(account.enabled());
@@ -113,19 +129,25 @@ class MfaServiceTest {
         when(crypto.hash("challenge")).thenReturn("challenge-hash");
         when(store.lockByChallenge("challenge-hash")).thenReturn(account);
         when(crypto.decrypt("encrypted")).thenReturn("secret");
-        when(crypto.verifyStep(eq("secret"), eq("123456"), any(), eq(-1L))).thenReturn(42L);
-        when(subjects.resolve("subject", AuthenticableType.USER)).thenReturn(subject);
+        when(crypto.verifyStep(eq("secret"), eq("123456"), any(), eq(-1L)))
+                .thenReturn(42L);
+        when(subjects.resolve("subject", AuthenticableType.USER))
+                .thenReturn(subject);
         when(subject.canAuthenticate()).thenReturn(false);
-        assertThrows(InvalidCredentialsException.class, () -> service.verify("challenge", "123456"));
+        assertThrows(InvalidCredentialsException.class,
+                () -> service.verify("challenge", "123456"));
         verifyNoInteractions(tokens, refresh);
         verify(store, never()).save(any());
     }
 
     @Test
     void expired_enrollment_cannot_be_enabled() {
-        account = new MfaAccount("subject", false, "encrypted", Instant.now().minusSeconds(1), -1, List.of(), null, null, 0, null);
+        account = new MfaAccount("subject", false, "encrypted",
+                Instant.now().minusSeconds(1), -1, List.of(), null, null, 0,
+                null);
         when(store.lock("subject")).thenReturn(account);
-        assertThrows(InvalidCredentialsException.class, () -> service.enable("subject", "123456"));
+        assertThrows(InvalidCredentialsException.class,
+                () -> service.enable("subject", "123456"));
         assertFalse(account.enabled());
         verifyNoInteractions(crypto, tokens, refresh);
     }

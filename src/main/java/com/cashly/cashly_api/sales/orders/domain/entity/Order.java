@@ -32,12 +32,12 @@ public class Order {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Order(OrderId id, OrderNumber orderNumber, UUID customerId, String customerName,
-                  String customerRif, UUID createdBy, String createdByName,
-                  OrderStatus status, String notes,
-                  UUID invoiceId, String invoiceNumber,
-                  LocalDateTime cancelledAt, String cancelledReason,
-                  List<OrderLine> lines, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Order(OrderId id, OrderNumber orderNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, OrderStatus status, String notes,
+            UUID invoiceId, String invoiceNumber, LocalDateTime cancelledAt,
+            String cancelledReason, List<OrderLine> lines,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.orderNumber = orderNumber;
         this.customerId = customerId;
@@ -57,43 +57,45 @@ public class Order {
         this.subtotal = calculateSubtotal();
     }
 
-    public static Order create(OrderNumber orderNumber, UUID customerId, String customerName,
-                               String customerRif, UUID createdBy, String createdByName,
-                               String notes, List<OrderLine> lines) {
-        return createWithStatus(orderNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, notes, lines, OrderStatus.DRAFT);
+    public static Order create(OrderNumber orderNumber, UUID customerId,
+            String customerName, String customerRif, UUID createdBy,
+            String createdByName, String notes, List<OrderLine> lines) {
+        return createWithStatus(orderNumber, customerId, customerName,
+                customerRif, createdBy, createdByName, notes, lines,
+                OrderStatus.DRAFT);
     }
 
-    private static Order createWithStatus(OrderNumber orderNumber, UUID customerId, String customerName,
-                               String customerRif, UUID createdBy, String createdByName,
-                               String notes, List<OrderLine> lines, OrderStatus status) {
+    private static Order createWithStatus(OrderNumber orderNumber,
+            UUID customerId, String customerName, String customerRif,
+            UUID createdBy, String createdByName, String notes,
+            List<OrderLine> lines, OrderStatus status) {
         Objects.requireNonNull(orderNumber, "Order number cannot be null");
         Objects.requireNonNull(customerId, "Customer id cannot be null");
         Objects.requireNonNull(customerName, "Customer name cannot be null");
         Objects.requireNonNull(customerRif, "Customer RIF cannot be null");
 
         if (lines == null || lines.isEmpty()) {
-            throw new IllegalArgumentException("Order must have at least one line");
+            throw new IllegalArgumentException(
+                    "Order must have at least one line");
         }
 
         LocalDateTime now = LocalDateTime.now();
-        return new Order(OrderId.generate(), orderNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, status, notes,
-                null, null, null, null, lines, now, now);
+        return new Order(OrderId.generate(), orderNumber, customerId,
+                customerName, customerRif, createdBy, createdByName, status,
+                notes, null, null, null, null, lines, now, now);
     }
 
-    public static Order reconstitute(OrderId id, OrderNumber orderNumber, UUID customerId,
-                                     String customerName, String customerRif,
-                                     UUID createdBy, String createdByName,
-                                     OrderStatus status, String notes,
-                                     UUID invoiceId, String invoiceNumber,
-                                     LocalDateTime cancelledAt, String cancelledReason,
-                                     List<OrderLine> lines, LocalDateTime createdAt,
-                                     LocalDateTime updatedAt) {
+    public static Order reconstitute(OrderId id, OrderNumber orderNumber,
+            UUID customerId, String customerName, String customerRif,
+            UUID createdBy, String createdByName, OrderStatus status,
+            String notes, UUID invoiceId, String invoiceNumber,
+            LocalDateTime cancelledAt, String cancelledReason,
+            List<OrderLine> lines, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         return new Order(id, orderNumber, customerId, customerName, customerRif,
-                createdBy, createdByName, status, notes,
-                invoiceId, invoiceNumber, cancelledAt, cancelledReason,
-                lines, createdAt, updatedAt);
+                createdBy, createdByName, status, notes, invoiceId,
+                invoiceNumber, cancelledAt, cancelledReason, lines, createdAt,
+                updatedAt);
     }
 
     public void update(String notes, List<OrderLine> lines) {
@@ -101,7 +103,8 @@ public class Order {
             throw new IllegalStateException("Only DRAFT orders can be updated");
         }
         if (lines == null || lines.isEmpty()) {
-            throw new IllegalArgumentException("Order must have at least one line");
+            throw new IllegalArgumentException(
+                    "Order must have at least one line");
         }
         this.notes = notes;
         this.lines.clear();
@@ -112,7 +115,8 @@ public class Order {
 
     public void confirm() {
         if (!isInDraftState()) {
-            throw new IllegalStateException("Only DRAFT orders can be confirmed");
+            throw new IllegalStateException(
+                    "Only DRAFT orders can be confirmed");
         }
         this.status = OrderStatus.CONFIRMED;
         this.updatedAt = LocalDateTime.now();
@@ -120,11 +124,14 @@ public class Order {
 
     public void cancel(String reason) {
         if (!isInDraftState() && this.status != OrderStatus.CONFIRMED) {
-            throw new IllegalStateException("Only DRAFT or CONFIRMED orders can be cancelled, current: " + this.status);
+            throw new IllegalStateException(
+                    "Only DRAFT or CONFIRMED orders can be cancelled, current: "
+                            + this.status);
         }
         Objects.requireNonNull(reason, "Cancellation reason cannot be null");
         if (reason.isBlank()) {
-            throw new IllegalArgumentException("Cancellation reason cannot be blank");
+            throw new IllegalArgumentException(
+                    "Cancellation reason cannot be blank");
         }
         this.status = OrderStatus.CANCELLED;
         this.cancelledAt = LocalDateTime.now();
@@ -134,7 +141,8 @@ public class Order {
 
     public void markAsInvoiced(UUID invoiceId, String invoiceNumber) {
         if (this.status != OrderStatus.CONFIRMED) {
-            throw new IllegalStateException("Only CONFIRMED orders can be invoiced");
+            throw new IllegalStateException(
+                    "Only CONFIRMED orders can be invoiced");
         }
         Objects.requireNonNull(invoiceId, "Invoice id cannot be null");
         Objects.requireNonNull(invoiceNumber, "Invoice number cannot be null");
@@ -146,7 +154,8 @@ public class Order {
 
     public void revertFromInvoiced() {
         if (this.status != OrderStatus.INVOICED) {
-            throw new IllegalStateException("Only INVOICED orders can be reverted from invoiced");
+            throw new IllegalStateException(
+                    "Only INVOICED orders can be reverted from invoiced");
         }
         this.status = OrderStatus.CONFIRMED;
         this.invoiceId = null;
@@ -159,8 +168,7 @@ public class Order {
     }
 
     private BigDecimal calculateSubtotal() {
-        return lines.stream()
-                .map(OrderLine::getLineTotal)
+        return lines.stream().map(OrderLine::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -175,21 +183,55 @@ public class Order {
         return Objects.equals(this.createdBy, userId);
     }
 
-    public OrderId getId() { return id; }
-    public OrderNumber getOrderNumber() { return orderNumber; }
-    public UUID getCustomerId() { return customerId; }
-    public String getCustomerName() { return customerName; }
-    public String getCustomerRif() { return customerRif; }
-    public UUID getCreatedBy() { return createdBy; }
-    public String getCreatedByName() { return createdByName; }
-    public OrderStatus getStatus() { return status; }
-    public String getNotes() { return notes; }
-    public BigDecimal getSubtotal() { return subtotal; }
-    public UUID getInvoiceId() { return invoiceId; }
-    public String getInvoiceNumber() { return invoiceNumber; }
-    public LocalDateTime getCancelledAt() { return cancelledAt; }
-    public String getCancelledReason() { return cancelledReason; }
-    public List<OrderLine> getLines() { return Collections.unmodifiableList(lines); }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OrderId getId() {
+        return id;
+    }
+    public OrderNumber getOrderNumber() {
+        return orderNumber;
+    }
+    public UUID getCustomerId() {
+        return customerId;
+    }
+    public String getCustomerName() {
+        return customerName;
+    }
+    public String getCustomerRif() {
+        return customerRif;
+    }
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+    public String getCreatedByName() {
+        return createdByName;
+    }
+    public OrderStatus getStatus() {
+        return status;
+    }
+    public String getNotes() {
+        return notes;
+    }
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+    public UUID getInvoiceId() {
+        return invoiceId;
+    }
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+    public LocalDateTime getCancelledAt() {
+        return cancelledAt;
+    }
+    public String getCancelledReason() {
+        return cancelledReason;
+    }
+    public List<OrderLine> getLines() {
+        return Collections.unmodifiableList(lines);
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 }

@@ -56,35 +56,40 @@ class PaymentMethodControllerTest {
     @DisplayName("should create payment method and return 201")
     void should_create_payment_method_and_return_201() {
         UUID id = UUID.randomUUID();
-        PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "CASH", "Cash", "Cash payment", true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PaymentMethodResponse response = new PaymentMethodResponse(id, "CASH",
+                "Cash", "Cash payment", true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(createPaymentMethodUseCase.execute(any(CreatePaymentMethodRequest.class))).thenReturn(response);
+        when(createPaymentMethodUseCase
+                .execute(any(CreatePaymentMethodRequest.class)))
+                .thenReturn(response);
 
-        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest("Cash", "Cash payment");
+        CreatePaymentMethodRequest request = new CreatePaymentMethodRequest(
+                "Cash", "Cash payment");
 
-        ResponseEntity<PaymentMethodResponse> result = paymentMethodController.create(request);
+        ResponseEntity<PaymentMethodResponse> result = paymentMethodController
+                .create(request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(id, result.getBody().id());
-        verify(createPaymentMethodUseCase).execute(any(CreatePaymentMethodRequest.class));
+        verify(createPaymentMethodUseCase)
+                .execute(any(CreatePaymentMethodRequest.class));
     }
 
     @Test
     @DisplayName("should list payment methods and return 200")
     void should_list_payment_methods_and_return_200() {
-        PaymentMethodResponse pm = new PaymentMethodResponse(
-                UUID.randomUUID(), "CASH", "Cash", null, true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PaymentMethodResponse pm = new PaymentMethodResponse(UUID.randomUUID(),
+                "CASH", "Cash", null, true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
         PageResponse<PaymentMethodResponse> pageResult = new PageResponse<>(
                 List.of(pm), 1, 1, 10, 0, true, true, false);
-        when(listPaymentMethodsUseCase.execute(isNull(), isNull(), eq(0), eq(10), eq("name"), eq("asc")))
-                .thenReturn(pageResult);
+        when(listPaymentMethodsUseCase.execute(isNull(), isNull(), eq(0),
+                eq(10), eq("name"), eq("asc"))).thenReturn(pageResult);
 
-        ResponseEntity<PageResponse<PaymentMethodResponse>> result =
-                paymentMethodController.list(null, null, 0, 10, "name", "asc");
+        ResponseEntity<PageResponse<PaymentMethodResponse>> result = paymentMethodController
+                .list(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
@@ -95,11 +100,11 @@ class PaymentMethodControllerTest {
     void should_return_empty_list_when_no_payment_methods() {
         PageResponse<PaymentMethodResponse> pageResult = new PageResponse<>(
                 List.of(), 0, 0, 10, 0, true, true, true);
-        when(listPaymentMethodsUseCase.execute(any(), any(), anyInt(), anyInt(), any(), any()))
-                .thenReturn(pageResult);
+        when(listPaymentMethodsUseCase.execute(any(), any(), anyInt(), anyInt(),
+                any(), any())).thenReturn(pageResult);
 
-        ResponseEntity<PageResponse<PaymentMethodResponse>> result =
-                paymentMethodController.list(null, null, 0, 10, "name", "asc");
+        ResponseEntity<PageResponse<PaymentMethodResponse>> result = paymentMethodController
+                .list(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
@@ -109,13 +114,14 @@ class PaymentMethodControllerTest {
     @DisplayName("should get payment method by id and return 200")
     void should_get_payment_method_by_id_and_return_200() {
         UUID id = UUID.randomUUID();
-        PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "CASH", "Cash", null, true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PaymentMethodResponse response = new PaymentMethodResponse(id, "CASH",
+                "Cash", null, true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
         when(getPaymentMethodByIdUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<PaymentMethodResponse> result = paymentMethodController.getById(id);
+        ResponseEntity<PaymentMethodResponse> result = paymentMethodController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -126,33 +132,37 @@ class PaymentMethodControllerTest {
     @DisplayName("should update payment method and return 200")
     void should_update_payment_method_and_return_200() {
         UUID id = UUID.randomUUID();
-        PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "TRANSFER", "Transfer", null, true, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PaymentMethodResponse response = new PaymentMethodResponse(id,
+                "TRANSFER", "Transfer", null, true, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(updatePaymentMethodUseCase.execute(eq(id), any(UpdatePaymentMethodRequest.class)))
-                .thenReturn(response);
+        when(updatePaymentMethodUseCase.execute(eq(id),
+                any(UpdatePaymentMethodRequest.class))).thenReturn(response);
 
-        UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest("Transfer", null, true);
+        UpdatePaymentMethodRequest request = new UpdatePaymentMethodRequest(
+                "Transfer", null, true);
 
-        ResponseEntity<PaymentMethodResponse> result = paymentMethodController.update(id, request);
+        ResponseEntity<PaymentMethodResponse> result = paymentMethodController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
-        verify(updatePaymentMethodUseCase).execute(eq(id), any(UpdatePaymentMethodRequest.class));
+        verify(updatePaymentMethodUseCase).execute(eq(id),
+                any(UpdatePaymentMethodRequest.class));
     }
 
     @Test
     @DisplayName("should toggle payment method and return 200")
     void should_toggle_payment_method_and_return_200() {
         UUID id = UUID.randomUUID();
-        PaymentMethodResponse response = new PaymentMethodResponse(
-                id, "CASH", "Cash", null, false, false,
-                LocalDateTime.now(), LocalDateTime.now());
+        PaymentMethodResponse response = new PaymentMethodResponse(id, "CASH",
+                "Cash", null, false, false, LocalDateTime.now(),
+                LocalDateTime.now());
 
         when(togglePaymentMethodUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<PaymentMethodResponse> result = paymentMethodController.toggle(id);
+        ResponseEntity<PaymentMethodResponse> result = paymentMethodController
+                .toggle(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertFalse(result.getBody().isActive());

@@ -14,12 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth/preferences")
 public class UserPreferencesController {
     private final UserPreferencesService service;
-    public UserPreferencesController(UserPreferencesService service) { this.service = service; }
+    public UserPreferencesController(UserPreferencesService service) {
+        this.service = service;
+    }
     public record UpdateRequest(
             @NotNull @Pattern(regexp = "system|light|dark") String themeMode,
             @NotNull @Pattern(regexp = "minimal|informative") String colorMode,
-            @NotNull Boolean shortcutsEnabled, @NotNull Boolean showShortcutHints, @Pattern(regexp = "es|en") String language) {
-        UserPreferences toDomain() { return new UserPreferences(themeMode, colorMode, shortcutsEnabled, showShortcutHints); }
+            @NotNull Boolean shortcutsEnabled,
+            @NotNull Boolean showShortcutHints,
+            @Pattern(regexp = "es|en") String language) {
+        UserPreferences toDomain() {
+            return new UserPreferences(themeMode, colorMode, shortcutsEnabled,
+                    showShortcutHints);
+        }
     }
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -28,10 +35,13 @@ public class UserPreferencesController {
     }
     @PutMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserPreferences> update(@Valid @RequestBody UpdateRequest request) {
+    public ResponseEntity<UserPreferences> update(
+            @Valid @RequestBody UpdateRequest request) {
         return noStore(service.update(request.toDomain(), request.language()));
     }
-    private ResponseEntity<UserPreferences> noStore(UserPreferences preferences) {
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(preferences);
+    private ResponseEntity<UserPreferences> noStore(
+            UserPreferences preferences) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .body(preferences);
     }
 }

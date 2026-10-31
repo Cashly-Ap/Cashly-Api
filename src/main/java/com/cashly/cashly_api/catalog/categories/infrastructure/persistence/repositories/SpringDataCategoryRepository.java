@@ -11,21 +11,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public interface SpringDataCategoryRepository extends JpaRepository<CategoryEntity, UUID> {
+public interface SpringDataCategoryRepository
+        extends
+            JpaRepository<CategoryEntity, UUID> {
 
     boolean existsByName(String name);
 
     boolean existsByNameAndIdNot(String name, UUID id);
 
     @Query("""
-        SELECT c FROM CategoryEntity c
-        WHERE (:search IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%'))
-               OR LOWER(c.description) LIKE LOWER(CONCAT('%', :search, '%')))
-        AND (:active IS NULL OR c.active = :active)
-        """)
-    Page<CategoryEntity> findAllWithFilters(
-            @Param("search") String search,
-            @Param("active") Boolean active,
-            Pageable pageable);
+            SELECT c FROM CategoryEntity c
+            WHERE (:search IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%'))
+                   OR LOWER(c.description) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (:active IS NULL OR c.active = :active)
+            """)
+    Page<CategoryEntity> findAllWithFilters(@Param("search") String search,
+            @Param("active") Boolean active, Pageable pageable);
 
 }

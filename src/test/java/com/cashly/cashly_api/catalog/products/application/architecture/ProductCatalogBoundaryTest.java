@@ -14,13 +14,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class ProductCatalogBoundaryTest {
     @Test
     void shouldRejectForeignCategoryAndPricingDependenciesInCore() {
-        for (Class<?> type : List.of(CreateProductUseCase.class, UpdateProductUseCase.class,
-                GetProductUseCase.class, ListProductsUseCase.class, UploadProductPhotoUseCase.class,
+        for (Class<?> type : List.of(CreateProductUseCase.class,
+                UpdateProductUseCase.class, GetProductUseCase.class,
+                ListProductsUseCase.class, UploadProductPhotoUseCase.class,
                 GetProductsForTransactionUseCase.class)) {
             for (var constructor : type.getConstructors()) {
                 for (Class<?> parameter : constructor.getParameterTypes()) {
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.catalog.categories"), parameter.getName());
-                    assertFalse(parameter.getPackageName().startsWith("com.cashly.cashly_api.catalog.price_types"), parameter.getName());
+                    assertFalse(
+                            parameter.getPackageName().startsWith(
+                                    "com.cashly.cashly_api.catalog.categories"),
+                            parameter.getName());
+                    assertFalse(parameter.getPackageName().startsWith(
+                            "com.cashly.cashly_api.catalog.price_types"),
+                            parameter.getName());
                 }
             }
         }

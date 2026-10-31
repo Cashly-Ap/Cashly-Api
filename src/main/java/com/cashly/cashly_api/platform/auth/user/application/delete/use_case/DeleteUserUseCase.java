@@ -16,19 +16,23 @@ public class DeleteUserUseCase {
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
-    public DeleteUserUseCase(UserRepository userRepository,com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+    public DeleteUserUseCase(UserRepository userRepository,
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
         this.userRepository = userRepository;
-        this.access=access;
+        this.access = access;
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public void execute(String id) {
         access.lockAdministration();
-        access.require(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS, com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DELETE);
-        access.protectAdministrator(UUID.fromString(id),null,false);
+        access.require(
+                com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS,
+                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DELETE);
+        access.protectAdministrator(UUID.fromString(id), null, false);
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(
+                        "User not found with id: " + id));
 
         if (userRepository.hasAssociatedRecords(userId)) {
             throw new UserHasAssociatedRecordsException(id);

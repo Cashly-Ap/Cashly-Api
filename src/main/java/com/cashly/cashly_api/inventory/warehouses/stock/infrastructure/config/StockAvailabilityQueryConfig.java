@@ -11,9 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StockAvailabilityQueryConfig {
     @Bean
-    public StockAvailabilityQuery stockAvailabilityQuery(WarehouseStockRepository stockRepository,
-                                                         WarehouseRepository warehouseRepository,
-                                                         CustomerWarehouseAccessGateway accessGateway) {
-        return new StockAvailabilityQueryService(stockRepository, warehouseRepository, accessGateway);
+    public StockAvailabilityQuery stockAvailabilityQuery(
+            WarehouseStockRepository stockRepository,
+            WarehouseRepository warehouseRepository,
+            CustomerWarehouseAccessGateway accessGateway) {
+        return new StockAvailabilityQueryService(stockRepository,
+                warehouseRepository, accessGateway);
     }
 }

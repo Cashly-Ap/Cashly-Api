@@ -4,7 +4,6 @@ import com.cashly.cashly_api.partners.customers.balance.domain.entity.BalanceTra
 import com.cashly.cashly_api.partners.customers.balance.domain.entity.CustomerBalance;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,7 +15,8 @@ public interface CustomerBalanceRepository {
 
     BalanceTransaction saveTransaction(BalanceTransaction transaction);
 
-    PageResponse<BalanceTransaction> findTransactionsByCustomerId(UUID customerId, int page, int size);
+    PageResponse<BalanceTransaction> findTransactionsByCustomerId(
+            UUID customerId, int page, int size);
 
     long countTransactionsByCustomerId(UUID customerId);
 }

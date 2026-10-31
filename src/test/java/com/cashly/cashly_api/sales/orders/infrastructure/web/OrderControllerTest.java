@@ -74,52 +74,58 @@ class OrderControllerTest {
     @Test
     @DisplayName("should create order and return 201")
     void should_create_order_and_return_201() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         OrderDetailResponse response = mock(OrderDetailResponse.class);
 
-        when(createOrderUseCase.execute(any(CreateOrderRequest.class), any(UUID.class)))
-                .thenReturn(response);
+        when(createOrderUseCase.execute(any(CreateOrderRequest.class),
+                any(UUID.class))).thenReturn(response);
 
-        var request = new CreateOrderRequest(UUID.randomUUID(), null, List.of());
+        var request = new CreateOrderRequest(UUID.randomUUID(), null,
+                List.of());
 
-        ResponseEntity<OrderDetailResponse> result = orderController.create(request, authentication);
+        ResponseEntity<OrderDetailResponse> result = orderController
+                .create(request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(createOrderUseCase).execute(any(CreateOrderRequest.class), eq(authenticatedUserId));
+        verify(createOrderUseCase).execute(any(CreateOrderRequest.class),
+                eq(authenticatedUserId));
     }
 
     @Test
     @DisplayName("should get all orders and return 200")
     void should_get_all_orders_and_return_200() {
-        OrderListResponse order = new OrderListResponse(
-                UUID.randomUUID(), "ORD-00001", UUID.randomUUID(), "Customer",
-                "PENDING", BigDecimal.TEN, 2, null, LocalDateTime.now());
+        OrderListResponse order = new OrderListResponse(UUID.randomUUID(),
+                "ORD-00001", UUID.randomUUID(), "Customer", "PENDING",
+                BigDecimal.TEN, 2, null, LocalDateTime.now());
 
-        when(getOrdersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(List.of(order));
+        when(getOrdersUseCase.execute(any(), any(), any(), any(), any(), any(),
+                any(), any())).thenReturn(List.of(order));
 
         ResponseEntity<List<OrderListResponse>> result = orderController.getAll(
                 null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
-        verify(getOrdersUseCase).execute(null, null, null, null, null, null, "createdAt", "desc");
+        verify(getOrdersUseCase).execute(null, null, null, null, null, null,
+                "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no orders")
     void should_return_empty_list_when_no_orders() {
-        when(getOrdersUseCase.execute(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(List.of());
+        when(getOrdersUseCase.execute(any(), any(), any(), any(), any(), any(),
+                any(), any())).thenReturn(List.of());
 
         ResponseEntity<List<OrderListResponse>> result = orderController.getAll(
                 null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
-        verify(getOrdersUseCase).execute(null, null, null, null, null, null, "createdAt", "desc");
+        verify(getOrdersUseCase).execute(null, null, null, null, null, null,
+                "createdAt", "desc");
     }
 
     @Test
@@ -131,7 +137,8 @@ class OrderControllerTest {
 
         when(getOrderByIdUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<OrderDetailResponse> result = orderController.getById(id);
+        ResponseEntity<OrderDetailResponse> result = orderController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -144,15 +151,18 @@ class OrderControllerTest {
         UUID id = UUID.randomUUID();
         OrderDetailResponse response = mock(OrderDetailResponse.class);
 
-        when(updateOrderUseCase.execute(eq(id), any(UpdateOrderRequest.class))).thenReturn(response);
+        when(updateOrderUseCase.execute(eq(id), any(UpdateOrderRequest.class)))
+                .thenReturn(response);
 
         var request = new UpdateOrderRequest(null, List.of());
 
-        ResponseEntity<OrderDetailResponse> result = orderController.update(id, request);
+        ResponseEntity<OrderDetailResponse> result = orderController.update(id,
+                request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(updateOrderUseCase).execute(eq(id), any(UpdateOrderRequest.class));
+        verify(updateOrderUseCase).execute(eq(id),
+                any(UpdateOrderRequest.class));
     }
 
     @Test
@@ -163,7 +173,8 @@ class OrderControllerTest {
 
         when(confirmOrderUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<OrderDetailResponse> result = orderController.confirm(id);
+        ResponseEntity<OrderDetailResponse> result = orderController
+                .confirm(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -176,37 +187,45 @@ class OrderControllerTest {
         UUID id = UUID.randomUUID();
         OrderDetailResponse response = mock(OrderDetailResponse.class);
 
-        when(cancelOrderUseCase.execute(eq(id), any(CancelOrderRequest.class))).thenReturn(response);
+        when(cancelOrderUseCase.execute(eq(id), any(CancelOrderRequest.class)))
+                .thenReturn(response);
 
         CancelOrderRequest request = new CancelOrderRequest("Test reason");
 
-        ResponseEntity<OrderDetailResponse> result = orderController.cancel(id, request);
+        ResponseEntity<OrderDetailResponse> result = orderController.cancel(id,
+                request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(cancelOrderUseCase).execute(eq(id), any(CancelOrderRequest.class));
+        verify(cancelOrderUseCase).execute(eq(id),
+                any(CancelOrderRequest.class));
     }
 
     @Test
     @DisplayName("should convert order to invoice and return 200")
     void should_convert_order_to_invoice_and_return_200() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         UUID id = UUID.randomUUID();
-        ConvertToInvoiceResponse response = new ConvertToInvoiceResponse(
-                id, "ORD-00001", "CONVERTED", UUID.randomUUID(), "FAC-00001");
+        ConvertToInvoiceResponse response = new ConvertToInvoiceResponse(id,
+                "ORD-00001", "CONVERTED", UUID.randomUUID(), "FAC-00001");
 
-        when(convertToInvoiceUseCase.execute(eq(id), any(ConvertToInvoiceRequest.class), eq(authenticatedUserId)))
+        when(convertToInvoiceUseCase.execute(eq(id),
+                any(ConvertToInvoiceRequest.class), eq(authenticatedUserId)))
                 .thenReturn(response);
 
-        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CREDIT", null, null, null, null);
+        ConvertToInvoiceRequest request = new ConvertToInvoiceRequest("CREDIT",
+                null, null, null, null);
 
-        ResponseEntity<ConvertToInvoiceResponse> result = orderController.convertToInvoice(id, request, authentication);
+        ResponseEntity<ConvertToInvoiceResponse> result = orderController
+                .convertToInvoice(id, request, authentication);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(id, result.getBody().orderId());
-        verify(convertToInvoiceUseCase).execute(eq(id), any(ConvertToInvoiceRequest.class), eq(authenticatedUserId));
+        verify(convertToInvoiceUseCase).execute(eq(id),
+                any(ConvertToInvoiceRequest.class), eq(authenticatedUserId));
     }
 
     @Test
@@ -222,22 +241,31 @@ class OrderControllerTest {
         verify(deleteOrderUseCase).execute(id);
     }
 
-
     @Test
     void shouldRejectUnknownActionFilter() throws Exception {
-        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(orderController).build()
-                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/orders")
-                        .param("action", "UNKNOWN"))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(orderController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/orders").param("action", "UNKNOWN"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isBadRequest());
     }
 
     @Test
     void shouldPassActionFilterToListQuery() throws Exception {
-        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(orderController).build()
-                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/orders")
-                        .param("action", "EDIT"))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
-        verify(getOrdersUseCase).execute(null, null, null, null, null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(orderController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/orders").param("action", "EDIT"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isOk());
+        verify(getOrdersUseCase).execute(null, null, null, null, null, null,
+                "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
     }
 
 }

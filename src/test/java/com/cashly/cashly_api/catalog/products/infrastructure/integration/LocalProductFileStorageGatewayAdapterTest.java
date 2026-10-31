@@ -17,7 +17,8 @@ class LocalProductFileStorageGatewayAdapterTest {
         FileStorageService storage = mock(FileStorageService.class);
         var adapter = new LocalProductFileStorageGatewayAdapter(storage);
         var input = new ByteArrayInputStream(new byte[]{1, 2});
-        when(storage.store("products/photo.jpg", input, "image/jpeg")).thenReturn("stored/photo.jpg");
+        when(storage.store("products/photo.jpg", input, "image/jpeg"))
+                .thenReturn("stored/photo.jpg");
 
         String path = adapter.store("products/photo.jpg", input, "image/jpeg");
 
@@ -42,8 +43,9 @@ class LocalProductFileStorageGatewayAdapterTest {
         var failure = new StorageException("Storage unavailable");
         when(storage.store(anyString(), any(), anyString())).thenThrow(failure);
 
-        assertThatThrownBy(() -> adapter.store("products/photo.jpg", new ByteArrayInputStream(new byte[0]),
-                "image/jpeg")).isSameAs(failure);
+        assertThatThrownBy(() -> adapter.store("products/photo.jpg",
+                new ByteArrayInputStream(new byte[0]), "image/jpeg"))
+                .isSameAs(failure);
     }
 
     @Test
@@ -53,6 +55,7 @@ class LocalProductFileStorageGatewayAdapterTest {
         var failure = new StorageException("Cannot remove file");
         doThrow(failure).when(storage).delete("stored/photo.jpg");
 
-        assertThatThrownBy(() -> adapter.remove("stored/photo.jpg")).isSameAs(failure);
+        assertThatThrownBy(() -> adapter.remove("stored/photo.jpg"))
+                .isSameAs(failure);
     }
 }

@@ -7,7 +7,9 @@ import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.ou
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.query.model.CatalogPdfQuery;
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.query.model.CatalogReportQuery;
 
-public class GenerateCatalogPdfUseCaseImpl implements GenerateCatalogPdfUseCase {
+public class GenerateCatalogPdfUseCaseImpl
+        implements
+            GenerateCatalogPdfUseCase {
 
     private final CatalogReportRepositoryPort catalogReportRepositoryPort;
     private final CatalogPdfPort catalogPdfPort;
@@ -21,17 +23,11 @@ public class GenerateCatalogPdfUseCaseImpl implements GenerateCatalogPdfUseCase 
 
     @Override
     public byte[] execute(CatalogPdfQuery query) {
-        CatalogReportQuery reportQuery = new CatalogReportQuery(
-                query.search(),
-                query.categoryId(),
-                query.warehouseId(),
-                query.composite(),
-                query.withStock(),
-                query.lowStock(),
-                0,
-                10000
-        );
-        var items = catalogReportRepositoryPort.findCatalog(reportQuery).content();
+        CatalogReportQuery reportQuery = new CatalogReportQuery(query.search(),
+                query.categoryId(), query.warehouseId(), query.composite(),
+                query.withStock(), query.lowStock(), 0, 10000);
+        var items = catalogReportRepositoryPort.findCatalog(reportQuery)
+                .content();
         return catalogPdfPort.generatePdf(items);
     }
 }

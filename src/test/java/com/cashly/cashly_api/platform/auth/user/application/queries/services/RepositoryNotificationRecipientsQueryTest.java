@@ -20,7 +20,8 @@ class RepositoryNotificationRecipientsQueryTest {
         when(second.getId()).thenReturn(secondId);
         when(repository.findAll()).thenReturn(List.of(first, second));
         assertEquals(List.of(firstId.getValue(), secondId.getValue()),
-                new RepositoryNotificationRecipientsQuery(repository).findAllUserIds());
+                new RepositoryNotificationRecipientsQuery(repository)
+                        .findAllUserIds());
         verify(repository).findAll();
         verifyNoMoreInteractions(repository);
         verify(first).getId();
@@ -32,6 +33,7 @@ class RepositoryNotificationRecipientsQueryTest {
     void should_return_empty_recipients_when_no_users_exist() {
         UserRepository repository = mock(UserRepository.class);
         when(repository.findAll()).thenReturn(List.of());
-        assertTrue(new RepositoryNotificationRecipientsQuery(repository).findAllUserIds().isEmpty());
+        assertTrue(new RepositoryNotificationRecipientsQuery(repository)
+                .findAllUserIds().isEmpty());
     }
 }

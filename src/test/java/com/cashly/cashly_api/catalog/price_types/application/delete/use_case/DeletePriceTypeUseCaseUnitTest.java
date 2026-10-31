@@ -23,7 +23,8 @@ class DeletePriceTypeUseCaseUnitTest {
     @Mock
     private PriceTypeRepository priceTypeRepository;
 
-    @Mock private PriceTypeUsageGateway usageGateway;
+    @Mock
+    private PriceTypeUsageGateway usageGateway;
 
     @InjectMocks
     private DeletePriceTypeUseCase deletePriceTypeUseCase;
@@ -49,11 +50,11 @@ class DeletePriceTypeUseCaseUnitTest {
         when(priceTypeRepository.existsById(id)).thenReturn(false);
 
         PriceTypeNotFoundException exception = assertThrows(
-            PriceTypeNotFoundException.class,
-            () -> deletePriceTypeUseCase.execute(id)
-        );
+                PriceTypeNotFoundException.class,
+                () -> deletePriceTypeUseCase.execute(id));
 
-        assertEquals("Price type not found with id: " + id, exception.getMessage());
+        assertEquals("Price type not found with id: " + id,
+                exception.getMessage());
         verify(priceTypeRepository).existsById(id);
         verify(usageGateway, never()).isInUseByProducts(any());
         verify(priceTypeRepository, never()).delete(any());
@@ -67,11 +68,12 @@ class DeletePriceTypeUseCaseUnitTest {
         when(usageGateway.isInUseByProducts(id)).thenReturn(true);
 
         PriceTypeInUseException exception = assertThrows(
-            PriceTypeInUseException.class,
-            () -> deletePriceTypeUseCase.execute(id)
-        );
+                PriceTypeInUseException.class,
+                () -> deletePriceTypeUseCase.execute(id));
 
-        assertEquals("Price type is in use by products and cannot be deleted: " + id, exception.getMessage());
+        assertEquals(
+                "Price type is in use by products and cannot be deleted: " + id,
+                exception.getMessage());
         verify(priceTypeRepository).existsById(id);
         verify(usageGateway).isInUseByProducts(id);
         verify(priceTypeRepository, never()).delete(any());

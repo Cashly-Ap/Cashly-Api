@@ -27,7 +27,7 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
     private final CreditNoteNumberSequenceJpaRepository sequenceJpaRepository;
 
     public CreditNoteRepositoryAdapter(CreditNoteJpaRepository jpaRepository,
-                                       CreditNoteNumberSequenceJpaRepository sequenceJpaRepository) {
+            CreditNoteNumberSequenceJpaRepository sequenceJpaRepository) {
         this.jpaRepository = jpaRepository;
         this.sequenceJpaRepository = sequenceJpaRepository;
     }
@@ -46,35 +46,31 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
     }
 
     @Override
-    public List<CreditNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-                                                UUID customerId) {
+    public List<CreditNote> findAllWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
-        List<CreditNoteEntity> entities = jpaRepository.findAllWithFilters(from, to, customerId);
+        List<CreditNoteEntity> entities = jpaRepository.findAllWithFilters(from,
+                to, customerId);
 
-        return entities.stream()
-                .map(CreditNoteJpaMapper::toDomain)
-                .toList();
+        return entities.stream().map(CreditNoteJpaMapper::toDomain).toList();
     }
 
     @Override
     public List<CreditNote> findByInvoiceId(UUID invoiceId) {
-        List<CreditNoteEntity> entities = jpaRepository.findByInvoiceId(invoiceId);
-        return entities.stream()
-                .map(CreditNoteJpaMapper::toDomain)
-                .toList();
+        List<CreditNoteEntity> entities = jpaRepository
+                .findByInvoiceId(invoiceId);
+        return entities.stream().map(CreditNoteJpaMapper::toDomain).toList();
     }
 
     @Override
     public Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds) {
-        if (invoiceIds.isEmpty()) return Map.of();
+        if (invoiceIds.isEmpty())
+            return Map.of();
         List<Object[]> results = jpaRepository.sumByInvoiceIds(invoiceIds);
-        return results.stream()
-                .collect(Collectors.toMap(
-                        row -> (UUID) row[0],
-                        row -> (BigDecimal) row[1]
-                ));
+        return results.stream().collect(Collectors.toMap(row -> (UUID) row[0],
+                row -> (BigDecimal) row[1]));
     }
 
     @Override
@@ -84,8 +80,8 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
 
     @Override
     public int getNextSequenceForYear(int year) {
-        CreditNoteNumberSequenceEntity sequence = sequenceJpaRepository.findByYearForUpdate(year)
-                .orElseGet(() -> {
+        CreditNoteNumberSequenceEntity sequence = sequenceJpaRepository
+                .findByYearForUpdate(year).orElseGet(() -> {
                     CreditNoteNumberSequenceEntity newSeq = new CreditNoteNumberSequenceEntity();
                     newSeq.setYear(year);
                     newSeq.setNextValue(0);

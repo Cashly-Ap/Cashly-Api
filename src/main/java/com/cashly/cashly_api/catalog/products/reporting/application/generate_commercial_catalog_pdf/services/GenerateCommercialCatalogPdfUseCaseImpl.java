@@ -9,11 +9,12 @@ import com.cashly.cashly_api.catalog.products.reporting.application.dto.query.mo
 
 import java.util.List;
 
-public class GenerateCommercialCatalogPdfUseCaseImpl implements GenerateCommercialCatalogPdfUseCase {
+public class GenerateCommercialCatalogPdfUseCaseImpl
+        implements
+            GenerateCommercialCatalogPdfUseCase {
 
     private final CommercialCatalogRepositoryPort repositoryPort;
     private final CommercialCatalogPdfPort pdfPort;
-
 
     public GenerateCommercialCatalogPdfUseCaseImpl(
             CommercialCatalogRepositoryPort repositoryPort,
@@ -25,7 +26,8 @@ public class GenerateCommercialCatalogPdfUseCaseImpl implements GenerateCommerci
 
     @Override
     public byte[] execute(CommercialCatalogQuery query) {
-        List<CommercialCatalogResponse> items = repositoryPort.findCatalog(query);
+        List<CommercialCatalogResponse> items = repositoryPort
+                .findCatalog(query);
         return pdfPort.generatePdf(items);
     }
 }

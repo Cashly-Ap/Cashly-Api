@@ -12,15 +12,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class V14InvoiceAllocationsSeed implements SeedStep {
     private final EntityManager entityManager;
-    public V14InvoiceAllocationsSeed(EntityManager entityManager) { this.entityManager = entityManager; }
-    @Override public int version() { return 14; }
-    @Override public void seed() {
-        allocation("one", "invoice-line.one", "2"); allocation("two", "invoice-line.two", "3");
+    public V14InvoiceAllocationsSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    @Override
+    public int version() {
+        return 14;
+    }
+    @Override
+    public void seed() {
+        allocation("one", "invoice-line.one", "2");
+        allocation("two", "invoice-line.two", "3");
     }
     private void allocation(String key, String lineKey, String quantity) {
-        var allocationId = id("invoice-allocation." + key); if (entityManager.find(InvoiceLineAllocationEntity.class, allocationId) != null) return;
-        var allocation = new InvoiceLineAllocationEntity(); allocation.setId(allocationId);
-        allocation.setInvoiceLine(entityManager.getReference(InvoiceLineEntity.class, id(lineKey)));
-        allocation.setWarehouseId(WAREHOUSE_MAIN); allocation.setAllocated(new BigDecimal(quantity)); entityManager.persist(allocation);
+        var allocationId = id("invoice-allocation." + key);
+        if (entityManager.find(InvoiceLineAllocationEntity.class,
+                allocationId) != null)
+            return;
+        var allocation = new InvoiceLineAllocationEntity();
+        allocation.setId(allocationId);
+        allocation.setInvoiceLine(entityManager
+                .getReference(InvoiceLineEntity.class, id(lineKey)));
+        allocation.setWarehouseId(WAREHOUSE_MAIN);
+        allocation.setAllocated(new BigDecimal(quantity));
+        entityManager.persist(allocation);
     }
 }

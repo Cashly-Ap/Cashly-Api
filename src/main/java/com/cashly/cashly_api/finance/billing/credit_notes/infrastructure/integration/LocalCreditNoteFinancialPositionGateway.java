@@ -10,14 +10,16 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Component
-public class LocalCreditNoteFinancialPositionGateway implements CreditNoteFinancialPositionGateway {
+public class LocalCreditNoteFinancialPositionGateway
+        implements
+            CreditNoteFinancialPositionGateway {
     private final CreditNoteRepository creditNotes;
     private final DebitNoteLedgerQuery debitNotes;
     private final InvoicePaymentTotalQuery payments;
 
-    public LocalCreditNoteFinancialPositionGateway(CreditNoteRepository creditNotes,
-                                                    DebitNoteLedgerQuery debitNotes,
-                                                    InvoicePaymentTotalQuery payments) {
+    public LocalCreditNoteFinancialPositionGateway(
+            CreditNoteRepository creditNotes, DebitNoteLedgerQuery debitNotes,
+            InvoicePaymentTotalQuery payments) {
         this.creditNotes = creditNotes;
         this.debitNotes = debitNotes;
         this.payments = payments;
@@ -25,12 +27,17 @@ public class LocalCreditNoteFinancialPositionGateway implements CreditNoteFinanc
 
     @Override
     public Position findByInvoiceId(UUID invoiceId) {
-        BigDecimal totalCredits = creditNotes.findByInvoiceId(invoiceId).stream()
-                .map(note -> note.getAmount() == null ? BigDecimal.ZERO : note.getAmount())
+        BigDecimal totalCredits = creditNotes.findByInvoiceId(invoiceId)
+                .stream()
+                .map(note -> note.getAmount() == null
+                        ? BigDecimal.ZERO
+                        : note.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalDebits = debitNotes.amountsByInvoiceId(invoiceId).stream()
+        BigDecimal totalDebits = debitNotes.amountsByInvoiceId(invoiceId)
+                .stream()
                 .map(amount -> amount == null ? BigDecimal.ZERO : amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return new Position(payments.totalAllocatedByInvoiceId(invoiceId), totalCredits, totalDebits);
+        return new Position(payments.totalAllocatedByInvoiceId(invoiceId),
+                totalCredits, totalDebits);
     }
 }

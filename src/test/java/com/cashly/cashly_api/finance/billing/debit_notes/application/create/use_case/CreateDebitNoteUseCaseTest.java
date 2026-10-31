@@ -20,9 +20,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreateDebitNoteUseCaseTest {
-    @Mock private DebitNoteRepository notes;
-    @Mock private DebitNoteInvoiceGateway invoices;
-    @Mock private DebitNoteCashGateway cash;
+    @Mock
+    private DebitNoteRepository notes;
+    @Mock
+    private DebitNoteInvoiceGateway invoices;
+    @Mock
+    private DebitNoteCashGateway cash;
 
     private CreateDebitNoteUseCase useCase;
     private UUID invoiceId;
@@ -35,28 +38,33 @@ class CreateDebitNoteUseCaseTest {
         invoiceId = UUID.randomUUID();
         customerId = UUID.randomUUID();
         userId = UUID.randomUUID();
-        when(invoices.find(invoiceId)).thenReturn(new DebitNoteInvoiceGateway.InvoiceContext(
-                invoiceId, "FAC-1", "PENDING_PAYMENT", "Pendiente", "Customer", "RIF"));
+        when(invoices.find(invoiceId)).thenReturn(
+                new DebitNoteInvoiceGateway.InvoiceContext(invoiceId, "FAC-1",
+                        "PENDING_PAYMENT", "Pendiente", "Customer", "RIF"));
     }
 
     @Test
     void givenValidInvoice_whenCreatingDebitNote_thenRecordsCashInAndRecalculates() {
         when(notes.getNextSequenceForYear(anyInt())).thenReturn(1);
-        when(notes.save(any(DebitNote.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(notes.save(any(DebitNote.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(request(), userId);
 
         verify(notes).save(any(DebitNote.class));
-        verify(cash).recordCashIn(eq(new BigDecimal("50.00")), contains("DN-"), any(), eq(userId), eq("User"));
+        verify(cash).recordCashIn(eq(new BigDecimal("50.00")), contains("DN-"),
+                any(), eq(userId), eq("User"));
         verify(invoices).recalculate(invoiceId);
     }
 
     @Test
     void givenCancelledInvoice_whenCreatingDebitNote_thenRejectsBeforeSaving() {
-        when(invoices.find(invoiceId)).thenReturn(new DebitNoteInvoiceGateway.InvoiceContext(
-                invoiceId, "FAC-1", "CANCELLED", "Anulada", "Customer", "RIF"));
+        when(invoices.find(invoiceId)).thenReturn(
+                new DebitNoteInvoiceGateway.InvoiceContext(invoiceId, "FAC-1",
+                        "CANCELLED", "Anulada", "Customer", "RIF"));
 
-        assertThrows(IllegalStateException.class, () -> useCase.execute(request(), userId));
+        assertThrows(IllegalStateException.class,
+                () -> useCase.execute(request(), userId));
 
         verify(notes, never()).save(any());
         verifyNoInteractions(cash);
@@ -65,16 +73,19 @@ class CreateDebitNoteUseCaseTest {
 
     @Test
     void givenFullyReturnedInvoice_whenCreatingDebitNote_thenRejectsBeforeSaving() {
-        when(invoices.find(invoiceId)).thenReturn(new DebitNoteInvoiceGateway.InvoiceContext(
-                invoiceId, "FAC-1", "FULLY_RETURNED", "Devuelta", "Customer", "RIF"));
+        when(invoices.find(invoiceId)).thenReturn(
+                new DebitNoteInvoiceGateway.InvoiceContext(invoiceId, "FAC-1",
+                        "FULLY_RETURNED", "Devuelta", "Customer", "RIF"));
 
-        assertThrows(IllegalStateException.class, () -> useCase.execute(request(), userId));
+        assertThrows(IllegalStateException.class,
+                () -> useCase.execute(request(), userId));
 
         verify(notes, never()).save(any());
         verifyNoInteractions(cash);
     }
 
     private CreateDebitNoteRequest request() {
-        return new CreateDebitNoteRequest(customerId, invoiceId, new BigDecimal("50.00"), "Price adjustment");
+        return new CreateDebitNoteRequest(customerId, invoiceId,
+                new BigDecimal("50.00"), "Price adjustment");
     }
 }

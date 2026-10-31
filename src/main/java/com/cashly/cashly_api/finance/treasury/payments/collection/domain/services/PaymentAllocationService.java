@@ -19,30 +19,36 @@ public class PaymentAllocationService {
     private final PaymentAllocationRepository allocationRepository;
 
     public PaymentAllocationService(PaymentRepository paymentRepository,
-                                    PaymentAllocationRepository allocationRepository) {
+            PaymentAllocationRepository allocationRepository) {
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
     }
 
-    public void applyPaymentToInvoices(UUID paymentId, List<AllocationRequest> allocations) {
+    public void applyPaymentToInvoices(UUID paymentId,
+            List<AllocationRequest> allocations) {
         Payment payment = paymentRepository.findById(PaymentId.of(paymentId))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + paymentId));
 
         if (payment.getStatus() == PaymentStatus.CANCELLED) {
-            throw new IllegalStateException("Cannot apply allocations to a cancelled payment");
+            throw new IllegalStateException(
+                    "Cannot apply allocations to a cancelled payment");
         }
 
         BigDecimal totalAllocation = allocations.stream()
                 .map(AllocationRequest::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal remaining = payment.getAmount().subtract(payment.getAppliedAmount());
+        BigDecimal remaining = payment.getAmount()
+                .subtract(payment.getAppliedAmount());
         if (totalAllocation.compareTo(remaining) > 0) {
-            throw new IllegalArgumentException("Total allocation exceeds remaining payment amount");
+            throw new IllegalArgumentException(
+                    "Total allocation exceeds remaining payment amount");
         }
 
         for (AllocationRequest req : allocations) {
-            PaymentAllocation allocation = PaymentAllocation.create(paymentId, req.invoiceId(), req.amount());
+            PaymentAllocation allocation = PaymentAllocation.create(paymentId,
+                    req.invoiceId(), req.amount());
             allocationRepository.save(allocation);
         }
 
@@ -52,7 +58,8 @@ public class PaymentAllocationService {
 
     public void cancelPayment(UUID paymentId, String reason) {
         Payment payment = paymentRepository.findById(PaymentId.of(paymentId))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + paymentId));
 
         allocationRepository.deleteByPaymentId(paymentId);
         payment.cancel(reason);
@@ -62,27 +69,33 @@ public class PaymentAllocationService {
     @Deprecated
     public void cancelPayment(UUID paymentId) {
         Payment payment = paymentRepository.findById(PaymentId.of(paymentId))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + paymentId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + paymentId));
 
         allocationRepository.deleteByPaymentId(paymentId);
         payment.cancel();
         paymentRepository.save(payment);
     }
 
-    public void applyAdvanceToInvoice(UUID advanceId, UUID invoiceId, BigDecimal amount) {
+    public void applyAdvanceToInvoice(UUID advanceId, UUID invoiceId,
+            BigDecimal amount) {
         Payment advance = paymentRepository.findById(PaymentId.of(advanceId))
-                .orElseThrow(() -> new IllegalArgumentException("Advance not found: " + advanceId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Advance not found: " + advanceId));
 
         if (advance.getStatus() == PaymentStatus.CANCELLED) {
             throw new IllegalStateException("Cannot apply a cancelled advance");
         }
 
-        BigDecimal remaining = advance.getAmount().subtract(advance.getAppliedAmount());
+        BigDecimal remaining = advance.getAmount()
+                .subtract(advance.getAppliedAmount());
         if (amount.compareTo(remaining) > 0) {
-            throw new IllegalArgumentException("Amount exceeds remaining advance balance");
+            throw new IllegalArgumentException(
+                    "Amount exceeds remaining advance balance");
         }
 
-        PaymentAllocation allocation = PaymentAllocation.create(advanceId, invoiceId, amount);
+        PaymentAllocation allocation = PaymentAllocation.create(advanceId,
+                invoiceId, amount);
         allocationRepository.save(allocation);
 
         advance.apply(amount);
@@ -90,8 +103,8 @@ public class PaymentAllocationService {
     }
 
     public List<PaymentAllocation> allocateOldestFirst(UUID paymentId,
-                                                          List<InvoiceRemainingBalance> invoicesOldestFirst,
-                                                          BigDecimal amountToAllocate) {
+            List<InvoiceRemainingBalance> invoicesOldestFirst,
+            BigDecimal amountToAllocate) {
         List<PaymentAllocation> allocations = new ArrayList<>();
         BigDecimal remaining = amountToAllocate;
 
@@ -103,13 +116,16 @@ public class PaymentAllocationService {
                 continue;
             }
 
-            BigDecimal allocatedAmount = remaining.min(invoice.remainingAmount());
-            allocations.add(PaymentAllocation.create(paymentId, invoice.invoiceId(), allocatedAmount));
+            BigDecimal allocatedAmount = remaining
+                    .min(invoice.remainingAmount());
+            allocations.add(PaymentAllocation.create(paymentId,
+                    invoice.invoiceId(), allocatedAmount));
             remaining = remaining.subtract(allocatedAmount);
         }
 
         return allocations;
     }
 
-    public record AllocationRequest(UUID invoiceId, BigDecimal amount) {}
+    public record AllocationRequest(UUID invoiceId, BigDecimal amount) {
+    }
 }

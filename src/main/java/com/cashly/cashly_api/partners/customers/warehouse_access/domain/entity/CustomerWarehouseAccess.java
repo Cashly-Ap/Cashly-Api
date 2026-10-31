@@ -12,10 +12,13 @@ public class CustomerWarehouseAccess {
     private final UUID grantedBy;
 
     public CustomerWarehouseAccess(UUID id, UUID customerId, UUID warehouseId,
-                                    LocalDateTime grantedAt, UUID grantedBy) {
-        if (customerId == null) throw new IllegalArgumentException("Customer ID cannot be null");
-        if (warehouseId == null) throw new IllegalArgumentException("Warehouse ID cannot be null");
-        if (grantedBy == null) throw new IllegalArgumentException("GrantedBy cannot be null");
+            LocalDateTime grantedAt, UUID grantedBy) {
+        if (customerId == null)
+            throw new IllegalArgumentException("Customer ID cannot be null");
+        if (warehouseId == null)
+            throw new IllegalArgumentException("Warehouse ID cannot be null");
+        if (grantedBy == null)
+            throw new IllegalArgumentException("GrantedBy cannot be null");
 
         this.id = id;
         this.customerId = customerId;
@@ -24,13 +27,25 @@ public class CustomerWarehouseAccess {
         this.grantedBy = grantedBy;
     }
 
-    public static CustomerWarehouseAccess create(UUID customerId, UUID warehouseId, UUID grantedBy) {
-        return new CustomerWarehouseAccess(null, customerId, warehouseId, LocalDateTime.now(), grantedBy);
+    public static CustomerWarehouseAccess create(UUID customerId,
+            UUID warehouseId, UUID grantedBy) {
+        return new CustomerWarehouseAccess(null, customerId, warehouseId,
+                LocalDateTime.now(), grantedBy);
     }
 
-    public UUID getId() { return id; }
-    public UUID getCustomerId() { return customerId; }
-    public UUID getWarehouseId() { return warehouseId; }
-    public LocalDateTime getGrantedAt() { return grantedAt; }
-    public UUID getGrantedBy() { return grantedBy; }
+    public UUID getId() {
+        return id;
+    }
+    public UUID getCustomerId() {
+        return customerId;
+    }
+    public UUID getWarehouseId() {
+        return warehouseId;
+    }
+    public LocalDateTime getGrantedAt() {
+        return grantedAt;
+    }
+    public UUID getGrantedBy() {
+        return grantedBy;
+    }
 }

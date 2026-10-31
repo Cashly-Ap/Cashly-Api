@@ -15,13 +15,17 @@ class GetOrdersCategoryQueryBoundaryTest {
     @Test
     void resolvesCurrentCategoryProductIdsThroughCatalogContract() {
         OrderRepository orders = mock(OrderRepository.class);
-        OrderProductCatalogGateway catalog = mock(OrderProductCatalogGateway.class);
+        OrderProductCatalogGateway catalog = mock(
+                OrderProductCatalogGateway.class);
         UUID categoryId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        when(catalog.findProductIdsByCurrentCategory(categoryId)).thenReturn(Set.of(productId));
+        when(catalog.findProductIdsByCurrentCategory(categoryId))
+                .thenReturn(Set.of(productId));
 
-        new GetOrdersUseCase(orders, catalog).execute(null, null, null, null, null, categoryId, null, null);
+        new GetOrdersUseCase(orders, catalog).execute(null, null, null, null,
+                null, categoryId, null, null);
 
-        verify(orders).findAllWithFilters(null, null, null, null, null, categoryId, Set.of(productId), null, null);
+        verify(orders).findAllWithFilters(null, null, null, null, null,
+                categoryId, Set.of(productId), null, null);
     }
 }

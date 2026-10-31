@@ -19,12 +19,10 @@ class ProductUnitTest {
     private static final String VALID_DESCRIPTION = "A test product";
     private static final UUID CATEGORY_ID = UUID.randomUUID();
 
-    
-
     @Test
     void should_CreateActiveProduct_When_ValidData() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, new BigDecimal("5.00"));
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, new BigDecimal("5.00"));
 
         assertNull(product.getId());
         assertEquals("PROD-001", product.getCode());
@@ -43,29 +41,25 @@ class ProductUnitTest {
 
     @Test
     void should_CreateCompositeProduct_When_CompositeFlagTrue() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, true, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, true, null);
 
         assertTrue(product.isComposite());
     }
-
-    
 
     @Test
     void should_Reconstitute_When_AllFieldsProvided() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        List<ProductComponent> components = List.of(
-                new ProductComponent(UUID.randomUUID(), id, UUID.randomUUID(), 2)
-        );
-        List<ProductPrice> prices = List.of(
-                ProductPrice.reconstitute(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("10.00"), null)
-        );
+        List<ProductComponent> components = List.of(new ProductComponent(
+                UUID.randomUUID(), id, UUID.randomUUID(), 2));
+        List<ProductPrice> prices = List
+                .of(ProductPrice.reconstitute(UUID.randomUUID(),
+                        UUID.randomUUID(), new BigDecimal("10.00"), null));
 
-        Product product = Product.reconstitute(id, VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, true, false, "photos/test.jpg",
-                new BigDecimal("5.00"),
-                components, prices, now, now);
+        Product product = Product.reconstitute(id, VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, true, false, "photos/test.jpg",
+                new BigDecimal("5.00"), components, prices, now, now);
 
         assertEquals(id, product.getId());
         assertEquals("PROD-001", product.getCode());
@@ -80,12 +74,10 @@ class ProductUnitTest {
         assertEquals(now, product.getUpdatedAt());
     }
 
-    
-
     @Test
     void should_UpdateFields_When_ValidData() throws InterruptedException {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         LocalDateTime beforeUpdate = product.getUpdatedAt();
 
         Thread.sleep(10);
@@ -101,50 +93,47 @@ class ProductUnitTest {
 
     @Test
     void should_NotChangeActive_When_ActiveIsNull() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         product.deactivate();
 
-        product.update("Updated Name", "Updated desc", CATEGORY_ID,
-                null, null);
+        product.update("Updated Name", "Updated desc", CATEGORY_ID, null, null);
 
         assertFalse(product.isActive());
     }
 
     @Test
     void should_ThrowException_When_UpdateNameIsNull() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                product.update(null, "desc", CATEGORY_ID, null, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> product.update(null, "desc", CATEGORY_ID, null, null));
     }
 
     @Test
     void should_ThrowException_When_UpdateNameIsBlank() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                product.update("   ", "desc", CATEGORY_ID, null, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> product.update("   ", "desc", CATEGORY_ID, null, null));
     }
 
     @Test
     void should_ThrowException_When_UpdateNameOver200Chars() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         String longName = "a".repeat(201);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                product.update(longName, "desc", CATEGORY_ID, null, null));
+        assertThrows(IllegalArgumentException.class, () -> product
+                .update(longName, "desc", CATEGORY_ID, null, null));
     }
-
-    
 
     @Test
     void should_Activate_When_Deactivated() throws InterruptedException {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         product.deactivate();
         LocalDateTime beforeActivate = product.getUpdatedAt();
 
@@ -157,8 +146,8 @@ class ProductUnitTest {
 
     @Test
     void should_Deactivate_When_Active() throws InterruptedException {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         LocalDateTime beforeDeactivate = product.getUpdatedAt();
 
         Thread.sleep(10);
@@ -168,12 +157,10 @@ class ProductUnitTest {
         assertTrue(product.getUpdatedAt().isAfter(beforeDeactivate));
     }
 
-    
-
     @Test
     void should_MakeComposite_When_NotComposite() throws InterruptedException {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         LocalDateTime beforeMake = product.getUpdatedAt();
 
         Thread.sleep(10);
@@ -183,57 +170,53 @@ class ProductUnitTest {
         assertTrue(product.getUpdatedAt().isAfter(beforeMake));
     }
 
-    
-
     @Test
     void should_ThrowException_When_SetComponentsOnNonComposite() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                product.setComponents(List.of()));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> product.setComponents(List.of()));
 
-        assertEquals("Cannot set components on a non-composite product", exception.getMessage());
+        assertEquals("Cannot set components on a non-composite product",
+                exception.getMessage());
     }
 
     @Test
     void should_SetComponents_When_Composite() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, true, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, true, null);
         UUID compId = UUID.randomUUID();
-        List<ProductComponent> components = List.of(
-                new ProductComponent(UUID.randomUUID(), product.getId(), compId, 3)
-        );
+        List<ProductComponent> components = List.of(new ProductComponent(
+                UUID.randomUUID(), product.getId(), compId, 3));
 
         product.setComponents(components);
 
         assertEquals(1, product.getComponents().size());
-        assertEquals(compId, product.getComponents().get(0).getComponentProductId());
+        assertEquals(compId,
+                product.getComponents().get(0).getComponentProductId());
     }
-
-    
 
     @Test
     void should_SetProductPrices_When_ValidList() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         UUID priceTypeId = UUID.randomUUID();
-        List<ProductPrice> prices = List.of(
-                ProductPrice.create(priceTypeId, new BigDecimal("25.00"), null)
-        );
+        List<ProductPrice> prices = List.of(ProductPrice.create(priceTypeId,
+                new BigDecimal("25.00"), null));
 
         product.setProductPrices(prices);
 
         assertEquals(1, product.getProductPrices().size());
-        assertEquals(priceTypeId, product.getProductPrices().get(0).getPriceTypeId());
+        assertEquals(priceTypeId,
+                product.getProductPrices().get(0).getPriceTypeId());
     }
-
-    
 
     @Test
     void should_AssignPhoto_When_PathProvided() throws InterruptedException {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         assertNull(product.getPhoto());
         LocalDateTime beforeAssign = product.getUpdatedAt();
 
@@ -246,8 +229,8 @@ class ProductUnitTest {
 
     @Test
     void should_RemovePhoto_When_PhotoExists() throws InterruptedException {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
         product.assignPhoto("products/test.jpg");
         LocalDateTime beforeRemove = product.getUpdatedAt();
 
@@ -258,101 +241,97 @@ class ProductUnitTest {
         assertTrue(product.getUpdatedAt().isAfter(beforeRemove));
     }
 
-    
-
     @Test
     void should_ThrowException_When_CodeIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                Product.create(null, VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null));
+        assertThrows(IllegalArgumentException.class, () -> Product.create(null,
+                VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null));
     }
 
     @Test
     void should_ThrowException_When_CodeIsBlank() {
-        assertThrows(IllegalArgumentException.class, () ->
-                Product.create("   ", VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null));
+        assertThrows(IllegalArgumentException.class, () -> Product.create("   ",
+                VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null));
     }
 
     @Test
     void should_ThrowException_When_CodeOver50Chars() {
         String longCode = "A".repeat(51);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                Product.create(longCode, VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> Product.create(longCode, VALID_NAME, VALID_DESCRIPTION,
+                        CATEGORY_ID, false, null));
     }
-
-    
 
     @Test
     void should_ThrowException_When_NameIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                Product.create(VALID_CODE, null, VALID_DESCRIPTION, CATEGORY_ID, false, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> Product.create(VALID_CODE, null, VALID_DESCRIPTION,
+                        CATEGORY_ID, false, null));
     }
 
     @Test
     void should_ThrowException_When_NameIsBlank() {
-        assertThrows(IllegalArgumentException.class, () ->
-                Product.create(VALID_CODE, "   ", VALID_DESCRIPTION, CATEGORY_ID, false, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> Product.create(VALID_CODE, "   ", VALID_DESCRIPTION,
+                        CATEGORY_ID, false, null));
     }
 
     @Test
     void should_ThrowException_When_NameOver200Chars() {
         String longName = "a".repeat(201);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                Product.create(VALID_CODE, longName, VALID_DESCRIPTION, CATEGORY_ID, false, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> Product.create(VALID_CODE, longName, VALID_DESCRIPTION,
+                        CATEGORY_ID, false, null));
     }
-
-    
 
     @Test
     void should_TrimAndUppercaseCode_When_CreatedWithSpacesAndLowercase() {
-        Product product = Product.create("  prod-001  ", VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create("  prod-001  ", VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
 
         assertEquals("PROD-001", product.getCode());
     }
 
-    
-
     @Test
     void should_TrimName_When_CreatedWithSpaces() {
-        Product product = Product.create(VALID_CODE, "  Test Product  ", VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, "  Test Product  ",
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
 
         assertEquals("Test Product", product.getName());
     }
 
-    
-
     @Test
     void should_ReturnUnmodifiableComponents_When_GetComponentsCalled() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, true, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, true, null);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                product.getComponents().add(new ProductComponent(UUID.randomUUID(), product.getId(), UUID.randomUUID(), 1)));
+        assertThrows(UnsupportedOperationException.class,
+                () -> product.getComponents()
+                        .add(new ProductComponent(UUID.randomUUID(),
+                                product.getId(), UUID.randomUUID(), 1)));
     }
 
     @Test
     void should_ReturnUnmodifiableProductPrices_When_GetProductPricesCalled() {
-        Product product = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, null);
+        Product product = Product.create(VALID_CODE, VALID_NAME,
+                VALID_DESCRIPTION, CATEGORY_ID, false, null);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                product.getProductPrices().add(ProductPrice.create(UUID.randomUUID(), BigDecimal.TEN, null)));
+        assertThrows(UnsupportedOperationException.class,
+                () -> product.getProductPrices().add(ProductPrice
+                        .create(UUID.randomUUID(), BigDecimal.TEN, null)));
     }
-
-    
 
     @Test
     void should_BeEqual_When_SameId() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
         Product p1 = Product.reconstitute(id, "CODE-1", "Name 1", "Desc 1",
-                CATEGORY_ID, false, true, null, null, List.of(), List.of(), now, now);
+                CATEGORY_ID, false, true, null, null, List.of(), List.of(), now,
+                now);
         Product p2 = Product.reconstitute(id, "CODE-2", "Name 2", "Desc 2",
-                UUID.randomUUID(), true, false, "photo.jpg", new BigDecimal("5"),
-                List.of(), List.of(), now, now);
+                UUID.randomUUID(), true, false, "photo.jpg",
+                new BigDecimal("5"), List.of(), List.of(), now, now);
 
         assertEquals(p1, p2);
         assertEquals(p1.hashCode(), p2.hashCode());
@@ -361,18 +340,22 @@ class ProductUnitTest {
     @Test
     void should_NotBeEqual_When_DifferentIds() {
         LocalDateTime now = LocalDateTime.now();
-        Product p1 = Product.reconstitute(UUID.randomUUID(), VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, true, null, null, List.of(), List.of(), now, now);
-        Product p2 = Product.reconstitute(UUID.randomUUID(), VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
-                CATEGORY_ID, false, true, null, null, List.of(), List.of(), now, now);
+        Product p1 = Product.reconstitute(UUID.randomUUID(), VALID_CODE,
+                VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, true, null,
+                null, List.of(), List.of(), now, now);
+        Product p2 = Product.reconstitute(UUID.randomUUID(), VALID_CODE,
+                VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, true, null,
+                null, List.of(), List.of(), now, now);
 
         assertNotEquals(p1, p2);
     }
 
     @Test
     void should_BeEqual_When_BothIdsNull() {
-        Product p1 = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null);
-        Product p2 = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION, CATEGORY_ID, false, null);
+        Product p1 = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
+                CATEGORY_ID, false, null);
+        Product p2 = Product.create(VALID_CODE, VALID_NAME, VALID_DESCRIPTION,
+                CATEGORY_ID, false, null);
 
         assertEquals(p1, p2);
     }

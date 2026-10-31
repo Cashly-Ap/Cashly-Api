@@ -25,20 +25,23 @@ public class NotificationController {
             Authentication authentication,
             @RequestParam(required = false) Boolean unread) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        List<NotificationResponse> notifications = notificationService.listByUser(userId)
-                .stream()
+        List<NotificationResponse> notifications = notificationService
+                .listByUser(userId).stream()
                 .filter(n -> unread == null || n.isRead() != unread)
-                .map(n -> translator.render(n, org.springframework.context.i18n.LocaleContextHolder.getLocale()))
-                .map(n -> new NotificationResponse(
-                        n.getId().value(), n.getType().name(), n.getTitle(),
-                        n.getMessage(), n.getReferenceType(), n.getReferenceId(),
-                        n.isRead(), n.getCreatedAt(), n.getReadAt()))
+                .map(n -> translator.render(n,
+                        org.springframework.context.i18n.LocaleContextHolder
+                                .getLocale()))
+                .map(n -> new NotificationResponse(n.getId().value(),
+                        n.getType().name(), n.getTitle(), n.getMessage(),
+                        n.getReferenceType(), n.getReferenceId(), n.isRead(),
+                        n.getCreatedAt(), n.getReadAt()))
                 .toList();
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/unread-count")
-    public ResponseEntity<UnreadCountResponse> unreadCount(Authentication authentication) {
+    public ResponseEntity<UnreadCountResponse> unreadCount(
+            Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         long count = notificationService.countUnread(userId);
         return ResponseEntity.ok(new UnreadCountResponse(count));
@@ -46,10 +49,12 @@ public class NotificationController {
 
     @PutMapping("/{id}/read")
     public ResponseEntity<NotificationResponse> markAsRead(
-            @PathVariable UUID id,
-            Authentication authentication) {
+            @PathVariable UUID id, Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
-        var notification = translator.render(notificationService.markAsRead(id, userId), org.springframework.context.i18n.LocaleContextHolder.getLocale());
+        var notification = translator.render(
+                notificationService.markAsRead(id, userId),
+                org.springframework.context.i18n.LocaleContextHolder
+                        .getLocale());
         return ResponseEntity.ok(new NotificationResponse(
                 notification.getId().value(), notification.getType().name(),
                 notification.getTitle(), notification.getMessage(),
@@ -65,10 +70,11 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    public record NotificationResponse(UUID id, String type, String title, String message,
-                                        String referenceType, UUID referenceId,
-                                        boolean isRead, LocalDateTime createdAt,
-                                        LocalDateTime readAt) {}
+    public record NotificationResponse(UUID id, String type, String title,
+            String message, String referenceType, UUID referenceId,
+            boolean isRead, LocalDateTime createdAt, LocalDateTime readAt) {
+    }
 
-    public record UnreadCountResponse(long count) {}
+    public record UnreadCountResponse(long count) {
+    }
 }

@@ -35,15 +35,22 @@ class UpdatePriceTypeUseCaseUnitTest {
     void should_UpdatePriceType_When_ValidRequestProvided() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType existing = PriceType.reconstitute(id, "Mayorista", "desc original", true, now, now);
-        PriceType updated = PriceType.reconstitute(id, "Minorista", "desc nueva", false, now, now.plusSeconds(1));
-        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Minorista", "desc nueva", false);
+        PriceType existing = PriceType.reconstitute(id, "Mayorista",
+                "desc original", true, now, now);
+        PriceType updated = PriceType.reconstitute(id, "Minorista",
+                "desc nueva", false, now, now.plusSeconds(1));
+        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Minorista",
+                "desc nueva", false);
 
-        when(priceTypeRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(priceTypeRepository.existsByNameAndIdNot("Minorista", id)).thenReturn(false);
-        when(priceTypeRepository.save(any(PriceType.class))).thenReturn(updated);
+        when(priceTypeRepository.findById(id))
+                .thenReturn(Optional.of(existing));
+        when(priceTypeRepository.existsByNameAndIdNot("Minorista", id))
+                .thenReturn(false);
+        when(priceTypeRepository.save(any(PriceType.class)))
+                .thenReturn(updated);
 
-        PriceTypeResponse response = updatePriceTypeUseCase.execute(id, request);
+        PriceTypeResponse response = updatePriceTypeUseCase.execute(id,
+                request);
 
         assertNotNull(response);
         assertEquals(id.toString(), response.id());
@@ -59,16 +66,17 @@ class UpdatePriceTypeUseCaseUnitTest {
     @Test
     void should_ThrowPriceTypeNotFoundException_When_IdDoesNotExist() {
         UUID id = UUID.randomUUID();
-        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Mayorista", null, true);
+        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Mayorista",
+                null, true);
 
         when(priceTypeRepository.findById(id)).thenReturn(Optional.empty());
 
         PriceTypeNotFoundException exception = assertThrows(
-            PriceTypeNotFoundException.class,
-            () -> updatePriceTypeUseCase.execute(id, request)
-        );
+                PriceTypeNotFoundException.class,
+                () -> updatePriceTypeUseCase.execute(id, request));
 
-        assertEquals("Price type not found with id: " + id, exception.getMessage());
+        assertEquals("Price type not found with id: " + id,
+                exception.getMessage());
         verify(priceTypeRepository).findById(id);
         verify(priceTypeRepository, never()).existsByNameAndIdNot(any(), any());
         verify(priceTypeRepository, never()).save(any());
@@ -78,18 +86,22 @@ class UpdatePriceTypeUseCaseUnitTest {
     void should_ThrowDuplicatePriceTypeNameException_When_NameExistsForAnotherPriceType() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType existing = PriceType.reconstitute(id, "Mayorista", null, true, now, now);
-        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Minorista", null, true);
+        PriceType existing = PriceType.reconstitute(id, "Mayorista", null, true,
+                now, now);
+        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Minorista",
+                null, true);
 
-        when(priceTypeRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(priceTypeRepository.existsByNameAndIdNot("Minorista", id)).thenReturn(true);
+        when(priceTypeRepository.findById(id))
+                .thenReturn(Optional.of(existing));
+        when(priceTypeRepository.existsByNameAndIdNot("Minorista", id))
+                .thenReturn(true);
 
         DuplicatePriceTypeNameException exception = assertThrows(
-            DuplicatePriceTypeNameException.class,
-            () -> updatePriceTypeUseCase.execute(id, request)
-        );
+                DuplicatePriceTypeNameException.class,
+                () -> updatePriceTypeUseCase.execute(id, request));
 
-        assertEquals("Price type with name already exists: Minorista", exception.getMessage());
+        assertEquals("Price type with name already exists: Minorista",
+                exception.getMessage());
         verify(priceTypeRepository).findById(id);
         verify(priceTypeRepository).existsByNameAndIdNot("Minorista", id);
         verify(priceTypeRepository, never()).save(any());
@@ -99,12 +111,17 @@ class UpdatePriceTypeUseCaseUnitTest {
     void should_AllowSameName_When_UpdatingSelf() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
-        PriceType existing = PriceType.reconstitute(id, "Mayorista", null, true, now, now);
-        PriceType saved = PriceType.reconstitute(id, "Mayorista", "nueva desc", true, now, now.plusSeconds(1));
-        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Mayorista", "nueva desc", true);
+        PriceType existing = PriceType.reconstitute(id, "Mayorista", null, true,
+                now, now);
+        PriceType saved = PriceType.reconstitute(id, "Mayorista", "nueva desc",
+                true, now, now.plusSeconds(1));
+        UpdatePriceTypeRequest request = new UpdatePriceTypeRequest("Mayorista",
+                "nueva desc", true);
 
-        when(priceTypeRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(priceTypeRepository.existsByNameAndIdNot("Mayorista", id)).thenReturn(false);
+        when(priceTypeRepository.findById(id))
+                .thenReturn(Optional.of(existing));
+        when(priceTypeRepository.existsByNameAndIdNot("Mayorista", id))
+                .thenReturn(false);
         when(priceTypeRepository.save(any(PriceType.class))).thenReturn(saved);
 
         assertDoesNotThrow(() -> updatePriceTypeUseCase.execute(id, request));

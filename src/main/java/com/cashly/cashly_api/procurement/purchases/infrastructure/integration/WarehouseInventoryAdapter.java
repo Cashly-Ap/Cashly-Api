@@ -17,17 +17,25 @@ public class WarehouseInventoryAdapter implements InventoryGateway {
     }
 
     @Override
-    public void receive(UUID purchaseId, String purchaseNumber, List<Allocation> allocations) {
+    public void receive(UUID purchaseId, String purchaseNumber,
+            List<Allocation> allocations) {
         inventoryApi.receive(command(purchaseId, purchaseNumber, allocations));
     }
 
     @Override
-    public void reverseReceipt(UUID purchaseId, String purchaseNumber, List<Allocation> allocations) {
-        inventoryApi.reverseReceipt(command(purchaseId, purchaseNumber, allocations));
+    public void reverseReceipt(UUID purchaseId, String purchaseNumber,
+            List<Allocation> allocations) {
+        inventoryApi.reverseReceipt(
+                command(purchaseId, purchaseNumber, allocations));
     }
 
-    private PurchaseStockCommand command(UUID purchaseId, String purchaseNumber, List<Allocation> allocations) {
-        return new PurchaseStockCommand(purchaseId, purchaseNumber, allocations.stream()
-                .map(allocation -> new PurchaseStockCommand.Allocation(allocation.warehouseId(), allocation.productId(), allocation.quantity())).toList());
+    private PurchaseStockCommand command(UUID purchaseId, String purchaseNumber,
+            List<Allocation> allocations) {
+        return new PurchaseStockCommand(purchaseId, purchaseNumber,
+                allocations.stream()
+                        .map(allocation -> new PurchaseStockCommand.Allocation(
+                                allocation.warehouseId(),
+                                allocation.productId(), allocation.quantity()))
+                        .toList());
     }
 }

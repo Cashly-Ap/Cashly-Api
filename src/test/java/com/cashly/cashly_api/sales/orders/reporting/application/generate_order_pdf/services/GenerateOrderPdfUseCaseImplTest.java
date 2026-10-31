@@ -53,13 +53,16 @@ class GenerateOrderPdfUseCaseImplTest {
     @Mock
     private OrderPdfPort orderPdfPort;
 
-
     private GenerateOrderPdfUseCaseImpl useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GenerateOrderPdfUseCaseImpl(new OrderDocumentQueryAdapter(new OrderDocumentQueryService(
-                orderRepository, new GetOrdersUseCase(orderRepository, mock(OrderProductCatalogGateway.class)))), orderPdfPort);
+        useCase = new GenerateOrderPdfUseCaseImpl(
+                new OrderDocumentQueryAdapter(new OrderDocumentQueryService(
+                        orderRepository,
+                        new GetOrdersUseCase(orderRepository,
+                                mock(OrderProductCatalogGateway.class)))),
+                orderPdfPort);
     }
 
     @Test
@@ -92,28 +95,33 @@ class GenerateOrderPdfUseCaseImplTest {
         when(allocation.getAllocated()).thenReturn(BigDecimal.valueOf(2));
         when(line.getAllocations()).thenReturn(List.of(allocation));
 
-
-
         when(order.getLines()).thenReturn(List.of(line));
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
 
         byte[] expectedPdf = "Order PDF".getBytes();
-        when(orderPdfPort.generatePdf(any(OrderReportData.class))).thenReturn(expectedPdf);
+        when(orderPdfPort.generatePdf(any(OrderReportData.class)))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(orderId);
 
         assertArrayEquals(expectedPdf, result);
         verify(orderRepository).findById(OrderId.of(orderId));
         verify(orderPdfPort).generatePdf(any(OrderReportData.class));
-        var projection = org.mockito.ArgumentCaptor.forClass(OrderReportData.class);
+        var projection = org.mockito.ArgumentCaptor
+                .forClass(OrderReportData.class);
         verify(orderPdfPort).generatePdf(projection.capture());
         assertEquals("ORD-001", projection.getValue().orderNumber());
         assertEquals("Customer A", projection.getValue().customerName());
         assertEquals(BigDecimal.valueOf(100), projection.getValue().subtotal());
-        assertEquals(BigDecimal.valueOf(2), projection.getValue().lines().getFirst().quantity());
-        assertEquals(BigDecimal.valueOf(50), projection.getValue().lines().getFirst().unitPrice());
-        assertEquals(BigDecimal.valueOf(100), projection.getValue().lines().getFirst().lineTotal());
-        assertThrows(UnsupportedOperationException.class, () -> projection.getValue().lines().clear());
+        assertEquals(BigDecimal.valueOf(2),
+                projection.getValue().lines().getFirst().quantity());
+        assertEquals(BigDecimal.valueOf(50),
+                projection.getValue().lines().getFirst().unitPrice());
+        assertEquals(BigDecimal.valueOf(100),
+                projection.getValue().lines().getFirst().lineTotal());
+        assertThrows(UnsupportedOperationException.class,
+                () -> projection.getValue().lines().clear());
     }
 
     @Test
@@ -121,9 +129,11 @@ class GenerateOrderPdfUseCaseImplTest {
     void should_throw_when_order_not_found() {
         UUID orderId = UUID.randomUUID();
 
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.empty());
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(OrderNotFoundException.class, () -> useCase.execute(orderId));
+        assertThrows(OrderNotFoundException.class,
+                () -> useCase.execute(orderId));
         verify(orderRepository).findById(OrderId.of(orderId));
         verifyNoInteractions(orderPdfPort);
     }
@@ -154,10 +164,12 @@ class GenerateOrderPdfUseCaseImplTest {
         when(line.getAllocations()).thenReturn(List.of());
 
         when(order.getLines()).thenReturn(List.of(line));
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
 
         byte[] expectedPdf = "Order no allocation PDF".getBytes();
-        when(orderPdfPort.generatePdf(any(OrderReportData.class))).thenReturn(expectedPdf);
+        when(orderPdfPort.generatePdf(any(OrderReportData.class)))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(orderId);
 

@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class LocalWarehouseDirectoryGateway implements WarehouseDirectoryGateway {
+public class LocalWarehouseDirectoryGateway
+        implements
+            WarehouseDirectoryGateway {
     private final WarehouseDirectoryQuery warehouses;
 
     public LocalWarehouseDirectoryGateway(WarehouseDirectoryQuery warehouses) {
@@ -18,11 +20,14 @@ public class LocalWarehouseDirectoryGateway implements WarehouseDirectoryGateway
 
     @Override
     public Optional<WarehouseSnapshot> findById(UUID warehouseId) {
-        return warehouses.findById(warehouseId).map(warehouse -> new WarehouseSnapshot(warehouse.id(), warehouse.name()));
+        return warehouses.findById(warehouseId)
+                .map(warehouse -> new WarehouseSnapshot(warehouse.id(),
+                        warehouse.name()));
     }
 
     @Override
     public WarehouseSnapshot requireById(UUID warehouseId) {
-        return findById(warehouseId).orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
+        return findById(warehouseId)
+                .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
     }
 }

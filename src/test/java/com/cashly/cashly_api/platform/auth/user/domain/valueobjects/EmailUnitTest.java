@@ -2,7 +2,6 @@ package com.cashly.cashly_api.platform.auth.user.domain.valueobjects;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.EmailUnitTest;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,38 +41,26 @@ class EmailUnitTest {
     @Test
     void should_ThrowException_When_NullEmailProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new Email(null)
-        );
+                IllegalArgumentException.class, () -> new Email(null));
         assertEquals("Email cannot be null or empty", exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_EmptyEmailProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new Email("   ")
-        );
+                IllegalArgumentException.class, () -> new Email("   "));
         assertEquals("Email cannot be null or empty", exception.getMessage());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-        "invalid",
-        "invalid@",
-        "@invalid.com",
-        "invalid@.com",
-        "invalid@com",
-        "invalid..email@example.com",
-        "invalid email@example.com",
-        "invalid@example",
-        "invalid@.example.com"
-    })
-    void should_ThrowException_When_InvalidEmailFormatProvided(String invalidEmail) {
+    @ValueSource(strings = {"invalid", "invalid@", "@invalid.com",
+            "invalid@.com", "invalid@com", "invalid..email@example.com",
+            "invalid email@example.com", "invalid@example",
+            "invalid@.example.com"})
+    void should_ThrowException_When_InvalidEmailFormatProvided(
+            String invalidEmail) {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new Email(invalidEmail)
-        );
+                IllegalArgumentException.class, () -> new Email(invalidEmail));
         assertTrue(exception.getMessage().contains("Invalid email format"));
     }
 
@@ -82,21 +69,15 @@ class EmailUnitTest {
         String longEmail = "a".repeat(250) + "@example.com";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new Email(longEmail)
-        );
-        assertEquals("Email cannot exceed 255 characters", exception.getMessage());
+                IllegalArgumentException.class, () -> new Email(longEmail));
+        assertEquals("Email cannot exceed 255 characters",
+                exception.getMessage());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-        "user@example.com",
-        "user.name@example.com",
-        "user+tag@example.co.uk",
-        "user_name@example-domain.com",
-        "123@example.com",
-        "user@sub.example.com"
-    })
+    @ValueSource(strings = {"user@example.com", "user.name@example.com",
+            "user+tag@example.co.uk", "user_name@example-domain.com",
+            "123@example.com", "user@sub.example.com"})
     void should_AcceptValidEmailFormats(String validEmail) {
         Email email = new Email(validEmail);
 

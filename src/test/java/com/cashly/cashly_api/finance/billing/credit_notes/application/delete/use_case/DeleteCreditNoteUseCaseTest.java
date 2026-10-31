@@ -32,8 +32,7 @@ class DeleteCreditNoteUseCaseTest {
     @BeforeEach
     void setUp() {
         deleteCreditNoteUseCase = new DeleteCreditNoteUseCase(
-                creditNoteRepository, invoices
-        );
+                creditNoteRepository, invoices);
     }
 
     @Nested

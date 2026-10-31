@@ -18,11 +18,13 @@ class UpdateOwnProfileUseCaseTest {
     void personalUpdateLocksBeforeReadAndPreservesAssignmentsAccountAndCredentials() {
         var users = mock(UserRepository.class);
         var access = mock(AccessService.class);
-        var user = new User(UserId.generate(), new Email("own@example.com"), new UserName("Old Name"),
+        var user = new User(UserId.generate(), new Email("own@example.com"),
+                new UserName("Old Name"),
                 Password.fromHash("existing-password-hash"), UserRole.OPERATOR);
         var role = UUID.randomUUID();
         var department = UUID.randomUUID();
-        user.updateProfile(new UserProfile("Old", "Name", null, null), role, department);
+        user.updateProfile(new UserProfile("Old", "Name", null, null), role,
+                department);
         user.setAssignmentNames("Role", "Department");
         user.grantPermission(BusinessModule.USERS);
         user.deactivate();
@@ -31,10 +33,14 @@ class UpdateOwnProfileUseCaseTest {
         var created = user.getCreatedAt();
         when(users.findById(user.getId())).thenReturn(Optional.of(user));
         when(users.save(user)).thenReturn(user);
-        var request = new UpdateOwnProfileRequest(" New Name ", " New ", " Last ",
-                new UserProfile.Address("Street", "City", "Region", "Country", "10000"), "+34 600 000 000");
+        var request = new UpdateOwnProfileRequest(" New Name ", " New ",
+                " Last ", new UserProfile.Address("Street", "City", "Region",
+                        "Country", "10000"),
+                "+34 600 000 000");
 
-        var response = new UpdateOwnProfileUseCase(users, access, mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class)).execute(user.getId().getValue().toString(), request);
+        var response = new UpdateOwnProfileUseCase(users, access, mock(
+                com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class))
+                .execute(user.getId().getValue().toString(), request);
 
         var order = inOrder(access, users);
         order.verify(access).lockAdministration();
@@ -50,7 +56,8 @@ class UpdateOwnProfileUseCaseTest {
         assertThat(response.roleName()).isEqualTo("Role");
         assertThat(response.departmentName()).isEqualTo("Department");
         assertThat(response.role()).isEqualTo(UserRole.OPERATOR);
-        assertThat(response.modulePermissions()).containsExactly(BusinessModule.USERS);
+        assertThat(response.modulePermissions())
+                .containsExactly(BusinessModule.USERS);
         assertThat(response.email()).isEqualTo("own@example.com");
         assertThat(response.active()).isFalse();
         assertThat(response.emailVerified()).isTrue();
@@ -59,8 +66,10 @@ class UpdateOwnProfileUseCaseTest {
     }
 
     @Test
-    void profileUpdateUsesReadCommittedTransactionForSharedAdministrationLock() throws Exception {
-        var method = UpdateOwnProfileUseCase.class.getMethod("execute", String.class, UpdateOwnProfileRequest.class);
+    void profileUpdateUsesReadCommittedTransactionForSharedAdministrationLock()
+            throws Exception {
+        var method = UpdateOwnProfileUseCase.class.getMethod("execute",
+                String.class, UpdateOwnProfileRequest.class);
         var transaction = method.getAnnotation(Transactional.class);
         assertThat(transaction).isNotNull();
         assertThat(transaction.isolation()).isEqualTo(Isolation.READ_COMMITTED);
@@ -73,9 +82,13 @@ class UpdateOwnProfileUseCaseTest {
         var access = mock(AccessService.class);
         var id = UserId.generate();
         when(users.findById(id)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> new UpdateOwnProfileUseCase(users, access, mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class)).execute(id.getValue().toString(),
-                new UpdateOwnProfileRequest("Name", "First", "Last", null, null)))
-                .isInstanceOf(com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException.class);
+        assertThatThrownBy(() -> new UpdateOwnProfileUseCase(users, access,
+                mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class))
+                .execute(id.getValue().toString(),
+                        new UpdateOwnProfileRequest("Name", "First", "Last",
+                                null, null)))
+                .isInstanceOf(
+                        com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException.class);
         verify(users, never()).save(any());
     }
 }

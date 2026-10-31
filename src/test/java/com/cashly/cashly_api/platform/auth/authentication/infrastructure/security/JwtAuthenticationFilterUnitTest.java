@@ -29,16 +29,25 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterUnitTest {
     private static final String TOKEN = "valid-access-token";
-    private static final UUID USER_ID = UUID.fromString("30000000-0000-0000-0000-000000000001");
-    private static final UUID ROLE_ID = UUID.fromString("10000000-0000-0000-0000-000000000001");
-    private static final UUID DEPARTMENT_ID = UUID.fromString("20000000-0000-0000-0000-000000000001");
+    private static final UUID USER_ID = UUID
+            .fromString("30000000-0000-0000-0000-000000000001");
+    private static final UUID ROLE_ID = UUID
+            .fromString("10000000-0000-0000-0000-000000000001");
+    private static final UUID DEPARTMENT_ID = UUID
+            .fromString("20000000-0000-0000-0000-000000000001");
 
-    @Mock private TokenService tokens;
-    @Mock private UserRepository users;
-    @Mock private AccessService access;
-    @Mock private HttpServletRequest request;
-    @Mock private HttpServletResponse response;
-    @Mock private FilterChain chain;
+    @Mock
+    private TokenService tokens;
+    @Mock
+    private UserRepository users;
+    @Mock
+    private AccessService access;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpServletResponse response;
+    @Mock
+    private FilterChain chain;
     private JwtAuthenticationFilter filter;
 
     @BeforeEach
@@ -55,12 +64,13 @@ class JwtAuthenticationFilterUnitTest {
     @Test
     void authenticatesSubjectWithCurrentPersistedGrants() throws Exception {
         validToken();
-        when(access.resolve(USER_ID)).thenReturn(current(Set.of(PermissionAction.READ)));
+        when(access.resolve(USER_ID))
+                .thenReturn(current(Set.of(PermissionAction.READ)));
 
         filter.doFilterInternal(request, response, chain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
-                .isEqualTo(USER_ID.toString());
+        assertThat(SecurityContextHolder.getContext().getAuthentication()
+                .getName()).isEqualTo(USER_ID.toString());
         verify(access).resolve(USER_ID);
         verify(tokens, never()).extractUserAccess(any());
         verify(chain).doFilter(request, response);
@@ -69,11 +79,13 @@ class JwtAuthenticationFilterUnitTest {
     @Test
     void emitsOnlyCurrentModuleActionAuthorities() throws Exception {
         validToken();
-        when(access.resolve(USER_ID)).thenReturn(current(Set.of(PermissionAction.READ)));
+        when(access.resolve(USER_ID))
+                .thenReturn(current(Set.of(PermissionAction.READ)));
 
         filter.doFilterInternal(request, response, chain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+        assertThat(SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities())
                 .extracting(authority -> authority.getAuthority())
                 .containsExactly("CATALOG:READ");
     }
@@ -81,14 +93,17 @@ class JwtAuthenticationFilterUnitTest {
     @Test
     void doesNotRestoreRevokedGrantFromAnAlreadyIssuedToken() throws Exception {
         validToken();
-        when(access.resolve(USER_ID)).thenReturn(current(Set.of(PermissionAction.READ, PermissionAction.UPDATE)))
+        when(access.resolve(USER_ID))
+                .thenReturn(current(
+                        Set.of(PermissionAction.READ, PermissionAction.UPDATE)))
                 .thenReturn(current(Set.of(PermissionAction.READ)));
         filter.doFilterInternal(request, response, chain);
         SecurityContextHolder.clearContext();
 
         filter.doFilterInternal(request, response, chain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+        assertThat(SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities())
                 .extracting(authority -> authority.getAuthority())
                 .doesNotContain("CATALOG:UPDATE");
     }
@@ -96,22 +111,26 @@ class JwtAuthenticationFilterUnitTest {
     @Test
     void rejectsInactiveAccountOrRole() throws Exception {
         validToken();
-        when(access.resolve(USER_ID)).thenThrow(new AccessDeniedException("Account unavailable"));
+        when(access.resolve(USER_ID))
+                .thenThrow(new AccessDeniedException("Account unavailable"));
 
         filter.doFilterInternal(request, response, chain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication())
+                .isNull();
         verify(chain).doFilter(request, response);
     }
 
     @Test
     void failsClosedWhenAuthoritativeLookupFails() throws Exception {
         validToken();
-        when(access.resolve(USER_ID)).thenThrow(new IllegalStateException("Database unavailable"));
+        when(access.resolve(USER_ID))
+                .thenThrow(new IllegalStateException("Database unavailable"));
 
         filter.doFilterInternal(request, response, chain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication())
+                .isNull();
     }
 
     @Test
@@ -124,7 +143,8 @@ class JwtAuthenticationFilterUnitTest {
 
     @Test
     void ignoresOtherAuthorizationSchemes() throws Exception {
-        when(request.getHeader("Authorization")).thenReturn("Basic credentials");
+        when(request.getHeader("Authorization"))
+                .thenReturn("Basic credentials");
 
         filter.doFilterInternal(request, response, chain);
 
@@ -139,29 +159,33 @@ class JwtAuthenticationFilterUnitTest {
         filter.doFilterInternal(request, response, chain);
 
         verifyNoInteractions(access);
-        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication())
+                .isNull();
     }
 
     @Test
     void continuesFilterChainAfterTokenFailure() throws Exception {
         when(request.getHeader("Authorization")).thenReturn("Bearer " + TOKEN);
-        when(tokens.validateToken(TOKEN)).thenThrow(new IllegalArgumentException("Malformed token"));
+        when(tokens.validateToken(TOKEN))
+                .thenThrow(new IllegalArgumentException("Malformed token"));
 
         filter.doFilterInternal(request, response, chain);
 
         verify(chain).doFilter(request, response);
-        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication())
+                .isNull();
     }
 
     private void validToken() {
         when(request.getHeader("Authorization")).thenReturn("Bearer " + TOKEN);
         when(tokens.validateToken(TOKEN)).thenReturn(true);
-        when(tokens.extractSubjectType(TOKEN)).thenReturn(AuthenticableType.USER);
+        when(tokens.extractSubjectType(TOKEN))
+                .thenReturn(AuthenticableType.USER);
         when(tokens.extractSubjectId(TOKEN)).thenReturn(USER_ID.toString());
     }
 
     private AccessService.CurrentAccess current(Set<PermissionAction> actions) {
-        return new AccessService.CurrentAccess(ROLE_ID, "Custom role", DEPARTMENT_ID, false,
-                Map.of(BusinessModule.CATALOG, actions));
+        return new AccessService.CurrentAccess(ROLE_ID, "Custom role",
+                DEPARTMENT_ID, false, Map.of(BusinessModule.CATALOG, actions));
     }
 }

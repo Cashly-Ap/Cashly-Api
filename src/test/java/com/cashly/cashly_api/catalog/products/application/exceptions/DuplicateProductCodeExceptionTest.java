@@ -12,7 +12,8 @@ class DuplicateProductCodeExceptionTest {
     void should_CreateException_WithCodeInMessage() {
         String code = "PROD-001";
 
-        DuplicateProductCodeException exception = new DuplicateProductCodeException(code);
+        DuplicateProductCodeException exception = new DuplicateProductCodeException(
+                code);
 
         assertTrue(exception.getMessage().contains(code));
         assertTrue(exception.getMessage().contains("already exists"));
@@ -20,14 +21,16 @@ class DuplicateProductCodeExceptionTest {
 
     @Test
     void should_BeRuntimeException() {
-        DuplicateProductCodeException exception = new DuplicateProductCodeException("TEST");
+        DuplicateProductCodeException exception = new DuplicateProductCodeException(
+                "TEST");
 
         assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
     void should_NotBeNull() {
-        DuplicateProductCodeException exception = new DuplicateProductCodeException("PROD-002");
+        DuplicateProductCodeException exception = new DuplicateProductCodeException(
+                "PROD-002");
 
         assertNotNull(exception);
     }

@@ -35,19 +35,23 @@ class CreateCategoryUseCaseTest {
 
     @Test
     void should_CreateCategory_When_ValidRequest() {
-        CreateCategoryRequest request = new CreateCategoryRequest("New Category", "Description");
+        CreateCategoryRequest request = new CreateCategoryRequest(
+                "New Category", "Description");
 
-        Category savedCategory = Category.reconstitute(
-                UUID.randomUUID(), "New Category", "Description", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category savedCategory = Category.reconstitute(UUID.randomUUID(),
+                "New Category", "Description", true, LocalDateTime.now(),
+                LocalDateTime.now());
 
         CategoryDetailResponse expectedResponse = new CategoryDetailResponse(
-                savedCategory.getId().toString(), "New Category", "Description", true, 0L,
-                savedCategory.getCreatedAt(), savedCategory.getUpdatedAt());
+                savedCategory.getId().toString(), "New Category", "Description",
+                true, 0L, savedCategory.getCreatedAt(),
+                savedCategory.getUpdatedAt());
 
         when(categoryRepository.existsByName("New Category")).thenReturn(false);
-        when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
-        when(categoryMapper.toDetailResponse(savedCategory, 0L)).thenReturn(expectedResponse);
+        when(categoryRepository.save(any(Category.class)))
+                .thenReturn(savedCategory);
+        when(categoryMapper.toDetailResponse(savedCategory, 0L))
+                .thenReturn(expectedResponse);
 
         CategoryDetailResponse result = useCase.execute(request);
 
@@ -61,11 +65,13 @@ class CreateCategoryUseCaseTest {
 
     @Test
     void should_ThrowDuplicateException_When_NameAlreadyExists() {
-        CreateCategoryRequest request = new CreateCategoryRequest("Existing", "Description");
+        CreateCategoryRequest request = new CreateCategoryRequest("Existing",
+                "Description");
 
         when(categoryRepository.existsByName("Existing")).thenReturn(true);
 
-        assertThrows(DuplicateCategoryNameException.class, () -> useCase.execute(request));
+        assertThrows(DuplicateCategoryNameException.class,
+                () -> useCase.execute(request));
 
         verify(categoryRepository).existsByName("Existing");
         verify(categoryRepository, never()).save(any());
@@ -73,19 +79,23 @@ class CreateCategoryUseCaseTest {
 
     @Test
     void should_TrimName_When_CheckingDuplicatesAndCreating() {
-        CreateCategoryRequest request = new CreateCategoryRequest("  Trimmed  ", "Description");
+        CreateCategoryRequest request = new CreateCategoryRequest("  Trimmed  ",
+                "Description");
 
-        Category savedCategory = Category.reconstitute(
-                UUID.randomUUID(), "Trimmed", "Description", true,
-                LocalDateTime.now(), LocalDateTime.now());
+        Category savedCategory = Category.reconstitute(UUID.randomUUID(),
+                "Trimmed", "Description", true, LocalDateTime.now(),
+                LocalDateTime.now());
 
         CategoryDetailResponse expectedResponse = new CategoryDetailResponse(
-                savedCategory.getId().toString(), "Trimmed", "Description", true, 0L,
-                savedCategory.getCreatedAt(), savedCategory.getUpdatedAt());
+                savedCategory.getId().toString(), "Trimmed", "Description",
+                true, 0L, savedCategory.getCreatedAt(),
+                savedCategory.getUpdatedAt());
 
         when(categoryRepository.existsByName("Trimmed")).thenReturn(false);
-        when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
-        when(categoryMapper.toDetailResponse(savedCategory, 0L)).thenReturn(expectedResponse);
+        when(categoryRepository.save(any(Category.class)))
+                .thenReturn(savedCategory);
+        when(categoryMapper.toDetailResponse(savedCategory, 0L))
+                .thenReturn(expectedResponse);
 
         CategoryDetailResponse result = useCase.execute(request);
 

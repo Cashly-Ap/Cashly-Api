@@ -24,9 +24,9 @@ public class CreateCreditNoteUseCase {
     private final CreditNoteEffectsGateway effects;
 
     public CreateCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
-                                   CreditNoteInvoiceGateway invoices,
-                                   CreditNoteFinancialPositionGateway financialPosition,
-                                   CreditNoteEffectsGateway effects) {
+            CreditNoteInvoiceGateway invoices,
+            CreditNoteFinancialPositionGateway financialPosition,
+            CreditNoteEffectsGateway effects) {
         this.creditNoteRepository = creditNoteRepository;
         this.invoices = invoices;
         this.financialPosition = financialPosition;
@@ -34,33 +34,40 @@ public class CreateCreditNoteUseCase {
     }
 
     @Transactional
-    public CreditNoteResponse execute(CreateCreditNoteRequest request, UUID authenticatedUserId) {
-        CreditNoteInvoiceGateway.CreditNoteInvoiceContext invoice = invoices.find(request.invoiceId());
-        if ("CANCELLED".equals(invoice.status()) || "FULLY_RETURNED".equals(invoice.status())) {
-            throw new IllegalStateException("Cannot create credit note for invoice " + invoice.number()
-                    + ". Current status: " + invoice.statusLabel());
+    public CreditNoteResponse execute(CreateCreditNoteRequest request,
+            UUID authenticatedUserId) {
+        CreditNoteInvoiceGateway.CreditNoteInvoiceContext invoice = invoices
+                .find(request.invoiceId());
+        if ("CANCELLED".equals(invoice.status())
+                || "FULLY_RETURNED".equals(invoice.status())) {
+            throw new IllegalStateException(
+                    "Cannot create credit note for invoice " + invoice.number()
+                            + ". Current status: " + invoice.statusLabel());
         }
 
         int year = LocalDate.now().getYear();
         CreditNoteNumber noteNumber = CreditNoteNumber.of(year,
                 creditNoteRepository.getNextSequenceForYear(year));
-        CreditNote note = CreditNote.create(noteNumber, request.customerId(), request.invoiceId(),
-                request.amount(), request.reason(), authenticatedUserId, "User");
+        CreditNote note = CreditNote.create(noteNumber, request.customerId(),
+                request.invoiceId(), request.amount(), request.reason(),
+                authenticatedUserId, "User");
         CreditNote saved = creditNoteRepository.save(note);
 
-        effects.recordCashOut(saved.getAmount(), saved.getNoteNumber().value(), saved.getId().value(),
-                authenticatedUserId, saved.getCreatedByName());
+        effects.recordCashOut(saved.getAmount(), saved.getNoteNumber().value(),
+                saved.getId().value(), authenticatedUserId,
+                saved.getCreatedByName());
         invoices.recalculate(saved.getInvoiceId());
 
-        CreditNoteFinancialPositionGateway.Position position = financialPosition.findByInvoiceId(request.invoiceId());
+        CreditNoteFinancialPositionGateway.Position position = financialPosition
+                .findByInvoiceId(request.invoiceId());
         BigDecimal effectiveTotal = invoice.totalBeforeNotes()
-                .subtract(position.creditNotes())
-                .add(position.debitNotes())
+                .subtract(position.creditNotes()).add(position.debitNotes())
                 .max(BigDecimal.ZERO);
         BigDecimal surplus = position.paid().subtract(effectiveTotal);
         if (surplus.compareTo(BigDecimal.ZERO) > 0) {
-            effects.addCustomerCredit(request.customerId(), surplus, saved.getId().value(),
-                    saved.getNoteNumber().value(), invoice.number(), authenticatedUserId);
+            effects.addCustomerCredit(request.customerId(), surplus,
+                    saved.getId().value(), saved.getNoteNumber().value(),
+                    invoice.number(), authenticatedUserId);
         }
 
         return CreditNoteMapper.toCreditNoteResponse(saved, null, null, null);

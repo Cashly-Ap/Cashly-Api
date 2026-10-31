@@ -48,22 +48,22 @@ class UpdateUserEmailUseCaseTest {
     void setUp() {
         UUID uuid = UUID.randomUUID();
         userId = uuid.toString();
-        testUser = new User(
-            new UserId(uuid),
-            new Email("old@example.com"),
-            new UserName("Test User"),
-            Password.fromHash("$2a$10$hashedPassword")
-        );
+        testUser = new User(new UserId(uuid), new Email("old@example.com"),
+                new UserName("Test User"),
+                Password.fromHash("$2a$10$hashedPassword"));
     }
 
     @Test
     @DisplayName("should_UpdateEmail_When_UserExistsAndEmailIsUnique")
     void should_UpdateEmail_When_UserExistsAndEmailIsUnique() {
-        UpdateUserEmailRequest request = new UpdateUserEmailRequest("new@example.com");
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "new@example.com");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = useCase.execute(userId, request);
 
@@ -77,14 +77,15 @@ class UpdateUserEmailUseCaseTest {
     @Test
     @DisplayName("should_ThrowUserNotFoundException_When_UserDoesNotExist")
     void should_ThrowUserNotFoundException_When_UserDoesNotExist() {
-        UpdateUserEmailRequest request = new UpdateUserEmailRequest("new@example.com");
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "new@example.com");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
-            UserNotFoundException.class,
-            () -> useCase.execute(userId, request)
-        );
+                UserNotFoundException.class,
+                () -> useCase.execute(userId, request));
 
         assertTrue(exception.getMessage().contains("User not found"));
         verify(userRepository).findById(any(UserId.class));
@@ -95,15 +96,16 @@ class UpdateUserEmailUseCaseTest {
     @Test
     @DisplayName("should_ThrowDuplicateEmailException_When_EmailAlreadyInUse")
     void should_ThrowDuplicateEmailException_When_EmailAlreadyInUse() {
-        UpdateUserEmailRequest request = new UpdateUserEmailRequest("taken@example.com");
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "taken@example.com");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(true);
 
         DuplicateEmailException exception = assertThrows(
-            DuplicateEmailException.class,
-            () -> useCase.execute(userId, request)
-        );
+                DuplicateEmailException.class,
+                () -> useCase.execute(userId, request));
 
         assertTrue(exception.getMessage().contains("Email already in use"));
         verify(userRepository).findById(any(UserId.class));
@@ -114,11 +116,14 @@ class UpdateUserEmailUseCaseTest {
     @Test
     @DisplayName("should_AllowSameEmail_When_UserKeepsCurrentEmail")
     void should_AllowSameEmail_When_UserKeepsCurrentEmail() {
-        UpdateUserEmailRequest request = new UpdateUserEmailRequest("old@example.com");
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "old@example.com");
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
         when(userRepository.existsByEmail(any(Email.class))).thenReturn(true);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UserResponse response = useCase.execute(userId, request);
 

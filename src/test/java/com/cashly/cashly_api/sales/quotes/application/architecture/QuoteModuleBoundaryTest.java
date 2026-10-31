@@ -15,14 +15,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuoteModuleBoundaryTest {
     @Test
     void application_use_cases_depend_only_on_quote_owned_types() {
-        Class<?>[] useCases = {CreateQuoteUseCase.class, UpdateQuoteUseCase.class, GetQuotesUseCase.class,
-                GetQuoteByIdUseCase.class, GetProductsForQuoteUseCase.class, GetWarehousesForQuoteUseCase.class};
+        Class<?>[] useCases = {CreateQuoteUseCase.class,
+                UpdateQuoteUseCase.class, GetQuotesUseCase.class,
+                GetQuoteByIdUseCase.class, GetProductsForQuoteUseCase.class,
+                GetWarehousesForQuoteUseCase.class};
 
         for (Class<?> useCase : useCases) {
             for (var constructor : useCase.getConstructors()) {
-                assertTrue(Arrays.stream(constructor.getParameterTypes()).allMatch(type ->
-                                type.getPackageName().startsWith("com.cashly.cashly_api.sales.quotes.")),
-                        useCase.getSimpleName() + " imports an external module into its constructor");
+                assertTrue(Arrays.stream(constructor.getParameterTypes())
+                        .allMatch(type -> type.getPackageName().startsWith(
+                                "com.cashly.cashly_api.sales.quotes.")),
+                        useCase.getSimpleName()
+                                + " imports an external module into its constructor");
             }
         }
     }

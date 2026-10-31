@@ -19,7 +19,8 @@ public final class PdfStatusColors {
 
         return switch (status) {
             case "PAID", "CONFIRMED", "INVOICED", "DISPATCHED", "DELIVERED",
-                 "CONVERTED", "CONVERTED_TO_ORDER", "CONVERTED_TO_INVOICE" -> SUCCESS;
+                    "CONVERTED", "CONVERTED_TO_ORDER", "CONVERTED_TO_INVOICE" ->
+                SUCCESS;
             case "PENDING_PAYMENT", "EXPIRED" -> WARNING;
             case "CANCELLED", "OVERDUE" -> DANGER;
             default -> INFO;

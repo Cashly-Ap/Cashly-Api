@@ -10,17 +10,20 @@ public class UserName {
 
     public UserName(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("User name cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "User name cannot be null or empty");
         }
 
         String trimmedValue = value.trim();
 
         if (trimmedValue.length() < MIN_LENGTH) {
-            throw new IllegalArgumentException("User name must be at least " + MIN_LENGTH + " characters long");
+            throw new IllegalArgumentException("User name must be at least "
+                    + MIN_LENGTH + " characters long");
         }
 
         if (trimmedValue.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("User name cannot exceed " + MAX_LENGTH + " characters");
+            throw new IllegalArgumentException(
+                    "User name cannot exceed " + MAX_LENGTH + " characters");
         }
 
         this.value = trimmedValue;
@@ -32,8 +35,10 @@ public class UserName {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         UserName userName = (UserName) obj;
         return Objects.equals(value, userName.value);
     }

@@ -16,12 +16,16 @@ class InvoiceStatusServiceImplTest {
     @Test
     void givenPosition_whenRecalculating_thenUsesTheFinancialTotalsAndPersistsInvoice() {
         InvoiceRepository invoices = mock(InvoiceRepository.class);
-        InvoiceFinancialPositionGateway position = mock(InvoiceFinancialPositionGateway.class);
+        InvoiceFinancialPositionGateway position = mock(
+                InvoiceFinancialPositionGateway.class);
         Invoice invoice = mock(Invoice.class);
         UUID invoiceId = UUID.randomUUID();
-        when(invoices.findById(InvoiceId.of(invoiceId))).thenReturn(Optional.of(invoice));
-        when(position.findByInvoiceId(invoiceId)).thenReturn(new InvoiceFinancialPositionGateway.Position(
-                new BigDecimal("50.00"), new BigDecimal("8.00"), new BigDecimal("3.00")));
+        when(invoices.findById(InvoiceId.of(invoiceId)))
+                .thenReturn(Optional.of(invoice));
+        when(position.findByInvoiceId(invoiceId))
+                .thenReturn(new InvoiceFinancialPositionGateway.Position(
+                        new BigDecimal("50.00"), new BigDecimal("8.00"),
+                        new BigDecimal("3.00")));
 
         new InvoiceStatusServiceImpl(invoices, position).recalculate(invoiceId);
 

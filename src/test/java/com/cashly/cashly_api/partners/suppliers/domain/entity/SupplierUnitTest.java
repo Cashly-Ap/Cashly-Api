@@ -36,31 +36,17 @@ class SupplierUnitTest {
     void should_reconstitute_supplier_with_full_state() {
         SupplierId id = SupplierId.generate();
         LocalDateTime now = LocalDateTime.now();
-        List<SupplierEmail> emails = List.of(
-            SupplierEmail.create(id, new EmailAddress("supplier@example.com"))
-        );
+        List<SupplierEmail> emails = List.of(SupplierEmail.create(id,
+                new EmailAddress("supplier@example.com")));
         List<SupplierPhone> phones = List.of(
-            SupplierPhone.create(id, new PhoneNumber("+58-212-555-1234"))
-        );
-        List<SupplierAddress> addresses = List.of(
-            SupplierAddress.create(id, "123 Main St", true, true, "State", "Mun", "1000")
-        );
+                SupplierPhone.create(id, new PhoneNumber("+58-212-555-1234")));
+        List<SupplierAddress> addresses = List.of(SupplierAddress.create(id,
+                "123 Main St", true, true, "State", "Mun", "1000"));
 
-        Supplier supplier = Supplier.reconstitute(
-            id,
-            SupplierCode.from(100L),
-            new LegalName("Proveedor C.A."),
-            SupplierType.JURIDICO,
-            new Rif("J-12345678-9"),
-            new SupplierAlias("Proveedor"),
-            "Some notes",
-            false,
-            now,
-            now,
-            emails,
-            phones,
-            addresses
-        );
+        Supplier supplier = Supplier.reconstitute(id, SupplierCode.from(100L),
+                new LegalName("Proveedor C.A."), SupplierType.JURIDICO,
+                new Rif("J-12345678-9"), new SupplierAlias("Proveedor"),
+                "Some notes", false, now, now, emails, phones, addresses);
 
         assertEquals(id, supplier.getId());
         assertEquals(100L, supplier.getCode().getValue());
@@ -84,13 +70,15 @@ class SupplierUnitTest {
 
         supplier.updateLegalName(new LegalName("New Name C.A."));
         assertEquals("New Name C.A.", supplier.getLegalName().getValue());
-        assertTrue(supplier.getUpdatedAt().isAfter(before) || supplier.getUpdatedAt().equals(before));
+        assertTrue(supplier.getUpdatedAt().isAfter(before)
+                || supplier.getUpdatedAt().equals(before));
     }
 
     @Test
     void should_throw_on_null_legal_name() {
         Supplier supplier = createTestSupplier();
-        assertThrows(IllegalArgumentException.class, () -> supplier.updateLegalName(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> supplier.updateLegalName(null));
     }
 
     @Test
@@ -100,13 +88,15 @@ class SupplierUnitTest {
 
         supplier.updateRif(new Rif("V-87654321-1"));
         assertEquals("V-87654321-1", supplier.getRif().getValue());
-        assertTrue(supplier.getUpdatedAt().isAfter(before) || supplier.getUpdatedAt().equals(before));
+        assertTrue(supplier.getUpdatedAt().isAfter(before)
+                || supplier.getUpdatedAt().equals(before));
     }
 
     @Test
     void should_throw_on_null_rif() {
         Supplier supplier = createTestSupplier();
-        assertThrows(IllegalArgumentException.class, () -> supplier.updateRif(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> supplier.updateRif(null));
     }
 
     @Test
@@ -116,13 +106,15 @@ class SupplierUnitTest {
 
         supplier.updateAlias(new SupplierAlias("NewAlias"));
         assertEquals("NewAlias", supplier.getAlias().getValue());
-        assertTrue(supplier.getUpdatedAt().isAfter(before) || supplier.getUpdatedAt().equals(before));
+        assertTrue(supplier.getUpdatedAt().isAfter(before)
+                || supplier.getUpdatedAt().equals(before));
     }
 
     @Test
     void should_throw_on_null_alias() {
         Supplier supplier = createTestSupplier();
-        assertThrows(IllegalArgumentException.class, () -> supplier.updateAlias(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> supplier.updateAlias(null));
     }
 
     @Test
@@ -132,13 +124,15 @@ class SupplierUnitTest {
 
         supplier.updateType(SupplierType.NATURAL);
         assertEquals(SupplierType.NATURAL, supplier.getType());
-        assertTrue(supplier.getUpdatedAt().isAfter(before) || supplier.getUpdatedAt().equals(before));
+        assertTrue(supplier.getUpdatedAt().isAfter(before)
+                || supplier.getUpdatedAt().equals(before));
     }
 
     @Test
     void should_throw_on_null_type() {
         Supplier supplier = createTestSupplier();
-        assertThrows(IllegalArgumentException.class, () -> supplier.updateType(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> supplier.updateType(null));
     }
 
     @Test
@@ -148,7 +142,8 @@ class SupplierUnitTest {
 
         supplier.updateNotes("Important notes");
         assertEquals("Important notes", supplier.getNotes());
-        assertTrue(supplier.getUpdatedAt().isAfter(before) || supplier.getUpdatedAt().equals(before));
+        assertTrue(supplier.getUpdatedAt().isAfter(before)
+                || supplier.getUpdatedAt().equals(before));
     }
 
     @Test
@@ -179,7 +174,8 @@ class SupplierUnitTest {
 
         supplier.addEmail(new EmailAddress("supplier@example.com"));
         assertEquals(1, supplier.getEmails().size());
-        assertEquals("supplier@example.com", supplier.getEmails().get(0).getEmail().getValue());
+        assertEquals("supplier@example.com",
+                supplier.getEmails().get(0).getEmail().getValue());
     }
 
     @Test
@@ -189,7 +185,8 @@ class SupplierUnitTest {
 
         supplier.addPhone(new PhoneNumber("+58-212-555-1234"));
         assertEquals(1, supplier.getPhones().size());
-        assertEquals("+58-212-555-1234", supplier.getPhones().get(0).getPhone().getValue());
+        assertEquals("+58-212-555-1234",
+                supplier.getPhones().get(0).getPhone().getValue());
     }
 
     @Test
@@ -197,9 +194,11 @@ class SupplierUnitTest {
         Supplier supplier = createTestSupplier();
         assertTrue(supplier.getAddresses().isEmpty());
 
-        supplier.addAddress("123 Main St", true, true, "State", "Municipality", "1000");
+        supplier.addAddress("123 Main St", true, true, "State", "Municipality",
+                "1000");
         assertEquals(1, supplier.getAddresses().size());
-        assertEquals("123 Main St", supplier.getAddresses().get(0).getAddress());
+        assertEquals("123 Main St",
+                supplier.getAddresses().get(0).getAddress());
         assertTrue(supplier.getAddresses().get(0).isBilling());
     }
 
@@ -248,17 +247,15 @@ class SupplierUnitTest {
         SupplierId id = SupplierId.generate();
         LocalDateTime now = LocalDateTime.now();
 
-        Supplier supplier1 = Supplier.reconstitute(
-            id, SupplierCode.from(1L), new LegalName("Name 1"), SupplierType.JURIDICO,
-            new Rif("J-11111111-1"), new SupplierAlias("Alias1"),
-            null, true, now, now, List.of(), List.of(), List.of()
-        );
+        Supplier supplier1 = Supplier.reconstitute(id, SupplierCode.from(1L),
+                new LegalName("Name 1"), SupplierType.JURIDICO,
+                new Rif("J-11111111-1"), new SupplierAlias("Alias1"), null,
+                true, now, now, List.of(), List.of(), List.of());
 
-        Supplier supplier2 = Supplier.reconstitute(
-            id, SupplierCode.from(2L), new LegalName("Name 2"), SupplierType.NATURAL,
-            new Rif("J-22222222-2"), new SupplierAlias("Alias2"),
-            null, false, now, now, List.of(), List.of(), List.of()
-        );
+        Supplier supplier2 = Supplier.reconstitute(id, SupplierCode.from(2L),
+                new LegalName("Name 2"), SupplierType.NATURAL,
+                new Rif("J-22222222-2"), new SupplierAlias("Alias2"), null,
+                false, now, now, List.of(), List.of(), List.of());
 
         assertEquals(supplier1, supplier2);
         assertEquals(supplier1.hashCode(), supplier2.hashCode());
@@ -274,19 +271,22 @@ class SupplierUnitTest {
     @Test
     void should_return_unmodifiable_emails() {
         Supplier supplier = createTestSupplier();
-        assertThrows(UnsupportedOperationException.class, () -> supplier.getEmails().add(null));
+        assertThrows(UnsupportedOperationException.class,
+                () -> supplier.getEmails().add(null));
     }
 
     @Test
     void should_return_unmodifiable_phones() {
         Supplier supplier = createTestSupplier();
-        assertThrows(UnsupportedOperationException.class, () -> supplier.getPhones().add(null));
+        assertThrows(UnsupportedOperationException.class,
+                () -> supplier.getPhones().add(null));
     }
 
     @Test
     void should_return_unmodifiable_addresses() {
         Supplier supplier = createTestSupplier();
-        assertThrows(UnsupportedOperationException.class, () -> supplier.getAddresses().add(null));
+        assertThrows(UnsupportedOperationException.class,
+                () -> supplier.getAddresses().add(null));
     }
 
     @Test
@@ -305,12 +305,8 @@ class SupplierUnitTest {
     }
 
     private Supplier createTestSupplier() {
-        return Supplier.create(
-            SupplierCode.from(1L),
-            new LegalName("Proveedor C.A."),
-            SupplierType.JURIDICO,
-            new Rif("J-12345678-9"),
-            new SupplierAlias("Proveedor")
-        );
+        return Supplier.create(SupplierCode.from(1L),
+                new LegalName("Proveedor C.A."), SupplierType.JURIDICO,
+                new Rif("J-12345678-9"), new SupplierAlias("Proveedor"));
     }
 }

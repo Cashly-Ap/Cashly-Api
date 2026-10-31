@@ -33,28 +33,33 @@ class CustomerAliasUnitTest {
 
     @Test
     void should_throw_on_null() {
-        assertThrows(IllegalArgumentException.class, () -> new CustomerAlias(null));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerAlias(null));
     }
 
     @Test
     void should_throw_on_blank() {
-        assertThrows(IllegalArgumentException.class, () -> new CustomerAlias("   "));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerAlias("   "));
     }
 
     @Test
     void should_throw_on_empty() {
-        assertThrows(IllegalArgumentException.class, () -> new CustomerAlias(""));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerAlias(""));
     }
 
     @Test
     void should_throw_on_single_char() {
-        assertThrows(IllegalArgumentException.class, () -> new CustomerAlias("A"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerAlias("A"));
     }
 
     @Test
     void should_throw_on_too_long() {
         String tooLong = "A".repeat(101);
-        assertThrows(IllegalArgumentException.class, () -> new CustomerAlias(tooLong));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CustomerAlias(tooLong));
     }
 
     @Test

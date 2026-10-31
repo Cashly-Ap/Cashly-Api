@@ -8,14 +8,8 @@ public interface CustomerCashGateway {
 
     void record(CustomerCashMovement movement);
 
-    record CustomerCashMovement(
-            String direction,
-            String type,
-            BigDecimal amount,
-            UUID paymentMethodId,
-            String description,
-            String sourceType,
-            UUID sourceId,
-            UUID actorId,
-            String actorName) {}
+    record CustomerCashMovement(String direction, String type,
+            BigDecimal amount, UUID paymentMethodId, String description,
+            String sourceType, UUID sourceId, UUID actorId, String actorName) {
+    }
 }

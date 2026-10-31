@@ -35,7 +35,8 @@ class DeletePaymentUseCaseTest {
         UUID id = UUID.randomUUID();
         Payment payment = mock(Payment.class);
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.of(payment));
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.of(payment));
 
         useCase.execute(id);
 
@@ -47,12 +48,11 @@ class DeletePaymentUseCaseTest {
     void should_ThrowException_When_PaymentDoesNotExist() {
         UUID id = UUID.randomUUID();
 
-        when(paymentRepository.findById(PaymentId.of(id))).thenReturn(Optional.empty());
+        when(paymentRepository.findById(PaymentId.of(id)))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> useCase.execute(id)
-        );
+                IllegalArgumentException.class, () -> useCase.execute(id));
 
         assertEquals("Payment not found: " + id, exception.getMessage());
         verify(paymentRepository).findById(PaymentId.of(id));
@@ -65,7 +65,8 @@ class DeletePaymentUseCaseTest {
         UUID id2 = UUID.randomUUID();
         Payment payment = mock(Payment.class);
 
-        when(paymentRepository.findById(PaymentId.of(id1))).thenReturn(Optional.of(payment));
+        when(paymentRepository.findById(PaymentId.of(id1)))
+                .thenReturn(Optional.of(payment));
 
         useCase.execute(id1);
 

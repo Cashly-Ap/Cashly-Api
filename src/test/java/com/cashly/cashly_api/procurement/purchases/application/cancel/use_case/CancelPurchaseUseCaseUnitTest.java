@@ -58,19 +58,29 @@ class CancelPurchaseUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         cancelPurchaseUseCase = new CancelPurchaseUseCase(purchaseRepository,
-                new WarehouseInventoryAdapter(new PurchaseInventoryService(warehouseStockRepository, stockMovementRepository)), new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(warehouseRepository, mock(WarehouseStockRepository.class)))));
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(
+                        warehouseStockRepository, stockMovementRepository)),
+                new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
+                        new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(
+                                new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(
+                                        warehouseRepository,
+                                        mock(WarehouseStockRepository.class)))));
     }
 
     @Test
     void should_CancelPurchase_When_PurchaseExistsAndIsDraft() {
         UUID id = UUID.randomUUID();
         Purchase purchase = buildPurchase(id, PurchaseStatus.DRAFT);
-        CancelPurchaseRequest request = new CancelPurchaseRequest("Cancelación por parte del proveedor");
+        CancelPurchaseRequest request = new CancelPurchaseRequest(
+                "Cancelación por parte del proveedor");
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
-        PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id, request);
+        PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id,
+                request);
 
         assertNotNull(response);
         assertEquals("CANCELLED", response.status());
@@ -83,31 +93,37 @@ class CancelPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.CONFIRMED, warehouseId, productId);
-        CancelPurchaseRequest request = new CancelPurchaseRequest("Error en la compra");
+        Purchase purchase = buildPurchaseWithAllocation(id,
+                PurchaseStatus.CONFIRMED, warehouseId, productId);
+        CancelPurchaseRequest request = new CancelPurchaseRequest(
+                "Error en la compra");
 
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
         stock.addStock(10);
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
         cancelPurchaseUseCase.execute(id, request);
 
         assertEquals(0, stock.getQuantity());
-        verify(warehouseStockRepository).save(argThat(savedStock ->
-                savedStock.getQuantity() == 0));
-        verify(stockMovementRepository).save(argThat(movement ->
-                movement.getMovementType() == MovementType.CANCEL_ENTRY &&
-                movement.getReferenceType() == ReferenceType.PURCHASE &&
-                movement.getQuantity() == 10 &&
-                movement.getPreviousStock() == 10 && movement.getNewStock() == 0 &&
-                movement.getReferenceId().equals(id) &&
-                movement.getReferenceNumber().equals(purchase.getPurchaseNumber().getValue()) &&
-                movement.getNotes().equals("Compra cancelada")
-        ));
+        verify(warehouseStockRepository)
+                .save(argThat(savedStock -> savedStock.getQuantity() == 0));
+        verify(stockMovementRepository).save(argThat(movement -> movement
+                .getMovementType() == MovementType.CANCEL_ENTRY
+                && movement.getReferenceType() == ReferenceType.PURCHASE
+                && movement.getQuantity() == 10
+                && movement.getPreviousStock() == 10
+                && movement.getNewStock() == 0
+                && movement.getReferenceId().equals(id)
+                && movement.getReferenceNumber()
+                        .equals(purchase.getPurchaseNumber().getValue())
+                && movement.getNotes().equals("Compra cancelada")));
     }
 
     @Test
@@ -115,16 +131,20 @@ class CancelPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.DRAFT, warehouseId, productId);
+        Purchase purchase = buildPurchaseWithAllocation(id,
+                PurchaseStatus.DRAFT, warehouseId, productId);
         CancelPurchaseRequest request = new CancelPurchaseRequest("Razón");
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         cancelPurchaseUseCase.execute(id, request);
 
         verify(purchaseRepository).save(any(Purchase.class));
-        verify(warehouseStockRepository, never()).findByWarehouseIdAndProductIdForUpdate(any(), any());
+        verify(warehouseStockRepository, never())
+                .findByWarehouseIdAndProductIdForUpdate(any(), any());
         verify(stockMovementRepository, never()).save(any());
     }
 
@@ -133,14 +153,15 @@ class CancelPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         CancelPurchaseRequest request = new CancelPurchaseRequest("Razón");
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.empty());
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.empty());
 
         PurchaseNotFoundException exception = assertThrows(
                 PurchaseNotFoundException.class,
-                () -> cancelPurchaseUseCase.execute(id, request)
-        );
+                () -> cancelPurchaseUseCase.execute(id, request));
 
-        assertEquals("Purchase not found with id: " + id, exception.getMessage());
+        assertEquals("Purchase not found with id: " + id,
+                exception.getMessage());
         verify(purchaseRepository, never()).save(any());
     }
 
@@ -150,9 +171,11 @@ class CancelPurchaseUseCaseUnitTest {
         Purchase purchase = buildPurchase(id, PurchaseStatus.CANCELLED);
         CancelPurchaseRequest request = new CancelPurchaseRequest("Razón");
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
 
-        assertThrows(IllegalStateException.class, () -> cancelPurchaseUseCase.execute(id, request));
+        assertThrows(IllegalStateException.class,
+                () -> cancelPurchaseUseCase.execute(id, request));
         verify(purchaseRepository, never()).save(any());
     }
 
@@ -162,8 +185,10 @@ class CancelPurchaseUseCaseUnitTest {
         Purchase purchase = buildPurchase(id, PurchaseStatus.DRAFT);
         CancelPurchaseRequest request = new CancelPurchaseRequest("Razón");
 
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(purchaseRepository.save(any(Purchase.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         cancelPurchaseUseCase.execute(id, request);
 
@@ -175,11 +200,15 @@ class CancelPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.CONFIRMED, warehouseId, productId);
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)).thenReturn(Optional.empty());
-        assertThrows(IllegalStateException.class,
-                () -> cancelPurchaseUseCase.execute(id, new CancelPurchaseRequest("Missing stock")));
+        Purchase purchase = buildPurchaseWithAllocation(id,
+                PurchaseStatus.CONFIRMED, warehouseId, productId);
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(Optional.empty());
+        assertThrows(IllegalStateException.class, () -> cancelPurchaseUseCase
+                .execute(id, new CancelPurchaseRequest("Missing stock")));
         verify(purchaseRepository, never()).save(any());
         verify(stockMovementRepository, never()).save(any());
     }
@@ -189,13 +218,17 @@ class CancelPurchaseUseCaseUnitTest {
         UUID id = UUID.randomUUID();
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        Purchase purchase = buildPurchaseWithAllocation(id, PurchaseStatus.CONFIRMED, warehouseId, productId);
+        Purchase purchase = buildPurchaseWithAllocation(id,
+                PurchaseStatus.CONFIRMED, warehouseId, productId);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
         stock.addStock(5);
-        when(purchaseRepository.findById(PurchaseId.of(id))).thenReturn(Optional.of(purchase));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId)).thenReturn(Optional.of(stock));
-        assertThrows(IllegalStateException.class,
-                () -> cancelPurchaseUseCase.execute(id, new CancelPurchaseRequest("Consumed stock")));
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+                .thenReturn(Optional.of(stock));
+        assertThrows(IllegalStateException.class, () -> cancelPurchaseUseCase
+                .execute(id, new CancelPurchaseRequest("Consumed stock")));
         assertEquals(5, stock.getQuantity());
         verify(purchaseRepository, never()).save(any());
         verify(warehouseStockRepository, never()).save(any());
@@ -203,58 +236,27 @@ class CancelPurchaseUseCaseUnitTest {
     }
 
     private Purchase buildPurchase(UUID id, PurchaseStatus status) {
-        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Purchase.reconstitute(
-                PurchaseId.of(id),
-                PurchaseNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                status,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Purchase.reconstitute(PurchaseId.of(id),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name", status, null,
+                BigDecimal.ZERO, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Purchase buildPurchaseWithAllocation(UUID id, PurchaseStatus status,
-                                                  UUID warehouseId, UUID productId) {
-        PurchaseLineAllocation allocation = PurchaseLineAllocation.create(warehouseId, BigDecimal.TEN);
+            UUID warehouseId, UUID productId) {
+        PurchaseLineAllocation allocation = PurchaseLineAllocation
+                .create(warehouseId, BigDecimal.TEN);
         PurchaseLine line = PurchaseLine.reconstitute(
-                PurchaseLineId.of(UUID.randomUUID()),
-                productId,
-                "Test Product",
-                "PROD-001",
-                BigDecimal.TEN,
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(100),
-                List.of(allocation)
-        );
-        return Purchase.reconstitute(
-                PurchaseId.of(id),
-                PurchaseNumber.of(2026, 1),
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                status,
-                null,
-                BigDecimal.ZERO,
-                null,
-                null,
-                null,
-                List.of(line),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                PurchaseLineId.of(UUID.randomUUID()), productId, "Test Product",
+                "PROD-001", BigDecimal.TEN, BigDecimal.valueOf(10),
+                BigDecimal.valueOf(100), List.of(allocation));
+        return Purchase.reconstitute(PurchaseId.of(id),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name", status, null,
+                BigDecimal.ZERO, null, null, null, List.of(line),
+                LocalDateTime.now(), LocalDateTime.now());
     }
 }

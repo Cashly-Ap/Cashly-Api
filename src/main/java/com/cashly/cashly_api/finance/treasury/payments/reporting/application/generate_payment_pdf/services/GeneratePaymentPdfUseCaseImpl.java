@@ -8,13 +8,15 @@ import com.cashly.cashly_api.finance.treasury.payments.reporting.application.por
 
 import java.util.UUID;
 
-public class GeneratePaymentPdfUseCaseImpl implements GeneratePaymentPdfUseCase {
+public class GeneratePaymentPdfUseCaseImpl
+        implements
+            GeneratePaymentPdfUseCase {
 
     private final PaymentReportQueryGateway paymentQuery;
     private final PaymentPdfPort paymentPdfPort;
 
     public GeneratePaymentPdfUseCaseImpl(PaymentReportQueryGateway paymentQuery,
-                                          PaymentPdfPort paymentPdfPort) {
+            PaymentPdfPort paymentPdfPort) {
         this.paymentQuery = paymentQuery;
         this.paymentPdfPort = paymentPdfPort;
     }

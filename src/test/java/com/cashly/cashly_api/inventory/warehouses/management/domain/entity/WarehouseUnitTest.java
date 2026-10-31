@@ -14,10 +14,8 @@ class WarehouseUnitTest {
     @Test
     @DisplayName("create() creates active warehouse with null id")
     void shouldCreateActiveWarehouseWithNullId() {
-        Warehouse warehouse = Warehouse.create(
-                "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001"
-        );
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
 
         assertNull(warehouse.getId());
         assertEquals("WH-001", warehouse.getCode());
@@ -38,11 +36,9 @@ class WarehouseUnitTest {
         LocalDateTime created = LocalDateTime.of(2024, 1, 1, 10, 0);
         LocalDateTime updated = LocalDateTime.of(2024, 6, 1, 15, 0);
 
-        Warehouse warehouse = Warehouse.reconstitute(
-                id, "WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001",
-                false, created, updated
-        );
+        Warehouse warehouse = Warehouse.reconstitute(id, "WH-001",
+                "Main Warehouse", "123 Main St", "State A", "Municipality B",
+                "10001", false, created, updated);
 
         assertEquals(id, warehouse.getId());
         assertEquals("WH-001", warehouse.getCode());
@@ -55,11 +51,12 @@ class WarehouseUnitTest {
     @Test
     @DisplayName("update() changes all fields and updates updatedAt")
     void shouldUpdateAllFields() {
-        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
         LocalDateTime before = warehouse.getUpdatedAt();
 
-        warehouse.update("New Name", "456 New St", "State C", "Municipality D", "20002", true);
+        warehouse.update("New Name", "456 New St", "State C", "Municipality D",
+                "20002", true);
 
         assertEquals("New Name", warehouse.getName());
         assertEquals("456 New St", warehouse.getAddress());
@@ -67,17 +64,19 @@ class WarehouseUnitTest {
         assertEquals("Municipality D", warehouse.getMunicipality());
         assertEquals("20002", warehouse.getPostalCode());
         assertTrue(warehouse.isActive());
-        assertTrue(warehouse.getUpdatedAt().isAfter(before) || warehouse.getUpdatedAt().equals(before));
+        assertTrue(warehouse.getUpdatedAt().isAfter(before)
+                || warehouse.getUpdatedAt().equals(before));
     }
 
     @Test
     @DisplayName("update() with active=null does not change active flag")
     void shouldNotChangeActiveWhenNull() {
-        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
         assertTrue(warehouse.isActive());
 
-        warehouse.update("New Name", "456 New St", "State C", "Municipality D", "20002", null);
+        warehouse.update("New Name", "456 New St", "State C", "Municipality D",
+                "20002", null);
 
         assertTrue(warehouse.isActive());
     }
@@ -85,41 +84,43 @@ class WarehouseUnitTest {
     @Test
     @DisplayName("update() validates name not null")
     void shouldThrowWhenNameIsNull() {
-        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
 
         assertThrows(IllegalArgumentException.class,
-                () -> warehouse.update(null, "456 New St", "State C", "Municipality D", "20002", true));
+                () -> warehouse.update(null, "456 New St", "State C",
+                        "Municipality D", "20002", true));
     }
 
     @Test
     @DisplayName("update() validates name not blank")
     void shouldThrowWhenNameIsBlank() {
-        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
 
         assertThrows(IllegalArgumentException.class,
-                () -> warehouse.update("   ", "456 New St", "State C", "Municipality D", "20002", true));
+                () -> warehouse.update("   ", "456 New St", "State C",
+                        "Municipality D", "20002", true));
     }
 
     @Test
     @DisplayName("update() validates name not over 100 chars")
     void shouldThrowWhenNameOver100Chars() {
-        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
         String longName = "A".repeat(101);
 
         assertThrows(IllegalArgumentException.class,
-                () -> warehouse.update(longName, "456 New St", "State C", "Municipality D", "20002", true));
+                () -> warehouse.update(longName, "456 New St", "State C",
+                        "Municipality D", "20002", true));
     }
 
     @Test
     @DisplayName("activate() sets active to true")
     void shouldActivateWarehouse() {
-        Warehouse warehouse = Warehouse.reconstitute(
-                UUID.randomUUID(), "WH-001", "Main", "Addr", "State", "Mun", "10001",
-                false, LocalDateTime.now(), LocalDateTime.now()
-        );
+        Warehouse warehouse = Warehouse.reconstitute(UUID.randomUUID(),
+                "WH-001", "Main", "Addr", "State", "Mun", "10001", false,
+                LocalDateTime.now(), LocalDateTime.now());
         assertFalse(warehouse.isActive());
 
         warehouse.activate();
@@ -131,8 +132,8 @@ class WarehouseUnitTest {
     @Test
     @DisplayName("deactivate() sets active to false")
     void shouldDeactivateWarehouse() {
-        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
         assertTrue(warehouse.isActive());
 
         warehouse.deactivate();
@@ -163,15 +164,15 @@ class WarehouseUnitTest {
         String longCode = "A".repeat(51);
 
         assertThrows(IllegalArgumentException.class,
-                () -> Warehouse.create(longCode, "Main Warehouse", "123 Main St",
-                        "State A", "Municipality B", "10001"));
+                () -> Warehouse.create(longCode, "Main Warehouse",
+                        "123 Main St", "State A", "Municipality B", "10001"));
     }
 
     @Test
     @DisplayName("code is trimmed and uppercased")
     void shouldTrimAndUppercaseCode() {
-        Warehouse warehouse = Warehouse.create("  wh-001  ", "Main Warehouse", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("  wh-001  ", "Main Warehouse",
+                "123 Main St", "State A", "Municipality B", "10001");
 
         assertEquals("WH-001", warehouse.getCode());
     }
@@ -179,8 +180,8 @@ class WarehouseUnitTest {
     @Test
     @DisplayName("name is trimmed")
     void shouldTrimName() {
-        Warehouse warehouse = Warehouse.create("WH-001", "  Main Warehouse  ", "123 Main St",
-                "State A", "Municipality B", "10001");
+        Warehouse warehouse = Warehouse.create("WH-001", "  Main Warehouse  ",
+                "123 Main St", "State A", "Municipality B", "10001");
 
         assertEquals("Main Warehouse", warehouse.getName());
     }
@@ -207,10 +208,10 @@ class WarehouseUnitTest {
         UUID id2 = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        Warehouse w1 = Warehouse.reconstitute(id1, "WH-001", "Main", "Addr", "State", "Mun", "10001",
-                true, now, now);
-        Warehouse w2 = Warehouse.reconstitute(id2, "WH-002", "Main", "Addr", "State", "Mun", "10001",
-                true, now, now);
+        Warehouse w1 = Warehouse.reconstitute(id1, "WH-001", "Main", "Addr",
+                "State", "Mun", "10001", true, now, now);
+        Warehouse w2 = Warehouse.reconstitute(id2, "WH-002", "Main", "Addr",
+                "State", "Mun", "10001", true, now, now);
 
         assertNotEquals(w1, w2);
     }

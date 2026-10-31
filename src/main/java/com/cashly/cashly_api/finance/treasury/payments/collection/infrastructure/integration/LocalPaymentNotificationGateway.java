@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class LocalPaymentNotificationGateway implements PaymentNotificationGateway {
+public class LocalPaymentNotificationGateway
+        implements
+            PaymentNotificationGateway {
     private final NotificationService notifications;
 
     public LocalPaymentNotificationGateway(NotificationService notifications) {
@@ -21,6 +23,7 @@ public class LocalPaymentNotificationGateway implements PaymentNotificationGatew
 
     @Override
     public void rejected(UUID customerId, UUID paymentId, String reason) {
-        notifications.notifyCustomerPaymentRejected(customerId, paymentId, reason);
+        notifications.notifyCustomerPaymentRejected(customerId, paymentId,
+                reason);
     }
 }

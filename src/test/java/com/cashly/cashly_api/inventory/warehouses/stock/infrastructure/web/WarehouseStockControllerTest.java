@@ -58,10 +58,11 @@ class WarehouseStockControllerTest {
         PageResponse<WarehouseStockResponse> pageResponse = new PageResponse<>(
                 List.of(stock), 1L, 1, 20, 0, true, true, false);
 
-        when(getWarehouseStockUseCase.execute(eq(warehouseId), anyInt(), anyInt()))
-                .thenReturn(pageResponse);
+        when(getWarehouseStockUseCase.execute(eq(warehouseId), anyInt(),
+                anyInt())).thenReturn(pageResponse);
 
-        ResponseEntity<PageResponse<WarehouseStockResponse>> result = warehouseStockController.getStock(warehouseId, 0, 20);
+        ResponseEntity<PageResponse<WarehouseStockResponse>> result = warehouseStockController
+                .getStock(warehouseId, 0, 20);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -76,10 +77,11 @@ class WarehouseStockControllerTest {
         PageResponse<WarehouseStockResponse> emptyPage = new PageResponse<>(
                 List.of(), 0L, 0, 20, 0, true, true, true);
 
-        when(getWarehouseStockUseCase.execute(eq(warehouseId), anyInt(), anyInt()))
-                .thenReturn(emptyPage);
+        when(getWarehouseStockUseCase.execute(eq(warehouseId), anyInt(),
+                anyInt())).thenReturn(emptyPage);
 
-        ResponseEntity<PageResponse<WarehouseStockResponse>> result = warehouseStockController.getStock(warehouseId, 0, 20);
+        ResponseEntity<PageResponse<WarehouseStockResponse>> result = warehouseStockController
+                .getStock(warehouseId, 0, 20);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -93,17 +95,19 @@ class WarehouseStockControllerTest {
         UUID warehouseId = UUID.randomUUID();
         StockMovementResponse movement = mock(StockMovementResponse.class);
 
-        when(stockEntryUseCase.execute(eq(warehouseId), any(StockEntryRequest.class)))
-                .thenReturn(List.of(movement));
+        when(stockEntryUseCase.execute(eq(warehouseId),
+                any(StockEntryRequest.class))).thenReturn(List.of(movement));
 
         var request = new StockEntryRequest(List.of());
 
-        ResponseEntity<List<StockMovementResponse>> result = warehouseStockController.entry(warehouseId, request);
+        ResponseEntity<List<StockMovementResponse>> result = warehouseStockController
+                .entry(warehouseId, request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().size());
-        verify(stockEntryUseCase).execute(eq(warehouseId), any(StockEntryRequest.class));
+        verify(stockEntryUseCase).execute(eq(warehouseId),
+                any(StockEntryRequest.class));
     }
 
     @Test
@@ -112,17 +116,19 @@ class WarehouseStockControllerTest {
         UUID warehouseId = UUID.randomUUID();
         StockMovementResponse movement = mock(StockMovementResponse.class);
 
-        when(stockExitUseCase.execute(eq(warehouseId), any(StockExitRequest.class)))
-                .thenReturn(List.of(movement));
+        when(stockExitUseCase.execute(eq(warehouseId),
+                any(StockExitRequest.class))).thenReturn(List.of(movement));
 
         var request = new StockExitRequest(List.of());
 
-        ResponseEntity<List<StockMovementResponse>> result = warehouseStockController.exit(warehouseId, request);
+        ResponseEntity<List<StockMovementResponse>> result = warehouseStockController
+                .exit(warehouseId, request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().size());
-        verify(stockExitUseCase).execute(eq(warehouseId), any(StockExitRequest.class));
+        verify(stockExitUseCase).execute(eq(warehouseId),
+                any(StockExitRequest.class));
     }
 
     @Test
@@ -131,16 +137,19 @@ class WarehouseStockControllerTest {
         UUID warehouseId = UUID.randomUUID();
         StockMovementResponse movement = mock(StockMovementResponse.class);
 
-        when(stockAdjustmentUseCase.execute(eq(warehouseId), any(StockAdjustmentRequest.class)))
-                .thenReturn(movement);
+        when(stockAdjustmentUseCase.execute(eq(warehouseId),
+                any(StockAdjustmentRequest.class))).thenReturn(movement);
 
-        StockAdjustmentRequest request = new StockAdjustmentRequest(UUID.randomUUID(), 50, "Adjustment");
+        StockAdjustmentRequest request = new StockAdjustmentRequest(
+                UUID.randomUUID(), 50, "Adjustment");
 
-        ResponseEntity<StockMovementResponse> result = warehouseStockController.adjustment(warehouseId, request);
+        ResponseEntity<StockMovementResponse> result = warehouseStockController
+                .adjustment(warehouseId, request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(stockAdjustmentUseCase).execute(eq(warehouseId), any(StockAdjustmentRequest.class));
+        verify(stockAdjustmentUseCase).execute(eq(warehouseId),
+                any(StockAdjustmentRequest.class));
     }
 
     @Test
@@ -149,17 +158,19 @@ class WarehouseStockControllerTest {
         UUID warehouseId = UUID.randomUUID();
         StockMovementResponse movement = mock(StockMovementResponse.class);
 
-        when(transferStockUseCase.execute(eq(warehouseId), any(TransferStockRequest.class)))
-                .thenReturn(List.of(movement));
+        when(transferStockUseCase.execute(eq(warehouseId),
+                any(TransferStockRequest.class))).thenReturn(List.of(movement));
 
         TransferStockRequest request = new TransferStockRequest(
                 UUID.randomUUID(), UUID.randomUUID(), 10, "Transfer notes");
 
-        ResponseEntity<List<StockMovementResponse>> result = warehouseStockController.transfer(warehouseId, request);
+        ResponseEntity<List<StockMovementResponse>> result = warehouseStockController
+                .transfer(warehouseId, request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().size());
-        verify(transferStockUseCase).execute(eq(warehouseId), any(TransferStockRequest.class));
+        verify(transferStockUseCase).execute(eq(warehouseId),
+                any(TransferStockRequest.class));
     }
 }

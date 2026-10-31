@@ -7,7 +7,8 @@ public class SupplierCode {
 
     public SupplierCode(Long value) {
         if (value == null || value <= 0) {
-            throw new IllegalArgumentException("Supplier code must be a positive number");
+            throw new IllegalArgumentException(
+                    "Supplier code must be a positive number");
         }
         this.value = value;
     }
@@ -22,8 +23,10 @@ public class SupplierCode {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         SupplierCode that = (SupplierCode) obj;
         return Objects.equals(value, that.value);
     }

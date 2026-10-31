@@ -9,6 +9,7 @@ public interface DebitNoteInvoiceGateway {
     Map<UUID, InvoiceContext> findAll(Set<UUID> invoiceIds);
     void recalculate(UUID invoiceId);
 
-    record InvoiceContext(UUID id, String number, String status, String statusLabel,
-                          String customerName, String customerRif) {}
+    record InvoiceContext(UUID id, String number, String status,
+            String statusLabel, String customerName, String customerRif) {
+    }
 }

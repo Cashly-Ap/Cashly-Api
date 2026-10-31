@@ -18,7 +18,7 @@ public class InvoiceStatusServiceImpl implements InvoiceStatusService {
     private final InvoiceFinancialPositionGateway financialPosition;
 
     public InvoiceStatusServiceImpl(InvoiceRepository invoiceRepository,
-                                     InvoiceFinancialPositionGateway financialPosition) {
+            InvoiceFinancialPositionGateway financialPosition) {
         this.invoiceRepository = invoiceRepository;
         this.financialPosition = financialPosition;
     }
@@ -27,10 +27,13 @@ public class InvoiceStatusServiceImpl implements InvoiceStatusService {
     @Transactional
     public void recalculate(UUID invoiceId) {
         Invoice invoice = invoiceRepository.findById(new InvoiceId(invoiceId))
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + invoiceId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Invoice not found: " + invoiceId));
 
-        InvoiceFinancialPositionGateway.Position position = financialPosition.findByInvoiceId(invoiceId);
-        invoice.recalculatePaymentStatus(position.paid(), position.debitNotes(), position.creditNotes());
+        InvoiceFinancialPositionGateway.Position position = financialPosition
+                .findByInvoiceId(invoiceId);
+        invoice.recalculatePaymentStatus(position.paid(), position.debitNotes(),
+                position.creditNotes());
         invoiceRepository.save(invoice);
     }
 }

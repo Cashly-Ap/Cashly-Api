@@ -38,13 +38,15 @@ public class StockReportConfig {
     public GenerateStockPdfUseCase generateStockPdfUseCase(
             StockReportRepositoryPort stockReportRepositoryPort,
             StockPdfPort stockPdfPort) {
-        return new GenerateStockPdfUseCaseImpl(stockReportRepositoryPort, stockPdfPort);
+        return new GenerateStockPdfUseCaseImpl(stockReportRepositoryPort,
+                stockPdfPort);
     }
 
     @Bean
     public GenerateStockExcelUseCase generateStockExcelUseCase(
             StockReportRepositoryPort stockReportRepositoryPort,
             StockExcelPort stockExcelPort) {
-        return new GenerateStockExcelUseCaseImpl(stockReportRepositoryPort, stockExcelPort);
+        return new GenerateStockExcelUseCaseImpl(stockReportRepositoryPort,
+                stockExcelPort);
     }
 }

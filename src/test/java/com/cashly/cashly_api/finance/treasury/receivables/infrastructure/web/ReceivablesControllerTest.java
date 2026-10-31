@@ -54,11 +54,13 @@ class ReceivablesControllerTest {
     @DisplayName("should get summary and return 200")
     void should_get_summary_and_return_200() {
         ReceivablesSummaryResponse response = new ReceivablesSummaryResponse(
-                BigDecimal.TEN, 5L, 10L, BigDecimal.ZERO, BigDecimal.ZERO, LocalDateTime.now());
+                BigDecimal.TEN, 5L, 10L, BigDecimal.ZERO, BigDecimal.ZERO,
+                LocalDateTime.now());
 
         when(getReceivablesSummaryUseCase.execute()).thenReturn(response);
 
-        ResponseEntity<ReceivablesSummaryResponse> result = receivablesController.getSummary();
+        ResponseEntity<ReceivablesSummaryResponse> result = receivablesController
+                .getSummary();
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(BigDecimal.TEN, result.getBody().totalDebt());
@@ -69,12 +71,14 @@ class ReceivablesControllerTest {
     @Test
     @DisplayName("should get customers with debt and return 200")
     void should_get_customers_with_debt_and_return_200() {
-        PageResponse<?> pageResponse = new PageResponse<>(
-                List.of(), 0L, 0, 20, 0, true, true, true);
+        PageResponse<?> pageResponse = new PageResponse<>(List.of(), 0L, 0, 20,
+                0, true, true, true);
 
-        doReturn(pageResponse).when(searchCustomerDebtUseCase).execute(any(), anyInt(), anyInt(), any());
+        doReturn(pageResponse).when(searchCustomerDebtUseCase).execute(any(),
+                anyInt(), anyInt(), any());
 
-        ResponseEntity<PageResponse<?>> result = receivablesController.getCustomersWithDebt(null, 0, 20, null);
+        ResponseEntity<PageResponse<?>> result = receivablesController
+                .getCustomersWithDebt(null, 0, 20, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         verify(searchCustomerDebtUseCase).execute(null, 0, 20, null);
@@ -85,14 +89,14 @@ class ReceivablesControllerTest {
     void should_get_customer_debt_and_return_200() {
         UUID id = UUID.randomUUID();
         CustomerDebtSummaryResponse response = new CustomerDebtSummaryResponse(
-                id, "Customer", "J-123", null, null,
-                BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN,
-                BigDecimal.valueOf(100), BigDecimal.valueOf(90), BigDecimal.ZERO,
-                List.of(), 0L);
+                id, "Customer", "J-123", null, null, BigDecimal.TEN,
+                BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(100),
+                BigDecimal.valueOf(90), BigDecimal.ZERO, List.of(), 0L);
 
         when(getCustomerDebtUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<CustomerDebtSummaryResponse> result = receivablesController.getCustomerDebt(id);
+        ResponseEntity<CustomerDebtSummaryResponse> result = receivablesController
+                .getCustomerDebt(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().customerId());
@@ -104,28 +108,32 @@ class ReceivablesControllerTest {
     @DisplayName("should get customer invoices and return 200")
     void should_get_customer_invoices_and_return_200() {
         UUID customerId = UUID.randomUUID();
-        PageResponse<?> pageResponse = new PageResponse<>(
-                List.of(), 0L, 0, 20, 0, true, true, true);
+        PageResponse<?> pageResponse = new PageResponse<>(List.of(), 0L, 0, 20,
+                0, true, true, true);
 
-        doReturn(pageResponse).when(getCustomerInvoicesUseCase).execute(eq(customerId), any(), any(), anyInt(), anyInt());
+        doReturn(pageResponse).when(getCustomerInvoicesUseCase)
+                .execute(eq(customerId), any(), any(), anyInt(), anyInt());
 
-        ResponseEntity<PageResponse<?>> result = receivablesController.getCustomerInvoices(
-                customerId, null, null, 0, 20);
+        ResponseEntity<PageResponse<?>> result = receivablesController
+                .getCustomerInvoices(customerId, null, null, 0, 20);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        verify(getCustomerInvoicesUseCase).execute(customerId, null, null, 0, 20);
+        verify(getCustomerInvoicesUseCase).execute(customerId, null, null, 0,
+                20);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     @DisplayName("should get payment history and return 200")
     void should_get_payment_history_and_return_200() {
-        PageResponse<?> pageResponse = new PageResponse<>(
-                List.of(), 0L, 0, 20, 0, true, true, true);
+        PageResponse<?> pageResponse = new PageResponse<>(List.of(), 0L, 0, 20,
+                0, true, true, true);
 
-        doReturn(pageResponse).when(getPaymentHistoryUseCase).execute(any(), anyInt(), anyInt());
+        doReturn(pageResponse).when(getPaymentHistoryUseCase).execute(any(),
+                anyInt(), anyInt());
 
-        ResponseEntity<PageResponse<?>> result = receivablesController.getPaymentHistory(null, 0, 20);
+        ResponseEntity<PageResponse<?>> result = receivablesController
+                .getPaymentHistory(null, 0, 20);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         verify(getPaymentHistoryUseCase).execute(null, 0, 20);
@@ -136,13 +144,14 @@ class ReceivablesControllerTest {
     @DisplayName("should get customer payment history and return 200")
     void should_get_customer_payment_history_and_return_200() {
         UUID customerId = UUID.randomUUID();
-        PageResponse<?> pageResponse = new PageResponse<>(
-                List.of(), 0L, 0, 100, 0, true, true, true);
+        PageResponse<?> pageResponse = new PageResponse<>(List.of(), 0L, 0, 100,
+                0, true, true, true);
 
-        doReturn(pageResponse).when(getPaymentHistoryUseCase).execute(eq(customerId), any(), anyInt(), anyInt());
+        doReturn(pageResponse).when(getPaymentHistoryUseCase)
+                .execute(eq(customerId), any(), anyInt(), anyInt());
 
-        ResponseEntity<PageResponse<?>> result = receivablesController.getCustomerPaymentHistory(
-                customerId, null, 0, 100);
+        ResponseEntity<PageResponse<?>> result = receivablesController
+                .getCustomerPaymentHistory(customerId, null, 0, 100);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         verify(getPaymentHistoryUseCase).execute(customerId, null, 0, 100);

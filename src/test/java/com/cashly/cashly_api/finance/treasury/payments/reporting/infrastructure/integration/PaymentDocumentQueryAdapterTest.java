@@ -9,8 +9,10 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 class PaymentDocumentQueryAdapterTest {
-    private final GetPaymentByIdUseCase query = mock(GetPaymentByIdUseCase.class);
-    private final PaymentDocumentQueryAdapter adapter = new PaymentDocumentQueryAdapter(new PaymentDocumentQueryService(query));
+    private final GetPaymentByIdUseCase query = mock(
+            GetPaymentByIdUseCase.class);
+    private final PaymentDocumentQueryAdapter adapter = new PaymentDocumentQueryAdapter(
+            new PaymentDocumentQueryService(query));
     @Test
     void providerAndAdapterPreserveEveryRenderedFieldWithoutRecalculatingAmount() {
         var id = UUID.randomUUID();
@@ -48,6 +50,7 @@ class PaymentDocumentQueryAdapterTest {
         var id = UUID.randomUUID();
         var failure = new IllegalArgumentException("Payment not found: " + id);
         when(query.execute(id)).thenThrow(failure);
-        assertSame(failure, assertThrows(IllegalArgumentException.class, () -> adapter.find(id)));
+        assertSame(failure, assertThrows(IllegalArgumentException.class,
+                () -> adapter.find(id)));
     }
 }

@@ -24,9 +24,7 @@ class RefreshTokenIdUnitTest {
     @Test
     void should_ThrowException_When_NullUuidProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new RefreshTokenId(null)
-        );
+                IllegalArgumentException.class, () -> new RefreshTokenId(null));
         assertEquals("RefreshToken ID cannot be null", exception.getMessage());
     }
 
@@ -55,28 +53,28 @@ class RefreshTokenIdUnitTest {
         String invalidUuid = "invalid-token-id";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> RefreshTokenId.from(invalidUuid)
-        );
-        assertTrue(exception.getMessage().contains("Invalid RefreshToken ID format"));
+                IllegalArgumentException.class,
+                () -> RefreshTokenId.from(invalidUuid));
+        assertTrue(exception.getMessage()
+                .contains("Invalid RefreshToken ID format"));
     }
 
     @Test
     void should_ThrowException_When_NullStringProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> RefreshTokenId.from(null)
-        );
-        assertEquals("RefreshToken ID string cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> RefreshTokenId.from(null));
+        assertEquals("RefreshToken ID string cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_EmptyStringProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> RefreshTokenId.from("   ")
-        );
-        assertEquals("RefreshToken ID string cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> RefreshTokenId.from("   "));
+        assertEquals("RefreshToken ID string cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test

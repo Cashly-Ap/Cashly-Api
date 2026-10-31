@@ -20,14 +20,16 @@ public class UpdateOwnProfileUseCase {
     private final UserRepository users;
     private final AccessService access;
 
-    public UpdateOwnProfileUseCase(UserRepository users, AccessService access, UserPreferencesRepository preferences) {
+    public UpdateOwnProfileUseCase(UserRepository users, AccessService access,
+            UserPreferencesRepository preferences) {
         this.preferences = preferences;
         this.users = users;
         this.access = access;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserResponse execute(String authenticatedUserId, UpdateOwnProfileRequest request) {
+    public UserResponse execute(String authenticatedUserId,
+            UpdateOwnProfileRequest request) {
         // Serialize with administrative writes before loading the account so assignments cannot be overwritten.
         access.lockAdministration();
         var user = users.findById(UserId.from(authenticatedUserId))
@@ -35,7 +37,10 @@ public class UpdateOwnProfileUseCase {
         user.updateUserName(new UserName(request.userName()));
         user.updatePersonalProfile(request.profile());
         var saved = users.save(user);
-        if (request.language() != null) preferences.updateLanguage(saved.getId().getValue(), request.language());
-        return UserResponse.from(saved).withLanguage(preferences.languageFor(saved.getId().getValue()));
+        if (request.language() != null)
+            preferences.updateLanguage(saved.getId().getValue(),
+                    request.language());
+        return UserResponse.from(saved).withLanguage(
+                preferences.languageFor(saved.getId().getValue()));
     }
 }

@@ -32,7 +32,8 @@ import static org.mockito.Mockito.when;
 @DisplayName("GetActiveRegisterUseCase Unit Tests")
 class GetActiveRegisterUseCaseTest {
 
-    @Mock private CashRegisterQueryGateway queries;
+    @Mock
+    private CashRegisterQueryGateway queries;
 
     @Mock
     private CashRegisterRepository closureRepository;
@@ -48,53 +49,51 @@ class GetActiveRegisterUseCaseTest {
     }
 
     private DailyTotals emptyDailyTotals() {
-        return new DailyTotals(
-                BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
+        return new DailyTotals(BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
                 BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, List.of()
-        );
+                BigDecimal.ZERO, List.of());
     }
 
     private CashRegister openRegister() {
-        return CashRegister.reconstitute(
-                RegisterId.generate(), LocalDate.now(), RegisterStatus.OPEN,
-                userId, "Test User", LocalDateTime.now(),
-                null, null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO,
+        return CashRegister.reconstitute(RegisterId.generate(), LocalDate.now(),
+                RegisterStatus.OPEN, userId, "Test User", LocalDateTime.now(),
+                null, null, null, BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                0, 0, 0, 0,
-                BigDecimal.ZERO, null, null, null,
-                0, LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
-        );
+                BigDecimal.ZERO, 0, 0, 0, 0, BigDecimal.ZERO, null, null, null,
+                0, LocalDateTime.now(), LocalDateTime.now(), List.of());
     }
 
     @Test
     void should_ReturnActiveRegisterAcrossCalendarDays() {
         CashRegister activeClosure = CashRegister.reconstitute(
-                RegisterId.generate(), LocalDate.now().minusDays(2), RegisterStatus.OPEN,
-                userId, "Test User", LocalDateTime.now().minusDays(2),
-                null, null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, 0, 0, 0, 0,
+                RegisterId.generate(), LocalDate.now().minusDays(2),
+                RegisterStatus.OPEN, userId, "Test User",
+                LocalDateTime.now().minusDays(2), null, null, null,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 0, 0, 0, 0,
                 BigDecimal.ZERO, null, null, null, 0,
-                LocalDateTime.now().minusDays(2), LocalDateTime.now(), List.of());
-        when(closureRepository.findActiveClosure()).thenReturn(Optional.of(activeClosure));
-        when(queries.findSessionTotals(activeClosure.getId())).thenReturn(emptyDailyTotals());
-        when(closureRepository.save(any(CashRegister.class))).thenReturn(activeClosure);
+                LocalDateTime.now().minusDays(2), LocalDateTime.now(),
+                List.of());
+        when(closureRepository.findActiveClosure())
+                .thenReturn(Optional.of(activeClosure));
+        when(queries.findSessionTotals(activeClosure.getId()))
+                .thenReturn(emptyDailyTotals());
+        when(closureRepository.save(any(CashRegister.class)))
+                .thenReturn(activeClosure);
 
         Optional<CashRegisterResponse> response = useCase.execute();
 
         assertTrue(response.isPresent());
-        assertEquals(activeClosure.getId().value(), response.orElseThrow().id());
+        assertEquals(activeClosure.getId().value(),
+                response.orElseThrow().id());
         verify(closureRepository).save(any(CashRegister.class));
     }
 
     @Test
     void should_ReturnEmptyWithoutCreatingRegister_When_NoActiveRegisterExists() {
-        when(closureRepository.findActiveClosure()).thenReturn(Optional.empty());
+        when(closureRepository.findActiveClosure())
+                .thenReturn(Optional.empty());
 
         Optional<CashRegisterResponse> response = useCase.execute();
 

@@ -19,8 +19,9 @@ class InvoiceLineUnitTest {
 
     @Test
     void should_CreateInvoiceLine_When_ValidDataProvided() {
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("2"), new BigDecimal("10.00"), List.of());
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, new BigDecimal("2"), new BigDecimal("10.00"),
+                List.of());
 
         assertNotNull(line.getId());
         assertEquals(PRODUCT_ID, line.getProductId());
@@ -34,35 +35,40 @@ class InvoiceLineUnitTest {
 
     @Test
     void should_CalculateLineTotal_When_Created() {
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("3"), new BigDecimal("5.50"), List.of());
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, new BigDecimal("3"), new BigDecimal("5.50"),
+                List.of());
 
         assertEquals(new BigDecimal("16.50"), line.getLineTotal());
     }
 
     @Test
     void should_CalculateLineTotal_WithDecimalPrecision() {
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("1.5"), new BigDecimal("3.33"), List.of());
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, new BigDecimal("1.5"), new BigDecimal("3.33"),
+                List.of());
 
         assertEquals(new BigDecimal("4.995"), line.getLineTotal());
     }
 
     @Test
     void should_CreateWithAllocations_When_Provided() {
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(UUID.randomUUID(), BigDecimal.valueOf(5));
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(UUID.randomUUID(), BigDecimal.valueOf(5));
 
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, BigDecimal.ONE, BigDecimal.TEN,
+                List.of(allocation));
 
         assertEquals(1, line.getAllocations().size());
-        assertEquals(allocation.getWarehouseId(), line.getAllocations().get(0).getWarehouseId());
+        assertEquals(allocation.getWarehouseId(),
+                line.getAllocations().get(0).getWarehouseId());
     }
 
     @Test
     void should_CreateWithEmptyAllocations_When_NullProvided() {
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                BigDecimal.ONE, BigDecimal.TEN, null);
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, BigDecimal.ONE, BigDecimal.TEN, null);
 
         assertNotNull(line.getAllocations());
         assertTrue(line.getAllocations().isEmpty());
@@ -70,64 +76,65 @@ class InvoiceLineUnitTest {
 
     @Test
     void should_ThrowException_When_IdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                InvoiceLine.reconstitute(null, PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                        BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, List.of()));
+        assertThrows(NullPointerException.class,
+                () -> InvoiceLine.reconstitute(null, PRODUCT_ID, PRODUCT_NAME,
+                        PRODUCT_CODE, BigDecimal.ONE, BigDecimal.TEN,
+                        BigDecimal.ZERO, List.of()));
     }
 
     @Test
     void should_ThrowException_When_ProductIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                InvoiceLine.create(null, PRODUCT_NAME, PRODUCT_CODE,
+        assertThrows(NullPointerException.class,
+                () -> InvoiceLine.create(null, PRODUCT_NAME, PRODUCT_CODE,
                         BigDecimal.ONE, BigDecimal.TEN, List.of()));
     }
 
     @Test
     void should_ThrowException_When_ProductNameIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                InvoiceLine.create(PRODUCT_ID, null, PRODUCT_CODE,
+        assertThrows(NullPointerException.class,
+                () -> InvoiceLine.create(PRODUCT_ID, null, PRODUCT_CODE,
                         BigDecimal.ONE, BigDecimal.TEN, List.of()));
     }
 
     @Test
     void should_ThrowException_When_ProductCodeIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, null,
+        assertThrows(NullPointerException.class,
+                () -> InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, null,
                         BigDecimal.ONE, BigDecimal.TEN, List.of()));
     }
 
     @Test
     void should_ThrowException_When_QuantityIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+        assertThrows(NullPointerException.class,
+                () -> InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
                         null, BigDecimal.TEN, List.of()));
     }
 
     @Test
     void should_ThrowException_When_UnitPriceIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+        assertThrows(NullPointerException.class,
+                () -> InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
                         BigDecimal.ONE, null, List.of()));
     }
 
     @Test
     void should_ThrowException_When_QuantityIsZero() {
-        assertThrows(IllegalArgumentException.class, () ->
-                InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+        assertThrows(IllegalArgumentException.class,
+                () -> InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
                         BigDecimal.ZERO, BigDecimal.TEN, List.of()));
     }
 
     @Test
     void should_ThrowException_When_QuantityIsNegative() {
-        assertThrows(IllegalArgumentException.class, () ->
-                InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
+        assertThrows(IllegalArgumentException.class,
+                () -> InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
                         new BigDecimal("-1"), BigDecimal.TEN, List.of()));
     }
 
     @Test
     void should_AllowZeroUnitPrice() {
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                BigDecimal.ONE, BigDecimal.ZERO, List.of());
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, BigDecimal.ONE, BigDecimal.ZERO, List.of());
 
         assertEquals(BigDecimal.ZERO, line.getUnitPrice());
         assertEquals(BigDecimal.ZERO, line.getLineTotal());
@@ -137,8 +144,9 @@ class InvoiceLineUnitTest {
     void should_Reconstitute_When_AllFieldsProvided() {
         InvoiceLineId id = InvoiceLineId.generate();
 
-        InvoiceLine line = InvoiceLine.reconstitute(id, PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("5"), new BigDecimal("2.00"), BigDecimal.ZERO, List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(id, PRODUCT_ID,
+                PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("5"),
+                new BigDecimal("2.00"), BigDecimal.ZERO, List.of());
 
         assertEquals(id, line.getId());
         assertEquals(PRODUCT_ID, line.getProductId());
@@ -147,14 +155,15 @@ class InvoiceLineUnitTest {
 
     @Test
     void should_ReturnUnmodifiableAllocations_When_GetAllocationsCalled() {
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(UUID.randomUUID(), BigDecimal.ONE);
-        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(UUID.randomUUID(), BigDecimal.ONE);
+        InvoiceLine line = InvoiceLine.create(PRODUCT_ID, PRODUCT_NAME,
+                PRODUCT_CODE, BigDecimal.ONE, BigDecimal.TEN,
+                List.of(allocation));
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                line.getAllocations().add(allocation));
+        assertThrows(UnsupportedOperationException.class,
+                () -> line.getAllocations().add(allocation));
     }
-
 
     // ============================================================
     // decreaseReturnedQuantity()
@@ -162,9 +171,9 @@ class InvoiceLineUnitTest {
 
     @Test
     void should_DecreaseReturnedQuantity_When_ValidQuantityProvided() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("10"),
+                new BigDecimal("10.00"), new BigDecimal("5"), List.of());
 
         line.decreaseReturnedQuantity(new BigDecimal("3"));
 
@@ -173,39 +182,39 @@ class InvoiceLineUnitTest {
 
     @Test
     void should_ThrowException_When_DecreaseQuantityIsNull() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("10"),
+                new BigDecimal("10.00"), new BigDecimal("5"), List.of());
 
-        assertThrows(NullPointerException.class, () ->
-                line.decreaseReturnedQuantity(null));
+        assertThrows(NullPointerException.class,
+                () -> line.decreaseReturnedQuantity(null));
     }
 
     @Test
     void should_ThrowException_When_DecreaseQuantityIsNegative() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("10"),
+                new BigDecimal("10.00"), new BigDecimal("5"), List.of());
 
-        assertThrows(IllegalArgumentException.class, () ->
-                line.decreaseReturnedQuantity(new BigDecimal("-1")));
+        assertThrows(IllegalArgumentException.class,
+                () -> line.decreaseReturnedQuantity(new BigDecimal("-1")));
     }
 
     @Test
     void should_ThrowException_When_DecreaseQuantityWouldMakeReturnedNegative() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("10"),
+                new BigDecimal("10.00"), new BigDecimal("5"), List.of());
 
-        assertThrows(IllegalArgumentException.class, () ->
-                line.decreaseReturnedQuantity(new BigDecimal("6")));
+        assertThrows(IllegalArgumentException.class,
+                () -> line.decreaseReturnedQuantity(new BigDecimal("6")));
     }
 
     @Test
     void should_AllowDecreasingReturnedQuantityToExactlyZero() {
-        InvoiceLine line = InvoiceLine.reconstitute(
-                InvoiceLineId.generate(), PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE,
-                new BigDecimal("10"), new BigDecimal("10.00"), new BigDecimal("5"), List.of());
+        InvoiceLine line = InvoiceLine.reconstitute(InvoiceLineId.generate(),
+                PRODUCT_ID, PRODUCT_NAME, PRODUCT_CODE, new BigDecimal("10"),
+                new BigDecimal("10.00"), new BigDecimal("5"), List.of());
 
         line.decreaseReturnedQuantity(new BigDecimal("5"));
 

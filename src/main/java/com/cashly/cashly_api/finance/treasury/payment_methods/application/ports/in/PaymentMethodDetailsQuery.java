@@ -6,5 +6,6 @@ import java.util.UUID;
 public interface PaymentMethodDetailsQuery {
     Optional<PaymentMethodDetails> findById(UUID paymentMethodId);
 
-    record PaymentMethodDetails(UUID id, String name) {}
+    record PaymentMethodDetails(UUID id, String name) {
+    }
 }

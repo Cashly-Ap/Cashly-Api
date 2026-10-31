@@ -49,28 +49,35 @@ class GrantWarehouseAccessUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GrantWarehouseAccessUseCase(accessRepository, customerRepository, warehouseRepository);
+        useCase = new GrantWarehouseAccessUseCase(accessRepository,
+                customerRepository, warehouseRepository);
     }
 
     @Test
     @DisplayName("should grant warehouse access successfully")
     void shouldGrantWarehouseAccessSuccessfully() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
-        WarehouseSnapshot warehouse = new WarehouseSnapshot(warehouseId, "Main Warehouse");
-        CustomerWarehouseAccess access = CustomerTestHelper.buildAccess(customerId, warehouseId);
+        WarehouseSnapshot warehouse = new WarehouseSnapshot(warehouseId,
+                "Main Warehouse");
+        CustomerWarehouseAccess access = CustomerTestHelper
+                .buildAccess(customerId, warehouseId);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(warehouseRepository.requireById(warehouseId)).thenReturn(warehouse);
-        when(accessRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId)).thenReturn(false);
-        when(accessRepository.save(any(CustomerWarehouseAccess.class))).thenAnswer(inv -> {
-            CustomerWarehouseAccess saved = inv.getArgument(0);
-            return new CustomerWarehouseAccess(
-                    UUID.randomUUID(), saved.getCustomerId(), saved.getWarehouseId(),
-                    saved.getGrantedAt(), saved.getGrantedBy()
-            );
-        });
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(warehouseRepository.requireById(warehouseId))
+                .thenReturn(warehouse);
+        when(accessRepository.existsByCustomerIdAndWarehouseId(customerId,
+                warehouseId)).thenReturn(false);
+        when(accessRepository.save(any(CustomerWarehouseAccess.class)))
+                .thenAnswer(inv -> {
+                    CustomerWarehouseAccess saved = inv.getArgument(0);
+                    return new CustomerWarehouseAccess(UUID.randomUUID(),
+                            saved.getCustomerId(), saved.getWarehouseId(),
+                            saved.getGrantedAt(), saved.getGrantedBy());
+                });
 
-        CustomerWarehouseAccessResponse response = useCase.execute(customerId, warehouseId, grantedBy);
+        CustomerWarehouseAccessResponse response = useCase.execute(customerId,
+                warehouseId, grantedBy);
 
         assertNotNull(response);
         assertEquals(customerId, response.customerId());
@@ -82,7 +89,8 @@ class GrantWarehouseAccessUseCaseTest {
     @Test
     @DisplayName("should throw CustomerNotFoundException when customer not found")
     void shouldThrowWhenCustomerNotFound() {
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.empty());
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.empty());
 
         assertThrows(CustomerNotFoundException.class,
                 () -> useCase.execute(customerId, warehouseId, grantedBy));
@@ -97,8 +105,10 @@ class GrantWarehouseAccessUseCaseTest {
     void shouldThrowWhenWarehouseNotFound() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(warehouseRepository.requireById(warehouseId)).thenThrow(new WarehouseNotFoundException(warehouseId));
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(warehouseRepository.requireById(warehouseId))
+                .thenThrow(new WarehouseNotFoundException(warehouseId));
 
         assertThrows(WarehouseNotFoundException.class,
                 () -> useCase.execute(customerId, warehouseId, grantedBy));
@@ -111,11 +121,15 @@ class GrantWarehouseAccessUseCaseTest {
     @DisplayName("should throw CustomerWarehouseAccessAlreadyExistsException when access already exists")
     void shouldThrowWhenAccessAlreadyExists() {
         Customer customer = CustomerTestHelper.buildCustomer(customerId);
-        WarehouseSnapshot warehouse = new WarehouseSnapshot(warehouseId, "Main Warehouse");
+        WarehouseSnapshot warehouse = new WarehouseSnapshot(warehouseId,
+                "Main Warehouse");
 
-        when(customerRepository.findById(new CustomerId(customerId))).thenReturn(Optional.of(customer));
-        when(warehouseRepository.requireById(warehouseId)).thenReturn(warehouse);
-        when(accessRepository.existsByCustomerIdAndWarehouseId(customerId, warehouseId)).thenReturn(true);
+        when(customerRepository.findById(new CustomerId(customerId)))
+                .thenReturn(Optional.of(customer));
+        when(warehouseRepository.requireById(warehouseId))
+                .thenReturn(warehouse);
+        when(accessRepository.existsByCustomerIdAndWarehouseId(customerId,
+                warehouseId)).thenReturn(true);
 
         assertThrows(CustomerWarehouseAccessAlreadyExistsException.class,
                 () -> useCase.execute(customerId, warehouseId, grantedBy));

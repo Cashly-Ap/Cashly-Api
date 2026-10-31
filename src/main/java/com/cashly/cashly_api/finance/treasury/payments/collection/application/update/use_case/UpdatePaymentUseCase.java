@@ -22,14 +22,24 @@ public class UpdatePaymentUseCase {
     @Transactional
     public PaymentResponse execute(UUID id, UpdatePaymentRequest request) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Payment not found: " + id));
 
-        String referenceNumber = request.referenceNumber() != null ? request.referenceNumber() : payment.getReferenceNumber();
-        LocalDate paymentDate = request.paymentDate() != null ? request.paymentDate() : payment.getPaymentDate();
-        UUID paymentMethodId = request.paymentMethodId() != null ? request.paymentMethodId() : payment.getPaymentMethodId();
-        String notes = request.notes() != null ? request.notes() : payment.getNotes();
+        String referenceNumber = request.referenceNumber() != null
+                ? request.referenceNumber()
+                : payment.getReferenceNumber();
+        LocalDate paymentDate = request.paymentDate() != null
+                ? request.paymentDate()
+                : payment.getPaymentDate();
+        UUID paymentMethodId = request.paymentMethodId() != null
+                ? request.paymentMethodId()
+                : payment.getPaymentMethodId();
+        String notes = request.notes() != null
+                ? request.notes()
+                : payment.getNotes();
 
-        Payment updated = payment.withUpdatedDetails(referenceNumber, paymentDate, paymentMethodId, notes);
+        Payment updated = payment.withUpdatedDetails(referenceNumber,
+                paymentDate, paymentMethodId, notes);
         Payment saved = paymentRepository.save(updated);
         return PaymentMapper.toResponse(saved);
     }

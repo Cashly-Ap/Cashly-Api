@@ -78,27 +78,28 @@ class PurchaseControllerTest {
     @Test
     @DisplayName("should create purchase and return 201")
     void shouldCreatePurchase() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
         PurchaseDetailResponse response = buildDetailResponse();
 
-        when(createPurchaseUseCase.execute(any(CreatePurchaseRequest.class), any(UUID.class)))
-                .thenReturn(response);
+        when(createPurchaseUseCase.execute(any(CreatePurchaseRequest.class),
+                any(UUID.class))).thenReturn(response);
 
         CreatePurchaseRequest request = new CreatePurchaseRequest(
                 UUID.randomUUID(), "Notes",
-                List.of(new CreatePurchaseRequest.LineRequest(
-                        UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN,
+                List.of(new CreatePurchaseRequest.LineRequest(UUID.randomUUID(),
+                        BigDecimal.ONE, BigDecimal.TEN,
                         List.of(new CreatePurchaseRequest.AllocationRequest(
-                                UUID.randomUUID(), BigDecimal.ONE))
-                ))
-        );
+                                UUID.randomUUID(), BigDecimal.ONE)))));
 
-        ResponseEntity<PurchaseDetailResponse> result = purchaseController.create(request, authentication);
+        ResponseEntity<PurchaseDetailResponse> result = purchaseController
+                .create(request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(response.id(), result.getBody().id());
-        verify(createPurchaseUseCase).execute(any(CreatePurchaseRequest.class), any(UUID.class));
+        verify(createPurchaseUseCase).execute(any(CreatePurchaseRequest.class),
+                any(UUID.class));
     }
 
     @Test
@@ -108,26 +109,30 @@ class PurchaseControllerTest {
                 UUID.randomUUID(), "PUR-2026-00001", UUID.randomUUID(),
                 "Supplier", "DRAFT", BigDecimal.TEN, 1, LocalDateTime.now());
 
-        when(listPurchasesUseCase.execute(any(), any(), any(), any(), any(), any(), anyString(), anyString()))
-                .thenReturn(List.of(purchase));
+        when(listPurchasesUseCase.execute(any(), any(), any(), any(), any(),
+                any(), anyString(), anyString())).thenReturn(List.of(purchase));
 
-        ResponseEntity<List<PurchaseListResponse>> result = purchaseController.getAll(
-                null, null, null, null, null, null, "createdAt", "desc");
+        ResponseEntity<List<PurchaseListResponse>> result = purchaseController
+                .getAll(null, null, null, null, null, null, "createdAt",
+                        "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
-        assertEquals("PUR-2026-00001", result.getBody().get(0).purchaseNumber());
-        verify(listPurchasesUseCase).execute(null, null, null, null, null, null, "createdAt", "desc");
+        assertEquals("PUR-2026-00001",
+                result.getBody().get(0).purchaseNumber());
+        verify(listPurchasesUseCase).execute(null, null, null, null, null, null,
+                "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no purchases exist")
     void shouldReturnEmptyListWhenNoPurchases() {
-        when(listPurchasesUseCase.execute(any(), any(), any(), any(), any(), any(), anyString(), anyString()))
-                .thenReturn(List.of());
+        when(listPurchasesUseCase.execute(any(), any(), any(), any(), any(),
+                any(), anyString(), anyString())).thenReturn(List.of());
 
-        ResponseEntity<List<PurchaseListResponse>> result = purchaseController.getAll(
-                null, null, null, null, null, null, "createdAt", "desc");
+        ResponseEntity<List<PurchaseListResponse>> result = purchaseController
+                .getAll(null, null, null, null, null, null, "createdAt",
+                        "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
@@ -141,7 +146,8 @@ class PurchaseControllerTest {
 
         when(getPurchaseByIdUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<PurchaseDetailResponse> result = purchaseController.getById(id);
+        ResponseEntity<PurchaseDetailResponse> result = purchaseController
+                .getById(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(id, result.getBody().id());
@@ -154,20 +160,23 @@ class PurchaseControllerTest {
         UUID id = UUID.randomUUID();
         PurchaseDetailResponse response = buildDetailResponse();
 
-        when(updatePurchaseUseCase.execute(eq(id), any(UpdatePurchaseRequest.class))).thenReturn(response);
+        when(updatePurchaseUseCase.execute(eq(id),
+                any(UpdatePurchaseRequest.class))).thenReturn(response);
 
-        UpdatePurchaseRequest request = new UpdatePurchaseRequest("Updated notes",
-                List.of(new UpdatePurchaseRequest.LineRequest(
-                        UUID.randomUUID(), BigDecimal.ONE, BigDecimal.TEN,
+        UpdatePurchaseRequest request = new UpdatePurchaseRequest(
+                "Updated notes",
+                List.of(new UpdatePurchaseRequest.LineRequest(UUID.randomUUID(),
+                        BigDecimal.ONE, BigDecimal.TEN,
                         List.of(new UpdatePurchaseRequest.AllocationRequest(
-                                UUID.randomUUID(), BigDecimal.ONE)))
-                ));
+                                UUID.randomUUID(), BigDecimal.ONE)))));
 
-        ResponseEntity<PurchaseDetailResponse> result = purchaseController.update(id, request);
+        ResponseEntity<PurchaseDetailResponse> result = purchaseController
+                .update(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(updatePurchaseUseCase).execute(eq(id), any(UpdatePurchaseRequest.class));
+        verify(updatePurchaseUseCase).execute(eq(id),
+                any(UpdatePurchaseRequest.class));
     }
 
     @Test
@@ -178,7 +187,8 @@ class PurchaseControllerTest {
 
         when(confirmPurchaseUseCase.execute(id)).thenReturn(response);
 
-        ResponseEntity<PurchaseDetailResponse> result = purchaseController.confirm(id);
+        ResponseEntity<PurchaseDetailResponse> result = purchaseController
+                .confirm(id);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals("CONFIRMED", result.getBody().status());
@@ -191,15 +201,19 @@ class PurchaseControllerTest {
         UUID id = UUID.randomUUID();
         PurchaseDetailResponse response = buildDetailResponse(id, "CANCELLED");
 
-        when(cancelPurchaseUseCase.execute(eq(id), any(CancelPurchaseRequest.class))).thenReturn(response);
+        when(cancelPurchaseUseCase.execute(eq(id),
+                any(CancelPurchaseRequest.class))).thenReturn(response);
 
-        CancelPurchaseRequest request = new CancelPurchaseRequest("Cancellation reason");
+        CancelPurchaseRequest request = new CancelPurchaseRequest(
+                "Cancellation reason");
 
-        ResponseEntity<PurchaseDetailResponse> result = purchaseController.cancel(id, request);
+        ResponseEntity<PurchaseDetailResponse> result = purchaseController
+                .cancel(id, request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals("CANCELLED", result.getBody().status());
-        verify(cancelPurchaseUseCase).execute(eq(id), any(CancelPurchaseRequest.class));
+        verify(cancelPurchaseUseCase).execute(eq(id),
+                any(CancelPurchaseRequest.class));
     }
 
     @Test
@@ -221,10 +235,11 @@ class PurchaseControllerTest {
         PageResponse<PurchaseProductResponse> pageResponse = new PageResponse<>(
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
-        when(getProductsForPurchaseUseCase.execute(any(), any(), anyInt(), anyInt()))
-                .thenReturn(pageResponse);
+        when(getProductsForPurchaseUseCase.execute(any(), any(), anyInt(),
+                anyInt())).thenReturn(pageResponse);
 
-        ResponseEntity<?> result = purchaseController.getProducts(null, null, 0, 10);
+        ResponseEntity<?> result = purchaseController.getProducts(null, null, 0,
+                10);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -236,40 +251,38 @@ class PurchaseControllerTest {
     }
 
     private PurchaseDetailResponse buildDetailResponse(UUID id, String status) {
-        return new PurchaseDetailResponse(
-                id,
-                "PUR-2026-00001",
-                UUID.randomUUID(),
-                "Supplier Name",
-                "J-12345678-9",
-                UUID.randomUUID(),
-                "User Name",
-                status,
-                null,
-                BigDecimal.TEN,
-                null,
-                null,
-                null,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                List.of()
-        );
+        return new PurchaseDetailResponse(id, "PUR-2026-00001",
+                UUID.randomUUID(), "Supplier Name", "J-12345678-9",
+                UUID.randomUUID(), "User Name", status, null, BigDecimal.TEN,
+                null, null, null, LocalDateTime.now(), LocalDateTime.now(),
+                List.of());
     }
     @Test
     void shouldRejectUnknownActionFilter() throws Exception {
-        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(purchaseController).build()
-                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/purchases")
-                        .param("action", "UNKNOWN"))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(purchaseController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/purchases")
+                                .param("action", "UNKNOWN"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isBadRequest());
     }
 
     @Test
     void shouldPassActionFilterToListQuery() throws Exception {
-        org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(purchaseController).build()
-                .perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/purchases")
-                        .param("action", "EDIT"))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
-        verify(listPurchasesUseCase).execute(null, null, null, null, null, null, "createdAt", "desc", com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(purchaseController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/purchases").param("action", "EDIT"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isOk());
+        verify(listPurchasesUseCase).execute(null, null, null, null, null, null,
+                "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
     }
 
 }

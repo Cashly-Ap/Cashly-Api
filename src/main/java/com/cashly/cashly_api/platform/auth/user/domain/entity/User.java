@@ -16,7 +16,9 @@ import java.util.Set;
 public class User {
     private final UserId id;
     private String photoPath;
-    public String getPhotoPath() { return photoPath; }
+    public String getPhotoPath() {
+        return photoPath;
+    }
     public void changePhoto(String photoPath) {
         this.photoPath = photoPath;
         this.updatedAt = LocalDateTime.now();
@@ -28,22 +30,38 @@ public class User {
     private com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile;
     private String roleName;
     private String departmentName;
-    public String getRoleName() { return roleName; }
-    public String getDepartmentName() { return departmentName; }
-    public void setAssignmentNames(String roleName,String departmentName) { this.roleName=roleName;this.departmentName=departmentName; }
+    public String getRoleName() {
+        return roleName;
+    }
+    public String getDepartmentName() {
+        return departmentName;
+    }
+    public void setAssignmentNames(String roleName, String departmentName) {
+        this.roleName = roleName;
+        this.departmentName = departmentName;
+    }
     private java.util.UUID roleId;
     private java.util.UUID departmentId;
-    public com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile getProfile() { return profile; }
-    public java.util.UUID getRoleId() { return roleId; }
-    public java.util.UUID getDepartmentId() { return departmentId; }
-    public void updateProfile(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile,java.util.UUID roleId,java.util.UUID departmentId) {
-        this.profile=java.util.Objects.requireNonNull(profile);
-        this.roleId=java.util.Objects.requireNonNull(roleId);
-        this.departmentId=java.util.Objects.requireNonNull(departmentId);
-        this.updatedAt=LocalDateTime.now();
+    public com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile getProfile() {
+        return profile;
+    }
+    public java.util.UUID getRoleId() {
+        return roleId;
+    }
+    public java.util.UUID getDepartmentId() {
+        return departmentId;
+    }
+    public void updateProfile(
+            com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile,
+            java.util.UUID roleId, java.util.UUID departmentId) {
+        this.profile = java.util.Objects.requireNonNull(profile);
+        this.roleId = java.util.Objects.requireNonNull(roleId);
+        this.departmentId = java.util.Objects.requireNonNull(departmentId);
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public void updatePersonalProfile(com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile) {
+    public void updatePersonalProfile(
+            com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile profile) {
         this.profile = java.util.Objects.requireNonNull(profile);
         this.updatedAt = LocalDateTime.now();
     }
@@ -58,7 +76,8 @@ public class User {
         this(id, email, userName, password, UserRole.OPERATOR);
     }
 
-    public User(UserId id, Email email, UserName userName, Password password, UserRole role) {
+    public User(UserId id, Email email, UserName userName, Password password,
+            UserRole role) {
         validateParameters(id, email, userName, password);
 
         this.id = id;
@@ -73,7 +92,8 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    private void validateParameters(UserId id, Email email, UserName userName, Password password) {
+    private void validateParameters(UserId id, Email email, UserName userName,
+            Password password) {
         if (id == null) {
             throw new IllegalArgumentException("User ID cannot be null");
         }
@@ -102,7 +122,6 @@ public class User {
         this.email = newEmail;
         this.updatedAt = LocalDateTime.now();
     }
-
 
     public void updateUserName(UserName newUserName) {
         if (newUserName == null) {
@@ -239,8 +258,10 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         User user = (User) obj;
         return Objects.equals(id, user.id);
     }
@@ -252,17 +273,10 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email=" + email +
-                ", userName=" + userName +
-                ", password=***" +
-                ", role=" + role +
-                ", active=" + active +
-                ", emailVerified=" + emailVerified +
-                ", modulePermissions=" + modulePermissions +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return "User{" + "id=" + id + ", email=" + email + ", userName="
+                + userName + ", password=***" + ", role=" + role + ", active="
+                + active + ", emailVerified=" + emailVerified
+                + ", modulePermissions=" + modulePermissions + ", createdAt="
+                + createdAt + ", updatedAt=" + updatedAt + '}';
     }
 }

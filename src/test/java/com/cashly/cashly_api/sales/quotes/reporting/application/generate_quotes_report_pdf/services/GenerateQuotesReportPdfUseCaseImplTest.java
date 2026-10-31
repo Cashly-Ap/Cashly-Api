@@ -23,7 +23,8 @@ class GenerateQuotesReportPdfUseCaseImplTest {
     @Mock
     private QuotesReportPdfPort quotesReportPdfPort;
 
-    @Mock private QuoteReportQueryGateway query;
+    @Mock
+    private QuoteReportQueryGateway query;
     @InjectMocks
     private GenerateQuotesReportPdfUseCaseImpl useCase;
 
@@ -35,7 +36,8 @@ class GenerateQuotesReportPdfUseCaseImplTest {
         when(query.findAll(filter)).thenReturn(quotes);
         byte[] expectedPdf = "Quotes report PDF".getBytes();
 
-        when(quotesReportPdfPort.generatePdf(quotes, "SIMPLE")).thenReturn(expectedPdf);
+        when(quotesReportPdfPort.generatePdf(quotes, "SIMPLE"))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(filter, "SIMPLE");
 
@@ -51,7 +53,8 @@ class GenerateQuotesReportPdfUseCaseImplTest {
         when(query.findAll(filter)).thenReturn(quotes);
         byte[] expectedPdf = "Default PDF".getBytes();
 
-        when(quotesReportPdfPort.generatePdf(quotes, "simple")).thenReturn(expectedPdf);
+        when(quotesReportPdfPort.generatePdf(quotes, "simple"))
+                .thenReturn(expectedPdf);
 
         byte[] result = useCase.execute(filter, null);
 

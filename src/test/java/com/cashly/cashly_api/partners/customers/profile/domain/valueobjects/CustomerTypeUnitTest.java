@@ -17,7 +17,8 @@ class CustomerTypeUnitTest {
     @Test
     void should_HaveIndividualValue() {
         assertNotNull(CustomerType.valueOf("INDIVIDUAL"));
-        assertEquals(CustomerType.INDIVIDUAL, CustomerType.valueOf("INDIVIDUAL"));
+        assertEquals(CustomerType.INDIVIDUAL,
+                CustomerType.valueOf("INDIVIDUAL"));
     }
 
     @Test
@@ -29,13 +30,15 @@ class CustomerTypeUnitTest {
     @Test
     void should_HaveGovernmentValue() {
         assertNotNull(CustomerType.valueOf("GOVERNMENT"));
-        assertEquals(CustomerType.GOVERNMENT, CustomerType.valueOf("GOVERNMENT"));
+        assertEquals(CustomerType.GOVERNMENT,
+                CustomerType.valueOf("GOVERNMENT"));
     }
 
     @Test
     void should_HaveNonProfitValue() {
         assertNotNull(CustomerType.valueOf("NON_PROFIT"));
-        assertEquals(CustomerType.NON_PROFIT, CustomerType.valueOf("NON_PROFIT"));
+        assertEquals(CustomerType.NON_PROFIT,
+                CustomerType.valueOf("NON_PROFIT"));
     }
 
     @Test

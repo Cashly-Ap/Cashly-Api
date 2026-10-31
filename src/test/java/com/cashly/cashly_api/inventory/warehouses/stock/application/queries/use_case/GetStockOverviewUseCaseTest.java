@@ -9,25 +9,31 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GetStockOverviewUseCaseTest {
-    private final StockOverviewQueryGateway gateway = mock(StockOverviewQueryGateway.class);
-    private final GetStockOverviewUseCase useCase = new GetStockOverviewUseCase(gateway);
+    private final StockOverviewQueryGateway gateway = mock(
+            StockOverviewQueryGateway.class);
+    private final GetStockOverviewUseCase useCase = new GetStockOverviewUseCase(
+            gateway);
 
     @Test
     void passesNormalizedSearchAndPaginationToTheReadGateway() {
         useCase.execute(null, null, "  APP  ", 2, 10);
-        verify(gateway).search(new StockOverviewFilter(null, null, "APP", 2, 10));
+        verify(gateway)
+                .search(new StockOverviewFilter(null, null, "APP", 2, 10));
     }
 
     @ParameterizedTest
     @CsvSource({"-1,10", "0,0", "0,-1", "0,101"})
     void rejectsUnboundedOrNegativePagination(int page, int size) {
-        assertThatThrownBy(() -> useCase.execute(null, null, null, page, size)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> useCase.execute(null, null, null, page, size))
+                .isInstanceOf(IllegalArgumentException.class);
         verifyNoInteractions(gateway);
     }
 
     @Test
     void rejectsOversizedSearchBeforeQuerying() {
-        assertThatThrownBy(() -> useCase.execute(null, null, "a".repeat(201), 0, 10)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(
+                () -> useCase.execute(null, null, "a".repeat(201), 0, 10))
+                .isInstanceOf(IllegalArgumentException.class);
         verifyNoInteractions(gateway);
     }
 }

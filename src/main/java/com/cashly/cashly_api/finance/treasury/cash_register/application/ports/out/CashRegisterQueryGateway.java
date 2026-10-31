@@ -12,12 +12,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CashRegisterQueryGateway {
-    PageResponse<CashRegister> findAll(int page, int size, String sort, LocalDate dateFrom, LocalDate dateTo);
+    PageResponse<CashRegister> findAll(int page, int size, String sort,
+            LocalDate dateFrom, LocalDate dateTo);
     DailyTotals findDailyTotals(LocalDate closureDate);
     DailyTotals findSessionTotals(RegisterId registerId);
     DailyTotals findRangeTotals(LocalDate dateFrom, LocalDate dateTo);
-    List<CashRegisterExportRow> findExportRows(LocalDate dateFrom, LocalDate dateTo);
+    List<CashRegisterExportRow> findExportRows(LocalDate dateFrom,
+            LocalDate dateTo);
     List<CashRegisterExportRow> findExportRows(CashRegisterReportFilter filter);
-    List<CashRegisterDetail> findPaymentMethodSummary(LocalDate dateFrom, LocalDate dateTo);
-    List<CustomerSummary> findCustomerSummary(LocalDate dateFrom, LocalDate dateTo);
+    List<CashRegisterDetail> findPaymentMethodSummary(LocalDate dateFrom,
+            LocalDate dateTo);
+    List<CustomerSummary> findCustomerSummary(LocalDate dateFrom,
+            LocalDate dateTo);
 }

@@ -16,7 +16,8 @@ public class BcryptPasswordEncoder implements PasswordEncoder {
     @Override
     public String encode(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {
-            throw new IllegalArgumentException("Raw password cannot be null or empty");
+            throw new IllegalArgumentException(
+                    "Raw password cannot be null or empty");
         }
         return bCryptPasswordEncoder.encode(rawPassword);
     }

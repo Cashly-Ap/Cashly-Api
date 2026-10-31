@@ -20,19 +20,19 @@ public class ListSuppliersUseCase {
     private final PurchaseUsageGateway purchaseUsage;
 
     public ListSuppliersUseCase(SupplierRepository supplierRepository,
-                                 SupplierMapper supplierMapper,
-                                 PurchaseUsageGateway purchaseUsage) {
+            SupplierMapper supplierMapper, PurchaseUsageGateway purchaseUsage) {
         this.supplierRepository = supplierRepository;
         this.supplierMapper = supplierMapper;
         this.purchaseUsage = purchaseUsage;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<SupplierListResponse> execute(String search, String type, Boolean active,
-                                                       String state, int page, int size,
-                                                       String orderBy, String orderDir) {
-        PageResponse<Supplier> supplierPage = supplierRepository.findAllWithFilters(
-            search, type, active, state, page, size, orderBy, orderDir);
+    public PageResponse<SupplierListResponse> execute(String search,
+            String type, Boolean active, String state, int page, int size,
+            String orderBy, String orderDir) {
+        PageResponse<Supplier> supplierPage = supplierRepository
+                .findAllWithFilters(search, type, active, state, page, size,
+                        orderBy, orderDir);
 
         Set<UUID> supplierIds = supplierPage.content().stream()
                 .map(supplier -> supplier.getId().getValue())
@@ -41,20 +41,16 @@ public class ListSuppliersUseCase {
                 ? Set.of()
                 : purchaseUsage.findSupplierIdsWithPurchases(supplierIds);
 
-        List<SupplierListResponse> content = supplierPage.content().stream()
-            .map(s -> supplierMapper.toListResponse(
-                s, supplierIdsWithPurchases.contains(s.getId().getValue())))
-            .toList();
+        List<SupplierListResponse> content = supplierPage
+                .content().stream().map(
+                        s -> supplierMapper.toListResponse(s,
+                                supplierIdsWithPurchases
+                                        .contains(s.getId().getValue())))
+                .toList();
 
-        return new PageResponse<>(
-            content,
-            supplierPage.totalElements(),
-            supplierPage.totalPages(),
-            supplierPage.size(),
-            supplierPage.number(),
-            supplierPage.first(),
-            supplierPage.last(),
-            supplierPage.empty()
-        );
+        return new PageResponse<>(content, supplierPage.totalElements(),
+                supplierPage.totalPages(), supplierPage.size(),
+                supplierPage.number(), supplierPage.first(),
+                supplierPage.last(), supplierPage.empty());
     }
 }

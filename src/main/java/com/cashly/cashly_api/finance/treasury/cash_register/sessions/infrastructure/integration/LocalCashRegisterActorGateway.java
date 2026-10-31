@@ -17,6 +17,7 @@ public class LocalCashRegisterActorGateway implements CashRegisterActorGateway {
 
     @Override
     public Optional<Actor> findById(UUID actorId) {
-        return actors.findById(actorId).map(actor -> new Actor(actor.id(), actor.name()));
+        return actors.findById(actorId)
+                .map(actor -> new Actor(actor.id(), actor.name()));
     }
 }

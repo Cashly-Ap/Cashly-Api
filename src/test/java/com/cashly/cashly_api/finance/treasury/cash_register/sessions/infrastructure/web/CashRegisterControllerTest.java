@@ -59,28 +59,35 @@ class CashRegisterControllerTest {
     @Test
     @DisplayName("should open register and return 201")
     void should_open_register_and_return_201() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         CashRegisterResponse response = mock(CashRegisterResponse.class);
 
-        when(openRegisterUseCase.execute(any(UUID.class), anyString(), any())).thenReturn(response);
+        when(openRegisterUseCase.execute(any(UUID.class), anyString(), any()))
+                .thenReturn(response);
 
-        OpenRegisterRequest request = new OpenRegisterRequest("Test User", java.math.BigDecimal.ZERO);
+        OpenRegisterRequest request = new OpenRegisterRequest("Test User",
+                java.math.BigDecimal.ZERO);
 
-        ResponseEntity<CashRegisterResponse> result = cashRegisterController.open(request, authentication);
+        ResponseEntity<CashRegisterResponse> result = cashRegisterController
+                .open(request, authentication);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(openRegisterUseCase).execute(any(UUID.class), eq("Test User"), eq(java.math.BigDecimal.ZERO));
+        verify(openRegisterUseCase).execute(any(UUID.class), eq("Test User"),
+                eq(java.math.BigDecimal.ZERO));
     }
 
     @Test
     @DisplayName("should get active register and return 200")
     void should_get_active_register_and_return_200() {
         CashRegisterResponse response = mock(CashRegisterResponse.class);
-        when(getActiveRegisterUseCase.execute()).thenReturn(java.util.Optional.of(response));
+        when(getActiveRegisterUseCase.execute())
+                .thenReturn(java.util.Optional.of(response));
 
-        ResponseEntity<CashRegisterResponse> result = cashRegisterController.getActive();
+        ResponseEntity<CashRegisterResponse> result = cashRegisterController
+                .getActive();
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -90,20 +97,24 @@ class CashRegisterControllerTest {
     @Test
     @DisplayName("should close register and return 200")
     void should_close_register_and_return_200() {
-        when(authentication.getPrincipal()).thenReturn(authenticatedUserId.toString());
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
 
         UUID closureId = UUID.randomUUID();
         CashRegisterResponse response = mock(CashRegisterResponse.class);
-        when(closeRegisterUseCase.execute(any(UUID.class), any(UUID.class), anyString(), any(), anyString()))
-                .thenReturn(response);
+        when(closeRegisterUseCase.execute(any(UUID.class), any(UUID.class),
+                anyString(), any(), anyString())).thenReturn(response);
 
-        CloseRegisterRequest request = new CloseRegisterRequest("Test User", java.math.BigDecimal.ZERO, "Closing notes");
+        CloseRegisterRequest request = new CloseRegisterRequest("Test User",
+                java.math.BigDecimal.ZERO, "Closing notes");
 
-        ResponseEntity<CashRegisterResponse> result = cashRegisterController.close(closureId, request, authentication);
+        ResponseEntity<CashRegisterResponse> result = cashRegisterController
+                .close(closureId, request, authentication);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        verify(closeRegisterUseCase).execute(eq(closureId), eq(authenticatedUserId), eq("Test User"),
+        verify(closeRegisterUseCase).execute(eq(closureId),
+                eq(authenticatedUserId), eq("Test User"),
                 eq(java.math.BigDecimal.ZERO), eq("Closing notes"));
     }
 
@@ -113,16 +124,18 @@ class CashRegisterControllerTest {
         CashRegisterResponse response = mock(CashRegisterResponse.class);
         Page<CashRegisterResponse> page = new PageImpl<>(List.of(response));
 
-        when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(), any(), any(), anyBoolean()))
+        when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(),
+                any(), any(), anyBoolean()))
                 .thenReturn(PageResponseMapper.from(page));
 
-        ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController.getHistory(
-                0, 20, "closureDate,desc", null, null, true);
+        ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController
+                .getHistory(0, 20, "closureDate,desc", null, null, true);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().getContent().size());
-        verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc", null, null, true);
+        verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc",
+                null, null, true);
     }
 
     @Test
@@ -130,23 +143,27 @@ class CashRegisterControllerTest {
     void should_get_empty_history_when_no_registers() {
         Page<CashRegisterResponse> emptyPage = Page.empty();
 
-        when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(), any(), any(), anyBoolean()))
+        when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(),
+                any(), any(), anyBoolean()))
                 .thenReturn(PageResponseMapper.from(emptyPage));
 
-        ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController.getHistory(
-                0, 20, "closureDate,desc", null, null, false);
+        ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController
+                .getHistory(0, 20, "closureDate,desc", null, null, false);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
-        verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc", null, null, false);
+        verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc",
+                null, null, false);
     }
     @Test
     void should_preserve_web_history_page_and_sort_metadata() {
         var response = mock(CashRegisterResponse.class);
-        when(getRegisterHistoryUseCase.execute(1, 5, "openedAt,desc", null, null, false))
-                .thenReturn(new com.cashly.cashly_api.shared.dto.PageResponse<>(List.of(response), 12L,
-                        3, 5, 1, false, false, false));
-        var page = cashRegisterController.getHistory(1, 5, "openedAt,desc", null, null, false).getBody();
+        when(getRegisterHistoryUseCase.execute(1, 5, "openedAt,desc", null,
+                null, false))
+                .thenReturn(new com.cashly.cashly_api.shared.dto.PageResponse<>(
+                        List.of(response), 12L, 3, 5, 1, false, false, false));
+        var page = cashRegisterController
+                .getHistory(1, 5, "openedAt,desc", null, null, false).getBody();
         assertNotNull(page);
         assertEquals(1, page.getNumber());
         assertEquals(5, page.getSize());

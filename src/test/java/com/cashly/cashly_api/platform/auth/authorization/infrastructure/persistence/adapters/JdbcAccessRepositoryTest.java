@@ -17,8 +17,11 @@ class JdbcAccessRepositoryTest {
     @Test
     void excludes_system_roles_in_the_editing_query() {
         var jdbc = mock(JdbcTemplate.class);
-        when(jdbc.query(anyString(), any(RowMapper.class))).thenReturn(List.of());
+        when(jdbc.query(anyString(), any(RowMapper.class)))
+                .thenReturn(List.of());
         assertThat(new JdbcAccessRepository(jdbc).editableRoles()).isEmpty();
-        verify(jdbc).query(org.mockito.ArgumentMatchers.eq("select * from auth_roles where system_key IS NULL order by name"), any(RowMapper.class));
+        verify(jdbc).query(org.mockito.ArgumentMatchers.eq(
+                "select * from auth_roles where system_key IS NULL order by name"),
+                any(RowMapper.class));
     }
 }

@@ -15,16 +15,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class LocalReceivablesCustomerProfileGatewayAdapterTest {
-    private final CustomerProfileQuery customerProfiles = mock(CustomerProfileQuery.class);
-    private final LocalReceivablesCustomerProfileGatewayAdapter adapter =
-            new LocalReceivablesCustomerProfileGatewayAdapter(customerProfiles);
+    private final CustomerProfileQuery customerProfiles = mock(
+            CustomerProfileQuery.class);
+    private final LocalReceivablesCustomerProfileGatewayAdapter adapter = new LocalReceivablesCustomerProfileGatewayAdapter(
+            customerProfiles);
 
     @Test
     void shouldReturnReceivablesOwnedSnapshotFromCustomerProfile() {
         UUID customerId = UUID.randomUUID();
-        when(customerProfiles.find(customerId)).thenReturn(new CustomerProfileSnapshot(customerId, 7L,
-                "Customer", "COMPANY", "J-1", null, null, 30, BigDecimal.valueOf(500),
-                BigDecimal.valueOf(25), true, null, null, List.of("a@cashly.test"), List.of("555"), List.of()));
+        when(customerProfiles.find(customerId))
+                .thenReturn(new CustomerProfileSnapshot(customerId, 7L,
+                        "Customer", "COMPANY", "J-1", null, null, 30,
+                        BigDecimal.valueOf(500), BigDecimal.valueOf(25), true,
+                        null, null, List.of("a@cashly.test"), List.of("555"),
+                        List.of()));
 
         var profile = adapter.findById(customerId).orElseThrow();
 
@@ -39,7 +43,8 @@ class LocalReceivablesCustomerProfileGatewayAdapterTest {
     @Test
     void shouldRepresentMissingCustomerAsEmpty() {
         UUID customerId = UUID.randomUUID();
-        when(customerProfiles.find(customerId)).thenThrow(new CustomerNotFoundException("missing"));
+        when(customerProfiles.find(customerId))
+                .thenThrow(new CustomerNotFoundException("missing"));
 
         assertThat(adapter.findById(customerId)).isEmpty();
     }
@@ -47,9 +52,11 @@ class LocalReceivablesCustomerProfileGatewayAdapterTest {
     @Test
     void shouldPropagateUnexpectedCustomerQueryFailure() {
         UUID customerId = UUID.randomUUID();
-        IllegalStateException failure = new IllegalStateException("database unavailable");
+        IllegalStateException failure = new IllegalStateException(
+                "database unavailable");
         when(customerProfiles.find(customerId)).thenThrow(failure);
 
-        assertThatThrownBy(() -> adapter.findById(customerId)).isSameAs(failure);
+        assertThatThrownBy(() -> adapter.findById(customerId))
+                .isSameAs(failure);
     }
 }

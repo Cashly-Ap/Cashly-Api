@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProductStockQueryConfig {
     @Bean
-    public ProductStockQuery productStockQuery(WarehouseStockRepository stocks, WarehouseRepository warehouses) {
+    public ProductStockQuery productStockQuery(WarehouseStockRepository stocks,
+            WarehouseRepository warehouses) {
         return new RepositoryProductStockQuery(stocks, warehouses);
     }
 }

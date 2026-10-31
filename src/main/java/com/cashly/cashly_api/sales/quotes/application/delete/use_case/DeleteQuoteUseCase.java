@@ -22,7 +22,8 @@ public class DeleteQuoteUseCase {
                 .orElseThrow(() -> new QuoteNotFoundException(id));
 
         if (!quote.canBeModified()) {
-            throw new QuoteStateException("Quote can only be deleted in DRAFT status");
+            throw new QuoteStateException(
+                    "Quote can only be deleted in DRAFT status");
         }
 
         quoteRepository.delete(id);

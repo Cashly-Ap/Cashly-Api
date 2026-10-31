@@ -32,10 +32,10 @@ public class RegisterCustomerUseCase {
     private final WarehouseDirectoryGateway warehouseDirectory;
 
     public RegisterCustomerUseCase(CustomerRepository customerRepository,
-                                    CustomerCodeGenerator customerCodeGenerator,
-                                    CustomerMapper customerMapper,
-                                    CustomerWarehouseAccessRepository warehouseAccessRepository,
-                                    WarehouseDirectoryGateway warehouseDirectory) {
+            CustomerCodeGenerator customerCodeGenerator,
+            CustomerMapper customerMapper,
+            CustomerWarehouseAccessRepository warehouseAccessRepository,
+            WarehouseDirectoryGateway warehouseDirectory) {
         this.customerRepository = customerRepository;
         this.customerCodeGenerator = customerCodeGenerator;
         this.customerMapper = customerMapper;
@@ -44,7 +44,8 @@ public class RegisterCustomerUseCase {
     }
 
     @Transactional
-    public CustomerCreateResponse execute(CreateCustomerRequest request, UUID grantedBy) {
+    public CustomerCreateResponse execute(CreateCustomerRequest request,
+            UUID grantedBy) {
         Rif rif = new Rif(request.rif());
         if (customerRepository.existsByRif(rif)) {
             throw new DuplicateCustomerRifException(rif.getValue());
@@ -52,15 +53,12 @@ public class RegisterCustomerUseCase {
 
         CustomerCode code = customerCodeGenerator.generateNext();
 
-        Customer customer = Customer.create(
-            code,
-            new LegalName(request.legalName()),
-            CustomerType.valueOf(request.type()),
-            rif,
-            new CustomerAlias(request.alias()),
-            new CreditDays(request.creditDays()),
-            new CreditLimit(request.creditLimit())
-        );
+        Customer customer = Customer.create(code,
+                new LegalName(request.legalName()),
+                CustomerType.valueOf(request.type()), rif,
+                new CustomerAlias(request.alias()),
+                new CreditDays(request.creditDays()),
+                new CreditLimit(request.creditLimit()));
 
         if (!request.active()) {
             customer.deactivate();
@@ -69,22 +67,27 @@ public class RegisterCustomerUseCase {
         customer.updateNotes(request.notes());
         customer.updatePriceTypeId(request.priceTypeId());
 
-        request.emails().forEach(e -> customer.addEmail(new EmailAddress(e.email())));
-        request.phones().forEach(p -> customer.addPhone(new PhoneNumber(p.phone())));
-        request.addresses().forEach(a -> customer.addAddress(
-            a.address(), a.billing(), a.active(),
-            a.state(), a.municipality(), a.postalCode()
-        ));
+        request.emails()
+                .forEach(e -> customer.addEmail(new EmailAddress(e.email())));
+        request.phones()
+                .forEach(p -> customer.addPhone(new PhoneNumber(p.phone())));
+        request.addresses()
+                .forEach(a -> customer.addAddress(a.address(), a.billing(),
+                        a.active(), a.state(), a.municipality(),
+                        a.postalCode()));
 
         Customer saved = customerRepository.save(customer);
-        grantWarehouseAccess(saved.getId().getValue(), request.warehouseIds(), grantedBy);
+        grantWarehouseAccess(saved.getId().getValue(), request.warehouseIds(),
+                grantedBy);
         return customerMapper.toCreateResponse(saved);
     }
 
-    private void grantWarehouseAccess(UUID customerId, java.util.List<UUID> warehouseIds, UUID grantedBy) {
+    private void grantWarehouseAccess(UUID customerId,
+            java.util.List<UUID> warehouseIds, UUID grantedBy) {
         for (UUID warehouseId : warehouseIds) {
             warehouseDirectory.requireById(warehouseId);
-            warehouseAccessRepository.save(CustomerWarehouseAccess.create(customerId, warehouseId, grantedBy));
+            warehouseAccessRepository.save(CustomerWarehouseAccess
+                    .create(customerId, warehouseId, grantedBy));
         }
     }
 }

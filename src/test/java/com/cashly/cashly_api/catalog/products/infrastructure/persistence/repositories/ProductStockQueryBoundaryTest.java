@@ -10,7 +10,8 @@ class ProductStockQueryBoundaryTest {
         for (var method : SpringDataProductRepository.class.getMethods()) {
             Query query = method.getAnnotation(Query.class);
             if (query != null && !query.nativeQuery()) {
-                assertFalse(query.value().contains("WarehouseStockEntity"), method.toString());
+                assertFalse(query.value().contains("WarehouseStockEntity"),
+                        method.toString());
             }
         }
     }

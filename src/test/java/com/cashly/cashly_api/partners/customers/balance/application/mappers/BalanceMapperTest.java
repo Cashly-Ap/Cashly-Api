@@ -27,11 +27,11 @@ class BalanceMapperTest {
             UUID id = UUID.randomUUID();
             UUID customerId = UUID.randomUUID();
             LocalDateTime now = LocalDateTime.now();
-            CustomerBalance balance = CustomerBalance.reconstitute(
-                    id, customerId, new BigDecimal("500.00"), now, now
-            );
+            CustomerBalance balance = CustomerBalance.reconstitute(id,
+                    customerId, new BigDecimal("500.00"), now, now);
 
-            CustomerBalanceResponse response = BalanceMapper.toResponse(balance);
+            CustomerBalanceResponse response = BalanceMapper
+                    .toResponse(balance);
 
             assertEquals(customerId, response.customerId());
             assertEquals(new BigDecimal("500.00"), response.totalBalance());
@@ -44,11 +44,11 @@ class BalanceMapperTest {
             UUID id = UUID.randomUUID();
             UUID customerId = UUID.randomUUID();
             LocalDateTime now = LocalDateTime.now();
-            CustomerBalance balance = CustomerBalance.reconstitute(
-                    id, customerId, BigDecimal.ZERO, now, now
-            );
+            CustomerBalance balance = CustomerBalance.reconstitute(id,
+                    customerId, BigDecimal.ZERO, now, now);
 
-            CustomerBalanceResponse response = BalanceMapper.toResponse(balance);
+            CustomerBalanceResponse response = BalanceMapper
+                    .toResponse(balance);
 
             assertEquals(BigDecimal.ZERO, response.totalBalance());
         }
@@ -65,12 +65,12 @@ class BalanceMapperTest {
             UUID referenceId = UUID.randomUUID();
             LocalDateTime now = LocalDateTime.now();
             BalanceTransaction transaction = BalanceTransaction.reconstitute(
-                    txId, customerId, BalanceType.PAYMENTS, new BigDecimal("300.00"),
-                    BalanceType.PAYMENTS, referenceId, "TX-001", "FAC-001",
-                    UUID.randomUUID(), now
-            );
+                    txId, customerId, BalanceType.PAYMENTS,
+                    new BigDecimal("300.00"), BalanceType.PAYMENTS, referenceId,
+                    "TX-001", "FAC-001", UUID.randomUUID(), now);
 
-            BalanceTransactionResponse response = BalanceMapper.toTransactionResponse(transaction);
+            BalanceTransactionResponse response = BalanceMapper
+                    .toTransactionResponse(transaction);
 
             assertEquals(txId, response.id());
             assertEquals(customerId, response.customerId());

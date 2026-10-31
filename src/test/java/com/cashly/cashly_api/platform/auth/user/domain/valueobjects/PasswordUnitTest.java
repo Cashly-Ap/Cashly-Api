@@ -2,7 +2,6 @@ package com.cashly.cashly_api.platform.auth.user.domain.valueobjects;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.PasswordUnitTest;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -24,19 +23,17 @@ class PasswordUnitTest {
     @Test
     void should_ThrowException_When_NullHashedValueProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.fromHash(null)
-        );
-        assertEquals("Hashed password cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class, () -> Password.fromHash(null));
+        assertEquals("Hashed password cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_EmptyHashedValueProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.fromHash("   ")
-        );
-        assertEquals("Hashed password cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class, () -> Password.fromHash("   "));
+        assertEquals("Hashed password cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
@@ -49,19 +46,19 @@ class PasswordUnitTest {
     @Test
     void should_ThrowException_When_NullRawPasswordProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(null)
-        );
-        assertEquals("Password cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(null));
+        assertEquals("Password cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
     void should_ThrowException_When_EmptyRawPasswordProvided() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword("")
-        );
-        assertEquals("Password cannot be null or empty", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(""));
+        assertEquals("Password cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
@@ -69,10 +66,10 @@ class PasswordUnitTest {
         String shortPassword = "Pass1!";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(shortPassword)
-        );
-        assertEquals("Password must be at least 8 characters long", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(shortPassword));
+        assertEquals("Password must be at least 8 characters long",
+                exception.getMessage());
     }
 
     @Test
@@ -80,10 +77,10 @@ class PasswordUnitTest {
         String longPassword = "P@ssw0rd" + "a".repeat(100);
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(longPassword)
-        );
-        assertEquals("Password cannot exceed 100 characters", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(longPassword));
+        assertEquals("Password cannot exceed 100 characters",
+                exception.getMessage());
     }
 
     @Test
@@ -91,10 +88,10 @@ class PasswordUnitTest {
         String password = "password123!";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(password)
-        );
-        assertEquals("Password must contain at least one uppercase letter", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(password));
+        assertEquals("Password must contain at least one uppercase letter",
+                exception.getMessage());
     }
 
     @Test
@@ -102,10 +99,10 @@ class PasswordUnitTest {
         String password = "PASSWORD123!";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(password)
-        );
-        assertEquals("Password must contain at least one lowercase letter", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(password));
+        assertEquals("Password must contain at least one lowercase letter",
+                exception.getMessage());
     }
 
     @Test
@@ -113,10 +110,10 @@ class PasswordUnitTest {
         String password = "Password!";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(password)
-        );
-        assertEquals("Password must contain at least one digit", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(password));
+        assertEquals("Password must contain at least one digit",
+                exception.getMessage());
     }
 
     @Test
@@ -124,20 +121,15 @@ class PasswordUnitTest {
         String password = "Password123";
 
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> Password.validateRawPassword(password)
-        );
-        assertEquals("Password must contain at least one special character", exception.getMessage());
+                IllegalArgumentException.class,
+                () -> Password.validateRawPassword(password));
+        assertEquals("Password must contain at least one special character",
+                exception.getMessage());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-        "StrongP@ss123",
-        "MyP@ssw0rd!",
-        "Test#1234Pass",
-        "Secure$Pass99",
-        "Complex&Pass1"
-    })
+    @ValueSource(strings = {"StrongP@ss123", "MyP@ssw0rd!", "Test#1234Pass",
+            "Secure$Pass99", "Complex&Pass1"})
     void should_AcceptValidPasswords(String validPassword) {
         assertDoesNotThrow(() -> Password.validateRawPassword(validPassword));
     }

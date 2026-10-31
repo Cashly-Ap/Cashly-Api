@@ -50,7 +50,8 @@ class GetCustomerBalanceUseCaseTest {
                 UUID.randomUUID(), customerId, new BigDecimal("500.00"),
                 LocalDateTime.now(), LocalDateTime.now());
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.of(balance));
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.of(balance));
 
         CustomerBalanceResponse response = useCase.execute(customerId);
 
@@ -65,7 +66,8 @@ class GetCustomerBalanceUseCaseTest {
     void should_return_zero_balance_when_customer_has_no_balance() {
         UUID customerId = UUID.randomUUID();
 
-        when(customerBalanceRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
+        when(customerBalanceRepository.findByCustomerId(customerId))
+                .thenReturn(Optional.empty());
 
         CustomerBalanceResponse response = useCase.execute(customerId);
 
@@ -82,21 +84,26 @@ class GetCustomerBalanceUseCaseTest {
     void should_get_transactions_page() {
         UUID customerId = UUID.randomUUID();
         UUID createdBy = UUID.randomUUID();
-        BalanceTransaction tx = BalanceTransaction.create(
-                customerId, BalanceType.ADVANCED, BigDecimal.TEN,
-                BalanceType.ADVANCED, null, null, null, createdBy);
+        BalanceTransaction tx = BalanceTransaction.create(customerId,
+                BalanceType.ADVANCED, BigDecimal.TEN, BalanceType.ADVANCED,
+                null, null, null, createdBy);
 
         Page<BalanceTransaction> page = new PageImpl<>(List.of(tx));
 
-        when(customerBalanceRepository.findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt()))
+        when(customerBalanceRepository.findTransactionsByCustomerId(
+                eq(customerId), org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyInt()))
                 .thenReturn(PageResponseMapper.from(page));
 
-        PageResponse<BalanceTransactionResponse> response = useCase.getTransactions(customerId, 0, 10);
+        PageResponse<BalanceTransactionResponse> response = useCase
+                .getTransactions(customerId, 0, 10);
 
         assertNotNull(response);
         assertEquals(1, response.content().size());
         assertEquals(customerId, response.content().getFirst().customerId());
-        verify(customerBalanceRepository).findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt());
+        verify(customerBalanceRepository).findTransactionsByCustomerId(
+                eq(customerId), org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyInt());
     }
 
     @Test
@@ -106,14 +113,19 @@ class GetCustomerBalanceUseCaseTest {
 
         Page<BalanceTransaction> emptyPage = Page.empty();
 
-        when(customerBalanceRepository.findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt()))
+        when(customerBalanceRepository.findTransactionsByCustomerId(
+                eq(customerId), org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyInt()))
                 .thenReturn(PageResponseMapper.from(emptyPage));
 
-        PageResponse<BalanceTransactionResponse> response = useCase.getTransactions(customerId, 0, 10);
+        PageResponse<BalanceTransactionResponse> response = useCase
+                .getTransactions(customerId, 0, 10);
 
         assertNotNull(response);
         assertTrue(response.content().isEmpty());
         assertTrue(response.empty());
-        verify(customerBalanceRepository).findTransactionsByCustomerId(eq(customerId), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt());
+        verify(customerBalanceRepository).findTransactionsByCustomerId(
+                eq(customerId), org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyInt());
     }
 }

@@ -27,10 +27,13 @@ class InvoiceCreationContractTest {
         when(response.id()).thenReturn(invoiceId);
         when(response.invoiceNumber()).thenReturn("INV-2026-00001");
         when(createInvoice.execute(any(), eq(actorId))).thenReturn(response);
-        var gateway = new LocalInvoiceCreationGateway(new OrderInvoiceCreationService(createInvoice));
+        var gateway = new LocalInvoiceCreationGateway(
+                new OrderInvoiceCreationService(createInvoice));
 
-        var invoice = gateway.create(new InvoiceCreationGateway.Command(orderId, "CASH", true,
-                balance, paymentMethodId, "password", issueDate), actorId);
+        var invoice = gateway.create(
+                new InvoiceCreationGateway.Command(orderId, "CASH", true,
+                        balance, paymentMethodId, "password", issueDate),
+                actorId);
 
         var captor = ArgumentCaptor.forClass(CreateInvoiceRequest.class);
         verify(createInvoice).execute(captor.capture(), eq(actorId));

@@ -52,8 +52,12 @@ class DeleteInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         deleteInvoiceUseCase = new DeleteInvoiceUseCase(invoiceRepository,
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceOrderGateway(orderRepository),
-                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(warehouseStockRepository, mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))));
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceOrderGateway(
+                        orderRepository),
+                new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
+                        new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
+                                warehouseStockRepository,
+                                mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))));
     }
 
     @Test
@@ -61,7 +65,8 @@ class DeleteInvoiceUseCaseTest {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT, null);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
 
         deleteInvoiceUseCase.execute(id);
 
@@ -72,12 +77,11 @@ class DeleteInvoiceUseCaseTest {
     void should_ThrowInvoiceNotFoundException_When_InvoiceNotFound() {
         UUID id = UUID.randomUUID();
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.empty());
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.empty());
 
-        assertThrows(
-                InvoiceNotFoundException.class,
-                () -> deleteInvoiceUseCase.execute(id)
-        );
+        assertThrows(InvoiceNotFoundException.class,
+                () -> deleteInvoiceUseCase.execute(id));
 
         verify(invoiceRepository, never()).deleteById(any());
     }
@@ -87,12 +91,11 @@ class DeleteInvoiceUseCaseTest {
         UUID id = UUID.randomUUID();
         Invoice invoice = buildInvoice(id, InvoiceStatus.PAID, null);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> deleteInvoiceUseCase.execute(id)
-        );
+        assertThrows(IllegalStateException.class,
+                () -> deleteInvoiceUseCase.execute(id));
 
         verify(invoiceRepository, never()).deleteById(any());
     }
@@ -104,8 +107,10 @@ class DeleteInvoiceUseCaseTest {
         Invoice invoice = buildInvoice(id, InvoiceStatus.DRAFT, orderId);
         Order order = buildOrder(orderId);
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(orderRepository.findById(OrderId.of(orderId))).thenReturn(Optional.of(order));
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(orderRepository.findById(OrderId.of(orderId)))
+                .thenReturn(Optional.of(order));
 
         deleteInvoiceUseCase.execute(id);
 
@@ -119,22 +124,26 @@ class DeleteInvoiceUseCaseTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        InvoiceLineAllocation allocation = InvoiceLineAllocation.create(warehouseId, BigDecimal.valueOf(3));
-        InvoiceLine line = InvoiceLine.create(productId, "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of(allocation));
-        Invoice invoice = Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
-                UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "User", null, null,
-                InvoiceStatus.DRAFT, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+        InvoiceLineAllocation allocation = InvoiceLineAllocation
+                .create(warehouseId, BigDecimal.valueOf(3));
+        InvoiceLine line = InvoiceLine.create(productId, "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN,
+                List.of(allocation));
+        Invoice invoice = Invoice.reconstitute(InvoiceId.of(id),
+                InvoiceNumber.of(2026, 1), UUID.randomUUID(), "Customer",
+                "J-12345678-9", UUID.randomUUID(), "User", null, null,
+                InvoiceStatus.DRAFT, PaymentType.CASH, null, BigDecimal.ZERO,
+                null, null, null, List.of(line), LocalDateTime.now(),
+                LocalDateTime.now());
 
-        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(), warehouseId, productId, 50, 3,
-                LocalDateTime.now(), LocalDateTime.now());
+        WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
+                warehouseId, productId, 50, 3, LocalDateTime.now(),
+                LocalDateTime.now());
 
-        when(invoiceRepository.findById(InvoiceId.of(id))).thenReturn(Optional.of(invoice));
-        when(warehouseStockRepository.findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
+        when(invoiceRepository.findById(InvoiceId.of(id)))
+                .thenReturn(Optional.of(invoice));
+        when(warehouseStockRepository
+                .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(stock));
 
         deleteInvoiceUseCase.execute(id);
@@ -143,26 +152,22 @@ class DeleteInvoiceUseCaseTest {
     }
 
     private Invoice buildInvoice(UUID id, InvoiceStatus status, UUID orderId) {
-        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Invoice.reconstitute(
-                InvoiceId.of(id), InvoiceNumber.of(2026, 1),
+        InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name", orderId, null,
-                status, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+                UUID.randomUUID(), "User Name", orderId, null, status,
+                PaymentType.CASH, null, BigDecimal.ZERO, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Order buildOrder(UUID orderId) {
-        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A", "PROD-001",
-                BigDecimal.ONE, BigDecimal.TEN, List.of());
-        return Order.reconstitute(
-                OrderId.of(orderId), OrderNumber.of(2026, 1),
+        OrderLine line = OrderLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        return Order.reconstitute(OrderId.of(orderId), OrderNumber.of(2026, 1),
                 UUID.randomUUID(), "Customer Name", "J-12345678-9",
-                UUID.randomUUID(), "User Name",
-                OrderStatus.INVOICED, null, null, null, null, null,
-                List.of(line), LocalDateTime.now(), LocalDateTime.now()
-        );
+                UUID.randomUUID(), "User Name", OrderStatus.INVOICED, null,
+                null, null, null, null, List.of(line), LocalDateTime.now(),
+                LocalDateTime.now());
     }
 }

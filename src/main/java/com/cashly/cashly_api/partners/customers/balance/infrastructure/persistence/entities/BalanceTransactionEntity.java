@@ -10,13 +10,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "balance_transactions",
-    indexes = {
+@Table(name = "balance_transactions", indexes = {
         @Index(name = "idx_balance_transactions_customer_id", columnList = "customer_id"),
-        @Index(name = "idx_balance_transactions_created_at", columnList = "created_at")
-    }
-)
+        @Index(name = "idx_balance_transactions_created_at", columnList = "created_at")})
 @Getter
 @Setter
 @NoArgsConstructor

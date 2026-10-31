@@ -37,40 +37,47 @@ public class CustomerConfig {
     }
 
     @Bean
-    public CustomerCodeGenerator customerCodeGenerator(CustomerRepository customerRepository) {
+    public CustomerCodeGenerator customerCodeGenerator(
+            CustomerRepository customerRepository) {
         return new SequentialCustomerCodeGenerator(customerRepository);
     }
 
     @Bean
-    public RegisterCustomerUseCase registerCustomerUseCase(CustomerRepository customerRepository,
-                                                             CustomerCodeGenerator customerCodeGenerator,
-                                                             CustomerMapper customerMapper,
-                                                             CustomerWarehouseAccessRepository warehouseAccessRepository,
-                                                             WarehouseDirectoryGateway warehouseDirectory) {
-        return new RegisterCustomerUseCase(customerRepository, customerCodeGenerator, customerMapper,
+    public RegisterCustomerUseCase registerCustomerUseCase(
+            CustomerRepository customerRepository,
+            CustomerCodeGenerator customerCodeGenerator,
+            CustomerMapper customerMapper,
+            CustomerWarehouseAccessRepository warehouseAccessRepository,
+            WarehouseDirectoryGateway warehouseDirectory) {
+        return new RegisterCustomerUseCase(customerRepository,
+                customerCodeGenerator, customerMapper,
                 warehouseAccessRepository, warehouseDirectory);
     }
 
     @Bean
-    public GetCustomerUseCase getCustomerUseCase(CustomerRepository customerRepository,
-                                                   CustomerMapper customerMapper) {
+    public GetCustomerUseCase getCustomerUseCase(
+            CustomerRepository customerRepository,
+            CustomerMapper customerMapper) {
         return new GetCustomerUseCase(customerRepository, customerMapper);
     }
 
     @Bean
-    public ListCustomersUseCase listCustomersUseCase(CustomerRepository customerRepository,
-                                                       CustomerMapper customerMapper) {
+    public ListCustomersUseCase listCustomersUseCase(
+            CustomerRepository customerRepository,
+            CustomerMapper customerMapper) {
         return new ListCustomersUseCase(customerRepository, customerMapper);
     }
 
     @Bean
-    public UpdateCustomerUseCase updateCustomerUseCase(CustomerRepository customerRepository,
-                                                         CustomerMapper customerMapper) {
+    public UpdateCustomerUseCase updateCustomerUseCase(
+            CustomerRepository customerRepository,
+            CustomerMapper customerMapper) {
         return new UpdateCustomerUseCase(customerRepository, customerMapper);
     }
 
     @Bean
-    public DeleteCustomerUseCase deleteCustomerUseCase(CustomerRepository customerRepository) {
+    public DeleteCustomerUseCase deleteCustomerUseCase(
+            CustomerRepository customerRepository) {
         return new DeleteCustomerUseCase(customerRepository);
     }
 
@@ -79,7 +86,8 @@ public class CustomerConfig {
             CustomerWarehouseAccessRepository accessRepository,
             CustomerRepository customerRepository,
             WarehouseDirectoryGateway warehouseDirectory) {
-        return new GrantWarehouseAccessUseCase(accessRepository, customerRepository, warehouseDirectory);
+        return new GrantWarehouseAccessUseCase(accessRepository,
+                customerRepository, warehouseDirectory);
     }
 
     @Bean
@@ -93,7 +101,8 @@ public class CustomerConfig {
             CustomerWarehouseAccessRepository accessRepository,
             CustomerRepository customerRepository,
             WarehouseDirectoryGateway warehouseDirectory) {
-        return new ListCustomerWarehousesUseCase(accessRepository, customerRepository, warehouseDirectory);
+        return new ListCustomerWarehousesUseCase(accessRepository,
+                customerRepository, warehouseDirectory);
     }
 
     @Bean
@@ -119,8 +128,8 @@ public class CustomerConfig {
             AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
             CustomerCashGateway cashGateway,
             CustomerActorGateway actorGateway) {
-        return new CreateCustomerAdvanceUseCase(
-                addToCustomerBalanceUseCase, cashGateway, actorGateway);
+        return new CreateCustomerAdvanceUseCase(addToCustomerBalanceUseCase,
+                cashGateway, actorGateway);
     }
 
     @Bean
@@ -128,8 +137,8 @@ public class CustomerConfig {
             ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
             CustomerCashGateway cashGateway,
             CustomerActorGateway actorGateway) {
-        return new RefundCustomerBalanceUseCase(
-                consumeCustomerBalanceUseCase, cashGateway, actorGateway);
+        return new RefundCustomerBalanceUseCase(consumeCustomerBalanceUseCase,
+                cashGateway, actorGateway);
     }
 
     @Bean

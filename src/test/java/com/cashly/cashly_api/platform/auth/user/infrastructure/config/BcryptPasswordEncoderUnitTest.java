@@ -28,29 +28,29 @@ class BcryptPasswordEncoderUnitTest {
         assertNotNull(encoded);
         assertFalse(encoded.isEmpty());
         assertNotEquals(rawPassword, encoded);
-        assertTrue(encoded.startsWith("$2a$")); 
+        assertTrue(encoded.startsWith("$2a$"));
     }
 
     @Test
     @DisplayName("should_ThrowException_When_EncodingNullPassword")
     void should_ThrowException_When_EncodingNullPassword() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> passwordEncoder.encode(null)
-        );
+                IllegalArgumentException.class,
+                () -> passwordEncoder.encode(null));
 
-        assertEquals("Raw password cannot be null or empty", exception.getMessage());
+        assertEquals("Raw password cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
     @DisplayName("should_ThrowException_When_EncodingEmptyPassword")
     void should_ThrowException_When_EncodingEmptyPassword() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> passwordEncoder.encode("")
-        );
+                IllegalArgumentException.class,
+                () -> passwordEncoder.encode(""));
 
-        assertEquals("Raw password cannot be null or empty", exception.getMessage());
+        assertEquals("Raw password cannot be null or empty",
+                exception.getMessage());
     }
 
     @Test
@@ -112,7 +112,7 @@ class BcryptPasswordEncoderUnitTest {
         String encoded1 = passwordEncoder.encode(rawPassword);
         String encoded2 = passwordEncoder.encode(rawPassword);
 
-        assertNotEquals(encoded1, encoded2); 
+        assertNotEquals(encoded1, encoded2);
         assertTrue(passwordEncoder.matches(rawPassword, encoded1));
         assertTrue(passwordEncoder.matches(rawPassword, encoded2));
     }
@@ -157,7 +157,7 @@ class BcryptPasswordEncoderUnitTest {
 
         String encoded = passwordEncoder.encode(rawPassword);
 
-        assertTrue(encoded.startsWith("$2a$10$")); 
-        assertTrue(encoded.length() >= 60); 
+        assertTrue(encoded.startsWith("$2a$10$"));
+        assertTrue(encoded.length() >= 60);
     }
 }

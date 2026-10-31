@@ -14,24 +14,27 @@ class CompositeProductCannotBeComponentExceptionTest {
     void should_CreateException_WithIdInMessage() {
         UUID id = UUID.randomUUID();
 
-        CompositeProductCannotBeComponentException exception =
-                new CompositeProductCannotBeComponentException(id);
+        CompositeProductCannotBeComponentException exception = new CompositeProductCannotBeComponentException(
+                id);
 
         assertTrue(exception.getMessage().contains(id.toString()));
-        assertTrue(exception.getMessage().contains("cannot be used as a component"));
+        assertTrue(exception.getMessage()
+                .contains("cannot be used as a component"));
     }
 
     @Test
     void should_BeRuntimeException() {
-        CompositeProductCannotBeComponentException exception =
-                new CompositeProductCannotBeComponentException(UUID.randomUUID());
+        CompositeProductCannotBeComponentException exception = new CompositeProductCannotBeComponentException(
+                UUID.randomUUID());
 
         assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
     void should_BeThrownAndCaught() {
-        assertThrows(CompositeProductCannotBeComponentException.class,
-                () -> { throw new CompositeProductCannotBeComponentException(UUID.randomUUID()); });
+        assertThrows(CompositeProductCannotBeComponentException.class, () -> {
+            throw new CompositeProductCannotBeComponentException(
+                    UUID.randomUUID());
+        });
     }
 }

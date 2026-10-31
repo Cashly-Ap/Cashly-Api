@@ -16,7 +16,7 @@ public class DeleteCreditNoteUseCase {
     private final CreditNoteInvoiceGateway invoices;
 
     public DeleteCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
-                                   CreditNoteInvoiceGateway invoices) {
+            CreditNoteInvoiceGateway invoices) {
         this.creditNoteRepository = creditNoteRepository;
         this.invoices = invoices;
     }
@@ -25,7 +25,8 @@ public class DeleteCreditNoteUseCase {
     public void execute(UUID noteId) {
         CreditNoteId id = new CreditNoteId(noteId);
         CreditNote creditNote = creditNoteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Credit note not found: " + noteId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Credit note not found: " + noteId));
 
         UUID invoiceId = creditNote.getInvoiceId();
         creditNoteRepository.delete(id);

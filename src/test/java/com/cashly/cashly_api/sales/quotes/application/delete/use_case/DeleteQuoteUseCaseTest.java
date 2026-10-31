@@ -61,7 +61,8 @@ class DeleteQuoteUseCaseTest {
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
-        assertThrows(QuoteStateException.class, () -> deleteQuoteUseCase.execute(quoteId));
+        assertThrows(QuoteStateException.class,
+                () -> deleteQuoteUseCase.execute(quoteId));
         verify(quoteRepository, never()).delete(any());
     }
 
@@ -71,20 +72,18 @@ class DeleteQuoteUseCaseTest {
         UUID quoteId = UUID.randomUUID();
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.empty());
 
-        assertThrows(QuoteNotFoundException.class, () -> deleteQuoteUseCase.execute(quoteId));
+        assertThrows(QuoteNotFoundException.class,
+                () -> deleteQuoteUseCase.execute(quoteId));
     }
 
     private Quote createDraftQuote(UUID quoteId) {
-        return Quote.reconstitute(
-                quoteId,
-                QuoteNumber.of(2026, 1),
+        return Quote.reconstitute(quoteId, QuoteNumber.of(2026, 1),
                 UUID.randomUUID(), "Customer", "J-12345678-9",
-                UUID.randomUUID(), "Creator",
-                QuoteStatus.DRAFT,
-                LocalDate.now(), null, BigDecimal.TEN,
-                null, null, null, null, null, null,
-                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001", BigDecimal.ONE, BigDecimal.TEN)),
-                Instant.now(), Instant.now()
-        );
+                UUID.randomUUID(), "Creator", QuoteStatus.DRAFT,
+                LocalDate.now(), null, BigDecimal.TEN, null, null, null, null,
+                null, null,
+                List.of(new QuoteLine(UUID.randomUUID(), "Product", "PROD-001",
+                        BigDecimal.ONE, BigDecimal.TEN)),
+                Instant.now(), Instant.now());
     }
 }

@@ -2,7 +2,6 @@ package com.cashly.cashly_api.procurement.purchases.reporting.application.genera
 
 import java.util.UUID;
 
-
 public interface GeneratePurchasePdfUseCase {
     byte[] execute(UUID purchaseId);
 }

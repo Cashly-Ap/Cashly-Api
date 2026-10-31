@@ -9,15 +9,21 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-public class RepositoryInvoicePaymentTotalsQuery implements InvoicePaymentTotalsQuery {
+public class RepositoryInvoicePaymentTotalsQuery
+        implements
+            InvoicePaymentTotalsQuery {
     private final PaymentAllocationRepository allocations;
 
-    public RepositoryInvoicePaymentTotalsQuery(PaymentAllocationRepository allocations) {
+    public RepositoryInvoicePaymentTotalsQuery(
+            PaymentAllocationRepository allocations) {
         this.allocations = allocations;
     }
 
     @Override
-    public Map<UUID, java.math.BigDecimal> sumByInvoiceIds(Collection<UUID> invoiceIds) {
-        return invoiceIds.isEmpty() ? Map.of() : allocations.sumByInvoiceIds(invoiceIds);
+    public Map<UUID, java.math.BigDecimal> sumByInvoiceIds(
+            Collection<UUID> invoiceIds) {
+        return invoiceIds.isEmpty()
+                ? Map.of()
+                : allocations.sumByInvoiceIds(invoiceIds);
     }
 }

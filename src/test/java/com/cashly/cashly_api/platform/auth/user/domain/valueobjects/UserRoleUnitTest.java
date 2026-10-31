@@ -33,7 +33,8 @@ class UserRoleUnitTest {
     @Test
     void should_contain_all_expected_roles() {
         UserRole[] values = UserRole.values();
-        assertTrue(java.util.Arrays.asList(values).contains(UserRole.SUPER_ADMIN));
+        assertTrue(
+                java.util.Arrays.asList(values).contains(UserRole.SUPER_ADMIN));
         assertTrue(java.util.Arrays.asList(values).contains(UserRole.ADMIN));
         assertTrue(java.util.Arrays.asList(values).contains(UserRole.OPERATOR));
     }

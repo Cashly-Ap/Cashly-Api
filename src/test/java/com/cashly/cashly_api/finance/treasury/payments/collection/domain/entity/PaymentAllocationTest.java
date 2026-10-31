@@ -25,7 +25,8 @@ class PaymentAllocationTest {
 
         @Test
         void should_CreateAllocation_When_ValidData() {
-            PaymentAllocation allocation = PaymentAllocation.create(paymentId, invoiceId, allocatedAmount);
+            PaymentAllocation allocation = PaymentAllocation.create(paymentId,
+                    invoiceId, allocatedAmount);
 
             assertNotNull(allocation.getId());
             assertEquals(paymentId, allocation.getPaymentId());
@@ -36,34 +37,36 @@ class PaymentAllocationTest {
 
         @Test
         void should_Throw_When_PaymentIdIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    PaymentAllocation.create(null, invoiceId, allocatedAmount));
+            assertThrows(NullPointerException.class, () -> PaymentAllocation
+                    .create(null, invoiceId, allocatedAmount));
         }
 
         @Test
         void should_Throw_When_InvoiceIdIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    PaymentAllocation.create(paymentId, null, allocatedAmount));
+            assertThrows(NullPointerException.class, () -> PaymentAllocation
+                    .create(paymentId, null, allocatedAmount));
         }
 
         @Test
         void should_Throw_When_AllocatedAmountIsNull() {
-            assertThrows(NullPointerException.class, () ->
-                    PaymentAllocation.create(paymentId, invoiceId, null));
+            assertThrows(NullPointerException.class,
+                    () -> PaymentAllocation.create(paymentId, invoiceId, null));
         }
 
         @Test
         void should_Throw_When_AllocatedAmountIsZero() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    PaymentAllocation.create(paymentId, invoiceId, BigDecimal.ZERO));
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class, () -> PaymentAllocation
+                            .create(paymentId, invoiceId, BigDecimal.ZERO));
 
-            assertEquals("Allocated amount must be greater than zero", exception.getMessage());
+            assertEquals("Allocated amount must be greater than zero",
+                    exception.getMessage());
         }
 
         @Test
         void should_Throw_When_AllocatedAmountIsNegative() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    PaymentAllocation.create(paymentId, invoiceId, new BigDecimal("-100.00")));
+            assertThrows(IllegalArgumentException.class, () -> PaymentAllocation
+                    .create(paymentId, invoiceId, new BigDecimal("-100.00")));
         }
     }
 
@@ -76,8 +79,8 @@ class PaymentAllocationTest {
             UUID id = UUID.randomUUID();
             LocalDateTime createdAt = LocalDateTime.now();
 
-            PaymentAllocation allocation = PaymentAllocation.reconstitute(
-                    id, paymentId, invoiceId, allocatedAmount, createdAt);
+            PaymentAllocation allocation = PaymentAllocation.reconstitute(id,
+                    paymentId, invoiceId, allocatedAmount, createdAt);
 
             assertEquals(id, allocation.getId());
             assertEquals(paymentId, allocation.getPaymentId());
@@ -89,7 +92,8 @@ class PaymentAllocationTest {
         @Test
         void should_ReconstituteWithZeroAmount_When_AmountIsZero() {
             PaymentAllocation allocation = PaymentAllocation.reconstitute(
-                    UUID.randomUUID(), paymentId, invoiceId, BigDecimal.ZERO, LocalDateTime.now());
+                    UUID.randomUUID(), paymentId, invoiceId, BigDecimal.ZERO,
+                    LocalDateTime.now());
 
             assertEquals(BigDecimal.ZERO, allocation.getAllocatedAmount());
         }
@@ -101,7 +105,8 @@ class PaymentAllocationTest {
 
         @Test
         void should_ReturnAllFields_ThroughGetters() {
-            PaymentAllocation allocation = PaymentAllocation.create(paymentId, invoiceId, allocatedAmount);
+            PaymentAllocation allocation = PaymentAllocation.create(paymentId,
+                    invoiceId, allocatedAmount);
 
             assertNotNull(allocation.getId());
             assertNotNull(allocation.getPaymentId());

@@ -18,45 +18,36 @@ public class GetStockMovementsUseCase {
     private final StockCatalogGateway catalog;
 
     public GetStockMovementsUseCase(WarehouseRepository warehouseRepository,
-                                     StockMovementRepository stockMovementRepository,
-                                     StockCatalogGateway catalog) {
+            StockMovementRepository stockMovementRepository,
+            StockCatalogGateway catalog) {
         this.warehouseRepository = warehouseRepository;
         this.stockMovementRepository = stockMovementRepository;
         this.catalog = catalog;
     }
 
-    public PageResponse<StockMovementResponse> execute(UUID warehouseId, UUID productId,
-                                                        MovementType movementType,
-                                                        int page, int size) {
+    public PageResponse<StockMovementResponse> execute(UUID warehouseId,
+            UUID productId, MovementType movementType, int page, int size) {
         warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException(warehouseId));
 
-        PageResponse<StockMovement> result = findMovements(
-                warehouseId, productId, movementType, page, size);
+        PageResponse<StockMovement> result = findMovements(warehouseId,
+                productId, movementType, page, size);
 
-        return new PageResponse<>(
-                result.content().stream().map(m -> {
-                    var product = catalog.findProduct(m.getProductId());
-                    String code = product.map(p -> p.code()).orElse("UNKNOWN");
-                    String name = product.map(p -> p.name()).orElse("Unknown");
-                    return StockMovementResponse.from(m, code, name);
-                }).toList(),
-                result.totalElements(),
-                result.totalPages(),
-                result.size(),
-                result.number(),
-                result.first(),
-                result.last(),
-                result.empty()
-        );
+        return new PageResponse<>(result.content().stream().map(m -> {
+            var product = catalog.findProduct(m.getProductId());
+            String code = product.map(p -> p.code()).orElse("UNKNOWN");
+            String name = product.map(p -> p.name()).orElse("Unknown");
+            return StockMovementResponse.from(m, code, name);
+        }).toList(), result.totalElements(), result.totalPages(), result.size(),
+                result.number(), result.first(), result.last(), result.empty());
     }
 
-    private PageResponse<StockMovement> findMovements(UUID warehouseId, UUID productId,
-                                                       MovementType movementType,
-                                                       int page, int size) {
+    private PageResponse<StockMovement> findMovements(UUID warehouseId,
+            UUID productId, MovementType movementType, int page, int size) {
         if (productId != null && movementType != null) {
-            return stockMovementRepository.findByWarehouseIdAndProductIdAndMovementType(
-                    warehouseId, productId, movementType, page, size);
+            return stockMovementRepository
+                    .findByWarehouseIdAndProductIdAndMovementType(warehouseId,
+                            productId, movementType, page, size);
         }
         if (productId != null) {
             return stockMovementRepository.findByWarehouseIdAndProductId(
@@ -66,6 +57,7 @@ public class GetStockMovementsUseCase {
             return stockMovementRepository.findByWarehouseIdAndMovementType(
                     warehouseId, movementType, page, size);
         }
-        return stockMovementRepository.findByWarehouseId(warehouseId, page, size);
+        return stockMovementRepository.findByWarehouseId(warehouseId, page,
+                size);
     }
 }

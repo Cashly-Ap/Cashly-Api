@@ -9,10 +9,13 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface NotificationJpaRepository extends JpaRepository<NotificationEntity, UUID> {
+public interface NotificationJpaRepository
+        extends
+            JpaRepository<NotificationEntity, UUID> {
     List<NotificationEntity> findByUserIdOrderByCreatedAtDesc(UUID userId);
     long countByUserIdAndIsReadFalse(UUID userId);
-    List<NotificationEntity> findByCustomerIdOrderByCreatedAtDesc(UUID customerId);
+    List<NotificationEntity> findByCustomerIdOrderByCreatedAtDesc(
+            UUID customerId);
     long countByCustomerIdAndIsReadFalse(UUID customerId);
     @Modifying
     @Query("UPDATE NotificationEntity n SET n.isRead = true, n.readAt = CURRENT_TIMESTAMP WHERE n.userId = :userId")
