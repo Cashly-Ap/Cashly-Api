@@ -3,6 +3,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.id;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedStockReservations;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderLineEntity;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteLineJpaEntity;
 import jakarta.persistence.EntityManager;
@@ -24,6 +25,7 @@ public class V27SalesLineCategorySnapshotsSeed implements SeedStep {
         verifyOrderSnapshot("order-line.two");
         verifyQuoteSnapshot("quote-line.one");
         verifyQuoteSnapshot("quote-line.two");
+        SeedStockReservations.reconcile(entityManager);
     }
     private void verifyOrderSnapshot(String key) {
         var line = entityManager.find(OrderLineEntity.class, id(key));
