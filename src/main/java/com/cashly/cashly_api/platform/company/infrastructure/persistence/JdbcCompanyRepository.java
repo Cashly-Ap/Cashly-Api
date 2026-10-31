@@ -8,6 +8,17 @@ public class JdbcCompanyRepository implements CompanyRepository {
     public JdbcCompanyRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
     @Override public Company find() { return query(""); }
     @Override public Company lock() { return query(" for update"); }
+    @Override public void createIfAbsent(Company c) {
+        var a = c.address();
+        jdbc.update("insert ignore into companies(id,singleton_key,legal_name,trade_name,tax_id,email,phone,website,street,city,region,country,postal_code,logo_path,pdf_logo_path) values(?,1,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            bytes(c.id()),c.legalName(),c.tradeName(),c.taxId(),c.email(),c.phone(),c.website(),a.street(),a.city(),a.region(),a.country(),a.postalCode(),c.logoPath(),c.pdfLogoPath());
+    }
+    private static byte[] bytes(java.util.UUID id) {
+        var buffer = java.nio.ByteBuffer.allocate(16);
+        buffer.putLong(id.getMostSignificantBits());
+        buffer.putLong(id.getLeastSignificantBits());
+        return buffer.array();
+    }
     private Company query(String suffix) {
         return jdbc.queryForObject("select * from companies where singleton_key=1" + suffix, (row, n) ->
             new Company(Company.INSTALLATION_ID, row.getString("legal_name"), row.getString("trade_name"), row.getString("tax_id"),

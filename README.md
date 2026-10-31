@@ -66,7 +66,7 @@ Environment variables, database initialization, storage, and seed procedures are
 
 ## Database and migrations
 
-MySQL schema is created by Flyway migrations under `src/main/resources/db/migration`; each migration creates final tables and indexes for a fresh development database. Development seed data lives under `db/seeds` and is loaded through `db/seed.sql` after API startup. This migration set is for fresh, non-production databases and is not compatible with databases that retain the previous Flyway history.
+MySQL schema is created by the 29 Flyway migrations under `src/main/resources/db/migration`; each migration creates final tables and indexes for a fresh database. Development seed data is implemented as 29 ordered Java steps under `src/main/java/com/cashly/cashly_api/infrastructure/seed/steps` and is orchestrated by `DatabaseSeedRunner`. Set `CASHLY_SEED_ENABLED=true` to run the idempotent seed steps automatically after startup; when the variable is absent, seeding defaults to `false`. This migration set is for fresh, non-production databases and is not compatible with databases that retain the previous Flyway history.
 
 ## Verification
 

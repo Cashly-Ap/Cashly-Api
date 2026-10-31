@@ -55,13 +55,11 @@ La cobertura se ejecuta sobre la imagen anterior al último ajuste de proporcion
 - Email inexistente y contraseña incorrecta: respuesta real por proxy/API y aviso `Error de autenticación` / `Credenciales incorrectas. Verifica tu email y contraseña.`
 - El registro de navegador no mostró warnings ni errores. Captura: `evidence/cashly-login.png`.
 
-En la verificación inicial no se ejecutó un flujo de negocio autenticado satisfactorio porque la base aislada nueva todavía no contenía usuarios. La carga SQL posterior se verifica en la sección siguiente. La evidencia de login no cubre todos los estados de carga/vacío/error del ERP. Los endpoints conservan su comportamiento existente; los cambios de este alcance son marca y configuración.
+En la verificación inicial no se ejecutó un flujo de negocio autenticado satisfactorio porque la base aislada nueva todavía no contenía usuarios. La evidencia de login no cubre todos los estados de carga/vacío/error del ERP. Los endpoints conservan su comportamiento existente; los cambios de este alcance son marca y configuración.
 
-## Seed SQL de desarrollo
+## Seed Java de desarrollo
 
-Se ha cargado el seed existente `db/seed.sql` directamente en el contenedor MySQL, con `db/seeds` montado en `/seeds`, después de las migraciones Flyway. Se eliminó el script PowerShell y las variables de administrador añadidas anteriormente.
-
-La carga terminó sin errores SQL. Resultado: 6 usuarios, 11 clientes, 25 productos, 7 facturas y categorías históricas en 33/33 líneas de pedidos y 20/20 líneas de ofertas. Las credenciales de acceso son las definidas en `db/seeds/01_users.sql`. El resultado fue reconfirmado sobre un contenedor `mysql-test` recreado desde cero el 2026-10-08.
+El mecanismo SQL histórico fue reemplazado por `DatabaseSeedRunner` y 29 pasos Java ordenados. En una base MySQL recreada desde cero, Flyway validó y aplicó las 29 migraciones y, con `CASHLY_SEED_ENABLED=true`, el runner completó los 29 pasos sin errores. La configuración ausente utiliza `false` y producción fuerza el seed deshabilitado.
 ## Verificación final
 
 La imagen `cashly-app:local` se construyó correctamente con instalación congelada desde `bun.lock`. Esa captura histórica cubrió 37 pruebas enfocadas y precede a la suite completa ejecutada el 2026-10-08. Las conclusiones de ese momento no representan el esquema Flyway actual.

@@ -18,6 +18,7 @@ public interface AccessRepository  {
     void deleteDepartment(UUID id);
     boolean roleReferenced(UUID id);
     boolean departmentReferenced(UUID id);
+    void createAdministrationLockIfAbsent();
     void lockAdministration();
     long activeSystemAdministrators();
     Optional<Assignment> assignment(UUID userId);

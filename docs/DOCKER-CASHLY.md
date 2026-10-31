@@ -33,15 +33,11 @@ Los puertos se publican únicamente en la interfaz de loopback. App consume API 
 
 Flyway crea el esquema completo al iniciar API. Las migraciones son scripts de creación para una base de desarrollo nueva; no conservan el historial de alteraciones anterior. La base debe inicializarse desde cero con este conjunto de migraciones antes de cargar datos.
 
-### Seed SQL de desarrollo
+### Seed Java de desarrollo
 
-El seed `db/seed.sql` carga los archivos de `db/seeds` en orden. Docker monta el archivo como `/seed.sql` y la carpeta como `/seeds`. Con API iniciada y las migraciones Flyway aplicadas, carga los datos directamente en MySQL desde Cashly:
+Los datos de desarrollo se cargan mediante `DatabaseSeedRunner` y 29 pasos Java ordenados, uno por cada migración. Configura `CASHLY_SEED_ENABLED=true` en `.env` para ejecutarlos automáticamente después de que Flyway haya aplicado el esquema. Si la variable no existe, el valor predeterminado es `false`.
 
-```powershell
-docker compose --env-file .env exec -T mysql sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql --default-character-set=utf8mb4 --user="$MYSQL_USER" "$MYSQL_DATABASE" < /seed.sql'
-```
-
-Acceso local: `superadmin@cashly.com`, contraseña `49510561Gabriel.`, rol `SUPER_ADMIN`. El seed también crea usuarios y datos de demostración. Reinicializa las tablas indicadas por los SQL: úsalo sobre el entorno de desarrollo, no sobre datos reales. No se carga antes de Flyway ni se ejecuta automáticamente en cada arranque.
+Acceso local: `gabriel@gmail.com`, contraseña `49510561Gabriel.`, rol `SUPER_ADMIN`. Los pasos son idempotentes, por lo que reiniciar la API con el seed habilitado no duplica registros. Esta opción debe permanecer deshabilitada sobre bases de producción o datos que deban conservarse.
 
 La reconstrucción de esquema vacía requiere eliminar el volumen MySQL local y volver a levantar la API. Este proceso elimina todos los datos locales de Cashly; no debe usarse sobre una base que necesite conservar información. Desde la carpeta Cashly:
 

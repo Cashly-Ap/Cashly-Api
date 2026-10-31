@@ -17,6 +17,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_PROFILES_ACTIVE=dev
+      - CASHLY_SEED_ENABLED=${CASHLY_SEED_ENABLED:-false}
       - MFA_ENCRYPTION_KEY=${MFA_ENCRYPTION_KEY:-}
       - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
@@ -64,6 +65,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_PROFILES_ACTIVE=production
+      - CASHLY_SEED_ENABLED=false
       - MFA_ENCRYPTION_KEY=${MFA_ENCRYPTION_KEY:-}
       - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
@@ -104,8 +106,6 @@ services:
       - '${DB_PORT:-3306}:3306'
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db/seeds:/seeds
-      - ./db/seed.sql:/seed.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-verysecret}"]
       interval: 10s

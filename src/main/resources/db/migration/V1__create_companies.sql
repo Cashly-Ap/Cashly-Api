@@ -1,0 +1,21 @@
+CREATE TABLE `companies` (
+  `id` binary(16) NOT NULL,
+  `singleton_key` tinyint NOT NULL DEFAULT '1',
+  `legal_name` varchar(200) NOT NULL,
+  `trade_name` varchar(200) DEFAULT NULL,
+  `tax_id` varchar(50) DEFAULT NULL,
+  `email` varchar(254) DEFAULT NULL,
+  `phone` varchar(40) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `street` varchar(255) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `region` varchar(100) DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(30) DEFAULT NULL,
+  `logo_path` varchar(500) DEFAULT NULL,
+  `pdf_logo_path` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `singleton_key` (`singleton_key`),
+  CONSTRAINT `chk_companies_installation_id` CHECK ((`id` = 0x92000000000000000000000000000001)),
+  CONSTRAINT `chk_companies_singleton` CHECK ((`singleton_key` = 1))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

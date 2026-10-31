@@ -162,6 +162,11 @@ public class JdbcAccessRepository implements AccessRepository {
     }
 
     @Override
+    public void createAdministrationLockIfAbsent() {
+        jdbc.update("insert ignore into auth_administration_lock(id) values(1)");
+    }
+
+    @Override
     public void lockAdministration() {
         jdbc.queryForObject("select id from auth_administration_lock where id=1 for update", Integer.class);
     }
