@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.procurement.purchases.application.list.use_case;
 
 import com.cashly.cashly_api.procurement.purchases.domain.repository.PurchaseRepository;
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;

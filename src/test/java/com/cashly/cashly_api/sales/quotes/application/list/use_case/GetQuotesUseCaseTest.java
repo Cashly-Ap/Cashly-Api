@@ -87,7 +87,7 @@ class GetQuotesUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForEdit() {
         getQuotesUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
         verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
                 null, null, java.util.Set.of(), "createdAt", "desc");
     }
@@ -96,7 +96,7 @@ class GetQuotesUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForConvertToOrder() {
         getQuotesUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_ORDER);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CONVERT_TO_ORDER);
         verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
                 null, null, java.util.Set.of(), "createdAt", "desc");
     }
@@ -105,7 +105,7 @@ class GetQuotesUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForConvertToInvoice() {
         getQuotesUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_INVOICE);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CONVERT_TO_INVOICE);
         verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
                 null, null, java.util.Set.of(), "createdAt", "desc");
     }
@@ -114,7 +114,7 @@ class GetQuotesUseCaseTest {
     void shouldReturnEmptyWhenRequestedStatusCannotPerformAction() {
         var result = getQuotesUseCase.execute(null, null, null, "CANCELLED",
                 null, null, "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
         assertTrue(result.isEmpty());
         verifyNoInteractions(quoteRepository);
     }
@@ -124,7 +124,7 @@ class GetQuotesUseCaseTest {
         assertThrows(IllegalArgumentException.class,
                 () -> getQuotesUseCase.execute(null, null, null, null, null,
                         null, "createdAt", "desc",
-                        com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE));
+                        com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.DUPLICATE));
         verifyNoInteractions(quoteRepository);
     }
 

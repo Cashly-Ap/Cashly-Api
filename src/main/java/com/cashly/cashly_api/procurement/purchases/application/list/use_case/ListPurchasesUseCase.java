@@ -4,7 +4,7 @@ import com.cashly.cashly_api.procurement.purchases.application.dto.response.Purc
 import com.cashly.cashly_api.procurement.purchases.application.mappers.PurchaseMapper;
 import com.cashly.cashly_api.procurement.purchases.domain.repository.PurchaseRepository;
 
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 
 import java.time.LocalDate;
 import java.util.List;

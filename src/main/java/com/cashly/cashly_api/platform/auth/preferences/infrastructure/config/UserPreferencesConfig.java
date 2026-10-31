@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.platform.auth.preferences.infrastructure.config;
 
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.in.CurrentActor;
-import com.cashly.cashly_api.platform.auth.preferences.application.UserPreferencesService;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.application.services.UserPreferencesService;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

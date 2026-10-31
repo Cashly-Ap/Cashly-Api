@@ -5,8 +5,8 @@ import com.cashly.cashly_api.platform.notifications.domain.valueobjects.Notifica
 import com.cashly.cashly_api.platform.notifications.infrastructure.messaging.NotificationTranslator;
 import com.cashly.cashly_api.platform.notifications.infrastructure.messaging.WebSocketNotificationDeliveryAdapter;
 import com.cashly.cashly_api.platform.notifications.infrastructure.persistence.mappers.NotificationJpaMapper;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferences;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.domain.entity.UserPreferences;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.UUID;

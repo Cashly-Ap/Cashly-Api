@@ -230,7 +230,7 @@ class GetInvoicesUseCaseTest {
     void shouldQueryOnlyCancellableInvoicesRegardlessOfAllStatusRequest() {
         getInvoicesUseCase.execute(null, null, null, List.of("ALL"), null, null,
                 null, null, null, "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CANCEL);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CANCEL);
         verify(invoiceRepository).findAllWithFilters(null, null, null,
                 List.of("PENDING_PAYMENT", "PARTIALLY_PAID"),
                 (List<String>) null, null, null, null, "createdAt", "desc");
@@ -241,7 +241,7 @@ class GetInvoicesUseCaseTest {
         getInvoicesUseCase.execute(null, null, null,
                 List.of("DRAFT", "PAID", "PARTIALLY_PAID"), "customer", null,
                 null, null, null, "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CANCEL);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CANCEL);
         verify(invoiceRepository).findAllWithFilters(null, null, null,
                 List.of("PARTIALLY_PAID"), "customer", (List<String>) null,
                 null, null, null, "createdAt", "desc");
@@ -252,7 +252,7 @@ class GetInvoicesUseCaseTest {
         var result = getInvoicesUseCase.execute(null, null, null,
                 List.of("PAID"), null, null, null, null, null, "createdAt",
                 "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
         assertTrue(result.isEmpty());
         verifyNoInteractions(invoiceRepository, paymentTotals, noteDetails);
     }
@@ -261,7 +261,7 @@ class GetInvoicesUseCaseTest {
     void shouldQueryOnlyDraftInvoicesForConfirmation() {
         getInvoicesUseCase.execute(null, null, null, null, null, null, null,
                 null, null, "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CONFIRM);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CONFIRM);
         verify(invoiceRepository).findAllWithFilters(null, null, null,
                 List.of("DRAFT"), (List<String>) null, null, null, null,
                 "createdAt", "desc");
@@ -271,7 +271,7 @@ class GetInvoicesUseCaseTest {
     void shouldAllowDuplicatingInvoicesFromEveryStatus() {
         getInvoicesUseCase.execute(null, null, null, null, null, null, null,
                 null, null, "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.DUPLICATE);
         verify(invoiceRepository).findAllWithFilters(null, null, null,
                 java.util.Arrays.stream(InvoiceStatus.values()).map(Enum::name)
                         .toList(),

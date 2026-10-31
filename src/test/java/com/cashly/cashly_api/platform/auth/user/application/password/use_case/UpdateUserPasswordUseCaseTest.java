@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UpdateUserPasswordUseCase Tests")
 class UpdateUserPasswordUseCaseTest {
@@ -40,7 +41,7 @@ class UpdateUserPasswordUseCaseTest {
     private com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
     @Mock
-    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    private com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;
 
     @InjectMocks
     private UpdateUserPasswordUseCase useCase;

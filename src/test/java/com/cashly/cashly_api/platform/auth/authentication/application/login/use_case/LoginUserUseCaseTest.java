@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
+import com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LoginUserUseCase Tests")
 class LoginUserUseCaseTest {
@@ -45,7 +46,7 @@ class LoginUserUseCaseTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa;
+    private com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService mfa;
 
     @InjectMocks
     private LoginUserUseCase useCase;

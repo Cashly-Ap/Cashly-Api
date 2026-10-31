@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
+import com.cashly.cashly_api.platform.auth.mfa.infrastructure.web.MfaController;
 class EndpointPermissionCoverageTest {
     private static final Set<String> SELF_SERVICE = Set.of(
             "AuthController#login", "AuthController#refresh",
@@ -90,7 +91,7 @@ class EndpointPermissionCoverageTest {
 
     @Test
     void mfaOperationsHaveExplicitSelfServiceAndPublicVerificationContracts() {
-        var controller = com.cashly.cashly_api.platform.auth.mfa.infrastructure.MfaController.class;
+        var controller = com.cashly.cashly_api.platform.auth.mfa.infrastructure.web.MfaController.class;
         var interceptor = new PermissionCoverageInterceptor();
         int mappings = 0;
         for (var method : controller.getDeclaredMethods()) {

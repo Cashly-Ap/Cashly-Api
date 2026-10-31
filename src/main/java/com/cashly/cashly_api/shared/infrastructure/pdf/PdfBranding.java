@@ -2,7 +2,7 @@ package com.cashly.cashly_api.shared.infrastructure.pdf;
 
 import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.cashly.cashly_api.platform.company.application.CompanyService;
+import com.cashly.cashly_api.platform.company.application.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.function.Supplier;

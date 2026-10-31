@@ -15,6 +15,8 @@ import com.cashly.cashly_api.platform.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder;
 
+import com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService;
+import com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore;
 @Configuration
 public class AuthenticationConfig {
 
@@ -30,7 +32,7 @@ public class AuthenticationConfig {
             AuthenticableResolver authenticableResolver,
             RefreshTokenRepository refreshTokenRepository,
             TokenService tokenService, PasswordEncoder passwordEncoder,
-            com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa) {
+            com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService mfa) {
         return new LoginUserUseCase(authenticableResolver,
                 refreshTokenRepository, tokenService, passwordEncoder, mfa);
     }
@@ -52,7 +54,7 @@ public class AuthenticationConfig {
             RefreshTokenRepository refreshTokenRepository,
             AuthenticableSubjectGateway subjectGateway,
             TokenService tokenService,
-            com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore) {
+            com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore mfaStore) {
         return new RefreshTokenUseCase(refreshTokenRepository, subjectGateway,
                 tokenService, mfaStore);
     }

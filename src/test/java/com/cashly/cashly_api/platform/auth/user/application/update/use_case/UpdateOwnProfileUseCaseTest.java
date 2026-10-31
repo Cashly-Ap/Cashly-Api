@@ -13,6 +13,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 class UpdateOwnProfileUseCaseTest {
     @Test
     void personalUpdateLocksBeforeReadAndPreservesAssignmentsAccountAndCredentials() {
@@ -39,7 +40,7 @@ class UpdateOwnProfileUseCaseTest {
                 "+34 600 000 000");
 
         var response = new UpdateOwnProfileUseCase(users, access, mock(
-                com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class))
+                com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository.class))
                 .execute(user.getId().getValue().toString(), request);
 
         var order = inOrder(access, users);
@@ -83,7 +84,7 @@ class UpdateOwnProfileUseCaseTest {
         var id = UserId.generate();
         when(users.findById(id)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> new UpdateOwnProfileUseCase(users, access,
-                mock(com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class))
+                mock(com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository.class))
                 .execute(id.getValue().toString(),
                         new UpdateOwnProfileRequest("Name", "First", "Last",
                                 null, null)))

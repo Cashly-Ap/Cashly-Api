@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.platform.auth.user.application.update.use_case;
 
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 
 import com.cashly.cashly_api.platform.auth.user.application.update.request.UpdateUserRequest;
 import com.cashly.cashly_api.platform.auth.user.application.dto.response.UserResponse;

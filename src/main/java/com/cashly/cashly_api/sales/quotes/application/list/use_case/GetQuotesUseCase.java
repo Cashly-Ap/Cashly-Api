@@ -5,7 +5,7 @@ import com.cashly.cashly_api.sales.quotes.application.mappers.QuoteMapper;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteProductCatalogGateway;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 
 import java.time.LocalDate;
 import java.util.List;

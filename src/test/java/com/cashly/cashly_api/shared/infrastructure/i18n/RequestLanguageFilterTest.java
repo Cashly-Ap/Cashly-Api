@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.shared.infrastructure.i18n;
 
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;

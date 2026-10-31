@@ -27,6 +27,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @WebMvcTest(AuthController.class)
 @Import({SecurityConfig.class, JwtAuthenticationEntryPoint.class})
 class OwnProfileControllerTest {
@@ -47,7 +48,7 @@ class OwnProfileControllerTest {
     @MockitoBean
     GetUserByIdUseCase query;
     @MockitoBean
-    com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;
     @MockitoBean
     com.cashly.cashly_api.platform.auth.user.application.update.use_case.UpdateOwnProfileUseCase update;
     @MockitoBean

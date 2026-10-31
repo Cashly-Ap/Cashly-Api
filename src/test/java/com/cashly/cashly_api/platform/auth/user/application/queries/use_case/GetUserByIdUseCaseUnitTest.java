@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("GetUserByIdUseCase Unit Tests")
 class GetUserByIdUseCaseUnitTest {
@@ -30,7 +31,7 @@ class GetUserByIdUseCaseUnitTest {
     private UserRepository userRepository;
 
     @Mock
-    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    private com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;
 
     @InjectMocks
     private GetUserByIdUseCase getUserByIdUseCase;

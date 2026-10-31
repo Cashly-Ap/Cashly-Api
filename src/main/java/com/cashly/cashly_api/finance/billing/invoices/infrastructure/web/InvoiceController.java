@@ -15,7 +15,7 @@ import com.cashly.cashly_api.finance.billing.invoices.application.duplicate.use_
 import com.cashly.cashly_api.finance.billing.invoices.application.get.use_case.GetInvoiceByIdUseCase;
 import com.cashly.cashly_api.finance.billing.invoices.application.list.use_case.GetInvoicesUseCase;
 import com.cashly.cashly_api.finance.billing.invoices.application.update.use_case.UpdateInvoiceUseCase;
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

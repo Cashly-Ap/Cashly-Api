@@ -12,9 +12,10 @@ import com.cashly.cashly_api.platform.auth.token.domain.entity.RefreshToken;
 import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService;
 public class LoginUserUseCase {
 
-    private final com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa;
+    private final com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService mfa;
 
     private final AuthenticableResolver authenticableResolver;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -24,7 +25,7 @@ public class LoginUserUseCase {
     public LoginUserUseCase(AuthenticableResolver authenticableResolver,
             RefreshTokenRepository refreshTokenRepository,
             TokenService tokenService, PasswordEncoder passwordEncoder,
-            com.cashly.cashly_api.platform.auth.mfa.application.MfaService mfa) {
+            com.cashly.cashly_api.platform.auth.mfa.application.services.MfaService mfa) {
         this.mfa = mfa;
         this.authenticableResolver = authenticableResolver;
         this.refreshTokenRepository = refreshTokenRepository;

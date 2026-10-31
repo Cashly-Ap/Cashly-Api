@@ -13,7 +13,7 @@ import com.cashly.cashly_api.procurement.purchases.application.products.use_case
 import com.cashly.cashly_api.procurement.purchases.application.get.use_case.GetPurchaseByIdUseCase;
 import com.cashly.cashly_api.procurement.purchases.application.list.use_case.ListPurchasesUseCase;
 import com.cashly.cashly_api.procurement.purchases.application.update.use_case.UpdatePurchaseUseCase;
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

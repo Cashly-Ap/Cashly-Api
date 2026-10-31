@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.platform.auth.preferences.infrastructure.web;
 
-import com.cashly.cashly_api.platform.auth.preferences.application.UserPreferencesService;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferences;
+import com.cashly.cashly_api.platform.auth.preferences.application.services.UserPreferencesService;
+import com.cashly.cashly_api.platform.auth.preferences.domain.entity.UserPreferences;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

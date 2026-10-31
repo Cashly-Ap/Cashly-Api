@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.platform.company.infrastructure.web;
 
-import com.cashly.cashly_api.platform.company.application.CompanyService;
-import com.cashly.cashly_api.platform.company.domain.Company;
-import com.cashly.cashly_api.platform.company.infrastructure.CompanyPdfPreview;
+import com.cashly.cashly_api.platform.company.application.services.CompanyService;
+import com.cashly.cashly_api.platform.company.domain.entity.Company;
+import com.cashly.cashly_api.platform.company.infrastructure.services.CompanyPdfPreview;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import org.springframework.http.CacheControl;

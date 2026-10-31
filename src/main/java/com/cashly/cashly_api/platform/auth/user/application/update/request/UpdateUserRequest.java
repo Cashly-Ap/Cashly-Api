@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import java.util.UUID;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.valueobjects.SupportedLanguage;
 public record UpdateUserRequest(String userName, String firstName,
         String lastName, UserProfile.Address address, String phone, UUID roleId,
         UUID departmentId, Boolean active, Boolean emailVerified,
@@ -17,7 +18,7 @@ public record UpdateUserRequest(String userName, String firstName,
     }
     public UpdateUserRequest {
         if (language != null)
-            com.cashly.cashly_api.platform.auth.preferences.domain.SupportedLanguage
+            com.cashly.cashly_api.platform.auth.preferences.domain.valueobjects.SupportedLanguage
                     .require(language);
         if (userName == null || userName.isBlank()) {
             throw new IllegalArgumentException("User name is required");

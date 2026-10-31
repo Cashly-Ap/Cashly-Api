@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthController Unit Tests")
 class AuthControllerUnitTest {
@@ -45,7 +46,7 @@ class AuthControllerUnitTest {
     private LogoutUserUseCase logoutUserUseCase;
 
     @Mock
-    private com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    private com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;
 
     @InjectMocks
     private AuthController authController;

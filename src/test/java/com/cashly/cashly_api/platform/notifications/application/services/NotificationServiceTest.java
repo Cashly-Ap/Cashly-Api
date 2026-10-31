@@ -26,6 +26,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
 
@@ -46,7 +47,7 @@ class NotificationServiceTest {
                 recipientGateway,
                 new WebSocketNotificationDeliveryAdapter(messagingTemplate,
                         org.mockito.Mockito.mock(
-                                com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class,
+                                com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository.class,
                                 org.mockito.Mockito.CALLS_REAL_METHODS)));
     }
 

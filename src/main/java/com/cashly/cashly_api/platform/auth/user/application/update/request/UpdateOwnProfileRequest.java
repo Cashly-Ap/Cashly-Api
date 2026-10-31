@@ -4,6 +4,7 @@ import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.valueobjects.SupportedLanguage;
 public record UpdateOwnProfileRequest(String userName, String firstName,
         String lastName, UserProfile.Address address, String phone,
         String language) {
@@ -13,7 +14,7 @@ public record UpdateOwnProfileRequest(String userName, String firstName,
     }
     public UpdateOwnProfileRequest {
         if (language != null)
-            com.cashly.cashly_api.platform.auth.preferences.domain.SupportedLanguage
+            com.cashly.cashly_api.platform.auth.preferences.domain.valueobjects.SupportedLanguage
                     .require(language);
         userName = new UserName(userName).getValue();
         var profile = new UserProfile(firstName, lastName, address, phone);

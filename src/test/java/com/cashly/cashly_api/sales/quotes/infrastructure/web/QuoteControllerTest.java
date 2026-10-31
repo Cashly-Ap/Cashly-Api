@@ -233,7 +233,7 @@ class QuoteControllerTest {
                                 .status().isOk());
         verify(getQuotesUseCase).execute(null, null, null, null, null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
     }
 
 }

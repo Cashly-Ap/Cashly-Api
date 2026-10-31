@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.infrastructure.seed;
 
-import com.cashly.cashly_api.platform.company.domain.Company;
+import com.cashly.cashly_api.platform.company.domain.entity.Company;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 

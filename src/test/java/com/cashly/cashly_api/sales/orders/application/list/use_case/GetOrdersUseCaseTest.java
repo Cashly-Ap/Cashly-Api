@@ -139,7 +139,7 @@ class GetOrdersUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForEdit() {
         getOrdersUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
         verify(orderRepository).findAllWithFilters(null, null, null, "DRAFT",
                 null, null, java.util.Set.of(), "createdAt", "desc");
     }
@@ -148,7 +148,7 @@ class GetOrdersUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForConfirm() {
         getOrdersUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CONFIRM);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CONFIRM);
         verify(orderRepository).findAllWithFilters(null, null, null, "DRAFT",
                 null, null, java.util.Set.of(), "createdAt", "desc");
     }
@@ -157,7 +157,7 @@ class GetOrdersUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForCancel() {
         getOrdersUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CANCEL);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CANCEL);
         verify(orderRepository).findAllWithFilters(null, null, null,
                 "CONFIRMED", null, null, java.util.Set.of(), "createdAt",
                 "desc");
@@ -167,7 +167,7 @@ class GetOrdersUseCaseTest {
     void shouldQueryOnlyEligibleRecordsForConvertToInvoice() {
         getOrdersUseCase.execute(null, null, null, "ALL", null, null,
                 "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.CONVERT_TO_INVOICE);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CONVERT_TO_INVOICE);
         verify(orderRepository).findAllWithFilters(null, null, null,
                 "CONFIRMED", null, null, java.util.Set.of(), "createdAt",
                 "desc");
@@ -177,7 +177,7 @@ class GetOrdersUseCaseTest {
     void shouldReturnEmptyWhenRequestedStatusCannotPerformAction() {
         var result = getOrdersUseCase.execute(null, null, null, "CANCELLED",
                 null, null, "createdAt", "desc",
-                com.cashly.cashly_api.shared.domain.DocumentAction.EDIT);
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
         assertTrue(result.isEmpty());
         verifyNoInteractions(orderRepository);
     }
@@ -187,7 +187,7 @@ class GetOrdersUseCaseTest {
         assertThrows(IllegalArgumentException.class,
                 () -> getOrdersUseCase.execute(null, null, null, null, null,
                         null, "createdAt", "desc",
-                        com.cashly.cashly_api.shared.domain.DocumentAction.DUPLICATE));
+                        com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.DUPLICATE));
         verifyNoInteractions(orderRepository);
     }
 

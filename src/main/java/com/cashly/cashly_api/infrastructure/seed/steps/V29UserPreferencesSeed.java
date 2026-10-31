@@ -4,8 +4,8 @@ import static com.cashly.cashly_api.infrastructure.seed.SeedIds.ADMIN_USER;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.OPERATOR_USER;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferences;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.domain.entity.UserPreferences;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 import org.springframework.stereotype.Component;
 
 @Component

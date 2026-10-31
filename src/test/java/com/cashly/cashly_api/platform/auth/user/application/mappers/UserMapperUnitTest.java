@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @DisplayName("UserMapper Unit Tests")
 class UserMapperUnitTest {
 
@@ -22,7 +23,7 @@ class UserMapperUnitTest {
     @BeforeEach
     void setUp() {
         userMapper = new UserMapper(org.mockito.Mockito.mock(
-                com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository.class));
+                com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository.class));
 
         UserId userId = UserId.generate();
         Email email = new Email("test@example.com");

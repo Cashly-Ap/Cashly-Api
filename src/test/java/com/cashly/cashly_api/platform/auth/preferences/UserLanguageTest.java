@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.platform.auth.preferences;
 
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferences;
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
-import com.cashly.cashly_api.platform.auth.preferences.application.UserPreferencesService;
+import com.cashly.cashly_api.platform.auth.preferences.domain.entity.UserPreferences;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.application.services.UserPreferencesService;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.in.CurrentActor;
 import com.cashly.cashly_api.platform.auth.user.application.register.request.RegisterUserRequest;
 import com.cashly.cashly_api.platform.auth.user.application.update.request.UpdateOwnProfileRequest;

@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("RefreshTokenUseCase Unit Tests")
 class RefreshTokenUseCaseUnitTest {
@@ -48,7 +49,7 @@ class RefreshTokenUseCaseUnitTest {
     private TokenService tokenService;
 
     @Mock
-    private com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore;
+    private com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore mfaStore;
 
     private RefreshTokenUseCase refreshTokenUseCase;
 

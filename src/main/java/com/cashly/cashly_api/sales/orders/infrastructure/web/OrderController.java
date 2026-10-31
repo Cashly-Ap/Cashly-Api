@@ -15,7 +15,7 @@ import com.cashly.cashly_api.sales.orders.application.delete.use_case.DeleteOrde
 import com.cashly.cashly_api.sales.orders.application.get.use_case.GetOrderByIdUseCase;
 import com.cashly.cashly_api.sales.orders.application.list.use_case.GetOrdersUseCase;
 import com.cashly.cashly_api.sales.orders.application.update.use_case.UpdateOrderUseCase;
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

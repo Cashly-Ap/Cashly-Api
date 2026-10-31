@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
-import com.cashly.cashly_api.platform.company.domain.Company;
-import com.cashly.cashly_api.platform.company.domain.CompanyRepository;
+import com.cashly.cashly_api.platform.company.domain.entity.Company;
+import com.cashly.cashly_api.platform.company.domain.repository.CompanyRepository;
 import org.springframework.stereotype.Component;
 
 @Component

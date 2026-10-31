@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.platform.auth.user.application.password.use_case;
 
-import com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository;
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 
 import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
 import com.cashly.cashly_api.platform.auth.user.application.password.request.UpdateUserPasswordRequest;

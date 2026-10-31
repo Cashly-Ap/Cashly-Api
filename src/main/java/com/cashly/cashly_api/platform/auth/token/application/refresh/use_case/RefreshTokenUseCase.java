@@ -12,17 +12,18 @@ import com.cashly.cashly_api.platform.auth.token.application.exceptions.InvalidT
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore;
 public class RefreshTokenUseCase {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticableSubjectGateway subjectGateway;
     private final TokenService tokenService;
-    private final com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore;
+    private final com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore mfaStore;
 
     public RefreshTokenUseCase(RefreshTokenRepository refreshTokenRepository,
             AuthenticableSubjectGateway subjectGateway,
             TokenService tokenService,
-            com.cashly.cashly_api.platform.auth.mfa.application.MfaStore mfaStore) {
+            com.cashly.cashly_api.platform.auth.mfa.application.ports.out.MfaStore mfaStore) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.subjectGateway = subjectGateway;
         this.tokenService = tokenService;

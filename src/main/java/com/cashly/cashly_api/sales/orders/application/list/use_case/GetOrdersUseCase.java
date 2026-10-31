@@ -6,7 +6,7 @@ import com.cashly.cashly_api.sales.orders.application.ports.out.OrderProductCata
 import com.cashly.cashly_api.sales.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 
 import java.time.LocalDate;
 import java.util.List;

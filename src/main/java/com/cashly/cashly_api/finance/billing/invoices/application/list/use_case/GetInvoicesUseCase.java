@@ -8,7 +8,7 @@ import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
 import org.springframework.stereotype.Service;
 
-import com.cashly.cashly_api.shared.domain.DocumentAction;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
 
 import java.math.BigDecimal;

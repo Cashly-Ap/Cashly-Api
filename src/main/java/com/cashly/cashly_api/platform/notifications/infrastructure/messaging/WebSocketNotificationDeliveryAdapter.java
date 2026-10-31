@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 @Component
 public class WebSocketNotificationDeliveryAdapter
         implements
@@ -16,12 +17,12 @@ public class WebSocketNotificationDeliveryAdapter
     private static final Logger LOGGER = LoggerFactory
             .getLogger(WebSocketNotificationDeliveryAdapter.class);
     private final SimpMessagingTemplate messagingTemplate;
-    private final com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences;
+    private final com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;
     private final NotificationTranslator translator = new NotificationTranslator();
 
     public WebSocketNotificationDeliveryAdapter(
             SimpMessagingTemplate messagingTemplate,
-            com.cashly.cashly_api.platform.auth.preferences.domain.UserPreferencesRepository preferences) {
+            com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences) {
         this.preferences = preferences;
         this.messagingTemplate = messagingTemplate;
     }
