@@ -44,6 +44,7 @@ All endpoints require authentication unless explicitly noted. Management reads r
 | GET/PUT/DELETE `/api/roles/{id}` | Read/update/delete role; updates include version |
 | GET `/api/roles/options` | Assignable active role IDs/names |
 | GET `/api/roles/registry` | Supported module/action cells |
+| GET `/api/permissions/catalog` | Module → group → permission catalog with i18n keys and ordering; requires ROLES READ |
 | GET/POST `/api/departments` | List/create departments |
 | GET/PUT/DELETE `/api/departments/{id}` | Read/update/delete department; updates include version |
 | GET `/api/departments/options` | Active department IDs/names |
@@ -65,8 +66,14 @@ Administrative mutations take a shared database administration-row lock under RE
 
 ## Persistence, seeds and tests
 
-Flyway V26 adds `auth_roles`, `auth_role_permissions`, `auth_departments`, the administration lock and required profile/reference columns on users. Existing legacy enum/direct-grant storage remains compatibility data and no longer authorizes access.
+Flyway V2 adds `auth_roles`, `auth_role_permissions`, `auth_departments` and the administration lock; V3 adds `users` and the legacy direct-grant table. Existing legacy enum/direct-grant storage remains compatibility data and no longer authorizes access.
 
 See [the disposable beta dataset guide](../../db/README.md) for the explicit reset script, deterministic users/roles/departments and integrity checks. A planning or implementation session does not automatically reset the database.
 
 Domain, management, authorization, request and controller-coverage tests accompany this change. The isolated real-HTTP startup suite includes custom-role access and administrator credential-escalation denial checks. Tests are written; successful execution is not claimed until evidence is recorded.
+
+## Permission catalog and matrix
+
+`PermissionCatalog` describes every permission registered by `PermissionRegistry` as `module → group → permission`. Each `module:action` pair is classified exactly once; boot fails when the catalog and the registry diverge, so the description can never drift from enforcement. Groups classify grants for display only: they carry no grants of their own, and a module-level grant (for example `FINANCES:EXECUTE`) still covers every group of that module.
+
+The permissions tab of the role editor renders that catalog: one section per module with the existing access presets, one block per group and one row per permission showing its business label and its allowed or denied state. Denied rows stay visible so the editor never hides a gap, and rows outside the actor's grants are not editable. The protected system administrator role renders every permission as allowed and stays read-only. There is no standalone permission screen: permissions are inspected and edited where roles are edited.
