@@ -60,7 +60,7 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('SALES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> create(
             @Valid @RequestBody CreateOrderRequest request,
             Authentication authentication) {
@@ -71,7 +71,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('SALES:READ')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:READ')")
     public ResponseEntity<List<OrderListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -112,14 +112,14 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES:READ') and hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<OrderDetailResponse> getById(@PathVariable UUID id) {
         OrderDetailResponse order = getOrderByIdUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:UPDATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateOrderRequest request) {
         OrderDetailResponse order = updateOrderUseCase.execute(id, request);
@@ -127,14 +127,14 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/confirm")
-    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:CONFIRM') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> confirm(@PathVariable UUID id) {
         OrderDetailResponse order = confirmOrderUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:CANCEL') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<OrderDetailResponse> cancel(@PathVariable UUID id,
             @Valid @RequestBody CancelOrderRequest request) {
         OrderDetailResponse order = cancelOrderUseCase.execute(id, request);
@@ -142,7 +142,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/convert-to-invoice")
-    @PreAuthorize("hasAuthority('SALES:EXECUTE') and hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:CONFIRM') and hasAuthority('FINANCE_INVOICES:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody ConvertToInvoiceRequest request,
@@ -154,7 +154,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES:DELETE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:DELETE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteOrderUseCase.execute(id);
         return ResponseEntity.noContent().build();

@@ -45,7 +45,7 @@ public class PaymentMethodController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCES:CREATE')")
+    @PreAuthorize("hasAuthority('FINANCE_PAYMENT_METHODS:CREATE')")
     public ResponseEntity<PaymentMethodResponse> create(
             @Valid @RequestBody CreatePaymentMethodRequest request) {
         PaymentMethodResponse response = createPaymentMethodUseCase
@@ -54,7 +54,7 @@ public class PaymentMethodController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_PAYMENT_METHODS:READ')")
     public ResponseEntity<PageResponse<PaymentMethodResponse>> list(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,
@@ -67,7 +67,7 @@ public class PaymentMethodController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_PAYMENT_METHODS:READ')")
     public ResponseEntity<PaymentMethodResponse> getById(
             @PathVariable UUID id) {
         PaymentMethodResponse response = getPaymentMethodByIdUseCase
@@ -76,7 +76,7 @@ public class PaymentMethodController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:UPDATE')")
+    @PreAuthorize("hasAuthority('FINANCE_PAYMENT_METHODS:UPDATE')")
     public ResponseEntity<PaymentMethodResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdatePaymentMethodRequest request) {
         PaymentMethodResponse response = updatePaymentMethodUseCase.execute(id,
@@ -85,14 +85,14 @@ public class PaymentMethodController {
     }
 
     @PatchMapping("/{id}/toggle")
-    @PreAuthorize("hasAuthority('FINANCES:UPDATE')")
+    @PreAuthorize("hasAuthority('FINANCE_PAYMENT_METHODS:UPDATE')")
     public ResponseEntity<PaymentMethodResponse> toggle(@PathVariable UUID id) {
         PaymentMethodResponse response = togglePaymentMethodUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:DELETE')")
+    @PreAuthorize("hasAuthority('FINANCE_PAYMENT_METHODS:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePaymentMethodUseCase.execute(id);
         return ResponseEntity.noContent().build();

@@ -41,7 +41,7 @@ public class WarehouseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('INVENTORY:CREATE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:CREATE')")
     public ResponseEntity<WarehouseDetailResponse> create(
             @Valid @RequestBody CreateWarehouseRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,14 +49,14 @@ public class WarehouseController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<WarehouseDetailResponse> getById(
             @PathVariable UUID id) {
         return ResponseEntity.ok(getWarehouseUseCase.execute(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<PageResponse<WarehouseListResponse>> list(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,
@@ -69,14 +69,14 @@ public class WarehouseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('INVENTORY:UPDATE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:UPDATE')")
     public ResponseEntity<WarehouseDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateWarehouseRequest request) {
         return ResponseEntity.ok(updateWarehouseUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('INVENTORY:DELETE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteWarehouseUseCase.execute(id);
         return ResponseEntity.noContent().build();

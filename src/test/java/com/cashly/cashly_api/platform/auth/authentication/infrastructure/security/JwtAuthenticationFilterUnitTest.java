@@ -87,7 +87,7 @@ class JwtAuthenticationFilterUnitTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities())
                 .extracting(authority -> authority.getAuthority())
-                .containsExactly("CATALOG:READ");
+                .containsExactly("CATALOG_PRODUCTS:READ");
     }
 
     @Test
@@ -105,7 +105,7 @@ class JwtAuthenticationFilterUnitTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities())
                 .extracting(authority -> authority.getAuthority())
-                .doesNotContain("CATALOG:UPDATE");
+                .doesNotContain("CATALOG_PRODUCTS:UPDATE");
     }
 
     @Test
@@ -186,6 +186,7 @@ class JwtAuthenticationFilterUnitTest {
 
     private AccessService.CurrentAccess current(Set<PermissionAction> actions) {
         return new AccessService.CurrentAccess(ROLE_ID, "Custom role",
-                DEPARTMENT_ID, false, Map.of(BusinessModule.CATALOG, actions));
+                DEPARTMENT_ID, false,
+                Map.of(BusinessModule.CATALOG_PRODUCTS, actions));
     }
 }

@@ -70,7 +70,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCES:CREATE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:PAY_WITH_VALIDATION')")
     public ResponseEntity<PaymentResponse> create(
             @Valid @RequestBody CreatePaymentRequest request,
             Authentication authentication) {
@@ -81,7 +81,7 @@ public class PaymentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:HISTORY')")
     public ResponseEntity<List<PaymentListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -103,14 +103,14 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:DETAILS')")
     public ResponseEntity<PaymentResponse> getById(@PathVariable UUID id) {
         PaymentResponse payment = getPaymentByIdUseCase.execute(id);
         return ResponseEntity.ok(payment);
     }
 
     @PostMapping("/{id}/approve")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:APPROVE_PAYMENT')")
     public ResponseEntity<PaymentResponse> approve(@PathVariable UUID id,
             @Valid @RequestBody ApprovePaymentRequest request,
             Authentication authentication) {
@@ -122,7 +122,7 @@ public class PaymentController {
     }
 
     @PostMapping("/{id}/reject")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:REJECT_PAYMENT')")
     public ResponseEntity<PaymentResponse> reject(@PathVariable UUID id,
             @Valid @RequestBody RejectPaymentRequest request,
             Authentication authentication) {
@@ -134,7 +134,7 @@ public class PaymentController {
     }
 
     @PostMapping("/invoices/{invoiceId}/pay")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:PAY_DIRECT')")
     public ResponseEntity<PaymentResultResponse> payInvoice(
             @PathVariable UUID invoiceId,
             @Valid @RequestBody PayInvoiceRequest request,
@@ -147,7 +147,7 @@ public class PaymentController {
     }
 
     @PostMapping("/customers/{customerId}/pay-all")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:PAY_ALL')")
     public ResponseEntity<PaymentResultResponse> payAllCustomerDebt(
             @PathVariable UUID customerId,
             @RequestBody @Valid PayCustomerDebtRequest request,
@@ -160,7 +160,7 @@ public class PaymentController {
     }
 
     @PostMapping("/customers/{customerId}/pay-partial")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:PARTIAL_PAYMENT')")
     public ResponseEntity<PaymentResultResponse> payPartialDebt(
             @PathVariable UUID customerId,
             @RequestBody @Valid PayPartialDebtRequest request,
@@ -173,7 +173,7 @@ public class PaymentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:UPDATE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:UPDATE')")
     public ResponseEntity<PaymentResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdatePaymentRequest request) {
         PaymentResponse response = updatePaymentUseCase.execute(id, request);
@@ -181,7 +181,7 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:DELETE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePaymentUseCase.execute(id);
         return ResponseEntity.noContent().build();

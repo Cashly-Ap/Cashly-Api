@@ -3,6 +3,7 @@ package com.cashly.cashly_api.platform.auth.authorization.application.services;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException;
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException;
+import com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
@@ -54,12 +55,27 @@ class AccessServiceTest {
     @EnumSource(BusinessModule.class)
     void every_module_revokes_on_next_resolution_without_trusting_session_claims(
             BusinessModule module) {
+        var action = PermissionRegistry.modules().get(module).iterator().next();
         when(repository.role(roleId)).thenReturn(
                 Optional.of(
-                        role(Map.of(module, Set.of(PermissionAction.READ)))),
+                        role(Map.of(module, Set.of(action)))),
                 Optional.of(role(Map.of())));
-        service.require(module, PermissionAction.READ);
-        assertThatThrownBy(() -> service.require(module, PermissionAction.READ))
+        service.require(module, action);
+        assertThatThrownBy(() -> service.require(module, action))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void confirm_is_independent_from_read() {
+        when(repository.role(roleId)).thenReturn(Optional.of(role(
+                Map.of(BusinessModule.SALES_QUOTES,
+                        Set.of(PermissionAction.CONFIRM)))));
+
+        service.require(BusinessModule.SALES_QUOTES,
+                PermissionAction.CONFIRM);
+
+        assertThatThrownBy(() -> service.require(BusinessModule.SALES_QUOTES,
+                PermissionAction.READ))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -124,9 +140,9 @@ class AccessServiceTest {
     @Test
     void rejects_role_deactivation_and_delegation_above_actor_scope() {
         when(repository.role(roleId)).thenReturn(Optional.of(role(Map
-                .of(BusinessModule.CATALOG, Set.of(PermissionAction.READ)))));
+                .of(BusinessModule.CATALOG_PRODUCTS, Set.of(PermissionAction.READ)))));
         assertThatThrownBy(
-                () -> service.delegable(Map.of(BusinessModule.CATALOG,
+                () -> service.delegable(Map.of(BusinessModule.CATALOG_PRODUCTS,
                         Set.of(PermissionAction.READ,
                                 PermissionAction.UPDATE))))
                 .isInstanceOf(AccessDeniedException.class);

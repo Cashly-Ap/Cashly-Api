@@ -65,7 +65,16 @@ public class V02AccessControlSeed implements SeedStep {
     private static Map<BusinessModule, Set<PermissionAction>> operatorPermissions() {
         var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
                 BusinessModule.class);
-        result.put(BusinessModule.SALES, EnumSet.of(PermissionAction.READ));
+        result.put(BusinessModule.SALES_QUOTES,
+                EnumSet.of(PermissionAction.READ));
+        result.put(BusinessModule.SALES_ORDERS,
+                EnumSet.of(PermissionAction.READ));
+        result.put(BusinessModule.CONTACTS_CUSTOMERS,
+                EnumSet.of(PermissionAction.READ));
+        result.put(BusinessModule.FINANCE_RECEIVABLES,
+                EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS,
+                        PermissionAction.PAY_ALL, PermissionAction.PARTIAL_PAYMENT,
+                        PermissionAction.PAY_DIRECT));
         return result;
     }
 }

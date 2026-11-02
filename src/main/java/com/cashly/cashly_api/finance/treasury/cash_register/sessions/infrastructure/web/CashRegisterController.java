@@ -48,7 +48,7 @@ public class CashRegisterController {
     }
 
     @PostMapping("/open")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_CASH_REGISTER:EXECUTE')")
     public ResponseEntity<CashRegisterResponse> open(
             @Valid @RequestBody OpenRegisterRequest request,
             Authentication authentication) {
@@ -59,13 +59,13 @@ public class CashRegisterController {
     }
 
     @GetMapping("/active")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_CASH_REGISTER:READ')")
     public ResponseEntity<CashRegisterResponse> getActive() {
         return ResponseEntity.of(getActiveRegisterUseCase.execute());
     }
 
     @PostMapping("/{id}/close")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_CASH_REGISTER:EXECUTE')")
     public ResponseEntity<CashRegisterResponse> close(@PathVariable UUID id,
             @Valid @RequestBody CloseRegisterRequest request,
             Authentication authentication) {
@@ -77,7 +77,7 @@ public class CashRegisterController {
     }
 
     @PostMapping("/{id}/movements")
-    @PreAuthorize("hasAuthority('FINANCES:CREATE')")
+    @PreAuthorize("hasAuthority('FINANCE_CASH_REGISTER:EXECUTE')")
     public ResponseEntity<CashMovementResponse> addMovement(
             @PathVariable UUID id,
             @Valid @RequestBody CashMovementRequest request,
@@ -88,7 +88,7 @@ public class CashRegisterController {
     }
 
     @GetMapping("/history")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_CASH_REGISTER:READ')")
     public ResponseEntity<Page<CashRegisterResponse>> getHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,

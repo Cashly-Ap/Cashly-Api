@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CATALOG:CREATE')")
+    @PreAuthorize("hasAuthority('CATALOG_CATEGORIES:CREATE')")
     public ResponseEntity<CategoryDetailResponse> create(
             @Valid @RequestBody CreateCategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,7 +49,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('CATALOG:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_CATEGORIES:READ')")
     public ResponseEntity<PageResponse<CategoryListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,
@@ -62,21 +62,21 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_CATEGORIES:READ')")
     public ResponseEntity<CategoryDetailResponse> getById(
             @PathVariable UUID id) {
         return ResponseEntity.ok(getCategoryUseCase.execute(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG:UPDATE')")
+    @PreAuthorize("hasAuthority('CATALOG_CATEGORIES:UPDATE')")
     public ResponseEntity<CategoryDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateCategoryRequest request) {
         return ResponseEntity.ok(updateCategoryUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG:DELETE')")
+    @PreAuthorize("hasAuthority('CATALOG_CATEGORIES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteCategoryUseCase.execute(id);
         return ResponseEntity.noContent().build();

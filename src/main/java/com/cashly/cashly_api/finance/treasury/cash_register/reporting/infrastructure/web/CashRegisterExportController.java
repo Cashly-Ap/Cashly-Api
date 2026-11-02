@@ -38,7 +38,7 @@ public class CashRegisterExportController {
     }
 
     @GetMapping("/reports")
-    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:EXPORT')")
     public ResponseEntity<byte[]> exportRangeReport(
             @RequestParam LocalDate dateFrom, @RequestParam LocalDate dateTo,
             @RequestParam(defaultValue = "PDF") ReportFormat format,
@@ -65,7 +65,7 @@ public class CashRegisterExportController {
     }
 
     @GetMapping("/export")
-    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:EXPORT')")
     public ResponseEntity<byte[]> exportExcel(@RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo,
             @RequestParam(defaultValue = "DETAILED") ReportType type) {
@@ -89,7 +89,7 @@ public class CashRegisterExportController {
     }
 
     @GetMapping("/{id}/report")
-    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:EXPORT')")
     public ResponseEntity<byte[]> exportSession(
             @org.springframework.web.bind.annotation.PathVariable UUID id,
             @RequestParam(defaultValue = "PDF") ReportFormat format,

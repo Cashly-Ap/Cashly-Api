@@ -601,6 +601,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, "Invalid request", ex.getMessage()));
     }
 
+    @ExceptionHandler(org.springframework.dao.InvalidDataAccessApiUsageException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidDataAccessUsage(
+            org.springframework.dao.InvalidDataAccessApiUsageException ex) {
+        var cause = ex.getCause();
+        var message = cause instanceof IllegalArgumentException
+                ? cause.getMessage()
+                : ex.getMessage();
+        return ResponseEntity.badRequest().body(createErrorResponse(
+                HttpStatus.BAD_REQUEST, "Invalid request", message));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(
             MethodArgumentNotValidException ex) {

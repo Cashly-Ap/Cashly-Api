@@ -46,8 +46,7 @@ public class AccessService {
 
     public void require(BusinessModule module, PermissionAction action) {
         var grants = current().permissions().getOrDefault(module, Set.of());
-        if (!grants.contains(PermissionAction.READ)
-                || !grants.contains(action)) {
+        if (!grants.contains(action)) {
             throw new AccessDeniedException("Missing " + module + ":" + action);
         }
     }

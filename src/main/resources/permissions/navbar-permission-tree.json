@@ -1,0 +1,690 @@
+{
+  "version": 1,
+  "source": "cashly-app/src/app/core/layouts/config/menu.config.ts and list-navigation.config.ts",
+  "areas": [
+    {
+      "area": "SALES",
+      "label": "Ventas",
+      "children": [
+        {
+          "label": "Presupuestos",
+          "route": "/sales/quotes",
+          "module": "SALES_QUOTES",
+          "children": [
+            {
+              "label": "Ver presupuestos",
+              "route": "/sales/quotes",
+              "permission": "SALES_QUOTES:READ"
+            },
+            {
+              "label": "Ver detalle de presupuesto",
+              "permission": "SALES_QUOTES:READ"
+            },
+            {
+              "label": "Editar presupuesto",
+              "permission": "SALES_QUOTES:UPDATE"
+            },
+            {
+              "label": "Crear presupuesto",
+              "route": "/sales/quotes/new",
+              "permission": "SALES_QUOTES:CREATE"
+            },
+            {
+              "label": "Descargar PDF de presupuesto",
+              "permission": "SALES_QUOTES:EXPORT"
+            },
+            {
+              "label": "Convertir a pedido",
+              "permission": "SALES_ORDERS:CREATE"
+            },
+            {
+              "label": "Convertir a factura",
+              "permission": "FINANCE_INVOICES:CREATE"
+            },
+            {
+              "label": "Reporte de Presupuestos PDF",
+              "permission": "SALES_QUOTES:EXPORT"
+            }
+          ]
+        },
+        {
+          "label": "Pedidos",
+          "route": "/sales/orders",
+          "module": "SALES_ORDERS",
+          "children": [
+            {
+              "label": "Ver pedidos",
+              "route": "/sales/orders",
+              "permission": "SALES_ORDERS:READ"
+            },
+            {
+              "label": "Ver detalle de pedido",
+              "permission": "SALES_ORDERS:READ"
+            },
+            {
+              "label": "Editar pedido",
+              "permission": "SALES_ORDERS:UPDATE"
+            },
+            {
+              "label": "Crear pedido",
+              "route": "/sales/orders/new",
+              "permission": "SALES_ORDERS:CREATE"
+            },
+            {
+              "label": "Descargar PDF de pedido",
+              "permission": "SALES_ORDERS:EXPORT"
+            },
+            {
+              "label": "Confirmar pedido",
+              "permission": "SALES_ORDERS:CONFIRM"
+            },
+            {
+              "label": "Convertir a factura",
+              "permission": "FINANCE_INVOICES:CREATE"
+            },
+            {
+              "label": "Cancelar pedido",
+              "permission": "SALES_ORDERS:CANCEL"
+            },
+            {
+              "label": "Reporte de Pedidos PDF",
+              "permission": "SALES_ORDERS:EXPORT"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "PURCHASES",
+      "label": "Compras",
+      "children": [
+        {
+          "label": "Compras",
+          "route": "/procurement/purchases",
+          "module": "PURCHASES",
+          "children": [
+            {
+              "label": "Ver compras",
+              "route": "/procurement/purchases",
+              "permission": "PURCHASES:READ"
+            },
+            {
+              "label": "Ver detalle de compra",
+              "permission": "PURCHASES:READ"
+            },
+            {
+              "label": "Editar compra",
+              "permission": "PURCHASES:UPDATE"
+            },
+            {
+              "label": "Crear compra",
+              "route": "/procurement/purchases/new",
+              "permission": "PURCHASES:CREATE"
+            },
+            {
+              "label": "Descargar PDF de compra",
+              "permission": "PURCHASES:EXPORT"
+            },
+            {
+              "label": "Confirmar compra",
+              "permission": "PURCHASES:CONFIRM"
+            },
+            {
+              "label": "Cancelar compra",
+              "permission": "PURCHASES:CANCEL"
+            },
+            {
+              "label": "Reporte de Compras PDF",
+              "permission": "PURCHASES:EXPORT"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "CATALOG",
+      "label": "Catálogo",
+      "children": [
+        {
+          "label": "Productos",
+          "route": "/catalog/products",
+          "module": "CATALOG_PRODUCTS",
+          "children": [
+            {
+              "label": "Ver productos",
+              "route": "/catalog/products",
+              "permission": "CATALOG_PRODUCTS:READ"
+            },
+            {
+              "label": "Ver detalle de producto",
+              "permission": "CATALOG_PRODUCTS:READ"
+            },
+            {
+              "label": "Editar producto",
+              "permission": "CATALOG_PRODUCTS:UPDATE"
+            },
+            {
+              "label": "Crear producto",
+              "route": "/catalog/products/new",
+              "permission": "CATALOG_PRODUCTS:CREATE"
+            },
+            {
+              "label": "Reporte de Productos PDF",
+              "permission": "CATALOG_PRODUCTS:EXPORT"
+            },
+            {
+              "label": "Catálogo Comercial PDF",
+              "permission": "CATALOG_PRODUCTS:EXPORT"
+            }
+          ]
+        },
+        {
+          "label": "Categorías",
+          "route": "/catalog/categories",
+          "module": "CATALOG_CATEGORIES",
+          "children": [
+            {
+              "label": "Ver categorías",
+              "route": "/catalog/categories",
+              "permission": "CATALOG_CATEGORIES:READ"
+            },
+            {
+              "label": "Ver detalle de categoría",
+              "permission": "CATALOG_CATEGORIES:READ"
+            },
+            {
+              "label": "Editar categoría",
+              "permission": "CATALOG_CATEGORIES:UPDATE"
+            },
+            {
+              "label": "Crear categoría",
+              "route": "/catalog/categories/new",
+              "permission": "CATALOG_CATEGORIES:CREATE"
+            }
+          ]
+        },
+        {
+          "label": "Tipos de precios",
+          "route": "/catalog/price-types",
+          "module": "CATALOG_PRICES",
+          "children": [
+            {
+              "label": "Ver tipos de precios",
+              "route": "/catalog/price-types",
+              "permission": "CATALOG_PRICES:READ"
+            },
+            {
+              "label": "Ver detalle de tipo de precio",
+              "permission": "CATALOG_PRICES:READ"
+            },
+            {
+              "label": "Editar tipo de precio",
+              "permission": "CATALOG_PRICES:UPDATE"
+            },
+            {
+              "label": "Crear tipo de precio",
+              "route": "/catalog/price-types/new",
+              "permission": "CATALOG_PRICES:CREATE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "INVENTORY",
+      "label": "Inventario",
+      "children": [
+        {
+          "label": "Almacenes",
+          "route": "/inventory/warehouses",
+          "module": "INVENTORY_WAREHOUSES",
+          "children": [
+            {
+              "label": "Ver almacenes",
+              "route": "/inventory/warehouses",
+              "permission": "INVENTORY_WAREHOUSES:READ"
+            },
+            {
+              "label": "Ver detalle de almacén",
+              "permission": "INVENTORY_WAREHOUSES:READ"
+            },
+            {
+              "label": "Editar almacén",
+              "permission": "INVENTORY_WAREHOUSES:UPDATE"
+            },
+            {
+              "label": "Crear almacén",
+              "route": "/inventory/warehouses/new",
+              "permission": "INVENTORY_WAREHOUSES:CREATE"
+            },
+            {
+              "label": "Ver stock",
+              "route": "/inventory/warehouses/stock"
+            },
+            {
+              "label": "Registrar entrada"
+            },
+            {
+              "label": "Registrar salida"
+            },
+            {
+              "label": "Historial de movimientos",
+              "route": "/inventory/warehouses/movements"
+            },
+            {
+              "label": "Reportes",
+              "children": [
+                {
+                  "label": "Stock"
+                },
+                {
+                  "label": "Movimientos"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "FINANCE",
+      "label": "Finanzas",
+      "children": [
+        {
+          "label": "Facturación",
+          "children": [
+            {
+              "label": "Facturas",
+              "route": "/finance/billing/invoices",
+              "module": "FINANCE_INVOICES",
+              "children": [
+                {
+                  "label": "Ver facturas",
+                  "route": "/finance/billing/invoices",
+                  "permission": "FINANCE_INVOICES:READ"
+                },
+                {
+                  "label": "Ver detalle de factura",
+                  "permission": "FINANCE_INVOICES:READ"
+                },
+                {
+                  "label": "Editar factura",
+                  "permission": "FINANCE_INVOICES:UPDATE"
+                },
+                {
+                  "label": "Crear factura",
+                  "route": "/finance/billing/invoices/new",
+                  "permission": "FINANCE_INVOICES:CREATE"
+                },
+                {
+                  "label": "Descargar PDF de factura",
+                  "permission": "FINANCE_INVOICES:EXPORT"
+                },
+                {
+                  "label": "Confirmar factura",
+                  "permission": "FINANCE_INVOICES:CONFIRM"
+                },
+                {
+                  "label": "Cancelar factura",
+                  "permission": "FINANCE_INVOICES:CANCEL"
+                },
+                {
+                  "label": "Duplicar factura",
+                  "permission": "FINANCE_INVOICES:DUPLICATE"
+                },
+                {
+                  "label": "Reporte de Facturas PDF",
+                  "permission": "FINANCE_INVOICES:EXPORT"
+                }
+              ]
+            },
+            {
+              "label": "Devoluciones",
+              "route": "/finance/billing/returns",
+              "module": "FINANCE_RETURNS",
+              "children": [
+                {
+                  "label": "Ver devoluciones",
+                  "route": "/finance/billing/returns",
+                  "permission": "FINANCE_RETURNS:READ"
+                },
+                {
+                  "label": "Ver detalle de devolución",
+                  "permission": "FINANCE_RETURNS:READ"
+                },
+                {
+                  "label": "Crear devolución",
+                  "route": "/finance/billing/returns/new",
+                  "permission": "FINANCE_RETURNS:CREATE"
+                }
+              ]
+            },
+            {
+              "label": "Notas de crédito",
+              "route": "/finance/billing/credit-notes",
+              "module": "FINANCE_CREDIT_NOTES",
+              "children": [
+                {
+                  "label": "Ver notas de crédito",
+                  "route": "/finance/billing/credit-notes",
+                  "permission": "FINANCE_CREDIT_NOTES:READ"
+                },
+                {
+                  "label": "Ver detalle de nota de crédito",
+                  "permission": "FINANCE_CREDIT_NOTES:READ"
+                },
+                {
+                  "label": "Crear nota de crédito",
+                  "route": "/finance/billing/credit-notes/new",
+                  "permission": "FINANCE_CREDIT_NOTES:CREATE"
+                }
+              ]
+            },
+            {
+              "label": "Notas de débito",
+              "route": "/finance/billing/debit-notes",
+              "module": "FINANCE_DEBIT_NOTES",
+              "children": [
+                {
+                  "label": "Ver notas de débito",
+                  "route": "/finance/billing/debit-notes",
+                  "permission": "FINANCE_DEBIT_NOTES:READ"
+                },
+                {
+                  "label": "Ver detalle de nota de débito",
+                  "permission": "FINANCE_DEBIT_NOTES:READ"
+                },
+                {
+                  "label": "Crear nota de débito",
+                  "route": "/finance/billing/debit-notes/new",
+                  "permission": "FINANCE_DEBIT_NOTES:CREATE"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Tesorería",
+          "children": [
+            {
+              "label": "Caja",
+              "route": "/finance/treasury/cash-register",
+              "module": "FINANCE_CASH_REGISTER",
+              "children": [
+                {
+                  "label": "Ver caja",
+                  "route": "/finance/treasury/cash-register",
+                  "permission": "FINANCE_CASH_REGISTER:READ"
+                },
+                {
+                  "label": "Ver detalles",
+                  "permission": "FINANCE_CASH_REGISTER:READ"
+                },
+                {
+                  "label": "Historial de caja",
+                  "route": "/finance/treasury/cash-register/history"
+                },
+                {
+                  "label": "Abrir caja",
+                  "permission": "FINANCE_CASH_REGISTER:EXECUTE"
+                },
+                {
+                  "label": "Cerrar caja",
+                  "permission": "FINANCE_CASH_REGISTER:EXECUTE"
+                },
+                {
+                  "label": "Reportes de Caja",
+                  "permission": "FINANCE_CASH_REGISTER:EXPORT"
+                }
+              ]
+            },
+            {
+              "label": "Cuentas por cobrar",
+              "route": "/finance/treasury/receivables",
+              "module": "FINANCE_RECEIVABLES",
+              "children": [
+                {
+                  "label": "Ver cuentas por cobrar",
+                  "route": "/finance/treasury/receivables",
+                   "permission": "FINANCE_RECEIVABLES:READ"
+                },
+                {
+                  "label": "Ver deuda",
+                   "permission": "FINANCE_RECEIVABLES:DETAILS"
+                },
+                {
+                  "label": "Pagar todo",
+                   "permission": "FINANCE_RECEIVABLES:PAY_ALL"
+                },
+                {
+                  "label": "Pago parcial",
+                   "permission": "FINANCE_RECEIVABLES:PARTIAL_PAYMENT"
+                },
+                {
+                  "label": "Reintegro",
+                   "permission": "FINANCE_RECEIVABLES:REFUND"
+                },
+                {
+                  "label": "Generar anticipo",
+                   "permission": "FINANCE_RECEIVABLES:ADVANCE"
+                },
+                {
+                  "label": "Aprobar pago",
+                   "permission": "FINANCE_RECEIVABLES:APPROVE_PAYMENT"
+                },
+                {
+                  "label": "Rechazar pago",
+                   "permission": "FINANCE_RECEIVABLES:REJECT_PAYMENT"
+                },
+                {
+                  "label": "Cuentas por Cobrar PDF",
+                   "permission": "FINANCE_RECEIVABLES:REPORT"
+                }
+              ]
+            },
+            {
+              "label": "Métodos de pago",
+              "route": "/finance/treasury/payment-methods",
+              "module": "FINANCE_PAYMENT_METHODS",
+              "children": [
+                {
+                  "label": "Ver métodos de pago",
+                  "route": "/finance/treasury/payment-methods",
+                  "permission": "FINANCE_PAYMENT_METHODS:READ"
+                },
+                {
+                  "label": "Ver detalle de método de pago",
+                  "permission": "FINANCE_PAYMENT_METHODS:READ"
+                },
+                {
+                  "label": "Editar método de pago",
+                  "permission": "FINANCE_PAYMENT_METHODS:UPDATE"
+                },
+                {
+                  "label": "Crear método de pago",
+                  "route": "/finance/treasury/payment-methods/new",
+                  "permission": "FINANCE_PAYMENT_METHODS:CREATE"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "CONTACTS",
+      "label": "Contactos",
+      "children": [
+        {
+          "label": "Clientes",
+          "route": "/partners/customers",
+          "module": "CONTACTS_CUSTOMERS",
+          "children": [
+            {
+              "label": "Ver clientes",
+              "route": "/partners/customers",
+              "permission": "CONTACTS_CUSTOMERS:READ"
+            },
+            {
+              "label": "Ver detalle de cliente",
+              "permission": "CONTACTS_CUSTOMERS:READ"
+            },
+            {
+              "label": "Editar cliente",
+              "permission": "CONTACTS_CUSTOMERS:UPDATE"
+            },
+            {
+              "label": "Crear cliente",
+              "route": "/partners/customers/new",
+              "permission": "CONTACTS_CUSTOMERS:CREATE"
+            },
+            {
+              "label": "Ver saldo de cliente",
+              "permission": "CONTACTS_CUSTOMERS:READ"
+            }
+          ]
+        },
+        {
+          "label": "Proveedores",
+          "route": "/partners/suppliers",
+          "module": "CONTACTS_SUPPLIERS",
+          "children": [
+            {
+              "label": "Ver proveedores",
+              "route": "/partners/suppliers",
+              "permission": "CONTACTS_SUPPLIERS:READ"
+            },
+            {
+              "label": "Ver detalle de proveedor",
+              "permission": "CONTACTS_SUPPLIERS:READ"
+            },
+            {
+              "label": "Editar proveedor",
+              "permission": "CONTACTS_SUPPLIERS:UPDATE"
+            },
+            {
+              "label": "Crear proveedor",
+              "route": "/partners/suppliers/new",
+              "permission": "CONTACTS_SUPPLIERS:CREATE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "ANALYTICS",
+      "label": "Análisis",
+      "children": [
+        {
+          "label": "Dashboard",
+          "route": "/analytics/dashboard",
+          "module": "DASHBOARD",
+          "permission": "DASHBOARD:READ"
+        }
+      ]
+    },
+    {
+      "area": "PLATFORM",
+      "label": "Plataforma",
+      "children": [
+        {
+          "label": "Usuarios",
+          "route": "/platform/users",
+          "module": "USERS",
+          "children": [
+            {
+              "label": "Ver usuarios",
+              "route": "/platform/users",
+              "permission": "USERS:READ"
+            },
+            {
+              "label": "Ver detalle de usuario",
+              "permission": "USERS:READ"
+            },
+            {
+              "label": "Editar usuario",
+              "permission": "USERS:UPDATE"
+            },
+            {
+              "label": "Crear usuario",
+              "route": "/platform/users/new",
+              "permission": "USERS:CREATE"
+            }
+          ]
+        },
+        {
+          "label": "Roles",
+          "route": "/platform/roles",
+          "module": "ROLES",
+          "children": [
+            {
+              "label": "Ver roles",
+              "route": "/platform/roles",
+              "permission": "ROLES:READ"
+            },
+            {
+              "label": "Ver detalle de rol",
+              "permission": "ROLES:READ"
+            },
+            {
+              "label": "Editar rol",
+              "permission": "ROLES:UPDATE"
+            },
+            {
+              "label": "Crear rol",
+              "route": "/platform/roles/new",
+              "permission": "ROLES:CREATE"
+            }
+          ]
+        },
+        {
+          "label": "Departamentos",
+          "route": "/platform/departments",
+          "module": "DEPARTMENTS",
+          "children": [
+            {
+              "label": "Ver departamentos",
+              "route": "/platform/departments",
+              "permission": "DEPARTMENTS:READ"
+            },
+            {
+              "label": "Ver detalle de departamento",
+              "permission": "DEPARTMENTS:READ"
+            },
+            {
+              "label": "Editar departamento",
+              "permission": "DEPARTMENTS:UPDATE"
+            },
+            {
+              "label": "Crear departamento",
+              "route": "/platform/departments/new",
+              "permission": "DEPARTMENTS:CREATE"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "USERS": "User accounts management (platform).",
+    "ROLES": "Roles and their permission grants (platform).",
+    "DEPARTMENTS": "Departments assigned to users (platform).",
+    "CATALOG_PRODUCTS": "Products catalog.",
+    "CATALOG_CATEGORIES": "Product categories.",
+    "CATALOG_PRICES": "Price types.",
+    "INVENTORY_WAREHOUSES": "Warehouses management.",
+    "SALES_QUOTES": "Sales quotes (presupuestos).",
+    "SALES_ORDERS": "Sales orders (pedidos).",
+    "CONTACTS_CUSTOMERS": "Customers (clientes) master data.",
+    "FINANCE_INVOICES": "Invoices (facturas).",
+    "FINANCE_RETURNS": "Returns (devoluciones).",
+    "FINANCE_CREDIT_NOTES": "Credit notes (notas de crédito).",
+    "FINANCE_DEBIT_NOTES": "Debit notes (notas de débito).",
+    "FINANCE_CASH_REGISTER": "Cash register sessions (caja): open, close, view.",
+    "FINANCE_RECEIVABLES": "Accounts receivable (cuentas por cobrar): debt view, payments, refunds, advances.",
+    "FINANCE_PAYMENT_METHODS": "Payment methods (métodos de pago).",
+    "PURCHASES": "Purchases (compras).",
+    "CONTACTS_SUPPLIERS": "Suppliers (proveedores) master data.",
+    "DASHBOARD": "Analytics dashboard."
+  }
+}

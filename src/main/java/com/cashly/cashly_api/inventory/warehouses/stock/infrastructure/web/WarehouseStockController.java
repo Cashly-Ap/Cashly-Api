@@ -44,7 +44,7 @@ public class WarehouseStockController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<PageResponse<WarehouseStockResponse>> getStock(
             @PathVariable UUID warehouseId,
             @RequestParam(defaultValue = "0") int page,
@@ -54,7 +54,7 @@ public class WarehouseStockController {
     }
 
     @PostMapping("/entry")
-    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<List<StockMovementResponse>> entry(
             @PathVariable UUID warehouseId,
             @Valid @RequestBody StockEntryRequest request) {
@@ -63,7 +63,7 @@ public class WarehouseStockController {
     }
 
     @PostMapping("/exit")
-    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<List<StockMovementResponse>> exit(
             @PathVariable UUID warehouseId,
             @Valid @RequestBody StockExitRequest request) {
@@ -72,7 +72,7 @@ public class WarehouseStockController {
     }
 
     @PostMapping("/adjustment")
-    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<StockMovementResponse> adjustment(
             @PathVariable UUID warehouseId,
             @Valid @RequestBody StockAdjustmentRequest request) {
@@ -81,7 +81,7 @@ public class WarehouseStockController {
     }
 
     @PostMapping("/transfer")
-    @PreAuthorize("hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<List<StockMovementResponse>> transfer(
             @PathVariable UUID warehouseId,
             @Valid @RequestBody TransferStockRequest request) {

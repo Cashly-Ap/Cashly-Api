@@ -38,7 +38,7 @@ public class DebitNoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCES:CREATE')")
+    @PreAuthorize("hasAuthority('FINANCE_DEBIT_NOTES:CREATE')")
     public ResponseEntity<DebitNoteResponse> create(
             @Valid @RequestBody CreateDebitNoteRequest request,
             Authentication authentication) {
@@ -49,7 +49,7 @@ public class DebitNoteController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_DEBIT_NOTES:READ')")
     public ResponseEntity<List<DebitNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -60,14 +60,14 @@ public class DebitNoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_DEBIT_NOTES:READ')")
     public ResponseEntity<DebitNoteResponse> getById(@PathVariable UUID id) {
         DebitNoteResponse response = getDebitNoteByIdUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:DELETE')")
+    @PreAuthorize("hasAuthority('FINANCE_DEBIT_NOTES:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteDebitNoteUseCase.execute(id);
         return ResponseEntity.noContent().build();

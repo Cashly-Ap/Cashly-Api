@@ -59,7 +59,7 @@ public class PurchaseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('PURCHASES:CREATE') and hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('PURCHASES:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<PurchaseDetailResponse> create(
             @Valid @RequestBody CreatePurchaseRequest request,
             Authentication authentication) {
@@ -111,7 +111,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/products")
-    @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<?> getProducts(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,
@@ -122,7 +122,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('PURCHASES:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<PurchaseDetailResponse> getById(
             @PathVariable UUID id) {
         PurchaseDetailResponse response = getPurchaseByIdUseCase.execute(id);
@@ -130,7 +130,7 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('PURCHASES:UPDATE') and hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('PURCHASES:UPDATE') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<PurchaseDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdatePurchaseRequest request) {
         PurchaseDetailResponse response = updatePurchaseUseCase.execute(id,
@@ -139,7 +139,7 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}/confirm")
-    @PreAuthorize("hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('PURCHASES:CONFIRM') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<PurchaseDetailResponse> confirm(
             @PathVariable UUID id) {
         PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id);
@@ -147,7 +147,7 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAuthority('PURCHASES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('PURCHASES:CANCEL') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<PurchaseDetailResponse> cancel(@PathVariable UUID id,
             @Valid @RequestBody CancelPurchaseRequest request) {
         PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id,

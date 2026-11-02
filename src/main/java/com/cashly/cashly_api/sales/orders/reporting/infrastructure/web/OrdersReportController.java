@@ -32,7 +32,7 @@ public class OrdersReportController {
     }
 
     @GetMapping("/{id}/pdf")
-    @PreAuthorize("hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:EXPORT')")
     public ResponseEntity<byte[]> getOrderPdf(@PathVariable UUID id) {
         byte[] pdf = generateOrderPdfUseCase.execute(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
@@ -42,7 +42,7 @@ public class OrdersReportController {
     }
 
     @GetMapping("/pdf")
-    @PreAuthorize("hasAuthority('SALES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS:EXPORT')")
     public ResponseEntity<byte[]> getOrdersReportPdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,

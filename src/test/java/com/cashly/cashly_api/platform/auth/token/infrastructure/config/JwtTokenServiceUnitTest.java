@@ -29,14 +29,14 @@ class JwtTokenServiceUnitTest {
         when(authenticable.getType()).thenReturn(AuthenticableType.USER);
         when(authenticable.getRole()).thenReturn(UserRole.ADMIN);
         when(authenticable.getModulePermissions())
-                .thenReturn(Set.of(BusinessModule.INVENTORY));
+                .thenReturn(Set.of(BusinessModule.INVENTORY_WAREHOUSES));
 
         String token = tokenService.generateAccessToken(authenticable);
 
         var access = tokenService.extractUserAccess(token);
         assertTrue(access.isPresent());
         assertEquals(UserRole.ADMIN, access.orElseThrow().role());
-        assertEquals(Set.of(BusinessModule.INVENTORY),
+        assertEquals(Set.of(BusinessModule.INVENTORY_WAREHOUSES),
                 access.orElseThrow().modulePermissions());
     }
 

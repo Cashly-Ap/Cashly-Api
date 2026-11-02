@@ -35,14 +35,14 @@ public class CustomerBalanceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:BALANCE')")
     public ResponseEntity<CustomerBalanceResponse> getBalance(
             @PathVariable UUID customerId) {
         return ResponseEntity.ok(getCustomerBalanceUseCase.execute(customerId));
     }
 
     @GetMapping("/transactions")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:BALANCE')")
     public ResponseEntity<PageResponse<BalanceTransactionResponse>> getTransactions(
             @PathVariable UUID customerId,
             @RequestParam(defaultValue = "0") int page,
@@ -52,7 +52,7 @@ public class CustomerBalanceController {
     }
 
     @PostMapping("/advance")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:ADVANCE')")
     public ResponseEntity<CustomerBalanceResponse> createAdvance(
             @PathVariable UUID customerId,
             @Valid @RequestBody CreateAdvanceRequest request,
@@ -65,7 +65,7 @@ public class CustomerBalanceController {
     }
 
     @PostMapping("/refund")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:REFUND')")
     public ResponseEntity<CustomerBalanceResponse> createRefund(
             @PathVariable UUID customerId,
             @Valid @RequestBody CreateRefundRequest request,

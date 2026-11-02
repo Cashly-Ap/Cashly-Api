@@ -20,7 +20,7 @@ public class StockOverviewController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public StockOverviewResponse getStock(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID categoryId,
@@ -32,7 +32,7 @@ public class StockOverviewController {
                 groupBy);
     }
 
-    @PreAuthorize("hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public StockOverviewResponse getStock(UUID warehouseId, UUID categoryId,
             String search, int page, int size) {
         return getStock(warehouseId, categoryId, search, page, size,

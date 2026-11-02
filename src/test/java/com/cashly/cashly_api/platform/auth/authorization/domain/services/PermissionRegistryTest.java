@@ -16,18 +16,24 @@ import static org.assertj.core.api.Assertions.*;
 class PermissionRegistryTest {
     @ParameterizedTest
     @EnumSource(BusinessModule.class)
-    void every_module_supports_independent_denial_read_and_supported_actions(
+    void every_module_accepts_each_supported_action_independently(
             BusinessModule module) {
+        var supported = PermissionRegistry.modules().get(module);
+        var grant = supported.iterator().next();
         assertThat(PermissionRegistry.validate(Map.of()))
                 .doesNotContainKey(module);
         assertThat(PermissionRegistry
-                .validate(Map.of(module, Set.of(PermissionAction.READ))))
-                .containsEntry(module, Set.of(PermissionAction.READ));
-        var supported = PermissionRegistry.modules().get(module);
-        assertThat(PermissionRegistry.validate(Map.of(module, supported)))
-                .containsEntry(module, supported);
-        for (var action : supported) {
-            if (action != PermissionAction.READ) {
+                .validate(Map.of(module, Set.of(grant))))
+                .containsEntry(module, Set.of(grant));
+        if (module == BusinessModule.FINANCE_RECEIVABLES) {
+            assertThatThrownBy(() -> PermissionRegistry.validate(Map.of(module, supported)))
+                    .isInstanceOf(IllegalArgumentException.class);
+        } else {
+            assertThat(PermissionRegistry.validate(Map.of(module, supported)))
+                    .containsEntry(module, supported);
+        }
+        for (var action : PermissionAction.values()) {
+            if (!supported.contains(action)) {
                 assertThatThrownBy(() -> PermissionRegistry
                         .validate(Map.of(module, Set.of(action))))
                         .isInstanceOf(IllegalArgumentException.class);
@@ -43,7 +49,7 @@ class PermissionRegistryTest {
                                 PermissionAction.CREATE))))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(
-                () -> PermissionRegistry.validate(Map.of(BusinessModule.CATALOG,
+                () -> PermissionRegistry.validate(Map.of(BusinessModule.CATALOG_PRODUCTS,
                         Set.of(PermissionAction.READ,
                                 PermissionAction.IMPORT))))
                 .isInstanceOf(IllegalArgumentException.class);

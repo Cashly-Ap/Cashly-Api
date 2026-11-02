@@ -26,7 +26,7 @@ public class PaymentReportsController {
     }
 
     @GetMapping("/payments/{id}/pdf")
-    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:EXPORT')")
     public ResponseEntity<byte[]> getPaymentPdf(@PathVariable UUID id) {
         byte[] pdf = generatePaymentPdfUseCase.execute(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
@@ -36,7 +36,7 @@ public class PaymentReportsController {
     }
 
     @GetMapping("/payment-history/pdf")
-    @PreAuthorize("hasAuthority('FINANCES:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:EXPORT')")
     public ResponseEntity<byte[]> getPaymentHistoryPdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,

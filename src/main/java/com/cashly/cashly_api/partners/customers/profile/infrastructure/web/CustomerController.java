@@ -43,7 +43,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('SALES:CREATE')")
+    @PreAuthorize("hasAuthority('CONTACTS_CUSTOMERS:CREATE')")
     public ResponseEntity<CustomerCreateResponse> create(
             @Valid @RequestBody CreateCustomerRequest request,
             Authentication authentication) {
@@ -54,7 +54,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('SALES:READ')")
+    @PreAuthorize("hasAuthority('CONTACTS_CUSTOMERS:READ')")
     public ResponseEntity<PageResponse<CustomerListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String rif,
@@ -74,7 +74,7 @@ public class CustomerController {
     }
 
     @GetMapping("/picker")
-    @PreAuthorize("hasAuthority('SALES:READ')")
+    @PreAuthorize("hasAuthority('CONTACTS_CUSTOMERS:READ')")
     public ResponseEntity<PageResponse<CustomerListResponse>> getForPicker(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String type,
@@ -87,7 +87,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES:READ')")
+    @PreAuthorize("hasAuthority('CONTACTS_CUSTOMERS:READ')")
     public ResponseEntity<CustomerDetailResponse> getById(
             @PathVariable String id) {
         CustomerDetailResponse customer = getCustomerUseCase.execute(id);
@@ -95,7 +95,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES:UPDATE')")
+    @PreAuthorize("hasAuthority('CONTACTS_CUSTOMERS:UPDATE')")
     public ResponseEntity<CustomerDetailResponse> update(
             @PathVariable String id,
             @Valid @RequestBody UpdateCustomerRequest request) {
@@ -105,7 +105,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES:DELETE')")
+    @PreAuthorize("hasAuthority('CONTACTS_CUSTOMERS:DELETE')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteCustomerUseCase.execute(id);
         return ResponseEntity.noContent().build();

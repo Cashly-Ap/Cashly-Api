@@ -38,13 +38,13 @@ public class CompanyController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public Company update(@Valid @RequestBody CompanyService.Request request) {
         return service.update(request);
     }
 
     @PostMapping(value = "/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public Company upload(@RequestParam("file") MultipartFile file)
             throws IOException {
         if (file.isEmpty()) {
@@ -54,7 +54,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/logo")
-    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public Company deleteLogo() {
         return service.deleteLogo();
     }
@@ -70,7 +70,7 @@ public class CompanyController {
                 .header("X-Content-Type-Options", "nosniff").body(bytes);
     }
     @PostMapping(value = "/pdf-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public Company uploadPdfLogo(@RequestParam("file") MultipartFile file)
             throws IOException {
         if (file.isEmpty()) {
@@ -80,7 +80,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/pdf-logo")
-    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public Company deletePdfLogo() {
         return service.deletePdfLogo();
     }
@@ -96,7 +96,7 @@ public class CompanyController {
                 .header("X-Content-Type-Options", "nosniff").body(bytes);
     }
     @PostMapping(value = "/pdf-logo/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
-    @PreAuthorize("hasAuthority('COMPANY:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS:UPDATE')")
     public ResponseEntity<byte[]> previewPdfLogo(
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "companyLogo", required = false) MultipartFile companyLogo,

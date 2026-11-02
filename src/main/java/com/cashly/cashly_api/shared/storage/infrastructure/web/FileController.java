@@ -26,7 +26,7 @@ public class FileController {
     }
 
     @GetMapping("/**")
-    @PreAuthorize("hasAuthority('CATALOG:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:READ')")
     public ResponseEntity<byte[]> serveFile(HttpServletRequest request) {
         String filePath = request.getRequestURI().replaceFirst("/api/files/",
                 "");

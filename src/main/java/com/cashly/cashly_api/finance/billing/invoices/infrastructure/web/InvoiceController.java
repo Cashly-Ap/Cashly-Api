@@ -60,7 +60,7 @@ public class InvoiceController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:DUPLICATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> create(
             @Valid @RequestBody CreateInvoiceRequest request,
             Authentication authentication) {
@@ -71,7 +71,7 @@ public class InvoiceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:READ')")
     public ResponseEntity<List<InvoiceListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -113,7 +113,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:READ') and hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public ResponseEntity<InvoiceDetailResponse> getById(
             @PathVariable UUID id) {
         InvoiceDetailResponse invoice = getInvoiceByIdUseCase.execute(id);
@@ -121,7 +121,7 @@ public class InvoiceController {
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:CANCEL') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> cancel(@PathVariable UUID id,
             @Valid @RequestBody CancelInvoiceRequest request) {
         InvoiceDetailResponse invoice = cancelInvoiceUseCase.execute(id,
@@ -130,7 +130,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/{id}/duplicate")
-    @PreAuthorize("hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> duplicate(
             @PathVariable UUID id,
             @RequestBody(required = false) DuplicateInvoiceRequest request) {
@@ -141,7 +141,7 @@ public class InvoiceController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:UPDATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:UPDATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateInvoiceRequest request) {
         InvoiceDetailResponse response = updateInvoiceUseCase.execute(id,
@@ -150,7 +150,7 @@ public class InvoiceController {
     }
 
     @PutMapping("/{id}/confirm")
-    @PreAuthorize("hasAuthority('FINANCES:EXECUTE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:CONFIRM') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<InvoiceDetailResponse> confirm(@PathVariable UUID id,
             @Valid @RequestBody ConfirmInvoiceRequest request,
             Authentication authentication) {
@@ -161,7 +161,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:DELETE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_INVOICES:DELETE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteInvoiceUseCase.execute(id);
         return ResponseEntity.noContent().build();

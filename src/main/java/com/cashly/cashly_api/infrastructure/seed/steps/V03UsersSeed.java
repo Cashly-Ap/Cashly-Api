@@ -39,7 +39,7 @@ public class V03UsersSeed implements SeedStep {
                 ADMIN_PASSWORD_HASH);
         persistUser(OPERATOR_USER, "operator@cashly.local", "operator", "Sales",
                 "Operator", OPERATOR_ROLE, SALES_DEPARTMENT, UserRole.OPERATOR,
-                BusinessModule.SALES, OPERATOR_PASSWORD_HASH);
+                BusinessModule.SALES_QUOTES, OPERATOR_PASSWORD_HASH);
     }
 
     private void persistUser(UUID id, String email, String username,

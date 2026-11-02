@@ -73,7 +73,7 @@ class ManageRolesUseCaseTest {
                 true, 0, null, Map.of(BusinessModule.ROLES, Set
                         .of(PermissionAction.READ, PermissionAction.UPDATE)));
         var superior = new Role(id, "Sales administrator", null, true, 2, null,
-                Map.of(BusinessModule.SALES, Set.of(PermissionAction.READ,
+                Map.of(BusinessModule.SALES_ORDERS, Set.of(PermissionAction.READ,
                         PermissionAction.UPDATE)));
         when(repository.assignment(actorId)).thenReturn(
                 Optional.of(new AccessRepository.Assignment(actorRoleId,

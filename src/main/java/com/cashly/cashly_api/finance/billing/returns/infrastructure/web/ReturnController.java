@@ -39,7 +39,7 @@ public class ReturnController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCES:CREATE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RETURNS:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<ReturnResponse> create(
             @Valid @RequestBody CreateReturnRequest request,
             Authentication authentication) {
@@ -50,7 +50,7 @@ public class ReturnController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_RETURNS:READ')")
     public ResponseEntity<List<ReturnListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -62,14 +62,14 @@ public class ReturnController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_RETURNS:READ')")
     public ResponseEntity<ReturnResponse> getById(@PathVariable UUID id) {
         ReturnResponse response = getReturnByIdUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCES:DELETE') and hasAuthority('INVENTORY:EXECUTE')")
+    @PreAuthorize("hasAuthority('FINANCE_RETURNS:DELETE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());

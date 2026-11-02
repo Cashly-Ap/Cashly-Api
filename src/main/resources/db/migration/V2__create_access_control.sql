@@ -16,7 +16,7 @@ CREATE TABLE `auth_roles` (
 CREATE TABLE `auth_role_permissions` (
   `role_id` binary(16) NOT NULL,
   `module` varchar(30) NOT NULL,
-  `action` varchar(20) NOT NULL,
+  `action` varchar(50) NOT NULL,
   `company_id` binary(16) NOT NULL DEFAULT 0x92000000000000000000000000000001,
   PRIMARY KEY (`role_id`,`module`,`action`),
   KEY `fk_auth_role_permissions_company` (`company_id`),

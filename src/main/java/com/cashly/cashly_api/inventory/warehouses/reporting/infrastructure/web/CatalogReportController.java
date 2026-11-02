@@ -32,7 +32,7 @@ public class CatalogReportController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('INVENTORY:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
     public PageResponse<CatalogReportResponse> getCatalog(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,
@@ -48,7 +48,7 @@ public class CatalogReportController {
     }
 
     @GetMapping("/pdf")
-    @PreAuthorize("hasAuthority('INVENTORY:EXPORT') and hasAuthority('DOCUMENT_ADMIN:EXPORT')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXPORT')")
     public ResponseEntity<byte[]> getCatalogPdf(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,
