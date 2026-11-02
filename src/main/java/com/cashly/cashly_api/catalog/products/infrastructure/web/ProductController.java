@@ -16,6 +16,7 @@ import com.cashly.cashly_api.catalog.products.application.update.use_case.Update
 import com.cashly.cashly_api.catalog.products.application.photos.use_case.UploadProductPhotoUseCase;
 import com.cashly.cashly_api.catalog.products.application.transactions.response.ProductWithStockResponse;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -80,9 +81,15 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir) {
+            @RequestParam(defaultValue = "asc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
         return ResponseEntity.ok(listProductsUseCase.execute(search, categoryId,
-                active, composite, page, size, orderBy, orderDir));
+                active, composite, page, size, orderBy, orderDir, action));
+    }
+
+    public ResponseEntity<PageResponse<ProductListResponse>> getAll(String search, UUID categoryId,
+            Boolean active, Boolean composite, int page, int size, String orderBy, String orderDir) {
+        return getAll(search, categoryId, active, composite, page, size, orderBy, orderDir, null);
     }
 
     @GetMapping(params = "customerId")

@@ -62,6 +62,12 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<Quote> findEligibleForDeletion(UUID id) {
+        return jpaRepository.findEligibleForDeletion(id).map(mapper::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Quote> findAll() {
         return jpaRepository.findAllWithLines().stream().map(mapper::toDomain)
                 .toList();
@@ -100,6 +106,32 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
 
         return entities.stream().sorted(comparator).map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Quote> findAllEligibleForDeletion(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, String status, UUID productId,
+            UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
+            String orderBy, String orderDir) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        var entities = jpaRepository.findAllEligibleForDeletion(from, to,
+                customerId, status, productId, categoryId,
+                currentCategoryProductIds.isEmpty()
+                        ? java.util.Set.of(new UUID(0, 0))
+                        : currentCategoryProductIds);
+        boolean desc = "desc".equalsIgnoreCase(orderDir);
+        Comparator<QuoteJpaEntity> comparator = switch (orderBy) {
+            case null -> Comparator.comparing(QuoteJpaEntity::getCreatedAt);
+            case "quoteNumber" -> Comparator.comparing(QuoteJpaEntity::getQuoteNumber);
+            case "customerName" -> Comparator.comparing(QuoteJpaEntity::getCustomerName);
+            case "status" -> Comparator.comparing(QuoteJpaEntity::getStatus);
+            case "subtotal" -> Comparator.comparing(QuoteJpaEntity::getSubtotal);
+            default -> Comparator.comparing(QuoteJpaEntity::getCreatedAt);
+        };
+        if (desc) comparator = comparator.reversed();
+        return entities.stream().sorted(comparator).map(mapper::toDomain).toList();
     }
 
     @Override

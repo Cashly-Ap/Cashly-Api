@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 public class ListCustomersUseCase {
 
@@ -48,5 +50,14 @@ public class ListCustomersUseCase {
                 customerPage.totalPages(), customerPage.size(),
                 customerPage.number(), customerPage.first(),
                 customerPage.last(), customerPage.empty());
+    }
+    public PageResponse<CustomerListResponse> execute(String search, String rif, String type, Boolean active,
+            String state, String municipality, String postalCode, Boolean hasActiveWarehouse,
+            int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, rif, type, active, state, municipality,
+                postalCode, hasActiveWarehouse, page, size, orderBy, orderDir);
+        var all = execute(search, rif, type, active, state, municipality, postalCode,
+                hasActiveWarehouse, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), CustomerListResponse::deletable, page, size);
     }
 }

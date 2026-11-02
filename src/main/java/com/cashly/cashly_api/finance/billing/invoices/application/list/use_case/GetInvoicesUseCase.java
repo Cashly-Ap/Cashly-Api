@@ -76,7 +76,7 @@ public class GetInvoicesUseCase {
                     returnStatus, dueStatus, productId, categoryId, orderBy,
                     orderDir);
         List<String> eligibleStatuses = switch (action) {
-            case EDIT, CONFIRM -> List.of(InvoiceStatus.DRAFT.name());
+            case EDIT, CONFIRM, DELETE -> List.of(InvoiceStatus.DRAFT.name());
             case CANCEL -> List.of(InvoiceStatus.PENDING_PAYMENT.name(),
                     InvoiceStatus.PARTIALLY_PAID.name());
             case DUPLICATE -> java.util.Arrays.stream(InvoiceStatus.values())

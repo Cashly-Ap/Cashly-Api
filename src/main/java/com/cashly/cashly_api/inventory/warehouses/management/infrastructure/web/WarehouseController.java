@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.inventory.warehouses.management.infrastructure.web;
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import com.cashly.cashly_api.inventory.warehouses.management.application.create.request.CreateWarehouseRequest;
 import com.cashly.cashly_api.inventory.warehouses.management.application.update.request.UpdateWarehouseRequest;
 import com.cashly.cashly_api.inventory.warehouses.management.application.dto.response.WarehouseDetailResponse;
@@ -63,9 +64,15 @@ public class WarehouseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir) {
+            @RequestParam(defaultValue = "asc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
         return ResponseEntity.ok(listWarehousesUseCase.execute(search, active,
-                page, size, orderBy, orderDir));
+                page, size, orderBy, orderDir, action));
+    }
+
+    public ResponseEntity<PageResponse<WarehouseListResponse>> list(String search, Boolean active,
+            int page, int size, String orderBy, String orderDir) {
+        return list(search, active, page, size, orderBy, orderDir, null);
     }
 
     @PutMapping("/{id}")

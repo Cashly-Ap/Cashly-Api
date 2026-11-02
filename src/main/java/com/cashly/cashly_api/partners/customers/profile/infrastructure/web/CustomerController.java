@@ -11,6 +11,7 @@ import com.cashly.cashly_api.partners.customers.profile.application.list.use_cas
 import com.cashly.cashly_api.partners.customers.profile.application.register.use_case.RegisterCustomerUseCase;
 import com.cashly.cashly_api.partners.customers.profile.application.update.use_case.UpdateCustomerUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,11 +67,19 @@ public class CustomerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "legalName") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir) {
+            @RequestParam(defaultValue = "asc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
         PageResponse<CustomerListResponse> customers = listCustomersUseCase
                 .execute(search, rif, type, active, state, municipality,
-                        postalCode, null, page, size, orderBy, orderDir);
+                        postalCode, null, page, size, orderBy, orderDir, action);
         return ResponseEntity.ok(customers);
+    }
+
+    public ResponseEntity<PageResponse<CustomerListResponse>> getAll(String search, String rif,
+            String type, Boolean active, String state, String municipality, String postalCode,
+            int page, int size, String orderBy, String orderDir) {
+        return getAll(search, rif, type, active, state, municipality, postalCode, page, size,
+                orderBy, orderDir, null);
     }
 
     @GetMapping("/picker")

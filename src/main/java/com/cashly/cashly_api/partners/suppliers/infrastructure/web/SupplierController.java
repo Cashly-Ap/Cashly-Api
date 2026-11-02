@@ -11,6 +11,7 @@ import com.cashly.cashly_api.partners.suppliers.application.queries.use_case.Lis
 import com.cashly.cashly_api.partners.suppliers.application.register.use_case.RegisterSupplierUseCase;
 import com.cashly.cashly_api.partners.suppliers.application.update.use_case.UpdateSupplierUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,11 +59,17 @@ public class SupplierController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "legalName") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir) {
+            @RequestParam(defaultValue = "asc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
         PageResponse<SupplierListResponse> suppliers = listSuppliersUseCase
                 .execute(search, type, active, state, page, size, orderBy,
-                        orderDir);
+                        orderDir, action);
         return ResponseEntity.ok(suppliers);
+    }
+
+    public ResponseEntity<PageResponse<SupplierListResponse>> getAll(String search, String type,
+            Boolean active, String state, int page, int size, String orderBy, String orderDir) {
+        return getAll(search, type, active, state, page, size, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")

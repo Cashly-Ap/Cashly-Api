@@ -9,6 +9,7 @@ import com.cashly.cashly_api.catalog.price_types.application.queries.use_case.Ge
 import com.cashly.cashly_api.catalog.price_types.application.queries.use_case.ListPriceTypesUseCase;
 import com.cashly.cashly_api.catalog.price_types.application.update.use_case.UpdatePriceTypeUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,8 +76,14 @@ public class PriceTypeController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir) {
+             @RequestParam(defaultValue = "asc") String orderDir,
+             @RequestParam(required = false) DocumentAction action) {
         return ResponseEntity.ok(listPriceTypesUseCase.execute(search, active,
-                page, size, orderBy, orderDir));
+                page, size, orderBy, orderDir, action));
+    }
+
+    public ResponseEntity<PageResponse<PriceTypeResponse>> listAll(String search, Boolean active,
+            int page, int size, String orderBy, String orderDir) {
+        return listAll(search, active, page, size, orderBy, orderDir, null);
     }
 }

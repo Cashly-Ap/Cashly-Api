@@ -36,7 +36,7 @@ public class ManageRolesUseCase {
     }
 
     public enum ListAction {
-        EDIT
+        EDIT, DELETE
     }
 
     public List<Role> list() {
@@ -48,6 +48,14 @@ public class ManageRolesUseCase {
         if (action == ListAction.EDIT) {
             access.require(BusinessModule.ROLES, PermissionAction.UPDATE);
             return repository.editableRoles().stream().filter(this::assignable)
+                    .toList();
+        }
+        if (action == ListAction.DELETE) {
+            access.require(BusinessModule.ROLES, PermissionAction.DELETE);
+            return repository.roles().stream()
+                    .filter(role -> !role.systemAdministrator())
+                    .filter(role -> !repository.roleReferenced(role.id()))
+                    .filter(this::assignable)
                     .toList();
         }
         return repository.roles();

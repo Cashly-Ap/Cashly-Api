@@ -10,6 +10,7 @@ import com.cashly.cashly_api.finance.treasury.payment_methods.application.querie
 import com.cashly.cashly_api.finance.treasury.payment_methods.application.toggle.use_case.TogglePaymentMethodUseCase;
 import com.cashly.cashly_api.finance.treasury.payment_methods.application.update.use_case.UpdatePaymentMethodUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,9 +62,15 @@ public class PaymentMethodController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir) {
+             @RequestParam(defaultValue = "asc") String orderDir,
+             @RequestParam(required = false) DocumentAction action) {
         return ResponseEntity.ok(listPaymentMethodsUseCase.execute(search,
-                active, page, size, orderBy, orderDir));
+                 active, page, size, orderBy, orderDir, action));
+    }
+
+    public ResponseEntity<PageResponse<PaymentMethodResponse>> list(String search, Boolean active,
+            int page, int size, String orderBy, String orderDir) {
+        return list(search, active, page, size, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")

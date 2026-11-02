@@ -20,8 +20,9 @@ public class DepartmentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('DEPARTMENTS:READ')")
-    public List<Department> list() {
-        return useCase.list();
+    public List<Department> list(
+            @RequestParam(required = false) ManageDepartmentsUseCase.ListAction action) {
+        return useCase.list(action);
     }
 
     @GetMapping("/options")

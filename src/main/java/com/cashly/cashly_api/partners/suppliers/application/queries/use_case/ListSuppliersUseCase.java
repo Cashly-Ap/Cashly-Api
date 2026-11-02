@@ -7,6 +7,8 @@ import com.cashly.cashly_api.partners.suppliers.domain.entity.Supplier;
 import com.cashly.cashly_api.partners.suppliers.domain.repository.SupplierRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 import java.util.List;
 import java.util.Set;
@@ -52,5 +54,11 @@ public class ListSuppliersUseCase {
                 supplierPage.totalPages(), supplierPage.size(),
                 supplierPage.number(), supplierPage.first(),
                 supplierPage.last(), supplierPage.empty());
+    }
+    public PageResponse<SupplierListResponse> execute(String search, String type, Boolean active, String state,
+            int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, type, active, state, page, size, orderBy, orderDir);
+        var all = execute(search, type, active, state, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), supplier -> !supplier.hasPurchases(), page, size);
     }
 }

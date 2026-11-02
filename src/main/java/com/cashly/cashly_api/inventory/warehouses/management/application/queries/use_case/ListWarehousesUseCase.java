@@ -7,6 +7,8 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 
 import java.util.Set;
 import java.util.UUID;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 public class ListWarehousesUseCase {
 
@@ -33,5 +35,11 @@ public class ListWarehousesUseCase {
                         .toList(),
                 result.totalElements(), result.totalPages(), result.size(),
                 result.number(), result.first(), result.last(), result.empty());
+    }
+
+    public PageResponse<WarehouseListResponse> execute(String search, Boolean active, int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, active, page, size, orderBy, orderDir);
+        var all = execute(search, active, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), WarehouseListResponse::deletable, page, size);
     }
 }

@@ -41,13 +41,22 @@ public class GetQuotesUseCase {
             return execute(dateFrom, dateTo, customerId, status, productId,
                     categoryId, orderBy, orderDir);
         String eligibleStatus = switch (action) {
-            case EDIT, CONVERT_TO_ORDER, CONVERT_TO_INVOICE -> "DRAFT";
+            case EDIT, CONVERT_TO_ORDER, CONVERT_TO_INVOICE, DELETE -> "DRAFT";
             default -> throw new IllegalArgumentException(
                     "Unsupported quote action: " + action);
         };
         if (status != null && !status.isBlank() && !"ALL".equals(status)
                 && !eligibleStatus.equals(status)) {
             return List.of();
+        }
+        if (action == DocumentAction.DELETE) {
+            var currentCategoryProductIds = categoryId == null
+                    ? java.util.Set.<UUID>of()
+                    : products.findProductIdsByCurrentCategory(categoryId);
+            return quoteRepository.findAllEligibleForDeletion(dateFrom, dateTo,
+                    customerId, eligibleStatus, productId, categoryId,
+                    currentCategoryProductIds, orderBy, orderDir).stream()
+                    .map(QuoteMapper::toListResponse).toList();
         }
         return execute(dateFrom, dateTo, customerId, eligibleStatus, productId,
                 categoryId, orderBy, orderDir);

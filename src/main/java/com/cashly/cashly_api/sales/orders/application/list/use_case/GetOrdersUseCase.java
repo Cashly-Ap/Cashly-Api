@@ -44,6 +44,7 @@ public class GetOrdersUseCase {
         String eligibleStatus = switch (action) {
             case EDIT, CONFIRM -> "DRAFT";
             case CANCEL, CONVERT_TO_INVOICE -> "CONFIRMED";
+            case DELETE -> "DRAFT";
             default -> throw new IllegalArgumentException(
                     "Unsupported order action: " + action);
         };

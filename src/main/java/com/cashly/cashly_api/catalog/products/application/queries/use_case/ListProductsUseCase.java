@@ -6,6 +6,8 @@ import com.cashly.cashly_api.catalog.products.application.mappers.ProductMapper;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 import java.util.List;
 import java.util.Set;
@@ -55,5 +57,11 @@ public class ListProductsUseCase {
         return new PageResponse<>(content, result.totalElements(),
                 result.totalPages(), result.size(), result.number(),
                 result.first(), result.last(), result.empty());
+    }
+
+    public PageResponse<ProductListResponse> execute(String search, UUID categoryId, Boolean active, Boolean composite, int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, categoryId, active, composite, page, size, orderBy, orderDir);
+        var all = execute(search, categoryId, active, composite, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), ProductListResponse::deletable, page, size);
     }
 }

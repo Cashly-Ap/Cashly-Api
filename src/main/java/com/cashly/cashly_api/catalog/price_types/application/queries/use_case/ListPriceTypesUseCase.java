@@ -5,6 +5,8 @@ import com.cashly.cashly_api.catalog.price_types.domain.entity.PriceType;
 import com.cashly.cashly_api.catalog.price_types.application.ports.out.PriceTypeUsageGateway;
 import com.cashly.cashly_api.catalog.price_types.domain.repository.PriceTypeRepository;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 import java.util.List;
 import java.util.Set;
@@ -42,5 +44,11 @@ public class ListPriceTypesUseCase {
                 priceTypePage.totalPages(), priceTypePage.size(),
                 priceTypePage.number(), priceTypePage.first(),
                 priceTypePage.last(), priceTypePage.empty());
+    }
+
+    public PageResponse<PriceTypeResponse> execute(String search, Boolean active, int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, active, page, size, orderBy, orderDir);
+        var all = execute(search, active, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), PriceTypeResponse::deletable, page, size);
     }
 }

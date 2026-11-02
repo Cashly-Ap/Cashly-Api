@@ -9,6 +9,8 @@ import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 @Service
 public class ListPaymentMethodsUseCase {
@@ -36,5 +38,11 @@ public class ListPaymentMethodsUseCase {
         return new PageResponse<>(content, pageResult.totalElements(),
                 pageResult.totalPages(), pageResult.size(), pageResult.number(),
                 pageResult.first(), pageResult.last(), pageResult.empty());
+    }
+
+    public PageResponse<PaymentMethodResponse> execute(String search, Boolean active, int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, active, page, size, orderBy, orderDir);
+        var all = execute(search, active, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), pm -> !pm.hasAssociatedRecords(), page, size);
     }
 }

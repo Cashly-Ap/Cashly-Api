@@ -33,8 +33,22 @@ public class ManageDepartmentsUseCase {
     public record Option(UUID id, String name) {
     }
 
+    public enum ListAction {
+        DELETE
+    }
+
     public List<Department> list() {
+        return list(null);
+    }
+
+    public List<Department> list(ListAction action) {
         access.require(BusinessModule.DEPARTMENTS, PermissionAction.READ);
+        if (action == ListAction.DELETE) {
+            access.require(BusinessModule.DEPARTMENTS, PermissionAction.DELETE);
+            return repository.departments().stream()
+                    .filter(department -> !repository.departmentReferenced(department.id()))
+                    .toList();
+        }
         return repository.departments();
     }
 

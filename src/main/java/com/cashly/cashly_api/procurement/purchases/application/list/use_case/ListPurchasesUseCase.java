@@ -34,7 +34,7 @@ public class ListPurchasesUseCase {
             return execute(fromDate, toDate, supplierId, status, productId,
                     categoryId, orderBy, orderDir);
         String eligibleStatus = switch (action) {
-            case EDIT, CONFIRM -> "DRAFT";
+            case EDIT, CONFIRM, DELETE -> "DRAFT";
             case CANCEL -> "CONFIRMED";
             default -> throw new IllegalArgumentException(
                     "Unsupported purchase action: " + action);

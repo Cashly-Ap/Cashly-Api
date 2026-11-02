@@ -9,6 +9,8 @@ import com.cashly.cashly_api.catalog.categories.domain.entity.Category;
 import java.util.stream.Collectors;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 import java.util.List;
 
@@ -48,5 +50,11 @@ public class ListCategoriesUseCase {
                 summaryPage.totalPages(), summaryPage.size(),
                 summaryPage.number(), summaryPage.first(), summaryPage.last(),
                 summaryPage.empty());
+    }
+
+    public PageResponse<CategoryListResponse> execute(String search, Boolean active, int page, int size, String orderBy, String orderDir, DocumentAction action) {
+        if (action != DocumentAction.DELETE) return execute(search, active, page, size, orderBy, orderDir);
+        var all = execute(search, active, 0, Integer.MAX_VALUE, orderBy, orderDir);
+        return PageResponses.filterAndPage(all.content(), CategoryListResponse::deletable, page, size);
     }
 }

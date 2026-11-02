@@ -66,9 +66,15 @@ public class V26InvoiceSourceLinksSeed implements SeedStep {
     private void link(java.util.UUID invoiceId, java.util.UUID orderId,
             java.util.UUID quoteId) {
         var invoice = entityManager.find(InvoiceEntity.class, invoiceId);
+        var quote = entityManager.find(QuoteJpaEntity.class, quoteId);
         if (!invoice.getOrderIds().contains(orderId))
             invoice.getOrderIds().add(orderId);
         if (!invoice.getQuoteIds().contains(quoteId))
             invoice.getQuoteIds().add(quoteId);
+        if (quote != null && QuoteStatus.DRAFT.name().equals(quote.getStatus())) {
+            quote.setStatus(QuoteStatus.CONVERTED_TO_INVOICE.name());
+            quote.setInvoiceId(invoiceId);
+            quote.setInvoiceNumber(invoice.getInvoiceNumber());
+        }
     }
 }
