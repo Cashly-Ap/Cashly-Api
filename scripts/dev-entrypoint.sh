@@ -32,19 +32,5 @@ sleep 12
 echo "===== Hot reload active — edit any .java file ====="
 echo ""
 
-# Start file watcher in background
-(
-    inotifywait -m -r -q \
-        -e modify -e create -e delete -e move \
-        --exclude '/\.' \
-        --format '%w%f' \
-        src/main/java/ | while read -r CHANGED_FILE; do
-        echo "[$(date '+%H:%M:%S')] Changed: $CHANGED_FILE → recompiling..."
-        mvn compile -DskipTests -q $COMPILER_FLAGS 2>&1
-        echo "[$(date '+%H:%M:%S')] Recompile done."
-    done
-) &
-WATCHER_PID=$!
-
 # Wait for Spring Boot to exit (container stops when it does)
 wait $SPRING_PID
