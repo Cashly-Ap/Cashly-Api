@@ -1,33 +1,35 @@
 # Cashly API
 
-Cashly API is the private backend for the Cashly business management platform. It exposes the business rules and HTTP contracts used by the back-office application. The repository centralizes transactional data, enforces domain invariants, manages persistence, and provides authenticated integrations for sales, inventory, billing, payments, purchasing, and reporting.
+Cashly API is the backend for the Cashly business management platform. It exposes the HTTP contracts used by the back-office application and owns transactional data, domain rules, persistence, authentication and reporting.
 
-## Scope and modules
+## Business modules
 
-| Area | Responsibility |
-| --- | --- |
-| Authentication and users | JWT authentication, refresh tokens, roles, permissions, and user administration. |
-| Customers and merchants | Customer records, contacts, merchants, and related commercial information. |
-| Catalog | Categories, products, price types, and differential pricing. |
-| Inventory | Warehouses, stock, transfers, and inventory availability. |
-| Sales | Quotes, orders, invoices, dispatchers, returns, credit notes, and debit notes. |
-| Payments and cash | Payment methods, payment registration, receivables, payables, collections, and cash-register sessions. |
-| Purchasing | Suppliers and purchase workflows. |
-| Reporting and dashboard | Operational indicators and report data for the applications. |
-| Notifications and audit | User notifications and traceability of relevant operations. |
+| Area | Source root | Responsibility |
+| --- | --- | --- |
+| Platform auth | `platform/auth` | Authentication, JWT, MFA, users, roles, departments and authorization |
+| Platform company | `platform/company` | Installation company settings, logos and PDF branding |
+| Platform notifications | `platform/notifications` | User notifications and WebSocket delivery |
+| Partners | `partners/customers`, `partners/suppliers` | Customers, balances, credit, warehouse access and suppliers |
+| Catalog | `catalog/products`, `catalog/categories`, `catalog/price_types` | Products, categories, price types and product reporting |
+| Inventory | `inventory/warehouses` | Warehouses, stock, reservations, movements and inventory reporting |
+| Sales | `sales/quotes`, `sales/orders` | Quotes and sales orders |
+| Procurement | `procurement/purchases` | Purchases and purchase reporting |
+| Finance billing | `finance/billing` | Invoices, returns, credit notes and debit notes |
+| Finance treasury | `finance/treasury` | Cash register, payments, receivables and payment methods |
+| Analytics | `analytics/dashboard` | Dashboard indicators |
 
-The complete module index is available in [docs/modules/README.md](docs/modules/README.md).
+The module index is in [docs/modules/README.md](docs/modules/README.md).
 
 ## Architecture
 
-The code follows Clean/Hexagonal Architecture with domain-driven boundaries:
+The backend follows Hexagonal Architecture with DDD boundaries:
 
-- `domain` contains aggregates, value objects, domain services, and repository ports.
-- `application` coordinates use cases, input/output DTOs, validation, and application ports.
-- `infrastructure` contains REST controllers, persistence adapters, security, configuration, storage, and external integrations.
-- `shared` contains cross-cutting types used by more than one bounded context.
+- `domain`: entities, value objects, domain services and repository ports.
+- `application`: use cases, DTOs, mappers, validation and application ports.
+- `infrastructure`: REST controllers, JPA adapters, security, storage and integrations.
+- `shared`: cross-cutting types used by more than one bounded context.
 
-Each business module is organized under `src/main/java/com/cashly/cashly_api/` and should keep framework-specific code outside the domain layer.
+The application is a single Spring Boot deployment and a single MySQL database. Package boundaries do not imply separate services.
 
 ## Runtime stack
 
@@ -35,42 +37,97 @@ Each business module is organized under `src/main/java/com/cashly/cashly_api/` a
 | --- | --- |
 | Language and framework | Java 24, Spring Boot 3.5.5 |
 | Build | Maven Wrapper (`mvnw`) |
-| Database | MySQL 8.0 with Flyway migrations |
+| Database | MySQL 8.0 with Flyway |
 | Security | Spring Security and JWT |
-| File storage | S3-compatible storage through MinIO in local environments |
-| Testing | JUnit 5, Spring tests, and Testcontainers |
+| File storage | S3-compatible storage through MinIO locally |
+| Testing | JUnit 5, Spring tests and Testcontainers |
 | Runtime | Docker Compose |
 
 ## Local runtime
 
-Prerequisites: Docker with Compose and Git. The default Compose service runs the development profile with MySQL and MinIO:
+Prerequisites: Docker with Compose and Git.
 
 ```bash
 docker compose up --build
 ```
 
-The API is available at `http://localhost:8080`. Verify the service with:
+The API is available at `http://localhost:8080`:
 
 ```bash
 curl http://localhost:8080/actuator/health
 ```
 
-Production-image and test profiles are defined in `docker-compose.yaml`:
+Other profiles:
 
 ```bash
 docker compose --profile prod up --build
 docker compose --profile test up --build
 ```
 
-Environment variables, database initialization, storage, and seed procedures are documented in [docs/SETUP.md](docs/SETUP.md) and [docs/STORAGE.md](docs/STORAGE.md).
+Configuration, storage and seeding are documented in [docs/SETUP.md](docs/SETUP.md) and [docs/STORAGE.md](docs/STORAGE.md).
 
 ## Database and migrations
 
-MySQL schema is created by the 29 Flyway migrations under `src/main/resources/db/migration`; each migration creates final tables and indexes for a fresh database. Development seed data is implemented as 29 ordered Java steps under `src/main/java/com/cashly/cashly_api/infrastructure/seed/steps` and is orchestrated by `DatabaseSeedRunner`. Set `CASHLY_SEED_ENABLED=true` to run the idempotent seed steps automatically after startup; when the variable is absent, seeding defaults to `false`. This migration set is for fresh, non-production databases and is not compatible with databases that retain the previous Flyway history.
+- Migrations live in `src/main/resources/db/migration`. The current baseline ends at **V37**.
+- Migrations create the final schema for a fresh database.
+- Seed data is implemented as 29 ordered Java steps in `infrastructure/seed/steps`, orchestrated by `DatabaseSeedRunner`.
+- Set `CASHLY_SEED_ENABLED=true` to run the seed after startup. The default is `false`.
+
+To recreate a disposable database from scratch:
+
+```bash
+docker compose stop app
+docker exec cashly-api-mysql mysql -uroot -pverysecret \
+  -e "DROP DATABASE mydatabase; CREATE DATABASE mydatabase CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+docker compose start app
+```
+
+## Permissions
+
+Authorization uses a single permission code per operation:
+
+```text
+MODULE_ACTION
+```
+
+Examples:
+
+```text
+CATALOG_PRODUCTS_DELETE
+FINANCE_TREASURY_RECEIVABLES_PAY_DIRECT
+COMPANY_EDIT
+```
+
+- `PermissionRegistry` declares **131** supported codes.
+- `PermissionCatalog` exposes them grouped by area, submodule and module.
+- `GET /api/auth/access` returns the current user's `permissions: string[]`.
+- Roles store permission codes in `auth_role_permissions(role_id, module, action)`.
+- The JWT contains identity claims only; grants are resolved from the database on every request.
+- Per-user module grants and the `modulePermissions` API field are retired.
+
+See [docs/modules/ACCESS_CONTROL.md](docs/modules/ACCESS_CONTROL.md) for the full contract.
 
 ## Verification
 
-Use the repository Docker workflow and the commands described in [docs/TESTING.md](docs/TESTING.md). The main technical references are:
+Backend tests run inside the API container:
+
+```bash
+docker compose exec app ./mvnw test
+```
+
+Specific tests:
+
+```bash
+docker compose exec app ./mvnw -Dtest=PermissionRegistryTest test
+```
+
+The isolated Docker verification script used by CI is:
+
+```bash
+bash scripts/run-structure-verification.sh final
+```
+
+Main technical references:
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Setup and configuration](docs/SETUP.md)
@@ -79,6 +136,4 @@ Use the repository Docker workflow and the commands described in [docs/TESTING.m
 - [Workflows](docs/WORKFLOWS.md)
 - [Testing](docs/TESTING.md)
 
-Authenticator MFA is available from **Perfil → Seguridad**. Set the dedicated
-`MFA_ENCRYPTION_KEY` before enrolling users; see [Authenticator MFA setup](docs/SETUP.md#authenticator-mfa)
-for key generation, recovery codes, verification limits, and test instructions.
+Authenticator MFA is available from **Perfil → Seguridad**. Set `MFA_ENCRYPTION_KEY` before enrolling users; see [Authenticator MFA setup](docs/SETUP.md#authenticator-mfa).

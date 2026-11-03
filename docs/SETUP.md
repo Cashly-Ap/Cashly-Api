@@ -1,259 +1,148 @@
-# ⚙️ Setup & Configuration
+# ⚙️ Setup and configuration
 
 ## Prerequisites
 
-- Java 24+
-- Maven 3.8+
-- Docker & Docker Compose
+- Docker with Compose
 - Git
 
-## Installation
+Java 24 and Maven are only needed if you run the build outside Docker.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/GabrielEVP/lexand-api.git
-   cd lexand-api
-   ```
-
-2. **Choose your environment and start:**
-
-   **🚀 Production (Default):**
-   ```bash
-   docker compose up --build
-   ```
-
-   **🔧 Development (Hot-reload + Debug):**
-   ```bash
-   DOCKERFILE=Dockerfile.dev SPRING_PROFILES_ACTIVE=dev docker compose up --build
-   ```
-
-   **🧪 Testing:**
-   ```bash
-   docker compose --profile test up --build
-   ```
-
-3. **Verify the application**
-   ```bash
-   curl http://localhost:8080/actuator/health
-   # Response: {"status":"UP"}
-   ```
-
-> 💡 **Pro Tip**: For development, set environment variables in `.env` file:
-> ```bash
-> echo "DOCKERFILE=Dockerfile.dev" > .env
-> echo "SPRING_PROFILES_ACTIVE=dev" >> .env
-> docker compose up --build
-> ```
-
-## 🐳 Docker Environments
-
-The project provides **three optimized Docker environments** for different use cases:
-
-### 📋 Available Environments
-
-| Environment | Dockerfile | Profile | Description | Use Case |
-|-------------|------------|---------|-------------|----------|
-| **🚀 Production** | `Dockerfile` | `prod` | Optimized production build | **Deployment, Production** |
-| **🔧 Development** | `Dockerfile.dev` | `dev` | Hot-reload + Debug support | **Local development** |
-| **🧪 Testing** | `Dockerfile.test` | `test` | Isolated test environment | **Automated testing** |
-
-### 🚀 Production Environment (Default)
-
-**Best for**: Production deployment, staging, performance testing
+## Clone
 
 ```bash
-# Start production environment (DEFAULT)
+git clone git@gitlab.com:personal-proyect-gabriel/cashly/cashly-api.git
+cd cashly-api
+```
+
+## Start the API
+
+The default Compose service runs the development image with hot reload, MySQL and MinIO:
+
+```bash
 docker compose up --build
+```
 
-# Run in background
-docker compose up -d --build
+Verify it:
 
-# Check health
+```bash
 curl http://localhost:8080/actuator/health
 ```
 
-**✨ Features:**
-- ✅ Multi-stage optimized build
-- ✅ Minimal runtime image (Alpine)
-- ✅ Non-root user security
-- ✅ Production JVM optimizations
-- ✅ Health checks enabled
-- ✅ No development tools
-
-### 🔧 Development Environment
-
-**Best for**: Local development, debugging, hot-reload
+Other profiles:
 
 ```bash
-# Start development environment
-DOCKERFILE=Dockerfile.dev SPRING_PROFILES_ACTIVE=dev docker compose up --build
+# Optimized production image
+docker compose --profile prod up --build
 
-# Or create .env file with:
-echo "DOCKERFILE=Dockerfile.dev" > .env
-echo "SPRING_PROFILES_ACTIVE=dev" >> .env
-docker compose up --build
-```
-
-**✨ Features:**
-- ✅ **Hot Reload** - Changes reflect automatically
-- ✅ **Remote Debug** - Port 5005 for IDE debugging
-- ✅ **LiveReload** - Port 35729 for frontend
-- ✅ **Development Tools** - vim, git, wget included
-- ✅ **Source Mounting** - Live code synchronization
-- ✅ **Dev Profile** - Development database settings
-
-**🔌 Debug Setup (IntelliJ/VS Code):**
-```
-Host: localhost
-Port: 5005
-Transport: Socket
-Debugger mode: Attach
-```
-
-### 🧪 Testing Environment
-
-**Best for**: Running tests, CI/CD pipelines, test automation
-
-```bash
-# Run complete test suite
+# Isolated test database and test runner
 docker compose --profile test up --build
-
-# Run tests in background and check results
-docker compose --profile test up -d --build
-docker compose logs app-test
 ```
 
-**✨ Features:**
-- ✅ **Isolated Test DB** - Separate test database (port 3307)
-- ✅ **Test Profile** - Test-specific configurations
-- ✅ **Maven Test Runner** - Executes complete test suite
-- ✅ **CI/CD Ready** - Perfect for automated pipelines
-- ✅ **No Side Effects** - Doesn't affect dev/prod data
+## Services
 
-## 🛠️ Container Management
+| Service | Container | Purpose |
+| --- | --- | --- |
+| `app` | `cashly-api-app` | API with the `dev` profile and hot reload |
+| `app-prod` | `cashly-api-app-prod` | Production image, enabled with `--profile prod` |
+| `mysql` | `cashly-api-mysql` | MySQL 8.0 on port 3306 |
+| `mysql-test` | `cashly-api-mysql-test` | Isolated test MySQL on port 3307 |
+| `minio` | `cashly-api-minio` | S3-compatible local storage |
+| `minio-init` | — | Creates the local bucket and exits |
 
-### Basic Operations
+## Configuration
+
+Values are read from `.env` by Docker Compose. The main variables are:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `DB_NAME` | `mydatabase` | MySQL database |
+| `DB_USER` | `myuser` | MySQL application user |
+| `DB_PASSWORD` | `secret` | MySQL application password |
+| `DB_ROOT_PASSWORD` | `verysecret` | MySQL root password |
+| `DB_PORT` | `3306` | MySQL host port |
+| `SERVER_PORT` | `8080` | API host port |
+| `JWT_SECRET` | development default | JWT signing key |
+| `JWT_ACCESS_TOKEN_EXPIRATION` | `900000` | Access token lifetime in ms |
+| `JWT_REFRESH_TOKEN_EXPIRATION` | `604800000` | Refresh token lifetime in ms |
+| `MFA_ENCRYPTION_KEY` | empty | AES key for authenticator secrets |
+| `CASHLY_SEED_ENABLED` | `false` | Runs the Java seed on startup |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:4200` | Allowed frontend origin |
+| `STORAGE_S3_ENDPOINT` | `http://minio:9000` | Local S3 endpoint |
+| `STORAGE_S3_ACCESS_KEY` | `minioadmin` | Local S3 access key |
+| `STORAGE_S3_SECRET_KEY` | `minioadmin` | Local S3 secret key |
+| `STORAGE_S3_BUCKET` | `cashly-files` | Local S3 bucket |
+
+The application profiles are in `src/main/resources/application-dev.properties` and `application-production.properties`.
+
+## Database
+
+The schema is created by the Flyway migrations under `src/main/resources/db/migration`. The current baseline ends at **V37**.
+
+Migrations run automatically at API startup. Do not edit an applied migration; add a forward migration for later changes.
+
+### Reset a disposable database
+
+This drops the local database and lets Flyway rebuild it:
 
 ```bash
-# Stop all containers
-docker compose down
+docker compose stop app
+docker exec cashly-api-mysql mysql -uroot -pverysecret \
+  -e "DROP DATABASE mydatabase; CREATE DATABASE mydatabase CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+docker compose start app
+```
 
-# Stop and remove volumes (⚠️ deletes data)
-docker compose down -v
+If your `.env` changes the root password or database name, replace the values in the command.
 
-# View running containers
+### Seed data
+
+Seeding is implemented as 29 ordered Java steps in `infrastructure/seed/steps` and orchestrated by `DatabaseSeedRunner`.
+
+Enable it in `.env`:
+
+```dotenv
+CASHLY_SEED_ENABLED=true
+```
+
+The seed is idempotent and runs after startup. Leave it disabled for production-like data.
+
+### Connect to MySQL
+
+```bash
+docker compose exec mysql mysql -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME"
+```
+
+Backup and restore:
+
+```bash
+docker compose exec mysql mysqldump -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" > backup.sql
+docker compose exec -T mysql mysql -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < backup.sql
+```
+
+## Permissions
+
+The API uses 131 permission codes in the form `MODULE_ACTION`. The catalog is exposed at:
+
+```http
+GET /api/permissions/catalog
+```
+
+Current access for the signed-in user is exposed at:
+
+```http
+GET /api/auth/access
+```
+
+and returns `permissions: string[]`. See [ACCESS_CONTROL.md](modules/ACCESS_CONTROL.md).
+
+## Container operations
+
+```bash
 docker compose ps
-
-# Check logs
-docker compose logs app
-docker compose logs -f app  # Follow logs
-
-# Execute commands in running container
+docker compose logs -f app
 docker compose exec app bash
-
-# Rebuild specific service
-docker compose up --build app
-```
-
-### Troubleshooting
-
-```bash
-# Check container health
-docker compose ps
-curl http://localhost:8080/actuator/health
-
-# View application logs
-docker compose logs app
-
-# Check database connectivity
-docker compose exec db mysql -u lexand_user -p lexand_db
-
-# Remove everything and start fresh
-docker compose down -v
-docker system prune -f
-docker compose up --build
-```
-
-## 🔧 Configuration
-
-### Database Configuration
-```properties
-# Database
-spring.datasource.url=jdbc:mysql://localhost:3306/lexand_db
-spring.datasource.username=${DB_USER:lexand_user}
-spring.datasource.password=${DB_PASSWORD:lexand_pass}
-
-# JPA
-spring.jpa.hibernate.ddl-auto=validate
-spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.format_sql=true
-
-# Flyway
-spring.flyway.enabled=true
-spring.flyway.locations=classpath:db/migration
-```
-
-### Security Configuration
-```properties
-# OAuth2
-spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID}
-spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET}
-
-# JWT
-jwt.secret=${JWT_SECRET:your-secret-key}
-jwt.expiration=${JWT_EXPIRATION:86400}
-```
-
-### Environment Variables
-```bash
-# Required for production
-export DB_USER=your_db_user
-export DB_PASSWORD=your_db_password
-export JWT_SECRET=your_jwt_secret
-export GOOGLE_CLIENT_ID=your_google_client_id
-export GOOGLE_CLIENT_SECRET=your_google_client_secret
-```
-
-## 🔄 Database Migrations
-
-### Flyway Migrations
-
-Migrations are located in `src/main/resources/db/migration/` and follow the naming convention:
-```
-V{version}__{description}.sql
-```
-
-### Running Migrations
-
-```bash
-# Migrations run automatically on application startup
-docker compose up --build
-
-# Or run manually with Maven
-./mvnw flyway:migrate
-
-# Check migration status
-./mvnw flyway:info
-
-# Repair migrations (if needed)
-./mvnw flyway:repair
-```
-
-### Current Development Baseline
-
-The current Flyway set is a fresh-database baseline for the non-production Cashly environment. It creates the final schema through V24 and intentionally does not upgrade databases with the previous Flyway history. Recreate only the local development database before using this baseline. Once a migration set is deployed to a shared or production database, keep its applied files immutable and add a forward migration for later schema changes.
-
-### Database Access
-
-```bash
-# Connect to database
-docker compose exec db mysql -u lexand_user -p lexand_db
-
-# Backup database
-docker compose exec db mysqldump -u lexand_user -p lexand_db > backup.sql
-
-# Restore database
-docker compose exec -T db mysql -u lexand_user -p lexand_db < backup.sql
+docker compose exec app ./mvnw test
+docker compose down
+docker compose down -v   # removes volumes and database data
 ```
 
 ---

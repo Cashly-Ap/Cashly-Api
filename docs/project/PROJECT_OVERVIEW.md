@@ -26,8 +26,9 @@ The system is built from scratch, drawing inspiration from key modules of the **
 
 **Features:**
 - User creation and administration
-- Role assignment: Super Admin, Administration, Operators, Customers
-- Module-level access control
+- Reusable roles and departments
+- Fine-grained `MODULE_ACTION` permission codes with a protected system administrator
+- MFA, JWT sessions and current-access refresh
 - Secure login panel
 
 **Impact:** Ensures operational security and hierarchical control across the system.

@@ -1,4 +1,4 @@
-# 🧪 Testing Guide - Lexand API
+# 🧪 Testing Guide - Cashly API
 
 ## 📋 Executive Summary
 
@@ -7,7 +7,7 @@
 **Quick command**:
 ```bash
 ./run-tests.sh                        # All tests
-./run-tests.sh DifferentialTest       # Specific tests
+./run-tests.sh ProductControllerTest       # Specific tests
 ```
 
 ---
@@ -28,7 +28,7 @@
 
 ```
 ┌─────────────────────────────────────────┐
-│  ./run-tests.sh DifferentialTest        │
+│  ./run-tests.sh ProductControllerTest        │
 └──────────────────┬────────────────────┘
                    │
                    ▼
@@ -71,8 +71,8 @@
 ./run-tests.sh
 
 # Specific tests
-./run-tests.sh DifferentialControllerIntegrationTest
-./run-tests.sh "Differential*"
+./run-tests.sh PermissionRegistryTest
+./run-tests.sh "Permission*"
 ./run-tests.sh "**/*ControllerIntegrationTest"
 
 # With extra Maven arguments
@@ -89,19 +89,19 @@
 
 ```bash
 # Start only MySQL test
-docker-compose --profile test up -d mysql-test
+docker compose --profile test up -d mysql-test
 
 # Wait until ready
-until docker-compose --profile test exec -T mysql-test mysqladmin ping -h localhost -u root -ptestroot --silent; do
+until docker compose --profile test exec -T mysql-test mysqladmin ping -h localhost -u root -ptestroot --silent; do
     echo "Waiting for MySQL..."
     sleep 2
 done
 
 # Run tests
-docker-compose --profile test run --rm app-test ./mvnw test
+docker compose --profile test run --rm app-test ./mvnw test
 
 # Cleanup
-docker-compose --profile test down -v
+docker compose --profile test down -v
 ```
 
 ---
@@ -115,23 +115,22 @@ docker-compose --profile test down -v
 
 **Example**:
 ```java
-@DisplayName("DifferentialPercentage Unit Tests")
-class DifferentialPercentageUnitTest {
-    
+@DisplayName("PermissionRegistry Unit Tests")
+class PermissionRegistryTest {
+
     @Test
-    @DisplayName("should_CreatePercentage_When_ValidValueProvided")
-    void should_CreatePercentage_When_ValidValueProvided() {
-        DifferentialPercentage percentage = new DifferentialPercentage(10.5);
-        
-        assertThat(percentage.value()).isEqualTo(10.5);
+    @DisplayName("should_Expose131Codes_When_RegistryIsBuilt")
+    void should_Expose131Codes_When_RegistryIsBuilt() {
+        assertThat(PermissionRegistry.codes()).hasSize(131);
     }
-    
+
     @Test
-    @DisplayName("should_ThrowException_When_NegativeValue")
-    void should_ThrowException_When_NegativeValue() {
-        assertThatThrownBy(() -> new DifferentialPercentage(-5.0))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("cannot be negative");
+    @DisplayName("should_RejectUnsupportedCode_When_ValidatingRole")
+    void should_RejectUnsupportedCode_When_ValidatingRole() {
+        assertThatThrownBy(() -> PermissionRegistry.validate(
+                Map.of(PermissionModule.DASHBOARD,
+                        Set.of(PermissionAction.CREATE))))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
 ```
@@ -153,47 +152,40 @@ class DifferentialPercentageUnitTest {
 ```java
 @SpringBootTest
 @ActiveProfiles("test")
-@DisplayName("Differential Controller Integration Tests")
-class DifferentialControllerIntegrationTest {
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("Product Controller Integration Tests")
+class ProductControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    
+
     @BeforeEach
     void setUp() {
         cleanDatabase();
         registerUserAndGetToken();
     }
-    
-    private void cleanDatabase() {
-        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
-        jdbcTemplate.execute("TRUNCATE TABLE differentials");
-        jdbcTemplate.execute("TRUNCATE TABLE users");
-        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
-    }
-    
+
     @Test
-    @DisplayName("should_CreateDifferential_When_ValidRequest")
-    void should_CreateDifferential_When_ValidRequest() throws Exception {
+    @DisplayName("should_CreateProduct_When_ValidRequest")
+    void should_CreateProduct_When_ValidRequest() throws Exception {
         String requestJson = """
             {
-                "name": "VIP Discount",
-                "percentage": 15.0,
-                "active": true
+                "name": "Test Product",
+                "categoryId": "%s",
+                "costPrice": 100.00,
+                "salePrice": 150.00
             }
-            """;
-        
-        mockMvc.perform(post("/api/differentials")
+            """.formatted(categoryId);
+
+        mockMvc.perform(post("/api/products")
                 .header("Authorization", "Bearer " + jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.name").value("VIP Discount"))
-            .andExpect(jsonPath("$.percentage").value(15.0))
-            .andExpect(jsonPath("$.active").value(true));
+            .andExpect(status().isCreated());
     }
 }
 ```
@@ -230,7 +222,6 @@ private void cleanDatabase() {
     jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
     jdbcTemplate.execute("TRUNCATE TABLE refresh_tokens");
     jdbcTemplate.execute("TRUNCATE TABLE users");
-    jdbcTemplate.execute("TRUNCATE TABLE differentials");
     jdbcTemplate.execute("TRUNCATE TABLE warehouse_stock");
     jdbcTemplate.execute("TRUNCATE TABLE warehouses");
     jdbcTemplate.execute("TRUNCATE TABLE customer_addresses");
@@ -307,7 +298,7 @@ class MyControllerIntegrationTest {
     
     @Test
     void should_AccessProtectedEndpoint_When_Authenticated() throws Exception {
-        mockMvc.perform(get("/api/differentials")
+        mockMvc.perform(get("/api/products")
                 .header("Authorization", "Bearer " + jwtToken))
             .andExpect(status().isOk());
     }
@@ -346,7 +337,7 @@ class MyControllerIntegrationTest {
 **Usage**:
 ```bash
 ./run-tests.sh                           # All tests
-./run-tests.sh DifferentialTest          # Specific test
+./run-tests.sh ProductControllerTest          # Specific test
 ./run-tests.sh "**/*IntegrationTest"     # Pattern matching
 ```
 
@@ -390,7 +381,7 @@ class MyControllerIntegrationTest {
 **Solution**: Script already handles this with healthcheck. If running manually:
 ```bash
 # Wait for MySQL
-until docker-compose --profile test exec -T mysql-test mysqladmin ping -h localhost -u root -ptestroot --silent; do
+until docker compose --profile test exec -T mysql-test mysqladmin ping -h localhost -u root -ptestroot --silent; do
     echo "Waiting for MySQL..."
     sleep 2
 done
@@ -408,7 +399,8 @@ done
 ./clean-test-db.sh
 
 # Or manually
-docker-compose --profile test exec app-test ./mvnw flyway:clean flyway:migrate
+docker compose --profile test down -v
+./run-tests.sh
 ```
 
 ---
@@ -449,12 +441,12 @@ class MyRepositoryTest {
 ### Problem: Tests are very slow
 
 **Check**:
-1. Is `mysql-test` using tmpfs? (Check docker-compose.yaml)
+1. Is `mysql-test` using tmpfs? (Check docker compose.yaml)
 2. Are you running in Docker Desktop with enough RAM allocated?
 
 **Optimize**:
 ```yaml
-# docker-compose.yaml
+# docker compose.yaml
 mysql-test:
   tmpfs:
     - /var/lib/mysql  # ← Database in RAM (much faster)
@@ -548,11 +540,11 @@ void should_ReturnProduct_When_ValidIdProvided() {
 **Format**: `should_[ExpectedResult]_When_[Condition]`
 
 **Examples**:
-- ✅ `should_CreateDifferential_When_ValidDataProvided`
-- ✅ `should_ThrowException_When_NegativePercentage`
-- ✅ `should_ReturnEmptyList_When_NoDifferentialsExist`
+- ✅ `should_CreateProduct_When_ValidDataProvided`
+- ✅ `should_RejectUnsupportedCode_When_ValidatingRole`
+- ✅ `should_ReturnEmptyList_When_NoProductsExist`
 - ❌ `testCreate` (too vague)
-- ❌ `test_differential_creation` (not descriptive)
+- ❌ `test_product_creation` (not descriptive)
 
 ---
 
@@ -597,7 +589,7 @@ This ensures `application-test.properties` is loaded.
 // ✅ GOOD - Controller tests (no @Transactional)
 @SpringBootTest
 @AutoConfigureMockMvc
-class DifferentialControllerIntegrationTest {
+class PermissionRegistryTest {
     // Tests real transaction behavior
 }
 
@@ -633,17 +625,19 @@ Customer customer = new Customer("John", "Doe");  // Too generic
 ```java
 // ✅ GOOD - Single assertion focus
 @Test
-void should_ValidatePercentage_When_NegativeValue() {
-    assertThatThrownBy(() -> new DifferentialPercentage(-5.0))
+void should_RejectUnsupportedCode_When_ValidatingRole() {
+    assertThatThrownBy(() -> PermissionRegistry.validate(
+            Map.of(PermissionModule.DASHBOARD,
+                    Set.of(PermissionAction.CREATE))))
         .isInstanceOf(IllegalArgumentException.class);
 }
 
 // ❌ BAD - Multiple unrelated assertions
 @Test
-void testDifferential() {
-    // Creates differential
-    // Updates differential
-    // Deletes differential
+void testProductLifecycle() {
+    // Creates product
+    // Updates product
+    // Deletes product
     // All in one test (too much!)
 }
 ```
@@ -676,7 +670,7 @@ void testDifferential() {
 ./run-tests.sh
 
 # Run specific module
-./run-tests.sh DifferentialControllerIntegrationTest
+./run-tests.sh PermissionRegistryTest
 
 # Reset database manually
 ./clean-test-db.sh

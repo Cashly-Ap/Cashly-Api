@@ -2,7 +2,7 @@
 
 ## 📖 Interactive API Documentation
 
-The Lexand API provides comprehensive interactive documentation through **OpenAPI 3.0** specification with **Swagger UI**.
+The Cashly API provides comprehensive interactive documentation through **OpenAPI 3.0** specification with **Swagger UI**.
 
 ### 🌐 Access Documentation
 
@@ -29,36 +29,11 @@ The Lexand API provides comprehensive interactive documentation through **OpenAP
 - Test any endpoint directly from the interface
 - View request/response examples and schemas
 
-### 2. Postman Collection
-For comprehensive testing workflows, use our complete Postman collection:
-
-📦 **[→ Postman Setup Guide](../postman/POSTMAN.md)**
-
-#### Quick Import
-1. Download collection files:
-   - `Lexand-API.postman_collection.json`
-   - `Lexand-Local.postman_environment.json`
-
-2. Import into Postman:
-   - Open Postman → **Import** → Select both files
-
-3. Select "Lexand Local" environment and start testing!
-
-#### Features
-- ✅ **Automated Authentication** - Tokens saved automatically
-- ✅ **Environment Variables** - Auto-saved IDs and tokens
-- ✅ **Complete Workflows** - From registration to analytics
-- ✅ **Pre/Post Scripts** - Automatic data management
-
-## � Getting Started
+## 🚀 Getting Started
 
 ### 1. Start the Application
 ```bash
-# Development mode
 docker compose up --build
-
-# Or with development profile
-DOCKERFILE=Dockerfile.dev SPRING_PROFILES_ACTIVE=dev docker compose up --build
 ```
 
 ### 2. Access Documentation
@@ -73,7 +48,7 @@ curl http://localhost:8080/actuator/health
 
 ## 📋 API Overview
 
-The Lexand API provides comprehensive enterprise invoicing and inventory management capabilities through RESTful endpoints.
+The Cashly API provides comprehensive enterprise invoicing and inventory management capabilities through RESTful endpoints.
 
 ### Implemented Modules ✅
 
