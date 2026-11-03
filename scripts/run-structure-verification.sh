@@ -17,9 +17,9 @@ if [[ ! "$verification_project" =~ ^cashly-screaming-[a-z0-9-]+$ ]]; then
   exit 2
 fi
 verification_output="${SCREAMING_OUTPUT_DIR:-$backend_root/target/structure-verification/$verification_project}"
-coverage_baseline="${SCREAMING_COVERAGE_BASELINE:-$backend_root/openspec/changes/remove-warehouse-reassignment/evidence/coverage-baseline.json}"
-coverage_ownership="${SCREAMING_COVERAGE_OWNERSHIP:-$backend_root/openspec/changes/module-owned-reporting/relocation-manifest.json}"
-coverage_splits="${SCREAMING_COVERAGE_SPLITS:-$backend_root/openspec/changes/module-owned-reporting/split-manifest.json}"
+coverage_baseline="${SCREAMING_COVERAGE_BASELINE:-$backend_root/openspec/changes/archive/2026-11-01-remove-warehouse-reassignment/evidence/coverage-baseline.json}"
+coverage_ownership="${SCREAMING_COVERAGE_OWNERSHIP:-$backend_root/openspec/changes/archive/2026-11-01-module-owned-reporting/relocation-manifest.json}"
+coverage_splits="${SCREAMING_COVERAGE_SPLITS:-$backend_root/openspec/changes/archive/2026-11-01-module-owned-reporting/split-manifest.json}"
 if [[ -e "$verification_output" ]]; then
   echo "Evidence directory already exists; use a fresh project/output: $verification_output" >&2
   exit 2
