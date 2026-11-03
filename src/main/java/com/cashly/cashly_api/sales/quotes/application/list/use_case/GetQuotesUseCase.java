@@ -41,7 +41,8 @@ public class GetQuotesUseCase {
             return execute(dateFrom, dateTo, customerId, status, productId,
                     categoryId, orderBy, orderDir);
         String eligibleStatus = switch (action) {
-            case EDIT, CONVERT_TO_ORDER, CONVERT_TO_INVOICE, DELETE -> "DRAFT";
+            case EDIT, CANCEL, CONVERT_TO_ORDER, CONVERT_TO_INVOICE,
+                    DELETE -> "DRAFT";
             default -> throw new IllegalArgumentException(
                     "Unsupported quote action: " + action);
         };

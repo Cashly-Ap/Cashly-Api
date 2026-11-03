@@ -111,6 +111,15 @@ class GetQuotesUseCaseTest {
     }
 
     @Test
+    void shouldQueryOnlyEligibleRecordsForCancel() {
+        getQuotesUseCase.execute(null, null, null, "ALL", null, null,
+                "createdAt", "desc",
+                com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.CANCEL);
+        verify(quoteRepository).findAllWithFilters(null, null, null, "DRAFT",
+                null, null, java.util.Set.of(), "createdAt", "desc");
+    }
+
+    @Test
     void shouldReturnEmptyWhenRequestedStatusCannotPerformAction() {
         var result = getQuotesUseCase.execute(null, null, null, "CANCELLED",
                 null, null, "createdAt", "desc",
