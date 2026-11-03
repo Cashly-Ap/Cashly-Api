@@ -3,6 +3,8 @@ package com.cashly.cashly_api.platform.auth.authorization.infrastructure.web;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 
 @RestController
@@ -13,7 +15,8 @@ public class CurrentAccessController {
         this.access = access;
     }
     @GetMapping
-    public AccessService.CurrentAccess current() {
-        return access.current();
+    public ResponseEntity<AccessService.CurrentAccess> current() {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .body(access.current());
     }
 }

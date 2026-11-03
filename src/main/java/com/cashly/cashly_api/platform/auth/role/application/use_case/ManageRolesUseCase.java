@@ -4,6 +4,7 @@ import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
+import com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionCode;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
@@ -157,6 +158,7 @@ public class ManageRolesUseCase {
                     key -> EnumSet.noneOf(PermissionAction.class))
                     .add(permission.action());
         });
+        PermissionRegistry.requireModuleRoots(result);
         return result;
     }
 

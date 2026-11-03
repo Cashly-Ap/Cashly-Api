@@ -43,6 +43,32 @@ COMPANY_EDIT
 
 The catalog and registry must stay aligned. Boot fails when a registered pair has no catalog entry or a catalog entry is not registered.
 
+### Permission dependency invariant
+
+`VIEW_LIST` is the root permission of every module that supports it. Role writes enforce the following invariant over the flat permission set:
+
+- A module may hold `VIEW_LIST` alone, or `VIEW_LIST` together with any supported child actions.
+- If a module holds any action other than `VIEW_LIST`, it must also hold that module's `VIEW_LIST`.
+- `VIEW_DETAIL` is optional: it neither requires nor removes any other action.
+- Modules without a `VIEW_LIST` action (`DASHBOARD` uses `VIEW`; `COMPANY` uses `VIEW` and `EDIT`) are exempt.
+- Unknown codes and unsupported `module/action` pairs are rejected.
+
+`POST /api/roles` and `PUT /api/roles/{id}` reject invalid payloads with `400 Bad Request` instead of normalizing them:
+
+```json
+{
+  "code": "INVALID_PERMISSION_DEPENDENCY",
+  "message": "SALES_QUOTES_CREATE requiere SALES_QUOTES_VIEW_LIST",
+  "missing": ["SALES_QUOTES_VIEW_LIST"]
+}
+```
+
+An unknown code returns `400 Bad Request` with `code: "INVALID_PERMISSION_CODE"`. Validation runs on the write path only, so roles that already contain orphan children can still be read, authenticated and repaired. Use `scripts/audit-orphan-role-permissions.sql` to list them before deciding whether to grant the root or remove the children.
+
+`GET /api/auth/access` is authoritative and uncached: permissions are read from `auth_role_permissions` on every request, the endpoint responds with `Cache-Control: no-store`, and no JWT claim grants access. A role update is therefore visible on the next call without a token refresh. Detail reads already require the corresponding `*_VIEW_DETAIL` code; the backend does not treat `VIEW_LIST` as implied detail access.
+
+The schema requires every user to reference an active role and department (`users.role_id` and `users.department_id` are `NOT NULL`). An account that cannot resolve an active assignment is rejected during authentication, so the "user without role returns `200` with an empty array" case is not reachable in this installation. Sales order confirmation and cancellation are authorized by `SALES_ORDERS_CONFIRM` and `SALES_ORDERS_CANCEL`; invoice permissions never authorize order actions.
+
 ## API contracts
 
 All endpoints require authentication unless explicitly noted. Management reads require the matching `VIEW_LIST` or `VIEW_DETAIL` code; writes require `CREATE`, `EDIT` or `DELETE`. Options expose only minimal active records and require user administration eligibility; role options additionally enforce the actor's delegation ceiling.

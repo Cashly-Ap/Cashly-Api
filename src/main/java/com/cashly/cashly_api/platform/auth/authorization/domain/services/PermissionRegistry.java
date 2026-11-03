@@ -36,13 +36,16 @@ import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobje
 import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_LIST;
 import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_STOCK;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.InvalidPermissionDependencyException;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 
@@ -116,6 +119,34 @@ public final class PermissionRegistry {
                 .flatMap(entry -> entry.getValue().stream().map(
                         action -> entry.getKey().name() + "_" + action.name()))
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public static void requireModuleRoots(
+            Map<PermissionModule, Set<PermissionAction>> grants) {
+        if (grants == null || grants.isEmpty()) {
+            return;
+        }
+        var missing = new ArrayList<String>();
+        var details = new ArrayList<String>();
+        grants.forEach((module, actions) -> {
+            if (actions == null || actions.isEmpty()
+                    || !modules().getOrDefault(module, Set.of())
+                            .contains(VIEW_LIST)
+                    || actions.contains(VIEW_LIST)) {
+                return;
+            }
+            var root = module.name() + "_" + VIEW_LIST.name();
+            missing.add(root);
+            actions.stream()
+                    .map(action -> module.name() + "_" + action.name())
+                    .sorted().findFirst()
+                    .ifPresent(child -> details
+                            .add(child + " requiere " + root));
+        });
+        if (!missing.isEmpty()) {
+            throw new InvalidPermissionDependencyException(
+                    String.join("; ", details), List.copyOf(missing));
+        }
     }
 
     public static Map<PermissionModule, Set<PermissionAction>> validate(

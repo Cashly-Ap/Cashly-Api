@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.platform.auth.role.application.use_case;
 
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException;
+import com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.InvalidPermissionDependencyException;
+import com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.UnknownPermissionCodeException;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
@@ -124,6 +126,63 @@ class ManageRolesUseCaseTest {
                 .containsExactly(allowed);
         verify(access).require(PermissionModule.ROLES, PermissionAction.EDIT);
         verify(repository, never()).roles();
+    }
+
+    @Test
+    void rejects_a_role_whose_children_lack_the_module_view_list_root() {
+        when(repository.role(any())).thenReturn(Optional.of(role(null)));
+        when(repository.roles()).thenReturn(List.of());
+
+        assertThatThrownBy(() -> useCase.save(null,
+                new ManageRolesUseCase.Request("Sales", null, true, null,
+                        Set.of("SALES_QUOTES_CREATE",
+                                "SALES_QUOTES_EDIT"))))
+                .isInstanceOf(InvalidPermissionDependencyException.class)
+                .hasMessage(
+                        "SALES_QUOTES_CREATE requiere SALES_QUOTES_VIEW_LIST");
+
+        verify(repository, never()).saveRole(any(), anyBoolean());
+    }
+
+    @Test
+    void refuses_to_strip_the_root_from_an_existing_role_that_keeps_children() {
+        var existing = new Role(id, "Finance", null, true, 2, null,
+                Map.of(PermissionModule.SALES_QUOTES,
+                        Set.of(PermissionAction.VIEW_LIST,
+                                PermissionAction.CREATE)));
+        when(repository.role(id)).thenReturn(Optional.of(existing));
+        when(repository.roles()).thenReturn(List.of(existing));
+
+        assertThatThrownBy(() -> useCase.save(id,
+                new ManageRolesUseCase.Request("Finance", null, true, 2L,
+                        Set.of("SALES_QUOTES_CREATE"))))
+                .isInstanceOf(InvalidPermissionDependencyException.class);
+
+        verify(repository, never()).saveRole(any(), anyBoolean());
+    }
+
+    @Test
+    void accepts_view_list_alone_and_view_list_with_children() {
+        when(repository.role(any())).thenReturn(Optional.of(role(null)));
+        when(repository.roles()).thenReturn(List.of());
+
+        useCase.save(null, new ManageRolesUseCase.Request("Read only", null,
+                true, null, Set.of("SALES_QUOTES_VIEW_LIST")));
+        useCase.save(null, new ManageRolesUseCase.Request("Sales", null, true,
+                null, Set.of("SALES_QUOTES_VIEW_LIST",
+                        "SALES_QUOTES_CREATE")));
+
+        verify(repository, times(2)).saveRole(any(), eq(true));
+    }
+
+    @Test
+    void rejects_unknown_permission_codes_before_touching_storage() {
+        assertThatThrownBy(() -> useCase.save(null,
+                new ManageRolesUseCase.Request("Sales", null, true, null,
+                        Set.of("SALES_QUOTES_TELEPORT"))))
+                .isInstanceOf(UnknownPermissionCodeException.class);
+
+        verify(repository, never()).saveRole(any(), anyBoolean());
     }
 
 }

@@ -152,6 +152,8 @@ For detailed API specifications, request/response examples, and business rules, 
 4. **Refresh** access token when expired using refresh token
 5. **Logout** to revoke refresh token
 
+`GET /api/auth/access` returns the caller's role identity and effective `permissions` as a flat `string[]`. It is authoritative and uncached (`Cache-Control: no-store`); the JWT carries identity only. Role writes reject child permissions without the module `VIEW_LIST` root with `400` and `code: INVALID_PERMISSION_DEPENDENCY`. See [ACCESS_CONTROL](./modules/ACCESS_CONTROL.md).
+
 All endpoints are fully documented in the OpenAPI specification with example requests and responses.
 
 ---

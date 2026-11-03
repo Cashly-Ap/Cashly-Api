@@ -234,6 +234,25 @@ public class GlobalExceptionHandler {
                 .body(createErrorResponse(HttpStatus.NOT_FOUND,
                         "Reference not found", ex.getMessage()));
     }
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.InvalidPermissionDependencyException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidPermissionDependency(
+            com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.InvalidPermissionDependencyException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", "INVALID_PERMISSION_DEPENDENCY");
+        body.put("message", ex.getMessage());
+        body.put("missing", ex.missing());
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.UnknownPermissionCodeException.class)
+    public ResponseEntity<Map<String, Object>> handleUnknownPermissionCode(
+            com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.UnknownPermissionCodeException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", "INVALID_PERMISSION_CODE");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.badRequest().body(body);
+    }
+
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDenied(
             org.springframework.security.access.AccessDeniedException ex) {
