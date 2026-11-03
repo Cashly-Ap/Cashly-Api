@@ -227,11 +227,6 @@
                   "descriptionKey": "platform.auth.permissions.catalog_products.create.description"
                 },
                 {
-                  "code": "CATALOG_PRODUCTS_REPORT_PDF",
-                  "labelKey": "platform.auth.permissions.catalog_products.report_pdf",
-                  "descriptionKey": "platform.auth.permissions.catalog_products.report_pdf.description"
-                },
-                {
                   "code": "CATALOG_PRODUCTS_COMMERCIAL_CATALOG_PDF",
                   "labelKey": "platform.auth.permissions.catalog_products.commercial_catalog_pdf",
                   "descriptionKey": "platform.auth.permissions.catalog_products.commercial_catalog_pdf.description"
@@ -533,11 +528,6 @@
                   "code": "FINANCE_TREASURY_CASH_REGISTER_VIEW_LIST",
                   "labelKey": "platform.auth.permissions.finance_treasury_cash_register.view_list",
                   "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.view_list.description"
-                },
-                {
-                  "code": "FINANCE_TREASURY_CASH_REGISTER_VIEW_DETAIL",
-                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.view_detail",
-                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.view_detail.description"
                 },
                 {
                   "code": "FINANCE_TREASURY_CASH_REGISTER_CASH_HISTORY",

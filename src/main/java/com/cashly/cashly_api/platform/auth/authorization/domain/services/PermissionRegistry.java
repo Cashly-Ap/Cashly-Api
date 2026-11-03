@@ -66,7 +66,7 @@ public final class PermissionRegistry {
                 EDIT, DELETE, CREATE, REPORT_PDF, DOWNLOAD_PDF, CONFIRM,
                 CANCEL));
         result.put(PermissionModule.CATALOG_PRODUCTS, EnumSet.of(VIEW_LIST,
-                VIEW_DETAIL, EDIT, DELETE, CREATE, REPORT_PDF,
+                VIEW_DETAIL, EDIT, DELETE, CREATE,
                 COMMERCIAL_CATALOG_PDF));
         result.put(PermissionModule.CATALOG_CATEGORIES, EnumSet.of(VIEW_LIST,
                 VIEW_DETAIL, EDIT, DELETE, CREATE));
@@ -85,8 +85,7 @@ public final class PermissionRegistry {
         result.put(PermissionModule.FINANCE_BILLING_DEBIT_NOTES, EnumSet.of(
                 VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
         result.put(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, EnumSet.of(
-                VIEW_LIST, VIEW_DETAIL, CASH_HISTORY, REPORT_CASH_REGISTER,
-                OPEN, CLOSE));
+                VIEW_LIST, CASH_HISTORY, REPORT_CASH_REGISTER, OPEN, CLOSE));
         result.put(PermissionModule.FINANCE_TREASURY_RECEIVABLES, EnumSet.of(
                 VIEW_LIST, VIEW_DEBT, REPORT_PDF, PAY_ALL, PARTIAL_PAYMENT,
                 PAY_DIRECT, PAY_WITH_VALIDATION, REFUND, ADVANCE,

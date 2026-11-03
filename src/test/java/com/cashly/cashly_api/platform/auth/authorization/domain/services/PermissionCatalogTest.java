@@ -29,7 +29,7 @@ class PermissionCatalogTest {
                 .map(PermissionCatalog.PermissionEntry::code)
                 .toList();
 
-        assertThat(codes).hasSize(133).doesNotHaveDuplicates();
+        assertThat(codes).hasSize(131).doesNotHaveDuplicates();
         assertThat(Set.copyOf(codes)).isEqualTo(PermissionRegistry.codes());
     }
 
@@ -83,7 +83,7 @@ class PermissionCatalogTest {
                 Map.entry(PermissionModule.SALES_QUOTES, 10),
                 Map.entry(PermissionModule.SALES_ORDERS, 10),
                 Map.entry(PermissionModule.PURCHASES, 9),
-                Map.entry(PermissionModule.CATALOG_PRODUCTS, 7),
+                Map.entry(PermissionModule.CATALOG_PRODUCTS, 6),
                 Map.entry(PermissionModule.CATALOG_CATEGORIES, 5),
                 Map.entry(PermissionModule.CATALOG_PRICES, 5),
                 Map.entry(PermissionModule.INVENTORY_WAREHOUSES, 11),
@@ -91,7 +91,7 @@ class PermissionCatalogTest {
                 Map.entry(PermissionModule.FINANCE_BILLING_RETURNS, 4),
                 Map.entry(PermissionModule.FINANCE_BILLING_CREDIT_NOTES, 4),
                 Map.entry(PermissionModule.FINANCE_BILLING_DEBIT_NOTES, 4),
-                Map.entry(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, 6),
+                Map.entry(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, 5),
                 Map.entry(PermissionModule.FINANCE_TREASURY_RECEIVABLES, 13),
                 Map.entry(PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS, 5),
                 Map.entry(PermissionModule.CONTACTS_CUSTOMERS, 7),

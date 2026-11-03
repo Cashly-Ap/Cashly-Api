@@ -38,8 +38,8 @@ class PermissionRegistryTest {
     }
 
     @Test
-    void declares_the_agreed_one_hundred_thirty_three_permissions() {
-        assertThat(PermissionRegistry.codes()).hasSize(133).doesNotHaveDuplicates();
+    void declares_the_agreed_one_hundred_thirty_one_permissions() {
+        assertThat(PermissionRegistry.codes()).hasSize(131).doesNotHaveDuplicates();
         assertThat(PermissionRegistry.modules()).hasSize(21);
     }
 
