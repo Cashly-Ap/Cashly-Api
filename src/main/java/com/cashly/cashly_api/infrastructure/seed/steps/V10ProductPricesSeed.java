@@ -29,13 +29,24 @@ public class V10ProductPricesSeed implements SeedStep {
     private void price(String key, UUID productId, String amount,
             String margin) {
         UUID id = id("product-price." + key);
+        UUID priceTypeId = id("price-type.base");
         if (entityManager.find(ProductPriceEntity.class, id) != null)
+            return;
+        Long existing = entityManager.createQuery("""
+                select count(p) from ProductPriceEntity p
+                where p.product.id = :productId
+                and p.priceTypeId = :priceTypeId
+                """, Long.class)
+                .setParameter("productId", productId)
+                .setParameter("priceTypeId", priceTypeId)
+                .getSingleResult();
+        if (existing > 0)
             return;
         var price = new ProductPriceEntity();
         price.setId(id);
         price.setProduct(
                 entityManager.getReference(ProductEntity.class, productId));
-        price.setPriceTypeId(id("price-type.base"));
+        price.setPriceTypeId(priceTypeId);
         price.setPrice(new BigDecimal(amount));
         price.setProfitMargin(new BigDecimal(margin));
         entityManager.persist(price);
