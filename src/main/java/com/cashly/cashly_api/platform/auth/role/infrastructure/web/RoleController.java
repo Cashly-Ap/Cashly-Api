@@ -1,8 +1,5 @@
 package com.cashly.cashly_api.platform.auth.role.infrastructure.web;
 
-import com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.role.application.use_case.ManageRolesUseCase;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
 import org.springframework.http.HttpStatus;
@@ -10,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -62,16 +58,5 @@ public class RoleController {
         useCase.delete(id);
     }
 
-    public record RegistryEntry(PermissionModule module,
-            Set<PermissionAction> actions) {
-    }
 
-    @GetMapping("/registry")
-    @PreAuthorize("hasAuthority('ROLES_VIEW_LIST')")
-    public List<RegistryEntry> registry() {
-        return PermissionRegistry.modules().entrySet().stream()
-                .map(entry -> new RegistryEntry(entry.getKey(),
-                        entry.getValue()))
-                .toList();
-    }
 }
