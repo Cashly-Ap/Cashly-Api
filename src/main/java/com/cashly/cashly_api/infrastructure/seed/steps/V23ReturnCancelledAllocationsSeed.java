@@ -4,6 +4,7 @@ import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.finance.billing.returns.infrastructure.persistence.entities.ReturnCancelledAllocationEntity;
 import com.cashly.cashly_api.finance.billing.returns.infrastructure.persistence.entities.ReturnEntity;
+import com.cashly.cashly_api.infrastructure.seed.SeedReferences;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -30,10 +31,13 @@ public class V23ReturnCancelledAllocationsSeed implements SeedStep {
         if (entityManager.find(ReturnCancelledAllocationEntity.class,
                 allocationId) != null)
             return;
+        var returnEntity = SeedReferences.findOrWarn(entityManager,
+                ReturnEntity.class, returnId, "return " + returnId);
+        if (returnEntity == null)
+            return;
         var allocation = new ReturnCancelledAllocationEntity();
         allocation.setId(allocationId);
-        allocation.setReturnEntity(
-                entityManager.getReference(ReturnEntity.class, returnId));
+        allocation.setReturnEntity(returnEntity);
         allocation.setPaymentId(paymentId);
         allocation.setInvoiceId(invoiceId);
         allocation.setAmount(new BigDecimal(amount));

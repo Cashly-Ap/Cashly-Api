@@ -2,6 +2,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
+import com.cashly.cashly_api.infrastructure.seed.SeedReferences;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderLineAllocationEntity;
@@ -35,10 +36,13 @@ public class V12OrderAllocationsSeed implements SeedStep {
         if (entityManager.find(OrderLineAllocationEntity.class,
                 allocationId) != null)
             return;
+        var line = SeedReferences.findOrWarn(entityManager,
+                OrderLineEntity.class, id(lineKey), "order line " + lineKey);
+        if (line == null)
+            return;
         var allocation = new OrderLineAllocationEntity();
         allocation.setId(allocationId);
-        allocation.setOrderLine(
-                entityManager.getReference(OrderLineEntity.class, id(lineKey)));
+        allocation.setOrderLine(line);
         allocation.setWarehouseId(warehouseId);
         allocation.setAllocated(new BigDecimal(quantity));
         entityManager.persist(allocation);

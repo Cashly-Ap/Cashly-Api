@@ -59,8 +59,14 @@ public class V11OrdersSeed implements SeedStep {
             String customerName, String rif, UUID lineId, UUID productId,
             String productName, String code, String quantity, String price,
             UUID categoryId) {
-        if (entityManager.find(OrderEntity.class, id) != null)
+        BigDecimal qty = new BigDecimal(quantity),
+                unitPrice = new BigDecimal(price);
+        var existing = entityManager.find(OrderEntity.class, id);
+        if (existing != null) {
+            ensureLine(existing, lineId, productId, productName, code, qty,
+                    unitPrice, categoryId);
             return;
+        }
         var order = new OrderEntity();
         order.setId(id);
         order.setOrderNumber(number);
@@ -71,11 +77,29 @@ public class V11OrdersSeed implements SeedStep {
         order.setCreatedByName("Sales Operator");
         order.setStatus("CONFIRMED");
         order.setNotes("Deterministic seed order");
-        BigDecimal qty = new BigDecimal(quantity),
-                unitPrice = new BigDecimal(price);
         order.setSubtotal(qty.multiply(unitPrice));
         order.setCreatedAt(CREATED_AT);
         order.setUpdatedAt(CREATED_AT);
+        order.getLines().add(buildLine(order, lineId, productId, productName,
+                code, qty, unitPrice, categoryId));
+        entityManager.persist(order);
+    }
+
+    private void ensureLine(OrderEntity order, UUID lineId, UUID productId,
+            String productName, String code, BigDecimal qty,
+            BigDecimal unitPrice, UUID categoryId) {
+        if (entityManager.find(OrderLineEntity.class, lineId) != null)
+            return;
+        order.getLines().clear();
+        order.getLines().add(buildLine(order, lineId, productId, productName,
+                code, qty, unitPrice, categoryId));
+        order.setSubtotal(qty.multiply(unitPrice));
+        order.setUpdatedAt(EVENT_AT);
+    }
+
+    private OrderLineEntity buildLine(OrderEntity order, UUID lineId,
+            UUID productId, String productName, String code, BigDecimal qty,
+            BigDecimal unitPrice, UUID categoryId) {
         var line = new OrderLineEntity();
         line.setId(lineId);
         line.setOrder(order);
@@ -86,8 +110,7 @@ public class V11OrdersSeed implements SeedStep {
         line.setUnitPrice(unitPrice);
         line.setLineTotal(qty.multiply(unitPrice));
         line.setCategorySnapshot(categoryId);
-        order.getLines().add(line);
-        entityManager.persist(order);
+        return line;
     }
 
     private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {

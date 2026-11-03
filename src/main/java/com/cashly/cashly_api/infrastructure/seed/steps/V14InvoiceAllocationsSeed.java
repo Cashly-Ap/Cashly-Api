@@ -4,6 +4,7 @@ import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
+import com.cashly.cashly_api.infrastructure.seed.SeedReferences;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import jakarta.persistence.EntityManager;
@@ -34,10 +35,13 @@ public class V14InvoiceAllocationsSeed implements SeedStep {
         if (entityManager.find(InvoiceLineAllocationEntity.class,
                 allocationId) != null)
             return;
+        var line = SeedReferences.findOrWarn(entityManager,
+                InvoiceLineEntity.class, id(lineKey), "invoice line " + lineKey);
+        if (line == null)
+            return;
         var allocation = new InvoiceLineAllocationEntity();
         allocation.setId(allocationId);
-        allocation.setInvoiceLine(entityManager
-                .getReference(InvoiceLineEntity.class, id(lineKey)));
+        allocation.setInvoiceLine(line);
         allocation.setWarehouseId(WAREHOUSE_MAIN);
         allocation.setAllocated(new BigDecimal(quantity));
         entityManager.persist(allocation);

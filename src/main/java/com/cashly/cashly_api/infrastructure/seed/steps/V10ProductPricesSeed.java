@@ -4,6 +4,7 @@ import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.catalog.products.infrastructure.persistence.entities.ProductEntity;
 import com.cashly.cashly_api.catalog.products.infrastructure.persistence.entities.ProductPriceEntity;
+import com.cashly.cashly_api.infrastructure.seed.SeedReferences;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -42,10 +43,13 @@ public class V10ProductPricesSeed implements SeedStep {
                 .getSingleResult();
         if (existing > 0)
             return;
+        var product = SeedReferences.findOrWarn(entityManager,
+                ProductEntity.class, productId, "product " + productId);
+        if (product == null)
+            return;
         var price = new ProductPriceEntity();
         price.setId(id);
-        price.setProduct(
-                entityManager.getReference(ProductEntity.class, productId));
+        price.setProduct(product);
         price.setPriceTypeId(priceTypeId);
         price.setPrice(new BigDecimal(amount));
         price.setProfitMargin(new BigDecimal(margin));

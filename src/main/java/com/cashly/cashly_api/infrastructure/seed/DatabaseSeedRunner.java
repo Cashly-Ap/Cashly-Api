@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.infrastructure.seed;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.slf4j.Logger;
@@ -28,11 +29,23 @@ public class DatabaseSeedRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        List<String> failures = new ArrayList<>();
         for (SeedStep step : steps) {
-            log.info("Running database seed step V{}",
-                    String.format("%02d", step.version()));
-            transactions.executeWithoutResult(status -> step.seed());
+            String label = String.format("V%02d", step.version());
+            log.info("Running database seed step {}", label);
+            try {
+                transactions.executeWithoutResult(status -> step.seed());
+            } catch (RuntimeException exception) {
+                failures.add(label);
+                log.error("Database seed step {} failed; continuing with the "
+                        + "remaining steps", label, exception);
+            }
         }
-        log.info("Database seed completed ({} steps)", steps.size());
+        if (failures.isEmpty()) {
+            log.info("Database seed completed ({} steps)", steps.size());
+        } else {
+            log.error("Database seed finished with {} failed step(s): {}",
+                    failures.size(), String.join(", ", failures));
+        }
     }
 }

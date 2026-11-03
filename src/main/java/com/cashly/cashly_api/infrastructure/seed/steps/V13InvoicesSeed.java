@@ -63,11 +63,15 @@ public class V13InvoicesSeed implements SeedStep {
             String customerName, String rif, UUID orderId, String orderNumber,
             String lineKey, UUID productId, String productName, String code,
             String quantity, String price) {
-        if (entityManager.find(InvoiceEntity.class, id) != null)
-            return;
         BigDecimal qty = new BigDecimal(quantity),
                 unitPrice = new BigDecimal(price),
                 total = qty.multiply(unitPrice);
+        var existing = entityManager.find(InvoiceEntity.class, id);
+        if (existing != null) {
+            ensureLine(existing, lineKey, productId, productName, code, qty,
+                    unitPrice, total);
+            return;
+        }
         var invoice = new InvoiceEntity();
         invoice.setId(id);
         invoice.setInvoiceNumber(number);
@@ -87,6 +91,26 @@ public class V13InvoicesSeed implements SeedStep {
         invoice.setUpdatedAt(CREATED_AT);
         invoice.setIssueDate(LocalDate.of(2025, 1, 8));
         invoice.setDueDate(LocalDate.of(2025, 2, 7));
+        invoice.getLines().add(buildLine(invoice, lineKey, productId,
+                productName, code, qty, unitPrice, total));
+        entityManager.persist(invoice);
+    }
+
+    private void ensureLine(InvoiceEntity invoice, String lineKey,
+            UUID productId, String productName, String code, BigDecimal qty,
+            BigDecimal unitPrice, BigDecimal total) {
+        if (entityManager.find(InvoiceLineEntity.class, id(lineKey)) != null)
+            return;
+        invoice.getLines().clear();
+        invoice.getLines().add(buildLine(invoice, lineKey, productId,
+                productName, code, qty, unitPrice, total));
+        invoice.setSubtotal(total);
+        invoice.setUpdatedAt(EVENT_AT);
+    }
+
+    private InvoiceLineEntity buildLine(InvoiceEntity invoice, String lineKey,
+            UUID productId, String productName, String code, BigDecimal qty,
+            BigDecimal unitPrice, BigDecimal total) {
         var line = new InvoiceLineEntity();
         line.setId(id(lineKey));
         line.setInvoice(invoice);
@@ -97,8 +121,7 @@ public class V13InvoicesSeed implements SeedStep {
         line.setUnitPrice(unitPrice);
         line.setLineTotal(total);
         line.setReturnedQuantity(BigDecimal.ZERO);
-        invoice.getLines().add(line);
-        entityManager.persist(invoice);
+        return line;
     }
 
     private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {
