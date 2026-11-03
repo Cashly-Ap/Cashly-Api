@@ -87,7 +87,7 @@ class SupplierControllerTest {
                 List.of(supplier), 1L, 1, 10, 0, true, true, false);
 
         when(listSuppliersUseCase.execute(any(), any(), any(), any(), anyInt(),
-                anyInt(), anyString(), anyString())).thenReturn(pageResponse);
+                anyInt(), anyString(), anyString(), any())).thenReturn(pageResponse);
 
         ResponseEntity<PageResponse<SupplierListResponse>> result = supplierController
                 .getAll(null, null, null, null, 0, 10, "legalName", "asc");
@@ -95,7 +95,7 @@ class SupplierControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
         verify(listSuppliersUseCase).execute(null, null, null, null, 0, 10,
-                "legalName", "asc");
+                "legalName", "asc", null);
     }
 
     @Test
@@ -105,7 +105,7 @@ class SupplierControllerTest {
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
         when(listSuppliersUseCase.execute(any(), any(), any(), any(), anyInt(),
-                anyInt(), anyString(), anyString())).thenReturn(emptyPage);
+                anyInt(), anyString(), anyString(), any())).thenReturn(emptyPage);
 
         ResponseEntity<PageResponse<SupplierListResponse>> result = supplierController
                 .getAll(null, null, null, null, 0, 10, "legalName", "asc");
@@ -113,7 +113,7 @@ class SupplierControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
         verify(listSuppliersUseCase).execute(null, null, null, null, 0, 10,
-                "legalName", "asc");
+                "legalName", "asc", null);
     }
 
     @Test

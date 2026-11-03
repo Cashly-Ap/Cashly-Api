@@ -82,14 +82,14 @@ class CategoryControllerTest {
                 List.of(cat), 1L, 1, 10, 0, true, true, false);
 
         when(listCategoriesUseCase.execute(any(), any(), anyInt(), anyInt(),
-                anyString(), anyString())).thenReturn(pageResponse);
+                anyString(), anyString(), any())).thenReturn(pageResponse);
 
         ResponseEntity<PageResponse<CategoryListResponse>> result = categoryController
                 .getAll(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(listCategoriesUseCase).execute(null, null, 0, 10, "name", "asc");
+        verify(listCategoriesUseCase).execute(null, null, 0, 10, "name", "asc", null);
     }
 
     @Test
@@ -99,14 +99,14 @@ class CategoryControllerTest {
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
         when(listCategoriesUseCase.execute(any(), any(), anyInt(), anyInt(),
-                anyString(), anyString())).thenReturn(emptyPage);
+                anyString(), anyString(), any())).thenReturn(emptyPage);
 
         ResponseEntity<PageResponse<CategoryListResponse>> result = categoryController
                 .getAll(null, null, 0, 10, "name", "asc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listCategoriesUseCase).execute(null, null, 0, 10, "name", "asc");
+        verify(listCategoriesUseCase).execute(null, null, 0, 10, "name", "asc", null);
     }
 
     @Test

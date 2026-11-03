@@ -5,9 +5,9 @@ import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException;
 import com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -47,18 +48,25 @@ class AccessServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    private Role role(Map<BusinessModule, Set<PermissionAction>> permissions) {
+    private Role role(Map<PermissionModule, Set<PermissionAction>> permissions) {
         return new Role(roleId, "Custom", null, true, 0, null, permissions);
     }
 
+    private Map<PermissionModule, Set<PermissionAction>> grants(
+            PermissionModule module, PermissionAction... actions) {
+        var result = new EnumMap<PermissionModule, Set<PermissionAction>>(
+                PermissionModule.class);
+        result.put(module, Set.of(actions));
+        return result;
+    }
+
     @ParameterizedTest
-    @EnumSource(BusinessModule.class)
+    @EnumSource(PermissionModule.class)
     void every_module_revokes_on_next_resolution_without_trusting_session_claims(
-            BusinessModule module) {
+            PermissionModule module) {
         var action = PermissionRegistry.modules().get(module).iterator().next();
         when(repository.role(roleId)).thenReturn(
-                Optional.of(
-                        role(Map.of(module, Set.of(action)))),
+                Optional.of(role(grants(module, action))),
                 Optional.of(role(Map.of())));
         service.require(module, action);
         assertThatThrownBy(() -> service.require(module, action))
@@ -66,23 +74,23 @@ class AccessServiceTest {
     }
 
     @Test
-    void confirm_is_independent_from_read() {
+    void confirm_is_independent_from_view_list() {
         when(repository.role(roleId)).thenReturn(Optional.of(role(
-                Map.of(BusinessModule.SALES_QUOTES,
-                        Set.of(PermissionAction.CONFIRM)))));
+                grants(PermissionModule.SALES_ORDERS,
+                        PermissionAction.CONFIRM))));
 
-        service.require(BusinessModule.SALES_QUOTES,
+        service.require(PermissionModule.SALES_ORDERS,
                 PermissionAction.CONFIRM);
 
-        assertThatThrownBy(() -> service.require(BusinessModule.SALES_QUOTES,
-                PermissionAction.READ))
+        assertThatThrownBy(() -> service.require(PermissionModule.SALES_ORDERS,
+                PermissionAction.VIEW_LIST))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     void validates_active_role_and_department_under_the_administration_lock() {
         when(repository.role(roleId)).thenReturn(Optional.of(role(
-                Map.of(BusinessModule.USERS, Set.of(PermissionAction.READ)))));
+                grants(PermissionModule.USERS, PermissionAction.VIEW_LIST))));
         when(repository.department(departmentId)).thenReturn(Optional
                 .of(new Department(departmentId, "Operations", null, true, 0)));
 
@@ -122,13 +130,13 @@ class AccessServiceTest {
     @Test
     void rejects_assigning_a_role_with_permissions_above_the_actor_scope() {
         when(repository.role(roleId)).thenReturn(Optional.of(role(
-                Map.of(BusinessModule.USERS, Set.of(PermissionAction.READ)))));
+                grants(PermissionModule.USERS, PermissionAction.VIEW_LIST))));
         var elevatedRoleId = UUID.randomUUID();
         when(repository.role(elevatedRoleId)).thenReturn(Optional
                 .of(new Role(elevatedRoleId, "Elevated", null, true, 0, null,
-                        Map.of(BusinessModule.USERS,
-                                Set.of(PermissionAction.READ,
-                                        PermissionAction.UPDATE)))));
+                        grants(PermissionModule.USERS,
+                                PermissionAction.VIEW_LIST,
+                                PermissionAction.EDIT))));
         when(repository.department(departmentId)).thenReturn(Optional
                 .of(new Department(departmentId, "Operations", null, true, 0)));
 
@@ -139,12 +147,12 @@ class AccessServiceTest {
 
     @Test
     void rejects_role_deactivation_and_delegation_above_actor_scope() {
-        when(repository.role(roleId)).thenReturn(Optional.of(role(Map
-                .of(BusinessModule.CATALOG_PRODUCTS, Set.of(PermissionAction.READ)))));
+        when(repository.role(roleId)).thenReturn(Optional.of(role(
+                grants(PermissionModule.CATALOG_PRODUCTS,
+                        PermissionAction.VIEW_LIST))));
         assertThatThrownBy(
-                () -> service.delegable(Map.of(BusinessModule.CATALOG_PRODUCTS,
-                        Set.of(PermissionAction.READ,
-                                PermissionAction.UPDATE))))
+                () -> service.delegable(grants(PermissionModule.CATALOG_PRODUCTS,
+                        PermissionAction.VIEW_LIST, PermissionAction.EDIT)))
                 .isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> service.delegable(new Role(UUID.randomUUID(),
                 "Admin", null, true, 0, "SYSTEM_ADMIN", Map.of())))
@@ -168,13 +176,16 @@ class AccessServiceTest {
         order.verify(repository).assignment(userId);
         verify(repository).activeSystemAdministrators();
     }
+
     @Test
     void delegated_administrator_cannot_reset_credentials_or_delete_inactive_superior_account() {
         var targetId = UUID.randomUUID();
         var protectedRoleId = UUID.randomUUID();
         when(repository.role(roleId)).thenReturn(Optional.of(
-                role(Map.of(BusinessModule.USERS, Set.of(PermissionAction.READ,
-                        PermissionAction.UPDATE, PermissionAction.DELETE)))));
+                role(grants(PermissionModule.USERS,
+                        PermissionAction.VIEW_LIST,
+                        PermissionAction.EDIT,
+                        PermissionAction.DELETE))));
         when(repository.assignment(targetId)).thenReturn(
                 Optional.of(new AccessRepository.Assignment(protectedRoleId,
                         departmentId, false)));

@@ -94,7 +94,7 @@ class CustomerControllerTest {
 
         when(listCustomersUseCase.execute(any(), any(), any(), any(), any(),
                 any(), any(), any(), anyInt(), anyInt(), anyString(),
-                anyString())).thenReturn(pageResponse);
+                anyString(), any())).thenReturn(pageResponse);
 
         ResponseEntity<PageResponse<CustomerListResponse>> result = customerController
                 .getAll(null, null, null, null, null, null, null, 0, 10,
@@ -103,7 +103,7 @@ class CustomerControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
         verify(listCustomersUseCase).execute(null, null, null, null, null, null,
-                null, null, 0, 10, "legalName", "asc");
+                null, null, 0, 10, "legalName", "asc", null);
     }
 
     @Test
@@ -114,7 +114,7 @@ class CustomerControllerTest {
 
         when(listCustomersUseCase.execute(any(), any(), any(), any(), any(),
                 any(), any(), any(), anyInt(), anyInt(), anyString(),
-                anyString())).thenReturn(emptyPage);
+                anyString(), any())).thenReturn(emptyPage);
 
         ResponseEntity<PageResponse<CustomerListResponse>> result = customerController
                 .getAll(null, null, null, null, null, null, null, 0, 10,
@@ -123,7 +123,7 @@ class CustomerControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
         verify(listCustomersUseCase).execute(null, null, null, null, null, null,
-                null, null, 0, 10, "legalName", "asc");
+                null, null, 0, 10, "legalName", "asc", null);
     }
 
     @Test

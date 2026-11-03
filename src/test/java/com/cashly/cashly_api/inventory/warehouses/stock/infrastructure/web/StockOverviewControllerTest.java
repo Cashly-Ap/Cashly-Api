@@ -38,6 +38,7 @@ class StockOverviewControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "INVENTORY_WAREHOUSES_VIEW_STOCK")
     void readsStockAndOptionsWithoutCatalogPermission() throws Exception {
         var response = new StockOverviewResponse(
                 new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true),
@@ -58,7 +59,7 @@ class StockOverviewControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "CATALOG_PRODUCTS:READ")
+    @WithMockUser(authorities = "CATALOG_PRODUCTS_VIEW_LIST")
     void rejectsCallersWithoutInventoryRead() {
         assertThatThrownBy(() -> controller.getStock(null, null, null, 0, 10))
                 .isInstanceOf(AccessDeniedException.class);
@@ -66,6 +67,7 @@ class StockOverviewControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "INVENTORY_WAREHOUSES_VIEW_STOCK")
     void bindsGroupingAndRejectsUnknownGrouping() throws Exception {
         var response = new StockOverviewResponse(null,
                 new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
@@ -86,6 +88,7 @@ class StockOverviewControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "INVENTORY_WAREHOUSES_VIEW_STOCK")
     void defaultsToTheGlobalUngroupedView() throws Exception {
         when(gateway.search(any())).thenReturn(ungroupedResponse());
         MockMvcBuilders.standaloneSetup(controller).build()
@@ -99,6 +102,7 @@ class StockOverviewControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "INVENTORY_WAREHOUSES_VIEW_STOCK")
     void bindsEveryFilterAndGroupingTogether() throws Exception {
         var warehouseId = UUID.randomUUID();
         var categoryId = UUID.randomUUID();

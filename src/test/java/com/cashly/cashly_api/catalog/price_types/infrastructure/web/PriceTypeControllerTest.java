@@ -144,7 +144,7 @@ class PriceTypeControllerTest {
                 List.of(pt1, pt2), 2, 1, 10, 0, true, true, false);
 
         when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10),
-                eq("createdAt"), eq("desc"))).thenReturn(page);
+                eq("createdAt"), eq("desc"), any())).thenReturn(page);
 
         ResponseEntity<PageResponse<PriceTypeResponse>> result = priceTypeController
                 .listAll(null, null, 0, 10, "createdAt", "desc");
@@ -153,7 +153,7 @@ class PriceTypeControllerTest {
         assertNotNull(result.getBody());
         assertEquals(2, result.getBody().content().size());
         verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10),
-                eq("createdAt"), eq("desc"));
+                eq("createdAt"), eq("desc"), any());
     }
 
     @Test
@@ -163,7 +163,7 @@ class PriceTypeControllerTest {
                 0, 10, 0, true, true, true);
 
         when(listPriceTypesUseCase.execute(isNull(), isNull(), eq(0), eq(10),
-                eq("createdAt"), eq("desc"))).thenReturn(page);
+                eq("createdAt"), eq("desc"), any())).thenReturn(page);
 
         ResponseEntity<PageResponse<PriceTypeResponse>> result = priceTypeController
                 .listAll(null, null, 0, 10, "createdAt", "desc");
@@ -172,6 +172,6 @@ class PriceTypeControllerTest {
         assertNotNull(result.getBody());
         assertTrue(result.getBody().content().isEmpty());
         verify(listPriceTypesUseCase).execute(isNull(), isNull(), eq(0), eq(10),
-                eq("createdAt"), eq("desc"));
+                eq("createdAt"), eq("desc"), any());
     }
 }

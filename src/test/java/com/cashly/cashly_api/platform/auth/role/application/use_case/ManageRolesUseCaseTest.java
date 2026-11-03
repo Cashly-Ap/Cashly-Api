@@ -4,8 +4,8 @@ import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -32,7 +32,7 @@ class ManageRolesUseCaseTest {
     void protects_system_role_and_referenced_role_lifecycle_without_partial_save() {
         when(repository.role(id)).thenReturn(Optional.of(role("SYSTEM_ADMIN")));
         var update = new ManageRolesUseCase.Request("Changed", null, true, 2L,
-                Map.of());
+                Set.of());
         assertThatThrownBy(() -> useCase.save(id, update))
                 .isInstanceOf(AccessConflictException.class);
         assertThatThrownBy(() -> useCase.delete(id))
@@ -43,7 +43,7 @@ class ManageRolesUseCaseTest {
         assertThatThrownBy(
                 () -> useCase.save(id,
                         new ManageRolesUseCase.Request("Finance", null, false,
-                                2L, Map.of())))
+                                2L, Set.of())))
                 .isInstanceOf(AccessConflictException.class);
         assertThatThrownBy(() -> useCase.delete(id))
                 .isInstanceOf(AccessConflictException.class);
@@ -60,7 +60,7 @@ class ManageRolesUseCaseTest {
         assertThatThrownBy(
                 () -> useCase.save(id,
                         new ManageRolesUseCase.Request("Finance", null, true,
-                                1L, Map.of())))
+                                1L, Set.of())))
                 .isInstanceOf(AccessConflictException.class);
     }
 
@@ -70,11 +70,12 @@ class ManageRolesUseCaseTest {
         var actorRoleId = UUID.randomUUID();
         var departmentId = UUID.randomUUID();
         var actorRole = new Role(actorRoleId, "Limited administrator", null,
-                true, 0, null, Map.of(BusinessModule.ROLES, Set
-                        .of(PermissionAction.READ, PermissionAction.UPDATE)));
+                true, 0, null, Map.of(PermissionModule.ROLES, Set
+                        .of(PermissionAction.VIEW_LIST, PermissionAction.EDIT)));
         var superior = new Role(id, "Sales administrator", null, true, 2, null,
-                Map.of(BusinessModule.SALES_ORDERS, Set.of(PermissionAction.READ,
-                        PermissionAction.UPDATE)));
+                Map.of(PermissionModule.SALES_ORDERS,
+                        Set.of(PermissionAction.VIEW_LIST,
+                                PermissionAction.EDIT)));
         when(repository.assignment(actorId)).thenReturn(
                 Optional.of(new AccessRepository.Assignment(actorRoleId,
                         departmentId, true)));
@@ -85,7 +86,7 @@ class ManageRolesUseCaseTest {
 
         assertThatThrownBy(() -> secured.save(id,
                 new ManageRolesUseCase.Request("Stripped", null, true, 2L,
-                        Map.of())))
+                        Set.of())))
                 .isInstanceOf(
                         org.springframework.security.access.AccessDeniedException.class);
 
@@ -101,15 +102,15 @@ class ManageRolesUseCaseTest {
         when(repository.roles()).thenReturn(List.of(allowed, protectedRole));
         when(access.current()).thenReturn(new AccessService.CurrentAccess(id,
                 "Actor", UUID.randomUUID(), false,
-                Map.of(BusinessModule.USERS, Set.of(PermissionAction.READ,
-                        PermissionAction.CREATE))));
+                Set.of("USERS_VIEW_LIST", "USERS_CREATE")));
         doThrow(new org.springframework.security.access.AccessDeniedException(
                 "Not assignable")).when(access).delegable(protectedRole);
         assertThat(useCase.options())
                 .containsExactly(new ManageRolesUseCase.Option(id, "Finance"));
-        verify(access, never()).require(BusinessModule.ROLES,
-                PermissionAction.READ);
+        verify(access, never()).require(PermissionModule.ROLES,
+                PermissionAction.VIEW_LIST);
     }
+
     @Test
     void editing_selector_only_returns_editable_roles_within_actor_scope() {
         var allowed = role(null);
@@ -121,7 +122,7 @@ class ManageRolesUseCaseTest {
 
         assertThat(useCase.list(ManageRolesUseCase.ListAction.EDIT))
                 .containsExactly(allowed);
-        verify(access).require(BusinessModule.ROLES, PermissionAction.UPDATE);
+        verify(access).require(PermissionModule.ROLES, PermissionAction.EDIT);
         verify(repository, never()).roles();
     }
 

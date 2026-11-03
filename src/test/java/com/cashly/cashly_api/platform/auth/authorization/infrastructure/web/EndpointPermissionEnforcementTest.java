@@ -32,7 +32,7 @@ class EndpointPermissionEnforcementTest {
     private static final Set<String> ALL = PermissionRegistry.modules()
             .entrySet().stream()
             .flatMap(entry -> entry.getValue().stream()
-                    .map(action -> entry.getKey() + ":" + action))
+                    .map(action -> entry.getKey().name() + "_" + action.name()))
             .collect(java.util.stream.Collectors.toUnmodifiableSet());
 
     record Operation(Method method, String policy) {
@@ -91,16 +91,16 @@ class EndpointPermissionEnforcementTest {
     @MethodSource("operations")
     void requiresEveryDeclaredActionAndAcceptsAuthorizedUsers(
             Operation operation) {
-        assertThat(authorized(operation, ALL)).isTrue();
+        assertThat(authorized(operation, ALL)).as("%s", operation).isTrue();
         if (operation.policy().contains(" or ")) {
             assertThat(
-                    authorized(operation, Set.of("USERS:READ", "USERS:CREATE")))
+                    authorized(operation, Set.of("USERS_VIEW_LIST", "USERS_CREATE")))
                     .isTrue();
             assertThat(
-                    authorized(operation, Set.of("USERS:READ", "USERS:UPDATE")))
+                    authorized(operation, Set.of("USERS_VIEW_LIST", "USERS_EDIT")))
                     .isTrue();
             assertThat(authorized(operation,
-                    Set.of("USERS:CREATE", "USERS:UPDATE"))).isFalse();
+                    Set.of("USERS_CREATE", "USERS_EDIT"))).isFalse();
             return;
         }
         for (var authority : required(operation)) {

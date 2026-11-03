@@ -105,7 +105,7 @@ class WarehouseControllerTest {
                 List.of(wh), 1L, 1, 20, 0, true, true, false);
 
         when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(),
-                anyString(), anyString())).thenReturn(pageResponse);
+                anyString(), anyString(), any())).thenReturn(pageResponse);
 
         ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController
                 .list(null, null, 0, 20, "name", "asc");
@@ -113,7 +113,7 @@ class WarehouseControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().content().size());
-        verify(listWarehousesUseCase).execute(null, null, 0, 20, "name", "asc");
+        verify(listWarehousesUseCase).execute(null, null, 0, 20, "name", "asc", null);
     }
 
     @Test
@@ -123,7 +123,7 @@ class WarehouseControllerTest {
                 List.of(), 0L, 0, 20, 0, true, true, true);
 
         when(listWarehousesUseCase.execute(any(), any(), anyInt(), anyInt(),
-                anyString(), anyString())).thenReturn(emptyPage);
+                anyString(), anyString(), any())).thenReturn(emptyPage);
 
         ResponseEntity<PageResponse<WarehouseListResponse>> result = warehouseController
                 .list(null, null, 0, 20, "name", "asc");
@@ -131,7 +131,7 @@ class WarehouseControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertTrue(result.getBody().content().isEmpty());
-        verify(listWarehousesUseCase).execute(null, null, 0, 20, "name", "asc");
+        verify(listWarehousesUseCase).execute(null, null, 0, 20, "name", "asc", null);
     }
 
     @Test

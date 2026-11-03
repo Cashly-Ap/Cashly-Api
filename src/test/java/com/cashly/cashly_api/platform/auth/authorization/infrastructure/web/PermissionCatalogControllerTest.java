@@ -52,83 +52,71 @@ class PermissionCatalogControllerTest {
     }
 
     @Test
-    void readerReceivesTheAreasAndDomainsInDeterministicOrder() throws Exception {
+    void readerReceivesTheAreasSubmodulesAndDomainsInDeterministicOrder()
+            throws Exception {
         mvc.perform(get(CATALOG).with(user("reader")
-                .authorities(new SimpleGrantedAuthority("ROLES:READ"))))
+                .authorities(new SimpleGrantedAuthority("ROLES_VIEW_LIST"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(8))
-                .andExpect(jsonPath("$[1].area").value("PURCHASES"))
-                .andExpect(jsonPath("$[1].sortOrder").value(20))
-                .andExpect(jsonPath("$[3].area").value("INVENTORY"))
-                .andExpect(jsonPath("$[5].domains[0].module")
-                        .value("CONTACTS_CUSTOMERS"))
-                .andExpect(jsonPath("$[5].domains[1].module")
-                        .value("CONTACTS_SUPPLIERS"))
-                .andExpect(jsonPath("$[7].area").value("PLATFORM"))
-                .andExpect(jsonPath("$[7].domains.length()").value(3))
-                .andExpect(jsonPath("$[7].domains[0].module").value("USERS"))
-                .andExpect(jsonPath("$[7].domains[1].module").value("ROLES"))
-                .andExpect(jsonPath("$[7].domains[2].module")
-                        .value("DEPARTMENTS"))
                 .andExpect(jsonPath("$[0].area").value("SALES"))
+                .andExpect(jsonPath("$[0].sortOrder").value(10))
                 .andExpect(jsonPath("$[0].labelKey")
                         .value("platform.auth.areas.sales"))
-                .andExpect(jsonPath("$[0].sortOrder").value(10))
-                .andExpect(jsonPath("$[0].domains[0].module")
+                .andExpect(jsonPath("$[0].submodules[0].domains[0].module")
                         .value("SALES_QUOTES"))
-                .andExpect(jsonPath("$[0].domains[0].labelKey")
-                        .value("platform.auth.domains.sales_quotes"))
-                .andExpect(jsonPath("$[0].domains[0].sortOrder").value(10))
-                .andExpect(jsonPath("$[0].domains[0].permissions[0].action")
-                        .value("READ"))
                 .andExpect(jsonPath(
-                        "$[0].domains[0].permissions[0].labelKey")
-                        .value("platform.auth.permissions.sales_quotes.read"))
+                        "$[0].submodules[0].domains[0].permissions[0].code")
+                        .value("SALES_QUOTES_VIEW_LIST"))
                 .andExpect(jsonPath(
-                        "$[0].domains[0].permissions[0].descriptionKey")
-                        .value("platform.auth.permissions.sales_quotes.read.description"))
+                        "$[0].submodules[0].domains[0].permissions[0].labelKey")
+                        .value("platform.auth.permissions.sales_quotes.view_list"))
                 .andExpect(jsonPath(
-                        "$[0].domains[0].permissions[0].sortOrder").value(10))
-                .andExpect(jsonPath("$[4].area").value("FINANCE"))
-                .andExpect(jsonPath("$[4].sortOrder").value(50))
-                .andExpect(jsonPath("$[4].domains[0].module")
-                        .value("FINANCE_INVOICES"))
+                        "$[0].submodules[0].domains[0].permissions[0].descriptionKey")
+                        .value("platform.auth.permissions.sales_quotes.view_list.description"))
+                .andExpect(jsonPath("$[1].area").value("PURCHASES"))
                 .andExpect(jsonPath("$[2].area").value("CATALOG"))
-                .andExpect(jsonPath("$[2].sortOrder").value(30))
+                .andExpect(jsonPath("$[3].area").value("INVENTORY"))
+                .andExpect(jsonPath("$[4].area").value("FINANCE"))
+                .andExpect(jsonPath("$[4].submodules[0].submodule")
+                        .value("FINANCE_BILLING"))
+                .andExpect(jsonPath("$[4].submodules[1].submodule")
+                        .value("FINANCE_TREASURY"))
+                .andExpect(jsonPath("$[4].submodules[1].domains[1].module")
+                        .value("FINANCE_TREASURY_RECEIVABLES"))
                 .andExpect(jsonPath("$[5].area").value("CONTACTS"))
                 .andExpect(jsonPath("$[6].area").value("ANALYTICS"))
-                .andExpect(jsonPath("$[6].domains[0].module")
-                        .value("DASHBOARD"))
                 .andExpect(jsonPath("$[7].area").value("PLATFORM"))
-                .andExpect(jsonPath("$[7].sortOrder").value(90));
+                .andExpect(jsonPath("$[7].submodules[0].domains.length()")
+                        .value(4))
+                .andExpect(jsonPath("$[7].submodules[0].domains[3].module")
+                        .value("COMPANY"));
     }
 
     @Test
-    void catalogNeverExposesDocumentsOrCompanyDomains() throws Exception {
+    void catalogExposesCompanyUnderPlatform() throws Exception {
         var body = mvc.perform(get(CATALOG).with(user("reader")
-                .authorities(new SimpleGrantedAuthority("ROLES:READ"))))
+                .authorities(new SimpleGrantedAuthority("ROLES_VIEW_LIST"))))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
         org.assertj.core.api.Assertions.assertThat(body)
-                .doesNotContain("\"DOCUMENTS\"", "\"COMPANY\"",
-                        "\"FINANCE_BILLING\"", "\"FINANCE_TREASURY\"",
-                        "\"DOCUMENTS\"");
+                .contains("\"COMPANY\"", "COMPANY_VIEW", "COMPANY_EDIT")
+                .doesNotContain("\"DOCUMENTS\"");
     }
 
     @Test
     void readerWithoutTheCatalogAuthorityIsForbidden() throws Exception {
         mvc.perform(get(CATALOG).with(user("writer")
-                .authorities(new SimpleGrantedAuthority("ROLES:CREATE"))))
+                .authorities(new SimpleGrantedAuthority("ROLES_CREATE"))))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void authenticatedUserWithAnUnrelatedDomainIsForbidden() throws Exception {
         mvc.perform(get(CATALOG).with(user("sales")
-                .authorities(new SimpleGrantedAuthority("SALES_ORDERS:READ"),
+                .authorities(new SimpleGrantedAuthority("SALES_ORDERS_VIEW_LIST"),
                         new SimpleGrantedAuthority(
-                                "SALES_ORDERS:CONFIRM"))))
+                                "SALES_ORDERS_CONFIRM"))))
                 .andExpect(status().isForbidden());
     }
 

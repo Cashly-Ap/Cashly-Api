@@ -1,11 +1,11 @@
 package com.cashly.cashly_api.platform.auth.authorization.domain.services;
 
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,24 +14,20 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 
 class PermissionRegistryTest {
+
     @ParameterizedTest
-    @EnumSource(BusinessModule.class)
+    @EnumSource(PermissionModule.class)
     void every_module_accepts_each_supported_action_independently(
-            BusinessModule module) {
+            PermissionModule module) {
         var supported = PermissionRegistry.modules().get(module);
+        assertThat(supported).as(module.name()).isNotEmpty();
         var grant = supported.iterator().next();
         assertThat(PermissionRegistry.validate(Map.of()))
                 .doesNotContainKey(module);
-        assertThat(PermissionRegistry
-                .validate(Map.of(module, Set.of(grant))))
+        assertThat(PermissionRegistry.validate(Map.of(module, Set.of(grant))))
                 .containsEntry(module, Set.of(grant));
-        if (module == BusinessModule.FINANCE_RECEIVABLES) {
-            assertThatThrownBy(() -> PermissionRegistry.validate(Map.of(module, supported)))
-                    .isInstanceOf(IllegalArgumentException.class);
-        } else {
-            assertThat(PermissionRegistry.validate(Map.of(module, supported)))
-                    .containsEntry(module, supported);
-        }
+        assertThat(PermissionRegistry.validate(Map.of(module, supported)))
+                .containsEntry(module, supported);
         for (var action : PermissionAction.values()) {
             if (!supported.contains(action)) {
                 assertThatThrownBy(() -> PermissionRegistry
@@ -42,16 +38,17 @@ class PermissionRegistryTest {
     }
 
     @Test
+    void declares_the_agreed_one_hundred_thirty_three_permissions() {
+        assertThat(PermissionRegistry.codes()).hasSize(133).doesNotHaveDuplicates();
+        assertThat(PermissionRegistry.modules()).hasSize(21);
+    }
+
+    @Test
     void unsupported_actions_and_custom_administrator_names_never_grant_access() {
         assertThatThrownBy(() -> PermissionRegistry
-                .validate(Map.of(BusinessModule.DASHBOARD,
-                        Set.of(PermissionAction.READ,
+                .validate(Map.of(PermissionModule.DASHBOARD,
+                        Set.of(PermissionAction.VIEW,
                                 PermissionAction.CREATE))))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(
-                () -> PermissionRegistry.validate(Map.of(BusinessModule.CATALOG_PRODUCTS,
-                        Set.of(PermissionAction.READ,
-                                PermissionAction.IMPORT))))
                 .isInstanceOf(IllegalArgumentException.class);
         var custom = new Role(UUID.randomUUID(), "SUPER_ADMIN", null, true, 0,
                 null, Map.of());
@@ -65,5 +62,9 @@ class PermissionRegistryTest {
                 0, "SYSTEM_ADMIN", Map.of());
         assertThat(system.effectivePermissions())
                 .isEqualTo(PermissionRegistry.modules());
+        assertThat(system.codes())
+                .contains("COMPANY_EDIT",
+                        "FINANCE_TREASURY_RECEIVABLES_PAY_DIRECT",
+                        "CATALOG_PRODUCTS_DELETE");
     }
 }

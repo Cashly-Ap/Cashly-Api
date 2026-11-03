@@ -15,13 +15,13 @@ import static org.mockito.Mockito.when;
 
 class JdbcAccessRepositoryTest {
     @Test
-    void excludes_system_roles_in_the_editing_query() {
+    void excludes_only_the_system_administrator_in_the_editing_query() {
         var jdbc = mock(JdbcTemplate.class);
         when(jdbc.query(anyString(), any(RowMapper.class)))
                 .thenReturn(List.of());
         assertThat(new JdbcAccessRepository(jdbc).editableRoles()).isEmpty();
         verify(jdbc).query(org.mockito.ArgumentMatchers.eq(
-                "select * from auth_roles where system_key IS NULL order by name"),
+                "select * from auth_roles where system_key IS NULL OR system_key <> 'SYSTEM_ADMIN' order by name"),
                 any(RowMapper.class));
     }
 }

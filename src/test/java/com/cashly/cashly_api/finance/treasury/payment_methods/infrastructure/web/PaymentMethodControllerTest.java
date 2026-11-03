@@ -86,7 +86,7 @@ class PaymentMethodControllerTest {
         PageResponse<PaymentMethodResponse> pageResult = new PageResponse<>(
                 List.of(pm), 1, 1, 10, 0, true, true, false);
         when(listPaymentMethodsUseCase.execute(isNull(), isNull(), eq(0),
-                eq(10), eq("name"), eq("asc"))).thenReturn(pageResult);
+                eq(10), eq("name"), eq("asc"), any())).thenReturn(pageResult);
 
         ResponseEntity<PageResponse<PaymentMethodResponse>> result = paymentMethodController
                 .list(null, null, 0, 10, "name", "asc");
@@ -101,7 +101,7 @@ class PaymentMethodControllerTest {
         PageResponse<PaymentMethodResponse> pageResult = new PageResponse<>(
                 List.of(), 0, 0, 10, 0, true, true, true);
         when(listPaymentMethodsUseCase.execute(any(), any(), anyInt(), anyInt(),
-                any(), any())).thenReturn(pageResult);
+                any(), any(), any())).thenReturn(pageResult);
 
         ResponseEntity<PageResponse<PaymentMethodResponse>> result = paymentMethodController
                 .list(null, null, 0, 10, "name", "asc");

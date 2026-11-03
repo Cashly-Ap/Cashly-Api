@@ -45,7 +45,8 @@ class DeleteQuoteUseCaseTest {
         UUID quoteId = UUID.randomUUID();
         Quote quote = createDraftQuote(quoteId);
 
-        when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
+        when(quoteRepository.findEligibleForDeletion(quoteId))
+                .thenReturn(Optional.of(quote));
 
         deleteQuoteUseCase.execute(quoteId);
 

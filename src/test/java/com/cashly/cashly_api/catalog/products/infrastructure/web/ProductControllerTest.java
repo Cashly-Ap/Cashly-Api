@@ -95,7 +95,7 @@ class ProductControllerTest {
                 List.of(product), 1L, 1, 10, 0, true, true, false);
 
         when(listProductsUseCase.execute(any(), any(), any(), any(), anyInt(),
-                anyInt(), anyString(), anyString())).thenReturn(pageResponse);
+                anyInt(), anyString(), anyString(), any())).thenReturn(pageResponse);
 
         ResponseEntity<PageResponse<ProductListResponse>> result = productController
                 .getAll(null, null, null, null, 0, 10, "name", "asc");
@@ -103,7 +103,7 @@ class ProductControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
         verify(listProductsUseCase).execute(null, null, null, null, 0, 10,
-                "name", "asc");
+                "name", "asc", null);
     }
 
     @Test
@@ -113,7 +113,7 @@ class ProductControllerTest {
                 List.of(), 0L, 0, 10, 0, true, true, true);
 
         when(listProductsUseCase.execute(any(), any(), any(), any(), anyInt(),
-                anyInt(), anyString(), anyString())).thenReturn(emptyPage);
+                anyInt(), anyString(), anyString(), any())).thenReturn(emptyPage);
 
         ResponseEntity<PageResponse<ProductListResponse>> result = productController
                 .getAll(null, null, null, null, 0, 10, "name", "asc");
@@ -121,7 +121,7 @@ class ProductControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().content().isEmpty());
         verify(listProductsUseCase).execute(null, null, null, null, 0, 10,
-                "name", "asc");
+                "name", "asc", null);
     }
 
     @Test

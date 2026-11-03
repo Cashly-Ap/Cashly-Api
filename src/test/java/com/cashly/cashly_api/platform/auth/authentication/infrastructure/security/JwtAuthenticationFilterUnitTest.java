@@ -2,10 +2,8 @@ package com.cashly.cashly_api.platform.auth.authentication.infrastructure.securi
 
 import com.cashly.cashly_api.platform.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
 import com.cashly.cashly_api.platform.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -65,7 +62,7 @@ class JwtAuthenticationFilterUnitTest {
     void authenticatesSubjectWithCurrentPersistedGrants() throws Exception {
         validToken();
         when(access.resolve(USER_ID))
-                .thenReturn(current(Set.of(PermissionAction.READ)));
+                .thenReturn(current(Set.of("CATALOG_PRODUCTS_VIEW_LIST")));
 
         filter.doFilterInternal(request, response, chain);
 
@@ -80,14 +77,14 @@ class JwtAuthenticationFilterUnitTest {
     void emitsOnlyCurrentModuleActionAuthorities() throws Exception {
         validToken();
         when(access.resolve(USER_ID))
-                .thenReturn(current(Set.of(PermissionAction.READ)));
+                .thenReturn(current(Set.of("CATALOG_PRODUCTS_VIEW_LIST")));
 
         filter.doFilterInternal(request, response, chain);
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities())
                 .extracting(authority -> authority.getAuthority())
-                .containsExactly("CATALOG_PRODUCTS:READ");
+                .containsExactly("CATALOG_PRODUCTS_VIEW_LIST");
     }
 
     @Test
@@ -95,8 +92,8 @@ class JwtAuthenticationFilterUnitTest {
         validToken();
         when(access.resolve(USER_ID))
                 .thenReturn(current(
-                        Set.of(PermissionAction.READ, PermissionAction.UPDATE)))
-                .thenReturn(current(Set.of(PermissionAction.READ)));
+                        Set.of("CATALOG_PRODUCTS_VIEW_LIST", "CATALOG_PRODUCTS_EDIT")))
+                .thenReturn(current(Set.of("CATALOG_PRODUCTS_VIEW_LIST")));
         filter.doFilterInternal(request, response, chain);
         SecurityContextHolder.clearContext();
 
@@ -105,7 +102,7 @@ class JwtAuthenticationFilterUnitTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities())
                 .extracting(authority -> authority.getAuthority())
-                .doesNotContain("CATALOG_PRODUCTS:UPDATE");
+                .doesNotContain("CATALOG_PRODUCTS_EDIT");
     }
 
     @Test
@@ -184,9 +181,8 @@ class JwtAuthenticationFilterUnitTest {
         when(tokens.extractSubjectId(TOKEN)).thenReturn(USER_ID.toString());
     }
 
-    private AccessService.CurrentAccess current(Set<PermissionAction> actions) {
+    private AccessService.CurrentAccess current(Set<String> permissions) {
         return new AccessService.CurrentAccess(ROLE_ID, "Custom role",
-                DEPARTMENT_ID, false,
-                Map.of(BusinessModule.CATALOG_PRODUCTS, actions));
+                DEPARTMENT_ID, false, permissions);
     }
 }
