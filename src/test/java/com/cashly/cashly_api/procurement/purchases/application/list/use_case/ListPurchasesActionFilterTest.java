@@ -13,11 +13,12 @@ class ListPurchasesActionFilterTest {
             repository);
 
     @Test
-    void shouldQueryConfirmedPurchasesForCancellation() {
+    void shouldQueryDraftAndConfirmedPurchasesForCancellation() {
         useCase.execute(null, null, null, "ALL", null, null, "createdAt",
                 "desc", DocumentAction.CANCEL);
-        verify(repository).findAllWithFilters(null, null, null, "CONFIRMED",
-                null, null, "createdAt", "desc");
+        verify(repository).findAllWithFilters(null, null, null,
+                java.util.List.of("DRAFT", "CONFIRMED"), null, null,
+                "createdAt", "desc");
     }
 
     @Test
@@ -28,12 +29,12 @@ class ListPurchasesActionFilterTest {
                     "desc", action);
         }
         verify(repository, times(2)).findAllWithFilters(null, null, null,
-                "DRAFT", null, null, "createdAt", "desc");
+                java.util.List.of("DRAFT"), null, null, "createdAt", "desc");
     }
 
     @Test
     void shouldNotQueryAnIncompatibleStatus() {
-        assertTrue(useCase.execute(null, null, null, "DRAFT", null, null,
+        assertTrue(useCase.execute(null, null, null, "CANCELLED", null, null,
                 "createdAt", "desc", DocumentAction.CANCEL).isEmpty());
         verifyNoInteractions(repository);
     }

@@ -163,7 +163,7 @@ class PurchaseRepositoryIntegrationTest {
 
             List<Purchase> result = adapter.findAllWithFilters(
                     LocalDate.now().minusDays(30), LocalDate.now(), null,
-                    "DRAFT", null, null, "createdAt", "desc");
+                    java.util.List.of("DRAFT"), null, null, "createdAt", "desc");
 
             assertNotNull(result);
             assertFalse(result.isEmpty());

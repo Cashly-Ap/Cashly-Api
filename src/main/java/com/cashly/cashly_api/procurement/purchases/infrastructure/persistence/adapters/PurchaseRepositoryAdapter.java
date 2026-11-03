@@ -50,13 +50,13 @@ public class PurchaseRepositoryAdapter implements PurchaseRepository {
 
     @Override
     public List<Purchase> findAllWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID supplierId, String status, UUID productId,
-            UUID categoryId, String orderBy, String orderDir) {
+            LocalDate dateTo, UUID supplierId, Collection<String> statuses,
+            UUID productId, UUID categoryId, String orderBy, String orderDir) {
         LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
         LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
 
         List<PurchaseEntity> entities = jpaRepository.findAllWithFilters(from,
-                to, supplierId, status, productId, categoryId);
+                to, supplierId, statuses, productId, categoryId);
 
         boolean desc = "desc".equalsIgnoreCase(orderDir);
         Comparator<PurchaseEntity> comparator = switch (orderBy) {

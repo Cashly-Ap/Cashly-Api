@@ -14,8 +14,8 @@ public interface PurchaseRepository {
     Purchase save(Purchase purchase);
     Optional<Purchase> findById(PurchaseId id);
     List<Purchase> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
-            UUID supplierId, String status, UUID productId, UUID categoryId,
-            String orderBy, String orderDir);
+            UUID supplierId, Collection<String> statuses, UUID productId,
+            UUID categoryId, String orderBy, String orderDir);
     int getNextSequenceForYear(int year);
     void deleteById(PurchaseId id);
     boolean existsBySupplierId(UUID supplierId);

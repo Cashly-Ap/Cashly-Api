@@ -38,7 +38,7 @@ public interface PurchaseJpaRepository
             WHERE (:dateFrom IS NULL OR p.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR p.createdAt <= :dateTo)
             AND (:supplierId IS NULL OR p.supplierId = :supplierId)
-            AND ((:status IS NULL AND p.status = 'DRAFT') OR (:status IS NOT NULL AND p.status = :status))
+            AND p.status IN :statuses
             AND (:productId IS NULL OR EXISTS (
                 SELECT 1 FROM PurchaseLineEntity pl WHERE pl.purchase = p AND pl.productId = :productId
             ))
@@ -52,7 +52,8 @@ public interface PurchaseJpaRepository
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("supplierId") UUID supplierId,
-            @Param("status") String status, @Param("productId") UUID productId,
+            @Param("statuses") Collection<String> statuses,
+            @Param("productId") UUID productId,
             @Param("categoryId") UUID categoryId);
 
     boolean existsBySupplierId(UUID supplierId);
