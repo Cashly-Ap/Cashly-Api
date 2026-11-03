@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🧪 Lexand API - Test Runner with MySQL"
+echo "🧪 Cashly API - Test Runner with MySQL"
 echo "======================================"
 echo ""
 
@@ -13,7 +13,7 @@ echo ""
 cleanup() {
     echo ""
     echo "🧹 Cleaning up test containers..."
-    docker-compose --profile test down -v
+    docker compose --profile test down -v
     echo "✅ Cleanup completed"
 }
 
@@ -39,11 +39,11 @@ fi
 
 echo ""
 echo "🐳 Step 1: Starting test database (MySQL)..."
-docker-compose --profile test up -d mysql-test
+docker compose --profile test up -d mysql-test
 
 echo ""
 echo "⏳ Step 2: Waiting for MySQL to be ready..."
-until docker-compose --profile test exec -T mysql-test mysqladmin ping -h localhost -u root -ptestroot --silent; do
+until docker compose --profile test exec -T mysql-test mysqladmin ping -h localhost -u root -ptestroot --silent; do
     echo "   Waiting for MySQL..."
     sleep 2
 done
@@ -56,7 +56,7 @@ echo "   Command: ${TEST_COMMAND}"
 echo ""
 
 # Run tests
-if docker-compose --profile test run --rm app-test ${TEST_COMMAND}; then
+if docker compose --profile test run --rm app-test ${TEST_COMMAND}; then
     echo ""
     echo "${GREEN}✅ Tests completed successfully!${NC}"
     exit 0
