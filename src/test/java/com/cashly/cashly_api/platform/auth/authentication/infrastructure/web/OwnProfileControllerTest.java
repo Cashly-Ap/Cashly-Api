@@ -20,7 +20,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -71,7 +70,7 @@ class OwnProfileControllerTest {
             throws Exception {
         when(query.execute("own-user")).thenReturn(new UserResponse("own-user",
                 "own@example.com", "Own User", UserRole.OPERATOR, true, true,
-                false, Set.of(), "Own", "User", null, "+34600000000", null,
+                false, "Own", "User", null, "+34600000000", null,
                 null, "Sales", "Operations", null, null));
 
         mvc.perform(get("/api/auth/profile")

@@ -30,15 +30,3 @@ CREATE TABLE `users` (
   CONSTRAINT `fk_users_department` FOREIGN KEY (`department_id`) REFERENCES `auth_departments` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `user_module_permissions` (
-  `id` binary(16) NOT NULL,
-  `user_id` binary(16) NOT NULL,
-  `module` varchar(30) NOT NULL,
-  `company_id` binary(16) NOT NULL DEFAULT 0x92000000000000000000000000000001,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_ump_user_module` (`user_id`,`module`),
-  KEY `idx_ump_user_id` (`user_id`),
-  KEY `fk_user_module_permissions_company` (`company_id`),
-  CONSTRAINT `fk_ump_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_user_module_permissions_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -4,7 +4,6 @@ import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +14,7 @@ class UserResponseUnitTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserResponse response = new UserResponse("1", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -39,7 +38,7 @@ class UserResponseUnitTest {
         LocalDateTime now = LocalDateTime.of(2025, 12, 17, 12, 0);
 
         UserResponse response1 = new UserResponse("1", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -48,7 +47,7 @@ class UserResponseUnitTest {
                 "Custom role", "Operations", now, now);
 
         UserResponse response2 = new UserResponse("1", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -65,7 +64,7 @@ class UserResponseUnitTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserResponse response1 = new UserResponse("1", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -74,7 +73,7 @@ class UserResponseUnitTest {
                 "Custom role", "Operations", now, now);
 
         UserResponse response2 = new UserResponse("2", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -90,7 +89,7 @@ class UserResponseUnitTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserResponse response1 = new UserResponse("1", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -99,7 +98,7 @@ class UserResponseUnitTest {
                 "Custom role", "Operations", now, now);
 
         UserResponse response2 = new UserResponse("1", "jane@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
@@ -115,7 +114,7 @@ class UserResponseUnitTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserResponse response = new UserResponse("1", "john@example.com",
-                "John Doe", UserRole.OPERATOR, true, false, false, Set.of(),
+                "John Doe", UserRole.OPERATOR, true, false, false,
                 "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),

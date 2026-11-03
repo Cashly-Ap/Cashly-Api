@@ -1,7 +1,6 @@
 package com.cashly.cashly_api.platform.auth.user.infrastructure.persistence.entities;
 
 import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
@@ -13,11 +12,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -94,9 +89,6 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<UserModulePermissionEntity> modulePermissions = new HashSet<>();
-
     public static UserEntity fromDomain(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -114,10 +106,6 @@ public class UserEntity {
         entity.emailVerified = user.isEmailVerified();
         entity.createdAt = user.getCreatedAt();
         entity.updatedAt = user.getUpdatedAt();
-        entity.modulePermissions = user.getModulePermissions().stream()
-                .map(module -> UserModulePermissionEntity.of(entity, module))
-                .collect(Collectors.toCollection(HashSet::new));
-
         return entity;
     }
 
@@ -135,20 +123,6 @@ public class UserEntity {
         this.active = user.isActive();
         this.emailVerified = user.isEmailVerified();
         this.updatedAt = user.getUpdatedAt();
-
-        Set<BusinessModule> incoming = user.getModulePermissions();
-
-        this.modulePermissions
-                .removeIf(existing -> !incoming.contains(existing.getModule()));
-
-        Set<BusinessModule> existing = this.modulePermissions.stream()
-                .map(UserModulePermissionEntity::getModule)
-                .collect(Collectors.toCollection(
-                        () -> EnumSet.noneOf(BusinessModule.class)));
-
-        incoming.stream().filter(module -> !existing.contains(module))
-                .map(module -> UserModulePermissionEntity.of(this, module))
-                .forEach(this.modulePermissions::add);
     }
 
     public User toDomain() {
@@ -160,18 +134,12 @@ public class UserEntity {
         User user = new User(userId, domainEmail, domainUserName,
                 domainPassword, this.role);
 
-        Set<BusinessModule> permissions = this.modulePermissions.stream()
-                .map(UserModulePermissionEntity::getModule)
-                .collect(Collectors.toCollection(
-                        () -> EnumSet.noneOf(BusinessModule.class)));
-
         user.changePhoto(photoPath);
         user.setAssignmentNames(roleName, departmentName);
         user.updateProfile(
                 new com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserProfile(
                         firstName, lastName, address, phone),
                 roleId, departmentId);
-        user.setModulePermissions(permissions);
 
         try {
             java.lang.reflect.Field activeField = User.class

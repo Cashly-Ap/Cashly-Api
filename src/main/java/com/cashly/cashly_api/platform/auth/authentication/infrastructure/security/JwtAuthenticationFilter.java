@@ -18,7 +18,6 @@ import com.cashly.cashly_api.platform.auth.authentication.domain.valueobjects.Au
 import com.cashly.cashly_api.platform.auth.token.domain.services.TokenService;
 import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
 

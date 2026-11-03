@@ -76,7 +76,7 @@ class AuthControllerUnitTest {
         LocalDateTime now = LocalDateTime.now();
         userResponse = new UserResponse("user-id", "test@example.com",
                 "Test User", UserRole.OPERATOR, true, false, false,
-                java.util.Set.of(), "John", "Doe", null, null,
+                "John", "Doe", null, null,
                 java.util.UUID
                         .fromString("10000000-0000-0000-0000-000000000001"),
                 java.util.UUID
@@ -86,7 +86,7 @@ class AuthControllerUnitTest {
         AuthenticatedEntityResponse entityResponse = new AuthenticatedEntityResponse(
                 "user-id", "test@example.com", "Test User",
                 AuthenticableType.USER, UserRole.OPERATOR, true,
-                java.util.Set.of(), now, now);
+                now, now);
 
         authenticationResponse = new AuthenticationResponse("access-token",
                 "refresh-token", "Bearer", 900000L, entityResponse);

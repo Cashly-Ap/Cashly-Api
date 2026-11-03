@@ -1,12 +1,9 @@
 package com.cashly.cashly_api.platform.auth.authentication.infrastructure.integration;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-
 import com.cashly.cashly_api.platform.auth.authentication.domain.entity.Authenticable;
 import com.cashly.cashly_api.platform.auth.authentication.domain.valueobjects.AuthenticableType;
 import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
 
 public class UserAuthenticableAdapter implements Authenticable {
@@ -68,11 +65,6 @@ public class UserAuthenticableAdapter implements Authenticable {
     @Override
     public LocalDateTime getUpdatedAt() {
         return user.getUpdatedAt();
-    }
-
-    @Override
-    public Set<BusinessModule> getModulePermissions() {
-        return user.getModulePermissions();
     }
 
     @Override

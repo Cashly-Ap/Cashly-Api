@@ -27,7 +27,6 @@ class UpdateOwnProfileUseCaseTest {
         user.updateProfile(new UserProfile("Old", "Name", null, null), role,
                 department);
         user.setAssignmentNames("Role", "Department");
-        user.grantPermission(BusinessModule.USERS);
         user.deactivate();
         user.verifyEmail();
         var password = user.getPassword();
@@ -57,8 +56,6 @@ class UpdateOwnProfileUseCaseTest {
         assertThat(response.roleName()).isEqualTo("Role");
         assertThat(response.departmentName()).isEqualTo("Department");
         assertThat(response.role()).isEqualTo(UserRole.OPERATOR);
-        assertThat(response.modulePermissions())
-                .containsExactly(BusinessModule.USERS);
         assertThat(response.email()).isEqualTo("own@example.com");
         assertThat(response.active()).isFalse();
         assertThat(response.emailVerified()).isTrue();

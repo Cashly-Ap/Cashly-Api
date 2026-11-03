@@ -5,10 +5,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -23,8 +19,6 @@ import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.platform.auth.token.domain.valueobjects.RefreshTokenId;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -60,9 +54,6 @@ public class JwtTokenService implements TokenService {
                 .claim("email", user.getEmail().getValue())
                 .claim("type", AuthenticableType.USER.name())
                 .claim("role", user.getRole().name())
-                .claim("modules",
-                        user.getModulePermissions().stream().map(Enum::name)
-                                .toList())
                 .issuedAt(now).expiration(expiryDate).signWith(secretKey)
                 .compact();
     }
@@ -81,9 +72,7 @@ public class JwtTokenService implements TokenService {
                 .claim("type", authenticable.getType().name()).issuedAt(now);
 
         if (authenticable.getType() == AuthenticableType.USER) {
-            builder.claim("role", authenticable.getRole().name())
-                    .claim("modules", authenticable.getModulePermissions()
-                            .stream().map(Enum::name).toList());
+            builder.claim("role", authenticable.getRole().name());
         }
 
         return builder.expiration(expiryDate).signWith(secretKey).compact();
@@ -170,25 +159,6 @@ public class JwtTokenService implements TokenService {
             return AuthenticableType.USER;
         }
         return AuthenticableType.valueOf(type);
-    }
-
-    @Override
-    public Optional<UserAccess> extractUserAccess(String token) {
-        Claims claims = extractClaims(token);
-        String role = claims.get("role", String.class);
-        if (role == null) {
-            return Optional.empty();
-        }
-
-        List<?> modules = claims.get("modules", List.class);
-        Set<BusinessModule> modulePermissions = modules == null
-                ? Set.of()
-                : modules.stream().map(String::valueOf)
-                        .map(BusinessModule::valueOf)
-                        .collect(Collectors.toUnmodifiableSet());
-
-        return Optional
-                .of(new UserAccess(UserRole.valueOf(role), modulePermissions));
     }
 
     @Override

@@ -17,9 +17,4 @@ public record PermissionCode(PermissionModule module, PermissionAction action) {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Unknown permission code: " + code));
     }
-
-    public static PermissionCode of(PermissionModule module,
-            PermissionAction action) {
-        return new PermissionCode(module, action);
-    }
 }

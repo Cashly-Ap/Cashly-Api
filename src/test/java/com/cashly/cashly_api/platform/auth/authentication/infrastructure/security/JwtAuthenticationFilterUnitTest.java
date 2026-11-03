@@ -69,7 +69,6 @@ class JwtAuthenticationFilterUnitTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()
                 .getName()).isEqualTo(USER_ID.toString());
         verify(access).resolve(USER_ID);
-        verify(tokens, never()).extractUserAccess(any());
         verify(chain).doFilter(request, response);
     }
 

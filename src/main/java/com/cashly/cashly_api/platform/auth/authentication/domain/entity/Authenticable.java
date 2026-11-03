@@ -3,9 +3,6 @@ package com.cashly.cashly_api.platform.auth.authentication.domain.entity;
 import com.cashly.cashly_api.platform.auth.authentication.domain.valueobjects.AuthenticableType;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
 
 public interface Authenticable {
@@ -36,9 +33,5 @@ public interface Authenticable {
 
     default UserRole getRole() {
         return null;
-    }
-
-    default Set<BusinessModule> getModulePermissions() {
-        return Set.of();
     }
 }
