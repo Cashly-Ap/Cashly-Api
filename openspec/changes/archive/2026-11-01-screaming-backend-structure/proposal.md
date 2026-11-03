@@ -29,7 +29,7 @@ Implementation during planning; new endpoints, overview classes, domain events, 
 
 ## Approach
 
-Use the prior [Warehouses/Customers plan](../../../docs/plans/warehouses-customers-screaming-plan.md), `module-map.md`, `design.md` and `verification-plan.md`. Relocate packages and references in compiling review units. Preserve mixed composition roots and existing synchronous transactions.
+Use the prior Warehouses/Customers plan (retired after the migration), `module-map.md`, `design.md` and `verification-plan.md`. Relocate packages and references in compiling review units. Preserve mixed composition roots and existing synchronous transactions.
 
 This change supersedes **only infrastructure layout** in active `application-package-naming`: use `infrastructure/web`, `integration` and persistence role directories. Directional `application/ports/in|out` and existing capability contracts remain. Do not edit or archive that change or main specs here.
 
