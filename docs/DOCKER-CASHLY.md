@@ -15,7 +15,7 @@ Este comando se ejecuta desde `Cashly-Api`. Las rutas de construcción se resuel
 
 ## Variables locales
 
-El `.env` de la carpeta Cashly se ha generado con valores aleatorios y permanece fuera de Git. En una instalación nueva, crea ese archivo a partir de `.env.cashly.example` y rellena `CASHLY_DB_PASSWORD`, `CASHLY_DB_ROOT_PASSWORD`, `CASHLY_STORAGE_PASSWORD` y `CASHLY_JWT_SECRET`. Usa secretos distintos; JWT debe tener al menos 32 bytes de entropía. No reutilices secretos de otro proyecto ni pongas credenciales en URLs.
+El `.env` de la carpeta Cashly se ha generado con valores aleatorios y permanece fuera de Git. En una instalación nueva, crea ese archivo y rellena `CASHLY_DB_PASSWORD`, `CASHLY_DB_ROOT_PASSWORD`, `CASHLY_STORAGE_PASSWORD` y `CASHLY_JWT_SECRET`. Usa secretos distintos; JWT debe tener al menos 32 bytes de entropía. No reutilices secretos de otro proyecto ni pongas credenciales en URLs.
 
 Compose exige estas variables. El volumen externo `cashly-maven-cache` solo guarda dependencias Maven; se crea con el comando anterior.
 
