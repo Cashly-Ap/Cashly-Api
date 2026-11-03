@@ -191,4 +191,3 @@ graph TD
 | Roadmap | [ROADMAP.md](ROADMAP.md) |
 | Setup Guide | [SETUP.md](SETUP.md) |
 | Testing Strategy | [TESTING.md](TESTING.md) |
-| Deployment | [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md) |
