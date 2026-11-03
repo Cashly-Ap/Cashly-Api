@@ -37,7 +37,7 @@ public class RegisterUserUseCase {
     public UserResponse execute(RegisterUserRequest request) {
         access.lockAdministration();
         access.require(
-                com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS,
+                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule.USERS,
                 com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CREATE);
         access.validateAssignment(request.roleId(), request.departmentId());
         Email email = new Email(request.email());

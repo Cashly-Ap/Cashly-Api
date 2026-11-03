@@ -5,13 +5,16 @@ import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionCode;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,9 +32,9 @@ public class ManageRolesUseCase {
     }
 
     public record Request(String name, String description, Boolean active,
-            Long version,
-            Map<BusinessModule, Set<PermissionAction>> permissions) {
+            Long version, Set<String> permissions) {
     }
+
     public record Option(UUID id, String name) {
     }
 
@@ -44,14 +47,14 @@ public class ManageRolesUseCase {
     }
 
     public List<Role> list(ListAction action) {
-        access.require(BusinessModule.ROLES, PermissionAction.READ);
+        access.require(PermissionModule.ROLES, PermissionAction.VIEW_LIST);
         if (action == ListAction.EDIT) {
-            access.require(BusinessModule.ROLES, PermissionAction.UPDATE);
+            access.require(PermissionModule.ROLES, PermissionAction.EDIT);
             return repository.editableRoles().stream().filter(this::assignable)
                     .toList();
         }
         if (action == ListAction.DELETE) {
-            access.require(BusinessModule.ROLES, PermissionAction.DELETE);
+            access.require(PermissionModule.ROLES, PermissionAction.DELETE);
             return repository.roles().stream()
                     .filter(role -> !role.systemAdministrator())
                     .filter(role -> !repository.roleReferenced(role.id()))
@@ -62,7 +65,7 @@ public class ManageRolesUseCase {
     }
 
     public Role find(UUID id) {
-        access.require(BusinessModule.ROLES, PermissionAction.READ);
+        access.require(PermissionModule.ROLES, PermissionAction.VIEW_DETAIL);
         return existing(id);
     }
 
@@ -83,11 +86,10 @@ public class ManageRolesUseCase {
     }
 
     private void requireAssignment() {
-        var permissions = access.current().permissions()
-                .getOrDefault(BusinessModule.USERS, Set.of());
-        if (!permissions.contains(PermissionAction.READ)
-                || (!permissions.contains(PermissionAction.CREATE)
-                        && !permissions.contains(PermissionAction.UPDATE))) {
+        var permissions = access.current().permissions();
+        if (!permissions.contains("USERS_VIEW_LIST")
+                || (!permissions.contains("USERS_CREATE")
+                        && !permissions.contains("USERS_EDIT"))) {
             throw new AccessDeniedException("User administration required");
         }
     }
@@ -96,8 +98,9 @@ public class ManageRolesUseCase {
     public Role save(UUID id, Request request) {
         repository.lockAdministration();
         boolean create = id == null;
-        access.require(BusinessModule.ROLES,
-                create ? PermissionAction.CREATE : PermissionAction.UPDATE);
+        access.require(PermissionModule.ROLES, create
+                ? PermissionAction.CREATE
+                : PermissionAction.EDIT);
         if (!create) {
             var previous = existing(id);
             if (previous.systemAdministrator()) {
@@ -112,7 +115,8 @@ public class ManageRolesUseCase {
         var role = new Role(create ? UUID.randomUUID() : id, request.name(),
                 request.description(),
                 request.active() == null || request.active(),
-                create ? 0 : request.version(), null, request.permissions());
+                create ? 0 : request.version(), null,
+                permissions(request.permissions()));
         if (repository.roles().stream()
                 .anyMatch(other -> !other.id().equals(role.id())
                         && other.name().equalsIgnoreCase(role.name()))) {
@@ -130,7 +134,7 @@ public class ManageRolesUseCase {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void delete(UUID id) {
         repository.lockAdministration();
-        access.require(BusinessModule.ROLES, PermissionAction.DELETE);
+        access.require(PermissionModule.ROLES, PermissionAction.DELETE);
         var role = existing(id);
         if (role.systemAdministrator() || repository.roleReferenced(id)) {
             throw new AccessConflictException(
@@ -138,6 +142,22 @@ public class ManageRolesUseCase {
         }
         access.delegable(role);
         repository.deleteRole(id);
+    }
+
+    private Map<PermissionModule, Set<PermissionAction>> permissions(
+            Set<String> codes) {
+        var result = new EnumMap<PermissionModule, Set<PermissionAction>>(
+                PermissionModule.class);
+        if (codes == null) {
+            return result;
+        }
+        codes.forEach(code -> {
+            var permission = PermissionCode.parse(code);
+            result.computeIfAbsent(permission.module(),
+                    key -> EnumSet.noneOf(PermissionAction.class))
+                    .add(permission.action());
+        });
+        return result;
     }
 
     private Role existing(UUID id) {

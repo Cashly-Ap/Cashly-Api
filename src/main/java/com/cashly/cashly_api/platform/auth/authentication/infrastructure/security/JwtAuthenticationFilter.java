@@ -75,11 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String subjectId) {
         var access = accessService.resolve(UUID.fromString(subjectId));
         List<GrantedAuthority> authorities = new ArrayList<>();
-        // Legacy enum/claims never decide access. Only persisted current grants do.
-        access.permissions()
-                .forEach((module, actions) -> actions.forEach(
-                        action -> authorities.add(new SimpleGrantedAuthority(
-                                module.name() + ":" + action.name()))));
+        access.permissions().forEach(
+                code -> authorities.add(new SimpleGrantedAuthority(code)));
         var authentication = new UsernamePasswordAuthenticationToken(subjectId,
                 null, authorities);
         authentication.setDetails(

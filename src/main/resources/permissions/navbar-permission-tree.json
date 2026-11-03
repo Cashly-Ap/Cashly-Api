@@ -1,94 +1,126 @@
 {
-  "version": 1,
-  "source": "cashly-app/src/app/core/layouts/config/menu.config.ts and list-navigation.config.ts",
+  "version": 2,
+  "source": "PermissionCatalog",
   "areas": [
     {
       "area": "SALES",
-      "label": "Ventas",
-      "children": [
+      "labelKey": "platform.auth.areas.sales",
+      "submodules": [
         {
-          "label": "Presupuestos",
-          "route": "/sales/quotes",
-          "module": "SALES_QUOTES",
-          "children": [
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.sales",
+          "domains": [
             {
-              "label": "Ver presupuestos",
-              "route": "/sales/quotes",
-              "permission": "SALES_QUOTES:READ"
+              "module": "SALES_QUOTES",
+              "labelKey": "platform.auth.domains.sales_quotes",
+              "permissions": [
+                {
+                  "code": "SALES_QUOTES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.sales_quotes.view_list",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.view_list.description"
+                },
+                {
+                  "code": "SALES_QUOTES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.sales_quotes.view_detail",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.view_detail.description"
+                },
+                {
+                  "code": "SALES_QUOTES_EDIT",
+                  "labelKey": "platform.auth.permissions.sales_quotes.edit",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.edit.description"
+                },
+                {
+                  "code": "SALES_QUOTES_DELETE",
+                  "labelKey": "platform.auth.permissions.sales_quotes.delete",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.delete.description"
+                },
+                {
+                  "code": "SALES_QUOTES_CREATE",
+                  "labelKey": "platform.auth.permissions.sales_quotes.create",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.create.description"
+                },
+                {
+                  "code": "SALES_QUOTES_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.sales_quotes.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.report_pdf.description"
+                },
+                {
+                  "code": "SALES_QUOTES_DOWNLOAD_PDF",
+                  "labelKey": "platform.auth.permissions.sales_quotes.download_pdf",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.download_pdf.description"
+                },
+                {
+                  "code": "SALES_QUOTES_CONVERT_TO_ORDER",
+                  "labelKey": "platform.auth.permissions.sales_quotes.convert_to_order",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.convert_to_order.description"
+                },
+                {
+                  "code": "SALES_QUOTES_CONVERT_TO_INVOICE",
+                  "labelKey": "platform.auth.permissions.sales_quotes.convert_to_invoice",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.convert_to_invoice.description"
+                },
+                {
+                  "code": "SALES_QUOTES_CANCEL",
+                  "labelKey": "platform.auth.permissions.sales_quotes.cancel",
+                  "descriptionKey": "platform.auth.permissions.sales_quotes.cancel.description"
+                }
+              ]
             },
             {
-              "label": "Ver detalle de presupuesto",
-              "permission": "SALES_QUOTES:READ"
-            },
-            {
-              "label": "Editar presupuesto",
-              "permission": "SALES_QUOTES:UPDATE"
-            },
-            {
-              "label": "Crear presupuesto",
-              "route": "/sales/quotes/new",
-              "permission": "SALES_QUOTES:CREATE"
-            },
-            {
-              "label": "Descargar PDF de presupuesto",
-              "permission": "SALES_QUOTES:EXPORT"
-            },
-            {
-              "label": "Convertir a pedido",
-              "permission": "SALES_ORDERS:CREATE"
-            },
-            {
-              "label": "Convertir a factura",
-              "permission": "FINANCE_INVOICES:CREATE"
-            },
-            {
-              "label": "Reporte de Presupuestos PDF",
-              "permission": "SALES_QUOTES:EXPORT"
-            }
-          ]
-        },
-        {
-          "label": "Pedidos",
-          "route": "/sales/orders",
-          "module": "SALES_ORDERS",
-          "children": [
-            {
-              "label": "Ver pedidos",
-              "route": "/sales/orders",
-              "permission": "SALES_ORDERS:READ"
-            },
-            {
-              "label": "Ver detalle de pedido",
-              "permission": "SALES_ORDERS:READ"
-            },
-            {
-              "label": "Editar pedido",
-              "permission": "SALES_ORDERS:UPDATE"
-            },
-            {
-              "label": "Crear pedido",
-              "route": "/sales/orders/new",
-              "permission": "SALES_ORDERS:CREATE"
-            },
-            {
-              "label": "Descargar PDF de pedido",
-              "permission": "SALES_ORDERS:EXPORT"
-            },
-            {
-              "label": "Confirmar pedido",
-              "permission": "SALES_ORDERS:CONFIRM"
-            },
-            {
-              "label": "Convertir a factura",
-              "permission": "FINANCE_INVOICES:CREATE"
-            },
-            {
-              "label": "Cancelar pedido",
-              "permission": "SALES_ORDERS:CANCEL"
-            },
-            {
-              "label": "Reporte de Pedidos PDF",
-              "permission": "SALES_ORDERS:EXPORT"
+              "module": "SALES_ORDERS",
+              "labelKey": "platform.auth.domains.sales_orders",
+              "permissions": [
+                {
+                  "code": "SALES_ORDERS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.sales_orders.view_list",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.view_list.description"
+                },
+                {
+                  "code": "SALES_ORDERS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.sales_orders.view_detail",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.view_detail.description"
+                },
+                {
+                  "code": "SALES_ORDERS_EDIT",
+                  "labelKey": "platform.auth.permissions.sales_orders.edit",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.edit.description"
+                },
+                {
+                  "code": "SALES_ORDERS_DELETE",
+                  "labelKey": "platform.auth.permissions.sales_orders.delete",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.delete.description"
+                },
+                {
+                  "code": "SALES_ORDERS_CREATE",
+                  "labelKey": "platform.auth.permissions.sales_orders.create",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.create.description"
+                },
+                {
+                  "code": "SALES_ORDERS_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.sales_orders.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.report_pdf.description"
+                },
+                {
+                  "code": "SALES_ORDERS_DOWNLOAD_PDF",
+                  "labelKey": "platform.auth.permissions.sales_orders.download_pdf",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.download_pdf.description"
+                },
+                {
+                  "code": "SALES_ORDERS_CONFIRM",
+                  "labelKey": "platform.auth.permissions.sales_orders.confirm",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.confirm.description"
+                },
+                {
+                  "code": "SALES_ORDERS_CONVERT_TO_INVOICE",
+                  "labelKey": "platform.auth.permissions.sales_orders.convert_to_invoice",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.convert_to_invoice.description"
+                },
+                {
+                  "code": "SALES_ORDERS_CANCEL",
+                  "labelKey": "platform.auth.permissions.sales_orders.cancel",
+                  "descriptionKey": "platform.auth.permissions.sales_orders.cancel.description"
+                }
+              ]
             }
           ]
         }
@@ -96,46 +128,62 @@
     },
     {
       "area": "PURCHASES",
-      "label": "Compras",
-      "children": [
+      "labelKey": "platform.auth.areas.purchases",
+      "submodules": [
         {
-          "label": "Compras",
-          "route": "/procurement/purchases",
-          "module": "PURCHASES",
-          "children": [
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.purchases",
+          "domains": [
             {
-              "label": "Ver compras",
-              "route": "/procurement/purchases",
-              "permission": "PURCHASES:READ"
-            },
-            {
-              "label": "Ver detalle de compra",
-              "permission": "PURCHASES:READ"
-            },
-            {
-              "label": "Editar compra",
-              "permission": "PURCHASES:UPDATE"
-            },
-            {
-              "label": "Crear compra",
-              "route": "/procurement/purchases/new",
-              "permission": "PURCHASES:CREATE"
-            },
-            {
-              "label": "Descargar PDF de compra",
-              "permission": "PURCHASES:EXPORT"
-            },
-            {
-              "label": "Confirmar compra",
-              "permission": "PURCHASES:CONFIRM"
-            },
-            {
-              "label": "Cancelar compra",
-              "permission": "PURCHASES:CANCEL"
-            },
-            {
-              "label": "Reporte de Compras PDF",
-              "permission": "PURCHASES:EXPORT"
+              "module": "PURCHASES",
+              "labelKey": "platform.auth.domains.purchases",
+              "permissions": [
+                {
+                  "code": "PURCHASES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.purchases.view_list",
+                  "descriptionKey": "platform.auth.permissions.purchases.view_list.description"
+                },
+                {
+                  "code": "PURCHASES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.purchases.view_detail",
+                  "descriptionKey": "platform.auth.permissions.purchases.view_detail.description"
+                },
+                {
+                  "code": "PURCHASES_EDIT",
+                  "labelKey": "platform.auth.permissions.purchases.edit",
+                  "descriptionKey": "platform.auth.permissions.purchases.edit.description"
+                },
+                {
+                  "code": "PURCHASES_DELETE",
+                  "labelKey": "platform.auth.permissions.purchases.delete",
+                  "descriptionKey": "platform.auth.permissions.purchases.delete.description"
+                },
+                {
+                  "code": "PURCHASES_CREATE",
+                  "labelKey": "platform.auth.permissions.purchases.create",
+                  "descriptionKey": "platform.auth.permissions.purchases.create.description"
+                },
+                {
+                  "code": "PURCHASES_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.purchases.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.purchases.report_pdf.description"
+                },
+                {
+                  "code": "PURCHASES_DOWNLOAD_PDF",
+                  "labelKey": "platform.auth.permissions.purchases.download_pdf",
+                  "descriptionKey": "platform.auth.permissions.purchases.download_pdf.description"
+                },
+                {
+                  "code": "PURCHASES_CONFIRM",
+                  "labelKey": "platform.auth.permissions.purchases.confirm",
+                  "descriptionKey": "platform.auth.permissions.purchases.confirm.description"
+                },
+                {
+                  "code": "PURCHASES_CANCEL",
+                  "labelKey": "platform.auth.permissions.purchases.cancel",
+                  "descriptionKey": "platform.auth.permissions.purchases.cancel.description"
+                }
+              ]
             }
           ]
         }
@@ -143,88 +191,114 @@
     },
     {
       "area": "CATALOG",
-      "label": "Catálogo",
-      "children": [
+      "labelKey": "platform.auth.areas.catalog",
+      "submodules": [
         {
-          "label": "Productos",
-          "route": "/catalog/products",
-          "module": "CATALOG_PRODUCTS",
-          "children": [
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.catalog",
+          "domains": [
             {
-              "label": "Ver productos",
-              "route": "/catalog/products",
-              "permission": "CATALOG_PRODUCTS:READ"
+              "module": "CATALOG_PRODUCTS",
+              "labelKey": "platform.auth.domains.catalog_products",
+              "permissions": [
+                {
+                  "code": "CATALOG_PRODUCTS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.catalog_products.view_list",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.view_list.description"
+                },
+                {
+                  "code": "CATALOG_PRODUCTS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.catalog_products.view_detail",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.view_detail.description"
+                },
+                {
+                  "code": "CATALOG_PRODUCTS_EDIT",
+                  "labelKey": "platform.auth.permissions.catalog_products.edit",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.edit.description"
+                },
+                {
+                  "code": "CATALOG_PRODUCTS_DELETE",
+                  "labelKey": "platform.auth.permissions.catalog_products.delete",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.delete.description"
+                },
+                {
+                  "code": "CATALOG_PRODUCTS_CREATE",
+                  "labelKey": "platform.auth.permissions.catalog_products.create",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.create.description"
+                },
+                {
+                  "code": "CATALOG_PRODUCTS_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.catalog_products.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.report_pdf.description"
+                },
+                {
+                  "code": "CATALOG_PRODUCTS_COMMERCIAL_CATALOG_PDF",
+                  "labelKey": "platform.auth.permissions.catalog_products.commercial_catalog_pdf",
+                  "descriptionKey": "platform.auth.permissions.catalog_products.commercial_catalog_pdf.description"
+                }
+              ]
             },
             {
-              "label": "Ver detalle de producto",
-              "permission": "CATALOG_PRODUCTS:READ"
+              "module": "CATALOG_CATEGORIES",
+              "labelKey": "platform.auth.domains.catalog_categories",
+              "permissions": [
+                {
+                  "code": "CATALOG_CATEGORIES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.catalog_categories.view_list",
+                  "descriptionKey": "platform.auth.permissions.catalog_categories.view_list.description"
+                },
+                {
+                  "code": "CATALOG_CATEGORIES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.catalog_categories.view_detail",
+                  "descriptionKey": "platform.auth.permissions.catalog_categories.view_detail.description"
+                },
+                {
+                  "code": "CATALOG_CATEGORIES_EDIT",
+                  "labelKey": "platform.auth.permissions.catalog_categories.edit",
+                  "descriptionKey": "platform.auth.permissions.catalog_categories.edit.description"
+                },
+                {
+                  "code": "CATALOG_CATEGORIES_DELETE",
+                  "labelKey": "platform.auth.permissions.catalog_categories.delete",
+                  "descriptionKey": "platform.auth.permissions.catalog_categories.delete.description"
+                },
+                {
+                  "code": "CATALOG_CATEGORIES_CREATE",
+                  "labelKey": "platform.auth.permissions.catalog_categories.create",
+                  "descriptionKey": "platform.auth.permissions.catalog_categories.create.description"
+                }
+              ]
             },
             {
-              "label": "Editar producto",
-              "permission": "CATALOG_PRODUCTS:UPDATE"
-            },
-            {
-              "label": "Crear producto",
-              "route": "/catalog/products/new",
-              "permission": "CATALOG_PRODUCTS:CREATE"
-            },
-            {
-              "label": "Reporte de Productos PDF",
-              "permission": "CATALOG_PRODUCTS:EXPORT"
-            },
-            {
-              "label": "Catálogo Comercial PDF",
-              "permission": "CATALOG_PRODUCTS:EXPORT"
-            }
-          ]
-        },
-        {
-          "label": "Categorías",
-          "route": "/catalog/categories",
-          "module": "CATALOG_CATEGORIES",
-          "children": [
-            {
-              "label": "Ver categorías",
-              "route": "/catalog/categories",
-              "permission": "CATALOG_CATEGORIES:READ"
-            },
-            {
-              "label": "Ver detalle de categoría",
-              "permission": "CATALOG_CATEGORIES:READ"
-            },
-            {
-              "label": "Editar categoría",
-              "permission": "CATALOG_CATEGORIES:UPDATE"
-            },
-            {
-              "label": "Crear categoría",
-              "route": "/catalog/categories/new",
-              "permission": "CATALOG_CATEGORIES:CREATE"
-            }
-          ]
-        },
-        {
-          "label": "Tipos de precios",
-          "route": "/catalog/price-types",
-          "module": "CATALOG_PRICES",
-          "children": [
-            {
-              "label": "Ver tipos de precios",
-              "route": "/catalog/price-types",
-              "permission": "CATALOG_PRICES:READ"
-            },
-            {
-              "label": "Ver detalle de tipo de precio",
-              "permission": "CATALOG_PRICES:READ"
-            },
-            {
-              "label": "Editar tipo de precio",
-              "permission": "CATALOG_PRICES:UPDATE"
-            },
-            {
-              "label": "Crear tipo de precio",
-              "route": "/catalog/price-types/new",
-              "permission": "CATALOG_PRICES:CREATE"
+              "module": "CATALOG_PRICES",
+              "labelKey": "platform.auth.domains.catalog_prices",
+              "permissions": [
+                {
+                  "code": "CATALOG_PRICES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.catalog_prices.view_list",
+                  "descriptionKey": "platform.auth.permissions.catalog_prices.view_list.description"
+                },
+                {
+                  "code": "CATALOG_PRICES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.catalog_prices.view_detail",
+                  "descriptionKey": "platform.auth.permissions.catalog_prices.view_detail.description"
+                },
+                {
+                  "code": "CATALOG_PRICES_EDIT",
+                  "labelKey": "platform.auth.permissions.catalog_prices.edit",
+                  "descriptionKey": "platform.auth.permissions.catalog_prices.edit.description"
+                },
+                {
+                  "code": "CATALOG_PRICES_DELETE",
+                  "labelKey": "platform.auth.permissions.catalog_prices.delete",
+                  "descriptionKey": "platform.auth.permissions.catalog_prices.delete.description"
+                },
+                {
+                  "code": "CATALOG_PRICES_CREATE",
+                  "labelKey": "platform.auth.permissions.catalog_prices.create",
+                  "descriptionKey": "platform.auth.permissions.catalog_prices.create.description"
+                }
+              ]
             }
           ]
         }
@@ -232,53 +306,70 @@
     },
     {
       "area": "INVENTORY",
-      "label": "Inventario",
-      "children": [
+      "labelKey": "platform.auth.areas.inventory",
+      "submodules": [
         {
-          "label": "Almacenes",
-          "route": "/inventory/warehouses",
-          "module": "INVENTORY_WAREHOUSES",
-          "children": [
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.inventory",
+          "domains": [
             {
-              "label": "Ver almacenes",
-              "route": "/inventory/warehouses",
-              "permission": "INVENTORY_WAREHOUSES:READ"
-            },
-            {
-              "label": "Ver detalle de almacén",
-              "permission": "INVENTORY_WAREHOUSES:READ"
-            },
-            {
-              "label": "Editar almacén",
-              "permission": "INVENTORY_WAREHOUSES:UPDATE"
-            },
-            {
-              "label": "Crear almacén",
-              "route": "/inventory/warehouses/new",
-              "permission": "INVENTORY_WAREHOUSES:CREATE"
-            },
-            {
-              "label": "Ver stock",
-              "route": "/inventory/warehouses/stock"
-            },
-            {
-              "label": "Registrar entrada"
-            },
-            {
-              "label": "Registrar salida"
-            },
-            {
-              "label": "Historial de movimientos",
-              "route": "/inventory/warehouses/movements"
-            },
-            {
-              "label": "Reportes",
-              "children": [
+              "module": "INVENTORY_WAREHOUSES",
+              "labelKey": "platform.auth.domains.inventory_warehouses",
+              "permissions": [
                 {
-                  "label": "Stock"
+                  "code": "INVENTORY_WAREHOUSES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.view_list",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.view_list.description"
                 },
                 {
-                  "label": "Movimientos"
+                  "code": "INVENTORY_WAREHOUSES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.view_detail",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.view_detail.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_EDIT",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.edit",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.edit.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_DELETE",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.delete",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.delete.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_CREATE",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.create",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.create.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_VIEW_STOCK",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.view_stock",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.view_stock.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_MOVEMENT_HISTORY",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.movement_history",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.movement_history.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_RECORD_ENTRY",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.record_entry",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.record_entry.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_RECORD_EXIT",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.record_exit",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.record_exit.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_REPORT_STOCK",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.report_stock",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.report_stock.description"
+                },
+                {
+                  "code": "INVENTORY_WAREHOUSES_REPORT_MOVEMENTS",
+                  "labelKey": "platform.auth.permissions.inventory_warehouses.report_movements",
+                  "descriptionKey": "platform.auth.permissions.inventory_warehouses.report_movements.description"
                 }
               ]
             }
@@ -288,222 +379,287 @@
     },
     {
       "area": "FINANCE",
-      "label": "Finanzas",
-      "children": [
+      "labelKey": "platform.auth.areas.finance",
+      "submodules": [
         {
-          "label": "Facturación",
-          "children": [
+          "submodule": "FINANCE_BILLING",
+          "labelKey": "platform.auth.submodules.finance_billing",
+          "domains": [
             {
-              "label": "Facturas",
-              "route": "/finance/billing/invoices",
-              "module": "FINANCE_INVOICES",
-              "children": [
+              "module": "FINANCE_BILLING_INVOICES",
+              "labelKey": "platform.auth.domains.finance_billing_invoices",
+              "permissions": [
                 {
-                  "label": "Ver facturas",
-                  "route": "/finance/billing/invoices",
-                  "permission": "FINANCE_INVOICES:READ"
+                  "code": "FINANCE_BILLING_INVOICES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.view_list.description"
                 },
                 {
-                  "label": "Ver detalle de factura",
-                  "permission": "FINANCE_INVOICES:READ"
+                  "code": "FINANCE_BILLING_INVOICES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.view_detail",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.view_detail.description"
                 },
                 {
-                  "label": "Editar factura",
-                  "permission": "FINANCE_INVOICES:UPDATE"
+                  "code": "FINANCE_BILLING_INVOICES_EDIT",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.edit",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.edit.description"
                 },
                 {
-                  "label": "Crear factura",
-                  "route": "/finance/billing/invoices/new",
-                  "permission": "FINANCE_INVOICES:CREATE"
+                  "code": "FINANCE_BILLING_INVOICES_DELETE",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.delete",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.delete.description"
                 },
                 {
-                  "label": "Descargar PDF de factura",
-                  "permission": "FINANCE_INVOICES:EXPORT"
+                  "code": "FINANCE_BILLING_INVOICES_CREATE",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.create",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.create.description"
                 },
                 {
-                  "label": "Confirmar factura",
-                  "permission": "FINANCE_INVOICES:CONFIRM"
+                  "code": "FINANCE_BILLING_INVOICES_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.report_pdf.description"
                 },
                 {
-                  "label": "Cancelar factura",
-                  "permission": "FINANCE_INVOICES:CANCEL"
+                  "code": "FINANCE_BILLING_INVOICES_DOWNLOAD_PDF",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.download_pdf",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.download_pdf.description"
                 },
                 {
-                  "label": "Duplicar factura",
-                  "permission": "FINANCE_INVOICES:DUPLICATE"
+                  "code": "FINANCE_BILLING_INVOICES_CONFIRM",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.confirm",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.confirm.description"
                 },
                 {
-                  "label": "Reporte de Facturas PDF",
-                  "permission": "FINANCE_INVOICES:EXPORT"
+                  "code": "FINANCE_BILLING_INVOICES_CANCEL",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.cancel",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.cancel.description"
+                },
+                {
+                  "code": "FINANCE_BILLING_INVOICES_DUPLICATE",
+                  "labelKey": "platform.auth.permissions.finance_billing_invoices.duplicate",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.duplicate.description"
                 }
               ]
             },
             {
-              "label": "Devoluciones",
-              "route": "/finance/billing/returns",
-              "module": "FINANCE_RETURNS",
-              "children": [
+              "module": "FINANCE_BILLING_RETURNS",
+              "labelKey": "platform.auth.domains.finance_billing_returns",
+              "permissions": [
                 {
-                  "label": "Ver devoluciones",
-                  "route": "/finance/billing/returns",
-                  "permission": "FINANCE_RETURNS:READ"
+                  "code": "FINANCE_BILLING_RETURNS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_billing_returns.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.view_list.description"
                 },
                 {
-                  "label": "Ver detalle de devolución",
-                  "permission": "FINANCE_RETURNS:READ"
+                  "code": "FINANCE_BILLING_RETURNS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.finance_billing_returns.view_detail",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.view_detail.description"
                 },
                 {
-                  "label": "Crear devolución",
-                  "route": "/finance/billing/returns/new",
-                  "permission": "FINANCE_RETURNS:CREATE"
+                  "code": "FINANCE_BILLING_RETURNS_DELETE",
+                  "labelKey": "platform.auth.permissions.finance_billing_returns.delete",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.delete.description"
+                },
+                {
+                  "code": "FINANCE_BILLING_RETURNS_CREATE",
+                  "labelKey": "platform.auth.permissions.finance_billing_returns.create",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.create.description"
                 }
               ]
             },
             {
-              "label": "Notas de crédito",
-              "route": "/finance/billing/credit-notes",
-              "module": "FINANCE_CREDIT_NOTES",
-              "children": [
+              "module": "FINANCE_BILLING_CREDIT_NOTES",
+              "labelKey": "platform.auth.domains.finance_billing_credit_notes",
+              "permissions": [
                 {
-                  "label": "Ver notas de crédito",
-                  "route": "/finance/billing/credit-notes",
-                  "permission": "FINANCE_CREDIT_NOTES:READ"
+                  "code": "FINANCE_BILLING_CREDIT_NOTES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.view_list.description"
                 },
                 {
-                  "label": "Ver detalle de nota de crédito",
-                  "permission": "FINANCE_CREDIT_NOTES:READ"
+                  "code": "FINANCE_BILLING_CREDIT_NOTES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.view_detail",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.view_detail.description"
                 },
                 {
-                  "label": "Crear nota de crédito",
-                  "route": "/finance/billing/credit-notes/new",
-                  "permission": "FINANCE_CREDIT_NOTES:CREATE"
+                  "code": "FINANCE_BILLING_CREDIT_NOTES_DELETE",
+                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.delete",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.delete.description"
+                },
+                {
+                  "code": "FINANCE_BILLING_CREDIT_NOTES_CREATE",
+                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.create",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.create.description"
                 }
               ]
             },
             {
-              "label": "Notas de débito",
-              "route": "/finance/billing/debit-notes",
-              "module": "FINANCE_DEBIT_NOTES",
-              "children": [
+              "module": "FINANCE_BILLING_DEBIT_NOTES",
+              "labelKey": "platform.auth.domains.finance_billing_debit_notes",
+              "permissions": [
                 {
-                  "label": "Ver notas de débito",
-                  "route": "/finance/billing/debit-notes",
-                  "permission": "FINANCE_DEBIT_NOTES:READ"
+                  "code": "FINANCE_BILLING_DEBIT_NOTES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.view_list.description"
                 },
                 {
-                  "label": "Ver detalle de nota de débito",
-                  "permission": "FINANCE_DEBIT_NOTES:READ"
+                  "code": "FINANCE_BILLING_DEBIT_NOTES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.view_detail",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.view_detail.description"
                 },
                 {
-                  "label": "Crear nota de débito",
-                  "route": "/finance/billing/debit-notes/new",
-                  "permission": "FINANCE_DEBIT_NOTES:CREATE"
+                  "code": "FINANCE_BILLING_DEBIT_NOTES_DELETE",
+                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.delete",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.delete.description"
+                },
+                {
+                  "code": "FINANCE_BILLING_DEBIT_NOTES_CREATE",
+                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.create",
+                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.create.description"
                 }
               ]
             }
           ]
         },
         {
-          "label": "Tesorería",
-          "children": [
+          "submodule": "FINANCE_TREASURY",
+          "labelKey": "platform.auth.submodules.finance_treasury",
+          "domains": [
             {
-              "label": "Caja",
-              "route": "/finance/treasury/cash-register",
-              "module": "FINANCE_CASH_REGISTER",
-              "children": [
+              "module": "FINANCE_TREASURY_CASH_REGISTER",
+              "labelKey": "platform.auth.domains.finance_treasury_cash_register",
+              "permissions": [
                 {
-                  "label": "Ver caja",
-                  "route": "/finance/treasury/cash-register",
-                  "permission": "FINANCE_CASH_REGISTER:READ"
+                  "code": "FINANCE_TREASURY_CASH_REGISTER_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.view_list.description"
                 },
                 {
-                  "label": "Ver detalles",
-                  "permission": "FINANCE_CASH_REGISTER:READ"
+                  "code": "FINANCE_TREASURY_CASH_REGISTER_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.view_detail",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.view_detail.description"
                 },
                 {
-                  "label": "Historial de caja",
-                  "route": "/finance/treasury/cash-register/history"
+                  "code": "FINANCE_TREASURY_CASH_REGISTER_CASH_HISTORY",
+                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.cash_history",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.cash_history.description"
                 },
                 {
-                  "label": "Abrir caja",
-                  "permission": "FINANCE_CASH_REGISTER:EXECUTE"
+                  "code": "FINANCE_TREASURY_CASH_REGISTER_REPORT_CASH_REGISTER",
+                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.report_cash_register",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.report_cash_register.description"
                 },
                 {
-                  "label": "Cerrar caja",
-                  "permission": "FINANCE_CASH_REGISTER:EXECUTE"
+                  "code": "FINANCE_TREASURY_CASH_REGISTER_OPEN",
+                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.open",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.open.description"
                 },
                 {
-                  "label": "Reportes de Caja",
-                  "permission": "FINANCE_CASH_REGISTER:EXPORT"
+                  "code": "FINANCE_TREASURY_CASH_REGISTER_CLOSE",
+                  "labelKey": "platform.auth.permissions.finance_treasury_cash_register.close",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_cash_register.close.description"
                 }
               ]
             },
             {
-              "label": "Cuentas por cobrar",
-              "route": "/finance/treasury/receivables",
-              "module": "FINANCE_RECEIVABLES",
-              "children": [
+              "module": "FINANCE_TREASURY_RECEIVABLES",
+              "labelKey": "platform.auth.domains.finance_treasury_receivables",
+              "permissions": [
                 {
-                  "label": "Ver cuentas por cobrar",
-                  "route": "/finance/treasury/receivables",
-                   "permission": "FINANCE_RECEIVABLES:READ"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.view_list.description"
                 },
                 {
-                  "label": "Ver deuda",
-                   "permission": "FINANCE_RECEIVABLES:DETAILS"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_VIEW_DEBT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.view_debt",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.view_debt.description"
                 },
                 {
-                  "label": "Pagar todo",
-                   "permission": "FINANCE_RECEIVABLES:PAY_ALL"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.report_pdf.description"
                 },
                 {
-                  "label": "Pago parcial",
-                   "permission": "FINANCE_RECEIVABLES:PARTIAL_PAYMENT"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_PAY_ALL",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.pay_all",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.pay_all.description"
                 },
                 {
-                  "label": "Reintegro",
-                   "permission": "FINANCE_RECEIVABLES:REFUND"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_PARTIAL_PAYMENT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.partial_payment",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.partial_payment.description"
                 },
                 {
-                  "label": "Generar anticipo",
-                   "permission": "FINANCE_RECEIVABLES:ADVANCE"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_PAY_DIRECT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.pay_direct",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.pay_direct.description"
                 },
                 {
-                  "label": "Aprobar pago",
-                   "permission": "FINANCE_RECEIVABLES:APPROVE_PAYMENT"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_PAY_WITH_VALIDATION",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.pay_with_validation",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.pay_with_validation.description"
                 },
                 {
-                  "label": "Rechazar pago",
-                   "permission": "FINANCE_RECEIVABLES:REJECT_PAYMENT"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_REFUND",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.refund",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.refund.description"
                 },
                 {
-                  "label": "Cuentas por Cobrar PDF",
-                   "permission": "FINANCE_RECEIVABLES:REPORT"
+                  "code": "FINANCE_TREASURY_RECEIVABLES_ADVANCE",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.advance",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.advance.description"
+                },
+                {
+                  "code": "FINANCE_TREASURY_RECEIVABLES_APPROVE_PAYMENT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.approve_payment",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.approve_payment.description"
+                },
+                {
+                  "code": "FINANCE_TREASURY_RECEIVABLES_REJECT_PAYMENT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.reject_payment",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.reject_payment.description"
+                },
+                {
+                  "code": "FINANCE_TREASURY_RECEIVABLES_EDIT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.edit",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.edit.description"
+                },
+                {
+                  "code": "FINANCE_TREASURY_RECEIVABLES_DELETE",
+                  "labelKey": "platform.auth.permissions.finance_treasury_receivables.delete",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_receivables.delete.description"
                 }
               ]
             },
             {
-              "label": "Métodos de pago",
-              "route": "/finance/treasury/payment-methods",
-              "module": "FINANCE_PAYMENT_METHODS",
-              "children": [
+              "module": "FINANCE_TREASURY_PAYMENT_METHODS",
+              "labelKey": "platform.auth.domains.finance_treasury_payment_methods",
+              "permissions": [
                 {
-                  "label": "Ver métodos de pago",
-                  "route": "/finance/treasury/payment-methods",
-                  "permission": "FINANCE_PAYMENT_METHODS:READ"
+                  "code": "FINANCE_TREASURY_PAYMENT_METHODS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.finance_treasury_payment_methods.view_list",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_payment_methods.view_list.description"
                 },
                 {
-                  "label": "Ver detalle de método de pago",
-                  "permission": "FINANCE_PAYMENT_METHODS:READ"
+                  "code": "FINANCE_TREASURY_PAYMENT_METHODS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.finance_treasury_payment_methods.view_detail",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_payment_methods.view_detail.description"
                 },
                 {
-                  "label": "Editar método de pago",
-                  "permission": "FINANCE_PAYMENT_METHODS:UPDATE"
+                  "code": "FINANCE_TREASURY_PAYMENT_METHODS_EDIT",
+                  "labelKey": "platform.auth.permissions.finance_treasury_payment_methods.edit",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_payment_methods.edit.description"
                 },
                 {
-                  "label": "Crear método de pago",
-                  "route": "/finance/treasury/payment-methods/new",
-                  "permission": "FINANCE_PAYMENT_METHODS:CREATE"
+                  "code": "FINANCE_TREASURY_PAYMENT_METHODS_DELETE",
+                  "labelKey": "platform.auth.permissions.finance_treasury_payment_methods.delete",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_payment_methods.delete.description"
+                },
+                {
+                  "code": "FINANCE_TREASURY_PAYMENT_METHODS_CREATE",
+                  "labelKey": "platform.auth.permissions.finance_treasury_payment_methods.create",
+                  "descriptionKey": "platform.auth.permissions.finance_treasury_payment_methods.create.description"
                 }
               ]
             }
@@ -513,59 +669,83 @@
     },
     {
       "area": "CONTACTS",
-      "label": "Contactos",
-      "children": [
+      "labelKey": "platform.auth.areas.contacts",
+      "submodules": [
         {
-          "label": "Clientes",
-          "route": "/partners/customers",
-          "module": "CONTACTS_CUSTOMERS",
-          "children": [
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.contacts",
+          "domains": [
             {
-              "label": "Ver clientes",
-              "route": "/partners/customers",
-              "permission": "CONTACTS_CUSTOMERS:READ"
+              "module": "CONTACTS_CUSTOMERS",
+              "labelKey": "platform.auth.domains.customers",
+              "permissions": [
+                {
+                  "code": "CONTACTS_CUSTOMERS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.customers.view_list",
+                  "descriptionKey": "platform.auth.permissions.customers.view_list.description"
+                },
+                {
+                  "code": "CONTACTS_CUSTOMERS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.customers.view_detail",
+                  "descriptionKey": "platform.auth.permissions.customers.view_detail.description"
+                },
+                {
+                  "code": "CONTACTS_CUSTOMERS_EDIT",
+                  "labelKey": "platform.auth.permissions.customers.edit",
+                  "descriptionKey": "platform.auth.permissions.customers.edit.description"
+                },
+                {
+                  "code": "CONTACTS_CUSTOMERS_DELETE",
+                  "labelKey": "platform.auth.permissions.customers.delete",
+                  "descriptionKey": "platform.auth.permissions.customers.delete.description"
+                },
+                {
+                  "code": "CONTACTS_CUSTOMERS_CREATE",
+                  "labelKey": "platform.auth.permissions.customers.create",
+                  "descriptionKey": "platform.auth.permissions.customers.create.description"
+                },
+                {
+                  "code": "CONTACTS_CUSTOMERS_VIEW_BALANCE",
+                  "labelKey": "platform.auth.permissions.customers.view_balance",
+                  "descriptionKey": "platform.auth.permissions.customers.view_balance.description"
+                },
+                {
+                  "code": "CONTACTS_CUSTOMERS_BALANCE",
+                  "labelKey": "platform.auth.permissions.customers.balance",
+                  "descriptionKey": "platform.auth.permissions.customers.balance.description"
+                }
+              ]
             },
             {
-              "label": "Ver detalle de cliente",
-              "permission": "CONTACTS_CUSTOMERS:READ"
-            },
-            {
-              "label": "Editar cliente",
-              "permission": "CONTACTS_CUSTOMERS:UPDATE"
-            },
-            {
-              "label": "Crear cliente",
-              "route": "/partners/customers/new",
-              "permission": "CONTACTS_CUSTOMERS:CREATE"
-            },
-            {
-              "label": "Ver saldo de cliente",
-              "permission": "CONTACTS_CUSTOMERS:READ"
-            }
-          ]
-        },
-        {
-          "label": "Proveedores",
-          "route": "/partners/suppliers",
-          "module": "CONTACTS_SUPPLIERS",
-          "children": [
-            {
-              "label": "Ver proveedores",
-              "route": "/partners/suppliers",
-              "permission": "CONTACTS_SUPPLIERS:READ"
-            },
-            {
-              "label": "Ver detalle de proveedor",
-              "permission": "CONTACTS_SUPPLIERS:READ"
-            },
-            {
-              "label": "Editar proveedor",
-              "permission": "CONTACTS_SUPPLIERS:UPDATE"
-            },
-            {
-              "label": "Crear proveedor",
-              "route": "/partners/suppliers/new",
-              "permission": "CONTACTS_SUPPLIERS:CREATE"
+              "module": "CONTACTS_SUPPLIERS",
+              "labelKey": "platform.auth.domains.suppliers",
+              "permissions": [
+                {
+                  "code": "CONTACTS_SUPPLIERS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.suppliers.view_list",
+                  "descriptionKey": "platform.auth.permissions.suppliers.view_list.description"
+                },
+                {
+                  "code": "CONTACTS_SUPPLIERS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.suppliers.view_detail",
+                  "descriptionKey": "platform.auth.permissions.suppliers.view_detail.description"
+                },
+                {
+                  "code": "CONTACTS_SUPPLIERS_EDIT",
+                  "labelKey": "platform.auth.permissions.suppliers.edit",
+                  "descriptionKey": "platform.auth.permissions.suppliers.edit.description"
+                },
+                {
+                  "code": "CONTACTS_SUPPLIERS_DELETE",
+                  "labelKey": "platform.auth.permissions.suppliers.delete",
+                  "descriptionKey": "platform.auth.permissions.suppliers.delete.description"
+                },
+                {
+                  "code": "CONTACTS_SUPPLIERS_CREATE",
+                  "labelKey": "platform.auth.permissions.suppliers.create",
+                  "descriptionKey": "platform.auth.permissions.suppliers.create.description"
+                }
+              ]
             }
           ]
         }
@@ -573,118 +753,147 @@
     },
     {
       "area": "ANALYTICS",
-      "label": "Análisis",
-      "children": [
+      "labelKey": "platform.auth.areas.analytics",
+      "submodules": [
         {
-          "label": "Dashboard",
-          "route": "/analytics/dashboard",
-          "module": "DASHBOARD",
-          "permission": "DASHBOARD:READ"
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.analytics",
+          "domains": [
+            {
+              "module": "DASHBOARD",
+              "labelKey": "platform.auth.domains.dashboard",
+              "permissions": [
+                {
+                  "code": "DASHBOARD_VIEW",
+                  "labelKey": "platform.auth.permissions.dashboard.view",
+                  "descriptionKey": "platform.auth.permissions.dashboard.view.description"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
       "area": "PLATFORM",
-      "label": "Plataforma",
-      "children": [
+      "labelKey": "platform.auth.areas.platform",
+      "submodules": [
         {
-          "label": "Usuarios",
-          "route": "/platform/users",
-          "module": "USERS",
-          "children": [
+          "submodule": null,
+          "labelKey": "platform.auth.submodules.platform",
+          "domains": [
             {
-              "label": "Ver usuarios",
-              "route": "/platform/users",
-              "permission": "USERS:READ"
+              "module": "USERS",
+              "labelKey": "platform.auth.domains.users",
+              "permissions": [
+                {
+                  "code": "USERS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.users.view_list",
+                  "descriptionKey": "platform.auth.permissions.users.view_list.description"
+                },
+                {
+                  "code": "USERS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.users.view_detail",
+                  "descriptionKey": "platform.auth.permissions.users.view_detail.description"
+                },
+                {
+                  "code": "USERS_EDIT",
+                  "labelKey": "platform.auth.permissions.users.edit",
+                  "descriptionKey": "platform.auth.permissions.users.edit.description"
+                },
+                {
+                  "code": "USERS_DELETE",
+                  "labelKey": "platform.auth.permissions.users.delete",
+                  "descriptionKey": "platform.auth.permissions.users.delete.description"
+                },
+                {
+                  "code": "USERS_CREATE",
+                  "labelKey": "platform.auth.permissions.users.create",
+                  "descriptionKey": "platform.auth.permissions.users.create.description"
+                }
+              ]
             },
             {
-              "label": "Ver detalle de usuario",
-              "permission": "USERS:READ"
+              "module": "ROLES",
+              "labelKey": "platform.auth.domains.roles",
+              "permissions": [
+                {
+                  "code": "ROLES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.roles.view_list",
+                  "descriptionKey": "platform.auth.permissions.roles.view_list.description"
+                },
+                {
+                  "code": "ROLES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.roles.view_detail",
+                  "descriptionKey": "platform.auth.permissions.roles.view_detail.description"
+                },
+                {
+                  "code": "ROLES_EDIT",
+                  "labelKey": "platform.auth.permissions.roles.edit",
+                  "descriptionKey": "platform.auth.permissions.roles.edit.description"
+                },
+                {
+                  "code": "ROLES_DELETE",
+                  "labelKey": "platform.auth.permissions.roles.delete",
+                  "descriptionKey": "platform.auth.permissions.roles.delete.description"
+                },
+                {
+                  "code": "ROLES_CREATE",
+                  "labelKey": "platform.auth.permissions.roles.create",
+                  "descriptionKey": "platform.auth.permissions.roles.create.description"
+                }
+              ]
             },
             {
-              "label": "Editar usuario",
-              "permission": "USERS:UPDATE"
+              "module": "DEPARTMENTS",
+              "labelKey": "platform.auth.domains.departments",
+              "permissions": [
+                {
+                  "code": "DEPARTMENTS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.departments.view_list",
+                  "descriptionKey": "platform.auth.permissions.departments.view_list.description"
+                },
+                {
+                  "code": "DEPARTMENTS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.departments.view_detail",
+                  "descriptionKey": "platform.auth.permissions.departments.view_detail.description"
+                },
+                {
+                  "code": "DEPARTMENTS_EDIT",
+                  "labelKey": "platform.auth.permissions.departments.edit",
+                  "descriptionKey": "platform.auth.permissions.departments.edit.description"
+                },
+                {
+                  "code": "DEPARTMENTS_DELETE",
+                  "labelKey": "platform.auth.permissions.departments.delete",
+                  "descriptionKey": "platform.auth.permissions.departments.delete.description"
+                },
+                {
+                  "code": "DEPARTMENTS_CREATE",
+                  "labelKey": "platform.auth.permissions.departments.create",
+                  "descriptionKey": "platform.auth.permissions.departments.create.description"
+                }
+              ]
             },
             {
-              "label": "Crear usuario",
-              "route": "/platform/users/new",
-              "permission": "USERS:CREATE"
-            }
-          ]
-        },
-        {
-          "label": "Roles",
-          "route": "/platform/roles",
-          "module": "ROLES",
-          "children": [
-            {
-              "label": "Ver roles",
-              "route": "/platform/roles",
-              "permission": "ROLES:READ"
-            },
-            {
-              "label": "Ver detalle de rol",
-              "permission": "ROLES:READ"
-            },
-            {
-              "label": "Editar rol",
-              "permission": "ROLES:UPDATE"
-            },
-            {
-              "label": "Crear rol",
-              "route": "/platform/roles/new",
-              "permission": "ROLES:CREATE"
-            }
-          ]
-        },
-        {
-          "label": "Departamentos",
-          "route": "/platform/departments",
-          "module": "DEPARTMENTS",
-          "children": [
-            {
-              "label": "Ver departamentos",
-              "route": "/platform/departments",
-              "permission": "DEPARTMENTS:READ"
-            },
-            {
-              "label": "Ver detalle de departamento",
-              "permission": "DEPARTMENTS:READ"
-            },
-            {
-              "label": "Editar departamento",
-              "permission": "DEPARTMENTS:UPDATE"
-            },
-            {
-              "label": "Crear departamento",
-              "route": "/platform/departments/new",
-              "permission": "DEPARTMENTS:CREATE"
+              "module": "COMPANY",
+              "labelKey": "platform.auth.domains.company",
+              "permissions": [
+                {
+                  "code": "COMPANY_VIEW",
+                  "labelKey": "platform.auth.permissions.company.view",
+                  "descriptionKey": "platform.auth.permissions.company.view.description"
+                },
+                {
+                  "code": "COMPANY_EDIT",
+                  "labelKey": "platform.auth.permissions.company.edit",
+                  "descriptionKey": "platform.auth.permissions.company.edit.description"
+                }
+              ]
             }
           ]
         }
       ]
     }
-  ],
-  "modules": {
-    "USERS": "User accounts management (platform).",
-    "ROLES": "Roles and their permission grants (platform).",
-    "DEPARTMENTS": "Departments assigned to users (platform).",
-    "CATALOG_PRODUCTS": "Products catalog.",
-    "CATALOG_CATEGORIES": "Product categories.",
-    "CATALOG_PRICES": "Price types.",
-    "INVENTORY_WAREHOUSES": "Warehouses management.",
-    "SALES_QUOTES": "Sales quotes (presupuestos).",
-    "SALES_ORDERS": "Sales orders (pedidos).",
-    "CONTACTS_CUSTOMERS": "Customers (clientes) master data.",
-    "FINANCE_INVOICES": "Invoices (facturas).",
-    "FINANCE_RETURNS": "Returns (devoluciones).",
-    "FINANCE_CREDIT_NOTES": "Credit notes (notas de crédito).",
-    "FINANCE_DEBIT_NOTES": "Debit notes (notas de débito).",
-    "FINANCE_CASH_REGISTER": "Cash register sessions (caja): open, close, view.",
-    "FINANCE_RECEIVABLES": "Accounts receivable (cuentas por cobrar): debt view, payments, refunds, advances.",
-    "FINANCE_PAYMENT_METHODS": "Payment methods (métodos de pago).",
-    "PURCHASES": "Purchases (compras).",
-    "CONTACTS_SUPPLIERS": "Suppliers (proveedores) master data.",
-    "DASHBOARD": "Analytics dashboard."
-  }
+  ]
 }

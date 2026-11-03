@@ -33,8 +33,8 @@ public class UpdateUserUseCase {
     public UserResponse execute(String id, UpdateUserRequest request) {
         access.lockAdministration();
         access.require(
-                com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS,
-                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.UPDATE);
+                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule.USERS,
+                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.EDIT);
         access.validateAssignment(request.roleId(), request.departmentId());
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)

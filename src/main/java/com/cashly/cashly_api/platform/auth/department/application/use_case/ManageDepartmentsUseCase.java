@@ -5,8 +5,8 @@ import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -42,9 +42,9 @@ public class ManageDepartmentsUseCase {
     }
 
     public List<Department> list(ListAction action) {
-        access.require(BusinessModule.DEPARTMENTS, PermissionAction.READ);
+        access.require(PermissionModule.DEPARTMENTS, PermissionAction.VIEW_LIST);
         if (action == ListAction.DELETE) {
-            access.require(BusinessModule.DEPARTMENTS, PermissionAction.DELETE);
+            access.require(PermissionModule.DEPARTMENTS, PermissionAction.DELETE);
             return repository.departments().stream()
                     .filter(department -> !repository.departmentReferenced(department.id()))
                     .toList();
@@ -53,16 +53,15 @@ public class ManageDepartmentsUseCase {
     }
 
     public Department find(UUID id) {
-        access.require(BusinessModule.DEPARTMENTS, PermissionAction.READ);
+        access.require(PermissionModule.DEPARTMENTS, PermissionAction.VIEW_DETAIL);
         return existing(id);
     }
 
     public List<Option> options() {
-        var permissions = access.current().permissions()
-                .getOrDefault(BusinessModule.USERS, Set.of());
-        if (!permissions.contains(PermissionAction.READ)
-                || (!permissions.contains(PermissionAction.CREATE)
-                        && !permissions.contains(PermissionAction.UPDATE))) {
+        var permissions = access.current().permissions();
+        if (!permissions.contains("USERS_VIEW_LIST")
+                || (!permissions.contains("USERS_CREATE")
+                        && !permissions.contains("USERS_EDIT"))) {
             throw new AccessDeniedException("User administration required");
         }
         return repository.departments().stream().filter(Department::active).map(
@@ -74,8 +73,8 @@ public class ManageDepartmentsUseCase {
     public Department save(UUID id, Request request) {
         repository.lockAdministration();
         boolean create = id == null;
-        access.require(BusinessModule.DEPARTMENTS,
-                create ? PermissionAction.CREATE : PermissionAction.UPDATE);
+        access.require(PermissionModule.DEPARTMENTS,
+                create ? PermissionAction.CREATE : PermissionAction.EDIT);
         if (!create) {
             existing(id);
         }
@@ -103,7 +102,7 @@ public class ManageDepartmentsUseCase {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void delete(UUID id) {
         repository.lockAdministration();
-        access.require(BusinessModule.DEPARTMENTS, PermissionAction.DELETE);
+        access.require(PermissionModule.DEPARTMENTS, PermissionAction.DELETE);
         existing(id);
         if (repository.departmentReferenced(id)) {
             throw new AccessConflictException(

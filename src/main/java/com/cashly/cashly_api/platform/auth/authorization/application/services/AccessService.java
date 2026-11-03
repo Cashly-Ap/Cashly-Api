@@ -5,8 +5,8 @@ import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.A
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException;
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import java.util.Map;
@@ -24,8 +24,7 @@ public class AccessService {
     }
 
     public record CurrentAccess(UUID roleId, String roleName, UUID departmentId,
-            boolean systemAdministrator,
-            Map<BusinessModule, Set<PermissionAction>> permissions) {
+            boolean systemAdministrator, Set<String> permissions) {
     }
 
     public CurrentAccess resolve(UUID userId) {
@@ -37,17 +36,20 @@ public class AccessService {
                         () -> new AccessDeniedException("Role unavailable"));
         return new CurrentAccess(role.id(), role.name(),
                 assignment.departmentId(), role.systemAdministrator(),
-                role.effectivePermissions());
+                role.codes());
     }
 
     public CurrentAccess current() {
         return resolve(actor.requireId());
     }
 
-    public void require(BusinessModule module, PermissionAction action) {
-        var grants = current().permissions().getOrDefault(module, Set.of());
-        if (!grants.contains(action)) {
-            throw new AccessDeniedException("Missing " + module + ":" + action);
+    public void require(PermissionModule module, PermissionAction action) {
+        require(module.name() + "_" + action.name());
+    }
+
+    public void require(String permissionCode) {
+        if (!current().permissions().contains(permissionCode)) {
+            throw new AccessDeniedException("Missing " + permissionCode);
         }
     }
 
@@ -61,15 +63,15 @@ public class AccessService {
     }
 
     public void delegable(
-            Map<BusinessModule, Set<PermissionAction>> requested) {
+            Map<PermissionModule, Set<PermissionAction>> requested) {
         var actor = current();
-        requested.forEach((module, actions) -> {
-            if (!actor.permissions().getOrDefault(module, Set.of())
-                    .containsAll(actions)) {
+        requested.forEach((module, actions) -> actions.forEach(action -> {
+            var code = module.name() + "_" + action.name();
+            if (!actor.permissions().contains(code)) {
                 throw new AccessDeniedException(
                         "Cannot delegate permissions you do not possess");
             }
-        });
+        }));
     }
 
     public void lockAdministration() {
@@ -101,7 +103,7 @@ public class AccessService {
             current();
             return;
         }
-        require(BusinessModule.USERS, PermissionAction.UPDATE);
+        require(PermissionModule.USERS, PermissionAction.EDIT);
         var target = repository.assignment(targetId).orElseThrow(
                 () -> new AccessReferenceNotFoundException("User not found"));
         delegable(repository.role(target.roleId()).orElseThrow(

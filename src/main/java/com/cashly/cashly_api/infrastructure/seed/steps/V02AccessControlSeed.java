@@ -5,9 +5,9 @@ import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class V02AccessControlSeed implements SeedStep {
     public void seed() {
         saveRole(new Role(SYSTEM_ADMIN_ROLE, "System administrator",
                 "Full installation access", true, 0, "SYSTEM_ADMIN",
-                administratorPermissions()));
+                Map.of()));
         saveRole(new Role(OPERATOR_ROLE, "Operator", "Daily sales operations",
                 true, 0, "OPERATOR", operatorPermissions()));
         saveDepartment(new Department(ADMINISTRATION_DEPARTMENT,
@@ -54,27 +54,20 @@ public class V02AccessControlSeed implements SeedStep {
         }
     }
 
-    private static Map<BusinessModule, Set<PermissionAction>> administratorPermissions() {
-        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
-                BusinessModule.class);
-        result.put(BusinessModule.USERS,
-                EnumSet.of(PermissionAction.READ, PermissionAction.UPDATE));
-        return result;
-    }
-
-    private static Map<BusinessModule, Set<PermissionAction>> operatorPermissions() {
-        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
-                BusinessModule.class);
-        result.put(BusinessModule.SALES_QUOTES,
-                EnumSet.of(PermissionAction.READ));
-        result.put(BusinessModule.SALES_ORDERS,
-                EnumSet.of(PermissionAction.READ));
-        result.put(BusinessModule.CONTACTS_CUSTOMERS,
-                EnumSet.of(PermissionAction.READ));
-        result.put(BusinessModule.FINANCE_RECEIVABLES,
-                EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS,
-                        PermissionAction.PAY_ALL, PermissionAction.PARTIAL_PAYMENT,
-                        PermissionAction.PAY_DIRECT));
+    private static Map<PermissionModule, Set<PermissionAction>> operatorPermissions() {
+        var result = new EnumMap<PermissionModule, Set<PermissionAction>>(
+                PermissionModule.class);
+        result.put(PermissionModule.SALES_QUOTES, EnumSet.of(
+                PermissionAction.VIEW_LIST, PermissionAction.VIEW_DETAIL));
+        result.put(PermissionModule.SALES_ORDERS, EnumSet.of(
+                PermissionAction.VIEW_LIST, PermissionAction.VIEW_DETAIL));
+        result.put(PermissionModule.CONTACTS_CUSTOMERS, EnumSet.of(
+                PermissionAction.VIEW_LIST, PermissionAction.VIEW_DETAIL));
+        result.put(PermissionModule.FINANCE_TREASURY_RECEIVABLES, EnumSet.of(
+                PermissionAction.VIEW_LIST, PermissionAction.VIEW_DEBT,
+                PermissionAction.PAY_ALL, PermissionAction.PARTIAL_PAYMENT,
+                PermissionAction.PAY_DIRECT,
+                PermissionAction.PAY_WITH_VALIDATION));
         return result;
     }
 }

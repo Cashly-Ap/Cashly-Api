@@ -3,9 +3,11 @@ package com.cashly.cashly_api.platform.auth.authorization.infrastructure.persist
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Repository;
@@ -24,6 +26,8 @@ import java.util.UUID;
 
 @Repository
 public class JdbcAccessRepository implements AccessRepository {
+    private static final Logger log = LoggerFactory
+            .getLogger(JdbcAccessRepository.class);
     private final JdbcTemplate jdbc;
 
     public JdbcAccessRepository(JdbcTemplate jdbc) {
@@ -47,17 +51,23 @@ public class JdbcAccessRepository implements AccessRepository {
     }
 
     private Role withPermissions(Role role,
-            Map<BusinessModule, Set<PermissionAction>> permissions) {
+            Map<PermissionModule, Set<PermissionAction>> permissions) {
         return new Role(role.id(), role.name(), role.description(),
                 role.active(), role.version(), role.systemKey(), permissions);
     }
 
     private void addGrant(ResultSet row,
-            Map<BusinessModule, Set<PermissionAction>> grants)
+            Map<PermissionModule, Set<PermissionAction>> grants)
             throws SQLException {
-        grants.computeIfAbsent(BusinessModule.valueOf(row.getString("module")),
-                key -> EnumSet.noneOf(PermissionAction.class))
-                .add(PermissionAction.valueOf(row.getString("action")));
+        try {
+            var module = PermissionModule.valueOf(row.getString("module"));
+            var action = PermissionAction.valueOf(row.getString("action"));
+            grants.computeIfAbsent(module,
+                    key -> EnumSet.noneOf(PermissionAction.class)).add(action);
+        } catch (IllegalArgumentException legacy) {
+            log.warn("Ignoring legacy permission {}:{}",
+                    row.getString("module"), row.getString("action"));
+        }
     }
 
     @Override
@@ -67,8 +77,8 @@ public class JdbcAccessRepository implements AccessRepository {
         if (role.isEmpty()) {
             return Optional.empty();
         }
-        Map<BusinessModule, Set<PermissionAction>> grants = new EnumMap<>(
-                BusinessModule.class);
+        Map<PermissionModule, Set<PermissionAction>> grants = new EnumMap<>(
+                PermissionModule.class);
         jdbc.query(
                 "select module, action from auth_role_permissions where role_id=?",
                 (RowCallbackHandler) row -> addGrant(row, grants), bytes(id));
@@ -87,14 +97,16 @@ public class JdbcAccessRepository implements AccessRepository {
 
     private List<Role> roles(boolean editableOnly) {
         var roles = jdbc.query("select * from auth_roles"
-                + (editableOnly ? " where system_key IS NULL" : "")
+                + (editableOnly
+                        ? " where system_key IS NULL OR system_key <> 'SYSTEM_ADMIN'"
+                        : "")
                 + " order by name", this::mapRole);
-        Map<UUID, Map<BusinessModule, Set<PermissionAction>>> allGrants = new HashMap<>();
+        Map<UUID, Map<PermissionModule, Set<PermissionAction>>> allGrants = new HashMap<>();
         jdbc.query("select role_id,module,action from auth_role_permissions",
                 (RowCallbackHandler) row -> {
                     var grants = allGrants.computeIfAbsent(
                             uuid(row.getBytes("role_id")),
-                            key -> new EnumMap<>(BusinessModule.class));
+                            key -> new EnumMap<>(PermissionModule.class));
                     addGrant(row, grants);
                 });
         return roles.stream().map(role -> withPermissions(role,

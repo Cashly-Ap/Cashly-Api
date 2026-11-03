@@ -1,89 +1,135 @@
 package com.cashly.cashly_api.platform.auth.authorization.domain.services;
 
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.ADVANCE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.APPROVE_PAYMENT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.BALANCE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CANCEL;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CASH_HISTORY;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CLOSE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.COMMERCIAL_CATALOG_PDF;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CONFIRM;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CONVERT_TO_INVOICE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CONVERT_TO_ORDER;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.CREATE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DELETE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DOWNLOAD_PDF;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DUPLICATE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.EDIT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.MOVEMENT_HISTORY;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.OPEN;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.PARTIAL_PAYMENT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.PAY_ALL;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.PAY_DIRECT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.PAY_WITH_VALIDATION;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.RECORD_ENTRY;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.RECORD_EXIT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.REFUND;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.REJECT_PAYMENT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.REPORT_CASH_REGISTER;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.REPORT_MOVEMENTS;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.REPORT_PDF;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.REPORT_STOCK;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_BALANCE;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_DEBT;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_DETAIL;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_LIST;
+import static com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.VIEW_STOCK;
+
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule;
+import java.util.stream.Collectors;
+
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 
 public final class PermissionRegistry {
 
-    private static final Set<PermissionAction> CRUD = EnumSet.of(
-            PermissionAction.READ, PermissionAction.CREATE,
-            PermissionAction.UPDATE, PermissionAction.DELETE);
-
-    private static final Map<BusinessModule, Set<PermissionAction>> MODULES = build();
+    private static final Map<PermissionModule, Set<PermissionAction>> MODULES = build();
 
     private PermissionRegistry() {
     }
 
-    private static Map<BusinessModule, Set<PermissionAction>> build() {
-        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
-                BusinessModule.class);
-        result.put(BusinessModule.USERS, CRUD);
-        result.put(BusinessModule.ROLES, CRUD);
-        result.put(BusinessModule.DEPARTMENTS, CRUD);
-        result.put(BusinessModule.CATALOG_PRODUCTS, EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS, PermissionAction.UPDATE, PermissionAction.CREATE, PermissionAction.REPORT_PRODUCTS, PermissionAction.REPORT_COMMERCIAL_CATALOG));
-        result.put(BusinessModule.CATALOG_CATEGORIES, CRUD);
-        result.put(BusinessModule.CATALOG_PRICES, CRUD);
-        result.put(BusinessModule.INVENTORY_WAREHOUSES, EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS, PermissionAction.UPDATE, PermissionAction.CREATE, PermissionAction.STOCK, PermissionAction.MOVEMENT_HISTORY, PermissionAction.RECORD_ENTRY, PermissionAction.RECORD_EXIT, PermissionAction.REPORT_STOCK, PermissionAction.REPORT_MOVEMENTS));
-        result.put(BusinessModule.SALES_QUOTES, EnumSet.of(
-                PermissionAction.READ, PermissionAction.CREATE,
-                PermissionAction.UPDATE, PermissionAction.DELETE,
-                PermissionAction.CONFIRM, PermissionAction.EXPORT));
-        result.put(BusinessModule.SALES_ORDERS, EnumSet.of(
-                PermissionAction.READ, PermissionAction.CREATE,
-                PermissionAction.UPDATE, PermissionAction.DELETE,
-                 PermissionAction.CONFIRM, PermissionAction.CANCEL,
-                 PermissionAction.EXPORT));
-        result.put(BusinessModule.CONTACTS_CUSTOMERS, EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS, PermissionAction.UPDATE, PermissionAction.CREATE, PermissionAction.CUSTOMER_BALANCE));
-        result.put(BusinessModule.FINANCE_INVOICES, EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS, PermissionAction.UPDATE, PermissionAction.CREATE, PermissionAction.REPORT_INVOICES, PermissionAction.CONFIRM, PermissionAction.CANCEL, PermissionAction.DUPLICATE));
-        result.put(BusinessModule.FINANCE_RETURNS, CRUD);
-        result.put(BusinessModule.FINANCE_CREDIT_NOTES, CRUD);
-        result.put(BusinessModule.FINANCE_DEBIT_NOTES, CRUD);
-        result.put(BusinessModule.FINANCE_CASH_REGISTER,
-                EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS, PermissionAction.CASH_HISTORY, PermissionAction.OPEN, PermissionAction.CLOSE, PermissionAction.REPORT_CASH_REGISTER));
-        result.put(BusinessModule.FINANCE_RECEIVABLES,
-                 EnumSet.of(PermissionAction.READ, PermissionAction.DETAILS,
-                         PermissionAction.PAY_ALL, PermissionAction.PARTIAL_PAYMENT, PermissionAction.REFUND,
-                        PermissionAction.ADVANCE,
-                        PermissionAction.PAY_WITH_VALIDATION,
-                        PermissionAction.PAY_DIRECT,
-                        PermissionAction.APPROVE_PAYMENT,
-                        PermissionAction.REJECT_PAYMENT));
-        result.put(BusinessModule.FINANCE_PAYMENT_METHODS, CRUD);
-        result.put(BusinessModule.PURCHASES, EnumSet.of(
-                PermissionAction.READ, PermissionAction.CREATE,
-                PermissionAction.UPDATE, PermissionAction.DELETE,
-                PermissionAction.CONFIRM, PermissionAction.CANCEL,
-                PermissionAction.EXPORT));
-        result.put(BusinessModule.CONTACTS_SUPPLIERS, CRUD);
-        result.put(BusinessModule.DASHBOARD,
-                EnumSet.of(PermissionAction.READ));
+    private static Map<PermissionModule, Set<PermissionAction>> build() {
+        var result = new EnumMap<PermissionModule, Set<PermissionAction>>(
+                PermissionModule.class);
+        result.put(PermissionModule.SALES_QUOTES, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE, REPORT_PDF, DOWNLOAD_PDF,
+                CONVERT_TO_ORDER, CONVERT_TO_INVOICE, CANCEL));
+        result.put(PermissionModule.SALES_ORDERS, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE, REPORT_PDF, DOWNLOAD_PDF,
+                CONFIRM, CONVERT_TO_INVOICE, CANCEL));
+        result.put(PermissionModule.PURCHASES, EnumSet.of(VIEW_LIST, VIEW_DETAIL,
+                EDIT, DELETE, CREATE, REPORT_PDF, DOWNLOAD_PDF, CONFIRM,
+                CANCEL));
+        result.put(PermissionModule.CATALOG_PRODUCTS, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE, REPORT_PDF,
+                COMMERCIAL_CATALOG_PDF));
+        result.put(PermissionModule.CATALOG_CATEGORIES, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE));
+        result.put(PermissionModule.CATALOG_PRICES, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE));
+        result.put(PermissionModule.INVENTORY_WAREHOUSES, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE, VIEW_STOCK, MOVEMENT_HISTORY,
+                RECORD_ENTRY, RECORD_EXIT, REPORT_STOCK, REPORT_MOVEMENTS));
+        result.put(PermissionModule.FINANCE_BILLING_INVOICES, EnumSet.of(
+                VIEW_LIST, VIEW_DETAIL, EDIT, DELETE, CREATE, REPORT_PDF,
+                DOWNLOAD_PDF, CONFIRM, CANCEL, DUPLICATE));
+        result.put(PermissionModule.FINANCE_BILLING_RETURNS, EnumSet.of(
+                VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
+        result.put(PermissionModule.FINANCE_BILLING_CREDIT_NOTES, EnumSet.of(
+                VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
+        result.put(PermissionModule.FINANCE_BILLING_DEBIT_NOTES, EnumSet.of(
+                VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
+        result.put(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, EnumSet.of(
+                VIEW_LIST, VIEW_DETAIL, CASH_HISTORY, REPORT_CASH_REGISTER,
+                OPEN, CLOSE));
+        result.put(PermissionModule.FINANCE_TREASURY_RECEIVABLES, EnumSet.of(
+                VIEW_LIST, VIEW_DEBT, REPORT_PDF, PAY_ALL, PARTIAL_PAYMENT,
+                PAY_DIRECT, PAY_WITH_VALIDATION, REFUND, ADVANCE,
+                APPROVE_PAYMENT, REJECT_PAYMENT, EDIT, DELETE));
+        result.put(PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS, EnumSet.of(
+                VIEW_LIST, VIEW_DETAIL, EDIT, DELETE, CREATE));
+        result.put(PermissionModule.CONTACTS_CUSTOMERS, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE, VIEW_BALANCE, BALANCE));
+        result.put(PermissionModule.CONTACTS_SUPPLIERS, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE));
+        result.put(PermissionModule.DASHBOARD, EnumSet.of(VIEW));
+        result.put(PermissionModule.USERS, EnumSet.of(VIEW_LIST, VIEW_DETAIL,
+                EDIT, DELETE, CREATE));
+        result.put(PermissionModule.ROLES, EnumSet.of(VIEW_LIST, VIEW_DETAIL,
+                EDIT, DELETE, CREATE));
+        result.put(PermissionModule.DEPARTMENTS, EnumSet.of(VIEW_LIST,
+                VIEW_DETAIL, EDIT, DELETE, CREATE));
+        result.put(PermissionModule.COMPANY, EnumSet.of(VIEW, EDIT));
         return Collections.unmodifiableMap(result);
     }
 
-    public static Map<BusinessModule, Set<PermissionAction>> modules() {
+    public static Map<PermissionModule, Set<PermissionAction>> modules() {
         return MODULES;
     }
 
-    public static Map<BusinessModule, Set<PermissionAction>> validate(
-            Map<BusinessModule, Set<PermissionAction>> grants) {
+    public static Set<String> codes() {
+        return MODULES.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream().map(
+                        action -> entry.getKey().name() + "_" + action.name()))
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public static Map<PermissionModule, Set<PermissionAction>> validate(
+            Map<PermissionModule, Set<PermissionAction>> grants) {
         if (grants == null)
             throw new IllegalArgumentException("Permissions are required");
-        var result = new EnumMap<BusinessModule, Set<PermissionAction>>(
-                BusinessModule.class);
+        var result = new EnumMap<PermissionModule, Set<PermissionAction>>(
+                PermissionModule.class);
         grants.forEach((module, actions) -> {
             if (module == null || actions == null
-                    || !modules().get(module).containsAll(actions))
+                    || !modules().getOrDefault(module, Set.of())
+                            .containsAll(actions))
                 throw new IllegalArgumentException("Unsupported permission");
-            if (module == BusinessModule.FINANCE_RECEIVABLES
-                    && actions.contains(PermissionAction.PAY_WITH_VALIDATION)
-                    && actions.contains(PermissionAction.PAY_DIRECT))
-                throw new IllegalArgumentException(
-                        "PAY_WITH_VALIDATION and PAY_DIRECT are mutually exclusive");
             if (!actions.isEmpty())
                 result.put(module, Set.copyOf(actions));
         });

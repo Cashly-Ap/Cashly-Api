@@ -26,7 +26,7 @@ public class DeleteUserUseCase {
     public void execute(String id) {
         access.lockAdministration();
         access.require(
-                com.cashly.cashly_api.platform.auth.user.domain.valueobjects.BusinessModule.USERS,
+                com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule.USERS,
                 com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction.DELETE);
         access.protectAdministrator(UUID.fromString(id), null, false);
         UserId userId = new UserId(UUID.fromString(id));
