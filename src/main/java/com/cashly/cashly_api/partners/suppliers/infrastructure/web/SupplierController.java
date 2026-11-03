@@ -41,7 +41,7 @@ public class SupplierController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS:CREATE')")
+    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS_CREATE')")
     public ResponseEntity<SupplierCreateResponse> create(
             @Valid @RequestBody CreateSupplierRequest request) {
         SupplierCreateResponse response = registerSupplierUseCase
@@ -50,7 +50,7 @@ public class SupplierController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS:READ')")
+    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS_VIEW_LIST')")
     public ResponseEntity<PageResponse<SupplierListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String type,
@@ -73,7 +73,7 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS:READ')")
+    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS_VIEW_DETAIL')")
     public ResponseEntity<SupplierDetailResponse> getById(
             @PathVariable String id) {
         SupplierDetailResponse supplier = getSupplierUseCase.execute(id);
@@ -81,7 +81,7 @@ public class SupplierController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS:UPDATE')")
+    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS_EDIT')")
     public ResponseEntity<SupplierDetailResponse> update(
             @PathVariable String id,
             @Valid @RequestBody UpdateSupplierRequest request) {
@@ -91,7 +91,7 @@ public class SupplierController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS:DELETE')")
+    @PreAuthorize("hasAuthority('CONTACTS_SUPPLIERS_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteSupplierUseCase.execute(id);
         return ResponseEntity.noContent().build();

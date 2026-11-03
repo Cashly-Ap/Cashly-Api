@@ -19,34 +19,34 @@ public class DepartmentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('DEPARTMENTS:READ')")
+    @PreAuthorize("hasAuthority('DEPARTMENTS_VIEW_LIST')")
     public List<Department> list(
             @RequestParam(required = false) ManageDepartmentsUseCase.ListAction action) {
         return useCase.list(action);
     }
 
     @GetMapping("/options")
-    @PreAuthorize("hasAuthority('USERS:READ') and (hasAuthority('USERS:CREATE') or hasAuthority('USERS:UPDATE'))")
+    @PreAuthorize("hasAuthority('USERS_VIEW_LIST') and (hasAuthority('USERS_CREATE') or hasAuthority('USERS_EDIT'))")
     public List<ManageDepartmentsUseCase.Option> options() {
         return useCase.options();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('DEPARTMENTS:READ')")
+    @PreAuthorize("hasAuthority('DEPARTMENTS_VIEW_DETAIL')")
     public Department find(@PathVariable UUID id) {
         return useCase.find(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('DEPARTMENTS:CREATE')")
+    @PreAuthorize("hasAuthority('DEPARTMENTS_CREATE')")
     public Department create(
             @RequestBody ManageDepartmentsUseCase.Request request) {
         return useCase.save(null, request);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('DEPARTMENTS:UPDATE')")
+    @PreAuthorize("hasAuthority('DEPARTMENTS_EDIT')")
     public Department update(@PathVariable UUID id,
             @RequestBody ManageDepartmentsUseCase.Request request) {
         return useCase.save(id, request);
@@ -54,7 +54,7 @@ public class DepartmentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('DEPARTMENTS:DELETE')")
+    @PreAuthorize("hasAuthority('DEPARTMENTS_DELETE')")
     public void delete(@PathVariable UUID id) {
         useCase.delete(id);
     }

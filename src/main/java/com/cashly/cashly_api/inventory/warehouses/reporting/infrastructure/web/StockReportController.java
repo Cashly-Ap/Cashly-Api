@@ -29,7 +29,7 @@ public class StockReportController {
     }
 
     @GetMapping("/pdf")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXPORT')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_REPORT_STOCK')")
     public ResponseEntity<byte[]> getStockPdf(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID categoryId,
@@ -45,7 +45,7 @@ public class StockReportController {
     }
 
     @GetMapping("/excel")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:EXPORT')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_REPORT_STOCK')")
     public ResponseEntity<byte[]> getStockExcel(
             @RequestParam(required = false) UUID warehouseId,
             @RequestParam(required = false) UUID categoryId,

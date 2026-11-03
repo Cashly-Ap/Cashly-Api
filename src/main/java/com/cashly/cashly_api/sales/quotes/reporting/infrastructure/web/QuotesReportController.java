@@ -31,7 +31,7 @@ public class QuotesReportController {
     }
 
     @GetMapping("/{id}/pdf")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:EXPORT')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_DOWNLOAD_PDF')")
     public ResponseEntity<byte[]> getQuotePdf(@PathVariable UUID id) {
         byte[] pdf = generateQuotePdfUseCase.execute(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
@@ -41,7 +41,7 @@ public class QuotesReportController {
     }
 
     @GetMapping("/pdf")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:EXPORT')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_REPORT_PDF')")
     public ResponseEntity<byte[]> getQuotesReportPdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,

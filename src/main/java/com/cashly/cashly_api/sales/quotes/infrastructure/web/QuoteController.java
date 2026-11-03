@@ -66,7 +66,7 @@ public class QuoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('SALES_QUOTES:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CREATE') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
     public ResponseEntity<QuoteDetailResponse> create(
             @Valid @RequestBody CreateQuoteRequest request,
             Authentication authentication) {
@@ -77,7 +77,7 @@ public class QuoteController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('SALES_QUOTES:READ')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_LIST')")
     public ResponseEntity<List<QuoteListResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -117,14 +117,14 @@ public class QuoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
     public ResponseEntity<QuoteDetailResponse> getById(@PathVariable UUID id) {
         QuoteDetailResponse quote = getQuoteByIdUseCase.execute(id);
         return ResponseEntity.ok(quote);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:UPDATE') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_EDIT') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
     public ResponseEntity<QuoteDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateQuoteRequest request) {
         QuoteDetailResponse response = updateQuoteUseCase.execute(id, request);
@@ -132,14 +132,14 @@ public class QuoteController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:DELETE')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteQuoteUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:CONFIRM')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CANCEL')")
     public ResponseEntity<Void> cancel(@PathVariable UUID id,
             @Valid @RequestBody CancelQuoteRequest request) {
         cancelQuoteUseCase.execute(id, request);
@@ -147,7 +147,7 @@ public class QuoteController {
     }
 
     @GetMapping("/warehouses")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_LIST')")
     public ResponseEntity<List<QuoteWarehouseResponse>> getWarehouses(
             @RequestParam UUID customerId) {
         List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase
@@ -156,7 +156,7 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/convert-to-order")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:CONFIRM') and hasAuthority('SALES_ORDERS:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CONVERT_TO_ORDER') and hasAuthority('SALES_ORDERS_CREATE')")
     public ResponseEntity<QuoteConvertedToOrderResponse> convertToOrder(
             @PathVariable UUID id, Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
@@ -166,7 +166,7 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/convert-to-invoice")
-    @PreAuthorize("hasAuthority('SALES_QUOTES:CONFIRM') and hasAuthority('FINANCE_INVOICES:CREATE') and hasAuthority('INVENTORY_WAREHOUSES:EXECUTE')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CONVERT_TO_INVOICE') and hasAuthority('FINANCE_BILLING_INVOICES_CREATE')")
     public ResponseEntity<QuoteConvertedToInvoiceResponse> convertToInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody ConvertQuoteToInvoiceRequest request,

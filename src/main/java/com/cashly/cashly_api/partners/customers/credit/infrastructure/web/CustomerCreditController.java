@@ -26,7 +26,7 @@ public class CustomerCreditController {
     }
 
     @GetMapping("/{customerId}/credit")
-    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_TREASURY_RECEIVABLES_VIEW_DEBT')")
     public ResponseEntity<CreditStatusResponse> getCreditStatus(
             @PathVariable UUID customerId) {
         CreditStatusResponse response = getCustomerCreditStatusUseCase
@@ -35,7 +35,7 @@ public class CustomerCreditController {
     }
 
     @GetMapping("/credit/overdue")
-    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_TREASURY_RECEIVABLES_VIEW_DEBT')")
     public ResponseEntity<List<OverdueInvoiceResponse>> getOverdueInvoices() {
         List<OverdueInvoiceResponse> response = getOverdueInvoicesUseCase
                 .execute();

@@ -31,7 +31,7 @@ public class CustomerWarehouseAccessController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_VIEW_LIST')")
     public ResponseEntity<List<CustomerWarehouseAccessResponse>> listWarehouses(
             @PathVariable UUID customerId) {
         return ResponseEntity
@@ -39,7 +39,7 @@ public class CustomerWarehouseAccessController {
     }
 
     @PostMapping("/{warehouseId}")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:CREATE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_EDIT')")
     public ResponseEntity<CustomerWarehouseAccessResponse> grantAccess(
             @PathVariable UUID customerId, @PathVariable UUID warehouseId,
             Authentication authentication) {
@@ -50,7 +50,7 @@ public class CustomerWarehouseAccessController {
     }
 
     @DeleteMapping("/{warehouseId}")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:DELETE')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_EDIT')")
     public ResponseEntity<Void> revokeAccess(@PathVariable UUID customerId,
             @PathVariable UUID warehouseId) {
         revokeWarehouseAccessUseCase.execute(customerId, warehouseId);

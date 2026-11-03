@@ -36,20 +36,20 @@ public class UserPhotoController {
     }
 
     @GetMapping("/api/users/{id}/photo")
-    @PreAuthorize("hasAuthority('USERS:READ')")
+    @PreAuthorize("hasAuthority('USERS_VIEW_DETAIL')")
     public ResponseEntity<byte[]> userPhoto(@PathVariable String id) {
         return image(photos.read(id));
     }
 
     @PostMapping(value = "/api/users/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('USERS:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS_EDIT')")
     public UserResponse uploadUserPhoto(@PathVariable String id,
             @RequestParam("file") MultipartFile file) {
         return photos.upload(id, file);
     }
 
     @DeleteMapping("/api/users/{id}/photo")
-    @PreAuthorize("hasAuthority('USERS:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS_EDIT')")
     public UserResponse deleteUserPhoto(@PathVariable String id) {
         return photos.delete(id);
     }

@@ -23,39 +23,39 @@ public class DashboardController {
     }
 
     @GetMapping("/summary")
-    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<DashboardSummaryResponse> getSummary() {
         return ResponseEntity.ok(getDashboardUseCase.getSummary());
     }
 
     @GetMapping("/monthly-sales")
-    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<List<MonthlySalesResponse>> getMonthlySales() {
         return ResponseEntity.ok(getDashboardUseCase.getMonthlySales());
     }
 
     @GetMapping("/top-products")
-    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<List<TopItemResponse>> getTopProducts(
             @RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(getDashboardUseCase.getTopProducts(limit));
     }
 
     @GetMapping("/top-customers")
-    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<List<TopItemResponse>> getTopCustomers(
             @RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(getDashboardUseCase.getTopCustomers(limit));
     }
 
     @GetMapping("/recent-activity")
-    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<List<Map<String, Object>>> getRecentActivity() {
         return ResponseEntity.ok(getDashboardUseCase.getRecentActivity());
     }
 
     @GetMapping("/invoice-due-schedule")
-    @PreAuthorize("hasAuthority('DASHBOARD:READ')")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<List<InvoiceDueResponse>> getInvoiceDueSchedule() {
         return ResponseEntity.ok(getDashboardUseCase.getInvoiceDueSchedule());
     }

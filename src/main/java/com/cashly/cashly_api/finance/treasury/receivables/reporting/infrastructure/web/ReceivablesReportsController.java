@@ -26,7 +26,7 @@ public class ReceivablesReportsController {
     }
 
     @GetMapping("/accounts-receivable/pdf")
-    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:REPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_TREASURY_RECEIVABLES_REPORT_PDF')")
     public ResponseEntity<byte[]> getAccountsReceivablePdf(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(defaultValue = "false") boolean overdueOnly) {
@@ -41,7 +41,7 @@ public class ReceivablesReportsController {
     }
 
     @GetMapping("/collections/pdf")
-    @PreAuthorize("hasAuthority('FINANCE_RECEIVABLES:REPORT')")
+    @PreAuthorize("hasAuthority('FINANCE_TREASURY_RECEIVABLES_REPORT_PDF')")
     public ResponseEntity<byte[]> getCollectionsPdf(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate agingFrom) {

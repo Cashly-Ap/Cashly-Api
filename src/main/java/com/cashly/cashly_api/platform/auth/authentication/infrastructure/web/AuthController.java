@@ -72,7 +72,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('USERS:CREATE')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('USERS_CREATE')")
     public ResponseEntity<UserResponse> register(
             @Valid @RequestBody RegisterUserRequest request) {
         UserResponse response = registerUserUseCase.execute(request);

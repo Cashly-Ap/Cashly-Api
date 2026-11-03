@@ -64,7 +64,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:CREATE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_CREATE')")
     public ResponseEntity<ProductDetailResponse> create(
             @Valid @RequestBody CreateProductRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -72,7 +72,7 @@ public class ProductController {
     }
 
     @GetMapping(params = "!customerId")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_LIST')")
     public ResponseEntity<PageResponse<ProductListResponse>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,
@@ -93,7 +93,7 @@ public class ProductController {
     }
 
     @GetMapping(params = "customerId")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_LIST') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
     public ResponseEntity<PageResponse<ProductWithStockResponse>> getForTransaction(
             @RequestParam UUID customerId,
             @RequestParam(required = false) List<UUID> customerIds,
@@ -113,35 +113,35 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_DETAIL')")
     public ResponseEntity<ProductDetailResponse> getById(
             @PathVariable UUID id) {
         return ResponseEntity.ok(getProductUseCase.execute(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:UPDATE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_EDIT')")
     public ResponseEntity<ProductDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateProductRequest request) {
         return ResponseEntity.ok(updateProductUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:DELETE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteProductUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/stock")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:READ') and hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
     public ResponseEntity<List<ProductStockByWarehouseResponse>> getStock(
             @PathVariable UUID id) {
         return ResponseEntity.ok(getProductStockUseCase.execute(id));
     }
 
     @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:UPDATE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_EDIT')")
     public ResponseEntity<ProductDetailResponse> uploadPhoto(
             @PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         try {
@@ -156,7 +156,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}/photo")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:UPDATE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_EDIT')")
     public ResponseEntity<Void> removePhoto(@PathVariable UUID id) {
         removeProductPhotoUseCase.execute(id);
         return ResponseEntity.noContent().build();

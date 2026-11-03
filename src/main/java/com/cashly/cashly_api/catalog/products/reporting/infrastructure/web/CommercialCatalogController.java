@@ -25,7 +25,7 @@ public class CommercialCatalogController {
     }
 
     @GetMapping("/pdf")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS:EXPORT')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_COMMERCIAL_CATALOG_PDF')")
     public ResponseEntity<byte[]> getCatalogPdf(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) UUID categoryId,

@@ -41,7 +41,7 @@ public class PriceTypeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CATALOG_PRICES:CREATE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRICES_CREATE')")
     public ResponseEntity<PriceTypeResponse> create(
             @Valid @RequestBody CreatePriceTypeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,27 +49,27 @@ public class PriceTypeController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG_PRICES:UPDATE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRICES_EDIT')")
     public ResponseEntity<PriceTypeResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdatePriceTypeRequest request) {
         return ResponseEntity.ok(updatePriceTypeUseCase.execute(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG_PRICES:DELETE')")
+    @PreAuthorize("hasAuthority('CATALOG_PRICES_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deletePriceTypeUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('CATALOG_PRICES:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRICES_VIEW_DETAIL')")
     public ResponseEntity<PriceTypeResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(getPriceTypeUseCase.execute(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('CATALOG_PRICES:READ')")
+    @PreAuthorize("hasAuthority('CATALOG_PRICES_VIEW_LIST')")
     public ResponseEntity<PageResponse<PriceTypeResponse>> listAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,

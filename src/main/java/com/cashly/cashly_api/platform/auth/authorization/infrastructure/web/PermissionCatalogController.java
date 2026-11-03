@@ -14,7 +14,7 @@ import com.cashly.cashly_api.platform.auth.authorization.domain.services.Permiss
 public class PermissionCatalogController {
 
     @GetMapping("/catalog")
-    @PreAuthorize("hasAuthority('ROLES:READ')")
+    @PreAuthorize("hasAuthority('ROLES_VIEW_LIST')")
     public List<PermissionCatalog.AreaCatalog> catalog() {
         return PermissionCatalog.areas();
     }

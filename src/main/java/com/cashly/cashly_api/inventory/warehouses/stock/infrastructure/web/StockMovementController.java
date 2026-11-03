@@ -22,7 +22,7 @@ public class StockMovementController {
     }
 
     @GetMapping("/movements")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_MOVEMENT_HISTORY')")
     public StockMovementsResponse getGlobalMovements(
             @RequestParam(required = false) String warehouseId,
             @RequestParam(required = false) String productId,
@@ -37,7 +37,7 @@ public class StockMovementController {
     }
 
     @GetMapping("/{warehouseId}/movements")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES:READ')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_MOVEMENT_HISTORY')")
     public PageResponse<StockMovementResponse> getMovements(
             @PathVariable UUID warehouseId,
             @RequestParam(required = false) UUID productId,

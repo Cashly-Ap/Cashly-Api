@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('USERS:READ')")
+    @PreAuthorize("hasAuthority('USERS_VIEW_LIST')")
     public ResponseEntity<PageResponse<UserResponse>> getAll(
             Authentication authentication,
             @RequestParam(required = false) java.util.UUID roleId,
@@ -67,14 +67,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('USERS:READ')")
+    @PreAuthorize("hasAuthority('USERS_VIEW_DETAIL')")
     public ResponseEntity<UserResponse> getById(@PathVariable String id) {
         UserResponse user = getUserByIdUseCase.execute(id);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('USERS:CREATE')")
+    @PreAuthorize("hasAuthority('USERS_CREATE')")
     public ResponseEntity<UserResponse> create(
             @Valid @RequestBody RegisterUserRequest request) {
         UserResponse user = registerUserUseCase.execute(request);
@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('USERS:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS_EDIT')")
     public ResponseEntity<UserResponse> update(@PathVariable String id,
             @Valid @RequestBody UpdateUserRequest request) {
         UserResponse user = updateUserUseCase.execute(id, request);
@@ -90,21 +90,21 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('USERS:DELETE')")
+    @PreAuthorize("hasAuthority('USERS_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteUserUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/email")
-    @PreAuthorize("hasAuthority('USERS:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS_EDIT')")
     public ResponseEntity<UserResponse> updateEmail(@PathVariable String id,
             @Valid @RequestBody UpdateUserEmailRequest request) {
         return ResponseEntity.ok(updateUserEmailUseCase.execute(id, request));
     }
 
     @PutMapping("/{id}/password")
-    @PreAuthorize("hasAuthority('USERS:UPDATE')")
+    @PreAuthorize("hasAuthority('USERS_EDIT')")
     public ResponseEntity<UserResponse> updatePassword(@PathVariable String id,
             @Valid @RequestBody UpdateUserPasswordRequest request) {
         return ResponseEntity

@@ -38,7 +38,7 @@ public class CreditNoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCE_CREDIT_NOTES:CREATE')")
+    @PreAuthorize("hasAuthority('FINANCE_BILLING_CREDIT_NOTES_CREATE')")
     public ResponseEntity<CreditNoteResponse> create(
             @Valid @RequestBody CreateCreditNoteRequest request,
             Authentication authentication) {
@@ -49,7 +49,7 @@ public class CreditNoteController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCE_CREDIT_NOTES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_BILLING_CREDIT_NOTES_VIEW_LIST')")
     public ResponseEntity<List<CreditNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
@@ -60,14 +60,14 @@ public class CreditNoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCE_CREDIT_NOTES:READ')")
+    @PreAuthorize("hasAuthority('FINANCE_BILLING_CREDIT_NOTES_VIEW_DETAIL')")
     public ResponseEntity<CreditNoteResponse> getById(@PathVariable UUID id) {
         CreditNoteResponse response = getCreditNoteByIdUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCE_CREDIT_NOTES:DELETE')")
+    @PreAuthorize("hasAuthority('FINANCE_BILLING_CREDIT_NOTES_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteCreditNoteUseCase.execute(id);
         return ResponseEntity.noContent().build();
