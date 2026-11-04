@@ -66,7 +66,7 @@ public class QuoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('SALES_QUOTES_CREATE') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CREATE')")
     public ResponseEntity<QuoteDetailResponse> create(
             @Valid @RequestBody CreateQuoteRequest request,
             Authentication authentication) {
@@ -117,14 +117,14 @@ public class QuoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_DETAIL')")
     public ResponseEntity<QuoteDetailResponse> getById(@PathVariable UUID id) {
         QuoteDetailResponse quote = getQuoteByIdUseCase.execute(id);
         return ResponseEntity.ok(quote);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_QUOTES_EDIT') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_EDIT')")
     public ResponseEntity<QuoteDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateQuoteRequest request) {
         QuoteDetailResponse response = updateQuoteUseCase.execute(id, request);
@@ -147,7 +147,7 @@ public class QuoteController {
     }
 
     @GetMapping("/warehouses")
-    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_LIST')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_DETAIL')")
     public ResponseEntity<List<QuoteWarehouseResponse>> getWarehouses(
             @RequestParam UUID customerId) {
         List<QuoteWarehouseResponse> result = getWarehousesForQuoteUseCase
@@ -156,7 +156,7 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/convert-to-order")
-    @PreAuthorize("hasAuthority('SALES_QUOTES_CONVERT_TO_ORDER') and hasAuthority('SALES_ORDERS_CREATE')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CONVERT_TO_ORDER')")
     public ResponseEntity<QuoteConvertedToOrderResponse> convertToOrder(
             @PathVariable UUID id, Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
@@ -166,7 +166,7 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/convert-to-invoice")
-    @PreAuthorize("hasAuthority('SALES_QUOTES_CONVERT_TO_INVOICE') and hasAuthority('FINANCE_BILLING_INVOICES_CREATE')")
+    @PreAuthorize("hasAuthority('SALES_QUOTES_CONVERT_TO_INVOICE')")
     public ResponseEntity<QuoteConvertedToInvoiceResponse> convertToInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody ConvertQuoteToInvoiceRequest request,

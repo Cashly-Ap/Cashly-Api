@@ -81,7 +81,7 @@ public class WarehouseStockController {
     }
 
     @PostMapping("/transfer")
-    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_RECORD_EXIT') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_ENTRY')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_RECORD_EXIT')")
     public ResponseEntity<List<StockMovementResponse>> transfer(
             @PathVariable UUID warehouseId,
             @Valid @RequestBody TransferStockRequest request) {

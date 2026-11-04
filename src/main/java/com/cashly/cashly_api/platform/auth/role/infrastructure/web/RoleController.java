@@ -26,7 +26,7 @@ public class RoleController {
     }
 
     @GetMapping("/options")
-    @PreAuthorize("hasAuthority('USERS_VIEW_LIST') and (hasAuthority('USERS_CREATE') or hasAuthority('USERS_EDIT'))")
+    @PreAuthorize("hasAuthority('USERS_VIEW_LIST')")
     public List<ManageRolesUseCase.Option> options() {
         return useCase.options();
     }

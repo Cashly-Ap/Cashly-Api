@@ -60,7 +60,7 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('SALES_ORDERS_CREATE') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_EXIT')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_CREATE')")
     public ResponseEntity<OrderDetailResponse> create(
             @Valid @RequestBody CreateOrderRequest request,
             Authentication authentication) {
@@ -112,14 +112,14 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_ORDERS_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_VIEW_DETAIL')")
     public ResponseEntity<OrderDetailResponse> getById(@PathVariable UUID id) {
         OrderDetailResponse order = getOrderByIdUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_ORDERS_EDIT') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_EXIT')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_EDIT')")
     public ResponseEntity<OrderDetailResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateOrderRequest request) {
         OrderDetailResponse order = updateOrderUseCase.execute(id, request);
@@ -127,14 +127,14 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/confirm")
-    @PreAuthorize("hasAuthority('SALES_ORDERS_CONFIRM') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_EXIT')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_CONFIRM')")
     public ResponseEntity<OrderDetailResponse> confirm(@PathVariable UUID id) {
         OrderDetailResponse order = confirmOrderUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAuthority('SALES_ORDERS_CANCEL') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_ENTRY')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_CANCEL')")
     public ResponseEntity<OrderDetailResponse> cancel(@PathVariable UUID id,
             @Valid @RequestBody CancelOrderRequest request) {
         OrderDetailResponse order = cancelOrderUseCase.execute(id, request);
@@ -142,7 +142,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/convert-to-invoice")
-    @PreAuthorize("hasAuthority('SALES_ORDERS_CONVERT_TO_INVOICE') and hasAuthority('FINANCE_BILLING_INVOICES_CREATE')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_CONVERT_TO_INVOICE')")
     public ResponseEntity<ConvertToInvoiceResponse> convertToInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody ConvertToInvoiceRequest request,
@@ -154,7 +154,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SALES_ORDERS_DELETE') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_ENTRY')")
+    @PreAuthorize("hasAuthority('SALES_ORDERS_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteOrderUseCase.execute(id);
         return ResponseEntity.noContent().build();

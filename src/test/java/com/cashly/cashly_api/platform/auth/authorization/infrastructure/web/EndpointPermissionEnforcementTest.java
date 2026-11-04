@@ -2,6 +2,7 @@ package com.cashly.cashly_api.platform.auth.authorization.infrastructure.web;
 
 import com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry;
 import org.aopalliance.intercept.MethodInvocation;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -67,6 +68,19 @@ class EndpointPermissionEnforcementTest {
         }
         assertThat(result.size()).isGreaterThan(170);
         return result.stream();
+    }
+
+    @Test
+    void everyProtectedEndpointDeclaresExactlyOnePermission() throws Exception {
+        operations().forEach(operation -> {
+            if (operation.policy().equals("isAuthenticated()")
+                    || operation.policy().equals("permitAll()")) {
+                return;
+            }
+            assertThat(AUTHORITY.matcher(operation.policy()).results().count())
+                    .as("%s must declare exactly one permission", operation)
+                    .isEqualTo(1);
+        });
     }
 
     @ParameterizedTest(name = "{0}: no module access")

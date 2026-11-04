@@ -39,7 +39,7 @@ public class ReturnController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FINANCE_BILLING_RETURNS_CREATE') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_ENTRY')")
+    @PreAuthorize("hasAuthority('FINANCE_BILLING_RETURNS_CREATE')")
     public ResponseEntity<ReturnResponse> create(
             @Valid @RequestBody CreateReturnRequest request,
             Authentication authentication) {
@@ -69,7 +69,7 @@ public class ReturnController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('FINANCE_BILLING_RETURNS_DELETE') and hasAuthority('INVENTORY_WAREHOUSES_RECORD_EXIT')")
+    @PreAuthorize("hasAuthority('FINANCE_BILLING_RETURNS_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable UUID id,
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());

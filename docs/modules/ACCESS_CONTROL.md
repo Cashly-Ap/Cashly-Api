@@ -101,7 +101,7 @@ Role writes use `{name, description, active, version, permissions}` where `permi
 
 JWT identity is verified and current account/role grants are loaded from `auth_role_permissions` for every authenticated request. The JWT contains identity claims only; it does not contain role/module grants and stored claims never authorize an operation. Method annotations declare explicit permission codes; an interceptor rejects unmapped API handlers except the named authentication/notification self-service operations.
 
-Every endpoint declares its exact code. Stock-aware transaction lookups additionally require `INVENTORY_WAREHOUSES_VIEW_STOCK`. Stock-changing operations declare `INVENTORY_WAREHOUSES_RECORD_ENTRY` or `INVENTORY_WAREHOUSES_RECORD_EXIT`. Reflection coverage tests fail when a controller declares a code that is absent from the registry.
+Every endpoint declares exactly one permission code, owned by the module that exposes the operation. Transaction endpoints use their own module code even when the response contains stock information; standalone inventory operations declare `INVENTORY_WAREHOUSES_VIEW_STOCK`, `INVENTORY_WAREHOUSES_RECORD_ENTRY` or `INVENTORY_WAREHOUSES_RECORD_EXIT`. Reflection coverage tests fail when a controller declares no code, more than one code or a code that is absent from the registry.
 
 Administrative mutations take a shared database administration-row lock under READ_COMMITTED before authorization/state reads. Role delegation cannot exceed the actor's grants; system role assignment requires an existing system administrator. Target-account checks apply to profile, deletion and credential administration, including inactive targets. At least one active system administrator must remain.
 

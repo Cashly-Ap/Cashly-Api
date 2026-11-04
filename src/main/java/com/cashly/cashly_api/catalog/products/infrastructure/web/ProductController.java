@@ -93,7 +93,7 @@ public class ProductController {
     }
 
     @GetMapping(params = "customerId")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_LIST') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_LIST')")
     public ResponseEntity<PageResponse<ProductWithStockResponse>> getForTransaction(
             @RequestParam UUID customerId,
             @RequestParam(required = false) List<UUID> customerIds,
@@ -134,7 +134,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}/stock")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_DETAIL') and hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
+    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_DETAIL')")
     public ResponseEntity<List<ProductStockByWarehouseResponse>> getStock(
             @PathVariable UUID id) {
         return ResponseEntity.ok(getProductStockUseCase.execute(id));
