@@ -114,6 +114,7 @@ public class User {
             throw new IllegalArgumentException("Email cannot be null");
         }
         this.email = newEmail;
+        this.emailVerified = false;
         this.updatedAt = LocalDateTime.now();
     }
 

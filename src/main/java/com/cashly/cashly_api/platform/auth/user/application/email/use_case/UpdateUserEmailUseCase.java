@@ -14,6 +14,7 @@ import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.user.verification.application.services.EmailVerificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,17 +28,20 @@ public class UpdateUserEmailUseCase {
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
     private final ActivityNotificationRecorder activityNotifications;
+    private final EmailVerificationService emailVerification;
 
     public UpdateUserEmailUseCase(UserRepository userRepository,
             com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
             UserPreferencesRepository preferences,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            EmailVerificationService emailVerification) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
         this.preferences = preferences;
         this.userRepository = userRepository;
         this.access = access;
+        this.emailVerification = emailVerification;
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
@@ -61,6 +65,8 @@ public class UpdateUserEmailUseCase {
         activityNotifications.record(ActivityEvent.of("USERS",
                 "EDIT", "USER", saved.getId().getValue(),
                 saved.getEmail().getValue(), null));
+        emailVerification.requestVerification(saved, preferences
+                .languageFor(saved.getId().getValue()));
         return UserResponse.from(saved).withLanguage(
                 preferences.languageFor(saved.getId().getValue()));
     }

@@ -126,6 +126,18 @@ class UserUnitTest {
     }
 
     @Test
+    void should_ResetEmailVerification_When_EmailChanges() {
+        User user = new User(userId, email, new UserName("Test User"),
+                password);
+        user.verifyEmail();
+
+        user.updateEmail(new Email("changed@example.com"));
+
+        assertFalse(user.isEmailVerified());
+        assertEquals("changed@example.com", user.getEmail().getValue());
+    }
+
+    @Test
     void should_ReturnTrue_When_UserCanAuthenticate() {
         User user = new User(userId, email, new UserName("Test User"),
                 password);

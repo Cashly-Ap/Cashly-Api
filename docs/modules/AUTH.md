@@ -228,6 +228,49 @@ The AUTH module handles user authentication and authorization using JWT (JSON We
 
 ---
 
+### 5. Confirm Email Verification
+**Endpoint**: `POST /api/auth/email-verification/confirm`
+
+**Authentication**: Not required
+
+**Description**: Confirms an email address using a single-use token sent by email. The token is stored only as a SHA-256 hash, expires after 24 hours and is consumed on first use.
+
+**Request Body**:
+```json
+{
+  "token": "8ppH5mKcnd3QM9YPhjthSEZU-1GfmYNwc4-GpyD2XbA"
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "emailVerified": true
+}
+```
+
+**Errors**:
+- `400 Bad Request` `EMAIL_VERIFICATION_INVALID`: Unknown or missing token
+- `409 Conflict` `EMAIL_VERIFICATION_USED`: Token already consumed
+- `410 Gone` `EMAIL_VERIFICATION_EXPIRED`: Token expired
+
+---
+
+### 6. Resend Email Verification
+**Endpoint**: `POST /api/auth/email-verification/resend`
+
+**Authentication**: Required (JWT)
+
+**Description**: Issues a new verification token for the authenticated user, invalidating any previous unused token. Requests are rate limited to one every 60 seconds. Verified accounts receive `202` without sending mail.
+
+**Response** (202 Accepted): Empty body
+
+**Errors**:
+- `401 Unauthorized`: Missing or invalid access token
+- `429 Too Many Requests` `EMAIL_VERIFICATION_RATE_LIMITED`: Cooldown still active
+
+---
+
 ## DTOs (Data Transfer Objects)
 
 ### Request DTOs

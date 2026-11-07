@@ -16,6 +16,7 @@ import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Password;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import com.cashly.cashly_api.platform.auth.user.application.exceptions.DuplicateEmailException;
+import com.cashly.cashly_api.platform.auth.user.verification.application.services.EmailVerificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +29,14 @@ public class RegisterUserUseCase {
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
     private final ActivityNotificationRecorder activityNotifications;
+    private final EmailVerificationService emailVerification;
 
     public RegisterUserUseCase(UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
             UserPreferencesRepository preferences,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            EmailVerificationService emailVerification) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
@@ -41,6 +44,7 @@ public class RegisterUserUseCase {
         this.access = access;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailVerification = emailVerification;
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
@@ -73,6 +77,7 @@ public class RegisterUserUseCase {
         activityNotifications.record(ActivityEvent.of("USERS",
                 "CREATE", "USER", savedUser.getId().getValue(),
                 savedUser.getEmail().getValue(), null));
+        emailVerification.requestVerification(savedUser, request.language());
         return UserResponse.from(savedUser).withLanguage(request.language());
     }
 }

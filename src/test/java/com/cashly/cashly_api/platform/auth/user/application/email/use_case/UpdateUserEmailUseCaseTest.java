@@ -39,6 +39,9 @@ class UpdateUserEmailUseCaseTest {
     @Mock
     private com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;
 
+    @Mock
+    private com.cashly.cashly_api.platform.auth.user.verification.application.services.EmailVerificationService emailVerification;
+
     @InjectMocks
     private UpdateUserEmailUseCase useCase;
 

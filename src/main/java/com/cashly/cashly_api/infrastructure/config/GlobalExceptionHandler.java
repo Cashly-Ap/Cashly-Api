@@ -620,6 +620,44 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, "Invalid request", ex.getMessage()));
     }
 
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.user.verification.application.exceptions.EmailVerificationRateLimitedException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailVerificationRateLimited(
+            RuntimeException ex) {
+        return verificationError(HttpStatus.TOO_MANY_REQUESTS,
+                "EMAIL_VERIFICATION_RATE_LIMITED", ex);
+    }
+
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.user.verification.application.exceptions.EmailVerificationInvalidTokenException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailVerificationInvalidToken(
+            RuntimeException ex) {
+        return verificationError(HttpStatus.BAD_REQUEST,
+                "EMAIL_VERIFICATION_INVALID", ex);
+    }
+
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.user.verification.application.exceptions.EmailVerificationExpiredTokenException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailVerificationExpiredToken(
+            RuntimeException ex) {
+        return verificationError(HttpStatus.GONE,
+                "EMAIL_VERIFICATION_EXPIRED", ex);
+    }
+
+    @ExceptionHandler(com.cashly.cashly_api.platform.auth.user.verification.application.exceptions.EmailVerificationUsedTokenException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailVerificationUsedToken(
+            RuntimeException ex) {
+        return verificationError(HttpStatus.CONFLICT,
+                "EMAIL_VERIFICATION_USED", ex);
+    }
+
+    private ResponseEntity<Map<String, Object>> verificationError(
+            HttpStatus status, String code, RuntimeException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", status.value());
+        body.put("code", code);
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(status).body(body);
+    }
+
     @ExceptionHandler(org.springframework.dao.InvalidDataAccessApiUsageException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidDataAccessUsage(
             org.springframework.dao.InvalidDataAccessApiUsageException ex) {
