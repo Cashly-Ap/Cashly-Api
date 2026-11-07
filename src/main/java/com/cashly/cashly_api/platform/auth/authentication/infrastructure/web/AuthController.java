@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.platform.auth.authentication.infrastructure.web;
 
+import com.cashly.cashly_api.platform.auth.user.application.email.request.UpdateUserEmailRequest;
+import com.cashly.cashly_api.platform.auth.user.application.email.use_case.UpdateUserEmailUseCase;
 import com.cashly.cashly_api.platform.auth.user.application.password.request.UpdateUserPasswordRequest;
 import com.cashly.cashly_api.platform.auth.user.application.password.use_case.UpdateUserPasswordUseCase;
 import org.springframework.http.HttpStatus;
@@ -40,12 +42,14 @@ public class AuthController {
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUserUseCase logoutUserUseCase;
     private final UpdateUserPasswordUseCase updateUserPasswordUseCase;
+    private final UpdateUserEmailUseCase updateUserEmailUseCase;
 
     public AuthController(RegisterUserUseCase registerUserUseCase,
             LoginUserUseCase loginUserUseCase,
             RefreshTokenUseCase refreshTokenUseCase,
             LogoutUserUseCase logoutUserUseCase,
             UpdateUserPasswordUseCase updateUserPasswordUseCase,
+            UpdateUserEmailUseCase updateUserEmailUseCase,
             GetUserByIdUseCase getUserByIdUseCase,
             UpdateOwnProfileUseCase updateOwnProfileUseCase) {
         this.updateOwnProfileUseCase = updateOwnProfileUseCase;
@@ -55,6 +59,7 @@ public class AuthController {
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUserUseCase = logoutUserUseCase;
         this.updateUserPasswordUseCase = updateUserPasswordUseCase;
+        this.updateUserEmailUseCase = updateUserEmailUseCase;
     }
 
     @GetMapping("/profile")
@@ -108,5 +113,15 @@ public class AuthController {
         UserResponse response = updateUserPasswordUseCase.executeSelf(userId,
                 request);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/profile/email")
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponse> changeEmail(
+            Authentication authentication,
+            @Valid @RequestBody UpdateUserEmailRequest request) {
+        String userId = (String) authentication.getPrincipal();
+        return ResponseEntity.ok(updateUserEmailUseCase.executeSelf(userId,
+                request));
     }
 }

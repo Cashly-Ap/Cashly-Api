@@ -14,6 +14,7 @@ import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
 import com.cashly.cashly_api.platform.auth.user.domain.repository.UserRepository;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.Email;
 import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserId;
+import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
 import com.cashly.cashly_api.platform.auth.user.verification.application.services.EmailVerificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,27 @@ public class UpdateUserEmailUseCase {
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public UserResponse execute(String id, UpdateUserEmailRequest request) {
         access.authorizeAccountMutation(UUID.fromString(id), false);
+        return change(id, request);
+    }
+
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
+    public UserResponse executeSelf(String id, UpdateUserEmailRequest request) {
+        UUID userId = UUID.fromString(id);
+        access.authorizeAccountMutation(userId, true);
+        User user = userRepository.findById(new UserId(userId))
+                .orElseThrow(() -> new UserNotFoundException(
+                        "User not found with id: " + id));
+        String currentEmail = request.currentEmail();
+        if (currentEmail == null || currentEmail.isBlank()
+                || !user.getEmail().getValue()
+                        .equalsIgnoreCase(currentEmail.trim())) {
+            throw new InvalidCredentialsException(
+                    "Current email is incorrect");
+        }
+        return change(id, request);
+    }
+
+    private UserResponse change(String id, UpdateUserEmailRequest request) {
         UserId userId = new UserId(UUID.fromString(id));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(

@@ -45,6 +45,8 @@ class OwnProfileControllerTest {
     @MockitoBean
     UpdateUserPasswordUseCase password;
     @MockitoBean
+    com.cashly.cashly_api.platform.auth.user.application.email.use_case.UpdateUserEmailUseCase updateEmail;
+    @MockitoBean
     GetUserByIdUseCase query;
     @MockitoBean
     com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository preferences;

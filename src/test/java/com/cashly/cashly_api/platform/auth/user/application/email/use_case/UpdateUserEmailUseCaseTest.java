@@ -135,4 +135,53 @@ class UpdateUserEmailUseCaseTest {
         assertEquals("old@example.com", response.email());
         verify(userRepository).save(any(User.class));
     }
+
+    @Test
+    @DisplayName("should_UpdateEmail_When_SelfServiceConfirmsCurrentEmail")
+    void should_UpdateEmail_When_SelfServiceConfirmsCurrentEmail() {
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "new@example.com", "old@example.com");
+
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
+        when(userRepository.existsByEmail(any(Email.class))).thenReturn(false);
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponse response = useCase.executeSelf(userId, request);
+
+        assertEquals("new@example.com", response.email());
+        verify(access).authorizeAccountMutation(UUID.fromString(userId), true);
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("should_RejectSelfService_When_CurrentEmailDoesNotMatch")
+    void should_RejectSelfService_When_CurrentEmailDoesNotMatch() {
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "new@example.com", "other@example.com");
+
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
+
+        assertThrows(
+                com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
+                () -> useCase.executeSelf(userId, request));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("should_RejectSelfService_When_CurrentEmailIsMissing")
+    void should_RejectSelfService_When_CurrentEmailIsMissing() {
+        UpdateUserEmailRequest request = new UpdateUserEmailRequest(
+                "new@example.com");
+
+        when(userRepository.findById(any(UserId.class)))
+                .thenReturn(Optional.of(testUser));
+
+        assertThrows(
+                com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException.class,
+                () -> useCase.executeSelf(userId, request));
+        verify(userRepository, never()).save(any(User.class));
+    }
 }

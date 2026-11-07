@@ -34,6 +34,9 @@ services:
       - STORAGE_S3_SECRET_KEY=${STORAGE_S3_SECRET_KEY:-minioadmin}
       - STORAGE_S3_BUCKET=${STORAGE_S3_BUCKET:-cashly-files}
       - STORAGE_S3_REGION=${STORAGE_S3_REGION:-us-east-1}
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST:-mailpit}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT:-1025}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH:-false}
     volumes:
       - .:/app
       - maven_cache:/root/.m2
@@ -42,6 +45,8 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+      mailpit:
+        condition: service_healthy
     networks:
       - cashly-network
 
@@ -167,6 +172,22 @@ services:
     profiles:
       - ${TEST_PROFILE:-test}
     command: ["./mvnw", "test"]
+
+  # Dev-only SMTP catcher: UI at http://localhost:8025, SMTP at :1025
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-cashly-api}-mailpit
+    restart: unless-stopped
+    ports:
+      - '${MAILPIT_UI_PORT:-8025}:8025'
+      - '${MAILPIT_SMTP_PORT:-1025}:1025'
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cashly-network
 
   minio:
     image: cashly-minio:local
