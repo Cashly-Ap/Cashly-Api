@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.invoices.application.update.request.UpdateInvoiceRequest;
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.finance.billing.invoices.application.mappers.InvoiceMapper;
@@ -33,11 +37,17 @@ public class UpdateInvoiceUseCase {
     private final StockAvailabilityGateway stockEnrichmentService;
     private final CustomerCreditTermsGateway customerRepository;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateInvoiceUseCase(InvoiceRepository invoiceRepository,
             InvoiceCatalogGateway productRepository,
             InventoryGateway inventoryGateway,
             StockAvailabilityGateway stockEnrichmentService,
-            CustomerCreditTermsGateway customerRepository) {
+            CustomerCreditTermsGateway customerRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoiceRepository = invoiceRepository;
         this.productRepository = productRepository;
         this.inventoryGateway = inventoryGateway;
@@ -100,6 +110,9 @@ public class UpdateInvoiceUseCase {
                             es.warehouseName(), es.availableStock()));
         }
 
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+                "EDIT", "INVOICE", saved.getId().value(),
+                saved.getInvoiceNumber().value(), null));
         return InvoiceMapper.toDetailResponse(saved, enrichmentMap, Map.of());
     }
 

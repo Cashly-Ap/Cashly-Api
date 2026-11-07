@@ -23,8 +23,8 @@ class PaymentModuleBoundaryTest {
         for (Class<?> useCase : useCases) {
             for (var constructor : useCase.getConstructors()) {
                 assertTrue(Arrays.stream(constructor.getParameterTypes())
-                        .allMatch(type -> type.getPackageName().startsWith(
-                                "com.cashly.cashly_api.finance.treasury.payments.")),
+                        .allMatch(type -> (type.getPackageName().startsWith(
+                                "com.cashly.cashly_api.finance.treasury.payments.") || type.getPackageName().startsWith("com.cashly.cashly_api.platform.notifications.application.ports.in"))),
                         useCase.getSimpleName()
                                 + " imports an external module into its constructor");
             }

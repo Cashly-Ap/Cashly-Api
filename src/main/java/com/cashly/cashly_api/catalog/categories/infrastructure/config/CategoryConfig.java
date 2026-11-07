@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.catalog.categories.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.catalog.categories.application.mappers.CategoryMapper;
 import com.cashly.cashly_api.catalog.categories.application.create.use_case.CreateCategoryUseCase;
 import com.cashly.cashly_api.catalog.categories.application.delete.use_case.DeleteCategoryUseCase;
@@ -22,8 +23,10 @@ public class CategoryConfig {
     @Bean
     public CreateCategoryUseCase createCategoryUseCase(
             CategoryRepository categoryRepository,
-            CategoryMapper categoryMapper) {
-        return new CreateCategoryUseCase(categoryRepository, categoryMapper);
+            CategoryMapper categoryMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        return new CreateCategoryUseCase(categoryRepository, categoryMapper,
+                activityNotifications);
     }
 
     @Bean
@@ -47,14 +50,18 @@ public class CategoryConfig {
     @Bean
     public UpdateCategoryUseCase updateCategoryUseCase(
             CategoryRepository categoryRepository,
-            CategoryMapper categoryMapper) {
-        return new UpdateCategoryUseCase(categoryRepository, categoryMapper);
+            CategoryMapper categoryMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdateCategoryUseCase(categoryRepository, categoryMapper,
+                activityNotifications);
     }
 
     @Bean
     public DeleteCategoryUseCase deleteCategoryUseCase(
             CategoryUsageGateway usageGateway,
-            CategoryRepository categoryRepository) {
-        return new DeleteCategoryUseCase(usageGateway, categoryRepository);
+            CategoryRepository categoryRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteCategoryUseCase(usageGateway, categoryRepository,
+                activityNotifications);
     }
 }

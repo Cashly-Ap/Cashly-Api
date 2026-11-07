@@ -1,11 +1,14 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.ActorIdentityGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CustomerCreditTermsGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceCatalogGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceCustomerGateway;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceOrderGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceQuoteGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.create.request.CreateInvoiceRequest;
@@ -38,16 +41,20 @@ public class CreateInvoiceUseCase {
     private final InvoiceCatalogGateway catalog;
     private final InventoryGateway inventory;
     private final IssueInvoiceService issuance;
-    private final InvoiceNotificationGateway notifications;
     private final InvoiceQuoteGateway quotes;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public CreateInvoiceUseCase(InvoiceRepository invoices,
             InvoiceOrderGateway orders, InvoiceCustomerGateway customers,
             CustomerCreditTermsGateway customerCreditTerms,
             ActorIdentityGateway actors, InvoiceCatalogGateway catalog,
             InventoryGateway inventory, IssueInvoiceService issuance,
-            InvoiceNotificationGateway notifications,
-            InvoiceQuoteGateway quotes) {
+            InvoiceQuoteGateway quotes,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoices = invoices;
         this.orders = orders;
         this.customers = customers;
@@ -56,7 +63,6 @@ public class CreateInvoiceUseCase {
         this.catalog = catalog;
         this.inventory = inventory;
         this.issuance = issuance;
-        this.notifications = notifications;
         this.quotes = quotes;
     }
 
@@ -156,9 +162,10 @@ public class CreateInvoiceUseCase {
                     InvoiceOrigin.CONFIRMED_ORDER, authenticatedUserId);
         } else {
             saved = invoices.save(invoice);
-            notifications.notifyCustomerInvoiceCreated(saved.getCustomerId(),
-                    saved.getId().value(), saved.getInvoiceNumber().value());
         }
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+                "CREATE", "INVOICE", saved.getId().value(),
+                saved.getInvoiceNumber().value(), authenticatedUserId));
         return InvoiceMapper.toDetailResponse(saved);
     }
 

@@ -21,14 +21,12 @@ public class IssueInvoiceService {
     private final InvoicePaymentService payments;
     private final InventoryGateway reservations;
     private final StockDeductionGateway stock;
-    private final InvoiceNotificationGateway notifications;
     private final CashRegisterGateway cashRegister;
 
     public IssueInvoiceService(InvoiceRepository invoices,
             ActorIdentityGateway actors, InvoiceIssueValidator validator,
             InvoicePaymentService payments, InventoryGateway reservations,
             StockDeductionGateway stock,
-            InvoiceNotificationGateway notifications,
             CashRegisterGateway cashRegister) {
         this.invoices = invoices;
         this.actors = actors;
@@ -36,7 +34,6 @@ public class IssueInvoiceService {
         this.payments = payments;
         this.reservations = reservations;
         this.stock = stock;
-        this.notifications = notifications;
         this.cashRegister = cashRegister;
     }
 
@@ -76,14 +73,6 @@ public class IssueInvoiceService {
             cashRegister.recordInvoice(new CashRegisterGateway.InvoiceEntry(
                     saved.calculateTotal(), saved.getId().value(),
                     saved.getInvoiceNumber().value(), actorId, actor.name()));
-        }
-        if (origin == InvoiceOrigin.CONFIRMED_ORDER) {
-            notifications.notifyCustomerInvoiceCreated(saved.getCustomerId(),
-                    saved.getId().value(), saved.getInvoiceNumber().value());
-        }
-        if (origin != InvoiceOrigin.QUOTE) {
-            notifications.notifyCustomerInvoiceConfirmed(saved.getCustomerId(),
-                    saved.getId().value(), saved.getInvoiceNumber().value());
         }
         return saved;
     }

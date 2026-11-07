@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.reject.use_case;
 
-import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.entity.Payment;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.repository.PaymentRepository;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.PaymentId;
@@ -24,10 +26,10 @@ class RejectPaymentUseCaseTest {
     @Test
     void rejection_is_saved_before_customer_notification_is_sent() {
         PaymentRepository payments = mock(PaymentRepository.class);
-        PaymentNotificationGateway notifications = mock(
-                PaymentNotificationGateway.class);
+        ActivityNotificationRecorder activityNotifications = mock(
+                ActivityNotificationRecorder.class);
         RejectPaymentUseCase useCase = new RejectPaymentUseCase(payments,
-                notifications);
+                activityNotifications);
         UUID customerId = UUID.randomUUID();
         UUID actorId = UUID.randomUUID();
         Payment payment = Payment.create(PaymentNumber.of(2026, 1), customerId,
@@ -44,7 +46,6 @@ class RejectPaymentUseCaseTest {
 
         assertEquals(PaymentStatus.REJECTED.name(), response.status());
         verify(payments).save(payment);
-        verify(notifications).rejected(customerId, payment.getId().value(),
-                reason);
+        verify(activityNotifications).record(any(ActivityEvent.class));
     }
 }

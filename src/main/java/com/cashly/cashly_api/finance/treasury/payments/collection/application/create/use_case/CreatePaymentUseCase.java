@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentActorGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentCustomerGateway;
@@ -23,9 +27,15 @@ public class CreatePaymentUseCase {
     private final PaymentActorGateway actors;
     private final CashRegisterGateway cashRegister;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreatePaymentUseCase(PaymentRepository paymentRepository,
             PaymentCustomerGateway customers, PaymentActorGateway actors,
-            CashRegisterGateway cashRegister) {
+            CashRegisterGateway cashRegister,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.paymentRepository = paymentRepository;
         this.customers = customers;
         this.actors = actors;
@@ -67,6 +77,10 @@ public class CreatePaymentUseCase {
 
         Payment saved = paymentRepository.save(payment);
         recordCashMovement(saved);
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_RECEIVABLES",
+                "PAY_WITH_VALIDATION", "PAYMENT",
+                saved.getId().value(), saved.getPaymentNumber().value(),
+                authenticatedUserId));
         return PaymentMapper.toResponse(saved);
     }
 

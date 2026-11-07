@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.close.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.mappers.CashRegisterMapper;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.dto.response.CashRegisterResponse;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashRegister;
@@ -15,8 +19,14 @@ public class CloseRegisterUseCase {
     private final CashRegisterRepository closureRepository;
     private final CashRegisterQueryGateway queries;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CloseRegisterUseCase(CashRegisterRepository closureRepository,
-            CashRegisterQueryGateway queries) {
+            CashRegisterQueryGateway queries,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.closureRepository = closureRepository;
         this.queries = queries;
     }
@@ -42,6 +52,9 @@ public class CloseRegisterUseCase {
 
         closure.close(closedBy, closedByName, declaredBalance, closingNotes);
         CashRegister saved = closureRepository.save(closure);
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_CASH_REGISTER",
+                "CLOSE", "CASH_REGISTER", saved.getId().value(),
+                saved.getClosureDate().toString(), closedBy));
         return CashRegisterMapper.toResponse(saved, dailyTotals,
                 closureRepository.findMovements(closure.getId()));
     }

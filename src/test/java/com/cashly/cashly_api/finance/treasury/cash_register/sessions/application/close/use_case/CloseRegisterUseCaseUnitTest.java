@@ -40,7 +40,7 @@ class CloseRegisterUseCaseUnitTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CloseRegisterUseCase(closureRepository, queries);
+        useCase = new CloseRegisterUseCase(closureRepository, queries, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         openClosure = CashRegister.open(RegisterId.of(closureId),
                 LocalDate.now(), userId, "Operator");
     }

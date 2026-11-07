@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.out.CashRegisterActorGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.request.CashMovementRequest;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.response.CashMovementResponse;
@@ -16,9 +20,15 @@ public class RecordCashMovementUseCase {
     private final CashRegisterActorGateway actors;
     private final CashMovementService movementService;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public RecordCashMovementUseCase(CashRegisterRepository registerRepository,
             CashRegisterActorGateway actors,
-            CashMovementService movementService) {
+            CashMovementService movementService,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.registerRepository = registerRepository;
         this.actors = actors;
         this.movementService = movementService;
@@ -41,6 +51,9 @@ public class RecordCashMovementUseCase {
         var movement = movementService.record(request.direction(),
                 request.type(), request.amount(), request.paymentMethodId(),
                 request.description(), "MANUAL", null, userId, userName);
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_CASH_REGISTER",
+                "OPEN", "CASH_REGISTER", active.getId().value(),
+                active.getClosureDate().toString(), userId));
         return new CashMovementResponse(movement.getId(),
                 movement.getDirection(), movement.getType(),
                 movement.getAmount(), movement.getPaymentMethodId(),

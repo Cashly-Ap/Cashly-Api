@@ -70,7 +70,7 @@ class CreateOrderUseCaseUnitTest {
     void setUp() {
         createOrderUseCase = new CreateOrderUseCase(orderRepository,
                 customerRepository, productRepository, userRepository,
-                warehouseStockRepository);
+                warehouseStockRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

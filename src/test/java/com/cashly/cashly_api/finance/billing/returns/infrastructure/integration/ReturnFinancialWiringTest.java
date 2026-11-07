@@ -35,6 +35,8 @@ class ReturnFinancialWiringTest {
     @Test
     void should_wire_return_owned_gateways_to_neutral_public_providers() {
         try (var context = new AnnotationConfigApplicationContext()) {
+            context.registerBean(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class,
+                    () -> mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
             context.registerBean(ReturnRepository.class,
                     () -> mock(ReturnRepository.class));
             context.registerBean(ReturnInvoiceAdjustmentGateway.class,

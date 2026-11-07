@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.sales.orders.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderActorGateway;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderCustomerGateway;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
@@ -27,9 +31,15 @@ public class CreateOrderUseCase {
     private final OrderActorGateway actors;
     private final OrderInventoryGateway inventory;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreateOrderUseCase(OrderRepository orderRepository,
             OrderCustomerGateway customers, OrderProductCatalogGateway products,
-            OrderActorGateway actors, OrderInventoryGateway inventory) {
+            OrderActorGateway actors, OrderInventoryGateway inventory,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.orderRepository = orderRepository;
         this.customers = customers;
         this.products = products;
@@ -59,6 +69,9 @@ public class CreateOrderUseCase {
                 request.notes(), lines);
 
         Order saved = orderRepository.save(order);
+        activityNotifications.record(ActivityEvent.of("SALES_ORDERS",
+                "CREATE", "ORDER", saved.getId().value(),
+                saved.getOrderNumber().value(), authenticatedUserId));
         return OrderMapper.toDetailResponse(saved);
     }
 

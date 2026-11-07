@@ -57,7 +57,7 @@ class DeleteInvoiceUseCaseTest {
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
                         new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
                                 warehouseStockRepository,
-                                mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))));
+                                mock(com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository.class))), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

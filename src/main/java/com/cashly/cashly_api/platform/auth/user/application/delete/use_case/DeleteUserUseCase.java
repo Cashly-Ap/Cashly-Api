@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.platform.auth.user.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserHasAssociatedRecordsException;
 import com.cashly.cashly_api.platform.auth.user.application.exceptions.UserNotFoundException;
 import com.cashly.cashly_api.platform.auth.user.domain.entity.User;
@@ -16,8 +20,14 @@ public class DeleteUserUseCase {
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public DeleteUserUseCase(UserRepository userRepository,
-            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access) {
+            com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.userRepository = userRepository;
         this.access = access;
     }
@@ -38,6 +48,9 @@ public class DeleteUserUseCase {
             throw new UserHasAssociatedRecordsException(id);
         }
 
+        activityNotifications.record(ActivityEvent.of("USERS",
+                "DELETE", "USER", user.getId().getValue(),
+                user.getEmail().getValue(), null));
         userRepository.delete(user);
     }
 }

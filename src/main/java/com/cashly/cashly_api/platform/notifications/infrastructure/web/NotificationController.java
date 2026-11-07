@@ -1,12 +1,16 @@
 package com.cashly.cashly_api.platform.notifications.infrastructure.web;
 
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
+import com.cashly.cashly_api.platform.notifications.application.services.NotificationPreferencesService;
 import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -14,10 +18,13 @@ import java.util.UUID;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final NotificationPreferencesService preferencesService;
     private final com.cashly.cashly_api.platform.notifications.infrastructure.messaging.NotificationTranslator translator = new com.cashly.cashly_api.platform.notifications.infrastructure.messaging.NotificationTranslator();
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService,
+            NotificationPreferencesService preferencesService) {
         this.notificationService = notificationService;
+        this.preferencesService = preferencesService;
     }
 
     @GetMapping
@@ -70,11 +77,69 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/preferences")
+    public ResponseEntity<PreferencesResponse> preferences(
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        return ResponseEntity.ok(toResponse(preferencesService.get(userId)));
+    }
+
+    @PutMapping("/preferences")
+    public ResponseEntity<PreferencesResponse> updatePreferences(
+            Authentication authentication,
+            @RequestBody UpdatePreferencesRequest request) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        Map<String, Boolean> modules = new java.util.HashMap<>();
+        if (request.modules() != null) {
+            for (ModulePreferenceRequest module : request.modules()) {
+                modules.put(parseModule(module.module()), module.enabled());
+            }
+        }
+        return ResponseEntity.ok(toResponse(preferencesService.update(userId,
+                request.enabled(), modules)));
+    }
+
+    private String parseModule(String module) {
+        if (module == null) {
+            throw new IllegalArgumentException("Module is required");
+        }
+        try {
+            PermissionModule.valueOf(module);
+            return module;
+        } catch (IllegalArgumentException unknown) {
+            throw new IllegalArgumentException("Unknown module: " + module);
+        }
+    }
+
+    private PreferencesResponse toResponse(
+            NotificationPreferencesService.PreferencesView view) {
+        return new PreferencesResponse(view.enabled(), view.modules().stream()
+                .map(module -> new ModulePreferenceResponse(
+                        module.module(), module.labelKey(),
+                        module.enabled()))
+                .toList());
+    }
+
     public record NotificationResponse(UUID id, String type, String title,
             String message, String referenceType, UUID referenceId,
             boolean isRead, LocalDateTime createdAt, LocalDateTime readAt) {
     }
 
     public record UnreadCountResponse(long count) {
+    }
+
+    public record PreferencesResponse(boolean enabled,
+            List<ModulePreferenceResponse> modules) {
+    }
+
+    public record ModulePreferenceResponse(String module, String labelKey,
+            boolean enabled) {
+    }
+
+    public record UpdatePreferencesRequest(boolean enabled,
+            List<ModulePreferenceRequest> modules) {
+    }
+
+    public record ModulePreferenceRequest(String module, boolean enabled) {
     }
 }

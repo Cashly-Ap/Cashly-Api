@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.inventory.warehouses.management.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.inventory.warehouses.management.application.create.request.CreateWarehouseRequest;
 import com.cashly.cashly_api.inventory.warehouses.management.application.dto.response.WarehouseDetailResponse;
 import com.cashly.cashly_api.inventory.warehouses.management.application.create.services.DuplicateWarehouseCodeException;
@@ -11,7 +15,13 @@ public class CreateWarehouseUseCase {
 
     private final WarehouseRepository warehouseRepository;
 
-    public CreateWarehouseUseCase(WarehouseRepository warehouseRepository) {
+    private final ActivityNotificationRecorder activityNotifications;
+
+    public CreateWarehouseUseCase(WarehouseRepository warehouseRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.warehouseRepository = warehouseRepository;
     }
 
@@ -25,6 +35,9 @@ public class CreateWarehouseUseCase {
                 request.address(), request.state(), request.municipality(),
                 request.postalCode());
         Warehouse saved = warehouseRepository.save(warehouse);
+        activityNotifications.record(ActivityEvent.of("INVENTORY_WAREHOUSES",
+                "CREATE", "WAREHOUSE", saved.getId(),
+                saved.getName(), null));
         return WarehouseDetailResponse.from(saved);
     }
 }

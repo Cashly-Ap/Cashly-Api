@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.platform.company.application.services;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.company.domain.entity.Company;
 import com.cashly.cashly_api.platform.company.domain.repository.CompanyRepository;
 import jakarta.validation.Valid;
@@ -17,8 +21,14 @@ public class CompanyService {
     private final CompanyRepository repository;
     private final CompanyMediaStorage images;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CompanyService(CompanyRepository repository,
-            CompanyMediaStorage images) {
+            CompanyMediaStorage images,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.repository = repository;
         this.images = images;
     }
@@ -54,6 +64,9 @@ public class CompanyService {
                         clean(address.country()), clean(address.postalCode())),
                 previous.logoPath(), previous.pdfLogoPath());
         repository.save(company);
+        activityNotifications.record(ActivityEvent.of("COMPANY",
+                "EDIT", "COMPANY", company.id(),
+                company.legalName(), null));
         return company;
     }
 

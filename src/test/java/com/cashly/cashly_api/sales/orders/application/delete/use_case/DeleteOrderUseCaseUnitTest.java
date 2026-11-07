@@ -42,7 +42,7 @@ class DeleteOrderUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         deleteOrderUseCase = new DeleteOrderUseCase(orderRepository,
-                warehouseStockRepository);
+                warehouseStockRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

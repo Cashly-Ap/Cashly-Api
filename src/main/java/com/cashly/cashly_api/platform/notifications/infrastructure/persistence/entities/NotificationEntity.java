@@ -26,10 +26,6 @@ public class NotificationEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID userId;
 
-    @Column(name = "customer_id", columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(SqlTypes.BINARY)
-    private UUID customerId;
-
     @Column(name = "type", length = 50, nullable = false)
     private String type;
 

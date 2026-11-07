@@ -47,7 +47,7 @@ class ReturnConfigTest {
 
         CreateReturnUseCase useCase = config.createReturnUseCase(
                 invoiceAdjustmentGateway, returnMapper, invoices, payments,
-                balances, inventoryGateway, cash);
+                balances, inventoryGateway, cash, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }
@@ -78,7 +78,7 @@ class ReturnConfigTest {
 
         DeleteReturnUseCase useCase = config.deleteReturnUseCase(
                 invoiceAdjustmentGateway, invoices, inventoryGateway, payments,
-                balances);
+                balances, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }

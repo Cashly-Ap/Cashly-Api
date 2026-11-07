@@ -12,7 +12,6 @@ public class Notification {
 
     private final NotificationId id;
     private final UUID userId;
-    private final UUID customerId;
     private final NotificationType type;
     private final String title;
     private final String message;
@@ -25,13 +24,12 @@ public class Notification {
     private LocalDateTime readAt;
     private final LocalDateTime createdAt;
 
-    private Notification(NotificationId id, UUID userId, UUID customerId,
-            NotificationType type, String title, String message,
-            String referenceType, UUID referenceId, boolean isRead,
-            LocalDateTime readAt, LocalDateTime createdAt) {
+    private Notification(NotificationId id, UUID userId, NotificationType type,
+            String title, String message, String referenceType,
+            UUID referenceId, boolean isRead, LocalDateTime readAt,
+            LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
-        this.customerId = customerId;
         this.type = type;
         this.title = title;
         this.message = message;
@@ -42,28 +40,25 @@ public class Notification {
         this.createdAt = createdAt;
     }
 
-    public static Notification create(UUID userId, UUID customerId,
-            NotificationType type, String title, String message,
-            String referenceType, UUID referenceId) {
-        if (userId == null && customerId == null) {
-            throw new IllegalArgumentException(
-                    "Either userId or customerId must be provided");
-        }
+    public static Notification create(UUID userId, NotificationType type,
+            String title, String message, String referenceType,
+            UUID referenceId) {
+        Objects.requireNonNull(userId, "userId must be provided");
         Objects.requireNonNull(type, "Notification type cannot be null");
         Objects.requireNonNull(title, "Title cannot be null");
         Objects.requireNonNull(message, "Message cannot be null");
 
-        return new Notification(NotificationId.generate(), userId, customerId,
-                type, title, message, referenceType, referenceId, false, null,
+        return new Notification(NotificationId.generate(), userId, type, title,
+                message, referenceType, referenceId, false, null,
                 LocalDateTime.now(ZoneOffset.UTC));
     }
 
     public static Notification reconstitute(NotificationId id, UUID userId,
-            UUID customerId, NotificationType type, String title,
-            String message, String referenceType, UUID referenceId,
-            boolean isRead, LocalDateTime readAt, LocalDateTime createdAt) {
-        return new Notification(id, userId, customerId, type, title, message,
-                referenceType, referenceId, isRead, readAt, createdAt);
+            NotificationType type, String title, String message,
+            String referenceType, UUID referenceId, boolean isRead,
+            LocalDateTime readAt, LocalDateTime createdAt) {
+        return new Notification(id, userId, type, title, message, referenceType,
+                referenceId, isRead, readAt, createdAt);
     }
 
     public Notification withTranslation(String titleKey, String messageKey,
@@ -98,10 +93,6 @@ public class Notification {
 
     public UUID getUserId() {
         return userId;
-    }
-
-    public UUID getCustomerId() {
-        return customerId;
     }
 
     public NotificationType getType() {

@@ -34,7 +34,7 @@ class CategoryConfigTest {
         CategoryConfig config = new CategoryConfig();
 
         CreateCategoryUseCase useCase = config
-                .createCategoryUseCase(categoryRepository, categoryMapper);
+                .createCategoryUseCase(categoryRepository, categoryMapper, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }
@@ -44,7 +44,7 @@ class CategoryConfigTest {
         CategoryConfig config = new CategoryConfig();
 
         DeleteCategoryUseCase useCase = config
-                .deleteCategoryUseCase(usageGateway, categoryRepository);
+                .deleteCategoryUseCase(usageGateway, categoryRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }
@@ -74,7 +74,7 @@ class CategoryConfigTest {
         CategoryConfig config = new CategoryConfig();
 
         UpdateCategoryUseCase useCase = config
-                .updateCategoryUseCase(categoryRepository, categoryMapper);
+                .updateCategoryUseCase(categoryRepository, categoryMapper, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }

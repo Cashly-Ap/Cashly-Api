@@ -1,7 +1,10 @@
 package com.cashly.cashly_api.sales.orders.application.cancel.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
 import com.cashly.cashly_api.sales.orders.application.cancel.request.CancelOrderRequest;
 import com.cashly.cashly_api.sales.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.sales.orders.application.mappers.OrderMapper;
@@ -18,14 +21,17 @@ public class CancelOrderUseCase {
 
     private final OrderRepository orderRepository;
     private final OrderInventoryGateway inventory;
-    private final OrderNotificationGateway notifications;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public CancelOrderUseCase(OrderRepository orderRepository,
             OrderInventoryGateway inventory,
-            OrderNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.orderRepository = orderRepository;
         this.inventory = inventory;
-        this.notifications = notifications;
     }
 
     @Transactional
@@ -38,8 +44,9 @@ public class CancelOrderUseCase {
         revertStockAllocations(order, previousStatus);
 
         Order saved = orderRepository.save(order);
-        notifications.notifyCustomerOrderRejected(order.getCustomerId(),
-                saved.getId().value(), request.reason());
+        activityNotifications.record(ActivityEvent.of("SALES_ORDERS",
+                "CANCEL", "ORDER", saved.getId().value(),
+                saved.getOrderNumber().value(), null));
         return OrderMapper.toDetailResponse(saved);
     }
 

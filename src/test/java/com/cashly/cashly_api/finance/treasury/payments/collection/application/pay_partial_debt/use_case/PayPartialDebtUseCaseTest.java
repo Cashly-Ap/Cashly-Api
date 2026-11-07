@@ -78,7 +78,7 @@ class PayPartialDebtUseCaseTest {
                 paymentRepository, allocationRepository);
         useCase = new PayPartialDebtUseCase(paymentRepository,
                 allocationRepository, invoiceGateway, customerGateway,
-                cashRegisterGateway, paymentAllocationService);
+                cashRegisterGateway, paymentAllocationService, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     private Invoice unpaidInvoice(UUID id, BigDecimal lineQty,

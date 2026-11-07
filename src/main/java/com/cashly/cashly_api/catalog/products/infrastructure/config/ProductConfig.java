@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.catalog.products.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductCategoryGateway;
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductPriceTypeGateway;
 import com.cashly.cashly_api.catalog.products.application.mappers.ProductMapper;
@@ -32,9 +33,10 @@ public class ProductConfig {
             ProductRepository productRepository,
             ProductCategoryGateway categoryRepository,
             ProductPriceTypeGateway priceTypeRepository,
-            ProductMapper productMapper) {
+            ProductMapper productMapper,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreateProductUseCase(productRepository, categoryRepository,
-                priceTypeRepository, productMapper);
+                priceTypeRepository, productMapper, activityNotifications);
     }
 
     @Bean
@@ -61,15 +63,17 @@ public class ProductConfig {
             ProductRepository productRepository,
             ProductCategoryGateway categoryRepository,
             ProductPriceTypeGateway priceTypeRepository,
-            ProductMapper productMapper) {
+            ProductMapper productMapper,
+            ActivityNotificationRecorder activityNotifications) {
         return new UpdateProductUseCase(productRepository, categoryRepository,
-                priceTypeRepository, productMapper);
+                priceTypeRepository, productMapper, activityNotifications);
     }
 
     @Bean
     public DeleteProductUseCase deleteProductUseCase(
-            ProductRepository productRepository) {
-        return new DeleteProductUseCase(productRepository);
+            ProductRepository productRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteProductUseCase(productRepository, activityNotifications);
     }
 
     @Bean
@@ -78,18 +82,20 @@ public class ProductConfig {
             ProductCategoryGateway categoryRepository,
             ProductPriceTypeGateway priceTypeRepository,
             ProductFileStorageGateway fileStorageService,
-            ProductMapper productMapper) {
+            ProductMapper productMapper,
+            ActivityNotificationRecorder activityNotifications) {
         return new UploadProductPhotoUseCase(productRepository,
                 categoryRepository, priceTypeRepository, fileStorageService,
-                productMapper);
+                productMapper, activityNotifications);
     }
 
     @Bean
     public RemoveProductPhotoUseCase removeProductPhotoUseCase(
             ProductRepository productRepository,
-            ProductFileStorageGateway fileStorageService) {
+            ProductFileStorageGateway fileStorageService,
+            ActivityNotificationRecorder activityNotifications) {
         return new RemoveProductPhotoUseCase(productRepository,
-                fileStorageService);
+                fileStorageService, activityNotifications);
     }
 
     @Bean

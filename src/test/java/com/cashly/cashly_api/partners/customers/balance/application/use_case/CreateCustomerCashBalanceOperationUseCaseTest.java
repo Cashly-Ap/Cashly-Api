@@ -51,9 +51,9 @@ class CreateCustomerCashBalanceOperationUseCaseTest {
     @BeforeEach
     void setUp() {
         advanceUseCase = new CreateCustomerAdvanceUseCase(addToBalance,
-                cashGateway, actorGateway);
+                cashGateway, actorGateway, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         refundUseCase = new RefundCustomerBalanceUseCase(consumeBalance,
-                cashGateway, actorGateway);
+                cashGateway, actorGateway, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

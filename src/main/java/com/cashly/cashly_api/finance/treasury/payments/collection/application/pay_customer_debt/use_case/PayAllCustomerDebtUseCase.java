@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.pay_customer_debt.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentCustomerGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
@@ -30,11 +34,17 @@ public class PayAllCustomerDebtUseCase {
     private final CashRegisterGateway cashRegister;
     private final PaymentAllocationService paymentAllocationService;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public PayAllCustomerDebtUseCase(PaymentRepository paymentRepository,
             PaymentAllocationRepository allocationRepository,
             PaymentInvoiceGateway invoices, PaymentCustomerGateway customers,
             CashRegisterGateway cashRegister,
-            PaymentAllocationService paymentAllocationService) {
+            PaymentAllocationService paymentAllocationService,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoices = invoices;
@@ -155,6 +165,9 @@ public class PayAllCustomerDebtUseCase {
             invoices.recalculateStatus(invoice.id());
         }
 
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_RECEIVABLES",
+                "PAY_ALL", "RECEIVABLE", customerId,
+                customerId.toString(), authenticatedUserId));
         return new PaymentResultResponse(null, PaymentStatus.APPLIED.name(),
                 "Pago total registrado exitosamente", true);
     }

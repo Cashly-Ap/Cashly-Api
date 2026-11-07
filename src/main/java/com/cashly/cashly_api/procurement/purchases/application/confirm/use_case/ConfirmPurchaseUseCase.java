@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.procurement.purchases.application.confirm.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
 import com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler;
 import com.cashly.cashly_api.procurement.purchases.domain.entity.Purchase;
@@ -17,9 +21,15 @@ public class ConfirmPurchaseUseCase {
     private final InventoryGateway inventoryGateway;
     private final PurchaseDetailResponseAssembler responseAssembler;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public ConfirmPurchaseUseCase(PurchaseRepository purchaseRepository,
             InventoryGateway inventoryGateway,
-            PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.purchaseRepository = purchaseRepository;
         this.inventoryGateway = inventoryGateway;
         this.responseAssembler = responseAssembler;
@@ -34,6 +44,9 @@ public class ConfirmPurchaseUseCase {
         addStockFromPurchase(purchase);
 
         Purchase saved = purchaseRepository.save(purchase);
+        activityNotifications.record(ActivityEvent.of("PURCHASES",
+                "CONFIRM", "PURCHASE", saved.getId().value(),
+                saved.getPurchaseNumber().value(), null));
         return responseAssembler.toDetailResponse(saved);
     }
 

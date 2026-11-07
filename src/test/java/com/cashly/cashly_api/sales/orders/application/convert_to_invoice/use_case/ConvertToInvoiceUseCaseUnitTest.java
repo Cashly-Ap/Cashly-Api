@@ -8,7 +8,7 @@ import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.respons
 import com.cashly.cashly_api.sales.orders.domain.entity.Order;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLine;
 import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotFoundException;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.sales.orders.domain.repository.OrderRepository;
 import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderId;
 import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderNumber;
@@ -46,7 +46,7 @@ class ConvertToInvoiceUseCaseUnitTest {
     private CreateInvoiceUseCase createInvoiceUseCase;
 
     @Mock
-    private OrderNotificationGateway notificationService;
+    private ActivityNotificationRecorder activityNotifications;
 
     @Captor
     private ArgumentCaptor<CreateInvoiceRequest> invoiceRequestCaptor;
@@ -58,7 +58,7 @@ class ConvertToInvoiceUseCaseUnitTest {
         convertToInvoiceUseCase = new ConvertToInvoiceUseCase(orderRepository,
                 new LocalInvoiceCreationGateway(
                         new OrderInvoiceCreationService(createInvoiceUseCase)),
-                notificationService);
+                activityNotifications);
     }
 
     @Test

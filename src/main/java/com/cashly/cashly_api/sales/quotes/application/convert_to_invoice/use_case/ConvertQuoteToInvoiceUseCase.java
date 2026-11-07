@@ -1,7 +1,10 @@
 package com.cashly.cashly_api.sales.quotes.application.convert_to_invoice.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.quotes.application.ports.out.InvoiceCreationGateway;
-import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway;
 import com.cashly.cashly_api.sales.quotes.application.convert_to_invoice.request.ConvertQuoteToInvoiceRequest;
 import com.cashly.cashly_api.sales.quotes.application.convert_to_invoice.response.QuoteConvertedToInvoiceResponse;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
@@ -13,14 +16,17 @@ import java.util.UUID;
 public class ConvertQuoteToInvoiceUseCase {
     private final QuoteRepository quotes;
     private final InvoiceCreationGateway invoices;
-    private final QuoteConversionNotificationGateway notifications;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public ConvertQuoteToInvoiceUseCase(QuoteRepository quotes,
             InvoiceCreationGateway invoices,
-            QuoteConversionNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.quotes = quotes;
         this.invoices = invoices;
-        this.notifications = notifications;
     }
 
     @Transactional
@@ -52,8 +58,9 @@ public class ConvertQuoteToInvoiceUseCase {
                 request.issueDate(), lines), authenticatedUserId);
         quote.markConvertedToInvoice(invoice.id(), invoice.number());
         quotes.save(quote);
-        notifications.convertedToInvoice(quote.getCustomerId(), quote.getId(),
-                invoice.number());
+        activityNotifications.record(ActivityEvent.of("SALES_QUOTES",
+                "CONVERT_TO_INVOICE", "QUOTE", quote.getId(),
+                quote.getQuoteNumber().value(), authenticatedUserId));
         return new QuoteConvertedToInvoiceResponse(quote.getId(),
                 quote.getQuoteNumber().value(), invoice.id(), invoice.number());
     }

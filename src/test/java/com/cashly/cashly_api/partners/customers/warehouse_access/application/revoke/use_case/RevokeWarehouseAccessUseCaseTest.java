@@ -32,7 +32,7 @@ class RevokeWarehouseAccessUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new RevokeWarehouseAccessUseCase(accessRepository);
+        useCase = new RevokeWarehouseAccessUseCase(accessRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

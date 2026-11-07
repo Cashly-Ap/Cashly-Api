@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.application.entry.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.inventory.warehouses.stock.application.dto.response.StockBatchItem;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.entry.request.StockEntryRequest;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.movements.response.StockMovementResponse;
@@ -31,10 +35,16 @@ public class StockEntryUseCase {
     private final StockMovementRepository stockMovementRepository;
     private final StockCatalogGateway catalog;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public StockEntryUseCase(WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
@@ -65,6 +75,9 @@ public class StockEntryUseCase {
             }
         }
 
+        activityNotifications.record(ActivityEvent.of("INVENTORY_WAREHOUSES",
+                "RECORD_ENTRY", "WAREHOUSE", warehouseId,
+                warehouse.getName(), null));
         return movements;
     }
 

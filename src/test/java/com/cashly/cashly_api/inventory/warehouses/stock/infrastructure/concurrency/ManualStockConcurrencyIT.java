@@ -94,7 +94,7 @@ class ManualStockConcurrencyIT {
             throws Exception {
         StockExitUseCase exit = new StockExitUseCase(warehouses, stocks,
                 movements, new LocalStockCatalogGatewayAdapter(
-                        new RepositoryStockCatalogQuery(products)));
+                        new RepositoryStockCatalogQuery(products)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         var productRead = new CountDownLatch(1);
         Product product = products.findById(productId).orElseThrow();
         when(products.findById(productId)).thenAnswer(invocation -> {
@@ -153,7 +153,7 @@ class ManualStockConcurrencyIT {
         UUID missingProductId = UUID.randomUUID();
         StockEntryUseCase entry = new StockEntryUseCase(warehouses, stocks,
                 movements, new LocalStockCatalogGatewayAdapter(
-                        new RepositoryStockCatalogQuery(products)));
+                        new RepositoryStockCatalogQuery(products)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         assertThrows(ProductNotFoundException.class,
                 () -> new TransactionTemplate(transactionManager)
                         .executeWithoutResult(status -> entry.execute(

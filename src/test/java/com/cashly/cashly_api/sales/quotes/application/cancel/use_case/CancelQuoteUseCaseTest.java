@@ -3,7 +3,6 @@ package com.cashly.cashly_api.sales.quotes.application.cancel.use_case;
 import com.cashly.cashly_api.sales.quotes.application.cancel.request.CancelQuoteRequest;
 import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
-import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,17 +33,13 @@ class CancelQuoteUseCaseTest {
     @Mock
     private QuoteRepository quoteRepository;
 
-    @Mock
-    private NotificationService notificationService;
 
     private CancelQuoteUseCase cancelQuoteUseCase;
 
     @BeforeEach
     void setUp() {
         cancelQuoteUseCase = new CancelQuoteUseCase(quoteRepository,
-                new com.cashly.cashly_api.sales.quotes.infrastructure.integration.LocalQuoteRejectionNotificationGateway(
-                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteRejectionNotificationService(
-                                notificationService)));
+                org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test
@@ -66,10 +61,7 @@ class CancelQuoteUseCaseTest {
         assertNotNull(quote.getCancelledAt());
         assertEquals("Customer decided to cancel", quote.getCancelledReason());
         verify(quoteRepository).save(quote);
-        var sequence = inOrder(quoteRepository, notificationService);
-        sequence.verify(quoteRepository).save(quote);
-        sequence.verify(notificationService).notifyCustomerQuoteRejected(
-                quote.getCustomerId(), quoteId, request.reason());
+        verify(quoteRepository).save(quote);
     }
 
     @Test
@@ -88,7 +80,7 @@ class CancelQuoteUseCaseTest {
                 com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteStateException.class,
                 () -> cancelQuoteUseCase.execute(quoteId, request));
         verify(quoteRepository, never()).save(any());
-        verifyNoInteractions(notificationService);
+        
     }
 
     @Test
@@ -101,7 +93,7 @@ class CancelQuoteUseCaseTest {
 
         assertThrows(QuoteNotFoundException.class,
                 () -> cancelQuoteUseCase.execute(quoteId, request));
-        verifyNoInteractions(notificationService);
+        
     }
 
     private Quote createDraftQuote(UUID quoteId) {

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.application.adjustment.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.inventory.warehouses.stock.application.adjustment.request.StockAdjustmentRequest;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.movements.response.StockMovementResponse;
 import com.cashly.cashly_api.inventory.warehouses.management.application.exceptions.WarehouseNotFoundException;
@@ -24,10 +28,16 @@ public class StockAdjustmentUseCase {
     private final StockMovementRepository stockMovementRepository;
     private final StockCatalogGateway catalog;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public StockAdjustmentUseCase(WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
@@ -58,6 +68,11 @@ public class StockAdjustmentUseCase {
                 MovementType.ADJUSTMENT, delta, prevQty,
                 savedStock.getQuantity(), null, null, request.notes());
         StockMovement saved = stockMovementRepository.save(movement);
+        activityNotifications.record(ActivityEvent.of("INVENTORY_WAREHOUSES",
+                savedStock.getQuantity() >= prevQty
+                        ? "RECORD_ENTRY"
+                        : "RECORD_EXIT",
+                "WAREHOUSE", warehouseId, warehouse.getName(), null));
         return StockMovementResponse.from(saved, product.code(),
                 product.name());
     }

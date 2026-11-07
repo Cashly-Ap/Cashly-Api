@@ -34,7 +34,7 @@ class CreateDebitNoteUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CreateDebitNoteUseCase(notes, invoices, cash);
+        useCase = new CreateDebitNoteUseCase(notes, invoices, cash, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         invoiceId = UUID.randomUUID();
         customerId = UUID.randomUUID();
         userId = UUID.randomUUID();

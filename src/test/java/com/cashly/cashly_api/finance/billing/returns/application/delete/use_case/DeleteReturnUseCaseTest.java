@@ -122,7 +122,7 @@ class DeleteReturnUseCaseTest {
                 new com.cashly.cashly_api.finance.billing.returns.infrastructure.integration.LocalReturnBalanceGateway(
                         new com.cashly.cashly_api.partners.customers.balance.application.services.ReturnBalanceMutationService(
                                 mock(com.cashly.cashly_api.partners.customers.balance.application.add.use_case.AddToCustomerBalanceUseCase.class),
-                                consumeCustomerBalanceUseCase)));
+                                consumeCustomerBalanceUseCase)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     // ------------------------------------------------------------------------

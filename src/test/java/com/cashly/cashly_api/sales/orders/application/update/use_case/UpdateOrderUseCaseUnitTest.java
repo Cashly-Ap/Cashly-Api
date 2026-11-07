@@ -50,7 +50,7 @@ class UpdateOrderUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         updateOrderUseCase = new UpdateOrderUseCase(orderRepository,
-                productRepository, warehouseStockRepository);
+                productRepository, warehouseStockRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

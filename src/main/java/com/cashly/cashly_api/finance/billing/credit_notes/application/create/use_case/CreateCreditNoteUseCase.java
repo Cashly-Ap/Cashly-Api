@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.credit_notes.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.out.CreditNoteEffectsGateway;
 import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.out.CreditNoteFinancialPositionGateway;
 import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.out.CreditNoteInvoiceGateway;
@@ -23,10 +27,16 @@ public class CreateCreditNoteUseCase {
     private final CreditNoteFinancialPositionGateway financialPosition;
     private final CreditNoteEffectsGateway effects;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreateCreditNoteUseCase(CreditNoteRepository creditNoteRepository,
             CreditNoteInvoiceGateway invoices,
             CreditNoteFinancialPositionGateway financialPosition,
-            CreditNoteEffectsGateway effects) {
+            CreditNoteEffectsGateway effects,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.creditNoteRepository = creditNoteRepository;
         this.invoices = invoices;
         this.financialPosition = financialPosition;
@@ -70,6 +80,9 @@ public class CreateCreditNoteUseCase {
                     invoice.number(), authenticatedUserId);
         }
 
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_CREDIT_NOTES",
+                "CREATE", "CREDIT_NOTE", saved.getId().value(),
+                saved.getNoteNumber().value(), authenticatedUserId));
         return CreditNoteMapper.toCreditNoteResponse(saved, null, null, null);
     }
 }

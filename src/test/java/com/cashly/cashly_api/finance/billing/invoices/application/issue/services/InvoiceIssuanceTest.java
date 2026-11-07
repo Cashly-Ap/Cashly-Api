@@ -33,8 +33,6 @@ class InvoiceIssuanceTest {
     private final InventoryGateway reservations = mock(InventoryGateway.class);
     private final StockDeductionGateway stock = mock(
             StockDeductionGateway.class);
-    private final InvoiceNotificationGateway notifications = mock(
-            InvoiceNotificationGateway.class);
     private final CashRegisterGateway cash = mock(CashRegisterGateway.class);
     private final UUID actorId = UUID.randomUUID();
     private final UUID methodId = UUID.randomUUID();
@@ -46,7 +44,7 @@ class InvoiceIssuanceTest {
         service = new IssueInvoiceService(invoices, actors,
                 new InvoiceIssueValidator(credit, actors, cash),
                 new InvoicePaymentService(balances, settlements), reservations,
-                stock, notifications, cash);
+                stock, cash);
         when(actors.requireActor(actorId)).thenReturn(
                 new ActorIdentityGateway.Actor(actorId, "Operator"));
         when(invoices.save(any()))
@@ -135,7 +133,7 @@ class InvoiceIssuanceTest {
                 InvoiceOrigin.QUOTE, actorId))
                 .isInstanceOf(IllegalStateException.class);
         verifyNoInteractions(actors, invoices, credit, cash, balances,
-                settlements, stock, reservations, notifications);
+                settlements, stock, reservations);
     }
 
     @Test

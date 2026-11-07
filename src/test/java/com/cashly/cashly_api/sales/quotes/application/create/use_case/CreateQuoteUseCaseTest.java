@@ -43,7 +43,7 @@ class CreateQuoteUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new CreateQuoteUseCase(quotes, customers, actors, products,
-                warehouses);
+                warehouses, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

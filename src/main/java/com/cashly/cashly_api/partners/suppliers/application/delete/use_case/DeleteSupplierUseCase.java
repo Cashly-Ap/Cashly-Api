@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.suppliers.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.suppliers.application.ports.out.PurchaseUsageGateway;
 import com.cashly.cashly_api.partners.suppliers.application.exceptions.SupplierHasAssociatedRecordsException;
 import com.cashly.cashly_api.partners.suppliers.application.exceptions.SupplierNotFoundException;
@@ -14,8 +18,14 @@ public class DeleteSupplierUseCase {
     private final SupplierRepository supplierRepository;
     private final PurchaseUsageGateway purchaseUsage;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public DeleteSupplierUseCase(SupplierRepository supplierRepository,
-            PurchaseUsageGateway purchaseUsage) {
+            PurchaseUsageGateway purchaseUsage,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.supplierRepository = supplierRepository;
         this.purchaseUsage = purchaseUsage;
     }
@@ -31,6 +41,9 @@ public class DeleteSupplierUseCase {
                 .hasPurchases(UUID.fromString(supplierId.toString()))) {
             throw new SupplierHasAssociatedRecordsException(id);
         }
+        activityNotifications.record(ActivityEvent.of("CONTACTS_SUPPLIERS",
+                "DELETE", "SUPPLIER", supplierId.getValue(),
+                supplierId.toString(), null));
         supplierRepository.delete(supplierId);
     }
 }

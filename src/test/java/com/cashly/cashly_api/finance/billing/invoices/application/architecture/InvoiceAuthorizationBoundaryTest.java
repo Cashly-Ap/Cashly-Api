@@ -19,7 +19,9 @@ class InvoiceAuthorizationBoundaryTest {
                 .map(Class::getName).toList();
         assertTrue(
                 dependencies.stream().allMatch(type -> type.startsWith(
-                        "com.cashly.cashly_api.finance.billing.invoices.")),
+                        "com.cashly.cashly_api.finance.billing.invoices.")
+                        || type.startsWith(
+                                "com.cashly.cashly_api.platform.notifications.application.ports.in.")),
                 dependencies.toString());
     }
     @Test
@@ -30,7 +32,9 @@ class InvoiceAuthorizationBoundaryTest {
                 .map(Class::getName).toList();
         assertTrue(
                 dependencies.stream().allMatch(type -> type.startsWith(
-                        "com.cashly.cashly_api.finance.billing.invoices.")),
+                        "com.cashly.cashly_api.finance.billing.invoices.")
+                        || type.startsWith(
+                                "com.cashly.cashly_api.platform.notifications.application.ports.in.")),
                 dependencies.toString());
     }
     @Test

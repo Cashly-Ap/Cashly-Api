@@ -17,7 +17,7 @@ class ManageDepartmentsUseCaseTest {
     private final AccessRepository repository = mock(AccessRepository.class);
     private final AccessService access = mock(AccessService.class);
     private final ManageDepartmentsUseCase useCase = new ManageDepartmentsUseCase(
-            repository, access);
+            repository, access, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     private final UUID id = UUID.randomUUID();
 
     @Test

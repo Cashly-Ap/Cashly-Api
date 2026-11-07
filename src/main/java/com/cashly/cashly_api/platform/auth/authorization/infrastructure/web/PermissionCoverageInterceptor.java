@@ -18,7 +18,9 @@ public class PermissionCoverageInterceptor implements HandlerInterceptor {
             "CurrentAccessController#current", "NotificationController#list",
             "NotificationController#unreadCount",
             "NotificationController#markAsRead",
-            "NotificationController#markAllAsRead");
+            "NotificationController#markAllAsRead",
+            "NotificationController#preferences",
+            "NotificationController#updatePreferences");
     @Override
     public boolean preHandle(HttpServletRequest request,
             HttpServletResponse response, Object handler) {

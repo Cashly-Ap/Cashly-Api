@@ -18,8 +18,8 @@ class ReturnBalanceMutationServiceTest {
     void should_credit_and_debit_real_balance_with_exact_return_reference_metadata() {
         var repository = mock(CustomerBalanceRepository.class);
         var service = new ReturnBalanceMutationService(
-                new AddToCustomerBalanceUseCase(repository),
-                new ConsumeCustomerBalanceUseCase(repository));
+                new AddToCustomerBalanceUseCase(repository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)),
+                new ConsumeCustomerBalanceUseCase(repository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)));
         UUID customerId = UUID.randomUUID();
         UUID returnId = UUID.randomUUID();
         UUID actorId = UUID.randomUUID();

@@ -39,7 +39,7 @@ class PaymentConfigTest {
 
         CreatePaymentUseCase useCase = config.createPaymentUseCase(
                 paymentRepository, customerGateway, actorGateway,
-                cashRegisterGateway);
+                cashRegisterGateway, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }
@@ -69,7 +69,7 @@ class PaymentConfigTest {
         PaymentConfig config = new PaymentConfig();
 
         UpdatePaymentUseCase useCase = config
-                .updatePaymentUseCase(paymentRepository);
+                .updatePaymentUseCase(paymentRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }
@@ -79,7 +79,7 @@ class PaymentConfigTest {
         PaymentConfig config = new PaymentConfig();
 
         DeletePaymentUseCase useCase = config
-                .deletePaymentUseCase(paymentRepository);
+                .deletePaymentUseCase(paymentRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertNotNull(useCase);
     }

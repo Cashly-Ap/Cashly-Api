@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseWarehouseGateway;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseActorGateway;
@@ -36,9 +37,10 @@ public class PurchaseConfig {
             PurchaseSupplierGateway supplierGateway,
             PurchaseProductGateway productRepository,
             PurchaseActorGateway userRepository,
-            PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreatePurchaseUseCase(purchaseRepository, supplierGateway,
-                productRepository, userRepository, responseAssembler);
+                productRepository, userRepository, responseAssembler, activityNotifications);
     }
 
     @Bean
@@ -59,33 +61,37 @@ public class PurchaseConfig {
     public UpdatePurchaseUseCase updatePurchaseUseCase(
             PurchaseRepository purchaseRepository,
             PurchaseProductGateway productRepository,
-            PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
         return new UpdatePurchaseUseCase(purchaseRepository, productRepository,
-                responseAssembler);
+                responseAssembler, activityNotifications);
     }
 
     @Bean
     public ConfirmPurchaseUseCase confirmPurchaseUseCase(
             PurchaseRepository purchaseRepository,
             InventoryGateway inventoryGateway,
-            PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
         return new ConfirmPurchaseUseCase(purchaseRepository, inventoryGateway,
-                responseAssembler);
+                responseAssembler, activityNotifications);
     }
 
     @Bean
     public CancelPurchaseUseCase cancelPurchaseUseCase(
             PurchaseRepository purchaseRepository,
             InventoryGateway inventoryGateway,
-            PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
         return new CancelPurchaseUseCase(purchaseRepository, inventoryGateway,
-                responseAssembler);
+                responseAssembler, activityNotifications);
     }
 
     @Bean
     public DeletePurchaseUseCase deletePurchaseUseCase(
-            PurchaseRepository purchaseRepository) {
-        return new DeletePurchaseUseCase(purchaseRepository);
+            PurchaseRepository purchaseRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeletePurchaseUseCase(purchaseRepository, activityNotifications);
     }
 
     @Bean

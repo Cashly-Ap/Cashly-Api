@@ -50,7 +50,7 @@ class GrantWarehouseAccessUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new GrantWarehouseAccessUseCase(accessRepository,
-                customerRepository, warehouseRepository);
+                customerRepository, warehouseRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

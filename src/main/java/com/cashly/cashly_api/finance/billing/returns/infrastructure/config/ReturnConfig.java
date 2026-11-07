@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.billing.returns.infrastructure.config;
-import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnBalanceGateway;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnBalanceGateway;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnCashGateway;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnInventoryGateway;
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnInvoiceAdjustmentGateway;
@@ -26,9 +27,10 @@ public class ReturnConfig {
             ReturnInvoiceQueryGateway invoices,
             ReturnPaymentSettlementGateway payments,
             ReturnBalanceGateway balances, ReturnInventoryGateway inventory,
-            ReturnCashGateway cash) {
+            ReturnCashGateway cash,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreateReturnUseCase(adjustments, returnRepository, responses,
-                invoices, payments, balances, inventory, cash);
+                invoices, payments, balances, inventory, cash, activityNotifications);
     }
     @Bean
     public GetAllReturnsUseCase getAllReturnsUseCase(
@@ -46,8 +48,9 @@ public class ReturnConfig {
             ReturnInvoiceQueryGateway invoices,
             ReturnInventoryGateway inventory,
             ReturnPaymentSettlementGateway payments,
-            ReturnBalanceGateway balances) {
+            ReturnBalanceGateway balances,
+            ActivityNotificationRecorder activityNotifications) {
         return new DeleteReturnUseCase(adjustments, returnRepository, invoices,
-                inventory, payments, balances);
+                inventory, payments, balances, activityNotifications);
     }
 }

@@ -63,7 +63,7 @@ class ConfirmPurchaseUseCaseUnitTest {
                         new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(
                                 new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(
                                         warehouseRepository,
-                                        mock(WarehouseStockRepository.class)))));
+                                        mock(WarehouseStockRepository.class)))), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

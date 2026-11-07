@@ -1,7 +1,6 @@
 CREATE TABLE `notifications` (
   `id` binary(16) NOT NULL,
   `user_id` binary(16) DEFAULT NULL,
-  `customer_id` binary(16) DEFAULT NULL,
   `type` varchar(50) NOT NULL,
   `title` varchar(200) NOT NULL,
   `message` varchar(1000) NOT NULL,
@@ -18,8 +17,30 @@ CREATE TABLE `notifications` (
   KEY `idx_notifications_user_id` (`user_id`),
   KEY `idx_notifications_user_read` (`user_id`,`is_read`),
   KEY `idx_notifications_created_at` (`created_at`),
-  KEY `idx_notifications_customer_id` (`customer_id`),
   KEY `fk_notifications_company` (`company_id`),
   CONSTRAINT `fk_notifications_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
   CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notification_preferences` (
+  `user_id` binary(16) NOT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `company_id` binary(16) NOT NULL DEFAULT 0x92000000000000000000000000000001,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  KEY `fk_notification_preferences_company` (`company_id`),
+  CONSTRAINT `fk_notification_preferences_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
+  CONSTRAINT `fk_notification_preferences_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notification_module_preferences` (
+  `user_id` binary(16) NOT NULL,
+  `module` varchar(50) NOT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `company_id` binary(16) NOT NULL DEFAULT 0x92000000000000000000000000000001,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`,`module`),
+  KEY `fk_notification_module_preferences_company` (`company_id`),
+  CONSTRAINT `fk_notification_module_preferences_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
+  CONSTRAINT `fk_notification_module_preferences_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

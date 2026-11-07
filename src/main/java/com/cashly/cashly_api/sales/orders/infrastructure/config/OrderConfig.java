@@ -11,6 +11,7 @@ import com.cashly.cashly_api.sales.orders.application.list.use_case.GetOrdersUse
 import com.cashly.cashly_api.sales.orders.application.products.use_case.GetProductsForOrderUseCase;
 import com.cashly.cashly_api.sales.orders.application.update.use_case.UpdateOrderUseCase;
 import com.cashly.cashly_api.sales.orders.domain.repository.OrderRepository;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.sales.orders.application.ports.out.StockAvailabilityGateway;
 import com.cashly.cashly_api.sales.orders.application.ports.out.CustomerCreditGateway;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +26,10 @@ public class OrderConfig {
             com.cashly.cashly_api.sales.orders.application.ports.out.OrderCustomerGateway customers,
             com.cashly.cashly_api.sales.orders.application.ports.out.OrderProductCatalogGateway products,
             com.cashly.cashly_api.sales.orders.application.ports.out.OrderActorGateway actors,
-            com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory) {
+            com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreateOrderUseCase(orderRepository, customers, products,
-                actors, inventory);
+                actors, inventory, activityNotifications);
     }
 
     @Bean
@@ -49,42 +51,46 @@ public class OrderConfig {
     public UpdateOrderUseCase updateOrderUseCase(
             OrderRepository orderRepository,
             com.cashly.cashly_api.sales.orders.application.ports.out.OrderProductCatalogGateway products,
-            com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory) {
-        return new UpdateOrderUseCase(orderRepository, products, inventory);
+            com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdateOrderUseCase(orderRepository, products, inventory,
+                activityNotifications);
     }
 
     @Bean
     public ConfirmOrderUseCase confirmOrderUseCase(
             OrderRepository orderRepository,
             com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory,
-            com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
         return new ConfirmOrderUseCase(orderRepository, inventory,
-                notifications);
+                activityNotifications);
     }
 
     @Bean
     public CancelOrderUseCase cancelOrderUseCase(
             OrderRepository orderRepository,
             com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory,
-            com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
         return new CancelOrderUseCase(orderRepository, inventory,
-                notifications);
+                activityNotifications);
     }
 
     @Bean
     public ConvertToInvoiceUseCase convertToInvoiceUseCase(
             OrderRepository orderRepository,
             InvoiceCreationGateway invoiceCreationGateway,
-            com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
         return new ConvertToInvoiceUseCase(orderRepository,
-                invoiceCreationGateway, notifications);
+                invoiceCreationGateway, activityNotifications);
     }
 
     @Bean
     public DeleteOrderUseCase deleteOrderUseCase(
             OrderRepository orderRepository,
-            com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory) {
-        return new DeleteOrderUseCase(orderRepository, inventory);
+            com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway inventory,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteOrderUseCase(orderRepository, inventory,
+                activityNotifications);
     }
 
     @Bean

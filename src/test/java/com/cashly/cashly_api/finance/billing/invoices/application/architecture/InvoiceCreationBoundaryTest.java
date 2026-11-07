@@ -12,8 +12,8 @@ class InvoiceCreationBoundaryTest {
                 DeleteInvoiceUseCase.class, CancelInvoiceUseCase.class}) {
             for (var constructor : useCase.getConstructors()) {
                 assertTrue(Arrays.stream(constructor.getParameterTypes())
-                        .allMatch(type -> type.getPackageName().startsWith(
-                                "com.cashly.cashly_api.finance.billing.invoices.")),
+                        .allMatch(type -> (type.getPackageName().startsWith(
+                                "com.cashly.cashly_api.finance.billing.invoices.") || type.getPackageName().startsWith("com.cashly.cashly_api.platform.notifications.application.ports.in"))),
                         useCase.getSimpleName());
             }
         }

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.platform.auth.user.application.register.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 
 import com.cashly.cashly_api.platform.auth.user.application.register.request.RegisterUserRequest;
@@ -23,10 +27,16 @@ public class RegisterUserUseCase {
     private final PasswordEncoder passwordEncoder;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public RegisterUserUseCase(UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
-            UserPreferencesRepository preferences) {
+            UserPreferencesRepository preferences,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.preferences = preferences;
         this.access = access;
         this.userRepository = userRepository;
@@ -60,6 +70,9 @@ public class RegisterUserUseCase {
 
         preferences.updateLanguage(savedUser.getId().getValue(),
                 request.language());
+        activityNotifications.record(ActivityEvent.of("USERS",
+                "CREATE", "USER", savedUser.getId().getValue(),
+                savedUser.getEmail().getValue(), null));
         return UserResponse.from(savedUser).withLanguage(request.language());
     }
 }

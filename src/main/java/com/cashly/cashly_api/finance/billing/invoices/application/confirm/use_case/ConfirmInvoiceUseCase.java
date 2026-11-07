@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.confirm.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.invoices.application.confirm.request.ConfirmInvoiceRequest;
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.finance.billing.invoices.application.mappers.InvoiceMapper;
@@ -21,8 +25,14 @@ public class ConfirmInvoiceUseCase {
     private final InvoiceRepository invoiceRepository;
     private final IssueInvoiceService issuance;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public ConfirmInvoiceUseCase(InvoiceRepository invoiceRepository,
-            IssueInvoiceService issuance) {
+            IssueInvoiceService issuance,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoiceRepository = invoiceRepository;
         this.issuance = issuance;
     }
@@ -37,6 +47,9 @@ public class ConfirmInvoiceUseCase {
                         request.useBalance(), request.balanceAmount(),
                         request.paymentMethodId()),
                 InvoiceOrigin.MANUAL_DRAFT, authenticatedUserId);
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+                "CONFIRM", "INVOICE", saved.getId().value(),
+                saved.getInvoiceNumber().value(), authenticatedUserId));
         return InvoiceMapper.toDetailResponse(saved);
     }
 }

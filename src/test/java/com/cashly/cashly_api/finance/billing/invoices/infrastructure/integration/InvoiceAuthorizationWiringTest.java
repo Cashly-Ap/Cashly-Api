@@ -51,6 +51,8 @@ class InvoiceAuthorizationWiringTest {
                     com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class,
                     () -> mock(
                             com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class));
+            context.registerBean(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class,
+                    () -> mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
             context.registerBean(InventoryGateway.class,
                     () -> mock(InventoryGateway.class));
             context.registerBean(NotificationService.class,
@@ -63,7 +65,6 @@ class InvoiceAuthorizationWiringTest {
                     LocalCustomerBalanceGateway.class,
                     LocalInvoicePaymentSettlementGateway.class,
                     LocalInvoiceCashRegisterGateway.class,
-                    LocalInvoiceNotificationGateway.class,
                     LocalPaymentCashRegisterGateway.class,
                     InvoiceIssueValidator.class, InvoicePaymentService.class,
                     IssueInvoiceService.class, ConfirmInvoiceUseCase.class);

@@ -53,7 +53,7 @@ class CreatePaymentUseCaseUnitTest {
     @BeforeEach
     void setUp() {
         useCase = new CreatePaymentUseCase(paymentRepository,
-                customerRepository, userRepository, cashMovementService);
+                customerRepository, userRepository, cashMovementService, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         when(customerRepository.exists(customerId)).thenReturn(true);
         when(userRepository.findName(userId))

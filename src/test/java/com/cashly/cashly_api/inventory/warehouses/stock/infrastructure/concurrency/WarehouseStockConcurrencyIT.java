@@ -102,7 +102,7 @@ class WarehouseStockConcurrencyIT {
             }
         };
         StockEntryUseCase entry = new StockEntryUseCase(warehouses, stocks,
-                movements, catalog);
+                movements, catalog, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         var ready = new CountDownLatch(2);
         var start = new CountDownLatch(1);
         try (var executor = Executors.newFixedThreadPool(2)) {
@@ -149,7 +149,7 @@ class WarehouseStockConcurrencyIT {
         var catalogReady = new CountDownLatch(2);
         var catalog = catalog(catalogReady);
         TransferStockUseCase transfer = new TransferStockUseCase(warehouses,
-                stocks, movements, catalog);
+                stocks, movements, catalog, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         var ready = new CountDownLatch(2);
         var start = new CountDownLatch(1);
         try (var executor = Executors.newFixedThreadPool(2)) {

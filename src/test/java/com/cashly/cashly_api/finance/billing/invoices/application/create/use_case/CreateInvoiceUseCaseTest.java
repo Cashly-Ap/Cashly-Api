@@ -38,7 +38,7 @@ import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.Acto
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CustomerCreditTermsGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceCatalogGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceCustomerGateway;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceOrderGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceQuoteGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseStock;
@@ -90,7 +90,7 @@ class CreateInvoiceUseCaseTest {
     private InvoiceIssueValidator authorizationService;
 
     @Mock
-    private InvoiceNotificationGateway notificationService;
+    private ActivityNotificationRecorder activityNotifications;
 
     private CreateInvoiceUseCase createInvoiceUseCase;
 
@@ -101,7 +101,6 @@ class CreateInvoiceUseCaseTest {
                         any(), any(), any()))
                 .thenReturn(new InvoiceIssueValidator.CashPaymentPlan(
                         java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO));
-        notificationService = mock(InvoiceNotificationGateway.class);
         InvoiceCustomerGateway customers = customerId -> customerRepository
                 .findById(new CustomerId(customerId))
                 .map(customer -> new InvoiceCustomerGateway.Customer(
@@ -151,9 +150,8 @@ class CreateInvoiceUseCaseTest {
                         authorizationService, mock(InvoicePaymentService.class),
                         mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
                         mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class),
-                        notificationService,
                         mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway.class)),
-                notificationService, quoteGateway);
+                quoteGateway, activityNotifications);
     }
 
     @Test
@@ -183,10 +181,8 @@ class CreateInvoiceUseCaseTest {
 
         assertNotNull(response);
         verify(invoiceRepository, times(2)).save(any(Invoice.class));
-        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(),
-                any());
-        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(),
-                any());
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -220,8 +216,7 @@ class CreateInvoiceUseCaseTest {
 
         assertNotNull(response);
         verify(invoiceRepository).save(any(Invoice.class));
-        verify(notificationService).notifyCustomerInvoiceCreated(any(), any(),
-                any());
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 
     @Test

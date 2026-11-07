@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.customers.warehouse_access.application.grant.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.customers.warehouse_access.application.dto.response.CustomerWarehouseAccessResponse;
 import com.cashly.cashly_api.partners.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
 import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
@@ -19,10 +23,16 @@ public class GrantWarehouseAccessUseCase {
     private final CustomerRepository customerRepository;
     private final WarehouseDirectoryGateway warehouseDirectory;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public GrantWarehouseAccessUseCase(
             CustomerWarehouseAccessRepository accessRepository,
             CustomerRepository customerRepository,
-            WarehouseDirectoryGateway warehouseDirectory) {
+            WarehouseDirectoryGateway warehouseDirectory,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.accessRepository = accessRepository;
         this.customerRepository = customerRepository;
         this.warehouseDirectory = warehouseDirectory;
@@ -47,6 +57,9 @@ public class GrantWarehouseAccessUseCase {
                 .create(customerId, warehouseId, grantedBy);
         CustomerWarehouseAccess saved = accessRepository.save(access);
 
+        activityNotifications.record(ActivityEvent.of("CONTACTS_CUSTOMERS",
+                "EDIT", "CUSTOMER", customerId,
+                customerId.toString(), grantedBy));
         return CustomerWarehouseAccessResponse.from(saved, warehouse.name());
     }
 }

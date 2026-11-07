@@ -26,7 +26,9 @@ class EndpointPermissionCoverageTest {
             "CurrentAccessController#current", "NotificationController#list",
             "NotificationController#unreadCount",
             "NotificationController#markAsRead",
-            "NotificationController#markAllAsRead");
+            "NotificationController#markAllAsRead",
+            "NotificationController#updatePreferences",
+            "NotificationController#preferences");
 
     @Test
     void everyControllerOperationHasExplicitPermissionsOrASelfServiceContract()

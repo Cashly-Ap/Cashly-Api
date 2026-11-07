@@ -49,13 +49,12 @@ public class WebSocketNotificationDeliveryAdapter
     }
 
     private void send(Notification notification) {
-        String destination = notification.getUserId() != null
-                ? "/topic/notifications/user/" + notification.getUserId()
-                : "/topic/notifications/customer/"
-                        + notification.getCustomerId();
-        String language = notification.getUserId() == null
-                ? "es"
-                : preferences.languageFor(notification.getUserId());
+        if (notification.getUserId() == null) {
+            return;
+        }
+        String destination = "/topic/notifications/user/"
+                + notification.getUserId();
+        String language = preferences.languageFor(notification.getUserId());
         messagingTemplate.convertAndSend(destination,
                 translator.render(notification, java.util.Locale
                         .forLanguageTag("en".equals(language) ? "en" : "es")));

@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.partners.suppliers.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.partners.suppliers.application.ports.out.PurchaseUsageGateway;
 import com.cashly.cashly_api.partners.suppliers.application.mappers.SupplierMapper;
 import com.cashly.cashly_api.partners.suppliers.application.delete.use_case.DeleteSupplierUseCase;
@@ -31,9 +32,10 @@ public class SupplierConfig {
     public RegisterSupplierUseCase registerSupplierUseCase(
             SupplierRepository supplierRepository,
             SupplierCodeGenerator supplierCodeGenerator,
-            SupplierMapper supplierMapper) {
+            SupplierMapper supplierMapper,
+            ActivityNotificationRecorder activityNotifications) {
         return new RegisterSupplierUseCase(supplierRepository,
-                supplierCodeGenerator, supplierMapper);
+                supplierCodeGenerator, supplierMapper, activityNotifications);
     }
 
     @Bean
@@ -54,14 +56,16 @@ public class SupplierConfig {
     @Bean
     public UpdateSupplierUseCase updateSupplierUseCase(
             SupplierRepository supplierRepository,
-            SupplierMapper supplierMapper) {
-        return new UpdateSupplierUseCase(supplierRepository, supplierMapper);
+            SupplierMapper supplierMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdateSupplierUseCase(supplierRepository, supplierMapper, activityNotifications);
     }
 
     @Bean
     public DeleteSupplierUseCase deleteSupplierUseCase(
             SupplierRepository supplierRepository,
-            PurchaseUsageGateway purchaseUsage) {
-        return new DeleteSupplierUseCase(supplierRepository, purchaseUsage);
+            PurchaseUsageGateway purchaseUsage,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteSupplierUseCase(supplierRepository, purchaseUsage, activityNotifications);
     }
 }

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.catalog.products.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.catalog.products.application.exceptions.ProductHasAssociatedRecordsException;
 import com.cashly.cashly_api.catalog.products.application.exceptions.ProductNotFoundException;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
@@ -12,15 +16,20 @@ public class DeleteProductUseCase {
 
     private final ProductRepository productRepository;
 
-    public DeleteProductUseCase(ProductRepository productRepository) {
+    private final ActivityNotificationRecorder activityNotifications;
+
+    public DeleteProductUseCase(ProductRepository productRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.productRepository = productRepository;
     }
 
     @Transactional
     public void execute(UUID id) {
-        if (productRepository.findById(id).isEmpty()) {
-            throw new ProductNotFoundException(id);
-        }
+        var product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
         productRepository.deleteComponentReferencesByProductId(id);
 
@@ -29,5 +38,8 @@ public class DeleteProductUseCase {
         } catch (ProductReferencedException e) {
             throw new ProductHasAssociatedRecordsException(id);
         }
+        activityNotifications.record(ActivityEvent.of("CATALOG_PRODUCTS",
+                "DELETE", "PRODUCT", product.getId(),
+                product.getCode(), null));
     }
 }

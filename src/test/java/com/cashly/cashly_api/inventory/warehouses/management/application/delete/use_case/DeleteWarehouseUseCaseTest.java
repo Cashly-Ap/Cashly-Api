@@ -31,7 +31,7 @@ class DeleteWarehouseUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new DeleteWarehouseUseCase(warehouseRepository);
+        useCase = new DeleteWarehouseUseCase(warehouseRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

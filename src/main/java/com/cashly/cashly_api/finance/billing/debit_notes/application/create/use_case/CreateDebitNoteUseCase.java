@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.debit_notes.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.debit_notes.application.ports.out.DebitNoteCashGateway;
 import com.cashly.cashly_api.finance.billing.debit_notes.application.ports.out.DebitNoteInvoiceGateway;
 import com.cashly.cashly_api.finance.billing.debit_notes.application.create.request.CreateDebitNoteRequest;
@@ -20,8 +24,14 @@ public class CreateDebitNoteUseCase {
     private final DebitNoteInvoiceGateway invoices;
     private final DebitNoteCashGateway cash;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreateDebitNoteUseCase(DebitNoteRepository debitNoteRepository,
-            DebitNoteInvoiceGateway invoices, DebitNoteCashGateway cash) {
+            DebitNoteInvoiceGateway invoices, DebitNoteCashGateway cash,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.debitNoteRepository = debitNoteRepository;
         this.invoices = invoices;
         this.cash = cash;
@@ -50,6 +60,9 @@ public class CreateDebitNoteUseCase {
                 saved.getId().value(), authenticatedUserId,
                 saved.getCreatedByName());
         invoices.recalculate(saved.getInvoiceId());
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_DEBIT_NOTES",
+                "CREATE", "DEBIT_NOTE", saved.getId().value(),
+                saved.getNoteNumber().value(), authenticatedUserId));
         return DebitNoteMapper.toDebitNoteResponse(saved, null, null, null);
     }
 }

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.catalog.categories.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.catalog.categories.application.update.request.UpdateCategoryRequest;
 import com.cashly.cashly_api.catalog.categories.application.dto.response.CategoryDetailResponse;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryNotFoundException;
@@ -16,8 +20,14 @@ public class UpdateCategoryUseCase {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateCategoryUseCase(CategoryRepository categoryRepository,
-            CategoryMapper categoryMapper) {
+            CategoryMapper categoryMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
@@ -36,6 +46,9 @@ public class UpdateCategoryUseCase {
         category.update(request.name().trim(), request.description(),
                 request.active());
         Category saved = categoryRepository.save(category);
+        activityNotifications.record(ActivityEvent.of("CATALOG_CATEGORIES",
+                "EDIT", "CATEGORY", saved.getId(),
+                saved.getName(), null));
         return categoryMapper.toDetailResponse(saved, 0L);
     }
 }

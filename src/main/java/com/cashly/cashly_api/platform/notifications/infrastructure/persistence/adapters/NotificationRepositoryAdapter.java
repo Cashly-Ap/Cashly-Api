@@ -41,18 +41,6 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
     }
 
     @Override
-    public List<Notification> findByCustomerIdOrderByCreatedAtDesc(
-            UUID customerId) {
-        return jpaRepository.findByCustomerIdOrderByCreatedAtDesc(customerId)
-                .stream().map(NotificationJpaMapper::toDomain).toList();
-    }
-
-    @Override
-    public long countUnreadByCustomerId(UUID customerId) {
-        return jpaRepository.countByCustomerIdAndIsReadFalse(customerId);
-    }
-
-    @Override
     public Optional<Notification> findById(NotificationId id) {
         return jpaRepository.findById(id.value())
                 .map(NotificationJpaMapper::toDomain);

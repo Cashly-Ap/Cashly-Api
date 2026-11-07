@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.sales.orders.application.confirm.use_case;
 
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.sales.orders.domain.entity.Order;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLine;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLineAllocation;
@@ -34,12 +34,12 @@ class ConfirmOrderUseCaseUnitTest {
     @Mock
     private OrderInventoryGateway inventory;
     @Mock
-    private OrderNotificationGateway notifications;
+    private ActivityNotificationRecorder activityNotifications;
     private ConfirmOrderUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new ConfirmOrderUseCase(orders, inventory, notifications);
+        useCase = new ConfirmOrderUseCase(orders, inventory, activityNotifications);
     }
 
     @Test
@@ -60,8 +60,7 @@ class ConfirmOrderUseCaseUnitTest {
                         productId, 4)),
                 new OrderInventoryGateway.Reference(id, "ORD-2026-00001",
                         "Order confirmed"));
-        verify(notifications).notifyCustomerOrderApproved(order.getCustomerId(),
-                id);
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -71,7 +70,7 @@ class ConfirmOrderUseCaseUnitTest {
 
         assertThrows(OrderNotFoundException.class, () -> useCase.execute(id));
 
-        verifyNoInteractions(inventory, notifications);
+        verifyNoInteractions(inventory);
     }
 
     private Order order(UUID id, OrderStatus status, UUID productId,

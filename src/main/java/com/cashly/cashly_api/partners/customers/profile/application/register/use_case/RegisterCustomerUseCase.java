@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.customers.profile.application.register.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.customers.profile.application.register.request.CreateCustomerRequest;
 import com.cashly.cashly_api.partners.customers.profile.application.register.response.CustomerCreateResponse;
 import com.cashly.cashly_api.partners.customers.profile.application.exceptions.DuplicateCustomerRifException;
@@ -31,11 +35,17 @@ public class RegisterCustomerUseCase {
     private final CustomerWarehouseAccessRepository warehouseAccessRepository;
     private final WarehouseDirectoryGateway warehouseDirectory;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public RegisterCustomerUseCase(CustomerRepository customerRepository,
             CustomerCodeGenerator customerCodeGenerator,
             CustomerMapper customerMapper,
             CustomerWarehouseAccessRepository warehouseAccessRepository,
-            WarehouseDirectoryGateway warehouseDirectory) {
+            WarehouseDirectoryGateway warehouseDirectory,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.customerRepository = customerRepository;
         this.customerCodeGenerator = customerCodeGenerator;
         this.customerMapper = customerMapper;
@@ -79,6 +89,9 @@ public class RegisterCustomerUseCase {
         Customer saved = customerRepository.save(customer);
         grantWarehouseAccess(saved.getId().getValue(), request.warehouseIds(),
                 grantedBy);
+        activityNotifications.record(ActivityEvent.of("CONTACTS_CUSTOMERS",
+                "CREATE", "CUSTOMER", saved.getId().getValue(),
+                saved.getLegalName().getValue(), grantedBy));
         return customerMapper.toCreateResponse(saved);
     }
 

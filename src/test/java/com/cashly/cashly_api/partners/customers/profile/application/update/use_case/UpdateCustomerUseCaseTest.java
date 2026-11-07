@@ -46,7 +46,7 @@ class UpdateCustomerUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new UpdateCustomerUseCase(customerRepository, mapper);
+        useCase = new UpdateCustomerUseCase(customerRepository, mapper, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

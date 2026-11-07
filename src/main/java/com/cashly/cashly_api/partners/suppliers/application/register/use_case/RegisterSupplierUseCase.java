@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.suppliers.application.register.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.suppliers.application.register.request.CreateSupplierRequest;
 import com.cashly.cashly_api.partners.suppliers.application.dto.response.SupplierCreateResponse;
 import com.cashly.cashly_api.partners.suppliers.application.mappers.SupplierMapper;
@@ -21,9 +25,15 @@ public class RegisterSupplierUseCase {
     private final SupplierCodeGenerator supplierCodeGenerator;
     private final SupplierMapper supplierMapper;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public RegisterSupplierUseCase(SupplierRepository supplierRepository,
             SupplierCodeGenerator supplierCodeGenerator,
-            SupplierMapper supplierMapper) {
+            SupplierMapper supplierMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.supplierRepository = supplierRepository;
         this.supplierCodeGenerator = supplierCodeGenerator;
         this.supplierMapper = supplierMapper;
@@ -50,6 +60,9 @@ public class RegisterSupplierUseCase {
                         a.postalCode()));
 
         Supplier saved = supplierRepository.save(supplier);
+        activityNotifications.record(ActivityEvent.of("CONTACTS_SUPPLIERS",
+                "CREATE", "SUPPLIER", saved.getId().getValue(),
+                saved.getLegalName().getValue(), null));
         return supplierMapper.toCreateResponse(saved);
     }
 }

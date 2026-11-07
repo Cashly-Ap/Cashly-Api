@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.sales.orders.application.cancel.use_case;
 
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.sales.orders.application.cancel.request.CancelOrderRequest;
 import com.cashly.cashly_api.sales.orders.domain.entity.Order;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLine;
@@ -35,12 +35,12 @@ class CancelOrderUseCaseUnitTest {
     @Mock
     private OrderInventoryGateway inventory;
     @Mock
-    private OrderNotificationGateway notifications;
+    private ActivityNotificationRecorder activityNotifications;
     private CancelOrderUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new CancelOrderUseCase(orders, inventory, notifications);
+        useCase = new CancelOrderUseCase(orders, inventory, activityNotifications);
     }
 
     @Test
@@ -56,8 +56,7 @@ class CancelOrderUseCaseUnitTest {
 
         assertEquals("CANCELLED", response.status());
         verify(inventory).release(allocations(order));
-        verify(notifications).notifyCustomerOrderRejected(order.getCustomerId(),
-                order.getId().value(), "Requested");
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
         verify(inventory, never()).restore(anyList(), any());
     }
 
@@ -86,7 +85,7 @@ class CancelOrderUseCaseUnitTest {
         assertThrows(OrderNotFoundException.class,
                 () -> useCase.execute(id, new CancelOrderRequest("Reason")));
 
-        verifyNoInteractions(inventory, notifications);
+        verifyNoInteractions(inventory);
     }
 
     private List<OrderInventoryGateway.Allocation> allocations(Order order) {

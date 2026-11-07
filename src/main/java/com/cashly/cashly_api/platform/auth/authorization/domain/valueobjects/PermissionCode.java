@@ -1,5 +1,8 @@
 package com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects;
 
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+
 import java.util.Arrays;
 
 import com.cashly.cashly_api.platform.auth.authorization.domain.exceptions.UnknownPermissionCodeException;

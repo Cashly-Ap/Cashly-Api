@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.sales.orders.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.orders.application.update.request.UpdateOrderRequest;
 import com.cashly.cashly_api.sales.orders.application.dto.response.OrderDetailResponse;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
@@ -24,9 +28,15 @@ public class UpdateOrderUseCase {
     private final OrderProductCatalogGateway products;
     private final OrderInventoryGateway inventory;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateOrderUseCase(OrderRepository orderRepository,
             OrderProductCatalogGateway products,
-            OrderInventoryGateway inventory) {
+            OrderInventoryGateway inventory,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.orderRepository = orderRepository;
         this.products = products;
         this.inventory = inventory;
@@ -59,6 +69,9 @@ public class UpdateOrderUseCase {
         order.update(request.notes(), lines);
 
         Order saved = orderRepository.save(order);
+        activityNotifications.record(ActivityEvent.of("SALES_ORDERS",
+                "EDIT", "ORDER", saved.getId().value(),
+                saved.getOrderNumber().value(), null));
         return OrderMapper.toDetailResponse(saved);
     }
 

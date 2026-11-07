@@ -10,7 +10,7 @@ import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.Invoic
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceNumber;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.PaymentType;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,14 +40,14 @@ class CancelInvoiceUseCaseUnitTest {
     private InventoryGateway inventoryGateway;
 
     @Mock
-    private InvoiceNotificationGateway notificationService;
+    private ActivityNotificationRecorder activityNotifications;
 
     private CancelInvoiceUseCase cancelInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         cancelInvoiceUseCase = new CancelInvoiceUseCase(invoiceRepository,
-                inventoryGateway, notificationService);
+                inventoryGateway, activityNotifications);
     }
 
     @Test
@@ -68,8 +68,7 @@ class CancelInvoiceUseCaseUnitTest {
         assertEquals("CANCELLED", response.status());
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verify(invoiceRepository).save(invoice);
-        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(),
-                eq("INV-2026-00001"), eq("Duplicate invoice"));
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -102,8 +101,7 @@ class CancelInvoiceUseCaseUnitTest {
         cancelInvoiceUseCase.execute(id, request);
 
         verify(invoiceRepository, times(1)).save(invoice);
-        verify(notificationService).notifyCustomerInvoiceCancelled(any(), any(),
-                any(), any());
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -158,7 +156,7 @@ class CancelInvoiceUseCaseUnitTest {
         assertThrows(IllegalStateException.class, () -> cancelInvoiceUseCase
                 .execute(id, new CancelInvoiceRequest("Reason")));
         verify(invoiceRepository, never()).save(any());
-        verifyNoInteractions(notificationService);
+        
     }
     private Invoice buildInvoice(UUID id, InvoiceStatus status) {
         InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",

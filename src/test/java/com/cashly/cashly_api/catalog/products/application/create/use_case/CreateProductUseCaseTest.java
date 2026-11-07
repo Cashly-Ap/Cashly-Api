@@ -61,7 +61,7 @@ class CreateProductUseCaseTest {
                 new LocalProductPriceTypeGatewayAdapter(
                         new RepositoryProductPriceTypeQuery(
                                 priceTypeRepository)),
-                productMapper);
+                productMapper, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

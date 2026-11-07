@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 class NotificationTranslationTest {
     private Notification sample(UUID user) {
         return Notification
-                .create(user, null, NotificationType.INVOICE_CANCELLED,
+                .create(user, NotificationType.INVOICE_CANCELLED,
                         "notifications.invoice_cancelled.title",
                         "notifications.invoice_cancelled.message", "INVOICE",
                         UUID.randomUUID())
@@ -61,7 +61,7 @@ class NotificationTranslationTest {
     }
     @Test
     void legacyUserSuppliedNotificationsRemainUnchanged() {
-        var raw = Notification.create(UUID.randomUUID(), null,
+        var raw = Notification.create(UUID.randomUUID(),
                 NotificationType.ORDER_CREATED, "User title", "User text", null,
                 null);
         assertThat(new NotificationTranslator().render(raw, Locale.ENGLISH))
@@ -71,10 +71,13 @@ class NotificationTranslationTest {
     void everyNotificationTypeHasBothLanguagesAndKeepsArgumentData() {
         var translator = new NotificationTranslator();
         for (var type : NotificationType.values()) {
+            if (type == NotificationType.ACTIVITY) {
+                continue;
+            }
             String base = "notifications."
                     + type.name().toLowerCase(Locale.ROOT);
             var notification = Notification
-                    .create(UUID.randomUUID(), null, type, base + ".title",
+                    .create(UUID.randomUUID(), type, base + ".title",
                             base + ".message", "TEST", UUID.randomUUID())
                     .withTranslation(base + ".title", base + ".message",
                             List.of("Dato del usuario", "123.45"));

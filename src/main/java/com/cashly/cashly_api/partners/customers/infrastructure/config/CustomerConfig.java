@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.partners.customers.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.partners.customers.profile.application.mappers.CustomerMapper;
 import com.cashly.cashly_api.partners.customers.credit.application.ports.out.CreditValidationGateway;
 import com.cashly.cashly_api.partners.customers.balance.application.ports.out.CustomerActorGateway;
@@ -48,10 +49,11 @@ public class CustomerConfig {
             CustomerCodeGenerator customerCodeGenerator,
             CustomerMapper customerMapper,
             CustomerWarehouseAccessRepository warehouseAccessRepository,
-            WarehouseDirectoryGateway warehouseDirectory) {
+            WarehouseDirectoryGateway warehouseDirectory,
+            ActivityNotificationRecorder activityNotifications) {
         return new RegisterCustomerUseCase(customerRepository,
                 customerCodeGenerator, customerMapper,
-                warehouseAccessRepository, warehouseDirectory);
+                warehouseAccessRepository, warehouseDirectory, activityNotifications);
     }
 
     @Bean
@@ -71,29 +73,33 @@ public class CustomerConfig {
     @Bean
     public UpdateCustomerUseCase updateCustomerUseCase(
             CustomerRepository customerRepository,
-            CustomerMapper customerMapper) {
-        return new UpdateCustomerUseCase(customerRepository, customerMapper);
+            CustomerMapper customerMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdateCustomerUseCase(customerRepository, customerMapper, activityNotifications);
     }
 
     @Bean
     public DeleteCustomerUseCase deleteCustomerUseCase(
-            CustomerRepository customerRepository) {
-        return new DeleteCustomerUseCase(customerRepository);
+            CustomerRepository customerRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteCustomerUseCase(customerRepository, activityNotifications);
     }
 
     @Bean
     public GrantWarehouseAccessUseCase grantWarehouseAccessUseCase(
             CustomerWarehouseAccessRepository accessRepository,
             CustomerRepository customerRepository,
-            WarehouseDirectoryGateway warehouseDirectory) {
+            WarehouseDirectoryGateway warehouseDirectory,
+            ActivityNotificationRecorder activityNotifications) {
         return new GrantWarehouseAccessUseCase(accessRepository,
-                customerRepository, warehouseDirectory);
+                customerRepository, warehouseDirectory, activityNotifications);
     }
 
     @Bean
     public RevokeWarehouseAccessUseCase revokeWarehouseAccessUseCase(
-            CustomerWarehouseAccessRepository accessRepository) {
-        return new RevokeWarehouseAccessUseCase(accessRepository);
+            CustomerWarehouseAccessRepository accessRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new RevokeWarehouseAccessUseCase(accessRepository, activityNotifications);
     }
 
     @Bean
@@ -113,32 +119,36 @@ public class CustomerConfig {
 
     @Bean
     public AddToCustomerBalanceUseCase addToCustomerBalanceUseCase(
-            CustomerBalanceRepository customerBalanceRepository) {
-        return new AddToCustomerBalanceUseCase(customerBalanceRepository);
+            CustomerBalanceRepository customerBalanceRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new AddToCustomerBalanceUseCase(customerBalanceRepository, activityNotifications);
     }
 
     @Bean
     public ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase(
-            CustomerBalanceRepository customerBalanceRepository) {
-        return new ConsumeCustomerBalanceUseCase(customerBalanceRepository);
+            CustomerBalanceRepository customerBalanceRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new ConsumeCustomerBalanceUseCase(customerBalanceRepository, activityNotifications);
     }
 
     @Bean
     public CreateCustomerAdvanceUseCase createCustomerAdvanceUseCase(
             AddToCustomerBalanceUseCase addToCustomerBalanceUseCase,
             CustomerCashGateway cashGateway,
-            CustomerActorGateway actorGateway) {
+            CustomerActorGateway actorGateway,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreateCustomerAdvanceUseCase(addToCustomerBalanceUseCase,
-                cashGateway, actorGateway);
+                cashGateway, actorGateway, activityNotifications);
     }
 
     @Bean
     public RefundCustomerBalanceUseCase refundCustomerBalanceUseCase(
             ConsumeCustomerBalanceUseCase consumeCustomerBalanceUseCase,
             CustomerCashGateway cashGateway,
-            CustomerActorGateway actorGateway) {
+            CustomerActorGateway actorGateway,
+            ActivityNotificationRecorder activityNotifications) {
         return new RefundCustomerBalanceUseCase(consumeCustomerBalanceUseCase,
-                cashGateway, actorGateway);
+                cashGateway, actorGateway, activityNotifications);
     }
 
     @Bean

@@ -77,7 +77,7 @@ class PayInvoiceUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new PayInvoiceUseCase(paymentRepository, allocationRepository,
-                invoiceGateway, customerGateway, cashRegisterGateway);
+                invoiceGateway, customerGateway, cashRegisterGateway, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     private Invoice invoiceWithTotal(BigDecimal total) {

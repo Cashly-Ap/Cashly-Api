@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockMovementQueryGateway;
 
@@ -33,8 +34,9 @@ public class WarehouseConfig {
 
     @Bean
     public CreateWarehouseUseCase createWarehouseUseCase(
-            WarehouseRepository warehouseRepository) {
-        return new CreateWarehouseUseCase(warehouseRepository);
+            WarehouseRepository warehouseRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new CreateWarehouseUseCase(warehouseRepository, activityNotifications);
     }
 
     @Bean
@@ -51,14 +53,16 @@ public class WarehouseConfig {
 
     @Bean
     public UpdateWarehouseUseCase updateWarehouseUseCase(
-            WarehouseRepository warehouseRepository) {
-        return new UpdateWarehouseUseCase(warehouseRepository);
+            WarehouseRepository warehouseRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdateWarehouseUseCase(warehouseRepository, activityNotifications);
     }
 
     @Bean
     public DeleteWarehouseUseCase deleteWarehouseUseCase(
-            WarehouseRepository warehouseRepository) {
-        return new DeleteWarehouseUseCase(warehouseRepository);
+            WarehouseRepository warehouseRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteWarehouseUseCase(warehouseRepository, activityNotifications);
     }
 
     @Bean
@@ -66,9 +70,10 @@ public class WarehouseConfig {
             WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
         return new StockEntryUseCase(warehouseRepository,
-                warehouseStockRepository, stockMovementRepository, catalog);
+                warehouseStockRepository, stockMovementRepository, catalog, activityNotifications);
     }
 
     @Bean
@@ -76,9 +81,10 @@ public class WarehouseConfig {
             WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
         return new StockExitUseCase(warehouseRepository,
-                warehouseStockRepository, stockMovementRepository, catalog);
+                warehouseStockRepository, stockMovementRepository, catalog, activityNotifications);
     }
 
     @Bean
@@ -86,9 +92,10 @@ public class WarehouseConfig {
             WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
         return new StockAdjustmentUseCase(warehouseRepository,
-                warehouseStockRepository, stockMovementRepository, catalog);
+                warehouseStockRepository, stockMovementRepository, catalog, activityNotifications);
     }
 
     @Bean
@@ -96,9 +103,10 @@ public class WarehouseConfig {
             WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
         return new TransferStockUseCase(warehouseRepository,
-                warehouseStockRepository, stockMovementRepository, catalog);
+                warehouseStockRepository, stockMovementRepository, catalog, activityNotifications);
     }
 
     @Bean

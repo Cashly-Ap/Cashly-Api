@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.update.request.UpdatePaymentRequest;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.mappers.PaymentMapper;
@@ -15,7 +19,13 @@ public class UpdatePaymentUseCase {
 
     private final PaymentRepository paymentRepository;
 
-    public UpdatePaymentUseCase(PaymentRepository paymentRepository) {
+    private final ActivityNotificationRecorder activityNotifications;
+
+    public UpdatePaymentUseCase(PaymentRepository paymentRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.paymentRepository = paymentRepository;
     }
 
@@ -41,6 +51,9 @@ public class UpdatePaymentUseCase {
         Payment updated = payment.withUpdatedDetails(referenceNumber,
                 paymentDate, paymentMethodId, notes);
         Payment saved = paymentRepository.save(updated);
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_RECEIVABLES",
+                "EDIT", "PAYMENT", saved.getId().value(),
+                saved.getPaymentNumber().value(), null));
         return PaymentMapper.toResponse(saved);
     }
 }

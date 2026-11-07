@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.customers.balance.application.refund.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.customers.balance.application.consume.use_case.ConsumeCustomerBalanceUseCase;
 
 import com.cashly.cashly_api.partners.customers.balance.application.ports.out.CustomerActorGateway;
@@ -18,10 +22,16 @@ public class RefundCustomerBalanceUseCase {
     private final CustomerCashGateway cashGateway;
     private final CustomerActorGateway actorGateway;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public RefundCustomerBalanceUseCase(
             ConsumeCustomerBalanceUseCase consumeBalance,
             CustomerCashGateway cashGateway,
-            CustomerActorGateway actorGateway) {
+            CustomerActorGateway actorGateway,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.consumeBalance = consumeBalance;
         this.cashGateway = cashGateway;
         this.actorGateway = actorGateway;
@@ -41,6 +51,9 @@ public class RefundCustomerBalanceUseCase {
         cashGateway.record(new CustomerCashMovement("OUT", "REFUND", amount,
                 paymentMethodId, description, "CUSTOMER_BALANCE",
                 mutation.transactionId(), userId, userName));
+        activityNotifications.record(ActivityEvent.of("CONTACTS_CUSTOMERS",
+                "BALANCE", "CUSTOMER", customerId,
+                customerId.toString(), userId));
         return mutation.balance();
     }
 

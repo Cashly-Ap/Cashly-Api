@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.customers.profile.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.customers.profile.application.update.request.UpdateCustomerRequest;
 import com.cashly.cashly_api.partners.customers.profile.application.dto.response.CustomerDetailResponse;
 import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
@@ -25,8 +29,14 @@ public class UpdateCustomerUseCase {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateCustomerUseCase(CustomerRepository customerRepository,
-            CustomerMapper customerMapper) {
+            CustomerMapper customerMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
     }
@@ -74,6 +84,9 @@ public class UpdateCustomerUseCase {
                         a.postalCode()));
 
         Customer saved = customerRepository.save(customer);
+        activityNotifications.record(ActivityEvent.of("CONTACTS_CUSTOMERS",
+                "EDIT", "CUSTOMER", saved.getId().getValue(),
+                saved.getLegalName().getValue(), null));
         return customerMapper.toDetailResponse(saved,
                 !customerRepository.hasAssociatedRecords(customer.getId()));
     }

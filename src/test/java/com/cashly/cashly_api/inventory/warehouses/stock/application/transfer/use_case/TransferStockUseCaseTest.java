@@ -60,7 +60,7 @@ class TransferStockUseCaseTest {
         useCase = new TransferStockUseCase(warehouseRepository,
                 warehouseStockRepository, stockMovementRepository,
                 new LocalStockCatalogGatewayAdapter(
-                        new RepositoryStockCatalogQuery(productRepository)));
+                        new RepositoryStockCatalogQuery(productRepository)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

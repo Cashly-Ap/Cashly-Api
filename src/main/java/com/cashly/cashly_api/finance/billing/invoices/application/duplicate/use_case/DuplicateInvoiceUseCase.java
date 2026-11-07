@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.duplicate.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.finance.billing.invoices.application.mappers.InvoiceMapper;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
@@ -28,10 +32,16 @@ public class DuplicateInvoiceUseCase {
     private final InvoiceCatalogGateway productRepository;
     private final InvoiceCustomerGateway customerRepository;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public DuplicateInvoiceUseCase(InvoiceRepository invoiceRepository,
             InventoryGateway inventoryGateway,
             InvoiceCatalogGateway productRepository,
-            InvoiceCustomerGateway customerRepository) {
+            InvoiceCustomerGateway customerRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoiceRepository = invoiceRepository;
         this.inventoryGateway = inventoryGateway;
         this.productRepository = productRepository;
@@ -85,6 +95,9 @@ public class DuplicateInvoiceUseCase {
                 original.getPaymentType(), original.getNotes(), copiedLines);
 
         Invoice saved = invoiceRepository.save(duplicate);
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+                "DUPLICATE", "INVOICE", saved.getId().value(),
+                saved.getInvoiceNumber().value(), null));
         return InvoiceMapper.toDetailResponse(saved);
     }
 

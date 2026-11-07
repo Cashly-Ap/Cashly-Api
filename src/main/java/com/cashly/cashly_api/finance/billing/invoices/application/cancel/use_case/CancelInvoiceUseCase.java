@@ -1,9 +1,12 @@
 package com.cashly.cashly_api.finance.billing.invoices.application.cancel.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.cancel.request.CancelInvoiceRequest;
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.mappers.InvoiceMapper;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.exceptions.InvoiceNotFoundException;
@@ -20,14 +23,17 @@ public class CancelInvoiceUseCase {
 
     private final InvoiceRepository invoiceRepository;
     private final InventoryGateway inventoryGateway;
-    private final InvoiceNotificationGateway notifications;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public CancelInvoiceUseCase(InvoiceRepository invoiceRepository,
             InventoryGateway inventoryGateway,
-            InvoiceNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoiceRepository = invoiceRepository;
         this.inventoryGateway = inventoryGateway;
-        this.notifications = notifications;
     }
 
     @Transactional
@@ -41,9 +47,9 @@ public class CancelInvoiceUseCase {
         revertStockAllocations(invoice, previousStatus);
 
         Invoice saved = invoiceRepository.save(invoice);
-        notifications.notifyCustomerInvoiceCancelled(saved.getCustomerId(),
-                saved.getId().value(), saved.getInvoiceNumber().value(),
-                request.reason());
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+                "CANCEL", "INVOICE", saved.getId().value(),
+                saved.getInvoiceNumber().value(), null));
         return InvoiceMapper.toDetailResponse(saved);
     }
 

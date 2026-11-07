@@ -18,7 +18,6 @@ import com.cashly.cashly_api.finance.billing.invoices.application.issue.request.
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.model.InvoiceOrigin;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
 import com.cashly.cashly_api.finance.billing.invoices.application.issue.services.IssueInvoiceService;
-import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLineAllocation;
@@ -70,8 +69,6 @@ class ConfirmInvoiceUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private NotificationService notificationService;
 
     @Mock
     private CashMovementService cashMovementService;
@@ -94,8 +91,6 @@ class ConfirmInvoiceUseCaseTest {
         var inventory = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInventoryGatewayAdapter(
                 new com.cashly.cashly_api.inventory.warehouses.stock.application.invoices.services.InvoiceInventoryService(
                         warehouseStockRepository, stockMovementRepository));
-        var notifications = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceNotificationGateway(
-                notificationService);
         var cash = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCashRegisterGateway(
                 new com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.services.CashRegisterOperationsService(
                         cashMovementService));
@@ -104,7 +99,9 @@ class ConfirmInvoiceUseCaseTest {
                         authorizationService, mock(InvoicePaymentService.class),
                         inventory,
                         mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.StockDeductionGateway.class),
-                        notifications, cash));
+                        cash),
+                org.mockito.Mockito.mock(
+                        com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test
@@ -129,8 +126,7 @@ class ConfirmInvoiceUseCaseTest {
         assertNotNull(response);
         assertEquals("PAID", response.status());
         verify(invoiceRepository, atLeastOnce()).save(any(Invoice.class));
-        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(),
-                any());
+        
         verify(cashMovementService).record(eq(CashMovementDirection.IN),
                 eq(CashMovementType.INVOICE), any(BigDecimal.class), isNull(),
                 contains("INV-"), eq("INVOICE"), eq(id),
@@ -159,8 +155,7 @@ class ConfirmInvoiceUseCaseTest {
         assertNotNull(response);
         assertEquals("PENDING_PAYMENT", response.status());
         verify(invoiceRepository, atLeastOnce()).save(any(Invoice.class));
-        verify(notificationService).notifyCustomerInvoiceConfirmed(any(), any(),
-                any());
+        
         verify(cashMovementService).record(eq(CashMovementDirection.IN),
                 eq(CashMovementType.INVOICE), any(BigDecimal.class), isNull(),
                 contains("INV-"), eq("INVOICE"), eq(id),
@@ -240,8 +235,7 @@ class ConfirmInvoiceUseCaseTest {
                         authenticatedUserId));
         verify(invoiceRepository, never()).save(any());
         verify(warehouseStockRepository, never()).save(any());
-        verifyNoInteractions(stockMovementRepository, cashMovementService,
-                notificationService);
+        verifyNoInteractions(stockMovementRepository, cashMovementService);
     }
     @Test
     void should_stop_before_authorization_and_effects_when_actor_is_missing() {
@@ -255,8 +249,7 @@ class ConfirmInvoiceUseCaseTest {
         assertEquals("Usuario no encontrado", error.getMessage());
         verify(invoiceRepository, never()).save(any());
         verifyNoInteractions(authorizationService, warehouseStockRepository,
-                stockMovementRepository, cashMovementService,
-                notificationService);
+                stockMovementRepository, cashMovementService);
     }
     private Invoice buildInvoice(UUID id, InvoiceStatus status,
             PaymentType paymentType) {

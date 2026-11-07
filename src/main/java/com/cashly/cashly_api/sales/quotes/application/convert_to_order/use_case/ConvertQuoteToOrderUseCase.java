@@ -1,8 +1,11 @@
 package com.cashly.cashly_api.sales.quotes.application.convert_to_order.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.quotes.application.ports.out.ActorIdentityGateway;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.OrderCreationGateway;
-import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway;
 import com.cashly.cashly_api.sales.quotes.application.convert_to_order.response.QuoteConvertedToOrderResponse;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
@@ -14,15 +17,18 @@ public class ConvertQuoteToOrderUseCase {
     private final QuoteRepository quotes;
     private final OrderCreationGateway orders;
     private final ActorIdentityGateway actors;
-    private final QuoteConversionNotificationGateway notifications;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public ConvertQuoteToOrderUseCase(QuoteRepository quotes,
             OrderCreationGateway orders, ActorIdentityGateway actors,
-            QuoteConversionNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.quotes = quotes;
         this.orders = orders;
         this.actors = actors;
-        this.notifications = notifications;
     }
 
     @Transactional
@@ -55,8 +61,9 @@ public class ConvertQuoteToOrderUseCase {
                 actor == null ? null : actor.name(), lines));
         quote.markConvertedToOrder(order.id(), order.number());
         quotes.save(quote);
-        notifications.convertedToOrder(quote.getCustomerId(), quote.getId(),
-                order.number());
+        activityNotifications.record(ActivityEvent.of("SALES_QUOTES",
+                "CONVERT_TO_ORDER", "QUOTE", quote.getId(),
+                quote.getQuoteNumber().value(), authenticatedUserId));
         return new QuoteConvertedToOrderResponse(quote.getId(),
                 quote.getQuoteNumber().value(), order.id(), order.number());
     }

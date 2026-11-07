@@ -40,7 +40,7 @@ class AddToCustomerBalanceUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new AddToCustomerBalanceUseCase(customerBalanceRepository);
+        useCase = new AddToCustomerBalanceUseCase(customerBalanceRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

@@ -35,7 +35,7 @@ class UpdatePaymentUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new UpdatePaymentUseCase(paymentRepository);
+        useCase = new UpdatePaymentUseCase(paymentRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

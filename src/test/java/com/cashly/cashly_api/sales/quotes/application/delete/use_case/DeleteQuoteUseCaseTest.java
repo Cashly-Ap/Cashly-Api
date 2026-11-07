@@ -36,7 +36,7 @@ class DeleteQuoteUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        deleteQuoteUseCase = new DeleteQuoteUseCase(quoteRepository);
+        deleteQuoteUseCase = new DeleteQuoteUseCase(quoteRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

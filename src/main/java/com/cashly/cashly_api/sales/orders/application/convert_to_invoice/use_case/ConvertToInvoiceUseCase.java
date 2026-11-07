@@ -1,7 +1,10 @@
 package com.cashly.cashly_api.sales.orders.application.convert_to_invoice.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.orders.application.ports.out.InvoiceCreationGateway;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
 import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.request.ConvertToInvoiceRequest;
 import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.response.ConvertToInvoiceResponse;
 import com.cashly.cashly_api.sales.orders.domain.entity.Order;
@@ -17,14 +20,17 @@ public class ConvertToInvoiceUseCase {
 
     private final OrderRepository orderRepository;
     private final InvoiceCreationGateway invoiceCreationGateway;
-    private final OrderNotificationGateway notifications;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public ConvertToInvoiceUseCase(OrderRepository orderRepository,
             InvoiceCreationGateway invoiceCreationGateway,
-            OrderNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.orderRepository = orderRepository;
         this.invoiceCreationGateway = invoiceCreationGateway;
-        this.notifications = notifications;
     }
 
     @Transactional
@@ -50,10 +56,9 @@ public class ConvertToInvoiceUseCase {
         order.markAsInvoiced(invoice.id(), invoice.invoiceNumber());
         orderRepository.save(order);
 
-        notifications.notifyCustomerOrderConvertedToInvoice(
-                order.getCustomerId(), order.getId().value(),
-                invoice.invoiceNumber());
-
+        activityNotifications.record(ActivityEvent.of("SALES_ORDERS",
+                "CONVERT_TO_INVOICE", "ORDER", order.getId().value(),
+                order.getOrderNumber().value(), authenticatedUserId));
         return new ConvertToInvoiceResponse(order.getId().value(),
                 order.getOrderNumber().value(), order.getStatus().name(),
                 invoice.id(), invoice.invoiceNumber());

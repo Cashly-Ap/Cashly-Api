@@ -1,11 +1,16 @@
 package com.cashly.cashly_api.platform.auth.department.application.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException;
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.department.domain.entity.Department;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -21,8 +26,14 @@ public class ManageDepartmentsUseCase {
     private final AccessRepository repository;
     private final AccessService access;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public ManageDepartmentsUseCase(AccessRepository repository,
-            AccessService access) {
+            AccessService access,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.repository = repository;
         this.access = access;
     }
@@ -95,6 +106,9 @@ public class ManageDepartmentsUseCase {
             throw new AccessConflictException(
                     "Reassign users before deactivating department");
         }
+        activityNotifications.record(ActivityEvent.of("DEPARTMENTS",
+                create ? "CREATE" : "EDIT",
+                "DEPARTMENT", department.id(), department.name(), null));
         repository.saveDepartment(department, create);
         return existing(department.id());
     }
@@ -103,12 +117,15 @@ public class ManageDepartmentsUseCase {
     public void delete(UUID id) {
         repository.lockAdministration();
         access.require(PermissionModule.DEPARTMENTS, PermissionAction.DELETE);
-        existing(id);
+        var department = existing(id);
         if (repository.departmentReferenced(id)) {
             throw new AccessConflictException(
                     "Reassign users before deleting department");
         }
         repository.deleteDepartment(id);
+        activityNotifications.record(ActivityEvent.of("DEPARTMENTS",
+                "DELETE", "DEPARTMENT", department.id(),
+                department.name(), null));
     }
 
     private Department existing(UUID id) {

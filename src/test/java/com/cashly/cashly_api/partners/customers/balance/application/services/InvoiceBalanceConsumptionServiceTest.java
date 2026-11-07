@@ -16,7 +16,7 @@ class InvoiceBalanceConsumptionServiceTest {
     private final CustomerBalanceRepository balances = mock(
             CustomerBalanceRepository.class);
     private final InvoiceBalanceConsumptionService service = new InvoiceBalanceConsumptionService(
-            new ConsumeCustomerBalanceUseCase(balances));
+            new ConsumeCustomerBalanceUseCase(balances, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)));
     private final InvoiceBalanceConsumption.Command command = new InvoiceBalanceConsumption.Command(
             UUID.randomUUID(), new BigDecimal("200"), UUID.randomUUID(),
             "INV-2026-0001", UUID.randomUUID());

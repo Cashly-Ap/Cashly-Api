@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.procurement.purchases.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseProductGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseSupplierGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseActorGateway;
@@ -26,11 +30,17 @@ public class CreatePurchaseUseCase {
     private final PurchaseActorGateway userRepository;
     private final PurchaseDetailResponseAssembler responseAssembler;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreatePurchaseUseCase(PurchaseRepository purchaseRepository,
             PurchaseSupplierGateway supplierGateway,
             PurchaseProductGateway productRepository,
             PurchaseActorGateway userRepository,
-            PurchaseDetailResponseAssembler responseAssembler) {
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.purchaseRepository = purchaseRepository;
         this.supplierGateway = supplierGateway;
         this.productRepository = productRepository;
@@ -77,6 +87,9 @@ public class CreatePurchaseUseCase {
                 request.notes(), lines);
 
         Purchase saved = purchaseRepository.save(purchase);
+        activityNotifications.record(ActivityEvent.of("PURCHASES",
+                "CREATE", "PURCHASE", saved.getId().value(),
+                saved.getPurchaseNumber().value(), null));
         return responseAssembler.toDetailResponse(saved);
     }
 }

@@ -12,6 +12,7 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.application.pa
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.reject.use_case.RejectPaymentUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.update.use_case.UpdatePaymentUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.repository.PaymentRepository;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.CustomerCreditContextGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.InvoiceCreditLedgerGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.CreditNoteLedgerGateway;
@@ -20,7 +21,6 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.application.po
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentActorGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentCustomerGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
-import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentNotificationGateway;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.in.CustomerCreditQuery;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.services.CustomerCreditQueryService;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.services.PaymentAllocationService;
@@ -35,9 +35,10 @@ public class PaymentConfig {
             PaymentRepository paymentRepository,
             PaymentCustomerGateway customerGateway,
             PaymentActorGateway actorGateway,
-            CashRegisterGateway cashRegisterGateway) {
+            CashRegisterGateway cashRegisterGateway,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreatePaymentUseCase(paymentRepository, customerGateway,
-                actorGateway, cashRegisterGateway);
+                actorGateway, cashRegisterGateway, activityNotifications);
     }
 
     @Bean
@@ -54,14 +55,18 @@ public class PaymentConfig {
 
     @Bean
     public UpdatePaymentUseCase updatePaymentUseCase(
-            PaymentRepository paymentRepository) {
-        return new UpdatePaymentUseCase(paymentRepository);
+            PaymentRepository paymentRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdatePaymentUseCase(paymentRepository,
+                activityNotifications);
     }
 
     @Bean
     public DeletePaymentUseCase deletePaymentUseCase(
-            PaymentRepository paymentRepository) {
-        return new DeletePaymentUseCase(paymentRepository);
+            PaymentRepository paymentRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeletePaymentUseCase(paymentRepository,
+                activityNotifications);
     }
 
     @Bean
@@ -78,10 +83,11 @@ public class PaymentConfig {
             PaymentAllocationRepository paymentAllocationRepository,
             PaymentInvoiceGateway invoiceGateway,
             PaymentCustomerGateway customerGateway,
-            CashRegisterGateway cashRegisterGateway) {
+            CashRegisterGateway cashRegisterGateway,
+            ActivityNotificationRecorder activityNotifications) {
         return new PayInvoiceUseCase(paymentRepository,
                 paymentAllocationRepository, invoiceGateway, customerGateway,
-                cashRegisterGateway);
+                cashRegisterGateway, activityNotifications);
     }
 
     @Bean
@@ -91,10 +97,12 @@ public class PaymentConfig {
             PaymentInvoiceGateway invoiceGateway,
             PaymentCustomerGateway customerGateway,
             CashRegisterGateway cashRegisterGateway,
-            PaymentAllocationService paymentAllocationService) {
+            PaymentAllocationService paymentAllocationService,
+            ActivityNotificationRecorder activityNotifications) {
         return new PayAllCustomerDebtUseCase(paymentRepository,
                 paymentAllocationRepository, invoiceGateway, customerGateway,
-                cashRegisterGateway, paymentAllocationService);
+                cashRegisterGateway, paymentAllocationService,
+                activityNotifications);
     }
 
     @Bean
@@ -104,10 +112,12 @@ public class PaymentConfig {
             PaymentInvoiceGateway invoiceGateway,
             PaymentCustomerGateway customerGateway,
             CashRegisterGateway cashRegisterGateway,
-            PaymentAllocationService paymentAllocationService) {
+            PaymentAllocationService paymentAllocationService,
+            ActivityNotificationRecorder activityNotifications) {
         return new PayPartialDebtUseCase(paymentRepository,
                 paymentAllocationRepository, invoiceGateway, customerGateway,
-                cashRegisterGateway, paymentAllocationService);
+                cashRegisterGateway, paymentAllocationService,
+                activityNotifications);
     }
 
     @Bean
@@ -115,19 +125,21 @@ public class PaymentConfig {
             PaymentRepository paymentRepository,
             PaymentAllocationRepository allocationRepository,
             PaymentInvoiceGateway invoiceGateway,
-            PaymentNotificationGateway notificationGateway,
             CashRegisterGateway cashRegisterGateway,
-            PaymentAllocationService paymentAllocationService) {
+            PaymentAllocationService paymentAllocationService,
+            ActivityNotificationRecorder activityNotifications) {
         return new ApprovePaymentUseCase(paymentRepository,
-                allocationRepository, invoiceGateway, notificationGateway,
-                cashRegisterGateway, paymentAllocationService);
+                allocationRepository, invoiceGateway,
+                cashRegisterGateway, paymentAllocationService,
+                activityNotifications);
     }
 
     @Bean
     public RejectPaymentUseCase rejectPaymentUseCase(
             PaymentRepository paymentRepository,
-            PaymentNotificationGateway notificationGateway) {
-        return new RejectPaymentUseCase(paymentRepository, notificationGateway);
+            ActivityNotificationRecorder activityNotifications) {
+        return new RejectPaymentUseCase(paymentRepository,
+                activityNotifications);
     }
 
     @Bean

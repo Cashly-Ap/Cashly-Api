@@ -1,8 +1,11 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.approve.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
-import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentNotificationGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.approve.request.ApprovePaymentRequest;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.mappers.PaymentMapper;
@@ -24,20 +27,23 @@ public class ApprovePaymentUseCase {
     private final PaymentRepository paymentRepository;
     private final PaymentAllocationRepository allocationRepository;
     private final PaymentInvoiceGateway invoices;
-    private final PaymentNotificationGateway notifications;
     private final CashRegisterGateway cashRegister;
     private final PaymentAllocationService paymentAllocationService;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public ApprovePaymentUseCase(PaymentRepository paymentRepository,
             PaymentAllocationRepository allocationRepository,
             PaymentInvoiceGateway invoices,
-            PaymentNotificationGateway notifications,
             CashRegisterGateway cashRegister,
-            PaymentAllocationService paymentAllocationService) {
+            PaymentAllocationService paymentAllocationService,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoices = invoices;
-        this.notifications = notifications;
         this.cashRegister = cashRegister;
         this.paymentAllocationService = paymentAllocationService;
     }
@@ -61,7 +67,10 @@ public class ApprovePaymentUseCase {
                 new CashRegisterGateway.PaymentEntry(saved.getAmount(),
                         saved.getPaymentMethodId(), saved.getNotes(), id,
                         userId, userName)));
-        notifications.approved(payment.getCustomerId(), id);
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_RECEIVABLES",
+                "APPROVE_PAYMENT", "PAYMENT",
+                saved.getId().value(), saved.getPaymentNumber().value(), userId));
+
         return PaymentMapper.toResponse(saved);
     }
 

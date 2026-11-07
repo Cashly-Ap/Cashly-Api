@@ -17,7 +17,9 @@ class ReturnFinancialBoundaryTest {
                 .map(Class::getName).toList();
         assertTrue(
                 dependencies.stream().allMatch(type -> type.startsWith(
-                        "com.cashly.cashly_api.finance.billing.returns.")),
+                        "com.cashly.cashly_api.finance.billing.returns.")
+                        || type.startsWith(
+                                "com.cashly.cashly_api.platform.notifications.application.ports.in.")),
                 component.getSimpleName() + dependencies);
     }
 }

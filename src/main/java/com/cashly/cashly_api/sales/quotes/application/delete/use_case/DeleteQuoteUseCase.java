@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.sales.quotes.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteStateException;
@@ -12,7 +16,13 @@ public class DeleteQuoteUseCase {
 
     private final QuoteRepository quoteRepository;
 
-    public DeleteQuoteUseCase(QuoteRepository quoteRepository) {
+    private final ActivityNotificationRecorder activityNotifications;
+
+    public DeleteQuoteUseCase(QuoteRepository quoteRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.quoteRepository = quoteRepository;
     }
 
@@ -32,6 +42,9 @@ public class DeleteQuoteUseCase {
                     "Quote can only be deleted when it is not linked to an invoice");
         }
 
+        activityNotifications.record(ActivityEvent.of("SALES_QUOTES",
+                "DELETE", "QUOTE", quote.getId(),
+                quote.getQuoteNumber().value(), null));
         quoteRepository.delete(id);
     }
 }

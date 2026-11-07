@@ -62,7 +62,7 @@ class RegisterCustomerUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new RegisterCustomerUseCase(customerRepository, codeGenerator,
-                mapper, warehouseAccessRepository, warehouseRepository);
+                mapper, warehouseAccessRepository, warehouseRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

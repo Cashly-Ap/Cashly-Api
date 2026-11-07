@@ -16,7 +16,6 @@ import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteAllocation;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteLine;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
-import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteStatus;
@@ -56,8 +55,6 @@ class ConvertQuoteToOrderUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private NotificationService notificationService;
 
     private ConvertQuoteToOrderUseCase useCase;
 
@@ -77,9 +74,7 @@ class ConvertQuoteToOrderUseCaseTest {
                         new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(
                                 userRepository,
                                 mock(com.cashly.cashly_api.platform.auth.user.domain.services.PasswordEncoder.class))),
-                new com.cashly.cashly_api.sales.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
-                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteConversionNotificationService(
-                                notificationService)));
+                org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

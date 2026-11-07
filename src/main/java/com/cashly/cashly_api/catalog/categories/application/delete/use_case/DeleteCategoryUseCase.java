@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.catalog.categories.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryHasActiveProductsException;
 import com.cashly.cashly_api.catalog.categories.application.exceptions.CategoryNotFoundException;
 import com.cashly.cashly_api.catalog.categories.domain.entity.Category;
@@ -14,8 +18,14 @@ public class DeleteCategoryUseCase {
     private final CategoryUsageGateway usageGateway;
     private final CategoryRepository categoryRepository;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public DeleteCategoryUseCase(CategoryUsageGateway usageGateway,
-            CategoryRepository categoryRepository) {
+            CategoryRepository categoryRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.usageGateway = usageGateway;
         this.categoryRepository = categoryRepository;
     }
@@ -32,6 +42,9 @@ public class DeleteCategoryUseCase {
         }
 
         category.deactivate();
+        activityNotifications.record(ActivityEvent.of("CATALOG_CATEGORIES",
+                "DELETE", "CATEGORY", category.getId(),
+                category.getName(), null));
         categoryRepository.save(category);
     }
 }

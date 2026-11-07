@@ -38,7 +38,9 @@ class CashRegisterBoundaryTest {
             for (var constructor : type.getConstructors()) {
                 for (var parameter : constructor.getParameterTypes()) {
                     assertTrue(parameter.getName().startsWith(
-                            "com.cashly.cashly_api.finance.treasury.cash_register."),
+                            "com.cashly.cashly_api.finance.treasury.cash_register.")
+                            || parameter.getName().startsWith(
+                                    "com.cashly.cashly_api.platform.notifications.application.ports.in."),
                             type.getSimpleName() + " depends on "
                                     + parameter.getName());
                 }

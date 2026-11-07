@@ -359,6 +359,6 @@ class CreateReturnUseCaseTest {
                 new LocalReturnInventoryGatewayAdapter(
                         new ReturnInventoryService(warehouseStockRepository,
                                 stockMovementRepository)),
-                cash);
+                cash, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 }

@@ -27,7 +27,7 @@ class DeletePaymentUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new DeletePaymentUseCase(paymentRepository);
+        useCase = new DeletePaymentUseCase(paymentRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.platform.auth.user.application.password.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 
 import com.cashly.cashly_api.platform.auth.authentication.application.exceptions.InvalidCredentialsException;
@@ -24,10 +28,16 @@ public class UpdateUserPasswordUseCase {
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
     private final PasswordEncoder passwordEncoder;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateUserPasswordUseCase(UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
-            UserPreferencesRepository preferences) {
+            UserPreferencesRepository preferences,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.preferences = preferences;
         this.userRepository = userRepository;
         this.access = access;
@@ -37,7 +47,10 @@ public class UpdateUserPasswordUseCase {
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public UserResponse execute(String id, UpdateUserPasswordRequest request) {
         access.authorizeAccountMutation(UUID.fromString(id), false);
-        return change(id, request);
+        var response = change(id, request);
+        activityNotifications.record(ActivityEvent.of("USERS",
+                "EDIT", "USER", UUID.fromString(id), id, null));
+        return response;
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)

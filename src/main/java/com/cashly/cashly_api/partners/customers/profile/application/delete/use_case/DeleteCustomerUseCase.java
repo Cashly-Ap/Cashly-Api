@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.customers.profile.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.customers.profile.application.delete.services.CustomerHasAssociatedRecordsException;
 import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
 import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
@@ -10,7 +14,13 @@ public class DeleteCustomerUseCase {
 
     private final CustomerRepository customerRepository;
 
-    public DeleteCustomerUseCase(CustomerRepository customerRepository) {
+    private final ActivityNotificationRecorder activityNotifications;
+
+    public DeleteCustomerUseCase(CustomerRepository customerRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.customerRepository = customerRepository;
     }
 
@@ -24,6 +34,9 @@ public class DeleteCustomerUseCase {
         if (customerRepository.hasAssociatedRecords(customerId)) {
             throw new CustomerHasAssociatedRecordsException(id);
         }
+        activityNotifications.record(ActivityEvent.of("CONTACTS_CUSTOMERS",
+                "DELETE", "CUSTOMER", customerId.getValue(),
+                customerId.toString(), null));
         customerRepository.delete(customerId);
     }
 }

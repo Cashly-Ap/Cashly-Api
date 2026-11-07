@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.returns.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.returns.application.get.use_case.GetReturnByIdUseCase;
 
 import com.cashly.cashly_api.finance.billing.returns.domain.entity.CancelledAllocation;
@@ -24,13 +28,19 @@ public class DeleteReturnUseCase {
     private final ReturnInventoryGateway inventoryGateway;
     private final ReturnPaymentSettlementGateway paymentSettlements;
     private final ReturnBalanceGateway balances;
+    private final ActivityNotificationRecorder activityNotifications;
+
     public DeleteReturnUseCase(
             ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway,
             ReturnRepository returnRepository,
             ReturnInvoiceQueryGateway invoiceQueries,
             ReturnInventoryGateway inventoryGateway,
             ReturnPaymentSettlementGateway paymentSettlements,
-            ReturnBalanceGateway balances) {
+            ReturnBalanceGateway balances,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoiceAdjustmentGateway = invoiceAdjustmentGateway;
         this.returnRepository = returnRepository;
         this.invoiceQueries = invoiceQueries;
@@ -54,6 +64,9 @@ public class DeleteReturnUseCase {
 
         revertCustomerBalance(return_);
 
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_RETURNS",
+                "DELETE", "RETURN", return_.getId().value(),
+                return_.getReturnNumber().value(), authenticatedUserId));
         returnRepository.delete(returnId);
     }
 

@@ -10,7 +10,7 @@ class PaymentMethodBoundaryTest {
     @Test
     void should_consult_usage_through_application_contract() {
         var constructor = DeletePaymentMethodUseCase.class.getConstructors()[0];
-        assertEquals(2, constructor.getParameterCount());
+        assertEquals(3, constructor.getParameterCount());
         assertEquals(
                 "com.cashly.cashly_api.finance.treasury.payment_methods.application.ports.out.PaymentMethodUsageGateway",
                 constructor.getParameterTypes()[1].getName());

@@ -16,6 +16,7 @@ class QuoteInvoiceConversionBoundaryTest {
                         .stream(constructor.getParameterTypes()))
                 .map(Class::getPackageName))
                 .allMatch(name -> name
-                        .startsWith("com.cashly.cashly_api.sales.quotes"));
+                        .startsWith("com.cashly.cashly_api.sales.quotes")
+                        || name.startsWith("com.cashly.cashly_api.platform.notifications.application.ports.in"));
     }
 }

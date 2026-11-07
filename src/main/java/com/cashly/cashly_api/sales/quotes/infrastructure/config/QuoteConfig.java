@@ -15,6 +15,7 @@ import com.cashly.cashly_api.sales.quotes.application.list.use_case.GetQuotesUse
 import com.cashly.cashly_api.sales.quotes.application.warehouses.use_case.GetWarehousesForQuoteUseCase;
 import com.cashly.cashly_api.sales.quotes.application.update.use_case.UpdateQuoteUseCase;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.adapters.JpaQuoteRepositoryAdapter;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.mappers.QuoteJpaMapper;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.repositories.QuoteJpaRepository;
@@ -43,9 +44,10 @@ public class QuoteConfig {
     public CreateQuoteUseCase createQuoteUseCase(
             QuoteRepository quoteRepository, QuoteCustomerGateway customers,
             ActorIdentityGateway actors, QuoteProductCatalogGateway products,
-            QuoteWarehouseGateway warehouses) {
+            QuoteWarehouseGateway warehouses,
+            ActivityNotificationRecorder activityNotifications) {
         return new CreateQuoteUseCase(quoteRepository, customers, actors,
-                products, warehouses);
+                products, warehouses, activityNotifications);
     }
 
     @Bean
@@ -64,21 +66,24 @@ public class QuoteConfig {
     public UpdateQuoteUseCase updateQuoteUseCase(
             QuoteRepository quoteRepository,
             QuoteProductCatalogGateway products,
-            QuoteWarehouseGateway warehouses) {
-        return new UpdateQuoteUseCase(quoteRepository, products, warehouses);
+            QuoteWarehouseGateway warehouses,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdateQuoteUseCase(quoteRepository, products, warehouses,
+                activityNotifications);
     }
 
     @Bean
     public DeleteQuoteUseCase deleteQuoteUseCase(
-            QuoteRepository quoteRepository) {
-        return new DeleteQuoteUseCase(quoteRepository);
+            QuoteRepository quoteRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeleteQuoteUseCase(quoteRepository, activityNotifications);
     }
 
     @Bean
     public CancelQuoteUseCase cancelQuoteUseCase(
             QuoteRepository quoteRepository,
-            com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteRejectionNotificationGateway notificationService) {
-        return new CancelQuoteUseCase(quoteRepository, notificationService);
+            ActivityNotificationRecorder activityNotifications) {
+        return new CancelQuoteUseCase(quoteRepository, activityNotifications);
     }
 
     @Bean
@@ -99,18 +104,18 @@ public class QuoteConfig {
             QuoteRepository quoteRepository,
             com.cashly.cashly_api.sales.quotes.application.ports.out.OrderCreationGateway orders,
             com.cashly.cashly_api.sales.quotes.application.ports.out.ActorIdentityGateway actors,
-            com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
         return new ConvertQuoteToOrderUseCase(quoteRepository, orders, actors,
-                notifications);
+                activityNotifications);
     }
 
     @Bean
     public ConvertQuoteToInvoiceUseCase convertQuoteToInvoiceUseCase(
             QuoteRepository quoteRepository,
             com.cashly.cashly_api.sales.quotes.application.ports.out.InvoiceCreationGateway invoices,
-            com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteConversionNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
         return new ConvertQuoteToInvoiceUseCase(quoteRepository, invoices,
-                notifications);
+                activityNotifications);
     }
 
     @Bean

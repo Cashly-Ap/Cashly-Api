@@ -61,7 +61,7 @@ class ReturnFinancialFlowsTest {
                 new ReturnInvoiceQueryGateway.InvoiceSnapshot("INV-01", false,
                         new BigDecimal("80"), true));
         var useCase = new CreateReturnUseCase(adjustments, repository, mapper,
-                invoices, payments, balances, inventory, cash);
+                invoices, payments, balances, inventory, cash, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         useCase.execute(request("MANUAL"), creator, "Operator");
         var ordered = inOrder(cash, inventory, adjustments, invoices, payments,
                 balances);
@@ -89,7 +89,7 @@ class ReturnFinancialFlowsTest {
                 new ReturnInvoiceQueryGateway.InvoiceSnapshot("INV-01", false,
                         new BigDecimal("2"), true));
         new CreateReturnUseCase(adjustments, repository, mapper, invoices,
-                payments, balances, inventory, cash)
+                payments, balances, inventory, cash, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                 .execute(request("MANUAL"), creator, "Operator");
         verify(balances).credit(argThat(command -> command.amount()
                 .compareTo(new BigDecimal("90")) == 0));
@@ -104,7 +104,7 @@ class ReturnFinancialFlowsTest {
                         "INV-01", false, new BigDecimal("80"), true)));
         UUID deletingActor = UUID.randomUUID();
         new DeleteReturnUseCase(adjustments, repository, invoices, inventory,
-                payments, balances).execute(returned.getId().value(),
+                payments, balances, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)).execute(returned.getId().value(),
                         deletingActor, "Deleting Operator");
         var ordered = inOrder(inventory, adjustments, payments, balances,
                 repository);

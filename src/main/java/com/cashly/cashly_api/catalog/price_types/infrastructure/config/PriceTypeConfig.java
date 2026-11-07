@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.catalog.price_types.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.catalog.price_types.application.create.use_case.CreatePriceTypeUseCase;
 import com.cashly.cashly_api.catalog.price_types.application.delete.use_case.DeletePriceTypeUseCase;
 import com.cashly.cashly_api.catalog.price_types.application.queries.use_case.GetPriceTypeUseCase;
@@ -15,21 +16,24 @@ public class PriceTypeConfig {
 
     @Bean
     public CreatePriceTypeUseCase createPriceTypeUseCase(
-            PriceTypeRepository priceTypeRepository) {
-        return new CreatePriceTypeUseCase(priceTypeRepository);
+            PriceTypeRepository priceTypeRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new CreatePriceTypeUseCase(priceTypeRepository, activityNotifications);
     }
 
     @Bean
     public UpdatePriceTypeUseCase updatePriceTypeUseCase(
-            PriceTypeRepository priceTypeRepository) {
-        return new UpdatePriceTypeUseCase(priceTypeRepository);
+            PriceTypeRepository priceTypeRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new UpdatePriceTypeUseCase(priceTypeRepository, activityNotifications);
     }
 
     @Bean
     public DeletePriceTypeUseCase deletePriceTypeUseCase(
             PriceTypeUsageGateway usageGateway,
-            PriceTypeRepository priceTypeRepository) {
-        return new DeletePriceTypeUseCase(usageGateway, priceTypeRepository);
+            PriceTypeRepository priceTypeRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new DeletePriceTypeUseCase(usageGateway, priceTypeRepository, activityNotifications);
     }
 
     @Bean

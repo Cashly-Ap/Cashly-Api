@@ -4,16 +4,18 @@ import com.cashly.cashly_api.sales.quotes.application.cancel.use_case.CancelQuot
 
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuoteCancellationBoundaryTest {
     @Test
     void should_depend_on_an_owned_notification_contract() {
-        assertFalse(Arrays
+        assertTrue(Arrays
                 .stream(CancelQuoteUseCase.class.getDeclaredConstructors())
                 .flatMap(constructor -> Arrays
                         .stream(constructor.getParameterTypes()))
-                .anyMatch(type -> type.getPackageName().startsWith(
-                        "com.cashly.cashly_api.platform.notifications")));
+                .filter(type -> type.getPackageName().startsWith(
+                        "com.cashly.cashly_api.platform.notifications"))
+                .allMatch(type -> type.getPackageName().equals(
+                        "com.cashly.cashly_api.platform.notifications.application.ports.in")));
     }
 }

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.application.transfer.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.inventory.warehouses.stock.application.transfer.request.TransferStockRequest;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.movements.response.StockMovementResponse;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.InsufficientStockException;
@@ -32,10 +36,16 @@ public class TransferStockUseCase {
     private final StockMovementRepository stockMovementRepository;
     private final StockCatalogGateway catalog;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public TransferStockUseCase(WarehouseRepository warehouseRepository,
             WarehouseStockRepository warehouseStockRepository,
             StockMovementRepository stockMovementRepository,
-            StockCatalogGateway catalog) {
+            StockCatalogGateway catalog,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.warehouseRepository = warehouseRepository;
         this.warehouseStockRepository = warehouseStockRepository;
         this.stockMovementRepository = stockMovementRepository;
@@ -109,6 +119,12 @@ public class TransferStockUseCase {
                 ReferenceType.TRANSFER, null, batchId, request.notes());
         StockMovement savedIn = stockMovementRepository.save(inMovement);
 
+        activityNotifications.record(ActivityEvent.of("INVENTORY_WAREHOUSES",
+                "RECORD_EXIT", "WAREHOUSE", sourceWarehouseId,
+                source.getName(), null));
+        activityNotifications.record(ActivityEvent.of("INVENTORY_WAREHOUSES",
+                "RECORD_ENTRY", "WAREHOUSE",
+                request.destinationWarehouseId(), destination.getName(), null));
         return List.of(
                 StockMovementResponse.from(savedOut, product.code(),
                         product.name()),

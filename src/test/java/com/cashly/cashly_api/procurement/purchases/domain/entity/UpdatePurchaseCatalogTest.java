@@ -42,7 +42,7 @@ class UpdatePurchaseCatalogTest {
                         List.of())));
         var result = new UpdatePurchaseUseCase(repository, products,
                 new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
-                        mock(PurchaseWarehouseGateway.class)))
+                        mock(PurchaseWarehouseGateway.class)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                 .execute(id, request);
         assertEquals("updated", result.notes());
         assertEquals("Tea", result.lines().getFirst().productName());
@@ -72,7 +72,7 @@ class UpdatePurchaseCatalogTest {
         var exception = assertThrows(IllegalArgumentException.class,
                 () -> new UpdatePurchaseUseCase(repository, products,
                         new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
-                                mock(PurchaseWarehouseGateway.class)))
+                                mock(PurchaseWarehouseGateway.class)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                         .execute(id, request));
         assertEquals("Product not found: " + productId, exception.getMessage());
         assertEquals("old", purchase.getNotes());

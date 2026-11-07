@@ -1,13 +1,18 @@
 package com.cashly.cashly_api.platform.auth.role.application.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
+import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessConflictException;
 import com.cashly.cashly_api.platform.auth.authorization.application.exceptions.AccessReferenceNotFoundException;
 import com.cashly.cashly_api.platform.auth.authorization.application.ports.out.AccessRepository;
 import com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService;
 import com.cashly.cashly_api.platform.auth.authorization.domain.services.PermissionRegistry;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionCode;
-import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.role.domain.entity.Role;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -26,8 +31,14 @@ public class ManageRolesUseCase {
     private final AccessRepository repository;
     private final AccessService access;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public ManageRolesUseCase(AccessRepository repository,
-            AccessService access) {
+            AccessService access,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.repository = repository;
         this.access = access;
     }
@@ -128,6 +139,9 @@ public class ManageRolesUseCase {
                     "Reassign users before deactivating role");
         }
         access.delegable(role);
+        activityNotifications.record(ActivityEvent.of("ROLES",
+                create ? "CREATE" : "EDIT",
+                "ROLE", role.id(), role.name(), null));
         repository.saveRole(role, create);
         return existing(role.id());
     }
@@ -143,6 +157,9 @@ public class ManageRolesUseCase {
         }
         access.delegable(role);
         repository.deleteRole(id);
+        activityNotifications.record(ActivityEvent.of("ROLES",
+                "DELETE", "ROLE", role.id(), role.name(),
+                null));
     }
 
     private Map<PermissionModule, Set<PermissionAction>> permissions(

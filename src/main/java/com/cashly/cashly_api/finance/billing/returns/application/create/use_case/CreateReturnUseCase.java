@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.billing.returns.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.billing.returns.application.create.request.CreateReturnRequest;
 import com.cashly.cashly_api.finance.billing.returns.application.dto.response.ReturnResponse;
 import com.cashly.cashly_api.finance.billing.returns.application.mappers.ReturnMapper;
@@ -34,6 +38,8 @@ public class CreateReturnUseCase {
     private final ReturnBalanceGateway balances;
     private final ReturnInventoryGateway inventoryGateway;
     private final ReturnCashGateway cash;
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreateReturnUseCase(
             ReturnInvoiceAdjustmentGateway invoiceAdjustmentGateway,
             ReturnRepository returnRepository,
@@ -41,7 +47,11 @@ public class CreateReturnUseCase {
             ReturnInvoiceQueryGateway invoiceQueries,
             ReturnPaymentSettlementGateway paymentSettlements,
             ReturnBalanceGateway balances,
-            ReturnInventoryGateway inventoryGateway, ReturnCashGateway cash) {
+            ReturnInventoryGateway inventoryGateway, ReturnCashGateway cash,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.invoiceAdjustmentGateway = invoiceAdjustmentGateway;
         this.returnRepository = returnRepository;
         this.responses = responses;
@@ -115,6 +125,9 @@ public class CreateReturnUseCase {
                     authenticatedUserId));
         }
 
+        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_RETURNS",
+                "CREATE", "RETURN", saved.getId().value(),
+                saved.getReturnNumber().value(), authenticatedUserId));
         return responses.toResponse(saved);
     }
 

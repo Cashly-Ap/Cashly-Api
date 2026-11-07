@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.customers.balance.application.add.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.customers.balance.application.dto.response.CustomerBalanceResponse;
 import com.cashly.cashly_api.partners.customers.balance.application.dto.response.CustomerBalanceMutationResponse;
 import com.cashly.cashly_api.partners.customers.balance.application.mappers.BalanceMapper;
@@ -17,8 +21,14 @@ public class AddToCustomerBalanceUseCase {
 
     private final CustomerBalanceRepository customerBalanceRepository;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public AddToCustomerBalanceUseCase(
-            CustomerBalanceRepository customerBalanceRepository) {
+            CustomerBalanceRepository customerBalanceRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.customerBalanceRepository = customerBalanceRepository;
     }
 
@@ -26,8 +36,12 @@ public class AddToCustomerBalanceUseCase {
     public CustomerBalanceResponse execute(UUID customerId, BalanceType type,
             BigDecimal amount, BalanceType referenceType, UUID referenceId,
             String number, String referenceNumber, UUID createdBy) {
-        return executeWithTransaction(customerId, type, amount, referenceType,
-                referenceId, number, referenceNumber, createdBy).balance();
+        var result = executeWithTransaction(customerId, type, amount,
+                referenceType, referenceId, number, referenceNumber, createdBy);
+        activityNotifications.record(ActivityEvent.of("CONTACTS_CUSTOMERS",
+                "BALANCE", "CUSTOMER", customerId,
+                customerId.toString(), createdBy));
+        return result.balance();
     }
 
     @Transactional

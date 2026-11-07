@@ -14,9 +14,6 @@ public interface NotificationJpaRepository
             JpaRepository<NotificationEntity, UUID> {
     List<NotificationEntity> findByUserIdOrderByCreatedAtDesc(UUID userId);
     long countByUserIdAndIsReadFalse(UUID userId);
-    List<NotificationEntity> findByCustomerIdOrderByCreatedAtDesc(
-            UUID customerId);
-    long countByCustomerIdAndIsReadFalse(UUID customerId);
     @Modifying
     @Query("UPDATE NotificationEntity n SET n.isRead = true, n.readAt = CURRENT_TIMESTAMP WHERE n.userId = :userId")
     void markAllAsReadByUserId(@Param("userId") UUID userId);

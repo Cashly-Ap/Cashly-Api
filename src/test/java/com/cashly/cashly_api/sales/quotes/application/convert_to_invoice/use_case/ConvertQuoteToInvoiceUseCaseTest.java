@@ -24,7 +24,6 @@ import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteAllocation;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteLine;
 import com.cashly.cashly_api.sales.quotes.domain.exceptions.QuoteNotFoundException;
-import com.cashly.cashly_api.platform.notifications.application.services.NotificationService;
 import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteStatus;
@@ -67,8 +66,6 @@ class ConvertQuoteToInvoiceUseCaseTest {
     @Mock
     private InvoiceIssueValidator authorizationService;
 
-    @Mock
-    private NotificationService notificationService;
 
     @Mock
     private com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CustomerCreditTermsGateway creditTerms;
@@ -97,16 +94,13 @@ class ConvertQuoteToInvoiceUseCaseTest {
                 authorizationService, mock(InvoicePaymentService.class),
                 mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway.class),
                 stock,
-                mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNotificationGateway.class),
                 mock(com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway.class));
         useCase = new ConvertQuoteToInvoiceUseCase(quoteRepository,
                 new com.cashly.cashly_api.sales.quotes.infrastructure.integration.LocalInvoiceCreationGateway(
                         new com.cashly.cashly_api.finance.billing.invoices.application.create.from_quote.services.QuoteInvoiceCreationService(
                                 invoiceRepository, actors, creditTerms,
                                 issuance)),
-                new com.cashly.cashly_api.sales.quotes.infrastructure.integration.QuoteConversionNotificationAdapter(
-                        new com.cashly.cashly_api.platform.notifications.application.quotes.services.QuoteConversionNotificationService(
-                                notificationService)));
+                org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test
@@ -297,7 +291,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
                                         "password", null, null, null),
                                 authenticatedUserId)));
 
-        verifyNoInteractions(warehouseStockRepository, notificationService);
+        verifyNoInteractions(warehouseStockRepository);
         verify(invoiceRepository, never()).save(any());
         verify(quoteRepository, never()).save(any());
         assertEquals(QuoteStatus.DRAFT, quote.getStatus());

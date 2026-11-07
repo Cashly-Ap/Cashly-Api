@@ -77,7 +77,7 @@ class DuplicateInvoiceUseCaseTest {
                                 productRepository)),
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalInvoiceCustomerGateway(
                         new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryInvoiceCustomerQuery(
-                                customerRepository)));
+                                customerRepository)), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

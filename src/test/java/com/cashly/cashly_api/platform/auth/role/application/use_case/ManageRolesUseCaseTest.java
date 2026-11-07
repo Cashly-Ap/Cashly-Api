@@ -23,7 +23,7 @@ class ManageRolesUseCaseTest {
     private final AccessRepository repository = mock(AccessRepository.class);
     private final AccessService access = mock(AccessService.class);
     private final ManageRolesUseCase useCase = new ManageRolesUseCase(
-            repository, access);
+            repository, access, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     private final UUID id = UUID.randomUUID();
 
     private Role role(String key) {
@@ -84,7 +84,7 @@ class ManageRolesUseCaseTest {
         when(repository.role(actorRoleId)).thenReturn(Optional.of(actorRole));
         when(repository.role(id)).thenReturn(Optional.of(superior));
         var secured = new ManageRolesUseCase(repository,
-                new AccessService(repository, () -> actorId));
+                new AccessService(repository, () -> actorId), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         assertThatThrownBy(() -> secured.save(id,
                 new ManageRolesUseCase.Request("Stripped", null, true, 2L,

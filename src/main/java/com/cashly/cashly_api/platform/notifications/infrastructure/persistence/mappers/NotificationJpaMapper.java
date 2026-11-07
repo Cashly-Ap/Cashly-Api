@@ -14,7 +14,6 @@ public class NotificationJpaMapper {
         NotificationEntity entity = new NotificationEntity();
         entity.setId(notification.getId().value());
         entity.setUserId(notification.getUserId());
-        entity.setCustomerId(notification.getCustomerId());
         entity.setType(notification.getType().name());
         entity.setTitle(notification.getTitle());
         entity.setMessage(notification.getMessage());
@@ -31,7 +30,7 @@ public class NotificationJpaMapper {
 
     public static Notification toDomain(NotificationEntity entity) {
         return Notification.reconstitute(NotificationId.of(entity.getId()),
-                entity.getUserId(), entity.getCustomerId(),
+                entity.getUserId(),
                 NotificationType.valueOf(entity.getType()), entity.getTitle(),
                 entity.getMessage(), entity.getReferenceType(),
                 entity.getReferenceId(), entity.isRead(), entity.getReadAt(),

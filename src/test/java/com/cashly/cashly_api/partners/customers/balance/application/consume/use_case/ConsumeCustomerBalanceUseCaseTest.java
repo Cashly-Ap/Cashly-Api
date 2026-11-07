@@ -41,7 +41,7 @@ class ConsumeCustomerBalanceUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new ConsumeCustomerBalanceUseCase(customerBalanceRepository);
+        useCase = new ConsumeCustomerBalanceUseCase(customerBalanceRepository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

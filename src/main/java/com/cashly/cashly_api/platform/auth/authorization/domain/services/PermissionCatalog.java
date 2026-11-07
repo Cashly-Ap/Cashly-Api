@@ -272,6 +272,10 @@ public final class PermissionCatalog {
         });
     }
 
+    public static String domainLabelKey(PermissionModule module) {
+        return DOMAIN_LABEL_PREFIX + moduleKey(module);
+    }
+
     private static String moduleKey(PermissionModule module) {
         return switch (module) {
             case CONTACTS_CUSTOMERS -> "customers";

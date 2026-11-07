@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.infrastructure.config;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.out.CashRegisterActorGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.out.CashRegisterPaymentMethodGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.application.ports.out.CashRegisterExcelPort;
@@ -26,8 +27,9 @@ public class CashRegisterConfig {
 
     @Bean
     OpenRegisterUseCase openClosureUseCase(
-            CashRegisterRepository closureRepository) {
-        return new OpenRegisterUseCase(closureRepository);
+            CashRegisterRepository closureRepository,
+            ActivityNotificationRecorder activityNotifications) {
+        return new OpenRegisterUseCase(closureRepository, activityNotifications);
     }
 
     @Bean
@@ -40,8 +42,9 @@ public class CashRegisterConfig {
     @Bean
     CloseRegisterUseCase closeClosureUseCase(
             CashRegisterRepository closureRepository,
-            CashRegisterQueryGateway queries) {
-        return new CloseRegisterUseCase(closureRepository, queries);
+            CashRegisterQueryGateway queries,
+            ActivityNotificationRecorder activityNotifications) {
+        return new CloseRegisterUseCase(closureRepository, queries, activityNotifications);
     }
 
     @Bean
@@ -62,9 +65,10 @@ public class CashRegisterConfig {
     RecordCashMovementUseCase recordCashMovementUseCase(
             CashRegisterRepository registerRepository,
             CashRegisterActorGateway actors,
-            CashMovementService movementService) {
+            CashMovementService movementService,
+            ActivityNotificationRecorder activityNotifications) {
         return new RecordCashMovementUseCase(registerRepository, actors,
-                movementService);
+                movementService, activityNotifications);
     }
 
     @Bean

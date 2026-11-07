@@ -32,7 +32,7 @@ class DeleteCreditNoteUseCaseTest {
     @BeforeEach
     void setUp() {
         deleteCreditNoteUseCase = new DeleteCreditNoteUseCase(
-                creditNoteRepository, invoices);
+                creditNoteRepository, invoices, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Nested

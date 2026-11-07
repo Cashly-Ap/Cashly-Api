@@ -32,7 +32,7 @@ class RecordCashMovementUseCaseTest {
     private final CashMovementService movements = mock(
             CashMovementService.class);
     private final RecordCashMovementUseCase useCase = new RecordCashMovementUseCase(
-            registers, actors, movements);
+            registers, actors, movements, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
     @Test
     void shouldRecordMovementWithActorNameFromCashRegisterContract() {

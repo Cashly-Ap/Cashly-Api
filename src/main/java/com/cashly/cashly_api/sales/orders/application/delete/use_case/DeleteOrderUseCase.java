@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.sales.orders.application.delete.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.orders.domain.entity.Order;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
 import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotFoundException;
@@ -14,8 +18,14 @@ public class DeleteOrderUseCase {
     private final OrderRepository orderRepository;
     private final OrderInventoryGateway inventory;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public DeleteOrderUseCase(OrderRepository orderRepository,
-            OrderInventoryGateway inventory) {
+            OrderInventoryGateway inventory,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.orderRepository = orderRepository;
         this.inventory = inventory;
     }
@@ -28,6 +38,9 @@ public class DeleteOrderUseCase {
         order.delete();
         revertStockAllocations(order);
 
+        activityNotifications.record(ActivityEvent.of("SALES_ORDERS",
+                "DELETE", "ORDER", order.getId().value(),
+                order.getOrderNumber().value(), null));
         orderRepository.deleteById(OrderId.of(id));
     }
 

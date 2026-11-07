@@ -41,7 +41,7 @@ class SupplierPurchaseUsageTest {
     void shouldDeleteSupplierWithoutPurchases() {
         when(suppliers.existsById(SupplierId.from(id.toString())))
                 .thenReturn(true);
-        new DeleteSupplierUseCase(suppliers, usage).execute(id.toString());
+        new DeleteSupplierUseCase(suppliers, usage, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)).execute(id.toString());
         verify(usage).hasPurchases(id);
         verify(suppliers).delete(SupplierId.from(id.toString()));
     }
@@ -52,7 +52,7 @@ class SupplierPurchaseUsageTest {
                 .thenReturn(true);
         when(usage.hasPurchases(id)).thenReturn(true);
         assertThrows(SupplierHasAssociatedRecordsException.class,
-                () -> new DeleteSupplierUseCase(suppliers, usage)
+                () -> new DeleteSupplierUseCase(suppliers, usage, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                         .execute(id.toString()));
         verify(suppliers, never()).delete(any());
     }
@@ -60,7 +60,7 @@ class SupplierPurchaseUsageTest {
     @Test
     void shouldRejectMissingSupplierWithoutQueryingPurchases() {
         assertThrows(SupplierNotFoundException.class,
-                () -> new DeleteSupplierUseCase(suppliers, usage)
+                () -> new DeleteSupplierUseCase(suppliers, usage, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                         .execute(id.toString()));
         verifyNoInteractions(usage);
         verify(suppliers, never()).delete(any());
@@ -103,7 +103,7 @@ class SupplierPurchaseUsageTest {
         when(usage.hasPurchases(id)).thenThrow(failure);
         assertSame(failure,
                 assertThrows(IllegalStateException.class,
-                        () -> new DeleteSupplierUseCase(suppliers, usage)
+                        () -> new DeleteSupplierUseCase(suppliers, usage, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                                 .execute(id.toString())));
         verify(suppliers, never()).delete(any());
     }

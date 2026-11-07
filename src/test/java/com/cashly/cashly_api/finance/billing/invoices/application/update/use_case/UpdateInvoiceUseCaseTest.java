@@ -64,7 +64,7 @@ class UpdateInvoiceUseCaseTest {
                 stockEnrichmentService,
                 new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalCustomerCreditTermsGateway(
                         new com.cashly.cashly_api.partners.customers.profile.application.queries.services.RepositoryCustomerCreditTermsQuery(
-                                mock(com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository.class))));
+                                mock(com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository.class))), org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
     }
 
     @Test

@@ -18,7 +18,7 @@ class CompanyServiceTest {
         var request = new CompanyService.Request(" New Company ", " ", "B123",
                 null, null, null, new CompanyService.AddressRequest("Street",
                         null, null, "Spain", "28001"));
-        var updated = new CompanyService(repository, images).update(request);
+        var updated = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)).update(request);
         assertThat(updated.id()).isEqualTo(Company.INSTALLATION_ID);
         assertThat(updated.logoPath()).isEqualTo(existing.logoPath());
         assertThat(updated.legalName()).isEqualTo("New Company");
@@ -35,7 +35,7 @@ class CompanyServiceTest {
                 new Company.Address(null, null, null, null, null),
                 "company/logo.png", null);
         when(repository.lock()).thenReturn(existing);
-        var updated = new CompanyService(repository, images).deleteLogo();
+        var updated = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class)).deleteLogo();
         assertThat(updated.logoPath()).isNull();
         verify(repository).save(updated);
         verify(images).deleteAfterCommit("company/logo.png");
@@ -47,7 +47,7 @@ class CompanyServiceTest {
         var existing = company("company/navbar.png", "company/old-pdf.png");
         when(repository.lock()).thenReturn(existing);
         when(images.store(new byte[]{1})).thenReturn("company/new-pdf.png");
-        var updated = new CompanyService(repository, images)
+        var updated = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                 .uploadPdfLogo(new byte[]{1});
         assertThat(updated.logoPath()).isEqualTo("company/navbar.png");
         assertThat(updated.pdfLogoPath()).isEqualTo("company/new-pdf.png");
@@ -61,7 +61,7 @@ class CompanyServiceTest {
         var images = mock(CompanyMediaStorage.class);
         when(repository.lock())
                 .thenReturn(company("company/navbar.png", "company/pdf.png"));
-        var service = new CompanyService(repository, images);
+        var service = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         var updated = service.deletePdfLogo();
         assertThat(updated.pdfLogoPath()).isNull();
         assertThat(updated.logoPath()).isEqualTo("company/navbar.png");
@@ -75,7 +75,7 @@ class CompanyServiceTest {
     void documentsPreferPdfLogoAndUseDefaultWhenNeitherLogoExists() {
         var repository = mock(CompanyRepository.class);
         var images = mock(CompanyMediaStorage.class);
-        var service = new CompanyService(repository, images);
+        var service = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         when(repository.find())
                 .thenReturn(company("company/navbar.png", "company/pdf.png"));
         when(images.load("company/pdf.png")).thenReturn(new byte[]{2});
@@ -90,7 +90,7 @@ class CompanyServiceTest {
         var images = mock(CompanyMediaStorage.class);
         when(repository.lock())
                 .thenReturn(company("company/navbar.png", "company/pdf.png"));
-        var updated = new CompanyService(repository, images)
+        var updated = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class))
                 .update(new CompanyService.Request("Company", null, null, null,
                         null, null, new CompanyService.AddressRequest(null,
                                 null, null, null, null)));
@@ -103,7 +103,7 @@ class CompanyServiceTest {
         when(repository.find()).thenReturn(company("navbar", "pdf"));
         when(images.load("navbar")).thenReturn(new byte[]{1});
         when(images.load("pdf")).thenReturn(new byte[]{2});
-        var service = new CompanyService(repository, images);
+        var service = new CompanyService(repository, images, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         assertThat(service.previewDocumentLogo(new byte[]{3}, false,
                 new byte[]{4}, false)).containsExactly(3);
         assertThat(

@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.pay_invoice.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentCustomerGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
@@ -26,10 +30,16 @@ public class PayInvoiceUseCase {
     private final PaymentCustomerGateway customers;
     private final CashRegisterGateway cashRegister;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public PayInvoiceUseCase(PaymentRepository paymentRepository,
             PaymentAllocationRepository allocationRepository,
             PaymentInvoiceGateway invoices, PaymentCustomerGateway customers,
-            CashRegisterGateway cashRegister) {
+            CashRegisterGateway cashRegister,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.paymentRepository = paymentRepository;
         this.allocationRepository = allocationRepository;
         this.invoices = invoices;
@@ -138,6 +148,9 @@ public class PayInvoiceUseCase {
 
         invoices.recalculateStatus(invoiceId);
 
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_RECEIVABLES",
+                "PAY_DIRECT", "INVOICE", invoiceId,
+                invoice.number(), authenticatedUserId));
         return new PaymentResultResponse(null, PaymentStatus.APPLIED.name(),
                 "Pago registrado exitosamente", true);
     }

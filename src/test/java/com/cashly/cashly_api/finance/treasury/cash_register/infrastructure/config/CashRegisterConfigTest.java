@@ -24,7 +24,7 @@ class CashRegisterConfigTest {
     @Test
     void should_create_open_register_use_case() {
         var config = new CashRegisterConfig();
-        var useCase = config.openClosureUseCase(repository);
+        var useCase = config.openClosureUseCase(repository, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         assertNotNull(useCase);
     }
 
@@ -38,7 +38,7 @@ class CashRegisterConfigTest {
     @Test
     void should_create_close_register_use_case() {
         var config = new CashRegisterConfig();
-        var useCase = config.closeClosureUseCase(repository, queries);
+        var useCase = config.closeClosureUseCase(repository, queries, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         assertNotNull(useCase);
     }
 

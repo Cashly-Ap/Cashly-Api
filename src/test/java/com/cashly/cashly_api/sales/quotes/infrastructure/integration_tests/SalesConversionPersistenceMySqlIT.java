@@ -12,7 +12,7 @@ import com.cashly.cashly_api.sales.orders.infrastructure.persistence.adapters.Or
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.repositories.*;
 import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.use_case.ConvertToInvoiceUseCase;
 import com.cashly.cashly_api.sales.orders.application.convert_to_invoice.request.ConvertToInvoiceRequest;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
+
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +80,7 @@ class SalesConversionPersistenceMySqlIT {
                 command -> new OrderCreationGateway.CreatedOrder(createdOrderId,
                         "PED-2026-9001"),
                 mock(ActorIdentityGateway.class),
-                mock(QuoteConversionNotificationGateway.class));
+                mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         useCase.execute(quoteId, null);
         entityManager.flush();
@@ -101,7 +101,7 @@ class SalesConversionPersistenceMySqlIT {
         var useCase = new ConvertQuoteToInvoiceUseCase(quotes(),
                 (command, actor) -> new InvoiceCreationGateway.CreatedInvoice(
                         invoiceId, "FAC-2026-9001"),
-                mock(QuoteConversionNotificationGateway.class));
+                mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         useCase.execute(quoteId, new ConvertQuoteToInvoiceRequest("CREDIT",
                 null, false, null, null), null);
@@ -136,7 +136,7 @@ class SalesConversionPersistenceMySqlIT {
         var useCase = new ConvertToInvoiceUseCase(repository, (command,
                 actor) -> new com.cashly.cashly_api.sales.orders.application.ports.out.InvoiceCreationGateway.CreatedInvoice(
                         invoiceId, "FAC-2026-9002"),
-                mock(OrderNotificationGateway.class));
+                mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
 
         useCase.execute(orderId,
                 new ConvertToInvoiceRequest("CREDIT", null, false, null, null),
@@ -172,7 +172,7 @@ class SalesConversionPersistenceMySqlIT {
                                     return new OrderCreationGateway.CreatedOrder(
                                             targetId, "PED-2026-9003");
                                 }, mock(ActorIdentityGateway.class),
-                                mock(QuoteConversionNotificationGateway.class));
+                                mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
                         useCase.execute(fixture.quoteId(), null);
                         entityManager.flush();
                         throw new IllegalStateException(

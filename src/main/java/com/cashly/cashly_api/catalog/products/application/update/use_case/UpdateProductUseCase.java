@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.catalog.products.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductCategoryGateway;
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductPriceTypeGateway;
 import com.cashly.cashly_api.catalog.products.application.dto.request.ProductPriceRequest;
@@ -29,10 +33,16 @@ public class UpdateProductUseCase {
     private final ProductPriceTypeGateway priceTypeRepository;
     private final ProductMapper productMapper;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateProductUseCase(ProductRepository productRepository,
             ProductCategoryGateway categoryRepository,
             ProductPriceTypeGateway priceTypeRepository,
-            ProductMapper productMapper) {
+            ProductMapper productMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.priceTypeRepository = priceTypeRepository;
@@ -94,6 +104,9 @@ public class UpdateProductUseCase {
 
         Map<UUID, String> priceTypeNames = resolvePriceTypeNames(
                 saved.getProductPrices());
+        activityNotifications.record(ActivityEvent.of("CATALOG_PRODUCTS",
+                "EDIT", "PRODUCT", saved.getId(),
+                saved.getCode(), null));
         return productMapper.toDetailResponse(saved, category.name(),
                 componentProducts, priceTypeNames);
     }

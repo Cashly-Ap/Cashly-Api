@@ -1,6 +1,9 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.application.reject.use_case;
 
-import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.reject.request.RejectPaymentRequest;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.dto.response.PaymentResponse;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.mappers.PaymentMapper;
@@ -14,12 +17,15 @@ import java.util.UUID;
 public class RejectPaymentUseCase {
 
     private final PaymentRepository paymentRepository;
-    private final PaymentNotificationGateway notifications;
+
+    private final ActivityNotificationRecorder activityNotifications;
 
     public RejectPaymentUseCase(PaymentRepository paymentRepository,
-            PaymentNotificationGateway notifications) {
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.paymentRepository = paymentRepository;
-        this.notifications = notifications;
     }
 
     @Transactional
@@ -32,7 +38,9 @@ public class RejectPaymentUseCase {
         payment.reject(request.reason(), userId, userName);
 
         Payment saved = paymentRepository.save(payment);
-        notifications.rejected(payment.getCustomerId(), id, request.reason());
+        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_RECEIVABLES",
+                "REJECT_PAYMENT", "PAYMENT",
+                saved.getId().value(), saved.getPaymentNumber().value(), userId));
         return PaymentMapper.toResponse(saved);
     }
 }

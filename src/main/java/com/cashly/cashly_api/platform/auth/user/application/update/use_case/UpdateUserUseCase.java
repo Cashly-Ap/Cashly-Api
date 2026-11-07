@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.platform.auth.user.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.platform.auth.preferences.domain.repository.UserPreferencesRepository;
 
 import com.cashly.cashly_api.platform.auth.user.application.update.request.UpdateUserRequest;
@@ -21,9 +25,15 @@ public class UpdateUserUseCase {
     private final UserRepository userRepository;
     private final com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateUserUseCase(UserRepository userRepository,
             com.cashly.cashly_api.platform.auth.authorization.application.services.AccessService access,
-            UserPreferencesRepository preferences) {
+            UserPreferencesRepository preferences,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.preferences = preferences;
         this.userRepository = userRepository;
         this.access = access;
@@ -63,6 +73,9 @@ public class UpdateUserUseCase {
         if (request.language() != null)
             preferences.updateLanguage(savedUser.getId().getValue(),
                     request.language());
+        activityNotifications.record(ActivityEvent.of("USERS",
+                "EDIT", "USER", savedUser.getId().getValue(),
+                savedUser.getEmail().getValue(), null));
         return UserResponse.from(savedUser).withLanguage(
                 preferences.languageFor(savedUser.getId().getValue()));
     }

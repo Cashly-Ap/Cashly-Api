@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.partners.suppliers.application.update.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.partners.suppliers.application.update.request.UpdateSupplierRequest;
 import com.cashly.cashly_api.partners.suppliers.application.dto.response.SupplierDetailResponse;
 import com.cashly.cashly_api.partners.suppliers.application.exceptions.SupplierNotFoundException;
@@ -20,8 +24,14 @@ public class UpdateSupplierUseCase {
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public UpdateSupplierUseCase(SupplierRepository supplierRepository,
-            SupplierMapper supplierMapper) {
+            SupplierMapper supplierMapper,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.supplierRepository = supplierRepository;
         this.supplierMapper = supplierMapper;
     }
@@ -61,6 +71,9 @@ public class UpdateSupplierUseCase {
                         a.postalCode()));
 
         Supplier saved = supplierRepository.save(supplier);
+        activityNotifications.record(ActivityEvent.of("CONTACTS_SUPPLIERS",
+                "EDIT", "SUPPLIER", saved.getId().getValue(),
+                saved.getLegalName().getValue(), null));
         return supplierMapper.toDetailResponse(saved);
     }
 }

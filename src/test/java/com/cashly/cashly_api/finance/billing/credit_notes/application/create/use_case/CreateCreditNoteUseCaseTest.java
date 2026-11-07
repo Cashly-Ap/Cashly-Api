@@ -38,7 +38,7 @@ class CreateCreditNoteUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new CreateCreditNoteUseCase(notes, invoices, position,
-                effects);
+                effects, org.mockito.Mockito.mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class));
         invoiceId = UUID.randomUUID();
         customerId = UUID.randomUUID();
         userId = UUID.randomUUID();

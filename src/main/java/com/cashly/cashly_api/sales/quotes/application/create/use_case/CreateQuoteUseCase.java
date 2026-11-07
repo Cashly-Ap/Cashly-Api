@@ -1,5 +1,9 @@
 package com.cashly.cashly_api.sales.quotes.application.create.use_case;
 
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityEvent;
+
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
+
 import com.cashly.cashly_api.sales.quotes.application.ports.out.ActorIdentityGateway;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteCustomerGateway;
 import com.cashly.cashly_api.sales.quotes.application.ports.out.QuoteProductCatalogGateway;
@@ -26,10 +30,16 @@ public class CreateQuoteUseCase {
     private final QuoteProductCatalogGateway products;
     private final QuoteWarehouseGateway warehouses;
 
+    private final ActivityNotificationRecorder activityNotifications;
+
     public CreateQuoteUseCase(QuoteRepository quoteRepository,
             QuoteCustomerGateway customers, ActorIdentityGateway actors,
             QuoteProductCatalogGateway products,
-            QuoteWarehouseGateway warehouses) {
+            QuoteWarehouseGateway warehouses,
+            ActivityNotificationRecorder activityNotifications) {
+        this.activityNotifications = activityNotifications != null
+                ? activityNotifications
+                : ActivityNotificationRecorder.NONE;
         this.quoteRepository = quoteRepository;
         this.customers = customers;
         this.actors = actors;
@@ -58,7 +68,11 @@ public class CreateQuoteUseCase {
         Quote quote = Quote.create(quoteNumber, customer.id(),
                 customer.legalName(), customer.rif(), createdById,
                 createdByName, request.expiryDate(), request.notes(), lines);
-        return QuoteMapper.toDetailResponse(quoteRepository.save(quote));
+        var saved = quoteRepository.save(quote);
+        activityNotifications.record(ActivityEvent.of("SALES_QUOTES",
+                "CREATE", "QUOTE", saved.getId(),
+                saved.getQuoteNumber().value(), authenticatedUserId));
+        return QuoteMapper.toDetailResponse(saved);
     }
 
     private List<QuoteLine> buildLines(CreateQuoteRequest request) {

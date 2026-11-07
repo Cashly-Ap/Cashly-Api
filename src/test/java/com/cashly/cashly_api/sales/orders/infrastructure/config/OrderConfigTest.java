@@ -5,7 +5,7 @@ import com.cashly.cashly_api.sales.orders.application.ports.out.InvoiceCreationG
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderActorGateway;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderCustomerGateway;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderInventoryGateway;
-import com.cashly.cashly_api.sales.orders.application.ports.out.OrderNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.sales.orders.application.ports.out.OrderProductCatalogGateway;
 import com.cashly.cashly_api.sales.orders.application.ports.out.StockAvailabilityGateway;
 
@@ -30,7 +30,7 @@ class OrderConfigTest {
     @Mock
     private OrderProductCatalogGateway products;
     @Mock
-    private OrderNotificationGateway notifications;
+    private ActivityNotificationRecorder activityNotifications;
     @Mock
     private StockAvailabilityGateway stockAvailability;
     @Mock
@@ -43,18 +43,20 @@ class OrderConfigTest {
         OrderConfig config = new OrderConfig();
 
         assertNotNull(config.createOrderUseCase(orders, customers, products,
-                actors, inventory));
+                actors, inventory, activityNotifications));
         assertNotNull(
                 config.getOrderByIdUseCase(orders, stockAvailability, credit));
         assertNotNull(config.getOrdersUseCase(orders, products));
-        assertNotNull(config.updateOrderUseCase(orders, products, inventory));
+        assertNotNull(config.updateOrderUseCase(orders, products, inventory,
+                activityNotifications));
         assertNotNull(
-                config.confirmOrderUseCase(orders, inventory, notifications));
+                config.confirmOrderUseCase(orders, inventory, activityNotifications));
         assertNotNull(
-                config.cancelOrderUseCase(orders, inventory, notifications));
+                config.cancelOrderUseCase(orders, inventory, activityNotifications));
         assertNotNull(config.convertToInvoiceUseCase(orders, invoices,
-                notifications));
-        assertNotNull(config.deleteOrderUseCase(orders, inventory));
+                activityNotifications));
+        assertNotNull(config.deleteOrderUseCase(orders, inventory,
+                activityNotifications));
         assertNotNull(config.getProductsForOrderUseCase(customers, products));
     }
 }

@@ -14,7 +14,9 @@ class InvoiceEditingBoundaryTest {
                 DuplicateInvoiceUseCase.class}) {
             assertTrue(Arrays.stream(useCase.getDeclaredFields()).allMatch(
                     field -> field.getType().getPackageName().startsWith(
-                            "com.cashly.cashly_api.finance.billing.invoices.")),
+                            "com.cashly.cashly_api.finance.billing.invoices.")
+                            || field.getType().getPackageName().startsWith(
+                                    "com.cashly.cashly_api.platform.notifications.application.ports.in")),
                     useCase.getSimpleName()
                             + " imports another module's repository");
         }

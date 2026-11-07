@@ -2,7 +2,7 @@ package com.cashly.cashly_api.finance.treasury.payments.collection.application.a
 
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
-import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentNotificationGateway;
+import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceId;
@@ -50,7 +50,7 @@ class ApprovePaymentUseCaseTest {
     @Mock
     private PaymentInvoiceGateway invoiceGateway;
     @Mock
-    private PaymentNotificationGateway notificationGateway;
+    private ActivityNotificationRecorder activityNotifications;
     @Mock
     private CashRegisterGateway cashRegisterGateway;
 
@@ -64,8 +64,9 @@ class ApprovePaymentUseCaseTest {
         PaymentAllocationService paymentAllocationService = new PaymentAllocationService(
                 paymentRepository, allocationRepository);
         useCase = new ApprovePaymentUseCase(paymentRepository,
-                allocationRepository, invoiceGateway, notificationGateway,
-                cashRegisterGateway, paymentAllocationService);
+                allocationRepository, invoiceGateway,
+                cashRegisterGateway, paymentAllocationService,
+                activityNotifications);
     }
 
     private Payment pendingPayment(BigDecimal amount) {
@@ -241,7 +242,6 @@ class ApprovePaymentUseCaseTest {
                         new CashRegisterGateway.PaymentEntry(
                                 new BigDecimal("125.00"), paymentMethodId, null,
                                 payment.getId().value(), userId, "Admin")));
-        verify(notificationGateway).approved(customerId,
-                payment.getId().value());
+        verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 }
