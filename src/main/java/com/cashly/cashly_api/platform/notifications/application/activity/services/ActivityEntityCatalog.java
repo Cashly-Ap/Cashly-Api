@@ -5,7 +5,8 @@ import java.util.Map;
 public final class ActivityEntityCatalog {
 
     private static final String PREFIX = "notifications.activity.entity.";
-    private static final String SUFFIX = ".noun";
+    private static final String NOUN_SUFFIX = ".noun";
+    private static final String LABEL_SUFFIX = ".label";
 
     private static final Map<String, String> ENTITIES = Map.ofEntries(
             Map.entry("QUOTE", "quote"),
@@ -34,12 +35,20 @@ public final class ActivityEntityCatalog {
     }
 
     public static String labelKey(String referenceType) {
+        return PREFIX + entityKey(referenceType) + NOUN_SUFFIX;
+    }
+
+    public static String displayLabelKey(String referenceType) {
+        return PREFIX + entityKey(referenceType) + LABEL_SUFFIX;
+    }
+
+    private static String entityKey(String referenceType) {
         var key = ENTITIES.get(referenceType);
         if (key == null) {
             throw new IllegalArgumentException(
                     "Unknown activity reference type: " + referenceType);
         }
-        return PREFIX + key + SUFFIX;
+        return key;
     }
 
     public static boolean contains(String referenceType) {

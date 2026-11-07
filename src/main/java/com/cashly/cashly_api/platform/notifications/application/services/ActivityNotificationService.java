@@ -62,10 +62,13 @@ public class ActivityNotificationService implements ActivityNotificationRecorder
         String entityKey = event.entityLabelKey() != null
                 ? event.entityLabelKey()
                 : ActivityEntityCatalog.labelKey(event.referenceType());
+        String entityDisplayKey = ActivityEntityCatalog
+                .displayLabelKey(event.referenceType());
         List<String> arguments = new ArrayList<>();
         arguments.add(actorName);
         arguments.add("i18n:" + entityKey);
         arguments.add(event.referenceLabel());
+        arguments.add("i18n:" + entityDisplayKey);
         arguments.addAll(event.extraArguments());
         for (UUID recipient : recipients) {
             Notification notification = Notification.create(recipient,

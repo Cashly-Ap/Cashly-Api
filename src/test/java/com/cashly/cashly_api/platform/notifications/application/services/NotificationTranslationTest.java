@@ -60,6 +60,30 @@ class NotificationTranslationTest {
                         .equals("Invoice cancelled")));
     }
     @Test
+    void activityTitlesNameTheAffectedEntity() {
+        var notification = Notification
+                .create(UUID.randomUUID(), NotificationType.ACTIVITY,
+                        "notifications.activity.create.title",
+                        "notifications.activity.create.message", "CUSTOMER",
+                        UUID.randomUUID())
+                .withTranslation("notifications.activity.create.title",
+                        "notifications.activity.create.message",
+                        List.of("operator",
+                                "i18n:notifications.activity.entity.customer.noun",
+                                "Ana Pérez",
+                                "i18n:notifications.activity.entity.customer.label"));
+        var translator = new NotificationTranslator();
+        assertThat(translator.render(notification,
+                Locale.forLanguageTag("es")).getTitle())
+                .isEqualTo("Creación de cliente");
+        assertThat(translator.render(notification,
+                Locale.forLanguageTag("es")).getMessage())
+                .isEqualTo("operator creó el cliente Ana Pérez");
+        assertThat(translator.render(notification, Locale.ENGLISH).getTitle())
+                .isEqualTo("Created customer");
+    }
+
+    @Test
     void legacyUserSuppliedNotificationsRemainUnchanged() {
         var raw = Notification.create(UUID.randomUUID(),
                 NotificationType.ORDER_CREATED, "User title", "User text", null,

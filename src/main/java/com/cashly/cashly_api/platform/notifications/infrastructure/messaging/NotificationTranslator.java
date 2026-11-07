@@ -17,14 +17,25 @@ public final class NotificationTranslator {
             return notification;
         Object[] arguments = notification.getMessageArguments().stream()
                 .map(argument -> resolve(argument, locale)).toArray();
+        String title = translateTitle(notification, arguments, locale);
         return Notification.reconstitute(notification.getId(),
                 notification.getUserId(), notification.getType(),
-                messages.translate(notification.getTitleKey(), locale),
+                title,
                 messages.translate(notification.getMessageKey(), locale,
                         arguments),
                 notification.getReferenceType(), notification.getReferenceId(),
                 notification.isRead(), notification.getReadAt(),
                 notification.getCreatedAt());
+    }
+
+    private String translateTitle(Notification notification, Object[] arguments,
+            Locale locale) {
+        try {
+            return messages.translate(notification.getTitleKey(), locale,
+                    arguments);
+        } catch (RuntimeException unavailable) {
+            return notification.getTitle();
+        }
     }
 
     private Object resolve(String argument, Locale locale) {

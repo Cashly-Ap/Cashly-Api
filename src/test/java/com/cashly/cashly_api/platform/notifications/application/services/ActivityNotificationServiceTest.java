@@ -77,7 +77,8 @@ class ActivityNotificationServiceTest {
         assertThat(notification.getMessageArguments())
                 .containsExactly("Ana",
                         "i18n:notifications.activity.entity.invoice.noun",
-                        "FAC-001");
+                        "FAC-001",
+                        "i18n:notifications.activity.entity.invoice.label");
         verify(delivery).deliver(notification);
     }
 

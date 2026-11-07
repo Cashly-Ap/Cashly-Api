@@ -31,10 +31,18 @@ public class NotificationJpaMapper {
     public static Notification toDomain(NotificationEntity entity) {
         return Notification.reconstitute(NotificationId.of(entity.getId()),
                 entity.getUserId(),
-                NotificationType.valueOf(entity.getType()), entity.getTitle(),
+                parseType(entity.getType()), entity.getTitle(),
                 entity.getMessage(), entity.getReferenceType(),
                 entity.getReferenceId(), entity.isRead(), entity.getReadAt(),
                 entity.getCreatedAt()).withTranslation(entity.getTitleKey(),
                         entity.getMessageKey(), entity.getMessageArguments());
+    }
+
+    private static NotificationType parseType(String value) {
+        try {
+            return NotificationType.valueOf(value);
+        } catch (IllegalArgumentException | NullPointerException unknown) {
+            return NotificationType.ACTIVITY;
+        }
     }
 }

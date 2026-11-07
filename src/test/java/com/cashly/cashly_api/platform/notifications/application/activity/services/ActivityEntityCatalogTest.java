@@ -17,6 +17,9 @@ class ActivityEntityCatalogTest {
             assertThat(ActivityEntityCatalog.labelKey(type))
                     .startsWith("notifications.activity.entity.")
                     .endsWith(".noun");
+            assertThat(ActivityEntityCatalog.displayLabelKey(type))
+                    .startsWith("notifications.activity.entity.")
+                    .endsWith(".label");
         }
     }
 

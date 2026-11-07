@@ -3,6 +3,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.platform.notifications.application.activity.services.ActivityEntityCatalog;
 import com.cashly.cashly_api.platform.notifications.infrastructure.persistence.entities.NotificationEntity;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -28,11 +29,16 @@ public class V24NotificationsSeed implements SeedStep {
 
     @Override
     public void seed() {
-        notification("one", ADMIN_USER, "PAYMENT",
+        notification("one", ADMIN_USER, "PAYMENT_APPROVED", "INVOICE",
                 "Payment received", "Invoice payment was recorded.",
+                "notifications.payment_received.title",
+                "notifications.payment_received.message", List.of(),
                 INVOICE_ONE, false);
-        notification("two", OPERATOR_USER, "QUOTE", "Quote created",
-                "A customer quote is ready.", QUOTE_TWO, true);
+        notification("two", OPERATOR_USER, "QUOTE_CREATED", "QUOTE",
+                "Quote created", "A customer quote is ready.",
+                "notifications.quote_created.title",
+                "notifications.quote_created.message", List.of(ACTIVITY_ACTOR),
+                QUOTE_TWO, true);
 
         activity("category-food", CATEGORY_FOOD, "CATEGORY", "Food");
         activity("category-drinks", CATEGORY_DRINKS, "CATEGORY", "Drinks");
@@ -63,7 +69,9 @@ public class V24NotificationsSeed implements SeedStep {
         String titleKey = "notifications.activity.create.title";
         String messageKey = "notifications.activity.create.message";
         List<String> arguments = List.of(ACTIVITY_ACTOR, "i18n:" + entityKey,
-                referenceLabel);
+                referenceLabel,
+                "i18n:" + ActivityEntityCatalog
+                        .displayLabelKey(referenceType));
         activityNotification(key, ADMIN_USER, titleKey, messageKey, arguments,
                 referenceType, referenceId);
     }
@@ -92,7 +100,9 @@ public class V24NotificationsSeed implements SeedStep {
     }
 
     private void notification(String key, UUID userId, String type,
-            String title, String message, UUID referenceId, boolean read) {
+            String referenceType, String title, String message,
+            String titleKey, String messageKey, List<String> arguments,
+            UUID referenceId, boolean read) {
         var id = id("notification." + key);
         if (entityManager.find(NotificationEntity.class, id) != null) {
             return;
@@ -103,8 +113,10 @@ public class V24NotificationsSeed implements SeedStep {
         notification.setType(type);
         notification.setTitle(title);
         notification.setMessage(message);
-        notification.setMessageArguments(List.of());
-        notification.setReferenceType(type);
+        notification.setTitleKey(titleKey);
+        notification.setMessageKey(messageKey);
+        notification.setMessageArguments(arguments);
+        notification.setReferenceType(referenceType);
         notification.setReferenceId(referenceId);
         notification.setRead(read);
         notification.setCreatedAt(LocalDateTime.of(2025, 1, 15, 8, 0));
