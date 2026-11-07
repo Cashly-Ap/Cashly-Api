@@ -30,3 +30,19 @@ CREATE TABLE `users` (
   CONSTRAINT `fk_users_department` FOREIGN KEY (`department_id`) REFERENCES `auth_departments` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `email_verification_tokens` (
+  `id` binary(16) NOT NULL,
+  `user_id` binary(16) NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `expires_at` timestamp(6) NOT NULL,
+  `used_at` timestamp(6) NULL DEFAULT NULL,
+  `created_at` timestamp(6) NOT NULL,
+  `company_id` binary(16) NOT NULL DEFAULT 0x92000000000000000000000000000001,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token_hash` (`token_hash`),
+  KEY `idx_email_verification_user` (`user_id`),
+  KEY `fk_email_verification_company` (`company_id`),
+  CONSTRAINT `fk_email_verification_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_email_verification_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
