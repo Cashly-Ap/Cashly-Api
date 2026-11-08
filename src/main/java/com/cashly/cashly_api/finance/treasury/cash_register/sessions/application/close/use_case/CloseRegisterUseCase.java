@@ -13,6 +13,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valu
 
 import java.util.UUID;
 import java.math.BigDecimal;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CloseRegisterUseCase {
 
@@ -31,6 +32,7 @@ public class CloseRegisterUseCase {
         this.queries = queries;
     }
 
+    @Audited(module = "finance", entityType = "CASH_REGISTER", action = "CLOSE")
     public CashRegisterResponse execute(UUID closureId, UUID closedBy,
             String closedByName, BigDecimal declaredBalance,
             String closingNotes) {

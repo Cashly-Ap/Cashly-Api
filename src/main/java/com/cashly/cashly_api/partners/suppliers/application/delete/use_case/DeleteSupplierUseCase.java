@@ -12,6 +12,7 @@ import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierId;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteSupplierUseCase {
 
@@ -31,6 +32,7 @@ public class DeleteSupplierUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "SUPPLIER", action = "DELETE")
     public void execute(String id) {
         SupplierId supplierId = SupplierId.from(id);
         if (!supplierRepository.existsById(supplierId)) {

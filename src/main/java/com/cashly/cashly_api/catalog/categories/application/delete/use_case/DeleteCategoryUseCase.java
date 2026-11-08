@@ -12,6 +12,7 @@ import com.cashly.cashly_api.catalog.categories.domain.repository.CategoryReposi
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteCategoryUseCase {
 
@@ -31,6 +32,7 @@ public class DeleteCategoryUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "CATEGORY", action = "DELETE")
     public void execute(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));

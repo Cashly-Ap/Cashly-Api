@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class CreateCreditNoteUseCase {
@@ -44,6 +45,7 @@ public class CreateCreditNoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "CREDIT_NOTE", action = "CREATE")
     public CreditNoteResponse execute(CreateCreditNoteRequest request,
             UUID authenticatedUserId) {
         CreditNoteInvoiceGateway.CreditNoteInvoiceContext invoice = invoices

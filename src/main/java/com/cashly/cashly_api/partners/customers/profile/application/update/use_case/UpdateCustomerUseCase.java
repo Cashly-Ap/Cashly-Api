@@ -23,6 +23,7 @@ import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.Rif;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateCustomerUseCase {
 
@@ -42,6 +43,7 @@ public class UpdateCustomerUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "CUSTOMER", action = "EDIT")
     public CustomerDetailResponse execute(String id,
             UpdateCustomerRequest request) {
         CustomerId customerId = CustomerId.from(id);

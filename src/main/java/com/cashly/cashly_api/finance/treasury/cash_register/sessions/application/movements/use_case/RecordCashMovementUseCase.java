@@ -13,6 +13,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valu
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class RecordCashMovementUseCase {
 
@@ -35,6 +36,7 @@ public class RecordCashMovementUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "CASH_REGISTER", action = "RECORD_MOVEMENT")
     public CashMovementResponse execute(UUID registerId,
             CashMovementRequest request, UUID userId) {
         var active = registerRepository.findActiveClosure()

@@ -13,6 +13,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateWarehouseUseCase {
 
@@ -29,6 +30,7 @@ public class UpdateWarehouseUseCase {
     }
 
     @Transactional
+    @Audited(module = "inventory", entityType = "WAREHOUSE", action = "EDIT")
     public WarehouseDetailResponse execute(UUID id,
             UpdateWarehouseRequest request) {
         Warehouse warehouse = warehouseRepository.findById(id)

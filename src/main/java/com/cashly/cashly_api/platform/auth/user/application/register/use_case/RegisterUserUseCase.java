@@ -19,6 +19,7 @@ import com.cashly.cashly_api.platform.auth.user.application.exceptions.Duplicate
 import com.cashly.cashly_api.platform.auth.user.verification.application.services.EmailVerificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class RegisterUserUseCase {
@@ -48,6 +49,7 @@ public class RegisterUserUseCase {
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
+    @Audited(module = "platform", entityType = "USER", action = "CREATE")
     public UserResponse execute(RegisterUserRequest request) {
         access.lockAdministration();
         access.require(

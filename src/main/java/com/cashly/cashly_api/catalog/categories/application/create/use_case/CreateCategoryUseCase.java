@@ -11,6 +11,7 @@ import com.cashly.cashly_api.catalog.categories.application.mappers.CategoryMapp
 import com.cashly.cashly_api.catalog.categories.domain.entity.Category;
 import com.cashly.cashly_api.catalog.categories.domain.repository.CategoryRepository;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateCategoryUseCase {
 
@@ -30,6 +31,7 @@ public class CreateCategoryUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "CATEGORY", action = "CREATE")
     public CategoryDetailResponse execute(CreateCategoryRequest request) {
         if (categoryRepository.existsByName(request.name().trim())) {
             throw new DuplicateCategoryNameException(request.name());

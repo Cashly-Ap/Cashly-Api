@@ -10,6 +10,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.application.create.
 import com.cashly.cashly_api.inventory.warehouses.management.domain.entity.Warehouse;
 import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateWarehouseUseCase {
 
@@ -26,6 +27,7 @@ public class CreateWarehouseUseCase {
     }
 
     @Transactional
+    @Audited(module = "inventory", entityType = "WAREHOUSE", action = "CREATE")
     public WarehouseDetailResponse execute(CreateWarehouseRequest request) {
         String code = request.code().trim().toUpperCase();
         if (warehouseRepository.existsByCode(code)) {

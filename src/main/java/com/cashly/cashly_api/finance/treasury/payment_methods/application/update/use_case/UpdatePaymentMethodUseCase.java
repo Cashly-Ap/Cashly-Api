@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class UpdatePaymentMethodUseCase {
@@ -35,6 +36,7 @@ public class UpdatePaymentMethodUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT_METHOD", action = "EDIT")
     public PaymentMethodResponse execute(UUID id,
             UpdatePaymentMethodRequest request) {
         PaymentMethod paymentMethod = repository

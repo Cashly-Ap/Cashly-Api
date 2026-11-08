@@ -11,6 +11,7 @@ import com.cashly.cashly_api.catalog.products.domain.exceptions.ProductReference
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteProductUseCase {
 
@@ -27,6 +28,7 @@ public class DeleteProductUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRODUCT", action = "DELETE")
     public void execute(UUID id) {
         var product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));

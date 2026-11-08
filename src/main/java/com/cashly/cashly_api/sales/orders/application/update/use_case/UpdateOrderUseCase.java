@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateOrderUseCase {
 
@@ -43,6 +44,7 @@ public class UpdateOrderUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "ORDER", action = "EDIT")
     public OrderDetailResponse execute(UUID id, UpdateOrderRequest request) {
         Order order = orderRepository.findById(OrderId.of(id))
                 .orElseThrow(() -> new OrderNotFoundException(id));

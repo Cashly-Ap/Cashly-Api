@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateProductUseCase {
 
@@ -50,6 +51,7 @@ public class UpdateProductUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRODUCT", action = "EDIT")
     public ProductDetailResponse execute(UUID id,
             UpdateProductRequest request) {
         Product product = productRepository.findById(id)

@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateQuoteUseCase {
     private final QuoteRepository quoteRepository;
@@ -48,6 +49,7 @@ public class CreateQuoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "QUOTE", action = "CREATE")
     public QuoteDetailResponse execute(CreateQuoteRequest request,
             UUID authenticatedUserId) {
         QuoteCustomerGateway.Customer customer = customers

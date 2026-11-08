@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateCustomerAdvanceUseCase {
 
@@ -38,6 +39,7 @@ public class CreateCustomerAdvanceUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "CUSTOMER", action = "ADVANCE")
     public CustomerBalanceResponse execute(UUID customerId, BigDecimal amount,
             UUID paymentMethodId, String notes, UUID userId) {
         cashGateway.requireOpenRegister();

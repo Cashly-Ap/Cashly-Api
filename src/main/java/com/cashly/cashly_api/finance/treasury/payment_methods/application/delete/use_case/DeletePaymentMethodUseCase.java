@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class DeletePaymentMethodUseCase {
@@ -31,6 +32,7 @@ public class DeletePaymentMethodUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT_METHOD", action = "DELETE")
     public void execute(UUID id) {
         PaymentMethodId paymentMethodId = PaymentMethodId.of(id);
 

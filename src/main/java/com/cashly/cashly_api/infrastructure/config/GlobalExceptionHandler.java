@@ -620,6 +620,29 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, "Invalid request", ex.getMessage()));
     }
 
+    @ExceptionHandler(com.cashly.cashly_api.platform.audit.domain.exceptions.AuditFilterException.class)
+    public ResponseEntity<Map<String, Object>> handleAuditFilter(
+            com.cashly.cashly_api.platform.audit.domain.exceptions.AuditFilterException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("code", "AUDIT_INVALID_FILTER");
+        body.put("message", translator.text(ex.messageKey(),
+                ex.messageArguments()));
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(com.cashly.cashly_api.platform.audit.application.exceptions.AuditEventNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleAuditEventNotFound(
+            com.cashly.cashly_api.platform.audit.application.exceptions.AuditEventNotFoundException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("code", "AUDIT_EVENT_NOT_FOUND");
+        body.put("message", translator.text(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
     @ExceptionHandler(com.cashly.cashly_api.platform.auth.user.verification.application.exceptions.EmailVerificationRateLimitedException.class)
     public ResponseEntity<Map<String, Object>> handleEmailVerificationRateLimited(
             RuntimeException ex) {

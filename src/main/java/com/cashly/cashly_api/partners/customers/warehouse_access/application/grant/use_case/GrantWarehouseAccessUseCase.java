@@ -16,6 +16,7 @@ import com.cashly.cashly_api.partners.customers.warehouse_access.application.por
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class GrantWarehouseAccessUseCase {
 
@@ -39,6 +40,7 @@ public class GrantWarehouseAccessUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "CUSTOMER", action = "EDIT")
     public CustomerWarehouseAccessResponse execute(UUID customerId,
             UUID warehouseId, UUID grantedBy) {
         customerRepository.findById(new CustomerId(customerId)).orElseThrow(

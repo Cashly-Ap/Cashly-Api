@@ -12,6 +12,7 @@ import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserName;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class UpdateOwnProfileUseCase {
@@ -28,6 +29,7 @@ public class UpdateOwnProfileUseCase {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Audited(module = "platform", entityType = "USER", action = "EDIT")
     public UserResponse execute(String authenticatedUserId,
             UpdateOwnProfileRequest request) {
         // Serialize with administrative writes before loading the account so assignments cannot be overwritten.

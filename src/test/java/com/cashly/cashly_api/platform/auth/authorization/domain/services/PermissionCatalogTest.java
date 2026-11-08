@@ -29,7 +29,7 @@ class PermissionCatalogTest {
                 .map(PermissionCatalog.PermissionEntry::code)
                 .toList();
 
-        assertThat(codes).hasSize(131).doesNotHaveDuplicates();
+        assertThat(codes).hasSize(132).doesNotHaveDuplicates();
         assertThat(Set.copyOf(codes)).isEqualTo(PermissionRegistry.codes());
     }
 
@@ -71,7 +71,8 @@ class PermissionCatalogTest {
         assertThat(platform.submodules().get(0).domains()).extracting(
                 PermissionCatalog.DomainCatalog::module)
                 .containsExactly(PermissionModule.USERS, PermissionModule.ROLES,
-                        PermissionModule.DEPARTMENTS, PermissionModule.COMPANY);
+                        PermissionModule.DEPARTMENTS, PermissionModule.COMPANY,
+                        PermissionModule.AUDIT_TRAIL);
         assertThat(company.permissions()).extracting(
                 PermissionCatalog.PermissionEntry::code)
                 .containsExactly("COMPANY_VIEW", "COMPANY_EDIT");
@@ -100,7 +101,8 @@ class PermissionCatalogTest {
                 Map.entry(PermissionModule.USERS, 5),
                 Map.entry(PermissionModule.ROLES, 5),
                 Map.entry(PermissionModule.DEPARTMENTS, 5),
-                Map.entry(PermissionModule.COMPANY, 2));
+                Map.entry(PermissionModule.COMPANY, 2),
+                Map.entry(PermissionModule.AUDIT_TRAIL, 1));
 
         expected.forEach((module, count) -> assertThat(
                 domainOf(module).permissions())

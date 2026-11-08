@@ -4,6 +4,7 @@ import com.cashly.cashly_api.platform.notifications.application.ports.in.Activit
 
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.audit.application.ports.in.AuditRecorder;
 
 import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 
@@ -28,12 +29,18 @@ public class ManageDepartmentsUseCase {
 
     private final ActivityNotificationRecorder activityNotifications;
 
+    private final AuditRecorder auditRecorder;
+
     public ManageDepartmentsUseCase(AccessRepository repository,
             AccessService access,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            AuditRecorder auditRecorder) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
+        this.auditRecorder = auditRecorder != null
+                ? auditRecorder
+                : AuditRecorder.NONE;
         this.repository = repository;
         this.access = access;
     }
@@ -110,6 +117,8 @@ public class ManageDepartmentsUseCase {
                 create ? "CREATE" : "EDIT",
                 "DEPARTMENT", department.id(), department.name(), null));
         repository.saveDepartment(department, create);
+        auditRecorder.record("platform", "DEPARTMENT", department.id(),
+                department.name(), create ? "CREATE" : "EDIT");
         return existing(department.id());
     }
 
@@ -123,6 +132,8 @@ public class ManageDepartmentsUseCase {
                     "Reassign users before deleting department");
         }
         repository.deleteDepartment(id);
+        auditRecorder.record("platform", "DEPARTMENT", department.id(),
+                department.name(), "DELETE");
         activityNotifications.record(ActivityEvent.of("DEPARTMENTS",
                 "DELETE", "DEPARTMENT", department.id(),
                 department.name(), null));

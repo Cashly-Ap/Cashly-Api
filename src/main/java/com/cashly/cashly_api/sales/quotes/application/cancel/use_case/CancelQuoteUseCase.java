@@ -11,6 +11,7 @@ import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CancelQuoteUseCase {
 
@@ -27,6 +28,7 @@ public class CancelQuoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "QUOTE", action = "CANCEL")
     public void execute(UUID id, CancelQuoteRequest request) {
         Quote quote = quoteRepository.findById(id)
                 .orElseThrow(() -> new QuoteNotFoundException(id));

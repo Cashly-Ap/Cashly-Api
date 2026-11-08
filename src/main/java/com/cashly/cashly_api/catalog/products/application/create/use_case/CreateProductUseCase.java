@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateProductUseCase {
 
@@ -50,6 +51,7 @@ public class CreateProductUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRODUCT", action = "CREATE")
     public ProductDetailResponse execute(CreateProductRequest request) {
         var category = categoryRepository.require(request.categoryId());
 

@@ -12,6 +12,7 @@ import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteStatus;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class ConvertQuoteToOrderUseCase {
     private final QuoteRepository quotes;
@@ -32,6 +33,7 @@ public class ConvertQuoteToOrderUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "QUOTE", action = "CONVERT_TO_ORDER")
     public QuoteConvertedToOrderResponse execute(UUID quoteId,
             UUID authenticatedUserId) {
         var quote = quotes.findById(quoteId)

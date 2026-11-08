@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class DeleteUserUseCase {
@@ -33,6 +34,7 @@ public class DeleteUserUseCase {
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
+    @Audited(module = "platform", entityType = "USER", action = "DELETE")
     public void execute(String id) {
         access.lockAdministration();
         access.require(

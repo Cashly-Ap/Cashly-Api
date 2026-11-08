@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateQuoteUseCase {
 
@@ -43,6 +44,7 @@ public class UpdateQuoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "QUOTE", action = "EDIT")
     public QuoteDetailResponse execute(UUID id, UpdateQuoteRequest request) {
         Quote quote = quoteRepository.findById(id)
                 .orElseThrow(() -> new QuoteNotFoundException(id));

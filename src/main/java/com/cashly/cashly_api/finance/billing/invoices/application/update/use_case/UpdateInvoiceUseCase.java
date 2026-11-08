@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.time.LocalDate;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class UpdateInvoiceUseCase {
@@ -56,6 +57,7 @@ public class UpdateInvoiceUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "INVOICE", action = "EDIT")
     public InvoiceDetailResponse execute(UUID id,
             UpdateInvoiceRequest request) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))

@@ -11,6 +11,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteWarehouseUseCase {
 
@@ -27,6 +28,7 @@ public class DeleteWarehouseUseCase {
     }
 
     @Transactional
+    @Audited(module = "inventory", entityType = "WAREHOUSE", action = "DELETE")
     public void execute(UUID id) {
         Warehouse warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new WarehouseNotFoundException(id));

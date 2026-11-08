@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class CreateInvoiceUseCase {
@@ -67,6 +68,7 @@ public class CreateInvoiceUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "INVOICE", action = "CREATE")
     public InvoiceDetailResponse execute(CreateInvoiceRequest request,
             UUID authenticatedUserId) {
         UUID customerId;

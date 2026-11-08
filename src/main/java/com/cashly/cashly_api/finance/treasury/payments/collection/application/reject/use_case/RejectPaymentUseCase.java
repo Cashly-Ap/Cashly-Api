@@ -13,6 +13,7 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueob
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class RejectPaymentUseCase {
 
@@ -29,6 +30,7 @@ public class RejectPaymentUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT", action = "REJECT")
     public PaymentResponse execute(UUID id, RejectPaymentRequest request,
             UUID userId, String userName) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))

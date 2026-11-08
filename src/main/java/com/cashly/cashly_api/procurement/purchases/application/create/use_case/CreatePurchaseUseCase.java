@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreatePurchaseUseCase {
 
@@ -49,6 +50,7 @@ public class CreatePurchaseUseCase {
     }
 
     @Transactional
+    @Audited(module = "procurement", entityType = "PURCHASE", action = "CREATE")
     public PurchaseDetailResponse execute(CreatePurchaseRequest request,
             UUID authenticatedUserId) {
         PurchaseSupplierGateway.Entry supplier = supplierGateway

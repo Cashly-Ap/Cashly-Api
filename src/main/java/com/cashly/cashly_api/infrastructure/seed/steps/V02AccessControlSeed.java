@@ -39,6 +39,7 @@ public class V02AccessControlSeed implements SeedStep {
                 "Administration", "Back office", true, 0));
         saveDepartment(new Department(SALES_DEPARTMENT, "Sales",
                 "Commercial operations", true, 0));
+        ensureOperatorPaymentMethods();
         access.createAdministrationLockIfAbsent();
     }
 
@@ -52,6 +53,30 @@ public class V02AccessControlSeed implements SeedStep {
         if (access.department(department.id()).isEmpty()) {
             access.saveDepartment(department, true);
         }
+    }
+
+    private void ensureOperatorPaymentMethods() {
+        var role = access.role(OPERATOR_ROLE).orElse(null);
+        if (role == null || role.systemAdministrator()) {
+            return;
+        }
+        var permissions = new EnumMap<PermissionModule, Set<PermissionAction>>(
+                PermissionModule.class);
+        role.permissions().forEach((module, actions) -> {
+            var copy = EnumSet.noneOf(PermissionAction.class);
+            copy.addAll(actions);
+            permissions.put(module, copy);
+        });
+        var actions = permissions.computeIfAbsent(
+                PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS,
+                key -> EnumSet.noneOf(PermissionAction.class));
+        if (!actions.addAll(EnumSet.of(PermissionAction.VIEW_LIST,
+                PermissionAction.VIEW_DETAIL))) {
+            return;
+        }
+        access.saveRole(new Role(role.id(), role.name(), role.description(),
+                role.active(), role.version(), role.systemKey(), permissions),
+                false);
     }
 
     private static Map<PermissionModule, Set<PermissionAction>> operatorPermissions() {

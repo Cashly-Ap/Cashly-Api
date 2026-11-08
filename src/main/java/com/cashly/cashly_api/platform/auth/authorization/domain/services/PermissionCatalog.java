@@ -125,7 +125,8 @@ public final class PermissionCatalog {
                                 domain(PermissionModule.USERS, 10),
                                 domain(PermissionModule.ROLES, 20),
                                 domain(PermissionModule.DEPARTMENTS, 30),
-                                domain(PermissionModule.COMPANY, 40))));
+                                domain(PermissionModule.COMPANY, 40),
+                                domain(PermissionModule.AUDIT_TRAIL, 50))));
         validate(areas);
         return ordered(areas);
     }

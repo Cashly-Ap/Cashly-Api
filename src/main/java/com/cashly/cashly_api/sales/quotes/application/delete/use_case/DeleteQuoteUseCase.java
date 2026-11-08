@@ -11,6 +11,7 @@ import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteQuoteUseCase {
 
@@ -27,6 +28,7 @@ public class DeleteQuoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "QUOTE", action = "DELETE")
     public void execute(UUID id) {
         Quote quote = quoteRepository.findEligibleForDeletion(id)
                 .or(() -> quoteRepository.findById(id))

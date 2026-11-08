@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class TogglePaymentMethodUseCase {
@@ -34,6 +35,7 @@ public class TogglePaymentMethodUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT_METHOD", action = "TOGGLE")
     public PaymentMethodResponse execute(UUID id) {
         PaymentMethod paymentMethod = repository
                 .findById(PaymentMethodId.of(id))

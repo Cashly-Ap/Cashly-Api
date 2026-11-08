@@ -9,6 +9,7 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.domain.reposit
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.PaymentId;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeletePaymentUseCase {
 
@@ -24,6 +25,7 @@ public class DeletePaymentUseCase {
         this.paymentRepository = paymentRepository;
     }
 
+    @Audited(module = "finance", entityType = "PAYMENT", action = "DELETE")
     public void execute(UUID id) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
                 .orElseThrow(() -> new IllegalArgumentException(

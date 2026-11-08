@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway.CatalogProduct;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class StockExitUseCase {
 
@@ -51,6 +52,7 @@ public class StockExitUseCase {
     }
 
     @Transactional
+    @Audited(module = "inventory", entityType = "WAREHOUSE", action = "RECORD_EXIT")
     public List<StockMovementResponse> execute(UUID warehouseId,
             StockExitRequest request) {
         Warehouse warehouse = warehouseRepository.findById(warehouseId)

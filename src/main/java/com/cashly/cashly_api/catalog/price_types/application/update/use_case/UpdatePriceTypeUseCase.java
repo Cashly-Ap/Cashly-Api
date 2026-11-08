@@ -13,6 +13,7 @@ import com.cashly.cashly_api.catalog.price_types.domain.repository.PriceTypeRepo
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdatePriceTypeUseCase {
 
@@ -29,6 +30,7 @@ public class UpdatePriceTypeUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRICE_TYPE", action = "EDIT")
     public PriceTypeResponse execute(UUID id, UpdatePriceTypeRequest request) {
         PriceType priceType = priceTypeRepository.findById(id)
                 .orElseThrow(() -> new PriceTypeNotFoundException(id));

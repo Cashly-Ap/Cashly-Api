@@ -11,6 +11,7 @@ import com.cashly.cashly_api.catalog.price_types.domain.repository.PriceTypeRepo
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeletePriceTypeUseCase {
 
@@ -30,6 +31,7 @@ public class DeletePriceTypeUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRICE_TYPE", action = "DELETE")
     public void execute(UUID id) {
         if (!priceTypeRepository.existsById(id)) {
             throw new PriceTypeNotFoundException(id);

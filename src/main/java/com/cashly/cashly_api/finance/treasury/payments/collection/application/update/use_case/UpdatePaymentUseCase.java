@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdatePaymentUseCase {
 
@@ -30,6 +31,7 @@ public class UpdatePaymentUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT", action = "EDIT")
     public PaymentResponse execute(UUID id, UpdatePaymentRequest request) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))
                 .orElseThrow(() -> new IllegalArgumentException(

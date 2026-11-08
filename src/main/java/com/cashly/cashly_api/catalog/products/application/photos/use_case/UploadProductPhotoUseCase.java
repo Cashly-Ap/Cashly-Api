@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UploadProductPhotoUseCase {
 
@@ -47,6 +48,7 @@ public class UploadProductPhotoUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRODUCT", action = "UPLOAD_PHOTO")
     public ProductDetailResponse execute(UUID productId,
             String originalFilename, InputStream inputStream,
             String contentType) {

@@ -19,6 +19,7 @@ import com.cashly.cashly_api.finance.billing.returns.application.ports.out.Retur
 import com.cashly.cashly_api.finance.billing.returns.application.ports.out.ReturnInventoryGateway;
 import java.math.BigDecimal;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteReturnUseCase {
 
@@ -50,6 +51,7 @@ public class DeleteReturnUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "RETURN", action = "DELETE")
     public void execute(UUID id, UUID authenticatedUserId, String userName) {
         ReturnId returnId = ReturnId.of(id);
         Return return_ = returnRepository.findById(returnId).orElseThrow(

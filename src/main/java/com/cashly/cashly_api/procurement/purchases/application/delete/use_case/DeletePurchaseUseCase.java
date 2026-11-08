@@ -10,6 +10,7 @@ import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseI
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeletePurchaseUseCase {
 
@@ -26,6 +27,7 @@ public class DeletePurchaseUseCase {
     }
 
     @Transactional
+    @Audited(module = "procurement", entityType = "PURCHASE", action = "DELETE")
     public void execute(UUID id) {
         var purchase = purchaseRepository.findById(PurchaseId.of(id))
                 .orElseThrow(() -> new PurchaseNotFoundException(id));

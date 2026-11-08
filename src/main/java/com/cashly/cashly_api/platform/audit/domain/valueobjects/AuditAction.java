@@ -1,0 +1,44 @@
+package com.cashly.cashly_api.platform.audit.domain.valueobjects;
+
+import java.util.Locale;
+
+public enum AuditAction {
+    CREATE,
+    EDIT,
+    DELETE,
+    CONFIRM,
+    CANCEL,
+    DUPLICATE,
+    ISSUE,
+    CONVERT_TO_ORDER,
+    CONVERT_TO_INVOICE,
+    PAY,
+    PAY_ALL,
+    PARTIAL_PAYMENT,
+    PAY_DIRECT,
+    PAY_WITH_VALIDATION,
+    APPROVE,
+    REJECT,
+    OPEN,
+    CLOSE,
+    RECORD_ENTRY,
+    RECORD_EXIT,
+    RECORD_MOVEMENT,
+    ADJUST,
+    TRANSFER,
+    REFUND,
+    ADVANCE,
+    TOGGLE,
+    UPLOAD_PHOTO,
+    REMOVE_PHOTO,
+    BALANCE;
+
+    public String labelKey() {
+        return "audit.actions." + name();
+    }
+
+    public String descriptionKey() {
+        return "audit.events." + name().toLowerCase(Locale.ROOT)
+                + ".description";
+    }
+}

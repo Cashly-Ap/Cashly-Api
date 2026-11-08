@@ -15,6 +15,7 @@ import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class ConvertToInvoiceUseCase {
 
@@ -34,6 +35,7 @@ public class ConvertToInvoiceUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "ORDER", action = "CONVERT_TO_INVOICE")
     public ConvertToInvoiceResponse execute(UUID orderId,
             ConvertToInvoiceRequest request, UUID authenticatedUserId) {
         Order order = orderRepository.findById(OrderId.of(orderId))

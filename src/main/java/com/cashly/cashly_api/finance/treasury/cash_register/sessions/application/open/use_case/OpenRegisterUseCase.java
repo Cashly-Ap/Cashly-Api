@@ -13,6 +13,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valu
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class OpenRegisterUseCase {
 
@@ -28,6 +29,7 @@ public class OpenRegisterUseCase {
         this.closureRepository = closureRepository;
     }
 
+    @Audited(module = "finance", entityType = "CASH_REGISTER", action = "OPEN")
     public CashRegisterResponse execute(UUID openedBy, String openedByName,
             BigDecimal openingBalance) {
         LocalDate today = LocalDate.now();

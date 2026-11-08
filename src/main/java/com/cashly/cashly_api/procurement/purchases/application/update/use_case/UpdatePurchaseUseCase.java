@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdatePurchaseUseCase {
 
@@ -41,6 +42,7 @@ public class UpdatePurchaseUseCase {
     }
 
     @Transactional
+    @Audited(module = "procurement", entityType = "PURCHASE", action = "EDIT")
     public PurchaseDetailResponse execute(UUID id,
             UpdatePurchaseRequest request) {
         Purchase purchase = purchaseRepository.findById(PurchaseId.of(id))

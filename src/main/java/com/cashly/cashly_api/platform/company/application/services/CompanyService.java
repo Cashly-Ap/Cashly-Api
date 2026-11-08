@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cashly.cashly_api.platform.company.application.ports.out.CompanyMediaStorage;
+import com.cashly.cashly_api.platform.audit.application.ports.in.AuditRecorder;
 @Service
 public class CompanyService {
     private final CompanyRepository repository;
@@ -23,12 +24,18 @@ public class CompanyService {
 
     private final ActivityNotificationRecorder activityNotifications;
 
+    private final AuditRecorder auditRecorder;
+
     public CompanyService(CompanyRepository repository,
             CompanyMediaStorage images,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            AuditRecorder auditRecorder) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
+        this.auditRecorder = auditRecorder != null
+                ? auditRecorder
+                : AuditRecorder.NONE;
         this.repository = repository;
         this.images = images;
     }
@@ -64,6 +71,8 @@ public class CompanyService {
                         clean(address.country()), clean(address.postalCode())),
                 previous.logoPath(), previous.pdfLogoPath());
         repository.save(company);
+        auditRecorder.record("platform", "COMPANY", company.id(),
+                company.legalName(), "EDIT");
         activityNotifications.record(ActivityEvent.of("COMPANY",
                 "EDIT", "COMPANY", company.id(),
                 company.legalName(), null));
@@ -76,6 +85,8 @@ public class CompanyService {
         var path = images.store(bytes);
         var company = withLogo(previous, path);
         repository.save(company);
+        auditRecorder.record("platform", "COMPANY", company.id(),
+                company.legalName(), "UPLOAD_PHOTO");
         images.deleteAfterCommit(previous.logoPath());
         return company;
     }
@@ -85,6 +96,8 @@ public class CompanyService {
         var previous = repository.lock();
         var company = withLogo(previous, null);
         repository.save(company);
+        auditRecorder.record("platform", "COMPANY", company.id(),
+                company.legalName(), "REMOVE_PHOTO");
         images.deleteAfterCommit(previous.logoPath());
         return company;
     }
@@ -100,6 +113,8 @@ public class CompanyService {
         var previous = repository.lock();
         var company = withPdfLogo(previous, images.store(bytes));
         repository.save(company);
+        auditRecorder.record("platform", "COMPANY", company.id(),
+                company.legalName(), "UPLOAD_PHOTO");
         images.deleteAfterCommit(previous.pdfLogoPath());
         return company;
     }
@@ -109,6 +124,8 @@ public class CompanyService {
         var previous = repository.lock();
         var company = withPdfLogo(previous, null);
         repository.save(company);
+        auditRecorder.record("platform", "COMPANY", company.id(),
+                company.legalName(), "REMOVE_PHOTO");
         images.deleteAfterCommit(previous.pdfLogoPath());
         return company;
     }

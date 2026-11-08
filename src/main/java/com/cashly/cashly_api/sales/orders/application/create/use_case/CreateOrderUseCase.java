@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateOrderUseCase {
 
@@ -48,6 +49,7 @@ public class CreateOrderUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "ORDER", action = "CREATE")
     public OrderDetailResponse execute(CreateOrderRequest request,
             UUID authenticatedUserId) {
         var customer = customers.findById(request.customerId())

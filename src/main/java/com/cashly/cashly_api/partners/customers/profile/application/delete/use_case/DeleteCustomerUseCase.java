@@ -9,6 +9,7 @@ import com.cashly.cashly_api.partners.customers.profile.application.exceptions.C
 import com.cashly.cashly_api.partners.customers.profile.domain.repository.CustomerRepository;
 import com.cashly.cashly_api.partners.customers.profile.domain.valueobjects.CustomerId;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteCustomerUseCase {
 
@@ -25,6 +26,7 @@ public class DeleteCustomerUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "CUSTOMER", action = "DELETE")
     public void execute(String id) {
         CustomerId customerId = CustomerId.from(id);
         if (!customerRepository.existsById(customerId)) {

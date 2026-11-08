@@ -10,6 +10,7 @@ import com.cashly.cashly_api.catalog.price_types.application.exceptions.Duplicat
 import com.cashly.cashly_api.catalog.price_types.domain.entity.PriceType;
 import com.cashly.cashly_api.catalog.price_types.domain.repository.PriceTypeRepository;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreatePriceTypeUseCase {
 
@@ -26,6 +27,7 @@ public class CreatePriceTypeUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "PRICE_TYPE", action = "CREATE")
     public PriceTypeResponse execute(CreatePriceTypeRequest request) {
         if (priceTypeRepository.existsByName(request.name())) {
             throw new DuplicatePriceTypeNameException(request.name());

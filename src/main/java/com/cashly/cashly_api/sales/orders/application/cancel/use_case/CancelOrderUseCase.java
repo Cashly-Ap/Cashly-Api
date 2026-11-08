@@ -16,6 +16,7 @@ import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CancelOrderUseCase {
 
@@ -35,6 +36,7 @@ public class CancelOrderUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "ORDER", action = "CANCEL")
     public OrderDetailResponse execute(UUID id, CancelOrderRequest request) {
         Order order = orderRepository.findById(OrderId.of(id))
                 .orElseThrow(() -> new OrderNotFoundException(id));

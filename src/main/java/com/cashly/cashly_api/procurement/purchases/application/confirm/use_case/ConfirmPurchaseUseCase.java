@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.InventoryGateway;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class ConfirmPurchaseUseCase {
 
@@ -36,6 +37,7 @@ public class ConfirmPurchaseUseCase {
     }
 
     @Transactional
+    @Audited(module = "procurement", entityType = "PURCHASE", action = "CONFIRM")
     public PurchaseDetailResponse execute(UUID id) {
         Purchase purchase = purchaseRepository.findById(PurchaseId.of(id))
                 .orElseThrow(() -> new PurchaseNotFoundException(id));

@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class DuplicateInvoiceUseCase {
@@ -49,6 +50,7 @@ public class DuplicateInvoiceUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "INVOICE", action = "DUPLICATE")
     public InvoiceDetailResponse execute(UUID id, UUID newCustomerId) {
         Invoice original = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));

@@ -10,6 +10,7 @@ import com.cashly.cashly_api.partners.customers.warehouse_access.domain.reposito
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class RevokeWarehouseAccessUseCase {
 
@@ -27,6 +28,7 @@ public class RevokeWarehouseAccessUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "CUSTOMER", action = "EDIT")
     public void execute(UUID customerId, UUID warehouseId) {
         CustomerWarehouseAccess access = accessRepository
                 .findByCustomerIdAndWarehouseId(customerId, warehouseId)

@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class ApprovePaymentUseCase {
 
@@ -49,6 +50,7 @@ public class ApprovePaymentUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT", action = "APPROVE")
     public PaymentResponse execute(UUID id, ApprovePaymentRequest request,
             UUID userId, String userName) {
         Payment payment = paymentRepository.findById(PaymentId.of(id))

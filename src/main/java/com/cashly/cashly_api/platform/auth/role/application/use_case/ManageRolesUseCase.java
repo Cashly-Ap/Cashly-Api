@@ -4,6 +4,7 @@ import com.cashly.cashly_api.platform.notifications.application.ports.in.Activit
 
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionModule;
 import com.cashly.cashly_api.platform.auth.authorization.domain.valueobjects.PermissionAction;
+import com.cashly.cashly_api.platform.audit.application.ports.in.AuditRecorder;
 
 import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 
@@ -33,12 +34,18 @@ public class ManageRolesUseCase {
 
     private final ActivityNotificationRecorder activityNotifications;
 
+    private final AuditRecorder auditRecorder;
+
     public ManageRolesUseCase(AccessRepository repository,
             AccessService access,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            AuditRecorder auditRecorder) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
+        this.auditRecorder = auditRecorder != null
+                ? auditRecorder
+                : AuditRecorder.NONE;
         this.repository = repository;
         this.access = access;
     }
@@ -143,6 +150,8 @@ public class ManageRolesUseCase {
                 create ? "CREATE" : "EDIT",
                 "ROLE", role.id(), role.name(), null));
         repository.saveRole(role, create);
+        auditRecorder.record("platform", "ROLE", role.id(), role.name(),
+                create ? "CREATE" : "EDIT");
         return existing(role.id());
     }
 
@@ -157,6 +166,8 @@ public class ManageRolesUseCase {
         }
         access.delegable(role);
         repository.deleteRole(id);
+        auditRecorder.record("platform", "ROLE", role.id(), role.name(),
+                "DELETE");
         activityNotifications.record(ActivityEvent.of("ROLES",
                 "DELETE", "ROLE", role.id(), role.name(),
                 null));

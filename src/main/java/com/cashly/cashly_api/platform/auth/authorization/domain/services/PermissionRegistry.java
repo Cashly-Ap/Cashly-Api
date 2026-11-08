@@ -107,6 +107,7 @@ public final class PermissionRegistry {
         result.put(PermissionModule.DEPARTMENTS, EnumSet.of(VIEW_LIST,
                 VIEW_DETAIL, EDIT, DELETE, CREATE));
         result.put(PermissionModule.COMPANY, EnumSet.of(VIEW, EDIT));
+        result.put(PermissionModule.AUDIT_TRAIL, EnumSet.of(VIEW_LIST));
         return Collections.unmodifiableMap(result);
     }
 

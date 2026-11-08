@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreatePaymentUseCase {
 
@@ -43,6 +44,7 @@ public class CreatePaymentUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT", action = "CREATE")
     public PaymentResponse execute(CreatePaymentRequest request,
             UUID authenticatedUserId) {
         if (!customers.exists(request.customerId())) {

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class CreateDebitNoteUseCase {
@@ -38,6 +39,7 @@ public class CreateDebitNoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "DEBIT_NOTE", action = "CREATE")
     public DebitNoteResponse execute(CreateDebitNoteRequest request,
             UUID authenticatedUserId) {
         DebitNoteInvoiceGateway.InvoiceContext invoice = invoices

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway.CatalogProduct;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class StockAdjustmentUseCase {
 
@@ -45,6 +46,7 @@ public class StockAdjustmentUseCase {
     }
 
     @Transactional
+    @Audited(module = "inventory", entityType = "WAREHOUSE", action = "ADJUST")
     public StockMovementResponse execute(UUID warehouseId,
             StockAdjustmentRequest request) {
         Warehouse warehouse = warehouseRepository.findById(warehouseId)

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway.CatalogProduct;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class TransferStockUseCase {
 
@@ -53,6 +54,7 @@ public class TransferStockUseCase {
     }
 
     @Transactional
+    @Audited(module = "inventory", entityType = "WAREHOUSE", action = "TRANSFER")
     public List<StockMovementResponse> execute(UUID sourceWarehouseId,
             TransferStockRequest request) {
         Warehouse source = warehouseRepository.findById(sourceWarehouseId)

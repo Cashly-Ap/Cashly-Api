@@ -12,6 +12,7 @@ import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderId;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class DeleteOrderUseCase {
 
@@ -31,6 +32,7 @@ public class DeleteOrderUseCase {
     }
 
     @Transactional
+    @Audited(module = "sales", entityType = "ORDER", action = "DELETE")
     public void execute(UUID id) {
         Order order = orderRepository.findById(OrderId.of(id))
                 .orElseThrow(() -> new OrderNotFoundException(id));

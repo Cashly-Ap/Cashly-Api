@@ -26,6 +26,7 @@ import com.cashly.cashly_api.partners.customers.warehouse_access.application.por
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class RegisterCustomerUseCase {
 
@@ -54,6 +55,7 @@ public class RegisterCustomerUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "CUSTOMER", action = "CREATE")
     public CustomerCreateResponse execute(CreateCustomerRequest request,
             UUID grantedBy) {
         Rif rif = new Rif(request.rif());

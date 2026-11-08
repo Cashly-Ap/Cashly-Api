@@ -18,6 +18,7 @@ import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierAlia
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierCode;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierType;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class RegisterSupplierUseCase {
 
@@ -40,6 +41,7 @@ public class RegisterSupplierUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "SUPPLIER", action = "CREATE")
     public SupplierCreateResponse execute(CreateSupplierRequest request) {
         SupplierCode code = supplierCodeGenerator.generateNext();
 

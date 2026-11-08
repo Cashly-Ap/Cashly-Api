@@ -40,6 +40,7 @@ class ErpAreaStructureTest {
             Map.entry("dashboard", "analytics/dashboard"),
             Map.entry("auth", "platform/auth"),
             Map.entry("company", "platform/company"),
+            Map.entry("audit", "platform/audit"),
             Map.entry("notifications", "platform/notifications"));
     private static final Set<String> ROOT_EXCEPTIONS = Set.of("shared",
             "infrastructure", "architecture");

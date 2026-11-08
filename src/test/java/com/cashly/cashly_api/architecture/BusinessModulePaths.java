@@ -7,6 +7,7 @@ import java.util.Map;
 public final class BusinessModulePaths {
     private static final Map<String, String> MODULES = Map.ofEntries(
             Map.entry("auth", "platform/auth"),
+            Map.entry("audit", "platform/audit"),
             Map.entry("cash_register", "finance/treasury/cash_register"),
             Map.entry("categories", "catalog/categories"),
             Map.entry("credit_notes", "finance/billing/credit_notes"),

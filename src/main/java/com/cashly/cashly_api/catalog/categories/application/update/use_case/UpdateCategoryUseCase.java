@@ -14,6 +14,7 @@ import com.cashly.cashly_api.catalog.categories.domain.repository.CategoryReposi
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateCategoryUseCase {
 
@@ -33,6 +34,7 @@ public class UpdateCategoryUseCase {
     }
 
     @Transactional
+    @Audited(module = "catalog", entityType = "CATEGORY", action = "EDIT")
     public CategoryDetailResponse execute(UUID id,
             UpdateCategoryRequest request) {
         Category category = categoryRepository.findById(id)

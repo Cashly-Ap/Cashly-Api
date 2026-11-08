@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class ConfirmInvoiceUseCase {
@@ -38,6 +39,7 @@ public class ConfirmInvoiceUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "INVOICE", action = "CONFIRM")
     public InvoiceDetailResponse execute(UUID id, ConfirmInvoiceRequest request,
             UUID authenticatedUserId) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))

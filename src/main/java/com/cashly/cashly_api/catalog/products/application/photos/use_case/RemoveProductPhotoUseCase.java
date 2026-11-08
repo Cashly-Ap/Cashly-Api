@@ -10,6 +10,7 @@ import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepositor
 import com.cashly.cashly_api.catalog.products.application.ports.out.ProductFileStorageGateway;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class RemoveProductPhotoUseCase {
 
@@ -28,6 +29,7 @@ public class RemoveProductPhotoUseCase {
         this.fileStorageService = fileStorageService;
     }
 
+    @Audited(module = "catalog", entityType = "PRODUCT", action = "REMOVE_PHOTO")
     public void execute(UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CreateReturnUseCase {
 
@@ -63,6 +64,7 @@ public class CreateReturnUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "RETURN", action = "CREATE")
     public ReturnResponse execute(CreateReturnRequest request,
             UUID authenticatedUserId, String userName) {
         int year = LocalDate.now().getYear();

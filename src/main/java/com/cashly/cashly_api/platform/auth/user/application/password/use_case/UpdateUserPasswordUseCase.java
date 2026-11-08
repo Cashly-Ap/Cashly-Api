@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class UpdateUserPasswordUseCase {
@@ -45,6 +46,7 @@ public class UpdateUserPasswordUseCase {
     }
 
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
+    @Audited(module = "platform", entityType = "USER", action = "EDIT")
     public UserResponse execute(String id, UpdateUserPasswordRequest request) {
         access.authorizeAccountMutation(UUID.fromString(id), false);
         var response = change(id, request);

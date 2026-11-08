@@ -11,6 +11,7 @@ import com.cashly.cashly_api.finance.treasury.payment_methods.domain.entity.Paym
 import com.cashly.cashly_api.finance.treasury.payment_methods.domain.repository.PaymentMethodRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class CreatePaymentMethodUseCase {
@@ -28,6 +29,7 @@ public class CreatePaymentMethodUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "PAYMENT_METHOD", action = "CREATE")
     public PaymentMethodResponse execute(CreatePaymentMethodRequest request) {
         String code = generateNextCode();
 

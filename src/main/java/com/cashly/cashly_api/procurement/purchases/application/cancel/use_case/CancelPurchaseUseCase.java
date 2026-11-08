@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.InventoryGateway;
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class CancelPurchaseUseCase {
 
@@ -38,6 +39,7 @@ public class CancelPurchaseUseCase {
     }
 
     @Transactional
+    @Audited(module = "procurement", entityType = "PURCHASE", action = "CANCEL")
     public PurchaseDetailResponse execute(UUID id,
             CancelPurchaseRequest request) {
         Purchase purchase = purchaseRepository.findById(PurchaseId.of(id))

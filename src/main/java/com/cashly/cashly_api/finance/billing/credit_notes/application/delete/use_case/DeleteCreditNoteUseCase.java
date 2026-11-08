@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 @Service
 public class DeleteCreditNoteUseCase {
@@ -32,6 +33,7 @@ public class DeleteCreditNoteUseCase {
     }
 
     @Transactional
+    @Audited(module = "finance", entityType = "CREDIT_NOTE", action = "DELETE")
     public void execute(UUID noteId) {
         CreditNoteId id = new CreditNoteId(noteId);
         CreditNote creditNote = creditNoteRepository.findById(id)

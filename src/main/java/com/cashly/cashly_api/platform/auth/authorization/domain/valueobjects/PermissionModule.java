@@ -21,5 +21,6 @@ public enum PermissionModule {
     USERS,
     ROLES,
     DEPARTMENTS,
-    COMPANY
+    COMPANY,
+    AUDIT_TRAIL
 }

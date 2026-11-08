@@ -18,6 +18,7 @@ import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierAlia
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierId;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.SupplierType;
 import org.springframework.transaction.annotation.Transactional;
+import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
 
 public class UpdateSupplierUseCase {
 
@@ -37,6 +38,7 @@ public class UpdateSupplierUseCase {
     }
 
     @Transactional
+    @Audited(module = "partners", entityType = "SUPPLIER", action = "EDIT")
     public SupplierDetailResponse execute(String id,
             UpdateSupplierRequest request) {
         SupplierId supplierId = SupplierId.from(id);
