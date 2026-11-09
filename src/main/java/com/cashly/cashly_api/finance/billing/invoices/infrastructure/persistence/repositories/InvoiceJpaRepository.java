@@ -29,7 +29,7 @@ public interface InvoiceJpaRepository
             AND (:customerId IS NULL OR i.customerId = :customerId)
             AND (:statuses IS NULL OR i.status IN :statuses)
             AND (:returnStatus IS NULL OR i.returnStatus IN :returnStatus)
-            AND (:dueStatus IS NULL OR (:dueStatus = 'OVERDUE' AND i.dueDate < CURRENT_DATE AND i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')) OR (:dueStatus = 'CURRENT' AND i.dueDate >= CURRENT_DATE AND i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')))
+            AND (:dueStatus IS NULL OR (:dueStatus = 'OVERDUE' AND i.dueDate < CURRENT_DATE AND i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')) OR (:dueStatus = 'CURRENT' AND (i.dueDate IS NULL OR i.dueDate >= CURRENT_DATE) AND i.status IN ('DRAFT', 'PENDING_PAYMENT', 'PARTIALLY_PAID')))
             AND (:productId IS NULL OR EXISTS (
                 SELECT 1 FROM InvoiceLineEntity il WHERE il.invoice = i AND il.productId = :productId
             ))
