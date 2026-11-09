@@ -34,13 +34,16 @@ public class ReturnInventoryService implements ReturnInventoryApi {
 
     private void mutateStock(ReturnStockCommand command, boolean reversing) {
         for (ReturnStockCommand.Allocation allocation : command.allocations()) {
-            WarehouseStock stock = stocks
-                    .findByWarehouseIdAndProductIdForUpdate(
+            WarehouseStock stock = reversing
+                    ? stocks.findByWarehouseIdAndProductIdForUpdate(
                             allocation.warehouseId(), allocation.productId())
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Stock not found for warehouse="
-                                    + allocation.warehouseId() + " product="
-                                    + allocation.productId()));
+                            .orElseThrow(() -> new IllegalStateException(
+                                    "Stock not found for warehouse="
+                                            + allocation.warehouseId()
+                                            + " product="
+                                            + allocation.productId()))
+                    : stocks.findOrCreateByWarehouseIdAndProductIdForUpdate(
+                            allocation.warehouseId(), allocation.productId());
             int previousStock = stock.getQuantity();
             if (reversing) {
                 stock.removeStock(allocation.quantity());

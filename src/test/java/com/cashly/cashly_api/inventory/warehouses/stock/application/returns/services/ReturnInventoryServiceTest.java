@@ -50,14 +50,17 @@ class ReturnInventoryServiceTest {
     }
 
     @Test
-    void shouldFailRestoreWhenStockIsMissing() {
-        IllegalStateException failure = assertThrows(
-                IllegalStateException.class,
-                () -> inventory.restoreStock(command));
-        assertEquals("Stock not found for warehouse=" + warehouseId
-                + " product=" + productId, failure.getMessage());
-        verify(stocks, never()).save(any());
-        verifyNoInteractions(movements);
+    void shouldCreateStockWhenReturnIsDirectedToWarehouseWithoutStock() {
+        WarehouseStock created = WarehouseStock.create(warehouseId, productId);
+        when(stocks.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                productId)).thenReturn(created);
+
+        inventory.restoreStock(command);
+
+        assertEquals(2, created.getQuantity());
+        verify(stocks).save(created);
+        verifyMovement(MovementType.RETURN_ENTRY, 0, 2,
+                "Return: " + command.returnNumber());
     }
 
     @Test
@@ -112,6 +115,8 @@ class ReturnInventoryServiceTest {
         stock.addStock(quantity);
         when(stocks.findByWarehouseIdAndProductIdForUpdate(warehouseId,
                 productId)).thenReturn(Optional.of(stock));
+        when(stocks.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
+                productId)).thenReturn(stock);
         return stock;
     }
 

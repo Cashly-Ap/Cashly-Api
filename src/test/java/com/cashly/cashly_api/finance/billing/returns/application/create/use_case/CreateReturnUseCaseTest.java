@@ -114,8 +114,8 @@ class CreateReturnUseCaseTest {
                 UUID.randomUUID());
         mockStock.addStock(1000);
         when(warehouseStockRepository
-                .findByWarehouseIdAndProductIdForUpdate(any(), any()))
-                .thenReturn(Optional.of(mockStock));
+                .findOrCreateByWarehouseIdAndProductIdForUpdate(any(), any()))
+                .thenReturn(mockStock);
         when(warehouseStockRepository.save(any(WarehouseStock.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
     }
