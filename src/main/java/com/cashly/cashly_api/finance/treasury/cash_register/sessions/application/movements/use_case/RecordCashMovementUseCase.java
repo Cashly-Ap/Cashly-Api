@@ -36,7 +36,7 @@ public class RecordCashMovementUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "CASH_REGISTER", action = "RECORD_MOVEMENT")
+    @Audited(module = "finance", entityType = "CASH_MOVEMENT", action = "RECORD_MOVEMENT")
     public CashMovementResponse execute(UUID registerId,
             CashMovementRequest request, UUID userId) {
         var active = registerRepository.findActiveClosure()

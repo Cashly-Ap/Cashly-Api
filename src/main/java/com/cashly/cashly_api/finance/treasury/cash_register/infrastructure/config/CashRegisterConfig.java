@@ -16,6 +16,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.queries.use_case.GetRegisterHistoryUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.open.use_case.OpenRegisterUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.DeleteCashMovementUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.application.ports.out.CashRegisterQueryGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.repository.CashRegisterRepository;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.excel.CashRegisterExcelGenerator;
@@ -69,6 +70,13 @@ public class CashRegisterConfig {
             ActivityNotificationRecorder activityNotifications) {
         return new RecordCashMovementUseCase(registerRepository, actors,
                 movementService, activityNotifications);
+    }
+
+    @Bean
+    DeleteCashMovementUseCase deleteCashMovementUseCase(
+            CashRegisterRepository registerRepository,
+            CashRegisterQueryGateway queries) {
+        return new DeleteCashMovementUseCase(registerRepository, queries);
     }
 
     @Bean

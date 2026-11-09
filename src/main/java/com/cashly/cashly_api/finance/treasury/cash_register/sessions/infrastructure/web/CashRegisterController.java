@@ -10,6 +10,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.queries.use_case.GetRegisterHistoryUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.open.use_case.OpenRegisterUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.DeleteCashMovementUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,17 +35,20 @@ public class CashRegisterController {
     private final CloseRegisterUseCase closeRegisterUseCase;
     private final GetRegisterHistoryUseCase getRegisterHistoryUseCase;
     private final RecordCashMovementUseCase recordCashMovementUseCase;
+    private final DeleteCashMovementUseCase deleteCashMovementUseCase;
 
     public CashRegisterController(OpenRegisterUseCase openRegisterUseCase,
             GetActiveRegisterUseCase getActiveRegisterUseCase,
             CloseRegisterUseCase closeRegisterUseCase,
             GetRegisterHistoryUseCase getRegisterHistoryUseCase,
-            RecordCashMovementUseCase recordCashMovementUseCase) {
+            RecordCashMovementUseCase recordCashMovementUseCase,
+            DeleteCashMovementUseCase deleteCashMovementUseCase) {
         this.openRegisterUseCase = openRegisterUseCase;
         this.getActiveRegisterUseCase = getActiveRegisterUseCase;
         this.closeRegisterUseCase = closeRegisterUseCase;
         this.getRegisterHistoryUseCase = getRegisterHistoryUseCase;
         this.recordCashMovementUseCase = recordCashMovementUseCase;
+        this.deleteCashMovementUseCase = deleteCashMovementUseCase;
     }
 
     @PostMapping("/open")
@@ -85,6 +89,13 @@ public class CashRegisterController {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(recordCashMovementUseCase.execute(id, request, userId));
+    }
+
+    @DeleteMapping("/movements/{movementId}")
+    @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN')")
+    public ResponseEntity<Void> deleteMovement(@PathVariable UUID movementId) {
+        deleteCashMovementUseCase.execute(movementId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/history")

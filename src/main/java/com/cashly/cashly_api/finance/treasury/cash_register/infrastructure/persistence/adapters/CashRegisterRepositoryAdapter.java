@@ -323,6 +323,21 @@ public class CashRegisterRepositoryAdapter
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<CashMovement> findMovementById(UUID id) {
+        if (movementJpaRepository == null)
+            return Optional.empty();
+        return movementJpaRepository.findById(id).map(this::toMovementDomain);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMovement(UUID id) {
+        if (movementJpaRepository != null)
+            movementJpaRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public boolean existsMovement(String sourceType, UUID sourceId) {
         return sourceId != null && movementJpaRepository != null
                 && movementJpaRepository

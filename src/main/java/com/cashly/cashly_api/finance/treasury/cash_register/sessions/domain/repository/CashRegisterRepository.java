@@ -15,5 +15,7 @@ public interface CashRegisterRepository {
     Optional<CashRegister> findActiveClosure();
     CashMovement saveMovement(CashMovement movement);
     List<CashMovement> findMovements(RegisterId registerId);
+    Optional<CashMovement> findMovementById(UUID id);
+    void deleteMovement(UUID id);
     boolean existsMovement(String sourceType, UUID sourceId);
 }
