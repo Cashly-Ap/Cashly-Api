@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,8 +17,8 @@ public interface QuoteJpaRepository
         extends
             JpaRepository<QuoteJpaEntity, UUID> {
 
-    default List<QuoteJpaEntity> findAllWithFilters(LocalDateTime dateFrom,
-            LocalDateTime dateTo, UUID customerId, String status,
+    default List<QuoteJpaEntity> findAllWithFilters(Instant dateFrom,
+            Instant dateTo, UUID customerId, String status,
             UUID productId, UUID categoryId) {
         return findAllWithFilters(dateFrom, dateTo, customerId, status,
                 productId, categoryId, java.util.Set.of(new UUID(0, 0)));
@@ -65,8 +65,8 @@ public interface QuoteJpaRepository
             ))
             """)
     List<QuoteJpaEntity> findAllWithFilters(
-            @Param("dateFrom") LocalDateTime dateFrom,
-            @Param("dateTo") LocalDateTime dateTo,
+            @Param("dateFrom") Instant dateFrom,
+            @Param("dateTo") Instant dateTo,
             @Param("customerId") UUID customerId,
             @Param("status") String status, @Param("productId") UUID productId,
             @Param("categoryId") UUID categoryId,
@@ -90,8 +90,8 @@ public interface QuoteJpaRepository
             ))
             """)
     List<QuoteJpaEntity> findAllEligibleForDeletion(
-            @Param("dateFrom") LocalDateTime dateFrom,
-            @Param("dateTo") LocalDateTime dateTo,
+            @Param("dateFrom") Instant dateFrom,
+            @Param("dateTo") Instant dateTo,
             @Param("customerId") UUID customerId,
             @Param("status") String status,
             @Param("productId") UUID productId,

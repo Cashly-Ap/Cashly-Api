@@ -6,6 +6,7 @@ import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
 import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceNumber;
+import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceReturnStatus;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.PaymentType;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InvoiceNoteDetailsGateway;
@@ -218,13 +219,86 @@ class GetInvoicesUseCaseTest {
 
     private Invoice buildInvoice(UUID id, UUID customerId,
             InvoiceStatus status) {
+        return buildInvoice(id, customerId, status, PaymentType.CASH, null);
+    }
+
+    private Invoice buildInvoice(UUID id, UUID customerId,
+            InvoiceStatus status, PaymentType paymentType,
+            InvoiceReturnStatus returnStatus) {
         InvoiceLine line = InvoiceLine.create(UUID.randomUUID(), "Product A",
                 "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
         return Invoice.reconstitute(InvoiceId.of(id), InvoiceNumber.of(2026, 1),
                 customerId, "Customer Name", "J-12345678-9", UUID.randomUUID(),
-                "User Name", null, null, status, PaymentType.CASH, null,
-                BigDecimal.ZERO, null, null, null, List.of(line),
+                "User Name", null, null, status, paymentType, null,
+                BigDecimal.ZERO, returnStatus, null, null, List.of(line),
                 LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    @Test
+    void should_FilterByPaymentType_When_PaymentTypeProvided() {
+        Invoice cash = buildInvoice(UUID.randomUUID(), UUID.randomUUID(),
+                InvoiceStatus.DRAFT, PaymentType.CASH, null);
+        Invoice credit = buildInvoice(UUID.randomUUID(), UUID.randomUUID(),
+                InvoiceStatus.DRAFT, PaymentType.CREDIT, null);
+
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(),
+                org.mockito.ArgumentMatchers.<String>anyList(),
+                org.mockito.ArgumentMatchers.nullable(List.class),
+                org.mockito.ArgumentMatchers.isNull(String.class), any(), any(),
+                any(), any())).thenReturn(List.of(cash, credit));
+        when(paymentTotals.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(noteDetails.sumDebitNotes(any())).thenReturn(Map.of());
+        when(noteDetails.sumCreditNotes(any())).thenReturn(Map.of());
+
+        List<InvoiceListResponse> result = getInvoicesUseCase.execute(null,
+                null, null, null, null, null, null, "CASH", null, null,
+                "createdAt", "desc");
+
+        assertEquals(1, result.size());
+        assertEquals("CASH", result.getFirst().paymentType());
+    }
+
+    @Test
+    void should_IncludeInvoicesWithoutReturn_When_NoneReturnStatusRequested() {
+        Invoice noReturn = buildInvoice(UUID.randomUUID(), UUID.randomUUID(),
+                InvoiceStatus.DRAFT, PaymentType.CASH, null);
+        Invoice partial = buildInvoice(UUID.randomUUID(), UUID.randomUUID(),
+                InvoiceStatus.DRAFT, PaymentType.CASH,
+                InvoiceReturnStatus.PARTIAL);
+
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(),
+                org.mockito.ArgumentMatchers.<String>anyList(),
+                org.mockito.ArgumentMatchers.nullable(List.class),
+                org.mockito.ArgumentMatchers.isNull(String.class), any(), any(),
+                any(), any())).thenReturn(List.of(noReturn, partial));
+        when(paymentTotals.sumByInvoiceIds(any())).thenReturn(Map.of());
+        when(noteDetails.sumDebitNotes(any())).thenReturn(Map.of());
+        when(noteDetails.sumCreditNotes(any())).thenReturn(Map.of());
+
+        List<InvoiceListResponse> result = getInvoicesUseCase.execute(null,
+                null, null, null, null, List.of("NONE"), null, null, null,
+                null, "createdAt", "desc");
+
+        assertEquals(1, result.size());
+        assertNull(result.getFirst().returnStatus());
+    }
+
+    @Test
+    void should_ExpandAllStatuses_When_AllRequested() {
+        when(invoiceRepository.findAllWithFilters(any(), any(), any(),
+                org.mockito.ArgumentMatchers.<String>anyList(),
+                org.mockito.ArgumentMatchers.nullable(List.class),
+                org.mockito.ArgumentMatchers.isNull(String.class), any(), any(),
+                any(), any())).thenReturn(List.of());
+
+        getInvoicesUseCase.execute(null, null, null, List.of("ALL"), null,
+                null, null, null, null, null, "createdAt", "desc");
+
+        verify(invoiceRepository).findAllWithFilters(null, null, null,
+                java.util.Arrays.stream(InvoiceStatus.values()).map(Enum::name)
+                        .toList(),
+                (List<String>) null, (String) null, null, null, "createdAt",
+                "desc");
     }
     @Test
     void shouldQueryOnlyCancellableInvoicesRegardlessOfAllStatusRequest() {

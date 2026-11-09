@@ -20,7 +20,7 @@ import org.mockito.ArgumentCaptor;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -207,6 +207,24 @@ class JpaQuoteRepositoryAdapterTest {
             assertTrue(result.isEmpty());
             verify(jpaRepository).findAllWithFilters(null, null, null, null,
                     null, null);
+        }
+
+        @Test
+        void should_ConvertDateRangeToInstant_When_DatesAreProvided() {
+            LocalDate dateFrom = LocalDate.of(2026, 1, 1);
+            LocalDate dateTo = LocalDate.of(2026, 1, 31);
+
+            when(jpaRepository.findAllWithFilters(any(), any(), any(), any(),
+                    any(), any())).thenReturn(List.of());
+
+            adapter.findAllWithFilters(dateFrom, dateTo, null, null, null,
+                    null, null, null);
+
+            verify(jpaRepository).findAllWithFilters(
+                    dateFrom.atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    dateTo.atTime(23, 59, 59)
+                            .atZone(ZoneId.systemDefault()).toInstant(),
+                    null, null, null, null);
         }
 
         @Test

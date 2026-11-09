@@ -11,8 +11,9 @@ import com.cashly.cashly_api.sales.quotes.domain.repository.QuoteRepository;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -78,8 +79,8 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
             UUID customerId, String status, UUID productId, UUID categoryId,
             java.util.Set<UUID> currentCategoryProductIds, String orderBy,
             String orderDir) {
-        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
-        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        Instant from = startOfDay(dateFrom);
+        Instant to = endOfDay(dateTo);
 
         List<QuoteJpaEntity> entities = currentCategoryProductIds.isEmpty()
                 ? jpaRepository.findAllWithFilters(from, to, customerId, status,
@@ -114,8 +115,8 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
             LocalDate dateTo, UUID customerId, String status, UUID productId,
             UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
             String orderBy, String orderDir) {
-        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
-        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        Instant from = startOfDay(dateFrom);
+        Instant to = endOfDay(dateTo);
         var entities = jpaRepository.findAllEligibleForDeletion(from, to,
                 customerId, status, productId, categoryId,
                 currentCategoryProductIds.isEmpty()
@@ -132,6 +133,19 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepository {
         };
         if (desc) comparator = comparator.reversed();
         return entities.stream().sorted(comparator).map(mapper::toDomain).toList();
+    }
+
+    private static Instant startOfDay(LocalDate date) {
+        return date == null
+                ? null
+                : date.atStartOfDay(ZoneId.systemDefault()).toInstant();
+    }
+
+    private static Instant endOfDay(LocalDate date) {
+        return date == null
+                ? null
+                : date.atTime(23, 59, 59)
+                        .atZone(ZoneId.systemDefault()).toInstant();
     }
 
     @Override

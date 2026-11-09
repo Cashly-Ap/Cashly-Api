@@ -82,16 +82,17 @@ public class InvoiceController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) List<String> returnStatus,
             @RequestParam(required = false) String dueStatus,
+            @RequestParam(required = false) String paymentType,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
         List<InvoiceListResponse> invoices = action == null
                 ? getInvoicesUseCase.execute(fromDate, toDate, customerId,
-                        status, search, returnStatus, dueStatus, productId,
-                        categoryId, orderBy, orderDir)
+                        status, search, returnStatus, dueStatus, paymentType,
+                        productId, categoryId, orderBy, orderDir)
                 : getInvoicesUseCase.execute(fromDate, toDate, customerId,
-                        status, search, returnStatus, dueStatus, productId,
-                        categoryId, orderBy, orderDir, action);
+                        status, search, returnStatus, dueStatus, paymentType,
+                        productId, categoryId, orderBy, orderDir, action);
         return ResponseEntity.ok(invoices);
     }
 
@@ -101,7 +102,8 @@ public class InvoiceController {
             List<String> returnStatus, String dueStatus, String orderBy,
             String orderDir) {
         return getAll(fromDate, toDate, customerId, search, status, productId,
-                categoryId, returnStatus, dueStatus, orderBy, orderDir, null);
+                categoryId, returnStatus, dueStatus, null, orderBy, orderDir,
+                null);
     }
 
     public ResponseEntity<List<InvoiceListResponse>> getAll(LocalDate fromDate,
@@ -109,7 +111,7 @@ public class InvoiceController {
             UUID productId, UUID categoryId, List<String> returnStatus,
             String orderBy, String orderDir) {
         return getAll(fromDate, toDate, customerId, null, status, productId,
-                categoryId, returnStatus, null, orderBy, orderDir);
+                categoryId, returnStatus, null, null, orderBy, orderDir, null);
     }
 
     @GetMapping("/{id}")

@@ -105,8 +105,8 @@ class InvoiceControllerTest {
                 UUID.randomUUID(), "ORD-00001", LocalDateTime.now(), null);
 
         when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any()))
-                .thenReturn(List.of(invoice));
+                any(), any(), nullable(String.class), any(), any(), anyString(),
+                anyString())).thenReturn(List.of(invoice));
 
         ResponseEntity<List<InvoiceListResponse>> result = invoiceController
                 .getAll(null, null, null, null, null, null, null, "createdAt",
@@ -115,15 +115,15 @@ class InvoiceControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
         verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, null, null, "createdAt", "desc");
+                null, null, null, null, "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no invoices")
     void should_return_empty_list_when_no_invoices() {
         when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any()))
-                .thenReturn(List.of());
+                any(), any(), nullable(String.class), any(), any(), anyString(),
+                anyString())).thenReturn(List.of());
 
         ResponseEntity<List<InvoiceListResponse>> result = invoiceController
                 .getAll(null, null, null, null, null, null, null, "createdAt",
@@ -132,7 +132,7 @@ class InvoiceControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
         verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, null, null, "createdAt", "desc");
+                null, null, null, null, "createdAt", "desc");
     }
 
     @Test
@@ -281,6 +281,21 @@ class InvoiceControllerTest {
     }
 
     @Test
+    void shouldPassPaymentTypeFilterToListQuery() throws Exception {
+        org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(invoiceController).build()
+                .perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/invoices")
+                                .param("paymentType", "CASH"))
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                                .status().isOk());
+        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
+                null, "CASH", null, null, "createdAt", "desc");
+    }
+
+    @Test
     void shouldPassActionFilterToListQuery() throws Exception {
         org.springframework.test.web.servlet.setup.MockMvcBuilders
                 .standaloneSetup(invoiceController).build()
@@ -291,7 +306,7 @@ class InvoiceControllerTest {
                         org.springframework.test.web.servlet.result.MockMvcResultMatchers
                                 .status().isOk());
         verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, null, null, "createdAt", "desc",
+                null, null, null, null, "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
     }
 
