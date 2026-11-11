@@ -8,6 +8,9 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.queries.use_case.GetRegisterHistoryUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.open.use_case.OpenRegisterUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.CancelCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.request.CancelCashMovementRequest;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.response.CashMovementResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +50,9 @@ class CashRegisterControllerTest {
 
     @Mock
     private RecordCashMovementUseCase recordCashMovementUseCase;
+
+    @Mock
+    private CancelCashMovementUseCase cancelCashMovementUseCase;
 
     @Mock
     private Authentication authentication;
@@ -119,23 +125,46 @@ class CashRegisterControllerTest {
     }
 
     @Test
+    @DisplayName("should cancel movement and return 200")
+    void should_cancel_movement_and_return_200() {
+        when(authentication.getPrincipal())
+                .thenReturn(authenticatedUserId.toString());
+        UUID movementId = UUID.randomUUID();
+        CashMovementResponse response = mock(CashMovementResponse.class);
+        when(cancelCashMovementUseCase.execute(eq(movementId),
+                any(CancelCashMovementRequest.class),
+                eq(authenticatedUserId))).thenReturn(response);
+
+        ResponseEntity<CashMovementResponse> result = cashRegisterController
+                .cancelMovement(movementId,
+                        new CancelCashMovementRequest("Duplicado"),
+                        authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertSame(response, result.getBody());
+        verify(cancelCashMovementUseCase).execute(eq(movementId),
+                any(CancelCashMovementRequest.class),
+                eq(authenticatedUserId));
+    }
+
+    @Test
     @DisplayName("should get history and return 200")
     void should_get_history_and_return_200() {
         CashRegisterResponse response = mock(CashRegisterResponse.class);
         Page<CashRegisterResponse> page = new PageImpl<>(List.of(response));
 
         when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(),
-                any(), any(), anyBoolean()))
+                any(), any(), any(), anyBoolean()))
                 .thenReturn(PageResponseMapper.from(page));
 
         ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController
-                .getHistory(0, 20, "closureDate,desc", null, null, true);
+                .getHistory(0, 20, "closureDate,desc", null, null, null, true);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().getContent().size());
         verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc",
-                null, null, true);
+                null, null, null, true);
     }
 
     @Test
@@ -144,26 +173,27 @@ class CashRegisterControllerTest {
         Page<CashRegisterResponse> emptyPage = Page.empty();
 
         when(getRegisterHistoryUseCase.execute(anyInt(), anyInt(), anyString(),
-                any(), any(), anyBoolean()))
+                any(), any(), any(), anyBoolean()))
                 .thenReturn(PageResponseMapper.from(emptyPage));
 
         ResponseEntity<Page<CashRegisterResponse>> result = cashRegisterController
-                .getHistory(0, 20, "closureDate,desc", null, null, false);
+                .getHistory(0, 20, "closureDate,desc", null, null, null, false);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
         verify(getRegisterHistoryUseCase).execute(0, 20, "closureDate,desc",
-                null, null, false);
+                null, null, null, false);
     }
     @Test
     void should_preserve_web_history_page_and_sort_metadata() {
         var response = mock(CashRegisterResponse.class);
         when(getRegisterHistoryUseCase.execute(1, 5, "openedAt,desc", null,
-                null, false))
+                null, null, false))
                 .thenReturn(new com.cashly.cashly_api.shared.dto.PageResponse<>(
                         List.of(response), 12L, 3, 5, 1, false, false, false));
         var page = cashRegisterController
-                .getHistory(1, 5, "openedAt,desc", null, null, false).getBody();
+                .getHistory(1, 5, "openedAt,desc", null, null, null, false)
+                .getBody();
         assertNotNull(page);
         assertEquals(1, page.getNumber());
         assertEquals(5, page.getSize());

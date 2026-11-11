@@ -58,6 +58,29 @@ class CashRegisterRepositoryAdapterSessionTotalsTest {
         assertEquals(new BigDecimal("5.00"), totals.totalExpenses());
     }
 
+    @Test
+    void should_ExcludeCancelledMovementsFromTotals() {
+        RegisterId registerId = RegisterId.generate();
+        UUID paymentMethodId = UUID.randomUUID();
+        CashRegisterRepositoryAdapter adapter = spy(
+                new CashRegisterRepositoryAdapter(
+                        mock(CashRegisterJpaRepository.class),
+                        mock(EntityManager.class),
+                        mock(CashMovementJpaRepository.class)));
+        CashMovement cancelled = movement(registerId,
+                CashMovementDirection.OUT, CashMovementType.EXPENSE, "30.00",
+                paymentMethodId);
+        cancelled.cancel("Duplicado", UUID.randomUUID(), "Supervisor");
+        doReturn(List.of(
+                movement(registerId, CashMovementDirection.OUT,
+                        CashMovementType.EXPENSE, "5.00", paymentMethodId),
+                cancelled)).when(adapter).findMovements(registerId);
+
+        var totals = adapter.findSessionTotals(registerId);
+
+        assertEquals(new BigDecimal("5.00"), totals.totalExpenses());
+    }
+
     private CashMovement movement(RegisterId registerId,
             CashMovementDirection direction, CashMovementType type,
             String amount, UUID paymentMethodId) {

@@ -62,4 +62,20 @@ public class CashMovementJpaEntity {
 
     @Column(name = "occurred_at", nullable = false)
     private LocalDateTime occurredAt;
+
+    @Column(nullable = false)
+    private boolean cancelled;
+
+    @Column(name = "cancellation_reason", length = 500)
+    private String cancellationReason;
+
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
+    @Column(name = "cancelled_by", columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private UUID cancelledBy;
+
+    @Column(name = "cancelled_by_name", length = 200)
+    private String cancelledByName;
 }

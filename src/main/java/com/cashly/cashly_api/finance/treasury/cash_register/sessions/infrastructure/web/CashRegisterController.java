@@ -4,6 +4,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.close.request.CloseRegisterRequest;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.open.request.OpenRegisterRequest;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.request.CashMovementRequest;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.request.CancelCashMovementRequest;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.response.CashMovementResponse;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.close.use_case.CloseRegisterUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.queries.use_case.GetActiveRegisterUseCase;
@@ -11,6 +12,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.open.use_case.OpenRegisterUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.DeleteCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.CancelCashMovementUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,19 +38,22 @@ public class CashRegisterController {
     private final GetRegisterHistoryUseCase getRegisterHistoryUseCase;
     private final RecordCashMovementUseCase recordCashMovementUseCase;
     private final DeleteCashMovementUseCase deleteCashMovementUseCase;
+    private final CancelCashMovementUseCase cancelCashMovementUseCase;
 
     public CashRegisterController(OpenRegisterUseCase openRegisterUseCase,
             GetActiveRegisterUseCase getActiveRegisterUseCase,
             CloseRegisterUseCase closeRegisterUseCase,
             GetRegisterHistoryUseCase getRegisterHistoryUseCase,
             RecordCashMovementUseCase recordCashMovementUseCase,
-            DeleteCashMovementUseCase deleteCashMovementUseCase) {
+            DeleteCashMovementUseCase deleteCashMovementUseCase,
+            CancelCashMovementUseCase cancelCashMovementUseCase) {
         this.openRegisterUseCase = openRegisterUseCase;
         this.getActiveRegisterUseCase = getActiveRegisterUseCase;
         this.closeRegisterUseCase = closeRegisterUseCase;
         this.getRegisterHistoryUseCase = getRegisterHistoryUseCase;
         this.recordCashMovementUseCase = recordCashMovementUseCase;
         this.deleteCashMovementUseCase = deleteCashMovementUseCase;
+        this.cancelCashMovementUseCase = cancelCashMovementUseCase;
     }
 
     @PostMapping("/open")
@@ -98,6 +103,17 @@ public class CashRegisterController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/movements/{movementId}/cancel")
+    @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN')")
+    public ResponseEntity<CashMovementResponse> cancelMovement(
+            @PathVariable UUID movementId,
+            @Valid @RequestBody CancelCashMovementRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        return ResponseEntity.ok(
+                cancelCashMovementUseCase.execute(movementId, request, userId));
+    }
+
     @GetMapping("/history")
     @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_CASH_HISTORY')")
     public ResponseEntity<Page<CashRegisterResponse>> getHistory(
@@ -106,9 +122,10 @@ public class CashRegisterController {
             @RequestParam(defaultValue = "closureDate,desc") String sort,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo,
+            @RequestParam(required = false) UUID registerId,
             @RequestParam(defaultValue = "false") boolean detailed) {
         var history = getRegisterHistoryUseCase.execute(page, size, sort,
-                dateFrom, dateTo, detailed);
+                dateFrom, dateTo, registerId, detailed);
         String[] sortParts = sort == null || sort.isBlank()
                 ? new String[0]
                 : sort.split(",");

@@ -65,12 +65,20 @@ Commercial concepts calculate net billing without changing the expected physical
 | `GET` | `/api/cash-register/active` | Returns the open session or `404` without creating one |
 | `POST` | `/api/cash-register/open` | Opens a session with `openedByName` and `openingBalance` |
 | `POST` | `/api/cash-register/{id}/close` | Closes with `closedByName`, `declaredBalance`, and notes |
-| `POST` | `/api/cash-register/{id}/movements` | Records a manual monetary movement |
-| `GET` | `/api/cash-register/history` | Paged history; `detailed=true` includes ledger movements |
+| `POST` | `/api/cash-register/{id}/movements` | Records a manual monetary movement; expenses may target an open or closed session and accept an optional `occurredAt` |
+| `POST` | `/api/cash-register/movements/{movementId}/cancel` | Cancels a manual expense belonging to a closed session with a mandatory `reason` |
+| `GET` | `/api/cash-register/history` | Paged history; `detailed=true` includes ledger movements; optional `registerId` filters a single session |
+| `GET` | `/api/cash-register/expenses` | Paged expense-only listing filtered by `occurredAt`, register, payment method and text search |
 | `GET` | `/api/cash-register/{id}/report` | Session report with `format=PDF|EXCEL` and `type=SIMPLE|DETAILED` |
 | `GET` | `/api/cash-register/reports` | Date-range report with PDF/Excel, simple/detailed/grouped modes and commercial filters |
 
 All endpoints require an administrative or operator role and `MODULE_FINANCES` authority.
+
+## Expenses
+
+Manual `EXPENSE` movements can be assigned to any existing session, open or closed. The optional `occurredAt` field sets the expense date and time; when omitted the server uses the current time. Adding an expense to a closed session recalculates its expected closing balance and difference from the stored totals plus the new movement, preserving legacy aggregate totals.
+
+Deleting a manual expense is only allowed while its session is `OPEN`. Once the session is closed, the expense must be cancelled through the cancellation endpoint with a mandatory reason. Cancelled expenses keep their audit data (`cancellationReason`, `cancelledAt`, `cancelledBy`, `cancelledByName`), remain visible in history, and are excluded from monetary totals and reports.
 
 ## Persistence
 

@@ -10,10 +10,11 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valu
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public interface CashRegisterQueryGateway {
     PageResponse<CashRegister> findAll(int page, int size, String sort,
-            LocalDate dateFrom, LocalDate dateTo);
+            LocalDate dateFrom, LocalDate dateTo, UUID registerId);
     DailyTotals findDailyTotals(LocalDate closureDate);
     DailyTotals findSessionTotals(RegisterId registerId);
     DailyTotals findRangeTotals(LocalDate dateFrom, LocalDate dateTo);

@@ -50,7 +50,7 @@ class GetRegisterHistoryUseCaseUnitTest {
         var page = new PageImpl<>(List.of(cashRegister));
 
         when(queries.findAll(eq(0), eq(20), eq("closureDate,desc"), isNull(),
-                isNull())).thenReturn(PageResponseMapper.from(page));
+                isNull(), isNull())).thenReturn(PageResponseMapper.from(page));
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(
                 CashRegisterMapper.class)) {
@@ -63,7 +63,8 @@ class GetRegisterHistoryUseCaseUnitTest {
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             assertEquals(expectedResponse, result.content().getFirst());
-            verify(queries).findAll(0, 20, "closureDate,desc", null, null);
+            verify(queries).findAll(0, 20, "closureDate,desc", null, null,
+                    null);
         }
     }
 
@@ -75,7 +76,7 @@ class GetRegisterHistoryUseCaseUnitTest {
         var dateTo = LocalDate.of(2025, 12, 31);
 
         when(queries.findAll(eq(0), eq(10), eq("closureDate,desc"),
-                eq(dateFrom), eq(dateTo)))
+                eq(dateFrom), eq(dateTo), isNull()))
                 .thenReturn(PageResponseMapper.from(page));
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(
@@ -90,7 +91,7 @@ class GetRegisterHistoryUseCaseUnitTest {
             assertNotNull(result);
             assertEquals(1, result.totalElements());
             verify(queries).findAll(0, 10, "closureDate,desc", dateFrom,
-                    dateTo);
+                    dateTo, null);
         }
     }
 
@@ -101,7 +102,7 @@ class GetRegisterHistoryUseCaseUnitTest {
         var dateFrom = LocalDate.of(2025, 6, 1);
 
         when(queries.findAll(eq(0), eq(20), anyString(), eq(dateFrom),
-                isNull())).thenReturn(PageResponseMapper.from(page));
+                isNull(), isNull())).thenReturn(PageResponseMapper.from(page));
 
         try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(
                 CashRegisterMapper.class)) {
@@ -114,7 +115,33 @@ class GetRegisterHistoryUseCaseUnitTest {
 
             assertNotNull(result);
             assertEquals(1, result.totalElements());
-            verify(queries).findAll(0, 20, "closureDate,desc", dateFrom, null);
+            verify(queries).findAll(0, 20, "closureDate,desc", dateFrom, null,
+                    null);
+        }
+    }
+
+    @Test
+    void should_filter_by_register_id() {
+        var cashRegister = mock(CashRegister.class);
+        var page = new PageImpl<>(List.of(cashRegister));
+        var registerId = java.util.UUID.randomUUID();
+
+        when(queries.findAll(0, 20, "closureDate,desc", null, null, registerId))
+                .thenReturn(PageResponseMapper.from(page));
+
+        try (MockedStatic<CashRegisterMapper> mockedMapper = mockStatic(
+                CashRegisterMapper.class)) {
+            var expectedResponse = mock(CashRegisterResponse.class);
+            mockedMapper.when(() -> CashRegisterMapper.toResponse(cashRegister))
+                    .thenReturn(expectedResponse);
+
+            var result = useCase.execute(0, 20, "closureDate,desc", null, null,
+                    registerId, false);
+
+            assertNotNull(result);
+            assertEquals(1, result.totalElements());
+            verify(queries).findAll(0, 20, "closureDate,desc", null, null,
+                    registerId);
         }
     }
 
@@ -123,8 +150,8 @@ class GetRegisterHistoryUseCaseUnitTest {
         org.springframework.data.domain.Page<CashRegister> emptyPage = new PageImpl<>(
                 List.<CashRegister>of());
 
-        when(queries.findAll(eq(0), eq(20), anyString(), isNull(), isNull()))
-                .thenReturn(PageResponseMapper.from(emptyPage));
+        when(queries.findAll(eq(0), eq(20), anyString(), isNull(), isNull(),
+                isNull())).thenReturn(PageResponseMapper.from(emptyPage));
 
         var result = useCase.execute(0, 20, "closureDate,desc", null, null);
 
@@ -139,7 +166,7 @@ class GetRegisterHistoryUseCaseUnitTest {
         var movements = List.of(mock(CashMovement.class));
         var page = new PageImpl<>(List.of(cashRegister));
         var totals = mock(DailyTotals.class);
-        when(queries.findAll(0, 20, "openedAt,desc", null, null))
+        when(queries.findAll(0, 20, "openedAt,desc", null, null, null))
                 .thenReturn(PageResponseMapper.from(page));
         when(queries.findSessionTotals(cashRegister.getId()))
                 .thenReturn(totals);
@@ -168,7 +195,7 @@ class GetRegisterHistoryUseCaseUnitTest {
         var movements = List.of(mock(CashMovement.class));
         var page = new PageImpl<>(List.of(cashRegister));
         var totals = mock(DailyTotals.class);
-        when(queries.findAll(0, 20, "openedAt,desc", null, null))
+        when(queries.findAll(0, 20, "openedAt,desc", null, null, null))
                 .thenReturn(PageResponseMapper.from(page));
         when(queries.findSessionTotals(cashRegister.getId()))
                 .thenReturn(totals);
@@ -194,7 +221,7 @@ class GetRegisterHistoryUseCaseUnitTest {
     void should_preserve_stored_totals_for_legacy_session_without_movements() {
         var cashRegister = mock(CashRegister.class);
         var page = new PageImpl<>(List.of(cashRegister));
-        when(queries.findAll(0, 20, "openedAt,desc", null, null))
+        when(queries.findAll(0, 20, "openedAt,desc", null, null, null))
                 .thenReturn(PageResponseMapper.from(page));
         when(repository.findMovements(cashRegister.getId()))
                 .thenReturn(List.of());
@@ -218,7 +245,7 @@ class GetRegisterHistoryUseCaseUnitTest {
         var response = mock(CashRegisterResponse.class);
         var page = new PageResponse<>(List.of(cashRegister), 12L, 3, 5, 1,
                 false, false, false);
-        when(queries.findAll(1, 5, "openedAt,desc", null, null))
+        when(queries.findAll(1, 5, "openedAt,desc", null, null, null))
                 .thenReturn(page);
         when(repository.findMovements(cashRegister.getId()))
                 .thenReturn(List.of());

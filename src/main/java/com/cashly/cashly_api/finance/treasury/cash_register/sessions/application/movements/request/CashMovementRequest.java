@@ -7,9 +7,17 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record CashMovementRequest(@NotNull CashMovementDirection direction,
         @NotNull CashMovementType type, @NotNull @Positive BigDecimal amount,
-        UUID paymentMethodId, @NotBlank String description) {
+        UUID paymentMethodId, @NotBlank String description,
+        LocalDateTime occurredAt) {
+
+    public CashMovementRequest(CashMovementDirection direction,
+            CashMovementType type, BigDecimal amount, UUID paymentMethodId,
+            String description) {
+        this(direction, type, amount, paymentMethodId, description, null);
+    }
 }

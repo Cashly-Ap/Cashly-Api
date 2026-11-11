@@ -17,6 +17,9 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.open.use_case.OpenRegisterUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.RecordCashMovementUseCase;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.DeleteCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.movements.use_case.CancelCashMovementUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.expenses.use_case.ListExpensesUseCase;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.out.ExpenseQueryGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.application.ports.out.CashRegisterQueryGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.repository.CashRegisterRepository;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.excel.CashRegisterExcelGenerator;
@@ -67,9 +70,10 @@ public class CashRegisterConfig {
             CashRegisterRepository registerRepository,
             CashRegisterActorGateway actors,
             CashMovementService movementService,
+            CashRegisterQueryGateway queries,
             ActivityNotificationRecorder activityNotifications) {
         return new RecordCashMovementUseCase(registerRepository, actors,
-                movementService, activityNotifications);
+                movementService, queries, activityNotifications);
     }
 
     @Bean
@@ -77,6 +81,18 @@ public class CashRegisterConfig {
             CashRegisterRepository registerRepository,
             CashRegisterQueryGateway queries) {
         return new DeleteCashMovementUseCase(registerRepository, queries);
+    }
+
+    @Bean
+    CancelCashMovementUseCase cancelCashMovementUseCase(
+            CashRegisterRepository registerRepository,
+            CashRegisterActorGateway actors) {
+        return new CancelCashMovementUseCase(registerRepository, actors);
+    }
+
+    @Bean
+    ListExpensesUseCase listExpensesUseCase(ExpenseQueryGateway gateway) {
+        return new ListExpensesUseCase(gateway);
     }
 
     @Bean

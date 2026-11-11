@@ -101,9 +101,9 @@ public class CashRegisterRepositoryAdapter
     @Override
     @Transactional(readOnly = true)
     public PageResponse<CashRegister> findAll(int page, int size, String sort,
-            LocalDate dateFrom, LocalDate dateTo) {
-        Specification<CashRegisterJpaEntity> spec = withDateBetween(dateFrom,
-                dateTo);
+            LocalDate dateFrom, LocalDate dateTo, UUID registerId) {
+        Specification<CashRegisterJpaEntity> spec = withFilters(dateFrom,
+                dateTo, registerId);
         var pageable = PageRequest.of(page, size, parseSort(sort));
         var entityPage = jpaRepository.findAll(spec, pageable);
         var domains = entityPage.getContent().stream().map(this::toDomain)
@@ -112,17 +112,26 @@ public class CashRegisterRepositoryAdapter
                 entityPage.getTotalElements()));
     }
 
-    private Specification<CashRegisterJpaEntity> withDateBetween(
-            LocalDate dateFrom, LocalDate dateTo) {
+    private Specification<CashRegisterJpaEntity> withFilters(
+            LocalDate dateFrom, LocalDate dateTo, UUID registerId) {
         return (root, query, cb) -> {
-            if (dateFrom == null && dateTo == null)
-                return null;
-            var path = root.<LocalDate>get("closureDate");
-            if (dateFrom != null && dateTo != null)
-                return cb.between(path, dateFrom, dateTo);
-            if (dateFrom != null)
-                return cb.greaterThanOrEqualTo(path, dateFrom);
-            return cb.lessThanOrEqualTo(path, dateTo);
+            var predicates = new ArrayList<Predicate>();
+            if (registerId != null) {
+                predicates.add(cb.equal(root.get("id"), registerId));
+            }
+            if (dateFrom != null || dateTo != null) {
+                var path = root.<LocalDate>get("closureDate");
+                if (dateFrom != null && dateTo != null) {
+                    predicates.add(cb.between(path, dateFrom, dateTo));
+                } else if (dateFrom != null) {
+                    predicates.add(cb.greaterThanOrEqualTo(path, dateFrom));
+                } else {
+                    predicates.add(cb.lessThanOrEqualTo(path, dateTo));
+                }
+            }
+            return predicates.isEmpty()
+                    ? null
+                    : cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 
@@ -225,7 +234,8 @@ public class CashRegisterRepositoryAdapter
     @Override
     @Transactional(readOnly = true)
     public DailyTotals findSessionTotals(RegisterId registerId) {
-        List<CashMovement> movements = findMovements(registerId);
+        List<CashMovement> movements = findMovements(registerId).stream()
+                .filter(movement -> !movement.isCancelled()).toList();
         BigDecimal payments = sum(movements, CashMovementDirection.IN,
                 CashMovementType.PAYMENT);
         BigDecimal advances = sum(movements, CashMovementDirection.IN,
@@ -992,6 +1002,11 @@ public class CashRegisterRepositoryAdapter
         entity.setCreatedBy(movement.getCreatedBy());
         entity.setCreatedByName(movement.getCreatedByName());
         entity.setOccurredAt(movement.getOccurredAt());
+        entity.setCancelled(movement.isCancelled());
+        entity.setCancellationReason(movement.getCancellationReason());
+        entity.setCancelledAt(movement.getCancelledAt());
+        entity.setCancelledBy(movement.getCancelledBy());
+        entity.setCancelledByName(movement.getCancelledByName());
         return entity;
     }
 
@@ -1003,7 +1018,10 @@ public class CashRegisterRepositoryAdapter
                 entity.getPaymentMethodId(), entity.getPaymentMethodName(),
                 entity.getDescription(), entity.getSourceType(),
                 entity.getSourceId(), entity.getCreatedBy(),
-                entity.getCreatedByName(), entity.getOccurredAt());
+                entity.getCreatedByName(), entity.getOccurredAt(),
+                entity.isCancelled(), entity.getCancellationReason(),
+                entity.getCancelledAt(), entity.getCancelledBy(),
+                entity.getCancelledByName());
     }
 
     private BigDecimal queryDecimal(String sql, LocalDate date) {

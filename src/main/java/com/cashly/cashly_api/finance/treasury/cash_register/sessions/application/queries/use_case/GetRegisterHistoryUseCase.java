@@ -8,6 +8,7 @@ import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public class GetRegisterHistoryUseCase {
 
@@ -28,7 +29,14 @@ public class GetRegisterHistoryUseCase {
     public PageResponse<CashRegisterResponse> execute(int page, int size,
             String sort, LocalDate dateFrom, LocalDate dateTo,
             boolean detailed) {
-        var closurePage = queries.findAll(page, size, sort, dateFrom, dateTo);
+        return execute(page, size, sort, dateFrom, dateTo, null, detailed);
+    }
+
+    public PageResponse<CashRegisterResponse> execute(int page, int size,
+            String sort, LocalDate dateFrom, LocalDate dateTo, UUID registerId,
+            boolean detailed) {
+        var closurePage = queries.findAll(page, size, sort, dateFrom, dateTo,
+                registerId);
         List<CashRegisterResponse> responses = closurePage.content().stream()
                 .map(register -> sessionResponse(register, detailed)).toList();
         return new PageResponse<>(responses, closurePage.totalElements(),

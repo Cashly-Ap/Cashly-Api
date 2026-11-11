@@ -4,7 +4,10 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.dto.response.DailyTotals;
 
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashRegister;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashMovement;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashRegisterDetail;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.RegisterId;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.RegisterStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -163,30 +166,33 @@ class CashRegisterMapperTest {
         }
 
         @Test
-        void should_BuildExpenseSummary_When_DailyTotalsHasReturnsAndCreditNotes() {
+        void should_BuildExpenseSummary_ByPaymentMethod_When_CashOutMovementsExist() {
             CashRegister register = createSampleRegister();
             DailyTotals dailyTotals = new DailyTotals(new BigDecimal("1800.00"),
                     22, BigDecimal.ZERO, 0, new BigDecimal("80.00"), 1,
                     new BigDecimal("30.00"), BigDecimal.ZERO,
                     new BigDecimal("2500.00"), 18, new BigDecimal("2500.00"),
                     new BigDecimal("1800.00"), new BigDecimal("110.00"), null);
+            List<CashMovement> movements = List.of(
+                    cashExpense("Cash", new BigDecimal("80.00")),
+                    cashExpense("Transfer", new BigDecimal("30.00")));
 
             CashRegisterResponse response = CashRegisterMapper
-                    .toResponse(register, dailyTotals);
+                    .toResponse(register, dailyTotals, movements);
 
             assertEquals(2, response.expenseSummary().size());
-            assertEquals("Devoluciones",
+            assertEquals("Cash",
                     response.expenseSummary().get(0).concept());
             assertEquals(new BigDecimal("80.00"),
                     response.expenseSummary().get(0).total());
-            assertEquals("Notas de Crédito",
+            assertEquals("Transfer",
                     response.expenseSummary().get(1).concept());
             assertEquals(new BigDecimal("30.00"),
                     response.expenseSummary().get(1).total());
         }
 
         @Test
-        void should_SkipExpenseSummary_When_NoReturnsOrCredits() {
+        void should_SkipExpenseSummary_When_NoCashOutMovements() {
             CashRegister register = createSampleRegister();
             DailyTotals dailyTotals = new DailyTotals(new BigDecimal("1800.00"),
                     22, BigDecimal.ZERO, 0, BigDecimal.ZERO, 0, BigDecimal.ZERO,
@@ -198,6 +204,14 @@ class CashRegisterMapperTest {
                     .toResponse(register, dailyTotals);
 
             assertTrue(response.expenseSummary().isEmpty());
+        }
+
+        private CashMovement cashExpense(String paymentMethodName,
+                BigDecimal amount) {
+            return CashMovement.create(RegisterId.of(REGISTER_ID),
+                    CashMovementDirection.OUT, CashMovementType.EXPENSE, amount,
+                    PAYMENT_METHOD_ID, paymentMethodName, "Expense", "MANUAL",
+                    null, OPENED_BY, "John Doe");
         }
     }
 

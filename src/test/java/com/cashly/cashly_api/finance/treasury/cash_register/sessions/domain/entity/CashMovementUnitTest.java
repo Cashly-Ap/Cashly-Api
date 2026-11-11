@@ -10,7 +10,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CashMovementUnitTest {
 
@@ -51,6 +53,58 @@ class CashMovementUnitTest {
                         CashMovementDirection.IN, CashMovementType.EXPENSE,
                         BigDecimal.ONE, null, "Efectivo", "Gasto", "MANUAL",
                         null, UUID.randomUUID(), "Operator"));
+    }
+
+    @Test
+    void should_KeepProvidedOccurredAtForExpense() {
+        var occurredAt = java.time.LocalDateTime.of(2026, 11, 1, 9, 30);
+        CashMovement movement = CashMovement.create(RegisterId.generate(),
+                CashMovementDirection.OUT, CashMovementType.EXPENSE,
+                BigDecimal.TEN, null, "Efectivo", "Gasto", "MANUAL", null,
+                UUID.randomUUID(), "Operator", occurredAt);
+
+        assertEquals(occurredAt, movement.getOccurredAt());
+    }
+
+    @Test
+    void should_CancelExpenseWithReason() {
+        CashMovement movement = CashMovement.create(RegisterId.generate(),
+                CashMovementDirection.OUT, CashMovementType.EXPENSE,
+                BigDecimal.TEN, null, "Efectivo", "Gasto", "MANUAL", null,
+                UUID.randomUUID(), "Operator");
+        UUID canceller = UUID.randomUUID();
+
+        movement.cancel("Duplicado", canceller, "Supervisor");
+
+        assertTrue(movement.isCancelled());
+        assertEquals("Duplicado", movement.getCancellationReason());
+        assertEquals(canceller, movement.getCancelledBy());
+        assertEquals("Supervisor", movement.getCancelledByName());
+        assertNotNull(movement.getCancelledAt());
+    }
+
+    @Test
+    void should_RejectCancellingTwice() {
+        CashMovement movement = CashMovement.create(RegisterId.generate(),
+                CashMovementDirection.OUT, CashMovementType.EXPENSE,
+                BigDecimal.TEN, null, "Efectivo", "Gasto", "MANUAL", null,
+                UUID.randomUUID(), "Operator");
+        movement.cancel("Duplicado", UUID.randomUUID(), "Supervisor");
+
+        assertThrows(IllegalStateException.class,
+                () -> movement.cancel("Otra vez", UUID.randomUUID(),
+                        "Supervisor"));
+    }
+
+    @Test
+    void should_RejectBlankCancellationReason() {
+        CashMovement movement = CashMovement.create(RegisterId.generate(),
+                CashMovementDirection.OUT, CashMovementType.EXPENSE,
+                BigDecimal.TEN, null, "Efectivo", "Gasto", "MANUAL", null,
+                UUID.randomUUID(), "Operator");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> movement.cancel("  ", UUID.randomUUID(), "Supervisor"));
     }
 
     @Test

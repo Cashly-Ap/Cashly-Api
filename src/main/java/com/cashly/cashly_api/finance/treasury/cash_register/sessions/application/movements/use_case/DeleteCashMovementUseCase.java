@@ -33,6 +33,10 @@ public class DeleteCashMovementUseCase {
                     "Only manually registered expenses can be deleted");
         }
 
+        if (movement.isCancelled()) {
+            throw new IllegalStateException("Expense is already cancelled");
+        }
+
         var register = registerRepository.findById(movement.getRegisterId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Cash register not found for movement: " + movementId));

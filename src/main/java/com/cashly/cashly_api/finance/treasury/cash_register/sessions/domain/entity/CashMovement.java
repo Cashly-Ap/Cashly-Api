@@ -24,12 +24,20 @@ public class CashMovement {
     private final UUID createdBy;
     private final String createdByName;
     private final LocalDateTime occurredAt;
+    private boolean cancelled;
+    private String cancellationReason;
+    private LocalDateTime cancelledAt;
+    private UUID cancelledBy;
+    private String cancelledByName;
 
     private CashMovement(UUID id, RegisterId registerId,
             CashMovementDirection direction, CashMovementType type,
             BigDecimal amount, UUID paymentMethodId, String paymentMethodName,
             String description, String sourceType, UUID sourceId,
-            UUID createdBy, String createdByName, LocalDateTime occurredAt) {
+            UUID createdBy, String createdByName, LocalDateTime occurredAt,
+            boolean cancelled, String cancellationReason,
+            LocalDateTime cancelledAt, UUID cancelledBy,
+            String cancelledByName) {
         this.id = Objects.requireNonNull(id);
         this.registerId = Objects.requireNonNull(registerId);
         this.direction = Objects.requireNonNull(direction);
@@ -44,6 +52,11 @@ public class CashMovement {
         this.createdBy = createdBy;
         this.createdByName = createdByName;
         this.occurredAt = Objects.requireNonNull(occurredAt);
+        this.cancelled = cancelled;
+        this.cancellationReason = cancellationReason;
+        this.cancelledAt = cancelledAt;
+        this.cancelledBy = cancelledBy;
+        this.cancelledByName = cancelledByName;
     }
 
     public static CashMovement create(RegisterId registerId,
@@ -51,10 +64,21 @@ public class CashMovement {
             BigDecimal amount, UUID paymentMethodId, String paymentMethodName,
             String description, String sourceType, UUID sourceId,
             UUID createdBy, String createdByName) {
+        return create(registerId, direction, type, amount, paymentMethodId,
+                paymentMethodName, description, sourceType, sourceId, createdBy,
+                createdByName, LocalDateTime.now());
+    }
+
+    public static CashMovement create(RegisterId registerId,
+            CashMovementDirection direction, CashMovementType type,
+            BigDecimal amount, UUID paymentMethodId, String paymentMethodName,
+            String description, String sourceType, UUID sourceId,
+            UUID createdBy, String createdByName, LocalDateTime occurredAt) {
         return new CashMovement(UUID.randomUUID(), registerId, direction, type,
                 amount, paymentMethodId, paymentMethodName, description,
                 sourceType, sourceId, createdBy, createdByName,
-                LocalDateTime.now());
+                occurredAt != null ? occurredAt : LocalDateTime.now(), false,
+                null, null, null, null);
     }
 
     public static CashMovement reconstitute(UUID id, RegisterId registerId,
@@ -62,9 +86,40 @@ public class CashMovement {
             BigDecimal amount, UUID paymentMethodId, String paymentMethodName,
             String description, String sourceType, UUID sourceId,
             UUID createdBy, String createdByName, LocalDateTime occurredAt) {
+        return reconstitute(id, registerId, direction, type, amount,
+                paymentMethodId, paymentMethodName, description, sourceType,
+                sourceId, createdBy, createdByName, occurredAt, false, null,
+                null, null, null);
+    }
+
+    public static CashMovement reconstitute(UUID id, RegisterId registerId,
+            CashMovementDirection direction, CashMovementType type,
+            BigDecimal amount, UUID paymentMethodId, String paymentMethodName,
+            String description, String sourceType, UUID sourceId,
+            UUID createdBy, String createdByName, LocalDateTime occurredAt,
+            boolean cancelled, String cancellationReason,
+            LocalDateTime cancelledAt, UUID cancelledBy,
+            String cancelledByName) {
         return new CashMovement(id, registerId, direction, type, amount,
                 paymentMethodId, paymentMethodName, description, sourceType,
-                sourceId, createdBy, createdByName, occurredAt);
+                sourceId, createdBy, createdByName, occurredAt, cancelled,
+                cancellationReason, cancelledAt, cancelledBy, cancelledByName);
+    }
+
+    public void cancel(String reason, UUID cancelledBy,
+            String cancelledByName) {
+        if (cancelled) {
+            throw new IllegalStateException("Expense is already cancelled");
+        }
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Cancellation reason must not be blank");
+        }
+        this.cancelled = true;
+        this.cancellationReason = reason.trim();
+        this.cancelledAt = LocalDateTime.now();
+        this.cancelledBy = cancelledBy;
+        this.cancelledByName = cancelledByName;
     }
 
     private static BigDecimal requirePositive(BigDecimal amount) {
@@ -129,5 +184,20 @@ public class CashMovement {
     }
     public LocalDateTime getOccurredAt() {
         return occurredAt;
+    }
+    public boolean isCancelled() {
+        return cancelled;
+    }
+    public String getCancellationReason() {
+        return cancellationReason;
+    }
+    public LocalDateTime getCancelledAt() {
+        return cancelledAt;
+    }
+    public UUID getCancelledBy() {
+        return cancelledBy;
+    }
+    public String getCancelledByName() {
+        return cancelledByName;
     }
 }

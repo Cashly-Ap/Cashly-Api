@@ -11,10 +11,12 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashRegister;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashRegisterDetail;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.entity.CashMovement;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class CashRegisterMapper {
@@ -52,7 +54,7 @@ public final class CashRegisterMapper {
             balance = totalRevenue.subtract(totalExpenses);
 
             revenueSummary = buildRevenueSummary(dailyTotals);
-            expenseSummary = buildExpenseSummary(dailyTotals);
+            expenseSummary = buildExpenseSummary(movements);
         }
 
         return new CashRegisterResponse(closure.getId().value(),
@@ -71,13 +73,7 @@ public final class CashRegisterMapper {
 
     private static CashMovementResponse toMovementResponse(
             CashMovement movement) {
-        return new CashMovementResponse(movement.getId(),
-                movement.getDirection(), movement.getType(),
-                movement.getAmount(), movement.getPaymentMethodId(),
-                movement.getPaymentMethodName(), movement.getDescription(),
-                movement.getSourceType(), movement.getSourceId(),
-                movement.getCreatedBy(), movement.getCreatedByName(),
-                movement.getOccurredAt());
+        return CashMovementResponse.from(movement);
     }
 
     private static List<RevenueSummaryItem> buildRevenueSummary(
@@ -91,17 +87,24 @@ public final class CashRegisterMapper {
     }
 
     private static List<ExpenseSummaryItem> buildExpenseSummary(
-            DailyTotals dailyTotals) {
-        List<ExpenseSummaryItem> items = new ArrayList<>();
-        if (dailyTotals.totalReturns().compareTo(BigDecimal.ZERO) > 0) {
-            items.add(new ExpenseSummaryItem("Devoluciones",
-                    dailyTotals.totalReturns()));
+            List<CashMovement> movements) {
+        Map<String, BigDecimal> totalsByPaymentMethod = new LinkedHashMap<>();
+        for (CashMovement movement : movements) {
+            if (movement.getDirection() != CashMovementDirection.OUT
+                    || !movement.getType().affectsCashBalance()) {
+                continue;
+            }
+            String concept = movement.getPaymentMethodName();
+            if (concept == null || concept.isBlank()) {
+                concept = "Sin método";
+            }
+            totalsByPaymentMethod.merge(concept, movement.getAmount(),
+                    BigDecimal::add);
         }
-        if (dailyTotals.totalCreditNotes().compareTo(BigDecimal.ZERO) > 0) {
-            items.add(new ExpenseSummaryItem("Notas de Crédito",
-                    dailyTotals.totalCreditNotes()));
-        }
-        return items;
+        return totalsByPaymentMethod.entrySet().stream()
+                .map(entry -> new ExpenseSummaryItem(entry.getKey(),
+                        entry.getValue()))
+                .collect(Collectors.toList());
     }
 
     private static CashRegisterDetailResponse toDetailResponse(

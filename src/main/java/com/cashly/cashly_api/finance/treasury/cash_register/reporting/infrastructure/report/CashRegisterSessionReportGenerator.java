@@ -186,7 +186,7 @@ public class CashRegisterSessionReportGenerator
                             ReportMessages.code(movement.type().name()));
                     details.addCell(value(movement.paymentMethodName()));
                     details.addCell(money(movement.amount()));
-                    details.addCell(value(movement.description()));
+                    details.addCell(value(movementDescription(movement)));
                     details.addCell(value(movement.createdByName()));
                 }
                 document.add(details);
@@ -235,13 +235,23 @@ public class CashRegisterSessionReportGenerator
                     .setCellValue(ReportMessages.code(movement.type().name()));
             row.createCell(3).setCellValue(value(movement.paymentMethodName()));
             row.createCell(4).setCellValue(movement.amount().doubleValue());
-            row.createCell(5).setCellValue(value(movement.description()));
+            row.createCell(5).setCellValue(value(movementDescription(movement)));
             row.createCell(6).setCellValue(value(movement.sourceType()));
             row.createCell(7).setCellValue(value(movement.createdByName()));
         }
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
+    }
+
+    private String movementDescription(CashMovementResponse movement) {
+        String description = value(movement.description());
+        if (!movement.cancelled()) {
+            return description;
+        }
+        String suffix = ReportMessages
+                .text("finance.treasury.cash_register.reports.cancelled");
+        return description.isBlank() ? suffix : description + " (" + suffix + ")";
     }
 
     private CellStyle headerStyle(XSSFWorkbook workbook) {

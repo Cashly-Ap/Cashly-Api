@@ -221,6 +221,10 @@ public class CashRegister {
         this.totalExpense = totalExpense;
         this.expectedClosingBalance = openingBalance.add(totalIncome)
                 .subtract(totalExpense);
+        if (status == RegisterStatus.CLOSED && actualClosingBalance != null) {
+            this.difference = actualClosingBalance
+                    .subtract(expectedClosingBalance);
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
