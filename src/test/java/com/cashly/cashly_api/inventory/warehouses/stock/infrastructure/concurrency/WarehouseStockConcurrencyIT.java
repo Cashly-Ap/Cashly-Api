@@ -210,6 +210,7 @@ class WarehouseStockConcurrencyIT {
     private Warehouse activeWarehouse() {
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.isActive()).thenReturn(true);
+        when(warehouse.getName()).thenReturn("Warehouse");
         return warehouse;
     }
 

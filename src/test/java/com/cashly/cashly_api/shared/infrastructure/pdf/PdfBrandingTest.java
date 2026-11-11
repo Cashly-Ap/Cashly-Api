@@ -74,13 +74,13 @@ class PdfBrandingTest {
         }
     }
     @Test
-    void unconfiguredLogoUsesLiteralTextAndCreatesIndependentLayoutElements()
+    void unconfiguredLogoUsesDefaultBrandLogoAndCreatesIndependentLayoutElements()
             throws Exception {
         var branding = new PdfBranding(() -> null);
         var first = branding.logo();
         assertThat(first.getChildren()).hasSize(1);
         assertThat(first.getChildren().getFirst())
-                .isInstanceOf(com.itextpdf.layout.element.Paragraph.class);
+                .isInstanceOf(com.itextpdf.layout.element.Image.class);
         assertThat(branding.logo()).isNotSameAs(first);
         var bytes = new ByteArrayOutputStream();
         try (var document = new com.itextpdf.layout.Document(
@@ -93,10 +93,10 @@ class PdfBrandingTest {
                         new java.io.ByteArrayInputStream(
                                 bytes.toByteArray())))) {
             assertThat(com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor
-                    .getTextFromPage(pdf.getFirstPage())).isEqualTo("Logotipo");
+                    .getTextFromPage(pdf.getFirstPage())).doesNotContain("Logotipo");
             assertThat(pdf.getFirstPage().getResources()
                     .getResource(com.itextpdf.kernel.pdf.PdfName.XObject))
-                    .isNull();
+                    .isNotNull();
         }
     }
     private static com.itextpdf.layout.element.Image image(

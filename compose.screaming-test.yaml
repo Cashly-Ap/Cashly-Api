@@ -33,7 +33,7 @@ services:
       retries: 30
       start_period: 30s
   runner:
-    image: ${SCREAMING_TEST_IMAGE:-maven:3.9.9-amazoncorretto-24}
+    image: ${SCREAMING_TEST_IMAGE:-maven:3.9.9-eclipse-temurin-24}
     working_dir: /workspace
     entrypoint: [sleep, infinity]
     volumes:

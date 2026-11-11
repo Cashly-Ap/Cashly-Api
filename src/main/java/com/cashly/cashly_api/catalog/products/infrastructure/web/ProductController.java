@@ -93,7 +93,7 @@ public class ProductController {
     }
 
     @GetMapping(params = "customerId")
-    @PreAuthorize("hasAuthority('CATALOG_PRODUCTS_VIEW_LIST')")
+    @PreAuthorize("hasAuthority('INVENTORY_WAREHOUSES_VIEW_STOCK')")
     public ResponseEntity<PageResponse<ProductWithStockResponse>> getForTransaction(
             @RequestParam UUID customerId,
             @RequestParam(required = false) List<UUID> customerIds,

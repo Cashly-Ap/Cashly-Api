@@ -57,17 +57,16 @@ class CompanyPdfPreviewTest {
         verifyNoMoreInteractions(company);
     }
     @Test
-    void previewWithoutConfiguredLogoDisplaysLiteralLogotipo()
-            throws Exception {
+    void previewWithoutConfiguredLogoUsesDefaultBrandLogo() throws Exception {
         var company = mock(CompanyService.class);
         var bytes = new CompanyPdfPreview(company).generate(null, true, null,
                 true);
         try (var pdf = new PdfDocument(
                 new PdfReader(new ByteArrayInputStream(bytes)))) {
             assertThat(PdfTextExtractor.getTextFromPage(pdf.getFirstPage()))
-                    .contains("Logotipo");
+                    .doesNotContain("Logotipo");
             assertThat(pdf.getFirstPage().getResources()
-                    .getResource(PdfName.XObject)).isNull();
+                    .getResource(PdfName.XObject)).isNotNull();
         }
     }
     @Test

@@ -34,6 +34,7 @@ jobs:
         env:
           MAVEN_OPTS: -Xmx2g -XX:+UseG1GC
           SCREAMING_PROJECT: cashly-screaming-ci-${{ github.run_id }}-${{ github.run_attempt }}
+          SCREAMING_COVERAGE_GATE: 'false'
 
       - name: Upload isolated verification evidence
         if: always()

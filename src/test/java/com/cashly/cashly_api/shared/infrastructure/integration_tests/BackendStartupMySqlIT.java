@@ -92,10 +92,10 @@ class BackendStartupMySqlIT {
         adminToken = createAndLogin("SUPER_ADMIN");
         restrictedToken = createAndLogin("OPERATOR");
         UUID delegatedRole = createRole(
-                Map.of("USERS", java.util.Set.of("READ", "UPDATE")));
+                Map.of("USERS", java.util.Set.of("VIEW_LIST", "EDIT")));
         delegatedAdminToken = createAndLogin("OPERATOR", delegatedRole);
         UUID catalogRole = createRole(
-                Map.of("CATALOG_PRODUCTS", java.util.Set.of("READ")));
+                Map.of("CATALOG_PRODUCTS", java.util.Set.of("VIEW_LIST")));
         catalogReadToken = createAndLogin("OPERATOR", catalogRole);
     }
 

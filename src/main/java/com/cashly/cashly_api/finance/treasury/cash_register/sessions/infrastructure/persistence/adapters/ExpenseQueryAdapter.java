@@ -1,4 +1,4 @@
-package com.cashly.cashly_api.finance.treasury.cash_register.infrastructure.persistence.adapters;
+package com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.persistence.adapters;
 
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.expenses.model.ExpenseFilter;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.expenses.response.ExpenseResponse;

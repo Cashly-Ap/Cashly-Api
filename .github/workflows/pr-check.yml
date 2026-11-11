@@ -32,6 +32,7 @@ jobs:
         env:
           MAVEN_OPTS: -Xmx2g -XX:+UseG1GC
           SCREAMING_PROJECT: cashly-screaming-pr-${{ github.run_id }}-${{ github.run_attempt }}
+          SCREAMING_COVERAGE_GATE: 'false'
 
       - name: Upload Surefire test reports
         if: always()

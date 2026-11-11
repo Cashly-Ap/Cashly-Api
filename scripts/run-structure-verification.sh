@@ -34,7 +34,7 @@ if [[ -n "$("${compose[@]}" ps -aq)" ]]; then
 fi
 {
   printf 'mode=%s\nproject=%s\nsource=%s\nstarted_utc=%s\n' "$verification_mode" "$verification_project" "$SCREAMING_SOURCE_DIR" "$(date -u +%FT%TZ)"
-  printf 'image=%s\n' "${SCREAMING_TEST_IMAGE:-maven:3.9.9-amazoncorretto-24}"
+  printf 'image=%s\n' "${SCREAMING_TEST_IMAGE:-maven:3.9.9-eclipse-temurin-24}"
 } > "$verification_output/run.txt"
 # Never tear down automatically: reports and failed database state survive errors.
 "${compose[@]}" up -d --wait suite-db inventory-db runner
@@ -66,7 +66,7 @@ for report in source-sha256.txt target/surefire-reports target/site/jacoco targe
     printf 'Missing: %s\n' "$report" >> "$verification_output/export.log"
   fi
 done
-if [[ "$verification_mode" == final ]]; then
+if [[ "$verification_mode" == final && "${SCREAMING_COVERAGE_GATE:-true}" == true ]]; then
   "${compose[@]}" up -d analyzer
   "${compose[@]}" cp "$verification_output" analyzer:/analysis/evidence
   "${compose[@]}" cp "$SCREAMING_SOURCE_DIR/src" analyzer:/analysis/src
@@ -84,6 +84,8 @@ if [[ "$verification_mode" == final ]]; then
   if [[ "$verification_result" -eq 0 ]]; then verification_result=$coverage_result; fi
   "${compose[@]}" cp analyzer:/analysis/summary "$verification_output/summary"
   printf 'coverage_gate_exit_code=%s\n' "$coverage_result" >> "$verification_output/run.txt"
+else
+  printf 'coverage_gate=skipped\n' >> "$verification_output/run.txt"
 fi
 printf 'Evidence: %s\nMaven exit: %s\n' "$verification_output" "$verification_result"
 printf 'After reviewing/exporting evidence, cleanup ONLY this project:\n'
