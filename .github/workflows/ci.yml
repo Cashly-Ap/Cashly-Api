@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   build-and-test:
@@ -49,4 +49,4 @@ jobs:
 
       - name: Build Docker image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: docker build -t lexand-api:${{ github.sha }} .
+        run: docker build -t cashly-api:${{ github.sha }} .
