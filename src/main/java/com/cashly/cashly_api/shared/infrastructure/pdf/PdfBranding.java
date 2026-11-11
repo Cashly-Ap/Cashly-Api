@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
 @Component
 public final class PdfBranding {
@@ -42,13 +43,25 @@ public final class PdfBranding {
         byte[] configured = companyLogo.get();
         var branding = new Div().setWidth(LOGO_MAX_WIDTH).setKeepTogether(true);
         if (configured == null) {
-            return branding.add(
-                    new Paragraph(ReportMessages.text("shared.reports.logo"))
-                            .setFontSize(20).setBold().setMargin(0));
+            byte[] defaultLogo = loadDefaultLogo();
+            if (defaultLogo != null) {
+                return branding.add(new Image(ImageDataFactory.create(defaultLogo))
+                        .scaleToFit(LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT));
+            }
+            return branding.add(new Paragraph(ReportMessages.text("shared.reports.logo"))
+                    .setFontSize(20).setBold().setMargin(0));
         }
         return branding.add(
                 new Image(ImageDataFactory.create(trimOuterMargins(configured)))
                         .scaleToFit(LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT));
+    }
+
+    private static byte[] loadDefaultLogo() {
+        try (InputStream input = PdfBranding.class.getResourceAsStream("/pdf/cashly-logo.png")) {
+            return input == null ? null : input.readAllBytes();
+        } catch (IOException exception) {
+            throw new IllegalStateException("Cannot load default Cashly logo", exception);
+        }
     }
 
     /** Removes only empty border rows/columns. Every non-background pixel stays inside the result. */
