@@ -5,6 +5,8 @@ import com.cashly.cashly_api.partners.suppliers.domain.entity.SupplierAddress;
 import com.cashly.cashly_api.partners.suppliers.domain.entity.SupplierEmail;
 import com.cashly.cashly_api.partners.suppliers.domain.entity.SupplierPhone;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.AddressId;
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.CreditDays;
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.CreditLimit;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.EmailAddress;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.EmailId;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.LegalName;
@@ -20,6 +22,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +61,12 @@ public class SupplierEntity {
     @Column(name = "rif", length = 50, nullable = false)
     private String rif;
 
+    @Column(name = "credit_days", nullable = false)
+    private int creditDays;
+
+    @Column(name = "credit_limit", precision = 15, scale = 2, nullable = false)
+    private BigDecimal creditLimit;
+
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
@@ -90,6 +99,8 @@ public class SupplierEntity {
         entity.alias = supplier.getAlias().getValue();
         entity.type = supplier.getType().name();
         entity.rif = supplier.getRif().getValue();
+        entity.creditDays = supplier.getCreditDays().getValue();
+        entity.creditLimit = supplier.getCreditLimit().getValue();
         entity.notes = supplier.getNotes();
         entity.active = supplier.isActive();
         entity.createdAt = supplier.getCreatedAt();
@@ -132,6 +143,8 @@ public class SupplierEntity {
         this.alias = supplier.getAlias().getValue();
         this.type = supplier.getType().name();
         this.rif = supplier.getRif().getValue();
+        this.creditDays = supplier.getCreditDays().getValue();
+        this.creditLimit = supplier.getCreditLimit().getValue();
         this.notes = supplier.getNotes();
         this.active = supplier.isActive();
         this.updatedAt = supplier.getUpdatedAt();
@@ -192,7 +205,8 @@ public class SupplierEntity {
         return Supplier.reconstitute(new SupplierId(this.id),
                 SupplierCode.from(this.code), new LegalName(this.legalName),
                 SupplierType.valueOf(this.type), new Rif(this.rif),
-                new SupplierAlias(this.alias), this.notes, this.active,
+                new SupplierAlias(this.alias), new CreditDays(this.creditDays),
+                new CreditLimit(this.creditLimit), this.notes, this.active,
                 this.createdAt, this.updatedAt, domainEmails, domainPhones,
                 domainAddresses);
     }

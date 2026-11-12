@@ -1,5 +1,7 @@
 package com.cashly.cashly_api.partners.suppliers.domain.entity;
 
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.CreditDays;
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.CreditLimit;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.EmailAddress;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.LegalName;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.PhoneNumber;
@@ -22,6 +24,8 @@ public class Supplier {
     private SupplierType type;
     private Rif rif;
     private SupplierAlias alias;
+    private CreditDays creditDays;
+    private CreditLimit creditLimit;
     private String notes;
     private boolean active;
     private final LocalDateTime createdAt;
@@ -31,7 +35,8 @@ public class Supplier {
     private List<SupplierAddress> addresses;
 
     private Supplier(SupplierId id, SupplierCode code, LegalName legalName,
-            SupplierType type, Rif rif, SupplierAlias alias, String notes,
+            SupplierType type, Rif rif, SupplierAlias alias,
+            CreditDays creditDays, CreditLimit creditLimit, String notes,
             boolean active, LocalDateTime createdAt, LocalDateTime updatedAt,
             List<SupplierEmail> emails, List<SupplierPhone> phones,
             List<SupplierAddress> addresses) {
@@ -41,6 +46,8 @@ public class Supplier {
         this.type = type;
         this.rif = rif;
         this.alias = alias;
+        this.creditDays = creditDays;
+        this.creditLimit = creditLimit;
         this.notes = notes;
         this.active = active;
         this.createdAt = createdAt;
@@ -55,8 +62,21 @@ public class Supplier {
             SupplierType type, Rif rif, SupplierAlias alias) {
         LocalDateTime now = LocalDateTime.now();
         return new Supplier(SupplierId.generate(), code, legalName, type, rif,
-                alias, null, true, now, now, new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                alias, new CreditDays(0),
+                new CreditLimit(java.math.BigDecimal.ZERO), null, true, now,
+                now, new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>());
+    }
+
+    public static Supplier reconstitute(SupplierId id, SupplierCode code,
+            LegalName legalName, SupplierType type, Rif rif,
+            SupplierAlias alias, CreditDays creditDays, CreditLimit creditLimit,
+            String notes, boolean active, LocalDateTime createdAt,
+            LocalDateTime updatedAt, List<SupplierEmail> emails,
+            List<SupplierPhone> phones, List<SupplierAddress> addresses) {
+        return new Supplier(id, code, legalName, type, rif, alias, creditDays,
+                creditLimit, notes, active, createdAt, updatedAt, emails,
+                phones, addresses);
     }
 
     public static Supplier reconstitute(SupplierId id, SupplierCode code,
@@ -65,8 +85,24 @@ public class Supplier {
             LocalDateTime createdAt, LocalDateTime updatedAt,
             List<SupplierEmail> emails, List<SupplierPhone> phones,
             List<SupplierAddress> addresses) {
-        return new Supplier(id, code, legalName, type, rif, alias, notes,
-                active, createdAt, updatedAt, emails, phones, addresses);
+        return reconstitute(id, code, legalName, type, rif, alias,
+                new CreditDays(0),
+                new CreditLimit(java.math.BigDecimal.ZERO), notes, active,
+                createdAt, updatedAt, emails, phones, addresses);
+    }
+
+    public void updateCreditDays(CreditDays creditDays) {
+        if (creditDays == null)
+            throw new IllegalArgumentException("Credit days cannot be null");
+        this.creditDays = creditDays;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateCreditLimit(CreditLimit creditLimit) {
+        if (creditLimit == null)
+            throw new IllegalArgumentException("Credit limit cannot be null");
+        this.creditLimit = creditLimit;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void updateLegalName(LegalName legalName) {
@@ -167,6 +203,14 @@ public class Supplier {
     public Rif getRif() {
         return rif;
     }
+    public CreditDays getCreditDays() {
+        return creditDays;
+    }
+
+    public CreditLimit getCreditLimit() {
+        return creditLimit;
+    }
+
     public SupplierAlias getAlias() {
         return alias;
     }

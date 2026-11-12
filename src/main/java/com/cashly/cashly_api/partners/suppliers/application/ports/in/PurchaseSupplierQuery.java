@@ -8,6 +8,9 @@ import java.util.UUID;
 public interface PurchaseSupplierQuery {
     Optional<Entry> findById(UUID id);
     List<Entry> findByIds(Collection<UUID> ids);
+    default int creditDays(UUID id) {
+        return 30;
+    }
     record Entry(UUID id, String name, String rif) {
     }
 }

@@ -24,6 +24,13 @@ public class SupplierPurchaseDirectoryAdapter implements PurchaseSupplierQuery {
     }
 
     @Override
+    public int creditDays(UUID id) {
+        return suppliers.findById(new SupplierId(id))
+                .map(supplier -> supplier.getCreditDays().getValue())
+                .orElse(0);
+    }
+
+    @Override
     public List<Entry> findByIds(Collection<UUID> ids) {
         if (ids.isEmpty()) {
             return List.of();

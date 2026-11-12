@@ -21,6 +21,10 @@ public record CreateSupplierRequest(
 
         @NotBlank(message = "Alias is required") String alias,
 
+        Integer creditDays,
+
+        java.math.BigDecimal creditLimit,
+
         String notes,
 
         @NotNull(message = "Emails list is required") @Valid List<EmailRequest> emails,
@@ -28,4 +32,11 @@ public record CreateSupplierRequest(
         @NotNull(message = "Phones list is required") @Valid List<PhoneRequest> phones,
 
         @NotNull(message = "Addresses list is required") @Valid @NotEmpty(message = "At least one address is required") List<AddressRequest> addresses) {
+
+    public CreateSupplierRequest(String legalName, String type, String rif,
+            String alias, String notes, List<EmailRequest> emails,
+            List<PhoneRequest> phones, List<AddressRequest> addresses) {
+        this(legalName, type, rif, alias, null, null, notes, emails, phones,
+                addresses);
+    }
 }

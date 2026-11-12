@@ -9,6 +9,7 @@ import com.cashly.cashly_api.partners.suppliers.infrastructure.persistence.entit
 import com.cashly.cashly_api.partners.suppliers.infrastructure.persistence.entities.SupplierEntity;
 import com.cashly.cashly_api.partners.suppliers.infrastructure.persistence.entities.SupplierPhoneEntity;
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,8 @@ public class V21SuppliersSeed implements SeedStep {
         supplier.setAlias(alias);
         supplier.setType(SupplierType.JURIDICO.name());
         supplier.setRif(rif);
+        supplier.setCreditDays(30);
+        supplier.setCreditLimit(new BigDecimal("1000.00"));
         supplier.setNotes("Deterministic seed supplier");
         supplier.setActive(true);
         supplier.setCreatedAt(LocalDateTime.of(2025, 1, 13, 8, 0));

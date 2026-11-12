@@ -10,6 +10,8 @@ import com.cashly.cashly_api.partners.suppliers.application.mappers.SupplierMapp
 import com.cashly.cashly_api.partners.suppliers.domain.entity.Supplier;
 import com.cashly.cashly_api.partners.suppliers.domain.repository.SupplierRepository;
 import com.cashly.cashly_api.partners.suppliers.domain.services.SupplierCodeGenerator;
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.CreditDays;
+import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.CreditLimit;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.EmailAddress;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.LegalName;
 import com.cashly.cashly_api.partners.suppliers.domain.valueobjects.PhoneNumber;
@@ -51,6 +53,13 @@ public class RegisterSupplierUseCase {
                 new SupplierAlias(request.alias()));
 
         supplier.updateNotes(request.notes());
+        if (request.creditDays() != null) {
+            supplier.updateCreditDays(new CreditDays(request.creditDays()));
+        }
+        if (request.creditLimit() != null) {
+            supplier.updateCreditLimit(
+                    new CreditLimit(request.creditLimit()));
+        }
 
         request.emails()
                 .forEach(e -> supplier.addEmail(new EmailAddress(e.email())));

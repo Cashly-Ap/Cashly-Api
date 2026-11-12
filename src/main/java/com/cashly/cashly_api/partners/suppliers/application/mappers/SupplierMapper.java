@@ -20,7 +20,9 @@ public class SupplierMapper {
                 supplier.getCode().getValue(),
                 supplier.getLegalName().getValue(),
                 supplier.getAlias().getValue(), supplier.getType().name(),
-                supplier.getRif().getValue(), supplier.isActive(),
+                supplier.getRif().getValue(),
+                supplier.getCreditDays().getValue(),
+                supplier.getCreditLimit().getValue(), supplier.isActive(),
                 supplier.getCreatedAt().toString(), hasPurchases);
     }
 
@@ -29,7 +31,9 @@ public class SupplierMapper {
                 supplier.getCode().getValue(),
                 supplier.getLegalName().getValue(),
                 supplier.getAlias().getValue(), supplier.getType().name(),
-                supplier.getRif().getValue(), supplier.isActive(),
+                supplier.getRif().getValue(),
+                supplier.getCreditDays().getValue(),
+                supplier.getCreditLimit().getValue(), supplier.isActive(),
                 supplier.getNotes(), supplier.getCreatedAt(),
                 supplier.getEmails().stream()
                         .map(e -> new EmailResponse(e.getId().toString(),
@@ -52,6 +56,8 @@ public class SupplierMapper {
                 supplier.getCode().getValue(),
                 supplier.getLegalName().getValue(),
                 supplier.getAlias().getValue(), supplier.getType().name(),
-                supplier.getRif().getValue());
+                supplier.getRif().getValue(),
+                supplier.getCreditDays().getValue(),
+                supplier.getCreditLimit().getValue());
     }
 }

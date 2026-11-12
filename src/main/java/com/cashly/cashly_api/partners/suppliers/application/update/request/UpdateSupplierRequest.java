@@ -21,6 +21,10 @@ public record UpdateSupplierRequest(
 
         @NotBlank(message = "Alias is required") String alias,
 
+        Integer creditDays,
+
+        java.math.BigDecimal creditLimit,
+
         @NotNull(message = "Active status is required") Boolean active,
 
         String notes,
@@ -30,4 +34,12 @@ public record UpdateSupplierRequest(
         @Valid @NotEmpty(message = "At least one phone is required") List<PhoneRequest> phones,
 
         @Valid @NotEmpty(message = "At least one address is required") List<AddressRequest> addresses) {
+
+    public UpdateSupplierRequest(String legalName, String type, String rif,
+            String alias, Boolean active, String notes,
+            List<EmailRequest> emails, List<PhoneRequest> phones,
+            List<AddressRequest> addresses) {
+        this(legalName, type, rif, alias, null, null, active, notes, emails,
+                phones, addresses);
+    }
 }
