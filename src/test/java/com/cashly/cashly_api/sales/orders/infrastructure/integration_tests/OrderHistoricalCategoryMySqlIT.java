@@ -122,10 +122,10 @@ class OrderHistoricalCategoryMySqlIT {
 
     private void executeMigrationBackfill(String table) throws IOException {
         String migration = Files.readString(Path.of(
-                "src/main/resources/db/migration/V31__backfill_sales_line_category_snapshots.sql"));
+                "src/main/resources/db/migration/V21__backfill_sales_line_category_snapshots.sql"));
         Matcher statement = Pattern.compile("(?is)INSERT\\s+INTO\\s+"
                 + Pattern.quote(table) + "\\s*\\(.*?;").matcher(migration);
-        assertThat(statement.find()).as("V31 backfills " + table).isTrue();
+        assertThat(statement.find()).as("V21 backfills " + table).isTrue();
         jdbc.execute(statement.group());
     }
 

@@ -82,7 +82,7 @@ Deleting a manual expense is only allowed while its session is `OPEN`. Once the 
 
 ## Persistence
 
-Migration `V30__create_cash_register_ledger.sql` removes the date uniqueness restriction, adds session balance columns, enforces a single open session, creates `cash_register_movements`, normalizes legacy open sessions, and backfills monetary operations belonging to the surviving active session.
+Migration `V18__create_cash_registers.sql` removes the date uniqueness restriction, adds session balance columns, enforces a single open session, creates `cash_register_movements`, normalizes legacy open sessions, and backfills monetary operations belonging to the surviving active session.
 
 Closed legacy sessions keep their stored aggregate totals when no itemized ledger is available, so detailed history and reports remain arithmetically correct while showing an empty movement list.
 

@@ -101,7 +101,7 @@ cashly.audit.max-page-size=100
 
 ## Persistencia
 
-- `V30__create_audit_trail.sql` crea `audit_events`.
+- `V25__create_audit_trail.sql` crea `audit_events`.
 - `entity_id` no tiene FK: el historial sobrevive al borrado del registro.
 - `actor_id` usa `ON DELETE SET NULL`.
 - `V30AuditSeed` carga eventos de ejemplo de forma idempotente.

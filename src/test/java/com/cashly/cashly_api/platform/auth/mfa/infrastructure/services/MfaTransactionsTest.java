@@ -120,7 +120,7 @@ class MfaTransactionsTest {
                 "MFA integration tests require the isolated mfa_verification schema");
         jdbc.execute("drop table if exists auth_mfa");
         jdbc.execute(Files.readString(Path.of(
-                "src/main/resources/db/migration/V28__create_auth_mfa.sql")));
+                "src/main/resources/db/migration/V23__create_auth_mfa.sql")));
     }
 
     @BeforeEach

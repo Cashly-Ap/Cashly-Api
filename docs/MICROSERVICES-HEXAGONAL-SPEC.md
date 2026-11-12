@@ -21,7 +21,7 @@ Las rutas siguientes son relativas a Cashly-Api. Los ejemplos Java usan el prefi
 | `payments/domain/services/CreditValidationService.java:12`, `:13`, `:31` | El dominio importa DTO de aplicación de clientes e implementa una interfaz de aplicación de clientes mediante un nombre completamente cualificado. | Política de crédito pura sobre valores locales; la orquestación de aplicación recopila datos propiedad del consumidor mediante puertos. |
 | `auth/authentication/domain/services/AuthenticationDomainService.java:4` | El dominio importa Spring Service. | Clase de dominio sin framework, conectada externamente. |
 | `warehouses/infrastructure/config/WarehouseConfig.java:41`–`:47` | La configuración existente ya usa métodos Bean y conexión mediante constructores. | Ampliar este enfoque y sustituir repositorios ajenos por adaptadores sobre capacidades públicas. |
-| `src/main/resources/db/migration/V11__create_invoices_tables.sql:29`, `:47` | El esquema de facturas contiene claves foráneas a clientes y productos. | Resolver la propiedad y migrar las referencias antes de separar las bases de datos. |
+| `src/main/resources/db/migration/V13__create_invoices.sql:29`, `:47` | El esquema de facturas contiene claves foráneas a clientes y productos. | Resolver la propiedad y migrar las referencias antes de separar las bases de datos. |
 
 `invoices/application/dto/request/ConfirmInvoiceRequest.java:6` es un record pasivo. La auditoría no demuestra que este DTO inyecte servicios. Distinguir un problema real de inyección en DTO de las interfaces de dominio que exponen DTO de aplicación: ambos están prohibidos en el objetivo, pero solo el segundo queda demostrado arriba.
 
