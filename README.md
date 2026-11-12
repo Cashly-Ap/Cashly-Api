@@ -15,7 +15,7 @@ Cashly API is the backend for the Cashly business management platform. It expose
 | Sales | `sales/quotes`, `sales/orders` | Quotes and sales orders |
 | Procurement | `procurement/purchases` | Purchases and purchase reporting |
 | Finance billing | `finance/billing` | Invoices, returns, credit notes and debit notes |
-| Finance treasury | `finance/treasury` | Cash register, payments, receivables and payment methods |
+| Finance treasury | `finance/treasury` | Cash register, payments, receivables, payables and payment methods |
 | Analytics | `analytics/dashboard` | Dashboard indicators |
 
 The module index is in [docs/modules/README.md](docs/modules/README.md).
@@ -68,7 +68,7 @@ Configuration, storage and seeding are documented in [docs/SETUP.md](docs/SETUP.
 
 ## Database and migrations
 
-- Migrations live in `src/main/resources/db/migration`. The current baseline ends at **V37**.
+- Migrations live in `src/main/resources/db/migration`. The current baseline ends at **V25** and is consolidated by domain (one migration per bounded context).
 - Migrations create the final schema for a fresh database.
 - Seed data is implemented as 29 ordered Java steps in `infrastructure/seed/steps`, orchestrated by `DatabaseSeedRunner`.
 - Set `CASHLY_SEED_ENABLED=true` to run the seed after startup. The default is `false`.
@@ -117,7 +117,7 @@ FINANCE_TREASURY_RECEIVABLES_PAY_DIRECT
 COMPANY_EDIT
 ```
 
-- `PermissionRegistry` declares **131** supported codes.
+- `PermissionRegistry` declares **145** supported codes.
 - `PermissionCatalog` exposes them grouped by area, submodule and module.
 - `GET /api/auth/access` returns the current user's `permissions: string[]`.
 - Roles store permission codes in `auth_role_permissions(role_id, module, action)`.

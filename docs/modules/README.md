@@ -26,6 +26,7 @@ This directory contains module-level references for the Cashly API. Source owner
 | Finance treasury | Cash register | `finance/treasury/cash_register` | [CASH_REGISTER.md](CASH_REGISTER.md) |
 | Finance treasury | Payments and collections | `finance/treasury/payments` | [PAYMENTS.md](PAYMENTS.md), [COLLECTIONS.md](COLLECTIONS.md) |
 | Finance treasury | Receivables | `finance/treasury/receivables` | [RECEIVABLES.md](RECEIVABLES.md) |
+| Finance treasury | Payables | `finance/treasury/payables` | [PAYABLES.md](PAYABLES.md) |
 | Finance treasury | Payment methods | `finance/treasury/payment_methods` | [PAYMENT_METHODS.md](PAYMENT_METHODS.md) |
 | Analytics | Dashboard | `analytics/dashboard` | [DASHBOARD.md](DASHBOARD.md) |
 | Reporting | Customer reports | `partners/customers` reporting | [REPORTS_CUSTOMERS.md](REPORTS_CUSTOMERS.md) |
