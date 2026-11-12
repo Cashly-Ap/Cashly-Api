@@ -111,6 +111,8 @@ public final class PermissionCatalog {
                                         10),
                                 domain(PermissionModule.FINANCE_TREASURY_RECEIVABLES,
                                         20),
+                                domain(PermissionModule.FINANCE_TREASURY_PAYABLES,
+                                        25),
                                 domain(PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS,
                                         30))),
                 area("CONTACTS", "contacts", 60,

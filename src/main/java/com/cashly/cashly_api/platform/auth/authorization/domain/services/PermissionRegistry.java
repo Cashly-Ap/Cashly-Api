@@ -93,6 +93,10 @@ public final class PermissionRegistry {
                 VIEW_LIST, VIEW_DEBT, REPORT_PDF, PAY_ALL, PARTIAL_PAYMENT,
                 PAY_DIRECT, PAY_WITH_VALIDATION, REFUND, ADVANCE,
                 APPROVE_PAYMENT, REJECT_PAYMENT, EDIT, DELETE));
+        result.put(PermissionModule.FINANCE_TREASURY_PAYABLES, EnumSet.of(
+                VIEW_LIST, VIEW_DEBT, REPORT_PDF, PAY_ALL, PARTIAL_PAYMENT,
+                PAY_DIRECT, PAY_WITH_VALIDATION, REFUND, ADVANCE,
+                APPROVE_PAYMENT, REJECT_PAYMENT, EDIT, DELETE));
         result.put(PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS, EnumSet.of(
                 VIEW_LIST, VIEW_DETAIL, EDIT, DELETE, CREATE));
         result.put(PermissionModule.CONTACTS_CUSTOMERS, EnumSet.of(VIEW_LIST,

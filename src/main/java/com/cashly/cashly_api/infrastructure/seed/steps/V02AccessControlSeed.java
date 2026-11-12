@@ -93,6 +93,14 @@ public class V02AccessControlSeed implements SeedStep {
                 PermissionAction.PAY_ALL, PermissionAction.PARTIAL_PAYMENT,
                 PermissionAction.PAY_DIRECT,
                 PermissionAction.PAY_WITH_VALIDATION));
+        result.put(PermissionModule.FINANCE_TREASURY_PAYABLES, EnumSet.of(
+                PermissionAction.VIEW_LIST, PermissionAction.VIEW_DEBT,
+                PermissionAction.PAY_ALL, PermissionAction.PARTIAL_PAYMENT,
+                PermissionAction.PAY_DIRECT,
+                PermissionAction.PAY_WITH_VALIDATION,
+                PermissionAction.APPROVE_PAYMENT,
+                PermissionAction.REJECT_PAYMENT, PermissionAction.ADVANCE,
+                PermissionAction.REFUND));
         result.put(PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS,
                 EnumSet.of(PermissionAction.VIEW_LIST,
                         PermissionAction.VIEW_DETAIL));
