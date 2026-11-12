@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.application.services;
 
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchasePaymentQuery;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseWarehouseGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseWarehouseGateway.Warehouse;
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
@@ -7,16 +8,24 @@ import com.cashly.cashly_api.procurement.purchases.application.mappers.PurchaseM
 import com.cashly.cashly_api.procurement.purchases.domain.entity.Purchase;
 import com.cashly.cashly_api.procurement.purchases.domain.entity.PurchaseLineAllocation;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class PurchaseDetailResponseAssembler {
     private final PurchaseWarehouseGateway warehouses;
+    private final PurchasePaymentQuery payments;
 
     public PurchaseDetailResponseAssembler(
             PurchaseWarehouseGateway warehouses) {
+        this(warehouses, purchaseId -> BigDecimal.ZERO);
+    }
+
+    public PurchaseDetailResponseAssembler(
+            PurchaseWarehouseGateway warehouses, PurchasePaymentQuery payments) {
         this.warehouses = warehouses;
+        this.payments = payments;
     }
 
     public PurchaseDetailResponse toDetailResponse(Purchase purchase) {
@@ -26,7 +35,8 @@ public class PurchaseDetailResponseAssembler {
                 .map(warehouses::findById).flatMap(java.util.Optional::stream)
                 .collect(Collectors.toMap(Warehouse::id,
                         warehouse -> warehouse));
+        BigDecimal paid = payments.findPaidAmount(purchase.getId().value());
         return PurchaseMapper.toDetailResponse(purchase, warehouseDetails,
-                Map.of());
+                Map.of(), paid);
     }
 }

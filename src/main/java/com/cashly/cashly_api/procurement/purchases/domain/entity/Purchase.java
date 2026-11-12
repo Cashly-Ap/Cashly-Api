@@ -1,10 +1,12 @@
 package com.cashly.cashly_api.procurement.purchases.domain.entity;
 
+import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType;
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseId;
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseNumber;
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,11 @@ public class Purchase {
     private final UUID createdBy;
     private final String createdByName;
     private PurchaseStatus status;
+    private PaymentType paymentType;
+    private LocalDate issueDate;
+    private LocalDate dueDate;
+    private BigDecimal returnedTotal;
+    private String returnStatus;
     private String notes;
     private BigDecimal subtotal;
     private LocalDateTime confirmedAt;
@@ -34,7 +41,9 @@ public class Purchase {
     private Purchase(PurchaseId id, PurchaseNumber purchaseNumber,
             UUID supplierId, String supplierName, String supplierRif,
             UUID createdBy, String createdByName, PurchaseStatus status,
-            String notes, BigDecimal subtotal, LocalDateTime confirmedAt,
+            PaymentType paymentType, LocalDate issueDate, LocalDate dueDate,
+            BigDecimal returnedTotal, String returnStatus, String notes,
+            BigDecimal subtotal, LocalDateTime confirmedAt,
             LocalDateTime cancelledAt, String cancelledReason,
             List<PurchaseLine> lines, LocalDateTime createdAt,
             LocalDateTime updatedAt) {
@@ -46,6 +55,12 @@ public class Purchase {
         this.createdBy = createdBy;
         this.createdByName = createdByName;
         this.status = status;
+        this.paymentType = paymentType;
+        this.issueDate = issueDate;
+        this.dueDate = dueDate;
+        this.returnedTotal = returnedTotal != null ? returnedTotal
+                : BigDecimal.ZERO;
+        this.returnStatus = returnStatus;
         this.notes = notes;
         this.subtotal = subtotal;
         this.confirmedAt = confirmedAt;
@@ -60,6 +75,17 @@ public class Purchase {
             UUID supplierId, String supplierName, String supplierRif,
             UUID createdBy, String createdByName, String notes,
             List<PurchaseLine> lines) {
+        LocalDate today = LocalDate.now();
+        return create(purchaseNumber, supplierId, supplierName, supplierRif,
+                createdBy, createdByName, PaymentType.CREDIT, notes, lines,
+                today, today.plusDays(30));
+    }
+
+    public static Purchase create(PurchaseNumber purchaseNumber,
+            UUID supplierId, String supplierName, String supplierRif,
+            UUID createdBy, String createdByName, PaymentType paymentType,
+            String notes, List<PurchaseLine> lines, LocalDate issueDate,
+            LocalDate dueDate) {
         Objects.requireNonNull(purchaseNumber,
                 "Purchase number cannot be null");
         Objects.requireNonNull(supplierId, "Supplier id cannot be null");
@@ -67,10 +93,18 @@ public class Purchase {
         Objects.requireNonNull(supplierRif, "Supplier RIF cannot be null");
         Objects.requireNonNull(createdBy, "Created by cannot be null");
         Objects.requireNonNull(createdByName, "Created by name cannot be null");
+        Objects.requireNonNull(paymentType, "Payment type cannot be null");
 
         if (lines == null || lines.isEmpty()) {
             throw new IllegalArgumentException(
                     "Purchase must have at least one line");
+        }
+
+        LocalDate issue = issueDate != null ? issueDate : LocalDate.now();
+        LocalDate due = dueDate != null ? dueDate : issue.plusDays(30);
+        if (due.isBefore(issue)) {
+            throw new IllegalArgumentException(
+                    "Due date cannot be before issue date");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -78,8 +112,25 @@ public class Purchase {
 
         return new Purchase(PurchaseId.generate(), purchaseNumber, supplierId,
                 supplierName, supplierRif, createdBy, createdByName,
-                PurchaseStatus.DRAFT, notes, calculatedSubtotal, null, null,
-                null, lines, now, now);
+                PurchaseStatus.DRAFT, paymentType, issue, due, BigDecimal.ZERO,
+                null, notes, calculatedSubtotal, null, null, null, lines, now,
+                now);
+    }
+
+    public static Purchase reconstitute(PurchaseId id,
+            PurchaseNumber purchaseNumber, UUID supplierId, String supplierName,
+            String supplierRif, UUID createdBy, String createdByName,
+            PurchaseStatus status, PaymentType paymentType, LocalDate issueDate,
+            LocalDate dueDate, BigDecimal returnedTotal, String returnStatus,
+            String notes, BigDecimal subtotal, LocalDateTime confirmedAt,
+            LocalDateTime cancelledAt, String cancelledReason,
+            List<PurchaseLine> lines, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        return new Purchase(id, purchaseNumber, supplierId, supplierName,
+                supplierRif, createdBy, createdByName, status, paymentType,
+                issueDate, dueDate, returnedTotal, returnStatus, notes, subtotal,
+                confirmedAt, cancelledAt, cancelledReason, lines, createdAt,
+                updatedAt);
     }
 
     public static Purchase reconstitute(PurchaseId id,
@@ -89,10 +140,11 @@ public class Purchase {
             LocalDateTime confirmedAt, LocalDateTime cancelledAt,
             String cancelledReason, List<PurchaseLine> lines,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new Purchase(id, purchaseNumber, supplierId, supplierName,
-                supplierRif, createdBy, createdByName, status, notes, subtotal,
-                confirmedAt, cancelledAt, cancelledReason, lines, createdAt,
-                updatedAt);
+        return reconstitute(id, purchaseNumber, supplierId, supplierName,
+                supplierRif, createdBy, createdByName, status,
+                PaymentType.CREDIT, null, null, BigDecimal.ZERO, null, notes,
+                subtotal, confirmedAt, cancelledAt, cancelledReason, lines,
+                createdAt, updatedAt);
     }
 
     public void update(String notes, List<PurchaseLine> lines) {
@@ -111,19 +163,79 @@ public class Purchase {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updatePaymentTerms(PaymentType paymentType, LocalDate issueDate,
+            LocalDate dueDate) {
+        if (this.status != PurchaseStatus.DRAFT) {
+            throw new IllegalStateException(
+                    "Only DRAFT purchases can change payment terms");
+        }
+        if (paymentType == null) {
+            throw new IllegalArgumentException("Payment type cannot be null");
+        }
+        LocalDate issue = issueDate != null ? issueDate : LocalDate.now();
+        LocalDate due = dueDate != null ? dueDate : issue.plusDays(30);
+        if (due.isBefore(issue)) {
+            throw new IllegalArgumentException(
+                    "Due date cannot be before issue date");
+        }
+        this.paymentType = paymentType;
+        this.issueDate = issue;
+        this.dueDate = due;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void confirm() {
         if (this.status != PurchaseStatus.DRAFT) {
             throw new IllegalStateException(
                     "Only DRAFT purchases can be confirmed");
         }
-        this.status = PurchaseStatus.CONFIRMED;
+        this.status = this.paymentType == PaymentType.CASH
+                ? PurchaseStatus.PAID
+                : PurchaseStatus.CONFIRMED;
         this.confirmedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void applyPayment(BigDecimal amountPaid) {
+        Objects.requireNonNull(amountPaid, "Paid amount cannot be null");
+        if (amountPaid.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+        BigDecimal total = getBalanceTotal();
+        this.status = amountPaid.compareTo(total) >= 0
+                ? PurchaseStatus.PAID
+                : PurchaseStatus.PARTIALLY_PAID;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public BigDecimal getBalanceTotal() {
+        BigDecimal returned = returnedTotal != null ? returnedTotal
+                : BigDecimal.ZERO;
+        return subtotal.subtract(returned).max(BigDecimal.ZERO);
+    }
+
+    public void registerReturn(BigDecimal amount) {
+        Objects.requireNonNull(amount, "Return amount cannot be null");
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException(
+                    "Return amount must be greater than zero");
+        }
+        BigDecimal newReturned = getReturnedTotal().add(amount);
+        if (newReturned.compareTo(subtotal) > 0) {
+            throw new IllegalArgumentException(
+                    "Returned total cannot exceed purchase subtotal");
+        }
+        this.returnedTotal = newReturned;
+        this.returnStatus = newReturned.compareTo(subtotal) >= 0
+                ? "FULLY_RETURNED"
+                : "PARTIAL_RETURN";
         this.updatedAt = LocalDateTime.now();
     }
 
     public void cancel(String reason) {
         if (this.status != PurchaseStatus.DRAFT
-                && this.status != PurchaseStatus.CONFIRMED) {
+                && this.status != PurchaseStatus.CONFIRMED
+                && this.status != PurchaseStatus.PARTIALLY_PAID) {
             throw new IllegalStateException(
                     "Only DRAFT or CONFIRMED purchases can be cancelled, current: "
                             + this.status);
@@ -174,6 +286,21 @@ public class Purchase {
     }
     public PurchaseStatus getStatus() {
         return status;
+    }
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+    public BigDecimal getReturnedTotal() {
+        return returnedTotal != null ? returnedTotal : BigDecimal.ZERO;
+    }
+    public String getReturnStatus() {
+        return returnStatus;
     }
     public String getNotes() {
         return notes;

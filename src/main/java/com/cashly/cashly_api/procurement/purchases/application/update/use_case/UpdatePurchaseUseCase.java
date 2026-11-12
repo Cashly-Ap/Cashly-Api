@@ -5,6 +5,7 @@ import com.cashly.cashly_api.platform.notifications.application.ports.in.Activit
 import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseProductGateway;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseSupplierGateway;
 
 import com.cashly.cashly_api.procurement.purchases.application.update.request.UpdatePurchaseRequest;
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
@@ -17,6 +18,7 @@ import com.cashly.cashly_api.procurement.purchases.domain.repository.PurchaseRep
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseId;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import com.cashly.cashly_api.platform.audit.application.ports.in.Audited;
@@ -25,6 +27,7 @@ public class UpdatePurchaseUseCase {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseProductGateway productRepository;
+    private final PurchaseSupplierGateway supplierGateway;
     private final PurchaseDetailResponseAssembler responseAssembler;
 
     private final ActivityNotificationRecorder activityNotifications;
@@ -33,11 +36,21 @@ public class UpdatePurchaseUseCase {
             PurchaseProductGateway productRepository,
             PurchaseDetailResponseAssembler responseAssembler,
             ActivityNotificationRecorder activityNotifications) {
+        this(purchaseRepository, productRepository, null, responseAssembler,
+                activityNotifications);
+    }
+
+    public UpdatePurchaseUseCase(PurchaseRepository purchaseRepository,
+            PurchaseProductGateway productRepository,
+            PurchaseSupplierGateway supplierGateway,
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
         this.purchaseRepository = purchaseRepository;
         this.productRepository = productRepository;
+        this.supplierGateway = supplierGateway;
         this.responseAssembler = responseAssembler;
     }
 
@@ -64,6 +77,29 @@ public class UpdatePurchaseUseCase {
                     product.code(), lineRequest.quantity(),
                     lineRequest.unitCost(), allocations);
         }).toList();
+
+        if (request.paymentType() != null || request.issueDate() != null
+                || request.dueDate() != null) {
+            com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType paymentType = request
+                    .paymentType() != null
+                            ? com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType
+                                    .valueOf(request.paymentType().toUpperCase())
+                            : purchase.getPaymentType() != null
+                                    ? purchase.getPaymentType()
+                                    : com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType.CREDIT;
+            LocalDate issueDate = request.issueDate() != null
+                    ? request.issueDate()
+                    : purchase.getIssueDate() != null
+                            ? purchase.getIssueDate()
+                            : LocalDate.now();
+            LocalDate dueDate = request.dueDate() != null
+                    ? request.dueDate()
+                    : issueDate.plusDays(supplierGateway != null
+                            ? supplierGateway
+                                    .creditDays(purchase.getSupplierId())
+                            : 0);
+            purchase.updatePaymentTerms(paymentType, issueDate, dueDate);
+        }
 
         purchase.update(request.notes(), lines);
 

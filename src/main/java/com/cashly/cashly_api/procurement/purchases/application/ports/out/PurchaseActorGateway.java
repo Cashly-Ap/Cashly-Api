@@ -5,6 +5,11 @@ import java.util.UUID;
 
 public interface PurchaseActorGateway {
     Optional<Entry> findById(UUID id);
+
+    default boolean matchesPassword(UUID id, String password) {
+        return false;
+    }
+
     record Entry(UUID id, String name) {
     }
 }

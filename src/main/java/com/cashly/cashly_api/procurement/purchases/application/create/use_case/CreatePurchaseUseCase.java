@@ -84,9 +84,19 @@ public class CreatePurchaseUseCase {
         int sequence = purchaseRepository.getNextSequenceForYear(year);
         PurchaseNumber purchaseNumber = PurchaseNumber.of(year, sequence);
 
+        com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType paymentType = com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType
+                .valueOf(request.paymentType().toUpperCase());
+        LocalDate issueDate = request.issueDate() != null
+                ? request.issueDate()
+                : LocalDate.now();
+        LocalDate dueDate = request.dueDate() != null
+                ? request.dueDate()
+                : issueDate.plusDays(
+                        supplierGateway.creditDays(request.supplierId()));
+
         Purchase purchase = Purchase.create(purchaseNumber, supplier.id(),
                 supplier.name(), supplier.rif(), user.id(), user.name(),
-                request.notes(), lines);
+                paymentType, request.notes(), lines, issueDate, dueDate);
 
         Purchase saved = purchaseRepository.save(purchase);
         activityNotifications.record(ActivityEvent.of("PURCHASES",

@@ -17,4 +17,9 @@ public class LocalPurchaseActorGatewayAdapter implements PurchaseActorGateway {
         return query.findById(id)
                 .map(entry -> new Entry(entry.id(), entry.name()));
     }
+
+    @Override
+    public boolean matchesPassword(UUID id, String password) {
+        return query.matchesPassword(id, password);
+    }
 }

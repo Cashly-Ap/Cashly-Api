@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,14 +46,29 @@ public class PurchaseEntity {
     @Column(name = "created_by_name", length = 200)
     private String createdByName;
 
-    @Column(name = "status", length = 20, nullable = false)
+    @Column(name = "status", length = 30, nullable = false)
     private String status;
+
+    @Column(name = "payment_type", length = 20)
+    private String paymentType;
 
     @Column(name = "notes", length = 1000)
     private String notes;
 
-    @Column(name = "subtotal", precision = 15, scale = 2)
+    @Column(name = "subtotal", precision = 15, scale = 2, nullable = false)
     private BigDecimal subtotal;
+
+    @Column(name = "returned_total", precision = 15, scale = 2, nullable = false)
+    private BigDecimal returnedTotal;
+
+    @Column(name = "return_status", length = 20)
+    private String returnStatus;
+
+    @Column(name = "issue_date", nullable = false)
+    private LocalDate issueDate;
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
 
     @Column(name = "confirmed_at")
     private LocalDateTime confirmedAt;

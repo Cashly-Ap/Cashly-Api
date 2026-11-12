@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.procurement.purchases.infrastructure.web;
 
 import com.cashly.cashly_api.procurement.purchases.application.cancel.request.CancelPurchaseRequest;
+import com.cashly.cashly_api.procurement.purchases.application.confirm.request.ConfirmPurchaseRequest;
 import com.cashly.cashly_api.procurement.purchases.application.create.request.CreatePurchaseRequest;
 import com.cashly.cashly_api.procurement.purchases.application.update.request.UpdatePurchaseRequest;
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
@@ -141,9 +142,20 @@ public class PurchaseController {
     @PutMapping("/{id}/confirm")
     @PreAuthorize("hasAuthority('PURCHASES_CONFIRM')")
     public ResponseEntity<PurchaseDetailResponse> confirm(
-            @PathVariable UUID id) {
-        PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id);
+            @PathVariable UUID id,
+            @RequestBody(required = false) ConfirmPurchaseRequest request,
+            Authentication authentication) {
+        UUID userId = authentication != null
+                ? UUID.fromString(String.valueOf(authentication.getPrincipal()))
+                : null;
+        PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id,
+                request != null ? request.confirmationPassword() : null,
+                userId);
         return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<PurchaseDetailResponse> confirm(UUID id) {
+        return ResponseEntity.ok(confirmPurchaseUseCase.execute(id));
     }
 
     @PutMapping("/{id}/cancel")

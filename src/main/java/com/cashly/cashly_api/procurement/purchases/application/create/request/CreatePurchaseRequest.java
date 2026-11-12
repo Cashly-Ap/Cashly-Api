@@ -7,15 +7,33 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public record CreatePurchaseRequest(
         @NotNull(message = "Supplier is required") UUID supplierId,
 
+        String paymentType,
+
+        LocalDate issueDate,
+
+        LocalDate dueDate,
+
         @Size(max = 1000, message = "Notes must be at most 1000 characters") String notes,
 
         @NotEmpty(message = "At least one purchase line is required") @Valid List<LineRequest> lines) {
+
+    public CreatePurchaseRequest(UUID supplierId, String notes,
+            List<LineRequest> lines) {
+        this(supplierId, "CREDIT", null, null, notes, lines);
+    }
+
+    public CreatePurchaseRequest {
+        if (paymentType == null || paymentType.isBlank()) {
+            paymentType = "CREDIT";
+        }
+    }
     public record LineRequest(
             @NotNull(message = "Product is required") UUID productId,
 

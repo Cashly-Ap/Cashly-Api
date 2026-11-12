@@ -12,6 +12,7 @@ import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.en
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseStatus;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -76,8 +77,12 @@ public class V22PurchasesSeed implements SeedStep {
         purchase.setCreatedBy(ADMIN_USER);
         purchase.setCreatedByName("Cashly Administrator");
         purchase.setStatus("CONFIRMED");
+        purchase.setPaymentType("CREDIT");
         purchase.setNotes("Deterministic seed purchase");
         purchase.setSubtotal(total);
+        purchase.setReturnedTotal(BigDecimal.ZERO);
+        purchase.setIssueDate(LocalDate.of(2025, 1, 14));
+        purchase.setDueDate(LocalDate.of(2025, 2, 13));
         purchase.setConfirmedAt(LocalDateTime.of(2025, 1, 14, 8, 0));
         purchase.setCreatedAt(LocalDateTime.of(2025, 1, 14, 8, 0));
         purchase.setUpdatedAt(LocalDateTime.of(2025, 1, 14, 8, 0));

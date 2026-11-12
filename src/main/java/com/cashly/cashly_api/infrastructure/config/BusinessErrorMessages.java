@@ -38,6 +38,8 @@ final class BusinessErrorMessages {
                     "catalog.products.errors.cannotSetComponentsOnANonCompositeProduct"),
             Map.entry("Contrasena incorrecta",
                     "finance.billing.invoices.errors.incorrectPassword"),
+            Map.entry("El monto excede el saldo a favor del proveedor",
+                    "procurement.purchases.errors.amountExceedsSupplierBalance"),
             Map.entry("Current password is incorrect",
                     "platform.auth.user.errors.currentPasswordIsIncorrect"),
             Map.entry("Current password is required",
@@ -178,6 +180,9 @@ final class BusinessErrorMessages {
             Map.entry(
                     "Se requiere contrasena para confirmar facturas que exceden el limite de credito",
                     "finance.billing.invoices.errors.aPasswordIsRequiredToConfirmInvoicesThatExceedTheCreditLimit"),
+            Map.entry(
+                    "Se requiere contrasena para confirmar compras que exceden el limite de credito",
+                    "procurement.purchases.errors.aPasswordIsRequiredToConfirmPurchasesThatExceedTheCreditLimit"),
             Map.entry("Select active role and department",
                     "platform.auth.authorization.errors.selectActiveRoleAndDepartment"),
             Map.entry("The monetary operation is already registered in cash",

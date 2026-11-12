@@ -18,6 +18,9 @@ import com.cashly.cashly_api.procurement.purchases.application.services.Purchase
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseProductGateway;
 import com.cashly.cashly_api.procurement.purchases.domain.repository.PurchaseRepository;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseSupplierGateway;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchasePaymentQuery;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseActorGateway;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.SupplierCreditGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.InventoryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +30,10 @@ public class PurchaseConfig {
 
     @Bean
     public PurchaseDetailResponseAssembler purchaseDetailResponseAssembler(
-            PurchaseWarehouseGateway warehouseGateway) {
-        return new PurchaseDetailResponseAssembler(warehouseGateway);
+            PurchaseWarehouseGateway warehouseGateway,
+            PurchasePaymentQuery paymentQuery) {
+        return new PurchaseDetailResponseAssembler(warehouseGateway,
+                paymentQuery);
     }
 
     @Bean
@@ -61,10 +66,11 @@ public class PurchaseConfig {
     public UpdatePurchaseUseCase updatePurchaseUseCase(
             PurchaseRepository purchaseRepository,
             PurchaseProductGateway productRepository,
+            PurchaseSupplierGateway supplierGateway,
             PurchaseDetailResponseAssembler responseAssembler,
             ActivityNotificationRecorder activityNotifications) {
         return new UpdatePurchaseUseCase(purchaseRepository, productRepository,
-                responseAssembler, activityNotifications);
+                supplierGateway, responseAssembler, activityNotifications);
     }
 
     @Bean
@@ -72,9 +78,12 @@ public class PurchaseConfig {
             PurchaseRepository purchaseRepository,
             InventoryGateway inventoryGateway,
             PurchaseDetailResponseAssembler responseAssembler,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            SupplierCreditGateway supplierCreditGateway,
+            PurchaseActorGateway actorGateway) {
         return new ConfirmPurchaseUseCase(purchaseRepository, inventoryGateway,
-                responseAssembler, activityNotifications);
+                responseAssembler, activityNotifications,
+                supplierCreditGateway, actorGateway);
     }
 
     @Bean

@@ -23,6 +23,11 @@ public class LocalPurchaseSupplierGatewayAdapter
     }
 
     @Override
+    public int creditDays(UUID id) {
+        return query.creditDays(id);
+    }
+
+    @Override
     public List<Entry> findByIds(Collection<UUID> ids) {
         return query.findByIds(ids).stream()
                 .map(entry -> new Entry(entry.id(), entry.name(), entry.rif()))

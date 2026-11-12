@@ -12,10 +12,15 @@ class PurchaseStatusUnitTest {
     void should_HaveAllExpectedEnumValues() {
         PurchaseStatus[] values = PurchaseStatus.values();
 
-        assertEquals(3, values.length);
+        assertEquals(8, values.length);
         assertNotNull(PurchaseStatus.valueOf("DRAFT"));
         assertNotNull(PurchaseStatus.valueOf("CONFIRMED"));
+        assertNotNull(PurchaseStatus.valueOf("PAID"));
+        assertNotNull(PurchaseStatus.valueOf("PARTIALLY_PAID"));
+        assertNotNull(PurchaseStatus.valueOf("OVERDUE"));
         assertNotNull(PurchaseStatus.valueOf("CANCELLED"));
+        assertNotNull(PurchaseStatus.valueOf("PARTIAL_RETURN"));
+        assertNotNull(PurchaseStatus.valueOf("FULLY_RETURNED"));
     }
 
     @Test
