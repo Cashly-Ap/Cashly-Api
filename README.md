@@ -82,6 +82,25 @@ docker exec cashly-api-mysql mysql -uroot -pverysecret \
 docker compose start app
 ```
 
+## Troubleshooting
+
+### API container fails to start after refactoring packages
+
+The development container bind-mounts `.:/app`, so `target/` is shared with the host and written by the container as `root`. After moving or renaming classes (package refactors), stale `.class` files remain in `target/classes` and Spring fails at startup with:
+
+```text
+ConflictingBeanDefinitionException: Annotation-specified bean name '...'
+conflicts with existing, non-compatible bean definition of same name and class
+```
+
+This is **not** a migration problem. Wipe the compiled output and recreate the API container (MySQL data is preserved) with:
+
+```bash
+./scripts/reset-target.sh
+```
+
+The script stops only `app`, removes the root-owned `target/` through a throwaway container, rebuilds and recreates `app`, and verifies `Started CashlyApplication` in the logs. Run it whenever you refactor package/class names.
+
 ## Permissions
 
 Authorization uses a single permission code per operation:
