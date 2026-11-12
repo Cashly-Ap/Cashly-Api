@@ -40,8 +40,8 @@ class PermissionRegistryTest {
 
     @Test
     void declares_the_agreed_one_hundred_thirty_one_permissions() {
-        assertThat(PermissionRegistry.codes()).hasSize(132).doesNotHaveDuplicates();
-        assertThat(PermissionRegistry.modules()).hasSize(22);
+        assertThat(PermissionRegistry.codes()).hasSize(145).doesNotHaveDuplicates();
+        assertThat(PermissionRegistry.modules()).hasSize(23);
     }
 
     @Test

@@ -34,6 +34,7 @@ class ErpAreaStructureTest {
             Map.entry("payments", "finance/treasury/payments"),
             Map.entry("cash_register", "finance/treasury/cash_register"),
             Map.entry("receivables", "finance/treasury/receivables"),
+            Map.entry("payables", "finance/treasury/payables"),
             Map.entry("payment_methods", "finance/treasury/payment_methods"),
             Map.entry("customers", "partners/customers"),
             Map.entry("suppliers", "partners/suppliers"),

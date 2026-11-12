@@ -27,7 +27,8 @@ class CapabilityStructureTest {
             "warehouses", Set.of("management", "stock", "reporting"),
             "customers",
             Set.of("profile", "balance", "credit", "warehouse_access"),
-            "payments", Set.of("collection", "credit", "reporting"),
+            "payments",
+            Set.of("collection", "credit", "payable", "reporting"),
             "cash_register", Set.of("sessions", "reporting"));
     private static final Set<String> COMPOSITION_SOURCES = Set.of(
             "warehouses/infrastructure/config/WarehouseConfig.java",

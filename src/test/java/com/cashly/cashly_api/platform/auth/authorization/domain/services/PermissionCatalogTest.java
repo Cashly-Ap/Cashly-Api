@@ -29,7 +29,7 @@ class PermissionCatalogTest {
                 .map(PermissionCatalog.PermissionEntry::code)
                 .toList();
 
-        assertThat(codes).hasSize(132).doesNotHaveDuplicates();
+        assertThat(codes).hasSize(145).doesNotHaveDuplicates();
         assertThat(Set.copyOf(codes)).isEqualTo(PermissionRegistry.codes());
     }
 
@@ -60,6 +60,7 @@ class PermissionCatalogTest {
                 .containsExactly(
                         PermissionModule.FINANCE_TREASURY_CASH_REGISTER,
                         PermissionModule.FINANCE_TREASURY_RECEIVABLES,
+                        PermissionModule.FINANCE_TREASURY_PAYABLES,
                         PermissionModule.FINANCE_TREASURY_PAYMENT_METHODS);
     }
 

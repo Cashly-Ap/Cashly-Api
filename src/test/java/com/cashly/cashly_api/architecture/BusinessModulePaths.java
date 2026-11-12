@@ -18,6 +18,7 @@ public final class BusinessModulePaths {
             Map.entry("notifications", "platform/notifications"),
             Map.entry("orders", "sales/orders"),
             Map.entry("payment_methods", "finance/treasury/payment_methods"),
+            Map.entry("payables", "finance/treasury/payables"),
             Map.entry("payments", "finance/treasury/payments"),
             Map.entry("price_types", "catalog/price_types"),
             Map.entry("products", "catalog/products"),

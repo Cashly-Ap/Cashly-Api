@@ -18,10 +18,10 @@ class ReportingOwnershipTest {
             Path.of("src/test/java/com/cashly/cashly_api"));
     private static final Set<String> OWNERS = Set.of("invoices", "orders",
             "quotes", "purchases", "products", "warehouses", "payments",
-            "receivables", "cash_register");
+            "receivables", "payables", "cash_register");
     private static final Set<String> DOCUMENT_OWNERS = Set.of("invoices",
             "orders", "quotes", "purchases", "products", "warehouses",
-            "payments", "receivables");
+            "payments", "receivables", "payables");
     private static final Set<String> SHARED_PDF = Set.of("PdfBranding",
             "PdfStatusColors");
     private static final Pattern GLOBAL_REFERENCE = Pattern
