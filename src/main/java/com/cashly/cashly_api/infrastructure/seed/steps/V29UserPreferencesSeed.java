@@ -20,11 +20,9 @@ public class V29UserPreferencesSeed implements SeedStep {
     }
     @Override
     public void seed() {
-        if (repository.findByUserId(ADMIN_USER).isEmpty())
-            repository.save(ADMIN_USER, new UserPreferences("dark",
-                    "informative", true, true, "es"));
-        if (repository.findByUserId(OPERATOR_USER).isEmpty())
-            repository.save(OPERATOR_USER, new UserPreferences("system",
-                    "minimal", true, false, "es"));
+        repository.save(ADMIN_USER, new UserPreferences("dark", "minimal",
+                false, false, "es"));
+        repository.save(OPERATOR_USER, new UserPreferences("system", "minimal",
+                true, false, "es"));
     }
 }

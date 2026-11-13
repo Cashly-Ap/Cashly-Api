@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,12 +43,15 @@ class CancelInvoiceUseCaseUnitTest {
     @Mock
     private ActivityNotificationRecorder activityNotifications;
 
+    @Mock
+    private CashRegisterGateway cashRegisterGateway;
+
     private CancelInvoiceUseCase cancelInvoiceUseCase;
 
     @BeforeEach
     void setUp() {
         cancelInvoiceUseCase = new CancelInvoiceUseCase(invoiceRepository,
-                inventoryGateway, activityNotifications);
+                inventoryGateway, activityNotifications, cashRegisterGateway);
     }
 
     @Test
@@ -68,6 +72,7 @@ class CancelInvoiceUseCaseUnitTest {
         assertEquals("CANCELLED", response.status());
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verify(invoiceRepository).save(invoice);
+        verify(cashRegisterGateway).cancelInvoice(id);
         verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());
     }
 

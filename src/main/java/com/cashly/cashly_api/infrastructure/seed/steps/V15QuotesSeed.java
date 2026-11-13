@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class V15QuotesSeed implements SeedStep {
 
     private static final Instant CREATED_AT = Instant
-            .parse("2025-01-09T12:00:00Z");
+            .parse("2026-01-09T12:00:00Z");
     private final EntityManager entityManager;
 
     public V15QuotesSeed(EntityManager entityManager) {
@@ -36,36 +36,40 @@ public class V15QuotesSeed implements SeedStep {
 
     @Override
     public void seed() {
-        quote(QUOTE_ONE, "PRE-2025-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
+        quote(QUOTE_ONE, "PRE-2026-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
                 "J-10000001-1", "one", PRODUCT_COFFEE, "Ground coffee",
-                "PRD-0001", "4", "6.50", CATEGORY_DRINKS);
-        quote(QUOTE_TWO, "PRE-2025-0002", CUSTOMER_TWO, "Ana Pérez",
+                "PRD-0001", "4", "6.50", CATEGORY_DRINKS, CREATED_AT);
+        quote(QUOTE_TWO, "PRE-2026-0002", CUSTOMER_TWO, "Ana Pérez",
                 "V-10000002-2", "two", PRODUCT_WATER, "Mineral water",
-                "PRD-0002", "6", "1.00", CATEGORY_DRINKS);
+                "PRD-0002", "6", "1.00", CATEGORY_DRINKS, CREATED_AT);
         for (var sample : SeedDocuments.additional()) {
             quote(id("quote." + sample.key()), sample.documentNumber("PRE"),
                     sample.customerId(), sample.customerName(),
                     sample.customerRif(), sample.key(), sample.productId(),
                     sample.productName(), sample.productCode(),
-                    sample.quantity(), sample.price(), CATEGORY_DRINKS);
+                    sample.quantity(), sample.price(), CATEGORY_DRINKS,
+                    sample.createdAt(9, 0).toInstant(ZoneOffset.UTC));
             applyScenario(sample, sample.scenario());
         }
-        var sequence = entityManager.find(QuoteNumberSequenceJpaEntity.class,
-                SeedDocuments.YEAR);
-        if (sequence == null) {
-            sequence = new QuoteNumberSequenceJpaEntity();
-            sequence.setYear(SeedDocuments.YEAR);
-            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
-            entityManager.persist(sequence);
-        } else if (sequence.getNextValue() < SeedDocuments.NEXT_NUMBER) {
-            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
+        for (int year : SeedDocuments.years()) {
+            var sequence = entityManager.find(QuoteNumberSequenceJpaEntity.class,
+                    year);
+            int nextValue = SeedDocuments.nextNumberFor(year);
+            if (sequence == null) {
+                sequence = new QuoteNumberSequenceJpaEntity();
+                sequence.setYear(year);
+                sequence.setNextValue(nextValue);
+                entityManager.persist(sequence);
+            } else if (sequence.getNextValue() < nextValue) {
+                sequence.setNextValue(nextValue);
+            }
         }
     }
 
     private void quote(UUID id, String number, UUID customerId,
             String customerName, String rif, String key, UUID productId,
             String productName, String code, String quantity, String price,
-            UUID categoryId) {
+            UUID categoryId, Instant createdAt) {
         var existing = entityManager.find(QuoteJpaEntity.class, id);
         if (existing != null) {
             if (existing.getQuoteNumber()
@@ -86,11 +90,12 @@ public class V15QuotesSeed implements SeedStep {
         quote.setCreatedBy(OPERATOR_USER);
         quote.setCreatedByName("Sales Operator");
         quote.setStatus("DRAFT");
-        quote.setExpiryDate(LocalDate.of(2025, 2, 9));
+        quote.setExpiryDate(LocalDate.ofInstant(createdAt,
+                ZoneOffset.UTC).plusDays(31));
         quote.setNotes("Deterministic seed quote");
         quote.setSubtotal(total);
-        quote.setCreatedAt(CREATED_AT);
-        quote.setUpdatedAt(CREATED_AT);
+        quote.setCreatedAt(createdAt);
+        quote.setUpdatedAt(createdAt);
         var line = new QuoteLineJpaEntity();
         line.setId(id("quote-line." + key));
         line.setQuote(quote);
@@ -136,13 +141,14 @@ public class V15QuotesSeed implements SeedStep {
                         ? sample.documentNumber("INV")
                         : null);
         quote.setCancelledAt(scenario.quote() == QuoteStatus.CANCELLED
-                ? EVENT_AT.toInstant(ZoneOffset.UTC)
+                ? sample.createdAt(10, 0).toInstant(ZoneOffset.UTC)
                 : null);
         quote.setCancelledReason(scenario.quote() == QuoteStatus.CANCELLED
                 ? CANCELLATION_REASON
                 : null);
         quote.setNotes(SCENARIO_NOTES);
-        quote.setUpdatedAt(EVENT_AT.toInstant(ZoneOffset.UTC));
+        quote.setUpdatedAt(
+                sample.createdAt(10, 0).toInstant(ZoneOffset.UTC));
     }
 
 }

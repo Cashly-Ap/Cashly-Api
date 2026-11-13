@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V11OrdersSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 7,
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1, 7,
             8, 0);
     private final EntityManager entityManager;
     public V11OrdersSeed(EntityManager entityManager) {
@@ -29,36 +29,41 @@ public class V11OrdersSeed implements SeedStep {
     }
     @Override
     public void seed() {
-        order(ORDER_ONE, "ORD-2025-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
+        order(ORDER_ONE, "ORD-2026-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
                 "J-10000001-1", id("order-line.one"), PRODUCT_COFFEE,
-                "Ground coffee", "PRD-0001", "2", "6.50", CATEGORY_DRINKS);
-        order(ORDER_TWO, "ORD-2025-0002", CUSTOMER_TWO, "Ana Pérez",
+                "Ground coffee", "PRD-0001", "2", "6.50", CATEGORY_DRINKS,
+                CREATED_AT);
+        order(ORDER_TWO, "ORD-2026-0002", CUSTOMER_TWO, "Ana Pérez",
                 "V-10000002-2", id("order-line.two"), PRODUCT_WATER,
-                "Mineral water", "PRD-0002", "3", "1.00", CATEGORY_DRINKS);
+                "Mineral water", "PRD-0002", "3", "1.00", CATEGORY_DRINKS,
+                CREATED_AT);
         for (var sample : SeedDocuments.additional()) {
             order(id("order." + sample.key()), sample.documentNumber("ORD"),
                     sample.customerId(), sample.customerName(),
                     sample.customerRif(), id("order-line." + sample.key()),
                     sample.productId(), sample.productName(),
                     sample.productCode(), sample.quantity(), sample.price(),
-                    CATEGORY_DRINKS);
+                    CATEGORY_DRINKS, sample.createdAt(8, 0));
             applyScenario(sample, sample.scenario());
         }
-        var sequence = entityManager.find(OrderNumberSequenceEntity.class,
-                SeedDocuments.YEAR);
-        if (sequence == null) {
-            sequence = new OrderNumberSequenceEntity();
-            sequence.setYear(SeedDocuments.YEAR);
-            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
-            entityManager.persist(sequence);
-        } else if (sequence.getNextValue() < SeedDocuments.NEXT_NUMBER) {
-            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
+        for (int year : SeedDocuments.years()) {
+            var sequence = entityManager.find(OrderNumberSequenceEntity.class,
+                    year);
+            int nextValue = SeedDocuments.nextNumberFor(year);
+            if (sequence == null) {
+                sequence = new OrderNumberSequenceEntity();
+                sequence.setYear(year);
+                sequence.setNextValue(nextValue);
+                entityManager.persist(sequence);
+            } else if (sequence.getNextValue() < nextValue) {
+                sequence.setNextValue(nextValue);
+            }
         }
     }
     private void order(UUID id, String number, UUID customerId,
             String customerName, String rif, UUID lineId, UUID productId,
             String productName, String code, String quantity, String price,
-            UUID categoryId) {
+            UUID categoryId, LocalDateTime createdAt) {
         BigDecimal qty = new BigDecimal(quantity),
                 unitPrice = new BigDecimal(price);
         var existing = entityManager.find(OrderEntity.class, id);
@@ -78,8 +83,8 @@ public class V11OrdersSeed implements SeedStep {
         order.setStatus("CONFIRMED");
         order.setNotes("Deterministic seed order");
         order.setSubtotal(qty.multiply(unitPrice));
-        order.setCreatedAt(CREATED_AT);
-        order.setUpdatedAt(CREATED_AT);
+        order.setCreatedAt(createdAt);
+        order.setUpdatedAt(createdAt);
         order.getLines().add(buildLine(order, lineId, productId, productName,
                 code, qty, unitPrice, categoryId));
         entityManager.persist(order);
@@ -128,12 +133,14 @@ public class V11OrdersSeed implements SeedStep {
                 ? sample.documentNumber("INV")
                 : null);
         order.setCancelledAt(
-                scenario.order() == OrderStatus.CANCELLED ? EVENT_AT : null);
+                scenario.order() == OrderStatus.CANCELLED
+                        ? sample.createdAt(10, 0)
+                        : null);
         order.setCancelledReason(scenario.order() == OrderStatus.CANCELLED
                 ? CANCELLATION_REASON
                 : null);
         order.setNotes(SCENARIO_NOTES);
-        order.setUpdatedAt(EVENT_AT);
+        order.setUpdatedAt(sample.createdAt(10, 0));
     }
 
 }

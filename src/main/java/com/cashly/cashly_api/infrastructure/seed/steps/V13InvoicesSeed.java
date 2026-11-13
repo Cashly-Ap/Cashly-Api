@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V13InvoicesSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 8,
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1, 8,
             8, 0);
     private final EntityManager entityManager;
     public V13InvoicesSeed(EntityManager entityManager) {
@@ -31,13 +31,15 @@ public class V13InvoicesSeed implements SeedStep {
     }
     @Override
     public void seed() {
-        invoice(INVOICE_ONE, "INV-2025-0001", CUSTOMER_ONE,
+        invoice(INVOICE_ONE, "INV-2026-0001", CUSTOMER_ONE,
                 "Mercado Central, C.A.", "J-10000001-1", ORDER_ONE,
-                "ORD-2025-0001", "invoice-line.one", PRODUCT_COFFEE,
-                "Ground coffee", "PRD-0001", "2", "6.50");
-        invoice(INVOICE_TWO, "INV-2025-0002", CUSTOMER_TWO, "Ana Pérez",
-                "V-10000002-2", ORDER_TWO, "ORD-2025-0002", "invoice-line.two",
-                PRODUCT_WATER, "Mineral water", "PRD-0002", "3", "1.00");
+                "ORD-2026-0001", "invoice-line.one", PRODUCT_COFFEE,
+                "Ground coffee", "PRD-0001", "2", "6.50",
+                LocalDate.of(2026, 1, 8), CREATED_AT);
+        invoice(INVOICE_TWO, "INV-2026-0002", CUSTOMER_TWO, "Ana Pérez",
+                "V-10000002-2", ORDER_TWO, "ORD-2026-0002",
+                "invoice-line.two", PRODUCT_WATER, "Mineral water", "PRD-0002",
+                "3", "1.00", LocalDate.of(2026, 1, 8), CREATED_AT);
         for (var sample : SeedDocuments.additional()) {
             invoice(id("invoice." + sample.key()), sample.documentNumber("INV"),
                     sample.customerId(), sample.customerName(),
@@ -45,24 +47,29 @@ public class V13InvoicesSeed implements SeedStep {
                     sample.documentNumber("ORD"),
                     "invoice-line." + sample.key(), sample.productId(),
                     sample.productName(), sample.productCode(),
-                    sample.quantity(), sample.price());
+                    sample.quantity(), sample.price(), sample.date(),
+                    sample.createdAt(9, 0));
             applyScenario(sample, sample.scenario());
         }
-        var sequence = entityManager.find(InvoiceNumberSequenceEntity.class,
-                SeedDocuments.YEAR);
-        if (sequence == null) {
-            sequence = new InvoiceNumberSequenceEntity();
-            sequence.setYear(SeedDocuments.YEAR);
-            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
-            entityManager.persist(sequence);
-        } else if (sequence.getNextValue() < SeedDocuments.NEXT_NUMBER) {
-            sequence.setNextValue(SeedDocuments.NEXT_NUMBER);
+        for (int year : SeedDocuments.years()) {
+            var sequence = entityManager.find(InvoiceNumberSequenceEntity.class,
+                    year);
+            int nextValue = SeedDocuments.nextNumberFor(year);
+            if (sequence == null) {
+                sequence = new InvoiceNumberSequenceEntity();
+                sequence.setYear(year);
+                sequence.setNextValue(nextValue);
+                entityManager.persist(sequence);
+            } else if (sequence.getNextValue() < nextValue) {
+                sequence.setNextValue(nextValue);
+            }
         }
     }
     private void invoice(UUID id, String number, UUID customerId,
             String customerName, String rif, UUID orderId, String orderNumber,
             String lineKey, UUID productId, String productName, String code,
-            String quantity, String price) {
+            String quantity, String price, LocalDate issueDate,
+            LocalDateTime createdAt) {
         BigDecimal qty = new BigDecimal(quantity),
                 unitPrice = new BigDecimal(price),
                 total = qty.multiply(unitPrice);
@@ -87,10 +94,10 @@ public class V13InvoicesSeed implements SeedStep {
         invoice.setNotes("Deterministic seed invoice");
         invoice.setSubtotal(total);
         invoice.setReturnedTotal(BigDecimal.ZERO);
-        invoice.setCreatedAt(CREATED_AT);
-        invoice.setUpdatedAt(CREATED_AT);
-        invoice.setIssueDate(LocalDate.of(2025, 1, 8));
-        invoice.setDueDate(LocalDate.of(2025, 2, 7));
+        invoice.setCreatedAt(createdAt);
+        invoice.setUpdatedAt(createdAt);
+        invoice.setIssueDate(issueDate);
+        invoice.setDueDate(issueDate.plusDays(30));
         invoice.getLines().add(buildLine(invoice, lineKey, productId,
                 productName, code, qty, unitPrice, total));
         entityManager.persist(invoice);
@@ -142,13 +149,13 @@ public class V13InvoicesSeed implements SeedStep {
             invoice.setOrderNumber(sample.documentNumber("ORD"));
         }
         invoice.setCancelledAt(scenario.invoice() == InvoiceStatus.CANCELLED
-                ? EVENT_AT
+                ? sample.createdAt(10, 0)
                 : null);
         invoice.setCancelledReason(scenario.invoice() == InvoiceStatus.CANCELLED
                 ? CANCELLATION_REASON
                 : null);
         invoice.setNotes(PENDING_LINKS_NOTES);
-        invoice.setUpdatedAt(EVENT_AT);
+        invoice.setUpdatedAt(sample.createdAt(10, 0));
     }
 
 }

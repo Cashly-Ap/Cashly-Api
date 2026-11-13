@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class V31SupplierPaymentsSeed implements SeedStep {
 
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1,
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1,
             16, 8, 0);
 
     private final EntityManager entityManager;
@@ -35,9 +35,9 @@ public class V31SupplierPaymentsSeed implements SeedStep {
 
     @Override
     public void seed() {
-        payment("one", "SPAY-2025-0001", id("supplier.one"),
+        payment("one", "SPAY-2026-0001", id("supplier.one"),
                 id("purchase.one"), "20.00");
-        payment("two", "SPAY-2025-0002", id("supplier.two"),
+        payment("two", "SPAY-2026-0002", id("supplier.two"),
                 id("purchase.two"), "5.00");
         balance(id("supplier.one"), new BigDecimal("5.00"), "SBT-0001");
     }
@@ -58,7 +58,7 @@ public class V31SupplierPaymentsSeed implements SeedStep {
         payment.setPaymentMethodId(id("payment-method.cash"));
         payment.setSource("PAYMENT_METHOD");
         payment.setReferenceNumber("SEED-" + number);
-        payment.setPaymentDate(LocalDate.of(2025, 1, 16));
+        payment.setPaymentDate(LocalDate.of(2026, 1, 16));
         payment.setNotes("Deterministic seed supplier payment");
         payment.setStatus(SupplierPaymentStatus.APPLIED.name());
         payment.setCreatedBy(ADMIN_USER);

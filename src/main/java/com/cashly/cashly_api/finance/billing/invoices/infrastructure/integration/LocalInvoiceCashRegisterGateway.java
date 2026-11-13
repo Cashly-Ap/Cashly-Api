@@ -2,6 +2,7 @@ package com.cashly.cashly_api.finance.billing.invoices.infrastructure.integratio
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.CashRegisterOperations;
 import org.springframework.stereotype.Component;
+import java.util.UUID;
 @Component
 public class LocalInvoiceCashRegisterGateway implements CashRegisterGateway {
     private final CashRegisterOperations operations;
@@ -11,11 +12,21 @@ public class LocalInvoiceCashRegisterGateway implements CashRegisterGateway {
     public void requireOpenRegister() {
         operations.requireOpenRegister();
     }
+    public boolean hasOpenRegister() {
+        return operations.hasOpenRegister();
+    }
     public void recordInvoice(InvoiceEntry entry) {
+        if (!operations.hasOpenRegister()) {
+            return;
+        }
         operations.record(new CashRegisterOperations.Entry(
                 CashRegisterOperations.Direction.IN,
                 CashRegisterOperations.EntryType.INVOICE, entry.amount(), null,
                 "Factura confirmada " + entry.invoiceNumber(), "INVOICE",
                 entry.invoiceId(), entry.actorId(), entry.actorName()));
+    }
+    public void cancelInvoice(UUID invoiceId) {
+        operations.cancelBySource("INVOICE", invoiceId, "Factura cancelada",
+                null, null);
     }
 }

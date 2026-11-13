@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V17ReturnsSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1,
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1,
             11, 8, 0);
     private final EntityManager entityManager;
     public V17ReturnsSeed(EntityManager entityManager) {
@@ -27,14 +27,14 @@ public class V17ReturnsSeed implements SeedStep {
     }
     @Override
     public void seed() {
-        returned(RETURN_ONE, "RET-2025-0001", INVOICE_ONE, CUSTOMER_ONE, "one",
+        returned(RETURN_ONE, "RET-2026-0001", INVOICE_ONE, CUSTOMER_ONE, "one",
                 "invoice-line.one", PRODUCT_COFFEE, "1", "6.50");
-        returned(RETURN_TWO, "RET-2025-0002", INVOICE_TWO, CUSTOMER_TWO, "two",
+        returned(RETURN_TWO, "RET-2026-0002", INVOICE_TWO, CUSTOMER_TWO, "two",
                 "invoice-line.two", PRODUCT_WATER, "1", "1.00");
         if (entityManager.find(ReturnNumberSequenceEntity.class,
-                2025) == null) {
+                2026) == null) {
             var sequence = new ReturnNumberSequenceEntity();
-            sequence.setYear(2025);
+            sequence.setYear(2026);
             sequence.setNextValue(3);
             entityManager.persist(sequence);
         }

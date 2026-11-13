@@ -5,6 +5,7 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 public class CashRegisterOperationsService implements CashRegisterOperations {
     private final CashMovementService movements;
     public CashRegisterOperationsService(CashMovementService movements) {
@@ -12,6 +13,17 @@ public class CashRegisterOperationsService implements CashRegisterOperations {
     }
     public void requireOpenRegister() {
         movements.requireOpenRegister();
+    }
+
+    public boolean hasOpenRegister() {
+        return movements.hasOpenRegister();
+    }
+
+    @Transactional
+    public void cancelBySource(String sourceType, UUID sourceId, String reason,
+            UUID actorId, String actorName) {
+        movements.cancelBySource(sourceType, sourceId, reason, actorId,
+                actorName);
     }
     @Transactional
     public void record(Entry entry) {

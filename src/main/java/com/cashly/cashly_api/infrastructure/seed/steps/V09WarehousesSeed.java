@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V09WarehousesSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 6,
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1, 6,
             8, 0);
     private final EntityManager entityManager;
     public V09WarehousesSeed(EntityManager entityManager) {

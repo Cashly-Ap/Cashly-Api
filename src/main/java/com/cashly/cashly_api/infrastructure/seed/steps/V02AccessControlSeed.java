@@ -40,6 +40,7 @@ public class V02AccessControlSeed implements SeedStep {
         saveDepartment(new Department(SALES_DEPARTMENT, "Sales",
                 "Commercial operations", true, 0));
         ensureOperatorPaymentMethods();
+        access.activateAllRoles();
         access.createAdministrationLockIfAbsent();
     }
 

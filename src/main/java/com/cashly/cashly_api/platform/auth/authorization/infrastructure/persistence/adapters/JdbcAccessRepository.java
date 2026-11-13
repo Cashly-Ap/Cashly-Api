@@ -139,6 +139,11 @@ public class JdbcAccessRepository implements AccessRepository {
                         bytes(role.id()), module.name(), action.name())));
     }
 
+    @Override
+    public void activateAllRoles() {
+        jdbc.update("update auth_roles set active=true where active=false");
+    }
+
     private Department mapDepartment(ResultSet rs, int row)
             throws SQLException {
         return new Department(uuid(rs.getBytes("id")), rs.getString("name"),

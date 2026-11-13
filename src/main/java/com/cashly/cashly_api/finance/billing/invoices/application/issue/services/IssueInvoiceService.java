@@ -69,11 +69,9 @@ public class IssueInvoiceService {
             }
         }
         Invoice saved = invoices.save(invoice);
-        if (origin == InvoiceOrigin.MANUAL_DRAFT) {
-            cashRegister.recordInvoice(new CashRegisterGateway.InvoiceEntry(
-                    saved.calculateTotal(), saved.getId().value(),
-                    saved.getInvoiceNumber().value(), actorId, actor.name()));
-        }
+        cashRegister.recordInvoice(new CashRegisterGateway.InvoiceEntry(
+                saved.calculateTotal(), saved.getId().value(),
+                saved.getInvoiceNumber().value(), actorId, actor.name()));
         return saved;
     }
 }

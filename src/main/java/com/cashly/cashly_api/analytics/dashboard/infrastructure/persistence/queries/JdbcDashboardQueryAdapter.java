@@ -30,9 +30,27 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
     }
 
     public DashboardSummaryResponse getSummary() {
+        LocalDate start = LocalDate.now().withDayOfMonth(1);
+        LocalDate end = start.plusMonths(1);
         BigDecimal monthlySales = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(subtotal), 0) FROM invoices WHERE status NOT IN ('CANCELLED', 'DRAFT') AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())",
-                BigDecimal.class);
+                "SELECT COALESCE(SUM(delta), 0) FROM ("
+                        + "  SELECT i.subtotal AS delta FROM invoices i"
+                        + "   WHERE i.status NOT IN ('CANCELLED', 'DRAFT')"
+                        + "     AND i.created_at >= ? AND i.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT -cn.amount FROM credit_notes cn"
+                        + "   WHERE cn.created_at >= ? AND cn.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT -r.total FROM returns r"
+                        + "   WHERE r.created_at >= ? AND r.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT dn.amount FROM debit_notes dn"
+                        + "   WHERE dn.created_at >= ? AND dn.created_at < ?"
+                        + ") t",
+                BigDecimal.class, start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay());
 
         long pendingOrders = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM orders WHERE status IN ('PENDING', 'CONFIRMED')",
@@ -74,17 +92,31 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
         if (!Set.of("WEEK", "MONTH", "YEAR").contains(normalized)) {
             normalized = "MONTH";
         }
-        LocalDate today = LocalDate.now();
-        SalesWindow window = salesWindow(normalized, today);
+        SalesWindow window = salesWindow(normalized, LocalDate.now());
         Map<String, BigDecimal> totals = new HashMap<>();
-        jdbc.query("SELECT " + window.bucketExpression() + " AS bucket, "
-                + "COALESCE(SUM(i.subtotal), 0) AS total FROM invoices i "
-                + "WHERE i.status NOT IN ('CANCELLED', 'DRAFT') "
-                + "AND i.created_at >= ? AND i.created_at < ? GROUP BY bucket",
-                rs -> {
-                    totals.put(rs.getString("bucket"),
-                            rs.getBigDecimal("total"));
-                }, window.start(), window.end());
+        String sql = "SELECT bucket, COALESCE(SUM(delta), 0) AS total FROM ("
+                + " SELECT " + bucket(normalized, "i.created_at")
+                + " AS bucket, i.subtotal AS delta FROM invoices i"
+                + " WHERE i.status NOT IN ('CANCELLED', 'DRAFT')"
+                + " AND i.created_at >= ? AND i.created_at < ?"
+                + " UNION ALL SELECT " + bucket(normalized, "cn.created_at")
+                + " AS bucket, -cn.amount AS delta FROM credit_notes cn"
+                + " WHERE cn.created_at >= ? AND cn.created_at < ?"
+                + " UNION ALL SELECT " + bucket(normalized, "r.created_at")
+                + " AS bucket, -r.total AS delta FROM returns r"
+                + " WHERE r.created_at >= ? AND r.created_at < ?"
+                + " UNION ALL SELECT " + bucket(normalized, "dn.created_at")
+                + " AS bucket, dn.amount AS delta FROM debit_notes dn"
+                + " WHERE dn.created_at >= ? AND dn.created_at < ?"
+                + ") t GROUP BY bucket";
+        jdbc.query(sql,
+                (org.springframework.jdbc.core.RowCallbackHandler) rs -> totals
+                        .put(rs.getString("bucket"),
+                                rs.getBigDecimal("total")),
+                window.start().atStartOfDay(), window.end().atStartOfDay(),
+                window.start().atStartOfDay(), window.end().atStartOfDay(),
+                window.start().atStartOfDay(), window.end().atStartOfDay(),
+                window.start().atStartOfDay(), window.end().atStartOfDay());
         List<MonthlySalesResponse> series = new ArrayList<>();
         for (String bucket : window.buckets()) {
             series.add(new MonthlySalesResponse(bucket,
@@ -93,8 +125,18 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
         return series;
     }
 
-    private record SalesWindow(List<String> buckets, String bucketExpression,
-            LocalDate start, LocalDate end) {
+    private String bucket(String period, String column) {
+        return switch (period) {
+            case "WEEK" -> "CONCAT(DATE_FORMAT(" + column
+                    + ", '%Y-%m'), '-W', LEAST(CEIL(DAY(" + column
+                    + ") / 7), 4))";
+            case "YEAR" -> "DATE_FORMAT(" + column + ", '%Y')";
+            default -> "DATE_FORMAT(" + column + ", '%Y-%m')";
+        };
+    }
+
+    private record SalesWindow(List<String> buckets, LocalDate start,
+            LocalDate end) {
     }
 
     private SalesWindow salesWindow(String period, LocalDate today) {
@@ -108,10 +150,7 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
                             week));
                 }
                 LocalDate start = today.withDayOfMonth(1);
-                yield new SalesWindow(buckets,
-                        "CONCAT(DATE_FORMAT(i.created_at, '%Y-%m'), '-W', "
-                                + "LEAST(CEIL(DAY(i.created_at) / 7), 4))",
-                        start, start.plusMonths(1));
+                yield new SalesWindow(buckets, start, start.plusMonths(1));
             }
             case "YEAR" -> {
                 int currentYear = today.getYear();
@@ -125,19 +164,16 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
                 years.add(currentYear - 1);
                 years.forEach(year -> buckets.add(String.valueOf(year)));
                 yield new SalesWindow(buckets,
-                        "DATE_FORMAT(i.created_at, '%Y')",
                         LocalDate.of(years.first(), 1, 1),
                         LocalDate.of(currentYear + 1, 1, 1));
             }
             default -> {
-                int year = today.getYear();
-                for (int month = 1; month <= 12; month++) {
-                    buckets.add(String.format("%d-%02d", year, month));
+                YearMonth firstMonth = YearMonth.from(today).minusMonths(11);
+                for (int index = 0; index < 12; index++) {
+                    buckets.add(firstMonth.plusMonths(index).toString());
                 }
-                yield new SalesWindow(buckets,
-                        "DATE_FORMAT(i.created_at, '%Y-%m')",
-                        LocalDate.of(year, 1, 1),
-                        LocalDate.of(year + 1, 1, 1));
+                yield new SalesWindow(buckets, firstMonth.atDay(1),
+                        YearMonth.from(today).plusMonths(1).atDay(1));
             }
         };
     }

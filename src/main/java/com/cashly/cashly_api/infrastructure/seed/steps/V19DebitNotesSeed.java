@@ -3,11 +3,15 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
 import com.cashly.cashly_api.finance.billing.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;
+import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceEntity;
 import com.cashly.cashly_api.finance.billing.debit_notes.infrastructure.persistence.entities.DebitNoteNumberSequenceEntity;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -23,18 +27,44 @@ public class V19DebitNotesSeed implements SeedStep {
     }
     @Override
     public void seed() {
-        note("one", "DN-2025-0001", CUSTOMER_ONE, INVOICE_ONE, "0.75");
-        note("two", "DN-2025-0002", CUSTOMER_TWO, INVOICE_TWO, "0.25");
-        if (entityManager.find(DebitNoteNumberSequenceEntity.class,
-                2025) == null) {
-            var s = new DebitNoteNumberSequenceEntity();
-            s.setYear(2025);
-            s.setNextValue(3);
-            entityManager.persist(s);
+        note("one", "DN-2026-0001", CUSTOMER_ONE, INVOICE_ONE,
+                new BigDecimal("0.75"), LocalDateTime.of(2026, 1, 12, 9, 0));
+        note("two", "DN-2026-0002", CUSTOMER_TWO, INVOICE_TWO,
+                new BigDecimal("0.25"), LocalDateTime.of(2026, 1, 12, 9, 0));
+        for (var sample : SeedDocuments.additional()) {
+            if (sample.number() % 4 != 0) {
+                continue;
+            }
+            var invoice = entityManager.find(InvoiceEntity.class,
+                    id("invoice." + sample.key()));
+            if (invoice == null || "DRAFT".equals(invoice.getStatus())
+                    || "CANCELLED".equals(invoice.getStatus())) {
+                continue;
+            }
+            BigDecimal amount = invoice.getSubtotal()
+                    .multiply(new BigDecimal("0.05"))
+                    .setScale(2, RoundingMode.HALF_UP);
+            note(sample.key(), sample.documentNumber("DN"),
+                    sample.customerId(), id("invoice." + sample.key()),
+                    amount, sample.createdAt(13, 0));
+        }
+        for (int year : SeedDocuments.years()) {
+            var sequence = entityManager
+                    .find(DebitNoteNumberSequenceEntity.class, year);
+            int nextValue = SeedDocuments.nextNumberFor(year);
+            if (sequence == null) {
+                sequence = new DebitNoteNumberSequenceEntity();
+                sequence.setYear(year);
+                sequence.setNextValue(nextValue);
+                entityManager.persist(sequence);
+            } else if (sequence.getNextValue() < nextValue) {
+                sequence.setNextValue(nextValue);
+            }
         }
     }
+
     private void note(String key, String number, UUID customerId,
-            UUID invoiceId, String amount) {
+            UUID invoiceId, BigDecimal amount, LocalDateTime createdAt) {
         UUID id = id("debit-note." + key);
         if (entityManager.find(DebitNoteEntity.class, id) != null)
             return;
@@ -43,12 +73,12 @@ public class V19DebitNotesSeed implements SeedStep {
         note.setNoteNumber(number);
         note.setCustomerId(customerId);
         note.setInvoiceId(invoiceId);
-        note.setAmount(new BigDecimal(amount));
+        note.setAmount(amount);
         note.setReason("Seed service adjustment");
         note.setCreatedBy(ADMIN_USER);
         note.setCreatedByName("Cashly Administrator");
-        note.setCreatedAt(LocalDateTime.of(2025, 1, 12, 9, 0));
-        note.setUpdatedAt(LocalDateTime.of(2025, 1, 12, 9, 0));
+        note.setCreatedAt(createdAt);
+        note.setUpdatedAt(createdAt);
         entityManager.persist(note);
     }
 }

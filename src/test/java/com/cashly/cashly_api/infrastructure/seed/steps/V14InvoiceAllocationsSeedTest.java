@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
 import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ class V14InvoiceAllocationsSeedTest {
 
         seed.seed();
 
-        verify(entityManager, times(30))
+        verify(entityManager, times(2 + SeedDocuments.additional().size()))
                 .persist(any(InvoiceLineAllocationEntity.class));
     }
 }

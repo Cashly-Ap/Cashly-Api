@@ -5,6 +5,7 @@ import com.cashly.cashly_api.platform.notifications.application.ports.in.Activit
 import com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder;
 
 import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.finance.billing.invoices.application.ports.out.CashRegisterGateway;
 import com.cashly.cashly_api.finance.billing.invoices.application.cancel.request.CancelInvoiceRequest;
 import com.cashly.cashly_api.finance.billing.invoices.application.dto.response.InvoiceDetailResponse;
 import com.cashly.cashly_api.finance.billing.invoices.application.mappers.InvoiceMapper;
@@ -24,17 +25,20 @@ public class CancelInvoiceUseCase {
 
     private final InvoiceRepository invoiceRepository;
     private final InventoryGateway inventoryGateway;
+    private final CashRegisterGateway cashRegister;
 
     private final ActivityNotificationRecorder activityNotifications;
 
     public CancelInvoiceUseCase(InvoiceRepository invoiceRepository,
             InventoryGateway inventoryGateway,
-            ActivityNotificationRecorder activityNotifications) {
+            ActivityNotificationRecorder activityNotifications,
+            CashRegisterGateway cashRegister) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
         this.invoiceRepository = invoiceRepository;
         this.inventoryGateway = inventoryGateway;
+        this.cashRegister = cashRegister;
     }
 
     @Transactional
@@ -49,6 +53,9 @@ public class CancelInvoiceUseCase {
         revertStockAllocations(invoice, previousStatus);
 
         Invoice saved = invoiceRepository.save(invoice);
+        if (cashRegister != null) {
+            cashRegister.cancelInvoice(saved.getId().value());
+        }
         activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
                 "CANCEL", "INVOICE", saved.getId().value(),
                 saved.getInvoiceNumber().value(), null));

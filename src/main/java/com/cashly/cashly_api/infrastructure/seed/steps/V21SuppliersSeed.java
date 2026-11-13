@@ -51,8 +51,8 @@ public class V21SuppliersSeed implements SeedStep {
         supplier.setCreditLimit(new BigDecimal("1000.00"));
         supplier.setNotes("Deterministic seed supplier");
         supplier.setActive(true);
-        supplier.setCreatedAt(LocalDateTime.of(2025, 1, 13, 8, 0));
-        supplier.setUpdatedAt(LocalDateTime.of(2025, 1, 13, 8, 0));
+        supplier.setCreatedAt(LocalDateTime.of(2026, 1, 13, 8, 0));
+        supplier.setUpdatedAt(LocalDateTime.of(2026, 1, 13, 8, 0));
         var email = new SupplierEmailEntity();
         email.setId(id("supplier-email." + key));
         email.setSupplierId(supplierId);

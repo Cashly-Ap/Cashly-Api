@@ -25,8 +25,7 @@ public class V30AuditSeed implements SeedStep {
     private static final String ADMIN = "Cashly Administrator";
     private static final String OPERATOR = "Sales Operator";
     private static final String COMPANY_LABEL = "Cashly Demo, C.A.";
-    private static final Instant BASE = Instant.parse("2025-01-01T08:00:00Z");
-    private static final long STEP_SECONDS = 1_800L;
+
 
     private final EntityManager entityManager;
     private int sequence;
@@ -146,13 +145,13 @@ public class V30AuditSeed implements SeedStep {
 
     private void salesDocuments() {
         create("quote-one", "sales", AuditEntityType.QUOTE, QUOTE_ONE,
-                "PRE-2025-0001", OPERATOR_USER, OPERATOR, "DRAFT");
+                "PRE-2026-0001", OPERATOR_USER, OPERATOR, "DRAFT");
         create("quote-two", "sales", AuditEntityType.QUOTE, QUOTE_TWO,
-                "PRE-2025-0002", OPERATOR_USER, OPERATOR, "DRAFT");
+                "PRE-2026-0002", OPERATOR_USER, OPERATOR, "DRAFT");
         create("order-one", "sales", AuditEntityType.ORDER, ORDER_ONE,
-                "ORD-2025-0001", OPERATOR_USER, OPERATOR, "CONFIRMED");
+                "ORD-2026-0001", OPERATOR_USER, OPERATOR, "CONFIRMED");
         create("order-two", "sales", AuditEntityType.ORDER, ORDER_TWO,
-                "ORD-2025-0002", OPERATOR_USER, OPERATOR, "CONFIRMED");
+                "ORD-2026-0002", OPERATOR_USER, OPERATOR, "CONFIRMED");
         for (var sample : SeedDocuments.additional()) {
             salesSample(sample);
         }
@@ -240,76 +239,76 @@ public class V30AuditSeed implements SeedStep {
 
     private void financeDocuments() {
         create("invoice-one", "finance", AuditEntityType.INVOICE, INVOICE_ONE,
-                "INV-2025-0001", ADMIN_USER, ADMIN, "PENDING_PAYMENT");
+                "INV-2026-0001", ADMIN_USER, ADMIN, "PENDING_PAYMENT");
         action("invoice-one-confirm", "finance", AuditEntityType.INVOICE,
-                INVOICE_ONE, "INV-2025-0001", AuditAction.CONFIRM, ADMIN_USER,
+                INVOICE_ONE, "INV-2026-0001", AuditAction.CONFIRM, ADMIN_USER,
                 ADMIN, Map.of("statusFrom", "DRAFT", "statusTo",
-                        "PENDING_PAYMENT", "documentNumber", "INV-2025-0001"));
+                        "PENDING_PAYMENT", "documentNumber", "INV-2026-0001"));
         action("invoice-one-pay", "finance", AuditEntityType.INVOICE,
-                INVOICE_ONE, "INV-2025-0001", AuditAction.PAY, OPERATOR_USER,
+                INVOICE_ONE, "INV-2026-0001", AuditAction.PAY, OPERATOR_USER,
                 OPERATOR, Map.of("amount", "10.00", "method", "CASH"));
         create("invoice-two", "finance", AuditEntityType.INVOICE, INVOICE_TWO,
-                "INV-2025-0002", ADMIN_USER, ADMIN, "PENDING_PAYMENT");
+                "INV-2026-0002", ADMIN_USER, ADMIN, "PENDING_PAYMENT");
         action("invoice-two-confirm", "finance", AuditEntityType.INVOICE,
-                INVOICE_TWO, "INV-2025-0002", AuditAction.CONFIRM, ADMIN_USER,
+                INVOICE_TWO, "INV-2026-0002", AuditAction.CONFIRM, ADMIN_USER,
                 ADMIN, Map.of("statusFrom", "DRAFT", "statusTo",
-                        "PENDING_PAYMENT", "documentNumber", "INV-2025-0002"));
+                        "PENDING_PAYMENT", "documentNumber", "INV-2026-0002"));
         action("invoice-two-partial", "finance", AuditEntityType.INVOICE,
-                INVOICE_TWO, "INV-2025-0002", AuditAction.PARTIAL_PAYMENT,
+                INVOICE_TWO, "INV-2026-0002", AuditAction.PARTIAL_PAYMENT,
                 OPERATOR_USER, OPERATOR, Map.of("amount", "3.00", "method",
                         "TRANSFER"));
         create("payment-one", "finance", AuditEntityType.PAYMENT, PAYMENT_ONE,
-                "PAY-2025-0001", ADMIN_USER, ADMIN, "APPLIED");
+                "PAY-2026-0001", ADMIN_USER, ADMIN, "APPLIED");
         action("payment-one-approve", "finance", AuditEntityType.PAYMENT,
-                PAYMENT_ONE, "PAY-2025-0001", AuditAction.APPROVE, ADMIN_USER,
+                PAYMENT_ONE, "PAY-2026-0001", AuditAction.APPROVE, ADMIN_USER,
                 ADMIN, Map.of("previousStatus", "PENDING", "newStatus",
                         "APPLIED", "amount", "10.00"));
         create("payment-two", "finance", AuditEntityType.PAYMENT, PAYMENT_TWO,
-                "PAY-2025-0002", ADMIN_USER, ADMIN, "APPLIED");
+                "PAY-2026-0002", ADMIN_USER, ADMIN, "APPLIED");
         action("payment-two-approve", "finance", AuditEntityType.PAYMENT,
-                PAYMENT_TWO, "PAY-2025-0002", AuditAction.APPROVE, ADMIN_USER,
+                PAYMENT_TWO, "PAY-2026-0002", AuditAction.APPROVE, ADMIN_USER,
                 ADMIN, Map.of("previousStatus", "PENDING", "newStatus",
                         "APPLIED", "amount", "3.00"));
         for (var sample : SeedDocuments.additional()) {
             paymentSample(sample);
         }
         create("return-one", "finance", AuditEntityType.RETURN, RETURN_ONE,
-                "RET-2025-0001", ADMIN_USER, ADMIN, "COMPLETED");
+                "RET-2026-0001", ADMIN_USER, ADMIN, "COMPLETED");
         create("return-two", "finance", AuditEntityType.RETURN, RETURN_TWO,
-                "RET-2025-0002", ADMIN_USER, ADMIN, "COMPLETED");
+                "RET-2026-0002", ADMIN_USER, ADMIN, "COMPLETED");
         create("credit-note-one", "finance", AuditEntityType.CREDIT_NOTE,
-                id("credit-note.one"), "CN-2025-0001", ADMIN_USER, ADMIN,
+                id("credit-note.one"), "CN-2026-0001", ADMIN_USER, ADMIN,
                 "ISSUED");
         create("credit-note-two", "finance", AuditEntityType.CREDIT_NOTE,
-                id("credit-note.two"), "CN-2025-0002", ADMIN_USER, ADMIN,
+                id("credit-note.two"), "CN-2026-0002", ADMIN_USER, ADMIN,
                 "ISSUED");
         create("debit-note-one", "finance", AuditEntityType.DEBIT_NOTE,
-                id("debit-note.one"), "DN-2025-0001", ADMIN_USER, ADMIN,
+                id("debit-note.one"), "DN-2026-0001", ADMIN_USER, ADMIN,
                 "ISSUED");
         create("debit-note-two", "finance", AuditEntityType.DEBIT_NOTE,
-                id("debit-note.two"), "DN-2025-0002", ADMIN_USER, ADMIN,
+                id("debit-note.two"), "DN-2026-0002", ADMIN_USER, ADMIN,
                 "ISSUED");
         action("register-closed-open", "finance",
-                AuditEntityType.CASH_REGISTER, id("cash-register.closed"),
-                "Cash register 2025-01-10", AuditAction.OPEN, ADMIN_USER,
+                AuditEntityType.CASH_REGISTER, id("cash-register.month-2026-10"),
+                "Cash register 2026-10-31", AuditAction.OPEN, ADMIN_USER,
                 ADMIN, Map.of("openingBalance", "100.00"));
         action("register-closed-close", "finance",
-                AuditEntityType.CASH_REGISTER, id("cash-register.closed"),
-                "Cash register 2025-01-10", AuditAction.CLOSE, ADMIN_USER,
+                AuditEntityType.CASH_REGISTER, id("cash-register.month-2026-10"),
+                "Cash register 2026-10-31", AuditAction.CLOSE, ADMIN_USER,
                 ADMIN, Map.of("declaredBalance", "113.00", "difference",
                         "0.00"));
         action("register-open", "finance", AuditEntityType.CASH_REGISTER,
-                id("cash-register.open"), "Cash register 2025-01-13",
+                id("cash-register.open"), "Cash register 2026-11-01",
                 AuditAction.OPEN, ADMIN_USER, ADMIN,
                 Map.of("openingBalance", "100.00"));
         action("cash-movement-one", "finance",
-                AuditEntityType.CASH_MOVEMENT, id("cash-movement.one"),
-                "Cash movement PAY-2025-0001", AuditAction.RECORD_MOVEMENT,
+                AuditEntityType.CASH_MOVEMENT, id("cash-movement.month-2026-01.payment-cash"),
+                "Cash movement PAY-2026-0001", AuditAction.RECORD_MOVEMENT,
                 ADMIN_USER, ADMIN, Map.of("direction", "IN", "type", "PAYMENT",
                         "amount", "10.00"));
         action("cash-movement-two", "finance",
-                AuditEntityType.CASH_MOVEMENT, id("cash-movement.two"),
-                "Petty cash expense", AuditAction.RECORD_MOVEMENT, ADMIN_USER,
+                AuditEntityType.CASH_MOVEMENT, id("cash-movement.2026-01-31.purchase-" + id("purchase.cash-one")),
+                "Compra al contado PUR-2026-0200", AuditAction.RECORD_MOVEMENT, ADMIN_USER,
                 ADMIN, Map.of("direction", "OUT", "type", "EXPENSE", "amount",
                         "2.00"));
         create("payment-method-cash", "finance",
@@ -340,17 +339,17 @@ public class V30AuditSeed implements SeedStep {
 
     private void procurementDocuments() {
         create("purchase-one", "procurement", AuditEntityType.PURCHASE,
-                id("purchase.one"), "PUR-2025-0001", ADMIN_USER, ADMIN,
+                id("purchase.one"), "PUR-2026-0001", ADMIN_USER, ADMIN,
                 "CONFIRMED");
         action("purchase-one-confirm", "procurement",
-                AuditEntityType.PURCHASE, id("purchase.one"), "PUR-2025-0001",
+                AuditEntityType.PURCHASE, id("purchase.one"), "PUR-2026-0001",
                 AuditAction.CONFIRM, ADMIN_USER, ADMIN,
                 Map.of("statusFrom", "DRAFT", "statusTo", "CONFIRMED"));
         create("purchase-two", "procurement", AuditEntityType.PURCHASE,
-                id("purchase.two"), "PUR-2025-0002", ADMIN_USER, ADMIN,
+                id("purchase.two"), "PUR-2026-0002", ADMIN_USER, ADMIN,
                 "CONFIRMED");
         action("purchase-two-confirm", "procurement",
-                AuditEntityType.PURCHASE, id("purchase.two"), "PUR-2025-0002",
+                AuditEntityType.PURCHASE, id("purchase.two"), "PUR-2026-0002",
                 AuditAction.CONFIRM, ADMIN_USER, ADMIN,
                 Map.of("statusFrom", "DRAFT", "statusTo", "CONFIRMED"));
         for (var sample : SeedDocuments.additional()) {
@@ -435,6 +434,13 @@ public class V30AuditSeed implements SeedStep {
     }
 
     private Instant nextAt() {
-        return BASE.plusSeconds((long) sequence++ * STEP_SECONDS);
+        int index = sequence++;
+        int monthOffset = index % 12;
+        int round = index / 12;
+        return java.time.LocalDateTime.of(2025, 12, 1, 8, 0)
+                .plusMonths(monthOffset)
+                .plusDays((round * 2L) % 25)
+                .plusMinutes((round % 16) * 30L)
+                .toInstant(java.time.ZoneOffset.UTC);
     }
 }

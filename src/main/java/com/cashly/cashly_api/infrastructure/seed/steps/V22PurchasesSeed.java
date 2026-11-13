@@ -33,35 +33,71 @@ public class V22PurchasesSeed implements SeedStep {
 
     @Override
     public void seed() {
-        purchase("one", "PUR-2025-0001", id("supplier.one"),
+        purchase("one", "PUR-2026-0001", id("supplier.one"),
                 "Coffee Growers, C.A.", "J-20000001-1", PRODUCT_COFFEE,
-                "Ground coffee", "PRD-0001", "10", "3.50");
-        purchase("two", "PUR-2025-0002", id("supplier.two"),
+                "Ground coffee", "PRD-0001", "10", "3.50",
+                LocalDate.of(2026, 1, 14));
+        purchase("two", "PUR-2026-0002", id("supplier.two"),
                 "Spring Water, C.A.", "J-20000002-2", PRODUCT_WATER,
-                "Mineral water", "PRD-0002", "24", "0.45");
+                "Mineral water", "PRD-0002", "24", "0.45",
+                LocalDate.of(2026, 1, 14));
         for (var sample : SeedDocuments.additional()) {
             purchase(sample.key(), sample.documentNumber("PUR"),
                     sample.supplierId(), sample.supplierName(),
                     sample.supplierRif(), sample.productId(),
                     sample.productName(), sample.productCode(),
-                    sample.quantity(), sample.cost());
+                    sample.quantity(), sample.cost(), sample.date());
             applyScenario(sample, sample.scenario());
         }
-        var s = entityManager.find(PurchaseNumberSequenceEntity.class,
-                SeedDocuments.YEAR);
-        if (s == null) {
-            s = new PurchaseNumberSequenceEntity();
-            s.setYear(SeedDocuments.YEAR);
-            s.setNextValue(SeedDocuments.NEXT_NUMBER);
-            entityManager.persist(s);
-        } else if (s.getNextValue() < SeedDocuments.NEXT_NUMBER) {
-            s.setNextValue(SeedDocuments.NEXT_NUMBER);
+        cashPurchase("cash-one", "PUR-2026-0200", id("supplier.one"),
+                "Coffee Growers, C.A.", "J-20000001-1", PRODUCT_COFFEE,
+                "Ground coffee", "PRD-0001", "15", "3.50",
+                LocalDate.of(2026, 1, 7));
+        cashPurchase("cash-two", "PUR-2026-0201", id("supplier.two"),
+                "Spring Water, C.A.", "J-20000002-2", PRODUCT_WATER,
+                "Mineral water", "PRD-0002", "80", "0.45",
+                LocalDate.of(2026, 1, 8));
+        cashPurchase("cash-three", "PUR-2026-0202", id("supplier.one"),
+                "Coffee Growers, C.A.", "J-20000001-1", PRODUCT_COFFEE,
+                "Ground coffee", "PRD-0001", "20", "3.50",
+                LocalDate.of(2026, 1, 9));
+        for (int year : SeedDocuments.years()) {
+            var sequence = entityManager.find(PurchaseNumberSequenceEntity.class,
+                    year);
+            int nextValue = year == 2026
+                    ? Math.max(SeedDocuments.nextNumberFor(year), 203)
+                    : SeedDocuments.nextNumberFor(year);
+            if (sequence == null) {
+                sequence = new PurchaseNumberSequenceEntity();
+                sequence.setYear(year);
+                sequence.setNextValue(nextValue);
+                entityManager.persist(sequence);
+            } else if (sequence.getNextValue() < nextValue) {
+                sequence.setNextValue(nextValue);
+            }
         }
     }
 
     private void purchase(String key, String number, UUID supplierId,
             String supplierName, String rif, UUID productId, String productName,
-            String code, String quantity, String cost) {
+            String code, String quantity, String cost, LocalDate issueDate) {
+        persistPurchase(key, number, supplierId, supplierName, rif, productId,
+                productName, code, quantity, cost, "CREDIT", "CONFIRMED",
+                issueDate, "Deterministic seed purchase");
+    }
+
+    private void cashPurchase(String key, String number, UUID supplierId,
+            String supplierName, String rif, UUID productId, String productName,
+            String code, String quantity, String cost, LocalDate issueDate) {
+        persistPurchase(key, number, supplierId, supplierName, rif, productId,
+                productName, code, quantity, cost, "CASH", "CONFIRMED",
+                issueDate, "Cash seed purchase");
+    }
+
+    private void persistPurchase(String key, String number, UUID supplierId,
+            String supplierName, String rif, UUID productId, String productName,
+            String code, String quantity, String cost, String paymentType,
+            String status, LocalDate issueDate, String notes) {
         var purchaseId = id("purchase." + key);
         if (entityManager.find(PurchaseEntity.class, purchaseId) != null) {
             return;
@@ -76,16 +112,16 @@ public class V22PurchasesSeed implements SeedStep {
         purchase.setSupplierRif(rif);
         purchase.setCreatedBy(ADMIN_USER);
         purchase.setCreatedByName("Cashly Administrator");
-        purchase.setStatus("CONFIRMED");
-        purchase.setPaymentType("CREDIT");
-        purchase.setNotes("Deterministic seed purchase");
+        purchase.setStatus(status);
+        purchase.setPaymentType(paymentType);
+        purchase.setNotes(notes);
         purchase.setSubtotal(total);
         purchase.setReturnedTotal(BigDecimal.ZERO);
-        purchase.setIssueDate(LocalDate.of(2025, 1, 14));
-        purchase.setDueDate(LocalDate.of(2025, 2, 13));
-        purchase.setConfirmedAt(LocalDateTime.of(2025, 1, 14, 8, 0));
-        purchase.setCreatedAt(LocalDateTime.of(2025, 1, 14, 8, 0));
-        purchase.setUpdatedAt(LocalDateTime.of(2025, 1, 14, 8, 0));
+        purchase.setIssueDate(issueDate);
+        purchase.setDueDate(issueDate.plusDays(30));
+        purchase.setConfirmedAt(issueDate.atTime(8, 0));
+        purchase.setCreatedAt(issueDate.atTime(8, 0));
+        purchase.setUpdatedAt(issueDate.atTime(8, 0));
         var line = new PurchaseLineEntity();
         line.setId(id("purchase-line." + key));
         line.setPurchase(purchase);
@@ -114,17 +150,17 @@ public class V22PurchasesSeed implements SeedStep {
         }
         purchase.setStatus(scenario.purchase().name());
         purchase.setConfirmedAt(scenario.purchase() == PurchaseStatus.CONFIRMED
-                ? EVENT_AT
+                ? sample.createdAt(9, 0)
                 : null);
         purchase.setCancelledAt(scenario.purchase() == PurchaseStatus.CANCELLED
-                ? EVENT_AT
+                ? sample.createdAt(10, 0)
                 : null);
         purchase.setCancelledReason(
                 scenario.purchase() == PurchaseStatus.CANCELLED
                         ? CANCELLATION_REASON
                         : null);
         purchase.setNotes(SCENARIO_NOTES);
-        purchase.setUpdatedAt(EVENT_AT);
+        purchase.setUpdatedAt(sample.createdAt(10, 0));
     }
 
 }

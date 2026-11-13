@@ -14,4 +14,6 @@ public interface CashMovementJpaRepository
     List<CashMovementJpaEntity> findByRegisterIdOrderByOccurredAtAsc(
             UUID registerId);
     boolean existsBySourceTypeAndSourceId(String sourceType, UUID sourceId);
+    java.util.Optional<CashMovementJpaEntity> findBySourceTypeAndSourceId(
+            String sourceType, UUID sourceId);
 }

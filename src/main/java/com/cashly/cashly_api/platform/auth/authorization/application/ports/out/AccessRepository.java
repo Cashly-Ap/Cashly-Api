@@ -11,6 +11,7 @@ public interface AccessRepository {
     List<Role> roles();
     List<Role> editableRoles();
     void saveRole(Role role, boolean create);
+    void activateAllRoles();
     void deleteRole(UUID id);
     Optional<Department> department(UUID id);
     List<Department> departments();

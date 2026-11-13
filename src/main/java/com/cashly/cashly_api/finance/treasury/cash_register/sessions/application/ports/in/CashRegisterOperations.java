@@ -3,7 +3,10 @@ import java.math.BigDecimal;
 import java.util.UUID;
 public interface CashRegisterOperations {
     void requireOpenRegister();
+    boolean hasOpenRegister();
     void record(Entry entry);
+    void cancelBySource(String sourceType, UUID sourceId, String reason,
+            UUID actorId, String actorName);
     enum Direction {
         IN, OUT
     }

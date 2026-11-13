@@ -26,6 +26,23 @@ public class CashMovementService {
         activeRegisterId();
     }
 
+    public boolean hasOpenRegister() {
+        return registerRepository.findActiveClosure().isPresent();
+    }
+
+    public void cancelBySource(String sourceType, UUID sourceId, String reason,
+            UUID actorId, String actorName) {
+        if (sourceType == null || sourceId == null) {
+            return;
+        }
+        registerRepository.findMovementBySource(sourceType, sourceId)
+                .filter(movement -> !movement.isCancelled())
+                .ifPresent(movement -> {
+                    movement.cancel(reason, actorId, actorName);
+                    registerRepository.saveMovement(movement);
+                });
+    }
+
     public CashMovement record(CashMovementDirection direction,
             CashMovementType type, BigDecimal amount, UUID paymentMethodId,
             String description, String sourceType, UUID sourceId,

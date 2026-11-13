@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V16PaymentsSeed implements SeedStep {
-    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1,
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1,
             10, 8, 0);
     private final EntityManager entityManager;
     public V16PaymentsSeed(EntityManager entityManager) {
@@ -36,9 +36,12 @@ public class V16PaymentsSeed implements SeedStep {
     public void seed() {
         method("cash", "CASH", "Cash");
         method("transfer", "TRANSFER", "Bank transfer");
-        payment(PAYMENT_ONE, "PAY-2025-0001", CUSTOMER_ONE, INVOICE_ONE, "cash",
+        method("card", "CARD", "Credit/Debit card");
+        method("mobile", "MOBILE_PAYMENT", "Mobile payment");
+        method("check", "CHECK", "Check");
+        payment(PAYMENT_ONE, "PAY-2026-0001", CUSTOMER_ONE, INVOICE_ONE, "cash",
                 "10.00");
-        payment(PAYMENT_TWO, "PAY-2025-0002", CUSTOMER_TWO, INVOICE_TWO,
+        payment(PAYMENT_TWO, "PAY-2026-0002", CUSTOMER_TWO, INVOICE_TWO,
                 "transfer", "3.00");
         for (var sample : SeedDocuments.additional()) {
             var invoice = entityManager.find(InvoiceEntity.class,
@@ -89,7 +92,7 @@ public class V16PaymentsSeed implements SeedStep {
             payment.setPaymentMethodId(id("payment-method." + methodKey));
             payment.setSource("PAYMENT_METHOD");
             payment.setReferenceNumber("SEED-" + number);
-            payment.setPaymentDate(LocalDate.of(2025, 1, 10));
+            payment.setPaymentDate(LocalDate.of(2026, 1, 10));
             payment.setNotes("Deterministic seed payment");
             payment.setStatus(PaymentStatus.APPLIED.name());
             payment.setAppliedAmount(amount);
@@ -131,16 +134,16 @@ public class V16PaymentsSeed implements SeedStep {
                             : "transfer")));
             payment.setSource("PAYMENT_METHOD");
             payment.setReferenceNumber(sample.documentNumber("SEED"));
-            payment.setPaymentDate(EVENT_AT.toLocalDate());
+            payment.setPaymentDate(sample.date());
             payment.setStatus(PaymentStatus.APPLIED.name());
             payment.setNotes(SCENARIO_NOTES);
             payment.setCreatedBy(ADMIN_USER);
             payment.setCreatedByName("Cashly Administrator");
             payment.setVerifiedBy(ADMIN_USER);
             payment.setVerifiedByName("Cashly Administrator");
-            payment.setVerifiedAt(EVENT_AT);
-            payment.setCreatedAt(EVENT_AT);
-            payment.setUpdatedAt(EVENT_AT);
+            payment.setVerifiedAt(sample.createdAt(11, 0));
+            payment.setCreatedAt(sample.createdAt(11, 0));
+            payment.setUpdatedAt(sample.createdAt(11, 0));
             entityManager.persist(payment);
         }
         var allocationId = id("scenario-payment-allocation." + sample.key());
@@ -151,7 +154,7 @@ public class V16PaymentsSeed implements SeedStep {
             allocation.setPaymentId(paymentId);
             allocation.setInvoiceId(invoice.getId());
             allocation.setAllocatedAmount(amount);
-            allocation.setCreatedAt(EVENT_AT);
+            allocation.setCreatedAt(sample.createdAt(11, 0));
             entityManager.persist(allocation);
         }
     }

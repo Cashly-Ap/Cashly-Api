@@ -84,6 +84,8 @@ class ConfirmInvoiceUseCaseTest {
                         any(), any(), any()))
                 .thenReturn(new InvoiceIssueValidator.CashPaymentPlan(
                         java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO));
+        lenient().when(cashMovementService.hasOpenRegister())
+                .thenReturn(true);
         var actors = new com.cashly.cashly_api.finance.billing.invoices.infrastructure.integration.LocalActorIdentityGateway(
                 new com.cashly.cashly_api.platform.auth.user.application.queries.services.RepositoryActorIdentityQuery(
                         userRepository,

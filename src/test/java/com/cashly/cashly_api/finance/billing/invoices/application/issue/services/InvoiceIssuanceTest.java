@@ -112,7 +112,8 @@ class InvoiceIssuanceTest {
         service.issue(invoice(PaymentType.CREDIT),
                 new IssueInvoiceCommand(null, true, BigDecimal.TEN, methodId),
                 InvoiceOrigin.CONFIRMED_ORDER, actorId);
-        verifyNoInteractions(balances, settlements, cash);
+        verifyNoInteractions(balances, settlements);
+        verify(cash).recordInvoice(any());
     }
 
     @Test
