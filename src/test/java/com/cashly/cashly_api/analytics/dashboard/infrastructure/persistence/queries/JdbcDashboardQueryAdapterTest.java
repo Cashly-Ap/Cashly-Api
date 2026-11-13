@@ -33,7 +33,8 @@ class JdbcDashboardQueryAdapterTest {
     @Test
     void should_preserve_zero_amounts_for_empty_summary() {
         when(jdbc.queryForObject(any(String.class),
-                org.mockito.ArgumentMatchers.eq(BigDecimal.class)))
+                org.mockito.ArgumentMatchers.eq(BigDecimal.class),
+                any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(null);
         when(jdbc.queryForObject(any(String.class),
                 org.mockito.ArgumentMatchers.eq(Long.class))).thenReturn(0L);
@@ -42,9 +43,15 @@ class JdbcDashboardQueryAdapterTest {
 
         assertThat(summary.monthlySales())
                 .isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(summary.monthlyExpenses())
+                .isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(summary.monthlyProfit())
+                .isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(summary.overdueReceivables())
                 .isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(summary.pendingOrders()).isZero();
+        assertThat(summary.pendingInvoices()).isZero();
+        assertThat(summary.overdueInvoices()).isZero();
         assertThat(summary.lowStockProducts()).isZero();
     }
 

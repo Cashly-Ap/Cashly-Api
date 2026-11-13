@@ -4,6 +4,7 @@ import com.cashly.cashly_api.analytics.dashboard.application.ports.out.Dashboard
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.DashboardSummaryResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.InvoiceDueResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.MonthlySalesResponse;
+import com.cashly.cashly_api.analytics.dashboard.application.dto.response.ProfitSummaryResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.TopItemResponse;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,10 @@ public class GetDashboardUseCase {
         return queryGateway.getSalesTrend(period);
     }
 
+    public ProfitSummaryResponse getProfitSummary(String period) {
+        return queryGateway.getProfitSummary(period);
+    }
+
     public List<TopItemResponse> getTopProducts(int limit) {
         return queryGateway.getTopProducts(limit);
     }
@@ -42,7 +47,7 @@ public class GetDashboardUseCase {
         return queryGateway.getRecentActivity();
     }
 
-    public List<InvoiceDueResponse> getInvoiceDueSchedule() {
-        return queryGateway.getInvoiceDueSchedule();
+    public List<InvoiceDueResponse> getInvoiceDueSchedule(String scope) {
+        return queryGateway.getInvoiceDueSchedule(scope);
     }
 }

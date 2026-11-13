@@ -3,6 +3,7 @@ package com.cashly.cashly_api.analytics.dashboard.infrastructure.web;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.DashboardSummaryResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.InvoiceDueResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.MonthlySalesResponse;
+import com.cashly.cashly_api.analytics.dashboard.application.dto.response.ProfitSummaryResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.TopItemResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.summary.use_case.GetDashboardUseCase;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,13 @@ public class DashboardController {
         return ResponseEntity.ok(getDashboardUseCase.getSalesTrend(period));
     }
 
+    @GetMapping("/profit-summary")
+    @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
+    public ResponseEntity<ProfitSummaryResponse> getProfitSummary(
+            @RequestParam(defaultValue = "MONTH") String period) {
+        return ResponseEntity.ok(getDashboardUseCase.getProfitSummary(period));
+    }
+
     @GetMapping("/top-products")
     @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
     public ResponseEntity<List<TopItemResponse>> getTopProducts(
@@ -57,7 +65,8 @@ public class DashboardController {
 
     @GetMapping("/invoice-due-schedule")
     @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
-    public ResponseEntity<List<InvoiceDueResponse>> getInvoiceDueSchedule() {
-        return ResponseEntity.ok(getDashboardUseCase.getInvoiceDueSchedule());
+    public ResponseEntity<List<InvoiceDueResponse>> getInvoiceDueSchedule(
+            @RequestParam(defaultValue = "ALL") String scope) {
+        return ResponseEntity.ok(getDashboardUseCase.getInvoiceDueSchedule(scope));
     }
 }

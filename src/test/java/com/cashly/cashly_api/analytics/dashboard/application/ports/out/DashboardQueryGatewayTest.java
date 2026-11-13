@@ -4,6 +4,7 @@ import com.cashly.cashly_api.analytics.dashboard.application.summary.use_case.Ge
 
 import com.cashly.cashly_api.analytics.dashboard.application.ports.out.DashboardQueryGateway;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.DashboardSummaryResponse;
+import com.cashly.cashly_api.analytics.dashboard.application.dto.response.ProfitSummaryResponse;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -24,7 +25,8 @@ class DashboardQueryGatewayTest {
 
     @Test
     void should_preserve_summary_from_query_gateway() {
-        var summary = new DashboardSummaryResponse(BigDecimal.TEN, 2L,
+        var summary = new DashboardSummaryResponse(BigDecimal.TEN,
+                BigDecimal.ONE, BigDecimal.valueOf(9), 2L, 5L, 4L,
                 BigDecimal.ONE, 3L);
         when(gateway.getSummary()).thenReturn(summary);
 
@@ -37,6 +39,15 @@ class DashboardQueryGatewayTest {
 
         assertThat(useCase.getMonthlySales()).isEmpty();
         verify(gateway).getMonthlySales();
+    }
+
+    @Test
+    void should_forward_profit_period() {
+        var summary = new ProfitSummaryResponse(BigDecimal.TEN,
+                BigDecimal.ONE, BigDecimal.valueOf(9));
+        when(gateway.getProfitSummary("WEEK")).thenReturn(summary);
+
+        assertThat(useCase.getProfitSummary("WEEK")).isSameAs(summary);
     }
 
     @Test
@@ -66,11 +77,11 @@ class DashboardQueryGatewayTest {
     }
 
     @Test
-    void should_preserve_invoice_due_schedule() {
-        when(gateway.getInvoiceDueSchedule()).thenReturn(List.of());
+    void should_forward_invoice_due_schedule_scope() {
+        when(gateway.getInvoiceDueSchedule("OVERDUE")).thenReturn(List.of());
 
-        assertThat(useCase.getInvoiceDueSchedule()).isEmpty();
-        verify(gateway).getInvoiceDueSchedule();
+        assertThat(useCase.getInvoiceDueSchedule("OVERDUE")).isEmpty();
+        verify(gateway).getInvoiceDueSchedule("OVERDUE");
     }
 
     @Test

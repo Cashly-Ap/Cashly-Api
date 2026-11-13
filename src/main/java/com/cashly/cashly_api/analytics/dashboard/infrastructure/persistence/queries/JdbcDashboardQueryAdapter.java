@@ -3,6 +3,7 @@ package com.cashly.cashly_api.analytics.dashboard.infrastructure.persistence.que
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.DashboardSummaryResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.InvoiceDueResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.MonthlySalesResponse;
+import com.cashly.cashly_api.analytics.dashboard.application.dto.response.ProfitSummaryResponse;
 import com.cashly.cashly_api.analytics.dashboard.application.dto.response.TopItemResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -30,31 +31,18 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
     }
 
     public DashboardSummaryResponse getSummary() {
-        LocalDate start = LocalDate.now().withDayOfMonth(1);
-        LocalDate end = start.plusMonths(1);
-        BigDecimal monthlySales = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(delta), 0) FROM ("
-                        + "  SELECT i.subtotal AS delta FROM invoices i"
-                        + "   WHERE i.status NOT IN ('CANCELLED', 'DRAFT')"
-                        + "     AND i.created_at >= ? AND i.created_at < ?"
-                        + "  UNION ALL"
-                        + "  SELECT -cn.amount FROM credit_notes cn"
-                        + "   WHERE cn.created_at >= ? AND cn.created_at < ?"
-                        + "  UNION ALL"
-                        + "  SELECT -r.total FROM returns r"
-                        + "   WHERE r.created_at >= ? AND r.created_at < ?"
-                        + "  UNION ALL"
-                        + "  SELECT dn.amount FROM debit_notes dn"
-                        + "   WHERE dn.created_at >= ? AND dn.created_at < ?"
-                        + ") t",
-                BigDecimal.class, start.atStartOfDay(), end.atStartOfDay(),
-                start.atStartOfDay(), end.atStartOfDay(),
-                start.atStartOfDay(), end.atStartOfDay(),
-                start.atStartOfDay(), end.atStartOfDay());
+        YearMonth currentMonth = YearMonth.from(LocalDate.now());
+        LocalDate start = currentMonth.atDay(1);
+        LocalDate end = currentMonth.plusMonths(1).atDay(1);
+        BigDecimal monthlySales = sumBilling(start, end);
+        BigDecimal monthlyExpenses = sumExpenses(start, end);
 
         long pendingOrders = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM orders WHERE status IN ('PENDING', 'CONFIRMED')",
                 Long.class);
+
+        long pendingInvoices = countOutstandingInvoices(">=");
+        long overdueInvoices = countOutstandingInvoices("<");
 
         BigDecimal overdueReceivables = jdbc
                 .queryForObject("SELECT COALESCE(SUM(balance), 0) FROM ("
@@ -75,11 +63,100 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
 
         return new DashboardSummaryResponse(
                 monthlySales != null ? monthlySales : BigDecimal.ZERO,
+                monthlyExpenses != null ? monthlyExpenses : BigDecimal.ZERO,
+                (monthlySales != null ? monthlySales : BigDecimal.ZERO)
+                        .subtract(monthlyExpenses != null ? monthlyExpenses
+                                : BigDecimal.ZERO),
                 pendingOrders,
+                pendingInvoices,
+                overdueInvoices,
                 overdueReceivables != null
                         ? overdueReceivables
                         : BigDecimal.ZERO,
                 lowStockProducts);
+    }
+
+    public ProfitSummaryResponse getProfitSummary(String period) {
+        String normalized = normalizePeriod(period);
+        LocalDate today = LocalDate.now();
+        LocalDate start;
+        LocalDate end;
+        switch (normalized) {
+            case "DAY" -> {
+                start = today;
+                end = today.plusDays(1);
+            }
+            case "WEEK" -> {
+                start = today.with(java.time.DayOfWeek.MONDAY);
+                end = start.plusWeeks(1);
+            }
+            case "YEAR" -> {
+                start = today.withDayOfYear(1);
+                end = start.plusYears(1);
+            }
+            default -> {
+                start = today.withDayOfMonth(1);
+                end = start.plusMonths(1);
+            }
+        }
+        BigDecimal billing = sumBilling(start, end);
+        BigDecimal expenses = sumExpenses(start, end);
+        return new ProfitSummaryResponse(billing, expenses,
+                billing.subtract(expenses));
+    }
+
+    private String normalizePeriod(String period) {
+        String normalized = period == null ? "MONTH"
+                : period.trim().toUpperCase(Locale.ROOT);
+        return Set.of("DAY", "WEEK", "MONTH", "YEAR").contains(normalized)
+                ? normalized
+                : "MONTH";
+    }
+
+    private BigDecimal sumBilling(LocalDate start, LocalDate end) {
+        BigDecimal total = jdbc.queryForObject(
+                "SELECT COALESCE(SUM(delta), 0) FROM ("
+                        + "  SELECT i.subtotal AS delta FROM invoices i"
+                        + "   WHERE i.status NOT IN ('CANCELLED', 'DRAFT')"
+                        + "     AND i.created_at >= ? AND i.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT -cn.amount FROM credit_notes cn"
+                        + "   WHERE cn.created_at >= ? AND cn.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT -r.total FROM returns r"
+                        + "   WHERE r.created_at >= ? AND r.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT dn.amount FROM debit_notes dn"
+                        + "   WHERE dn.created_at >= ? AND dn.created_at < ?"
+                        + ") t",
+                BigDecimal.class, start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay());
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    private BigDecimal sumExpenses(LocalDate start, LocalDate end) {
+        BigDecimal total = jdbc.queryForObject(
+                "SELECT COALESCE(SUM(delta), 0) FROM ("
+                        + "  SELECT p.subtotal AS delta FROM purchases p"
+                        + "   WHERE p.status NOT IN ('CANCELLED', 'DRAFT')"
+                        + "     AND p.created_at >= ? AND p.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT -pr.total FROM purchase_returns pr"
+                        + "   WHERE pr.created_at >= ? AND pr.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT -pcn.amount FROM purchase_credit_notes pcn"
+                        + "   WHERE pcn.created_at >= ? AND pcn.created_at < ?"
+                        + "  UNION ALL"
+                        + "  SELECT pdn.amount FROM purchase_debit_notes pdn"
+                        + "   WHERE pdn.created_at >= ? AND pdn.created_at < ?"
+                        + ") t",
+                BigDecimal.class, start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay(),
+                start.atStartOfDay(), end.atStartOfDay());
+        return total != null ? total : BigDecimal.ZERO;
     }
 
     public List<MonthlySalesResponse> getMonthlySales() {
@@ -87,11 +164,7 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
     }
 
     public List<MonthlySalesResponse> getSalesTrend(String period) {
-        String normalized = period == null ? "MONTH"
-                : period.trim().toUpperCase(Locale.ROOT);
-        if (!Set.of("WEEK", "MONTH", "YEAR").contains(normalized)) {
-            normalized = "MONTH";
-        }
+        String normalized = normalizePeriod(period);
         SalesWindow window = salesWindow(normalized, LocalDate.now());
         Map<String, BigDecimal> totals = new HashMap<>();
         String sql = "SELECT bucket, COALESCE(SUM(delta), 0) AS total FROM ("
@@ -127,6 +200,7 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
 
     private String bucket(String period, String column) {
         return switch (period) {
+            case "DAY" -> "DATE_FORMAT(" + column + ", '%Y-%m-%d')";
             case "WEEK" -> "CONCAT(DATE_FORMAT(" + column
                     + ", '%Y-%m'), '-W', LEAST(CEIL(DAY(" + column
                     + ") / 7), 4))";
@@ -142,6 +216,13 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
     private SalesWindow salesWindow(String period, LocalDate today) {
         List<String> buckets = new ArrayList<>();
         return switch (period) {
+            case "DAY" -> {
+                LocalDate start = today.with(java.time.DayOfWeek.MONDAY);
+                for (int index = 0; index < 7; index++) {
+                    buckets.add(start.plusDays(index).toString());
+                }
+                yield new SalesWindow(buckets, start, start.plusDays(7));
+            }
             case "WEEK" -> {
                 int year = today.getYear();
                 int month = today.getMonthValue();
@@ -211,7 +292,36 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
                         + "ORDER BY created_at DESC LIMIT 10");
     }
 
+    private long countOutstandingInvoices(String dueComparator) {
+        String balanceExpression = "(i.subtotal - COALESCE(i.returned_total, 0) "
+                + "- COALESCE(pa.total_paid, 0) - COALESCE(cn.total_credit, 0) "
+                + "+ COALESCE(dn.total_debit, 0))";
+        Long count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM ("
+                        + "SELECT i.id, " + balanceExpression + " AS balance "
+                        + "FROM invoices i "
+                        + "LEFT JOIN (SELECT invoice_id, SUM(allocated_amount) AS total_paid FROM payment_allocations GROUP BY invoice_id) pa ON pa.invoice_id = i.id "
+                        + "LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_credit FROM credit_notes GROUP BY invoice_id) cn ON cn.invoice_id = i.id "
+                        + "LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_debit FROM debit_notes GROUP BY invoice_id) dn ON dn.invoice_id = i.id "
+                        + "WHERE i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID') "
+                        + "AND i.due_date " + dueComparator + " CURDATE()"
+                        + ") t WHERE t.balance > 0",
+                Long.class);
+        return count != null ? count : 0;
+    }
+
     public List<InvoiceDueResponse> getInvoiceDueSchedule() {
+        return getInvoiceDueSchedule("ALL");
+    }
+
+    public List<InvoiceDueResponse> getInvoiceDueSchedule(String scope) {
+        String normalized = scope == null ? "ALL"
+                : scope.trim().toUpperCase(Locale.ROOT);
+        String dueFilter = switch (normalized) {
+            case "UPCOMING" -> " AND i.due_date >= CURDATE() ";
+            case "OVERDUE" -> " AND i.due_date < CURDATE() ";
+            default -> "";
+        };
         String balanceExpression = "(i.subtotal - COALESCE(i.returned_total, 0) "
                 + "- COALESCE(pa.total_paid, 0) - COALESCE(cn.total_credit, 0) "
                 + "+ COALESCE(dn.total_debit, 0))";
@@ -226,6 +336,7 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
                         + "LEFT JOIN (SELECT invoice_id, SUM(amount) AS total_debit FROM debit_notes GROUP BY invoice_id) dn ON dn.invoice_id = i.id "
                         + "WHERE i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID') "
                         + "AND " + balanceExpression + " > 0 "
+                        + dueFilter
                         + "ORDER BY due_date ASC, c.legal_name ASC, i.invoice_number ASC "
                         + "LIMIT 10",
                 (rs, rowNum) -> new InvoiceDueResponse(
