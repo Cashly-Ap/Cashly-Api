@@ -9,8 +9,15 @@ import org.springframework.stereotype.Component;
 import com.cashly.cashly_api.analytics.dashboard.application.ports.out.DashboardQueryGateway;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.WeekFields;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -58,21 +65,81 @@ public class JdbcDashboardQueryAdapter implements DashboardQueryGateway {
     }
 
     public List<MonthlySalesResponse> getMonthlySales() {
-        return jdbc.query(
-                "SELECT months.month, COALESCE(SUM(i.subtotal), 0) AS total "
-                        + "FROM ("
-                        + "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m') AS month UNION ALL "
-                        + "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y-%m') UNION ALL "
-                        + "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m') UNION ALL "
-                        + "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y-%m') UNION ALL "
-                        + "  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m') UNION ALL "
-                        + "  SELECT DATE_FORMAT(CURDATE(), '%Y-%m')"
-                        + ") months "
-                        + "LEFT JOIN invoices i ON DATE_FORMAT(i.created_at, '%Y-%m') = months.month "
-                        + "AND i.status NOT IN ('CANCELLED', 'DRAFT') "
-                        + "GROUP BY months.month ORDER BY months.month",
-                (rs, rowNum) -> new MonthlySalesResponse(rs.getString("month"),
-                        rs.getBigDecimal("total")));
+        return getSalesTrend("MONTH");
+    }
+
+    public List<MonthlySalesResponse> getSalesTrend(String period) {
+        String normalized = period == null ? "MONTH"
+                : period.trim().toUpperCase(Locale.ROOT);
+        if (!Set.of("WEEK", "MONTH", "YEAR").contains(normalized)) {
+            normalized = "MONTH";
+        }
+        LocalDate today = LocalDate.now();
+        SalesWindow window = salesWindow(normalized, today);
+        Map<String, BigDecimal> totals = new HashMap<>();
+        jdbc.query("SELECT " + window.bucketExpression() + " AS bucket, "
+                + "COALESCE(SUM(i.subtotal), 0) AS total FROM invoices i "
+                + "WHERE i.status NOT IN ('CANCELLED', 'DRAFT') "
+                + "AND i.created_at >= ? AND i.created_at < ? GROUP BY bucket",
+                rs -> {
+                    totals.put(rs.getString("bucket"),
+                            rs.getBigDecimal("total"));
+                }, window.start(), window.end());
+        List<MonthlySalesResponse> series = new ArrayList<>();
+        for (String bucket : window.buckets()) {
+            series.add(new MonthlySalesResponse(bucket,
+                    totals.getOrDefault(bucket, BigDecimal.ZERO)));
+        }
+        return series;
+    }
+
+    private record SalesWindow(List<String> buckets, String bucketExpression,
+            LocalDate start, LocalDate end) {
+    }
+
+    private SalesWindow salesWindow(String period, LocalDate today) {
+        List<String> buckets = new ArrayList<>();
+        return switch (period) {
+            case "WEEK" -> {
+                int year = today.getYear();
+                int month = today.getMonthValue();
+                for (int week = 1; week <= 4; week++) {
+                    buckets.add(String.format("%d-%02d-W%d", year, month,
+                            week));
+                }
+                LocalDate start = today.withDayOfMonth(1);
+                yield new SalesWindow(buckets,
+                        "CONCAT(DATE_FORMAT(i.created_at, '%Y-%m'), '-W', "
+                                + "LEAST(CEIL(DAY(i.created_at) / 7), 4))",
+                        start, start.plusMonths(1));
+            }
+            case "YEAR" -> {
+                int currentYear = today.getYear();
+                java.util.TreeSet<Integer> years = new java.util.TreeSet<>();
+                jdbc.query("SELECT DISTINCT YEAR(created_at) FROM invoices "
+                        + "WHERE status NOT IN ('CANCELLED', 'DRAFT')",
+                        rs -> {
+                            years.add(rs.getInt(1));
+                        });
+                years.add(currentYear);
+                years.add(currentYear - 1);
+                years.forEach(year -> buckets.add(String.valueOf(year)));
+                yield new SalesWindow(buckets,
+                        "DATE_FORMAT(i.created_at, '%Y')",
+                        LocalDate.of(years.first(), 1, 1),
+                        LocalDate.of(currentYear + 1, 1, 1));
+            }
+            default -> {
+                int year = today.getYear();
+                for (int month = 1; month <= 12; month++) {
+                    buckets.add(String.format("%d-%02d", year, month));
+                }
+                yield new SalesWindow(buckets,
+                        "DATE_FORMAT(i.created_at, '%Y-%m')",
+                        LocalDate.of(year, 1, 1),
+                        LocalDate.of(year + 1, 1, 1));
+            }
+        };
     }
 
     public List<TopItemResponse> getTopProducts(int limit) {

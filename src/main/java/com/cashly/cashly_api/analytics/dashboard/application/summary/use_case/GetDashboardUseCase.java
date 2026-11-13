@@ -26,6 +26,10 @@ public class GetDashboardUseCase {
         return queryGateway.getMonthlySales();
     }
 
+    public List<MonthlySalesResponse> getSalesTrend(String period) {
+        return queryGateway.getSalesTrend(period);
+    }
+
     public List<TopItemResponse> getTopProducts(int limit) {
         return queryGateway.getTopProducts(limit);
     }

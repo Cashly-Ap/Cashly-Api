@@ -30,8 +30,9 @@ public class DashboardController {
 
     @GetMapping("/monthly-sales")
     @PreAuthorize("hasAuthority('DASHBOARD_VIEW')")
-    public ResponseEntity<List<MonthlySalesResponse>> getMonthlySales() {
-        return ResponseEntity.ok(getDashboardUseCase.getMonthlySales());
+    public ResponseEntity<List<MonthlySalesResponse>> getMonthlySales(
+            @RequestParam(defaultValue = "MONTH") String period) {
+        return ResponseEntity.ok(getDashboardUseCase.getSalesTrend(period));
     }
 
     @GetMapping("/top-products")

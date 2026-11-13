@@ -11,6 +11,7 @@ import java.util.Map;
 public interface DashboardQueryGateway {
     DashboardSummaryResponse getSummary();
     List<MonthlySalesResponse> getMonthlySales();
+    List<MonthlySalesResponse> getSalesTrend(String period);
     List<TopItemResponse> getTopProducts(int limit);
     List<TopItemResponse> getTopCustomers(int limit);
     List<Map<String, Object>> getRecentActivity();
