@@ -22,6 +22,7 @@ import com.cashly.cashly_api.procurement.purchases.application.ports.out.Purchas
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseActorGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.SupplierCreditGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseCashRegisterGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -80,10 +81,11 @@ public class PurchaseConfig {
             PurchaseDetailResponseAssembler responseAssembler,
             ActivityNotificationRecorder activityNotifications,
             SupplierCreditGateway supplierCreditGateway,
-            PurchaseActorGateway actorGateway) {
+            PurchaseActorGateway actorGateway,
+            PurchaseCashRegisterGateway purchaseCashRegisterGateway) {
         return new ConfirmPurchaseUseCase(purchaseRepository, inventoryGateway,
                 responseAssembler, activityNotifications,
-                supplierCreditGateway, actorGateway);
+                supplierCreditGateway, actorGateway, purchaseCashRegisterGateway);
     }
 
     @Bean

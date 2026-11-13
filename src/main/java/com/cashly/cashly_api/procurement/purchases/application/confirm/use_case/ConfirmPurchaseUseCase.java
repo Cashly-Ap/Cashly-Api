@@ -14,6 +14,7 @@ import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseI
 import jakarta.transaction.Transactional;
 
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.InventoryGateway;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseCashRegisterGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseActorGateway;
 import com.cashly.cashly_api.procurement.purchases.application.ports.out.SupplierCreditGateway;
 import java.util.UUID;
@@ -26,6 +27,7 @@ public class ConfirmPurchaseUseCase {
     private final PurchaseDetailResponseAssembler responseAssembler;
     private final SupplierCreditGateway supplierCreditGateway;
     private final PurchaseActorGateway actorGateway;
+    private final PurchaseCashRegisterGateway purchaseCashRegisterGateway;
 
     private final ActivityNotificationRecorder activityNotifications;
 
@@ -34,7 +36,7 @@ public class ConfirmPurchaseUseCase {
             PurchaseDetailResponseAssembler responseAssembler,
             ActivityNotificationRecorder activityNotifications) {
         this(purchaseRepository, inventoryGateway, responseAssembler,
-                activityNotifications, null, null);
+                activityNotifications, null, null, null);
     }
 
     public ConfirmPurchaseUseCase(PurchaseRepository purchaseRepository,
@@ -43,6 +45,18 @@ public class ConfirmPurchaseUseCase {
             ActivityNotificationRecorder activityNotifications,
             SupplierCreditGateway supplierCreditGateway,
             PurchaseActorGateway actorGateway) {
+        this(purchaseRepository, inventoryGateway, responseAssembler,
+                activityNotifications, supplierCreditGateway, actorGateway,
+                null);
+    }
+
+    public ConfirmPurchaseUseCase(PurchaseRepository purchaseRepository,
+            InventoryGateway inventoryGateway,
+            PurchaseDetailResponseAssembler responseAssembler,
+            ActivityNotificationRecorder activityNotifications,
+            SupplierCreditGateway supplierCreditGateway,
+            PurchaseActorGateway actorGateway,
+            PurchaseCashRegisterGateway purchaseCashRegisterGateway) {
         this.activityNotifications = activityNotifications != null
                 ? activityNotifications
                 : ActivityNotificationRecorder.NONE;
@@ -51,6 +65,7 @@ public class ConfirmPurchaseUseCase {
         this.responseAssembler = responseAssembler;
         this.supplierCreditGateway = supplierCreditGateway;
         this.actorGateway = actorGateway;
+        this.purchaseCashRegisterGateway = purchaseCashRegisterGateway;
     }
 
     @Transactional
@@ -71,6 +86,7 @@ public class ConfirmPurchaseUseCase {
         addStockFromPurchase(purchase);
 
         Purchase saved = purchaseRepository.save(purchase);
+        recordCashPurchase(saved);
         activityNotifications.record(ActivityEvent.of("PURCHASES",
                 "CONFIRM", "PURCHASE", saved.getId().value(),
                 saved.getPurchaseNumber().value(), authenticatedUserId));
@@ -97,6 +113,17 @@ public class ConfirmPurchaseUseCase {
                         confirmationPassword)) {
             throw new IllegalArgumentException("Contrasena incorrecta");
         }
+    }
+
+    private void recordCashPurchase(Purchase purchase) {
+        if (purchase.getPaymentType() != PaymentType.CASH
+                || purchaseCashRegisterGateway == null) {
+            return;
+        }
+        purchaseCashRegisterGateway.recordCashPurchase(
+                purchase.getSubtotal(), purchase.getId().value(),
+                purchase.getPurchaseNumber().getValue(), purchase.getCreatedBy(),
+                purchase.getCreatedByName());
     }
 
     private void addStockFromPurchase(Purchase purchase) {

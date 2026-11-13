@@ -25,4 +25,11 @@ public class RepositoryPaymentMethodDetailsQuery
                 .map(method -> new PaymentMethodDetails(method.getId().value(),
                         method.getName()));
     }
+
+    @Override
+    public Optional<PaymentMethodDetails> findByCode(String code) {
+        return paymentMethods.findByCode(code)
+                .map(method -> new PaymentMethodDetails(method.getId().value(),
+                        method.getName()));
+    }
 }

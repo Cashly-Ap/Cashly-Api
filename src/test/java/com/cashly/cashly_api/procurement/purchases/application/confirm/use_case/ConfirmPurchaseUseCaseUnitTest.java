@@ -10,6 +10,8 @@ import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseI
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseLineId;
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseNumber;
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseStatus;
+import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PaymentType;
+import com.cashly.cashly_api.procurement.purchases.application.ports.out.PurchaseCashRegisterGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.MovementType;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.ReferenceType;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.StockMovement;
@@ -27,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +54,9 @@ class ConfirmPurchaseUseCaseUnitTest {
 
     @Mock
     private WarehouseRepository warehouseRepository;
+
+    @Mock
+    private PurchaseCashRegisterGateway purchaseCashRegisterGateway;
 
     private ConfirmPurchaseUseCase confirmPurchaseUseCase;
 
@@ -179,6 +185,34 @@ class ConfirmPurchaseUseCaseUnitTest {
     }
 
     @Test
+    void should_RecordCashExpense_When_CashPurchaseIsConfirmed() {
+        UUID id = UUID.randomUUID();
+        Purchase purchase = buildCashPurchase(id, PurchaseStatus.DRAFT);
+        ConfirmPurchaseUseCase useCase = new ConfirmPurchaseUseCase(
+                purchaseRepository,
+                new WarehouseInventoryAdapter(new PurchaseInventoryService(
+                        warehouseStockRepository, stockMovementRepository)),
+                new com.cashly.cashly_api.procurement.purchases.application.services.PurchaseDetailResponseAssembler(
+                        new com.cashly.cashly_api.procurement.purchases.infrastructure.integration.LocalPurchaseWarehouseGatewayAdapter(
+                                new com.cashly.cashly_api.inventory.warehouses.stock.application.queries.services.RepositoryPurchaseWarehouseQuery(
+                                        warehouseRepository,
+                                        mock(WarehouseStockRepository.class)))),
+                mock(com.cashly.cashly_api.platform.notifications.application.ports.in.ActivityNotificationRecorder.class),
+                null, null, purchaseCashRegisterGateway);
+        when(purchaseRepository.findById(PurchaseId.of(id)))
+                .thenReturn(Optional.of(purchase));
+        when(purchaseRepository.save(any(Purchase.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        useCase.execute(id);
+
+        verify(purchaseCashRegisterGateway).recordCashPurchase(
+                eq(BigDecimal.TEN), eq(id),
+                eq(purchase.getPurchaseNumber().getValue()),
+                eq(purchase.getCreatedBy()), eq(purchase.getCreatedByName()));
+    }
+
+    @Test
     void should_SavePurchaseExactlyOnce_When_ConfirmationSucceeds() {
         UUID id = UUID.randomUUID();
         Purchase purchase = buildPurchase(id, PurchaseStatus.DRAFT);
@@ -200,6 +234,18 @@ class ConfirmPurchaseUseCaseUnitTest {
                 "J-12345678-9", UUID.randomUUID(), "User Name", status, null,
                 BigDecimal.ZERO, null, null, null, List.of(line),
                 LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    private Purchase buildCashPurchase(UUID id, PurchaseStatus status) {
+        PurchaseLine line = PurchaseLine.create(UUID.randomUUID(), "Product A",
+                "PROD-001", BigDecimal.ONE, BigDecimal.TEN, List.of());
+        LocalDate issueDate = LocalDate.now();
+        return Purchase.reconstitute(PurchaseId.of(id),
+                PurchaseNumber.of(2026, 1), UUID.randomUUID(), "Supplier Name",
+                "J-12345678-9", UUID.randomUUID(), "User Name", status,
+                PaymentType.CASH, issueDate, issueDate.plusDays(30),
+                BigDecimal.ZERO, null, null, BigDecimal.TEN, null, null, null,
+                List.of(line), LocalDateTime.now(), LocalDateTime.now());
     }
 
     private Purchase buildPurchaseWithAllocation(UUID id, PurchaseStatus status,
