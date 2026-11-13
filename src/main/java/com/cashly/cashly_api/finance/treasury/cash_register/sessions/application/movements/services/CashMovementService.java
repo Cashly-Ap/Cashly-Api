@@ -46,7 +46,7 @@ public class CashMovementService {
                     "The monetary operation is already registered in cash");
         }
         String paymentMethodName = paymentMethodId == null
-                ? "Sin método"
+                ? ""
                 : paymentMethods.findById(paymentMethodId).map(
                         CashRegisterPaymentMethodGateway.PaymentMethod::name)
                         .orElseThrow(() -> new IllegalArgumentException(

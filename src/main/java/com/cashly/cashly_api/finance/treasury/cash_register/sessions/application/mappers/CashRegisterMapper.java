@@ -96,7 +96,7 @@ public final class CashRegisterMapper {
             }
             String concept = movement.getPaymentMethodName();
             if (concept == null || concept.isBlank()) {
-                concept = "Sin método";
+                concept = "";
             }
             totalsByPaymentMethod.merge(concept, movement.getAmount(),
                     BigDecimal::add);
