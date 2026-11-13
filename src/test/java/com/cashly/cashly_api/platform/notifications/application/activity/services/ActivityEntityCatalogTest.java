@@ -11,7 +11,7 @@ class ActivityEntityCatalogTest {
     void every_reference_type_has_a_noun_key() {
         for (String type : java.util.List.of("QUOTE", "ORDER", "PURCHASE",
                 "PRODUCT", "CATEGORY", "PRICE_TYPE", "WAREHOUSE", "INVOICE",
-                "RETURN", "CREDIT_NOTE", "DEBIT_NOTE", "CASH_REGISTER",
+                "RETURN", "CREDIT_NOTE", "DEBIT_NOTE", "CASH_REGISTER", "EXPENSE",
                 "RECEIVABLE", "PAYMENT", "PAYMENT_METHOD", "CUSTOMER",
                 "SUPPLIER", "USER", "ROLE", "DEPARTMENT", "COMPANY")) {
             assertThat(ActivityEntityCatalog.labelKey(type))

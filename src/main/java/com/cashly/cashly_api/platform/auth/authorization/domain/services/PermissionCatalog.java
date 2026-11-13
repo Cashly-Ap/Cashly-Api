@@ -109,6 +109,8 @@ public final class PermissionCatalog {
                         submodule("FINANCE_TREASURY", "finance_treasury", 20,
                                 domain(PermissionModule.FINANCE_TREASURY_CASH_REGISTER,
                                         10),
+                                domain(PermissionModule.FINANCE_TREASURY_EXPENSES,
+                                        15),
                                 domain(PermissionModule.FINANCE_TREASURY_RECEIVABLES,
                                         20),
                                 domain(PermissionModule.FINANCE_TREASURY_PAYABLES,

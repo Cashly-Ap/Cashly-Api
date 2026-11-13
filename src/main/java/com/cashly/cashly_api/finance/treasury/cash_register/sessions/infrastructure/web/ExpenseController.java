@@ -24,7 +24,7 @@ public class ExpenseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_VIEW_LIST')")
+    @PreAuthorize("hasAnyAuthority('FINANCE_TREASURY_EXPENSES_VIEW_LIST','FINANCE_TREASURY_CASH_REGISTER_VIEW_LIST')")
     public PageResponse<ExpenseResponse> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

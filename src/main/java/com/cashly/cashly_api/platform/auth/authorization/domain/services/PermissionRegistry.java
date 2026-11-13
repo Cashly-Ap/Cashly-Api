@@ -89,6 +89,8 @@ public final class PermissionRegistry {
                 VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
         result.put(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, EnumSet.of(
                 VIEW_LIST, CASH_HISTORY, REPORT_CASH_REGISTER, OPEN, CLOSE));
+        result.put(PermissionModule.FINANCE_TREASURY_EXPENSES, EnumSet.of(
+                VIEW_LIST, CREATE, DELETE, CANCEL));
         result.put(PermissionModule.FINANCE_TREASURY_RECEIVABLES, EnumSet.of(
                 VIEW_LIST, VIEW_DEBT, REPORT_PDF, PAY_ALL, PARTIAL_PAYMENT,
                 PAY_DIRECT, PAY_WITH_VALIDATION, REFUND, ADVANCE,

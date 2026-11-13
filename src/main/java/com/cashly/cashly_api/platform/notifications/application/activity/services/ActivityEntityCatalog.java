@@ -21,6 +21,7 @@ public final class ActivityEntityCatalog {
             Map.entry("CREDIT_NOTE", "credit_note"),
             Map.entry("DEBIT_NOTE", "debit_note"),
             Map.entry("CASH_REGISTER", "cash_register"),
+            Map.entry("EXPENSE", "expense"),
             Map.entry("RECEIVABLE", "receivable"),
             Map.entry("PAYMENT", "payment"),
             Map.entry("PAYMENT_METHOD", "payment_method"),

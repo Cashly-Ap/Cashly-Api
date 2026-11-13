@@ -86,7 +86,7 @@ public class CashRegisterController {
     }
 
     @PostMapping("/{id}/movements")
-    @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN')")
+    @PreAuthorize("hasAnyAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN','FINANCE_TREASURY_EXPENSES_CREATE')")
     public ResponseEntity<CashMovementResponse> addMovement(
             @PathVariable UUID id,
             @Valid @RequestBody CashMovementRequest request,
@@ -97,14 +97,14 @@ public class CashRegisterController {
     }
 
     @DeleteMapping("/movements/{movementId}")
-    @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN')")
+    @PreAuthorize("hasAnyAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN','FINANCE_TREASURY_EXPENSES_DELETE')")
     public ResponseEntity<Void> deleteMovement(@PathVariable UUID movementId) {
         deleteCashMovementUseCase.execute(movementId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/movements/{movementId}/cancel")
-    @PreAuthorize("hasAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN')")
+    @PreAuthorize("hasAnyAuthority('FINANCE_TREASURY_CASH_REGISTER_OPEN','FINANCE_TREASURY_EXPENSES_CANCEL')")
     public ResponseEntity<CashMovementResponse> cancelMovement(
             @PathVariable UUID movementId,
             @Valid @RequestBody CancelCashMovementRequest request,

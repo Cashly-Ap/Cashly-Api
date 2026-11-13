@@ -73,9 +73,16 @@ public class RecordCashMovementUseCase {
 
         refreshTotals(target, movement);
 
-        activityNotifications.record(ActivityEvent.of("FINANCE_TREASURY_CASH_REGISTER",
-                "OPEN", "CASH_REGISTER", target.getId().value(),
-                target.getClosureDate().toString(), userId));
+        if (request.type() == CashMovementType.EXPENSE) {
+            activityNotifications.record(ActivityEvent.of(
+                    "FINANCE_TREASURY_EXPENSES", "CREATE", "EXPENSE",
+                    movement.getId(), movement.getDescription(), userId));
+        } else {
+            activityNotifications.record(ActivityEvent.of(
+                    "FINANCE_TREASURY_CASH_REGISTER", "OPEN", "CASH_REGISTER",
+                    target.getId().value(),
+                    target.getClosureDate().toString(), userId));
+        }
         return CashMovementResponse.from(movement);
     }
 
