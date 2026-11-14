@@ -33,7 +33,7 @@ public class DeleteCreditNoteUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "CREDIT_NOTE", action = "DELETE")
+    @Audited(module = "sales", entityType = "CREDIT_NOTE", action = "DELETE")
     public void execute(UUID noteId) {
         CreditNoteId id = new CreditNoteId(noteId);
         CreditNote creditNote = creditNoteRepository.findById(id)
@@ -41,7 +41,7 @@ public class DeleteCreditNoteUseCase {
                         "Credit note not found: " + noteId));
 
         UUID invoiceId = creditNote.getInvoiceId();
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_CREDIT_NOTES",
+        activityNotifications.record(ActivityEvent.of("SALES_CREDIT_NOTES",
                 "DELETE", "CREDIT_NOTE",
                 noteId,
                 noteId.toString(), null));

@@ -24,7 +24,7 @@ Base path: `/api/notifications`. All endpoints are self-service (`isAuthenticate
 {
   "enabled": true,
   "modules": [
-    { "module": "FINANCE_BILLING_INVOICES", "labelKey": "platform.auth.domains.finance_billing_invoices", "enabled": true }
+    { "module": "SALES_INVOICES", "labelKey": "platform.auth.domains.sales_invoices", "enabled": true }
   ]
 }
 ```

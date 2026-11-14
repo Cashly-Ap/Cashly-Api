@@ -37,7 +37,7 @@ public class DeleteInvoiceUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "INVOICE", action = "DELETE")
+    @Audited(module = "sales", entityType = "INVOICE", action = "DELETE")
     public void execute(UUID id) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
@@ -46,7 +46,7 @@ public class DeleteInvoiceUseCase {
         revertLinkedOrder(invoice);
         revertStockAllocations(invoice);
 
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+        activityNotifications.record(ActivityEvent.of("SALES_INVOICES",
                 "DELETE", "INVOICE", invoice.getId().value(),
                 invoice.getInvoiceNumber().value(), null));
         invoiceRepository.deleteById(InvoiceId.of(id));

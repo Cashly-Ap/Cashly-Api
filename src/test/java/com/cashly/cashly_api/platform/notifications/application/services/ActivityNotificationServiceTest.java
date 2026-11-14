@@ -49,7 +49,7 @@ class ActivityNotificationServiceTest {
 
     @Test
     void read_only_actions_do_nothing() {
-        service.record(ActivityEvent.of("FINANCE_BILLING_INVOICES", "VIEW_LIST",
+        service.record(ActivityEvent.of("SALES_INVOICES", "VIEW_LIST",
                 "INVOICE", UUID.randomUUID(), "INV-1", UUID.randomUUID()));
         verifyNoInteractions(audience, actors, notifications, delivery);
     }
@@ -59,10 +59,10 @@ class ActivityNotificationServiceTest {
         UUID actorId = UUID.randomUUID();
         UUID recipient = UUID.randomUUID();
         when(actors.actorName(actorId)).thenReturn(Optional.of("Ana"));
-        when(audience.findRecipients("FINANCE_BILLING_INVOICES", "EDIT",
+        when(audience.findRecipients("SALES_INVOICES", "EDIT",
                 actorId)).thenReturn(List.of(recipient));
 
-        service.record(ActivityEvent.of("FINANCE_BILLING_INVOICES", "EDIT",
+        service.record(ActivityEvent.of("SALES_INVOICES", "EDIT",
                 "INVOICE", UUID.randomUUID(), "FAC-001", actorId));
 
         ArgumentCaptor<Notification> captor = ArgumentCaptor

@@ -46,7 +46,7 @@ class RecordAuditUseCaseTest {
         RecordAuditUseCase useCase = new RecordAuditUseCase(events, actors,
                 currentActor, clock, companyId, true);
 
-        useCase.record(AuditEntry.of("finance", AuditEntityType.INVOICE,
+        useCase.record(AuditEntry.of("sales", AuditEntityType.INVOICE,
                 UUID.randomUUID(), "INV-1", AuditAction.CONFIRM, actorId,
                 Map.of("status", "CONFIRMED")));
 
@@ -73,7 +73,7 @@ class RecordAuditUseCaseTest {
         RecordAuditUseCase useCase = new RecordAuditUseCase(events, actors,
                 currentActor, clock, companyId, true);
 
-        useCase.record(AuditEntry.of("finance", AuditEntityType.INVOICE,
+        useCase.record(AuditEntry.of("sales", AuditEntityType.INVOICE,
                 UUID.randomUUID(), "INV-1", AuditAction.CREATE));
 
         ArgumentCaptor<AuditEvent> captor = ArgumentCaptor
@@ -94,7 +94,7 @@ class RecordAuditUseCaseTest {
         RecordAuditUseCase useCase = new RecordAuditUseCase(events, actors,
                 currentActor, clock, companyId, true);
 
-        assertThatThrownBy(() -> useCase.record(AuditEntry.of("finance",
+        assertThatThrownBy(() -> useCase.record(AuditEntry.of("sales",
                 AuditEntityType.INVOICE, UUID.randomUUID(), "INV-1",
                 AuditAction.CREATE)))
                 .isInstanceOf(IllegalStateException.class)
@@ -110,7 +110,7 @@ class RecordAuditUseCaseTest {
         RecordAuditUseCase useCase = new RecordAuditUseCase(events, actors,
                 currentActor, clock, companyId, false);
 
-        assertThatCode(() -> useCase.record(AuditEntry.of("finance",
+        assertThatCode(() -> useCase.record(AuditEntry.of("sales",
                 AuditEntityType.INVOICE, UUID.randomUUID(), "INV-1",
                 AuditAction.CREATE))).doesNotThrowAnyException();
     }

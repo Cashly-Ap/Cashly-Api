@@ -68,7 +68,7 @@ public class CreateInvoiceUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "INVOICE", action = "CREATE")
+    @Audited(module = "sales", entityType = "INVOICE", action = "CREATE")
     public InvoiceDetailResponse execute(CreateInvoiceRequest request,
             UUID authenticatedUserId) {
         UUID customerId;
@@ -165,7 +165,7 @@ public class CreateInvoiceUseCase {
         } else {
             saved = invoices.save(invoice);
         }
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+        activityNotifications.record(ActivityEvent.of("SALES_INVOICES",
                 "CREATE", "INVOICE", saved.getId().value(),
                 saved.getInvoiceNumber().value(), authenticatedUserId));
         return InvoiceMapper.toDetailResponse(saved);

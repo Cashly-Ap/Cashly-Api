@@ -39,7 +39,7 @@ public class ConfirmInvoiceUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "INVOICE", action = "CONFIRM")
+    @Audited(module = "sales", entityType = "INVOICE", action = "CONFIRM")
     public InvoiceDetailResponse execute(UUID id, ConfirmInvoiceRequest request,
             UUID authenticatedUserId) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
@@ -49,7 +49,7 @@ public class ConfirmInvoiceUseCase {
                         request.useBalance(), request.balanceAmount(),
                         request.paymentMethodId()),
                 InvoiceOrigin.MANUAL_DRAFT, authenticatedUserId);
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+        activityNotifications.record(ActivityEvent.of("SALES_INVOICES",
                 "CONFIRM", "INVOICE", saved.getId().value(),
                 saved.getInvoiceNumber().value(), authenticatedUserId));
         return InvoiceMapper.toDetailResponse(saved);

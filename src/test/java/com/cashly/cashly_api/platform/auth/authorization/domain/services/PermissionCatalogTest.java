@@ -43,19 +43,25 @@ class PermissionCatalogTest {
     }
 
     @Test
-    void groups_finance_into_billing_and_treasury_submodules() {
+    void groups_sales_domains_and_finance_treasury() {
+        var sales = areaOf("SALES");
         var finance = areaOf("FINANCE");
 
+        assertThat(sales.submodules()).extracting(
+                PermissionCatalog.SubmoduleCatalog::submodule)
+                .containsExactly((String) null);
+        assertThat(sales.submodules().get(0).domains()).extracting(
+                PermissionCatalog.DomainCatalog::module)
+                .containsExactly(PermissionModule.SALES_QUOTES,
+                        PermissionModule.SALES_ORDERS,
+                        PermissionModule.SALES_INVOICES,
+                        PermissionModule.SALES_RETURNS,
+                        PermissionModule.SALES_CREDIT_NOTES,
+                        PermissionModule.SALES_DEBIT_NOTES);
         assertThat(finance.submodules()).extracting(
                 PermissionCatalog.SubmoduleCatalog::submodule)
-                .containsExactly("FINANCE_BILLING", "FINANCE_TREASURY");
+                .containsExactly("FINANCE_TREASURY");
         assertThat(finance.submodules().get(0).domains()).extracting(
-                PermissionCatalog.DomainCatalog::module)
-                .containsExactly(PermissionModule.FINANCE_BILLING_INVOICES,
-                        PermissionModule.FINANCE_BILLING_RETURNS,
-                        PermissionModule.FINANCE_BILLING_CREDIT_NOTES,
-                        PermissionModule.FINANCE_BILLING_DEBIT_NOTES);
-        assertThat(finance.submodules().get(1).domains()).extracting(
                 PermissionCatalog.DomainCatalog::module)
                 .containsExactly(
                         PermissionModule.FINANCE_TREASURY_CASH_REGISTER,
@@ -90,10 +96,10 @@ class PermissionCatalogTest {
                 Map.entry(PermissionModule.CATALOG_CATEGORIES, 5),
                 Map.entry(PermissionModule.CATALOG_PRICES, 5),
                 Map.entry(PermissionModule.INVENTORY_WAREHOUSES, 11),
-                Map.entry(PermissionModule.FINANCE_BILLING_INVOICES, 10),
-                Map.entry(PermissionModule.FINANCE_BILLING_RETURNS, 4),
-                Map.entry(PermissionModule.FINANCE_BILLING_CREDIT_NOTES, 4),
-                Map.entry(PermissionModule.FINANCE_BILLING_DEBIT_NOTES, 4),
+                Map.entry(PermissionModule.SALES_INVOICES, 10),
+                Map.entry(PermissionModule.SALES_RETURNS, 4),
+                Map.entry(PermissionModule.SALES_CREDIT_NOTES, 4),
+                Map.entry(PermissionModule.SALES_DEBIT_NOTES, 4),
                 Map.entry(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, 5),
                 Map.entry(PermissionModule.FINANCE_TREASURY_EXPENSES, 4),
                 Map.entry(PermissionModule.FINANCE_TREASURY_RECEIVABLES, 13),

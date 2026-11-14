@@ -50,7 +50,7 @@ public class DuplicateInvoiceUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "INVOICE", action = "DUPLICATE")
+    @Audited(module = "sales", entityType = "INVOICE", action = "DUPLICATE")
     public InvoiceDetailResponse execute(UUID id, UUID newCustomerId) {
         Invoice original = invoiceRepository.findById(InvoiceId.of(id))
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
@@ -97,7 +97,7 @@ public class DuplicateInvoiceUseCase {
                 original.getPaymentType(), original.getNotes(), copiedLines);
 
         Invoice saved = invoiceRepository.save(duplicate);
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+        activityNotifications.record(ActivityEvent.of("SALES_INVOICES",
                 "DUPLICATE", "INVOICE", saved.getId().value(),
                 saved.getInvoiceNumber().value(), null));
         return InvoiceMapper.toDetailResponse(saved);

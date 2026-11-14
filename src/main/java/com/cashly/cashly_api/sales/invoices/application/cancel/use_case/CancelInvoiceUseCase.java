@@ -42,7 +42,7 @@ public class CancelInvoiceUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "INVOICE", action = "CANCEL")
+    @Audited(module = "sales", entityType = "INVOICE", action = "CANCEL")
     public InvoiceDetailResponse execute(UUID id,
             CancelInvoiceRequest request) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
@@ -56,7 +56,7 @@ public class CancelInvoiceUseCase {
         if (cashRegister != null) {
             cashRegister.cancelInvoice(saved.getId().value());
         }
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+        activityNotifications.record(ActivityEvent.of("SALES_INVOICES",
                 "CANCEL", "INVOICE", saved.getId().value(),
                 saved.getInvoiceNumber().value(), null));
         return InvoiceMapper.toDetailResponse(saved);

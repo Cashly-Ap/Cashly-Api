@@ -45,7 +45,7 @@ public class CreateCreditNoteUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "CREDIT_NOTE", action = "CREATE")
+    @Audited(module = "sales", entityType = "CREDIT_NOTE", action = "CREATE")
     public CreditNoteResponse execute(CreateCreditNoteRequest request,
             UUID authenticatedUserId) {
         CreditNoteInvoiceGateway.CreditNoteInvoiceContext invoice = invoices
@@ -82,7 +82,7 @@ public class CreateCreditNoteUseCase {
                     invoice.number(), authenticatedUserId);
         }
 
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_CREDIT_NOTES",
+        activityNotifications.record(ActivityEvent.of("SALES_CREDIT_NOTES",
                 "CREATE", "CREDIT_NOTE", saved.getId().value(),
                 saved.getNoteNumber().value(), authenticatedUserId));
         return CreditNoteMapper.toCreditNoteResponse(saved, null, null, null);

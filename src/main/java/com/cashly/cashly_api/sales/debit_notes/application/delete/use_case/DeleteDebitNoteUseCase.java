@@ -33,7 +33,7 @@ public class DeleteDebitNoteUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "DEBIT_NOTE", action = "DELETE")
+    @Audited(module = "sales", entityType = "DEBIT_NOTE", action = "DELETE")
     public void execute(UUID noteId) {
         DebitNoteId id = new DebitNoteId(noteId);
         DebitNote debitNote = debitNoteRepository.findById(id)
@@ -41,7 +41,7 @@ public class DeleteDebitNoteUseCase {
                         "Debit note not found: " + noteId));
 
         UUID invoiceId = debitNote.getInvoiceId();
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_DEBIT_NOTES",
+        activityNotifications.record(ActivityEvent.of("SALES_DEBIT_NOTES",
                 "DELETE", "DEBIT_NOTE",
                 noteId,
                 noteId.toString(), null));

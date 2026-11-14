@@ -68,7 +68,7 @@ class AuditControllerTest {
                 new AuditFilterOptionsResponse(List.of(), List.of(),
                         new AuditDateRangeResponse(null, null)));
         when(queries.get(any())).thenReturn(new AuditEventResponse(
-                UUID.randomUUID(), "finance", "INVOICE", entityId, "INV-1",
+                UUID.randomUUID(), "sales", "INVOICE", entityId, "INV-1",
                 null, "CONFIRM", new AuditActorResponse(null, "Sistema", null),
                 Instant.parse("2025-01-01T10:00:00Z"),
                 "audit.events.confirm.description", List.of("INV-1"),

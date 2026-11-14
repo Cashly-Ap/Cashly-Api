@@ -51,7 +51,7 @@ public class DeleteReturnUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "RETURN", action = "DELETE")
+    @Audited(module = "sales", entityType = "RETURN", action = "DELETE")
     public void execute(UUID id, UUID authenticatedUserId, String userName) {
         ReturnId returnId = ReturnId.of(id);
         Return return_ = returnRepository.findById(returnId).orElseThrow(
@@ -66,7 +66,7 @@ public class DeleteReturnUseCase {
 
         revertCustomerBalance(return_);
 
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_RETURNS",
+        activityNotifications.record(ActivityEvent.of("SALES_RETURNS",
                 "DELETE", "RETURN", return_.getId().value(),
                 return_.getReturnNumber().value(), authenticatedUserId));
         returnRepository.delete(returnId);

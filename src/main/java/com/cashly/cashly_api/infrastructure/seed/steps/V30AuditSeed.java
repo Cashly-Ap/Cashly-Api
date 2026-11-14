@@ -206,16 +206,16 @@ public class V30AuditSeed implements SeedStep {
         }
 
         String invoiceNumber = sample.documentNumber("INV");
-        create("invoice-create-" + sample.key(), "finance",
+        create("invoice-create-" + sample.key(), "sales",
                 AuditEntityType.INVOICE, id("invoice." + sample.key()),
                 invoiceNumber, ADMIN_USER, ADMIN, scenario.invoice().name());
         if (scenario.invoice() == InvoiceStatus.CANCELLED) {
-            cancel("invoice-cancel-" + sample.key(), "finance",
+            cancel("invoice-cancel-" + sample.key(), "sales",
                     AuditEntityType.INVOICE, id("invoice." + sample.key()),
                     invoiceNumber, ADMIN_USER, ADMIN,
                     scenario.invoice().name(), "Cancelled demonstration invoice");
         } else if (scenario.invoice() != InvoiceStatus.DRAFT) {
-            action("invoice-confirm-" + sample.key(), "finance",
+            action("invoice-confirm-" + sample.key(), "sales",
                     AuditEntityType.INVOICE, id("invoice." + sample.key()),
                     invoiceNumber, AuditAction.CONFIRM, ADMIN_USER, ADMIN,
                     Map.of("statusFrom", "DRAFT", "statusTo",
@@ -223,13 +223,13 @@ public class V30AuditSeed implements SeedStep {
                             invoiceNumber));
         }
         if (scenario.invoice() == InvoiceStatus.PARTIALLY_PAID) {
-            action("invoice-partial-" + sample.key(), "finance",
+            action("invoice-partial-" + sample.key(), "sales",
                     AuditEntityType.INVOICE, id("invoice." + sample.key()),
                     invoiceNumber, AuditAction.PARTIAL_PAYMENT, OPERATOR_USER,
                     OPERATOR, Map.of("amount", "partial", "method",
                             scenario.paymentType().name()));
         } else if (scenario.invoice() == InvoiceStatus.PAID) {
-            action("invoice-pay-" + sample.key(), "finance",
+            action("invoice-pay-" + sample.key(), "sales",
                     AuditEntityType.INVOICE, id("invoice." + sample.key()),
                     invoiceNumber, AuditAction.PAY, OPERATOR_USER, OPERATOR,
                     Map.of("amount", "full", "method",
@@ -238,22 +238,22 @@ public class V30AuditSeed implements SeedStep {
     }
 
     private void financeDocuments() {
-        create("invoice-one", "finance", AuditEntityType.INVOICE, INVOICE_ONE,
+        create("invoice-one", "sales", AuditEntityType.INVOICE, INVOICE_ONE,
                 "INV-2026-0001", ADMIN_USER, ADMIN, "PENDING_PAYMENT");
-        action("invoice-one-confirm", "finance", AuditEntityType.INVOICE,
+        action("invoice-one-confirm", "sales", AuditEntityType.INVOICE,
                 INVOICE_ONE, "INV-2026-0001", AuditAction.CONFIRM, ADMIN_USER,
                 ADMIN, Map.of("statusFrom", "DRAFT", "statusTo",
                         "PENDING_PAYMENT", "documentNumber", "INV-2026-0001"));
-        action("invoice-one-pay", "finance", AuditEntityType.INVOICE,
+        action("invoice-one-pay", "sales", AuditEntityType.INVOICE,
                 INVOICE_ONE, "INV-2026-0001", AuditAction.PAY, OPERATOR_USER,
                 OPERATOR, Map.of("amount", "10.00", "method", "CASH"));
-        create("invoice-two", "finance", AuditEntityType.INVOICE, INVOICE_TWO,
+        create("invoice-two", "sales", AuditEntityType.INVOICE, INVOICE_TWO,
                 "INV-2026-0002", ADMIN_USER, ADMIN, "PENDING_PAYMENT");
-        action("invoice-two-confirm", "finance", AuditEntityType.INVOICE,
+        action("invoice-two-confirm", "sales", AuditEntityType.INVOICE,
                 INVOICE_TWO, "INV-2026-0002", AuditAction.CONFIRM, ADMIN_USER,
                 ADMIN, Map.of("statusFrom", "DRAFT", "statusTo",
                         "PENDING_PAYMENT", "documentNumber", "INV-2026-0002"));
-        action("invoice-two-partial", "finance", AuditEntityType.INVOICE,
+        action("invoice-two-partial", "sales", AuditEntityType.INVOICE,
                 INVOICE_TWO, "INV-2026-0002", AuditAction.PARTIAL_PAYMENT,
                 OPERATOR_USER, OPERATOR, Map.of("amount", "3.00", "method",
                         "TRANSFER"));
@@ -272,20 +272,20 @@ public class V30AuditSeed implements SeedStep {
         for (var sample : SeedDocuments.additional()) {
             paymentSample(sample);
         }
-        create("return-one", "finance", AuditEntityType.RETURN, RETURN_ONE,
+        create("return-one", "sales", AuditEntityType.RETURN, RETURN_ONE,
                 "RET-2026-0001", ADMIN_USER, ADMIN, "COMPLETED");
-        create("return-two", "finance", AuditEntityType.RETURN, RETURN_TWO,
+        create("return-two", "sales", AuditEntityType.RETURN, RETURN_TWO,
                 "RET-2026-0002", ADMIN_USER, ADMIN, "COMPLETED");
-        create("credit-note-one", "finance", AuditEntityType.CREDIT_NOTE,
+        create("credit-note-one", "sales", AuditEntityType.CREDIT_NOTE,
                 id("credit-note.one"), "CN-2026-0001", ADMIN_USER, ADMIN,
                 "ISSUED");
-        create("credit-note-two", "finance", AuditEntityType.CREDIT_NOTE,
+        create("credit-note-two", "sales", AuditEntityType.CREDIT_NOTE,
                 id("credit-note.two"), "CN-2026-0002", ADMIN_USER, ADMIN,
                 "ISSUED");
-        create("debit-note-one", "finance", AuditEntityType.DEBIT_NOTE,
+        create("debit-note-one", "sales", AuditEntityType.DEBIT_NOTE,
                 id("debit-note.one"), "DN-2026-0001", ADMIN_USER, ADMIN,
                 "ISSUED");
-        create("debit-note-two", "finance", AuditEntityType.DEBIT_NOTE,
+        create("debit-note-two", "sales", AuditEntityType.DEBIT_NOTE,
                 id("debit-note.two"), "DN-2026-0002", ADMIN_USER, ADMIN,
                 "ISSUED");
         action("register-closed-open", "finance",

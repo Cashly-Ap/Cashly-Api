@@ -39,7 +39,7 @@ public class CreateDebitNoteUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "DEBIT_NOTE", action = "CREATE")
+    @Audited(module = "sales", entityType = "DEBIT_NOTE", action = "CREATE")
     public DebitNoteResponse execute(CreateDebitNoteRequest request,
             UUID authenticatedUserId) {
         DebitNoteInvoiceGateway.InvoiceContext invoice = invoices
@@ -62,7 +62,7 @@ public class CreateDebitNoteUseCase {
                 saved.getId().value(), authenticatedUserId,
                 saved.getCreatedByName());
         invoices.recalculate(saved.getInvoiceId());
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_DEBIT_NOTES",
+        activityNotifications.record(ActivityEvent.of("SALES_DEBIT_NOTES",
                 "CREATE", "DEBIT_NOTE", saved.getId().value(),
                 saved.getNoteNumber().value(), authenticatedUserId));
         return DebitNoteMapper.toDebitNoteResponse(saved, null, null, null);

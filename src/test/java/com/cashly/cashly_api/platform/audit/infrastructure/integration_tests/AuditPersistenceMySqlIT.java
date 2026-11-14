@@ -176,7 +176,7 @@ class AuditPersistenceMySqlIT {
             UUID actorId, String actorName, Instant occurredAt,
             Map<String, Object> metadata) {
         return new AuditEvent(UUID.randomUUID(), Company.INSTALLATION_ID,
-                "finance", AuditEntityType.INVOICE, entityId, label, null,
+                "sales", AuditEntityType.INVOICE, entityId, label, null,
                 action, actorId, actorName, null, occurredAt,
                 action.descriptionKey(), List.of(label), metadata, "WEB");
     }

@@ -15,7 +15,7 @@ class AuditEntryTest {
 
     @Test
     void shouldDeriveDescriptionKeyFromAction() {
-        AuditEntry entry = AuditEntry.of("finance", AuditEntityType.INVOICE,
+        AuditEntry entry = AuditEntry.of("sales", AuditEntityType.INVOICE,
                 UUID.randomUUID(), "INV-1", AuditAction.CONFIRM);
 
         assertThat(entry.descriptionKey())
@@ -27,7 +27,7 @@ class AuditEntryTest {
     @Test
     void shouldKeepExplicitDescriptionAndMetadata() {
         UUID id = UUID.randomUUID();
-        AuditEntry entry = AuditEntry.of("finance", AuditEntityType.INVOICE, id,
+        AuditEntry entry = AuditEntry.of("sales", AuditEntityType.INVOICE, id,
                 "INV-1", null, AuditAction.PAY, null, "audit.events.pay.custom",
                 List.of("13.00"), Map.of("method", "CASH"));
 

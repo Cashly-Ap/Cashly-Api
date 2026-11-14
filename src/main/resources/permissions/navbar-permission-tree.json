@@ -121,6 +121,140 @@
                   "descriptionKey": "platform.auth.permissions.sales_orders.cancel.description"
                 }
               ]
+            },
+            {
+              "module": "SALES_INVOICES",
+              "labelKey": "platform.auth.domains.sales_invoices",
+              "permissions": [
+                {
+                  "code": "SALES_INVOICES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.sales_invoices.view_list",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.view_list.description"
+                },
+                {
+                  "code": "SALES_INVOICES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.sales_invoices.view_detail",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.view_detail.description"
+                },
+                {
+                  "code": "SALES_INVOICES_EDIT",
+                  "labelKey": "platform.auth.permissions.sales_invoices.edit",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.edit.description"
+                },
+                {
+                  "code": "SALES_INVOICES_DELETE",
+                  "labelKey": "platform.auth.permissions.sales_invoices.delete",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.delete.description"
+                },
+                {
+                  "code": "SALES_INVOICES_CREATE",
+                  "labelKey": "platform.auth.permissions.sales_invoices.create",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.create.description"
+                },
+                {
+                  "code": "SALES_INVOICES_REPORT_PDF",
+                  "labelKey": "platform.auth.permissions.sales_invoices.report_pdf",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.report_pdf.description"
+                },
+                {
+                  "code": "SALES_INVOICES_DOWNLOAD_PDF",
+                  "labelKey": "platform.auth.permissions.sales_invoices.download_pdf",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.download_pdf.description"
+                },
+                {
+                  "code": "SALES_INVOICES_CONFIRM",
+                  "labelKey": "platform.auth.permissions.sales_invoices.confirm",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.confirm.description"
+                },
+                {
+                  "code": "SALES_INVOICES_CANCEL",
+                  "labelKey": "platform.auth.permissions.sales_invoices.cancel",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.cancel.description"
+                },
+                {
+                  "code": "SALES_INVOICES_DUPLICATE",
+                  "labelKey": "platform.auth.permissions.sales_invoices.duplicate",
+                  "descriptionKey": "platform.auth.permissions.sales_invoices.duplicate.description"
+                }
+              ]
+            },
+            {
+              "module": "SALES_RETURNS",
+              "labelKey": "platform.auth.domains.sales_returns",
+              "permissions": [
+                {
+                  "code": "SALES_RETURNS_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.sales_returns.view_list",
+                  "descriptionKey": "platform.auth.permissions.sales_returns.view_list.description"
+                },
+                {
+                  "code": "SALES_RETURNS_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.sales_returns.view_detail",
+                  "descriptionKey": "platform.auth.permissions.sales_returns.view_detail.description"
+                },
+                {
+                  "code": "SALES_RETURNS_DELETE",
+                  "labelKey": "platform.auth.permissions.sales_returns.delete",
+                  "descriptionKey": "platform.auth.permissions.sales_returns.delete.description"
+                },
+                {
+                  "code": "SALES_RETURNS_CREATE",
+                  "labelKey": "platform.auth.permissions.sales_returns.create",
+                  "descriptionKey": "platform.auth.permissions.sales_returns.create.description"
+                }
+              ]
+            },
+            {
+              "module": "SALES_CREDIT_NOTES",
+              "labelKey": "platform.auth.domains.sales_credit_notes",
+              "permissions": [
+                {
+                  "code": "SALES_CREDIT_NOTES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.sales_credit_notes.view_list",
+                  "descriptionKey": "platform.auth.permissions.sales_credit_notes.view_list.description"
+                },
+                {
+                  "code": "SALES_CREDIT_NOTES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.sales_credit_notes.view_detail",
+                  "descriptionKey": "platform.auth.permissions.sales_credit_notes.view_detail.description"
+                },
+                {
+                  "code": "SALES_CREDIT_NOTES_DELETE",
+                  "labelKey": "platform.auth.permissions.sales_credit_notes.delete",
+                  "descriptionKey": "platform.auth.permissions.sales_credit_notes.delete.description"
+                },
+                {
+                  "code": "SALES_CREDIT_NOTES_CREATE",
+                  "labelKey": "platform.auth.permissions.sales_credit_notes.create",
+                  "descriptionKey": "platform.auth.permissions.sales_credit_notes.create.description"
+                }
+              ]
+            },
+            {
+              "module": "SALES_DEBIT_NOTES",
+              "labelKey": "platform.auth.domains.sales_debit_notes",
+              "permissions": [
+                {
+                  "code": "SALES_DEBIT_NOTES_VIEW_LIST",
+                  "labelKey": "platform.auth.permissions.sales_debit_notes.view_list",
+                  "descriptionKey": "platform.auth.permissions.sales_debit_notes.view_list.description"
+                },
+                {
+                  "code": "SALES_DEBIT_NOTES_VIEW_DETAIL",
+                  "labelKey": "platform.auth.permissions.sales_debit_notes.view_detail",
+                  "descriptionKey": "platform.auth.permissions.sales_debit_notes.view_detail.description"
+                },
+                {
+                  "code": "SALES_DEBIT_NOTES_DELETE",
+                  "labelKey": "platform.auth.permissions.sales_debit_notes.delete",
+                  "descriptionKey": "platform.auth.permissions.sales_debit_notes.delete.description"
+                },
+                {
+                  "code": "SALES_DEBIT_NOTES_CREATE",
+                  "labelKey": "platform.auth.permissions.sales_debit_notes.create",
+                  "descriptionKey": "platform.auth.permissions.sales_debit_notes.create.description"
+                }
+              ]
             }
           ]
         }
@@ -376,146 +510,6 @@
       "area": "FINANCE",
       "labelKey": "platform.auth.areas.finance",
       "submodules": [
-        {
-          "submodule": "FINANCE_BILLING",
-          "labelKey": "platform.auth.submodules.finance_billing",
-          "domains": [
-            {
-              "module": "FINANCE_BILLING_INVOICES",
-              "labelKey": "platform.auth.domains.finance_billing_invoices",
-              "permissions": [
-                {
-                  "code": "FINANCE_BILLING_INVOICES_VIEW_LIST",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.view_list",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.view_list.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_VIEW_DETAIL",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.view_detail",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.view_detail.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_EDIT",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.edit",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.edit.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_DELETE",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.delete",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.delete.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_CREATE",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.create",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.create.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_REPORT_PDF",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.report_pdf",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.report_pdf.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_DOWNLOAD_PDF",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.download_pdf",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.download_pdf.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_CONFIRM",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.confirm",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.confirm.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_CANCEL",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.cancel",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.cancel.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_INVOICES_DUPLICATE",
-                  "labelKey": "platform.auth.permissions.finance_billing_invoices.duplicate",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_invoices.duplicate.description"
-                }
-              ]
-            },
-            {
-              "module": "FINANCE_BILLING_RETURNS",
-              "labelKey": "platform.auth.domains.finance_billing_returns",
-              "permissions": [
-                {
-                  "code": "FINANCE_BILLING_RETURNS_VIEW_LIST",
-                  "labelKey": "platform.auth.permissions.finance_billing_returns.view_list",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.view_list.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_RETURNS_VIEW_DETAIL",
-                  "labelKey": "platform.auth.permissions.finance_billing_returns.view_detail",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.view_detail.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_RETURNS_DELETE",
-                  "labelKey": "platform.auth.permissions.finance_billing_returns.delete",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.delete.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_RETURNS_CREATE",
-                  "labelKey": "platform.auth.permissions.finance_billing_returns.create",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_returns.create.description"
-                }
-              ]
-            },
-            {
-              "module": "FINANCE_BILLING_CREDIT_NOTES",
-              "labelKey": "platform.auth.domains.finance_billing_credit_notes",
-              "permissions": [
-                {
-                  "code": "FINANCE_BILLING_CREDIT_NOTES_VIEW_LIST",
-                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.view_list",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.view_list.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_CREDIT_NOTES_VIEW_DETAIL",
-                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.view_detail",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.view_detail.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_CREDIT_NOTES_DELETE",
-                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.delete",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.delete.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_CREDIT_NOTES_CREATE",
-                  "labelKey": "platform.auth.permissions.finance_billing_credit_notes.create",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_credit_notes.create.description"
-                }
-              ]
-            },
-            {
-              "module": "FINANCE_BILLING_DEBIT_NOTES",
-              "labelKey": "platform.auth.domains.finance_billing_debit_notes",
-              "permissions": [
-                {
-                  "code": "FINANCE_BILLING_DEBIT_NOTES_VIEW_LIST",
-                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.view_list",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.view_list.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_DEBIT_NOTES_VIEW_DETAIL",
-                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.view_detail",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.view_detail.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_DEBIT_NOTES_DELETE",
-                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.delete",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.delete.description"
-                },
-                {
-                  "code": "FINANCE_BILLING_DEBIT_NOTES_CREATE",
-                  "labelKey": "platform.auth.permissions.finance_billing_debit_notes.create",
-                  "descriptionKey": "platform.auth.permissions.finance_billing_debit_notes.create.description"
-                }
-              ]
-            }
-          ]
-        },
         {
           "submodule": "FINANCE_TREASURY",
           "labelKey": "platform.auth.submodules.finance_treasury",

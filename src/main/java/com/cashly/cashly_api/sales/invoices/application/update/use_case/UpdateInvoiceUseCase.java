@@ -57,7 +57,7 @@ public class UpdateInvoiceUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "INVOICE", action = "EDIT")
+    @Audited(module = "sales", entityType = "INVOICE", action = "EDIT")
     public InvoiceDetailResponse execute(UUID id,
             UpdateInvoiceRequest request) {
         Invoice invoice = invoiceRepository.findById(InvoiceId.of(id))
@@ -112,7 +112,7 @@ public class UpdateInvoiceUseCase {
                             es.warehouseName(), es.availableStock()));
         }
 
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_INVOICES",
+        activityNotifications.record(ActivityEvent.of("SALES_INVOICES",
                 "EDIT", "INVOICE", saved.getId().value(),
                 saved.getInvoiceNumber().value(), null));
         return InvoiceMapper.toDetailResponse(saved, enrichmentMap, Map.of());

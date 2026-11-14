@@ -64,7 +64,7 @@ public class CreateReturnUseCase {
     }
 
     @Transactional
-    @Audited(module = "finance", entityType = "RETURN", action = "CREATE")
+    @Audited(module = "sales", entityType = "RETURN", action = "CREATE")
     public ReturnResponse execute(CreateReturnRequest request,
             UUID authenticatedUserId, String userName) {
         int year = LocalDate.now().getYear();
@@ -127,7 +127,7 @@ public class CreateReturnUseCase {
                     authenticatedUserId));
         }
 
-        activityNotifications.record(ActivityEvent.of("FINANCE_BILLING_RETURNS",
+        activityNotifications.record(ActivityEvent.of("SALES_RETURNS",
                 "CREATE", "RETURN", saved.getId().value(),
                 saved.getReturnNumber().value(), authenticatedUserId));
         return responses.toResponse(saved);
