@@ -82,7 +82,7 @@ class LocalizedErrorsTest {
     void amountAndLengthParametersSurviveTranslation() {
         var handler = new GlobalExceptionHandler();
         LocaleContextHolder.setLocale(Locale.ENGLISH);
-        var returned = new com.cashly.cashly_api.sales.invoices.domain.exceptions.ReturnQuantityExceedsException(
+        var returned = new com.cashly.cashly_api.sales.invoices.invoices.domain.exceptions.ReturnQuantityExceedsException(
                 java.util.UUID.randomUUID(), new java.math.BigDecimal("12"),
                 new java.math.BigDecimal("7"));
         assertThat(handler.handleReturnQuantityExceeds(returned).getBody()

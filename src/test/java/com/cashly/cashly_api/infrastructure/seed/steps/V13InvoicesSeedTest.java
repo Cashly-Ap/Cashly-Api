@@ -10,8 +10,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;

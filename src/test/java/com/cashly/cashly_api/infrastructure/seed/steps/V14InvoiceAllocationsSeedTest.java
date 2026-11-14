@@ -9,8 +9,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
-import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;

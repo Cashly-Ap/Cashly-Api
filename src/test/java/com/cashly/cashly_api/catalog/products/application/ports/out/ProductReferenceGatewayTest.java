@@ -20,9 +20,9 @@ class ProductReferenceGatewayTest {
         var orders = mock(
                 com.cashly.cashly_api.sales.orders.application.ports.in.ProductReferenceQuery.class);
         var invoices = mock(
-                com.cashly.cashly_api.sales.invoices.application.ports.in.ProductReferenceQuery.class);
+                com.cashly.cashly_api.sales.invoices.invoices.application.ports.in.ProductReferenceQuery.class);
         var returns = mock(
-                com.cashly.cashly_api.sales.returns.application.ports.in.ProductReferenceQuery.class);
+                com.cashly.cashly_api.sales.invoices.returns.application.ports.in.ProductReferenceQuery.class);
         var warehouses = mock(
                 com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.ProductReferenceQuery.class);
         var first = UUID.randomUUID();
@@ -97,9 +97,9 @@ class ProductReferenceGatewayTest {
         var orders = mock(
                 com.cashly.cashly_api.sales.orders.infrastructure.persistence.repositories.SpringDataOrdersProductReferenceRepository.class);
         var invoices = mock(
-                com.cashly.cashly_api.sales.invoices.infrastructure.persistence.repositories.SpringDataInvoicesProductReferenceRepository.class);
+                com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.repositories.SpringDataInvoicesProductReferenceRepository.class);
         var returns = mock(
-                com.cashly.cashly_api.sales.returns.infrastructure.persistence.repositories.SpringDataReturnsProductReferenceRepository.class);
+                com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.repositories.SpringDataReturnsProductReferenceRepository.class);
         var warehouses = mock(
                 com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.persistence.repositories.SpringDataWarehousesProductReferenceRepository.class);
         when(orders.findReferencedProductIds(ids)).thenReturn(ids);
@@ -108,9 +108,9 @@ class ProductReferenceGatewayTest {
         when(warehouses.findReferencedProductIds(ids)).thenReturn(ids);
         var orderQuery = new com.cashly.cashly_api.sales.orders.infrastructure.persistence.queries.JpaOrdersProductReferenceQuery(
                 orders);
-        var invoiceQuery = new com.cashly.cashly_api.sales.invoices.infrastructure.persistence.queries.JpaInvoicesProductReferenceQuery(
+        var invoiceQuery = new com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.queries.JpaInvoicesProductReferenceQuery(
                 invoices);
-        var returnQuery = new com.cashly.cashly_api.sales.returns.infrastructure.persistence.queries.JpaReturnsProductReferenceQuery(
+        var returnQuery = new com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.queries.JpaReturnsProductReferenceQuery(
                 returns);
         var stockQuery = new com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.persistence.queries.JpaWarehousesProductReferenceQuery(
                 warehouses);

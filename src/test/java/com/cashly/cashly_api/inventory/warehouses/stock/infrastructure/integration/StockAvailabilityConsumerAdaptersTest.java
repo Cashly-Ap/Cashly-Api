@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.integration;
 
-import com.cashly.cashly_api.sales.invoices.infrastructure.integration.InvoiceStockAvailabilityAdapter;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.integration.InvoiceStockAvailabilityAdapter;
 import com.cashly.cashly_api.sales.orders.infrastructure.integration.OrderStockAvailabilityAdapter;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.StockAvailabilityQuery;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class StockAvailabilityConsumerAdaptersTest {
         var invoiceAdapter = new InvoiceStockAvailabilityAdapter(query);
         var orderAdapter = new OrderStockAvailabilityAdapter(query);
         var invoiceResult = invoiceAdapter.enrich(List.of(
-                new com.cashly.cashly_api.sales.invoices.application.ports.out.StockAvailabilityGateway.AllocationData(
+                new com.cashly.cashly_api.sales.invoices.invoices.application.ports.out.StockAvailabilityGateway.AllocationData(
                         warehouseId, productId, 7)));
         var orderResult = orderAdapter.enrich(List.of(
                 new com.cashly.cashly_api.sales.orders.application.ports.out.StockAvailabilityGateway.AllocationData(

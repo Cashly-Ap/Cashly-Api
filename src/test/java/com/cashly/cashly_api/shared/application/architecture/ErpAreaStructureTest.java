@@ -27,10 +27,10 @@ class ErpAreaStructureTest {
             Map.entry("categories", "catalog/categories"),
             Map.entry("price_types", "catalog/price_types"),
             Map.entry("warehouses", "inventory/warehouses"),
-            Map.entry("invoices", "sales/invoices"),
-            Map.entry("returns", "sales/returns"),
-            Map.entry("credit_notes", "sales/credit_notes"),
-            Map.entry("debit_notes", "sales/debit_notes"),
+            Map.entry("invoices", "sales/invoices/invoices"),
+            Map.entry("returns", "sales/invoices/returns"),
+            Map.entry("credit_notes", "sales/invoices/credit_notes"),
+            Map.entry("debit_notes", "sales/invoices/debit_notes"),
             Map.entry("payments", "finance/treasury/payments"),
             Map.entry("cash_register", "finance/treasury/cash_register"),
             Map.entry("receivables", "finance/treasury/receivables"),
@@ -83,10 +83,10 @@ class ErpAreaStructureTest {
 
     @Test
     void accepts_owner_local_reporting_and_sales_billing_returns() {
-        assertThat(List.of("sales/returns/domain/entity/Return.java",
-                "sales/invoices/domain/entity/Invoice.java",
-                "sales/credit_notes/domain/entity/CreditNote.java",
-                "sales/debit_notes/domain/entity/DebitNote.java",
+        assertThat(List.of("sales/invoices/returns/domain/entity/Return.java",
+                "sales/invoices/invoices/domain/entity/Invoice.java",
+                "sales/invoices/credit_notes/domain/entity/CreditNote.java",
+                "sales/invoices/debit_notes/domain/entity/DebitNote.java",
                 "sales/orders/reporting/infrastructure/web/OrderReportController.java",
                 "inventory/warehouses/stock/domain/entity/Stock.java",
                 "platform/auth/user/domain/entity/User.java").stream()
@@ -102,9 +102,9 @@ class ErpAreaStructureTest {
                 BusinessModulePaths.owner(
                         Path.of("sales/quotes/domain/entity/Quote.java")),
                 BusinessModulePaths.owner(Path.of(
-                        "sales/invoices/domain/entity/Invoice.java")),
+                        "sales/invoices/invoices/domain/entity/Invoice.java")),
                 BusinessModulePaths.owner(Path.of(
-                        "sales/returns/domain/entity/Return.java"))))
+                        "sales/invoices/returns/domain/entity/Return.java"))))
                 .containsExactly("orders", "quotes", "invoices", "returns");
     }
 

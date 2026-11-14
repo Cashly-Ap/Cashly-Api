@@ -1,10 +1,10 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.integration;
 
-import com.cashly.cashly_api.sales.credit_notes.application.ports.in.CreditNoteLedgerQuery;
-import com.cashly.cashly_api.sales.debit_notes.application.ports.in.DebitNoteLedgerQuery;
-import com.cashly.cashly_api.sales.invoices.domain.repository.InvoiceRepository;
-import com.cashly.cashly_api.sales.invoices.domain.services.InvoiceStatusService;
-import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceId;
+import com.cashly.cashly_api.sales.invoices.credit_notes.application.ports.in.CreditNoteLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.debit_notes.application.ports.in.DebitNoteLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.repository.InvoiceRepository;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.services.InvoiceStatusService;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.InvoiceId;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +51,7 @@ public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
     }
 
     private InvoiceSnapshot snapshot(
-            com.cashly.cashly_api.sales.invoices.domain.entity.Invoice invoice) {
+            com.cashly.cashly_api.sales.invoices.invoices.domain.entity.Invoice invoice) {
         UUID id = invoice.getId().value();
         BigDecimal creditTotal = credits.amountsByInvoiceId(id).stream()
                 .map(amount -> amount == null ? BigDecimal.ZERO : amount)

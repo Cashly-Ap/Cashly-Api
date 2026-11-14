@@ -78,14 +78,14 @@ public final class PermissionRegistry {
         result.put(PermissionModule.INVENTORY_WAREHOUSES, EnumSet.of(VIEW_LIST,
                 VIEW_DETAIL, EDIT, DELETE, CREATE, VIEW_STOCK, MOVEMENT_HISTORY,
                 RECORD_ENTRY, RECORD_EXIT, REPORT_STOCK, REPORT_MOVEMENTS));
-        result.put(PermissionModule.SALES_INVOICES, EnumSet.of(
+        result.put(PermissionModule.SALES_INVOICES_INVOICES, EnumSet.of(
                 VIEW_LIST, VIEW_DETAIL, EDIT, DELETE, CREATE, REPORT_PDF,
                 DOWNLOAD_PDF, CONFIRM, CANCEL, DUPLICATE));
-        result.put(PermissionModule.SALES_RETURNS, EnumSet.of(
+        result.put(PermissionModule.SALES_INVOICES_RETURNS, EnumSet.of(
                 VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
-        result.put(PermissionModule.SALES_CREDIT_NOTES, EnumSet.of(
+        result.put(PermissionModule.SALES_INVOICES_CREDIT_NOTES, EnumSet.of(
                 VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
-        result.put(PermissionModule.SALES_DEBIT_NOTES, EnumSet.of(
+        result.put(PermissionModule.SALES_INVOICES_DEBIT_NOTES, EnumSet.of(
                 VIEW_LIST, VIEW_DETAIL, DELETE, CREATE));
         result.put(PermissionModule.FINANCE_TREASURY_CASH_REGISTER, EnumSet.of(
                 VIEW_LIST, CASH_HISTORY, REPORT_CASH_REGISTER, OPEN, CLOSE));

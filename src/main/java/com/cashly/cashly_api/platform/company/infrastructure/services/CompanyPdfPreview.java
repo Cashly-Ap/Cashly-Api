@@ -2,8 +2,8 @@ package com.cashly.cashly_api.platform.company.infrastructure.services;
 
 import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
 import com.cashly.cashly_api.platform.company.application.services.CompanyService;
-import com.cashly.cashly_api.sales.invoices.reporting.application.dto.model.InvoiceReportData;
-import com.cashly.cashly_api.sales.invoices.reporting.infrastructure.pdf.InvoicePdfGenerator;
+import com.cashly.cashly_api.sales.invoices.invoices.reporting.application.dto.model.InvoiceReportData;
+import com.cashly.cashly_api.sales.invoices.invoices.reporting.infrastructure.pdf.InvoicePdfGenerator;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import com.cashly.cashly_api.shared.storage.infrastructure.images.SafeImageStorage;
 import org.springframework.stereotype.Component;

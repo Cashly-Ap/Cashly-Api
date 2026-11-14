@@ -3,8 +3,8 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
 
-import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderEntity;

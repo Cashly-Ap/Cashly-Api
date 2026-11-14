@@ -15,9 +15,9 @@ import com.cashly.cashly_api.partners.customers.profile.application.exceptions.C
 import com.cashly.cashly_api.partners.customers.profile.application.exceptions.DuplicateCustomerRifException;
 import com.cashly.cashly_api.partners.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessAlreadyExistsException;
 import com.cashly.cashly_api.partners.customers.warehouse_access.application.exceptions.CustomerWarehouseAccessNotFoundException;
-import com.cashly.cashly_api.sales.invoices.domain.exceptions.InvoiceNotFoundException;
-import com.cashly.cashly_api.sales.invoices.domain.exceptions.InvoiceNotReturnableException;
-import com.cashly.cashly_api.sales.invoices.domain.exceptions.ReturnQuantityExceedsException;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.exceptions.InvoiceNotFoundException;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.exceptions.InvoiceNotReturnableException;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.exceptions.ReturnQuantityExceedsException;
 import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderCannotBeDeletedException;
 import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotFoundException;
 import com.cashly.cashly_api.sales.orders.domain.exceptions.OrderNotPendingException;

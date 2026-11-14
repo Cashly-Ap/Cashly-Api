@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.DebitNoteLedgerGateway;
-import com.cashly.cashly_api.sales.debit_notes.application.ports.in.DebitNoteLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.debit_notes.application.ports.in.DebitNoteLedgerQuery;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;

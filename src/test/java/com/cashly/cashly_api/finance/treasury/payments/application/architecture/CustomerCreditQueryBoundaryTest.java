@@ -16,11 +16,11 @@ class CustomerCreditQueryBoundaryTest {
         assertTrue(dependencies.stream().noneMatch(type -> type
                 .startsWith("com.cashly.cashly_api.partners.customers.")
                 || type.startsWith(
-                        "com.cashly.cashly_api.sales.invoices.")
+                        "com.cashly.cashly_api.sales.invoices.invoices.")
                 || type.startsWith(
-                        "com.cashly.cashly_api.sales.credit_notes.")
+                        "com.cashly.cashly_api.sales.invoices.credit_notes.")
                 || type.startsWith(
-                        "com.cashly.cashly_api.sales.debit_notes.")),
+                        "com.cashly.cashly_api.sales.invoices.debit_notes.")),
                 dependencies.toString());
         for (String contract : new String[]{"CustomerCreditContextGateway",
                 "InvoiceCreditLedgerGateway", "CreditNoteLedgerGateway",

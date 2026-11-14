@@ -60,14 +60,14 @@ class NotificationPreferencesServiceTest {
         when(access.resolve(userId)).thenReturn(new PermissionAccessGateway.Access(
                 true, Set.of()));
         when(access.notificationEligibleModules())
-                .thenReturn(List.of("SALES_INVOICES", "USERS"));
+                .thenReturn(List.of("SALES_INVOICES_INVOICES", "USERS"));
         when(repository.find(userId)).thenReturn(Optional.empty());
 
         var view = service.get(userId);
 
         assertThat(view.modules()).extracting(
                 NotificationPreferencesService.ModulePreference::module)
-                .containsExactly("SALES_INVOICES", "USERS");
+                .containsExactly("SALES_INVOICES_INVOICES", "USERS");
     }
 
     @Test

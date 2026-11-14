@@ -10,11 +10,11 @@ public final class BusinessModulePaths {
             Map.entry("audit", "platform/audit"),
             Map.entry("cash_register", "finance/treasury/cash_register"),
             Map.entry("categories", "catalog/categories"),
-            Map.entry("credit_notes", "sales/credit_notes"),
+            Map.entry("credit_notes", "sales/invoices/credit_notes"),
             Map.entry("customers", "partners/customers"),
             Map.entry("dashboard", "analytics/dashboard"),
-            Map.entry("debit_notes", "sales/debit_notes"),
-            Map.entry("invoices", "sales/invoices"),
+            Map.entry("debit_notes", "sales/invoices/debit_notes"),
+            Map.entry("invoices", "sales/invoices/invoices"),
             Map.entry("notifications", "platform/notifications"),
             Map.entry("orders", "sales/orders"),
             Map.entry("payment_methods", "finance/treasury/payment_methods"),
@@ -25,7 +25,7 @@ public final class BusinessModulePaths {
             Map.entry("purchases", "procurement/purchases"),
             Map.entry("quotes", "sales/quotes"),
             Map.entry("receivables", "finance/treasury/receivables"),
-            Map.entry("returns", "sales/returns"),
+            Map.entry("returns", "sales/invoices/returns"),
             Map.entry("suppliers", "partners/suppliers"),
             Map.entry("warehouses", "inventory/warehouses"));
 

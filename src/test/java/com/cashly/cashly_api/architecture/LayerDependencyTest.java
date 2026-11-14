@@ -94,10 +94,10 @@ class LayerDependencyTest {
                 .containsExactly(
                         "com.cashly.cashly_api.sales.quotes.domain.entity.Quote");
         assertThat(domainOwnershipViolations(
-                Path.of("sales/invoices/domain/entity/Invoice.java"),
-                "import com.cashly.cashly_api.sales.credit_notes.domain.entity.CreditNote;"))
+                Path.of("sales/invoices/invoices/domain/entity/Invoice.java"),
+                "import com.cashly.cashly_api.sales.invoices.credit_notes.domain.entity.CreditNote;"))
                 .containsExactly(
-                        "com.cashly.cashly_api.sales.credit_notes.domain.entity.CreditNote");
+                        "com.cashly.cashly_api.sales.invoices.credit_notes.domain.entity.CreditNote");
         assertThat(applicationOwnershipViolations(
                 Path.of("sales/orders/application/create/use_case/Create.java"),
                 "import com.cashly.cashly_api.sales.quotes.application.ports.in.QuoteQuery;"))

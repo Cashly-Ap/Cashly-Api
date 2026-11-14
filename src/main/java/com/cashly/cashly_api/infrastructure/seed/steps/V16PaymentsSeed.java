@@ -9,9 +9,9 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.PaymentStatus;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
-import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.sales.invoices.domain.valueobjects.PaymentType;
+import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.PaymentType;
 import java.math.RoundingMode;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;

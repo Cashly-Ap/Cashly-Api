@@ -18,10 +18,10 @@ The backend is a modular Spring Boot application. Business areas and capabilitie
 | `sales/quotes` | Quotes and `reporting` |
 | `sales/orders` | Orders and `reporting` |
 | `procurement/purchases` | Purchases and `reporting` |
-| `sales/invoices` | Invoices and `reporting` |
-| `sales/returns` | Returns |
-| `sales/credit_notes` | Credit notes |
-| `sales/debit_notes` | Debit notes |
+| `sales/invoices/invoices` | Invoices and `reporting` |
+| `sales/invoices/returns` | Returns |
+| `sales/invoices/credit_notes` | Credit notes |
+| `sales/invoices/debit_notes` | Debit notes |
 | `finance/treasury/cash_register` | Cash register sessions and `reporting` |
 | `finance/treasury/payments` | Payment collection and `reporting` |
 | `finance/treasury/receivables` | Receivables and `reporting` |
@@ -53,10 +53,11 @@ com/cashly/cashly_api/
 ├── sales/
 │   ├── quotes/{application,domain,infrastructure,reporting}/
 │   ├── orders/{application,domain,infrastructure,reporting}/
-│   ├── invoices/{application,domain,infrastructure,reporting}/
-│   ├── returns/{application,domain,infrastructure}/
-│   ├── credit_notes/{application,domain,infrastructure}/
-│   └── debit_notes/{application,domain,infrastructure}/
+│   └── invoices/
+│       ├── invoices/{application,domain,infrastructure,reporting}/
+│       ├── returns/{application,domain,infrastructure}/
+│       ├── credit_notes/{application,domain,infrastructure}/
+│       └── debit_notes/{application,domain,infrastructure}/
 ├── shared/
 ├── infrastructure/{config,seed,web}/
 └── CashlyApplication.java

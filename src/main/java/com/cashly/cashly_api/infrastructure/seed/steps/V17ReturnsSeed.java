@@ -2,10 +2,10 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
-import com.cashly.cashly_api.sales.returns.infrastructure.persistence.entities.ReturnEntity;
-import com.cashly.cashly_api.sales.returns.infrastructure.persistence.entities.ReturnLineAllocationEntity;
-import com.cashly.cashly_api.sales.returns.infrastructure.persistence.entities.ReturnLineEntity;
-import com.cashly.cashly_api.sales.returns.infrastructure.persistence.entities.ReturnNumberSequenceEntity;
+import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnEntity;
+import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnLineAllocationEntity;
+import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnLineEntity;
+import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnNumberSequenceEntity;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;

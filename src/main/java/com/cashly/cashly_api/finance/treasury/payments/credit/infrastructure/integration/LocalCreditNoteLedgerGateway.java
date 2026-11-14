@@ -1,6 +1,6 @@
 package com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.CreditNoteLedgerGateway;
-import com.cashly.cashly_api.sales.credit_notes.application.ports.in.CreditNoteLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.credit_notes.application.ports.in.CreditNoteLedgerQuery;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
