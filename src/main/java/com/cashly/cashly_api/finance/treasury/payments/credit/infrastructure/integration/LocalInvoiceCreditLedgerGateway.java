@@ -1,8 +1,8 @@
 package com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.model.InvoiceCreditEntry;
 import com.cashly.cashly_api.finance.treasury.payments.credit.application.ports.out.InvoiceCreditLedgerGateway;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.InvoiceCreditLedgerQuery;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.InvoiceCreditLedgerEntry;
+import com.cashly.cashly_api.sales.invoices.application.ports.in.InvoiceCreditLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.application.ports.in.InvoiceCreditLedgerEntry;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;

@@ -2,10 +2,10 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
-import com.cashly.cashly_api.finance.billing.credit_notes.infrastructure.persistence.entities.CreditNoteEntity;
-import com.cashly.cashly_api.finance.billing.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;
-import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.cashly.cashly_api.finance.billing.returns.infrastructure.persistence.entities.ReturnEntity;
+import com.cashly.cashly_api.sales.credit_notes.infrastructure.persistence.entities.CreditNoteEntity;
+import com.cashly.cashly_api.sales.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;
+import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import com.cashly.cashly_api.sales.returns.infrastructure.persistence.entities.ReturnEntity;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementDirection;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.infrastructure.persistence.entities.CashMovementJpaEntity;

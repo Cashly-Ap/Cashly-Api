@@ -3,10 +3,10 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
 
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceEntity;
-import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
-import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceNumberSequenceEntity;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
+import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceNumberSequenceEntity;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;

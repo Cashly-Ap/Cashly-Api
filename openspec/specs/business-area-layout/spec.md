@@ -12,8 +12,8 @@ Both projects SHALL organize features by the same business areas while keeping t
 #### Scenario: Invoice returns
 - **GIVEN** returns operate on invoices
 - **WHEN** locating return source and tests
-- **THEN** they belong to finance/billing/returns in both projects
-- **AND** sales contains quotes and orders
+- **THEN** they belong to sales/returns in both projects
+- **AND** sales contains quotes, orders, invoices, returns, credit notes and debit notes
 
 ### Requirement: Preserve public navigation and contracts
 Package relocation SHALL preserve all browser/API paths, permissions and business behavior.

@@ -6,10 +6,10 @@ import com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.int
 import com.cashly.cashly_api.finance.treasury.payments.credit.infrastructure.integration.LocalInvoiceCreditLedgerGateway;
 import com.cashly.cashly_api.partners.customers.credit.application.ports.in.CustomerCreditContextQuery;
 import com.cashly.cashly_api.partners.customers.credit.application.ports.in.CustomerCreditContextEntry;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.InvoiceCreditLedgerQuery;
-import com.cashly.cashly_api.finance.billing.invoices.application.ports.in.InvoiceCreditLedgerEntry;
-import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.in.CreditNoteLedgerQuery;
-import com.cashly.cashly_api.finance.billing.debit_notes.application.ports.in.DebitNoteLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.application.ports.in.InvoiceCreditLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.application.ports.in.InvoiceCreditLedgerEntry;
+import com.cashly.cashly_api.sales.credit_notes.application.ports.in.CreditNoteLedgerQuery;
+import com.cashly.cashly_api.sales.debit_notes.application.ports.in.DebitNoteLedgerQuery;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;

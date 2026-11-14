@@ -2,7 +2,7 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceStatus;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.platform.audit.domain.valueobjects.AuditAction;

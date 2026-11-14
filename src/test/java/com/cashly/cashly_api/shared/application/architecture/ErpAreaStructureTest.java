@@ -27,10 +27,10 @@ class ErpAreaStructureTest {
             Map.entry("categories", "catalog/categories"),
             Map.entry("price_types", "catalog/price_types"),
             Map.entry("warehouses", "inventory/warehouses"),
-            Map.entry("invoices", "finance/billing/invoices"),
-            Map.entry("returns", "finance/billing/returns"),
-            Map.entry("credit_notes", "finance/billing/credit_notes"),
-            Map.entry("debit_notes", "finance/billing/debit_notes"),
+            Map.entry("invoices", "sales/invoices"),
+            Map.entry("returns", "sales/returns"),
+            Map.entry("credit_notes", "sales/credit_notes"),
+            Map.entry("debit_notes", "sales/debit_notes"),
             Map.entry("payments", "finance/treasury/payments"),
             Map.entry("cash_register", "finance/treasury/cash_register"),
             Map.entry("receivables", "finance/treasury/receivables"),
@@ -71,18 +71,22 @@ class ErpAreaStructureTest {
     }
 
     @Test
-    void rejects_returns_under_sales_and_old_ungrouped_module_paths() {
-        assertThat(List.of("sales/returns/domain/entity/Return.java",
+    void rejects_old_ungrouped_module_paths() {
+        assertThat(List.of(
                 "returns/domain/entity/Return.java",
                 "orders/application/create/use_case/CreateOrderUseCase.java",
                 "finance/invoices/domain/entity/Invoice.java",
+                "finance/billing/invoices/domain/entity/Invoice.java",
                 "sales/domain/entity/Order.java").stream().map(Path::of)
                 .filter(ErpAreaStructureTest::isApproved).toList()).isEmpty();
     }
 
     @Test
-    void accepts_owner_local_reporting_and_billing_returns() {
-        assertThat(List.of("finance/billing/returns/domain/entity/Return.java",
+    void accepts_owner_local_reporting_and_sales_billing_returns() {
+        assertThat(List.of("sales/returns/domain/entity/Return.java",
+                "sales/invoices/domain/entity/Invoice.java",
+                "sales/credit_notes/domain/entity/CreditNote.java",
+                "sales/debit_notes/domain/entity/DebitNote.java",
                 "sales/orders/reporting/infrastructure/web/OrderReportController.java",
                 "inventory/warehouses/stock/domain/entity/Stock.java",
                 "platform/auth/user/domain/entity/User.java").stream()
@@ -98,9 +102,9 @@ class ErpAreaStructureTest {
                 BusinessModulePaths.owner(
                         Path.of("sales/quotes/domain/entity/Quote.java")),
                 BusinessModulePaths.owner(Path.of(
-                        "finance/billing/invoices/domain/entity/Invoice.java")),
+                        "sales/invoices/domain/entity/Invoice.java")),
                 BusinessModulePaths.owner(Path.of(
-                        "finance/billing/returns/domain/entity/Return.java"))))
+                        "sales/returns/domain/entity/Return.java"))))
                 .containsExactly("orders", "quotes", "invoices", "returns");
     }
 

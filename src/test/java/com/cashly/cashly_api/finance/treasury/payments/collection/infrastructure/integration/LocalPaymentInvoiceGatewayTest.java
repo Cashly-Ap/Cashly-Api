@@ -1,15 +1,15 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.integration;
 
-import com.cashly.cashly_api.finance.billing.credit_notes.application.ports.in.CreditNoteLedgerQuery;
-import com.cashly.cashly_api.finance.billing.debit_notes.application.ports.in.DebitNoteLedgerQuery;
-import com.cashly.cashly_api.finance.billing.invoices.domain.entity.Invoice;
-import com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceLine;
-import com.cashly.cashly_api.finance.billing.invoices.domain.repository.InvoiceRepository;
-import com.cashly.cashly_api.finance.billing.invoices.domain.services.InvoiceStatusService;
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceId;
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceNumber;
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.PaymentType;
+import com.cashly.cashly_api.sales.credit_notes.application.ports.in.CreditNoteLedgerQuery;
+import com.cashly.cashly_api.sales.debit_notes.application.ports.in.DebitNoteLedgerQuery;
+import com.cashly.cashly_api.sales.invoices.domain.entity.Invoice;
+import com.cashly.cashly_api.sales.invoices.domain.entity.InvoiceLine;
+import com.cashly.cashly_api.sales.invoices.domain.repository.InvoiceRepository;
+import com.cashly.cashly_api.sales.invoices.domain.services.InvoiceStatusService;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceId;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceNumber;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.PaymentType;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.ports.out.PaymentInvoiceGateway;
 import org.junit.jupiter.api.Test;
 

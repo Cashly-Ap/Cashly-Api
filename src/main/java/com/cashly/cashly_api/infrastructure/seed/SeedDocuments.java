@@ -2,8 +2,8 @@ package com.cashly.cashly_api.infrastructure.seed;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.InvoiceStatus;
-import com.cashly.cashly_api.finance.billing.invoices.domain.valueobjects.PaymentType;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.InvoiceStatus;
+import com.cashly.cashly_api.sales.invoices.domain.valueobjects.PaymentType;
 import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseStatus;
 import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteStatus;

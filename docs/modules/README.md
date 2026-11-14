@@ -19,10 +19,10 @@ This directory contains module-level references for the Cashly API. Source owner
 | Sales | Quotes | `sales/quotes` | [QUOTES.md](QUOTES.md) |
 | Sales | Orders | `sales/orders` | [ORDERS.md](ORDERS.md) |
 | Procurement | Purchases | `procurement/purchases` | [PURCHASES.md](PURCHASES.md) |
-| Finance billing | Invoices | `finance/billing/invoices` | [INVOICES.md](INVOICES.md) |
-| Finance billing | Returns | `finance/billing/returns` | [RETURNS.md](RETURNS.md) |
-| Finance billing | Credit notes | `finance/billing/credit_notes` | [CREDIT_NOTES.md](CREDIT_NOTES.md) |
-| Finance billing | Debit notes | `finance/billing/debit_notes` | [DEBIT_NOTES.md](DEBIT_NOTES.md) |
+| Sales | Invoices | `sales/invoices` | [INVOICES.md](INVOICES.md) |
+| Sales | Returns | `sales/returns` | [RETURNS.md](RETURNS.md) |
+| Sales | Credit notes | `sales/credit_notes` | [CREDIT_NOTES.md](CREDIT_NOTES.md) |
+| Sales | Debit notes | `sales/debit_notes` | [DEBIT_NOTES.md](DEBIT_NOTES.md) |
 | Finance treasury | Cash register | `finance/treasury/cash_register` | [CASH_REGISTER.md](CASH_REGISTER.md) |
 | Finance treasury | Payments and collections | `finance/treasury/payments` | [PAYMENTS.md](PAYMENTS.md), [COLLECTIONS.md](COLLECTIONS.md) |
 | Finance treasury | Receivables | `finance/treasury/receivables` | [RECEIVABLES.md](RECEIVABLES.md) |

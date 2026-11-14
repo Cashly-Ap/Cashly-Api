@@ -1,6 +1,6 @@
 # ERP business areas
 
-Current implementation: backend modules and Java tests are grouped under the same business areas as Angular features. Returns belongs to finance/billing/returns. Business ownership and neutral module contracts are preserved; shared technical infrastructure is not a business area.
+Current implementation: backend modules and Java tests are grouped under the same business areas as Angular features. Returns belongs to sales/returns. Business ownership and neutral module contracts are preserved; shared technical infrastructure is not a business area.
 
 Areas organize existing modules. Each module or capability keeps its application/domain/infrastructure and role folders. Sharing an area does not authorize access to a sibling module's entities or repositories. Reports remain under their owning module's reporting capability. Customers retains its existing balance, credit, profile and warehouse_access capabilities.
 

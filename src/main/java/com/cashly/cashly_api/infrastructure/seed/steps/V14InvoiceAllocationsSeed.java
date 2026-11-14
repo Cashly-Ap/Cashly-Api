@@ -2,8 +2,8 @@ package com.cashly.cashly_api.infrastructure.seed.steps;
 
 import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
 
-import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
-import com.cashly.cashly_api.finance.billing.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
+import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceLineAllocationEntity;
+import com.cashly.cashly_api.sales.invoices.infrastructure.persistence.entities.InvoiceLineEntity;
 import com.cashly.cashly_api.infrastructure.seed.SeedReferences;
 import com.cashly.cashly_api.infrastructure.seed.SeedStep;
 import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;

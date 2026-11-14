@@ -15,6 +15,6 @@ class OrderInvoiceConversionBoundaryTest {
                         .stream(constructor.getParameterTypes()))
                 .map(Class::getPackageName))
                 .noneMatch(name -> name.startsWith(
-                        "com.cashly.cashly_api.finance.billing.invoices"));
+                        "com.cashly.cashly_api.sales.invoices"));
     }
 }
