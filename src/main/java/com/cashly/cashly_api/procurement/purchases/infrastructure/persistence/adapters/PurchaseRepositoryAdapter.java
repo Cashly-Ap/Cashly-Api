@@ -9,16 +9,24 @@ import com.cashly.cashly_api.procurement.purchases.domain.valueobjects.PurchaseI
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.entities.PurchaseEntity;
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.entities.PurchaseNumberSequenceEntity;
 import com.cashly.cashly_api.procurement.purchases.infrastructure.persistence.mappers.PurchaseJpaMapper;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 public class PurchaseRepositoryAdapter implements PurchaseRepository {
@@ -77,6 +85,58 @@ public class PurchaseRepositoryAdapter implements PurchaseRepository {
 
         return entities.stream().sorted(comparator)
                 .map(PurchaseJpaMapper::toDomain).toList();
+    }
+
+    @Override
+    public PageResponse<Purchase> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID supplierId, Collection<String> statuses,
+            String search, UUID productId, UUID categoryId, int page, int size,
+            String orderBy, String orderDir) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        Page<PurchaseEntity> result = jpaRepository.findPageWithFilters(from,
+                to, supplierId, statuses, searchPattern(search), productId,
+                categoryId, PageRequest.of(page, size,
+                        sort(orderBy, orderDir)));
+        if (result.isEmpty()) {
+            return new PageResponse<>(List.of(), result.getTotalElements(),
+                    result.getTotalPages(), result.getSize(),
+                    result.getNumber(), result.isFirst(), result.isLast(),
+                    true);
+        }
+        List<UUID> orderedIds = result.getContent().stream()
+                .map(PurchaseEntity::getId).toList();
+        Map<UUID, PurchaseEntity> entities = jpaRepository
+                .findAllWithLinesByIds(orderedIds).stream()
+                .collect(Collectors.toMap(PurchaseEntity::getId,
+                        Function.identity()));
+        List<Purchase> content = orderedIds.stream().map(entities::get)
+                .filter(Objects::nonNull).map(PurchaseJpaMapper::toDomain)
+                .toList();
+        return new PageResponse<>(content, result.getTotalElements(),
+                result.getTotalPages(), result.getSize(), result.getNumber(),
+                result.isFirst(), result.isLast(), content.isEmpty());
+    }
+
+    private static String searchPattern(String search) {
+        if (search == null || search.isBlank()) {
+            return "";
+        }
+        return "%" + search.trim().toLowerCase() + "%";
+    }
+
+    private static Sort sort(String orderBy, String orderDir) {
+        String property = switch (orderBy == null ? "" : orderBy) {
+            case "purchaseNumber" -> "purchaseNumber";
+            case "supplierName" -> "supplierName";
+            case "status" -> "status";
+            case "subtotal" -> "subtotal";
+            default -> "createdAt";
+        };
+        Sort.Direction direction = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        return Sort.by(direction, property);
     }
 
     @Override

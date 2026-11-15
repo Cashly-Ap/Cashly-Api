@@ -1,11 +1,14 @@
 package com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,4 +58,63 @@ public interface InvoiceJpaRepository
         return findAllWithFilters(dateFrom, dateTo, customerId, statuses,
                 returnStatus, null, productId, categoryId);
     }
+
+    @Query(value = """
+            SELECT i FROM InvoiceEntity i
+            WHERE (:dateFrom IS NULL OR i.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR i.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR i.customerId = :customerId)
+            AND (:statuses IS NULL OR i.status IN :statuses)
+            AND (:returnStatus IS NULL OR i.returnStatus IN :returnStatus)
+            AND (:paymentType IS NULL OR i.paymentType = :paymentType)
+            AND (:dueStatus IS NULL OR (:dueStatus = 'OVERDUE' AND i.dueDate < CURRENT_DATE AND i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')) OR (:dueStatus = 'CURRENT' AND (i.dueDate IS NULL OR i.dueDate >= CURRENT_DATE) AND i.status IN ('DRAFT', 'PENDING_PAYMENT', 'PARTIALLY_PAID')))
+            AND (:productId IS NULL OR EXISTS (
+                SELECT 1 FROM InvoiceLineEntity il WHERE il.invoice = i AND il.productId = :productId
+            ))
+            AND (:categoryId IS NULL OR EXISTS (
+                SELECT 1 FROM InvoiceLineEntity il2 WHERE il2.invoice = i AND il2.productId IN (
+                    SELECT p.id FROM ProductEntity p WHERE p.categoryId = :categoryId
+                )
+            ))
+            AND (:search IS NULL OR :search = '' OR LOWER(i.invoiceNumber) LIKE :search
+                OR LOWER(i.customerName) LIKE :search OR LOWER(i.customerRif) LIKE :search)
+            """, countQuery = """
+            SELECT COUNT(i) FROM InvoiceEntity i
+            WHERE (:dateFrom IS NULL OR i.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR i.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR i.customerId = :customerId)
+            AND (:statuses IS NULL OR i.status IN :statuses)
+            AND (:returnStatus IS NULL OR i.returnStatus IN :returnStatus)
+            AND (:paymentType IS NULL OR i.paymentType = :paymentType)
+            AND (:dueStatus IS NULL OR (:dueStatus = 'OVERDUE' AND i.dueDate < CURRENT_DATE AND i.status IN ('PENDING_PAYMENT', 'PARTIALLY_PAID')) OR (:dueStatus = 'CURRENT' AND (i.dueDate IS NULL OR i.dueDate >= CURRENT_DATE) AND i.status IN ('DRAFT', 'PENDING_PAYMENT', 'PARTIALLY_PAID')))
+            AND (:productId IS NULL OR EXISTS (
+                SELECT 1 FROM InvoiceLineEntity il WHERE il.invoice = i AND il.productId = :productId
+            ))
+            AND (:categoryId IS NULL OR EXISTS (
+                SELECT 1 FROM InvoiceLineEntity il2 WHERE il2.invoice = i AND il2.productId IN (
+                    SELECT p.id FROM ProductEntity p WHERE p.categoryId = :categoryId
+                )
+            ))
+            AND (:search IS NULL OR :search = '' OR LOWER(i.invoiceNumber) LIKE :search
+                OR LOWER(i.customerName) LIKE :search OR LOWER(i.customerRif) LIKE :search)
+            """)
+    Page<InvoiceEntity> findPageWithFilters(
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo,
+            @Param("customerId") UUID customerId,
+            @Param("statuses") List<String> statuses,
+            @Param("returnStatus") List<String> returnStatus,
+            @Param("dueStatus") String dueStatus,
+            @Param("paymentType") String paymentType,
+            @Param("productId") UUID productId,
+            @Param("categoryId") UUID categoryId,
+            @Param("search") String search, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT i FROM InvoiceEntity i
+            LEFT JOIN FETCH i.lines
+            WHERE i.id IN :ids
+            """)
+    List<InvoiceEntity> findAllWithLinesByIds(
+            @Param("ids") Collection<UUID> ids);
 }

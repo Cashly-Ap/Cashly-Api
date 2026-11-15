@@ -16,6 +16,7 @@ import com.cashly.cashly_api.sales.invoices.invoices.application.get.use_case.Ge
 import com.cashly.cashly_api.sales.invoices.invoices.application.list.use_case.GetInvoicesUseCase;
 import com.cashly.cashly_api.sales.invoices.invoices.application.update.use_case.UpdateInvoiceUseCase;
 import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -72,7 +73,7 @@ public class InvoiceController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SALES_INVOICES_INVOICES_VIEW_LIST')")
-    public ResponseEntity<List<InvoiceListResponse>> getAll(
+    public ResponseEntity<PageResponse<InvoiceListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) UUID customerId,
@@ -83,35 +84,38 @@ public class InvoiceController {
             @RequestParam(required = false) List<String> returnStatus,
             @RequestParam(required = false) String dueStatus,
             @RequestParam(required = false) String paymentType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
-        List<InvoiceListResponse> invoices = action == null
-                ? getInvoicesUseCase.execute(fromDate, toDate, customerId,
-                        status, search, returnStatus, dueStatus, paymentType,
-                        productId, categoryId, orderBy, orderDir)
-                : getInvoicesUseCase.execute(fromDate, toDate, customerId,
-                        status, search, returnStatus, dueStatus, paymentType,
-                        productId, categoryId, orderBy, orderDir, action);
-        return ResponseEntity.ok(invoices);
+        return ResponseEntity.ok(getInvoicesUseCase.executePage(fromDate,
+                toDate, customerId, status, search, returnStatus, dueStatus,
+                paymentType, productId, categoryId, page,
+                normalizeSize(size), orderBy, orderDir, action));
     }
 
-    public ResponseEntity<List<InvoiceListResponse>> getAll(LocalDate fromDate,
-            LocalDate toDate, UUID customerId, String search,
-            List<String> status, UUID productId, UUID categoryId,
-            List<String> returnStatus, String dueStatus, String orderBy,
-            String orderDir) {
-        return getAll(fromDate, toDate, customerId, search, status, productId,
-                categoryId, returnStatus, dueStatus, null, orderBy, orderDir,
-                null);
-    }
-
-    public ResponseEntity<List<InvoiceListResponse>> getAll(LocalDate fromDate,
-            LocalDate toDate, UUID customerId, List<String> status,
-            UUID productId, UUID categoryId, List<String> returnStatus,
+    public ResponseEntity<PageResponse<InvoiceListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID customerId,
+            String search, List<String> status, UUID productId,
+            UUID categoryId, List<String> returnStatus, String dueStatus,
             String orderBy, String orderDir) {
+        return getAll(fromDate, toDate, customerId, search, status, productId,
+                categoryId, returnStatus, dueStatus, null, 0, 100, orderBy,
+                orderDir, null);
+    }
+
+    public ResponseEntity<PageResponse<InvoiceListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID customerId,
+            List<String> status, UUID productId, UUID categoryId,
+            List<String> returnStatus, String orderBy, String orderDir) {
         return getAll(fromDate, toDate, customerId, null, status, productId,
-                categoryId, returnStatus, null, null, orderBy, orderDir, null);
+                categoryId, returnStatus, null, null, 0, 100, orderBy,
+                orderDir, null);
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

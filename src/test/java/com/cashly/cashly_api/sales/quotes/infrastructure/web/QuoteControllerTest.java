@@ -11,6 +11,8 @@ import com.cashly.cashly_api.sales.quotes.application.delete.use_case.DeleteQuot
 import com.cashly.cashly_api.sales.quotes.application.get.use_case.GetQuoteByIdUseCase;
 import com.cashly.cashly_api.sales.quotes.application.list.use_case.GetQuotesUseCase;
 import com.cashly.cashly_api.sales.quotes.application.update.use_case.UpdateQuoteUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,17 +108,19 @@ class QuoteControllerTest {
                 "DRAFT", LocalDate.now(), BigDecimal.TEN, UUID.randomUUID(),
                 "Creator", Instant.now(), Instant.now());
 
-        when(getQuotesUseCase.execute(null, null, null, null, null, null,
-                "createdAt", "desc")).thenReturn(List.of(quote));
+        when(getQuotesUseCase.executePage(null, null, null, null, null, null,
+                null, 0, 100, "createdAt", "desc", null))
+                .thenReturn(PageResponses.page(List.of(quote), 0, 100));
 
-        ResponseEntity<List<QuoteListResponse>> result = quoteController
+        ResponseEntity<PageResponse<QuoteListResponse>> result = quoteController
                 .list(null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        assertEquals("2026-0001", result.getBody().get(0).quoteNumber());
-        verify(getQuotesUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc");
+        assertEquals(1, result.getBody().content().size());
+        assertEquals("2026-0001",
+                result.getBody().content().get(0).quoteNumber());
+        verify(getQuotesUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 100, "createdAt", "desc", null);
     }
 
     @Test
@@ -200,14 +204,15 @@ class QuoteControllerTest {
     @Test
     @DisplayName("should return empty list when no quotes exist")
     void shouldReturnEmptyListWhenNoQuotesExist() {
-        when(getQuotesUseCase.execute(null, null, null, null, null, null,
-                "createdAt", "desc")).thenReturn(List.of());
+        when(getQuotesUseCase.executePage(null, null, null, null, null, null,
+                null, 0, 100, "createdAt", "desc", null))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<QuoteListResponse>> result = quoteController
+        ResponseEntity<PageResponse<QuoteListResponse>> result = quoteController
                 .list(null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
+        assertTrue(result.getBody().empty());
     }
     @Test
     void shouldRejectUnknownActionFilter() throws Exception {
@@ -231,8 +236,8 @@ class QuoteControllerTest {
                 .andExpect(
                         org.springframework.test.web.servlet.result.MockMvcResultMatchers
                                 .status().isOk());
-        verify(getQuotesUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc",
+        verify(getQuotesUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 10, "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
     }
 

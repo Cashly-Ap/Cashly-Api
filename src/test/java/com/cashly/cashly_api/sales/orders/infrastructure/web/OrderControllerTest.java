@@ -16,6 +16,7 @@ import com.cashly.cashly_api.sales.orders.application.get.use_case.GetOrderByIdU
 import com.cashly.cashly_api.sales.orders.application.list.use_case.GetOrdersUseCase;
 import com.cashly.cashly_api.sales.orders.application.update.use_case.UpdateOrderUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,31 +102,33 @@ class OrderControllerTest {
                 "ORD-00001", UUID.randomUUID(), "Customer", "PENDING",
                 BigDecimal.TEN, 2, null, LocalDateTime.now());
 
-        when(getOrdersUseCase.execute(any(), any(), any(), any(), any(), any(),
-                any(), any())).thenReturn(List.of(order));
+        when(getOrdersUseCase.executePage(null, null, null, null, null, null,
+                null, 0, 100, "createdAt", "desc", null))
+                .thenReturn(PageResponses.page(List.of(order), 0, 100));
 
-        ResponseEntity<List<OrderListResponse>> result = orderController.getAll(
-                null, null, null, null, null, null, "createdAt", "desc");
+        ResponseEntity<PageResponse<OrderListResponse>> result = orderController
+                .getAll(null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        verify(getOrdersUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc");
+        assertEquals(1, result.getBody().content().size());
+        verify(getOrdersUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 100, "createdAt", "desc", null);
     }
 
     @Test
     @DisplayName("should return empty list when no orders")
     void should_return_empty_list_when_no_orders() {
-        when(getOrdersUseCase.execute(any(), any(), any(), any(), any(), any(),
-                any(), any())).thenReturn(List.of());
+        when(getOrdersUseCase.executePage(null, null, null, null, null, null,
+                null, 0, 100, "createdAt", "desc", null))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<OrderListResponse>> result = orderController.getAll(
-                null, null, null, null, null, null, "createdAt", "desc");
+        ResponseEntity<PageResponse<OrderListResponse>> result = orderController
+                .getAll(null, null, null, null, null, null, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
-        verify(getOrdersUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc");
+        assertTrue(result.getBody().empty());
+        verify(getOrdersUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 100, "createdAt", "desc", null);
     }
 
     @Test
@@ -263,8 +266,8 @@ class OrderControllerTest {
                 .andExpect(
                         org.springframework.test.web.servlet.result.MockMvcResultMatchers
                                 .status().isOk());
-        verify(getOrdersUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc",
+        verify(getOrdersUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 10, "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
     }
 

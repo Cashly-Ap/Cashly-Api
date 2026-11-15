@@ -15,6 +15,7 @@ import com.cashly.cashly_api.procurement.purchases.application.get.use_case.GetP
 import com.cashly.cashly_api.procurement.purchases.application.list.use_case.ListPurchasesUseCase;
 import com.cashly.cashly_api.procurement.purchases.application.update.use_case.UpdatePurchaseUseCase;
 import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,33 +110,35 @@ class PurchaseControllerTest {
                 UUID.randomUUID(), "PUR-2026-00001", UUID.randomUUID(),
                 "Supplier", "DRAFT", BigDecimal.TEN, 1, LocalDateTime.now());
 
-        when(listPurchasesUseCase.execute(any(), any(), any(), any(), any(),
-                any(), anyString(), anyString())).thenReturn(List.of(purchase));
+        when(listPurchasesUseCase.executePage(null, null, null, null, null,
+                null, null, 0, 100, "createdAt", "desc", null))
+                .thenReturn(PageResponses.page(List.of(purchase), 0, 100));
 
-        ResponseEntity<List<PurchaseListResponse>> result = purchaseController
+        ResponseEntity<PageResponse<PurchaseListResponse>> result = purchaseController
                 .getAll(null, null, null, null, null, null, "createdAt",
                         "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
+        assertEquals(1, result.getBody().content().size());
         assertEquals("PUR-2026-00001",
-                result.getBody().get(0).purchaseNumber());
-        verify(listPurchasesUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc");
+                result.getBody().content().get(0).purchaseNumber());
+        verify(listPurchasesUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 100, "createdAt", "desc", null);
     }
 
     @Test
     @DisplayName("should return empty list when no purchases exist")
     void shouldReturnEmptyListWhenNoPurchases() {
-        when(listPurchasesUseCase.execute(any(), any(), any(), any(), any(),
-                any(), anyString(), anyString())).thenReturn(List.of());
+        when(listPurchasesUseCase.executePage(null, null, null, null, null,
+                null, null, 0, 100, "createdAt", "desc", null))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<PurchaseListResponse>> result = purchaseController
+        ResponseEntity<PageResponse<PurchaseListResponse>> result = purchaseController
                 .getAll(null, null, null, null, null, null, "createdAt",
                         "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
+        assertTrue(result.getBody().empty());
     }
 
     @Test
@@ -280,8 +283,8 @@ class PurchaseControllerTest {
                 .andExpect(
                         org.springframework.test.web.servlet.result.MockMvcResultMatchers
                                 .status().isOk());
-        verify(listPurchasesUseCase).execute(null, null, null, null, null, null,
-                "createdAt", "desc",
+        verify(listPurchasesUseCase).executePage(null, null, null, null, null,
+                null, null, 0, 10, "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
     }
 

@@ -2,6 +2,7 @@ package com.cashly.cashly_api.sales.quotes.domain.repository;
 
 import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.valueobjects.QuoteNumber;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +16,12 @@ public interface QuoteRepository {
     List<Quote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
             UUID customerId, String status, UUID productId, UUID categoryId,
             java.util.Set<UUID> currentCategoryProductIds, String orderBy,
+            String orderDir);
+
+    PageResponse<Quote> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, String status, UUID productId,
+            UUID categoryId, java.util.Set<UUID> currentCategoryProductIds,
+            String search, int page, int size, String orderBy,
             String orderDir);
 
     /**

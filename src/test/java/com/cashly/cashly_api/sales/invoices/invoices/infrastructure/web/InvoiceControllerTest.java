@@ -15,6 +15,8 @@ import com.cashly.cashly_api.sales.invoices.invoices.application.duplicate.use_c
 import com.cashly.cashly_api.sales.invoices.invoices.application.get.use_case.GetInvoiceByIdUseCase;
 import com.cashly.cashly_api.sales.invoices.invoices.application.list.use_case.GetInvoicesUseCase;
 import com.cashly.cashly_api.sales.invoices.invoices.application.update.use_case.UpdateInvoiceUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,35 +106,37 @@ class InvoiceControllerTest {
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 2,
                 UUID.randomUUID(), "ORD-00001", LocalDateTime.now(), null);
 
-        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(),
-                any(), any(), nullable(String.class), any(), any(), anyString(),
-                anyString())).thenReturn(List.of(invoice));
+        when(getInvoicesUseCase.executePage(null, null, null, null, null,
+                null, null, null, null, null, 0, 100, "createdAt", "desc",
+                null)).thenReturn(PageResponses.page(List.of(invoice), 0, 100));
 
-        ResponseEntity<List<InvoiceListResponse>> result = invoiceController
+        ResponseEntity<PageResponse<InvoiceListResponse>> result = invoiceController
                 .getAll(null, null, null, null, null, null, null, "createdAt",
                         "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, null, null, null, "createdAt", "desc");
+        assertEquals(1, result.getBody().content().size());
+        verify(getInvoicesUseCase).executePage(null, null, null, null, null,
+                null, null, null, null, null, 0, 100, "createdAt", "desc",
+                null);
     }
 
     @Test
     @DisplayName("should return empty list when no invoices")
     void should_return_empty_list_when_no_invoices() {
-        when(getInvoicesUseCase.execute(any(), any(), any(), any(), any(),
-                any(), any(), nullable(String.class), any(), any(), anyString(),
-                anyString())).thenReturn(List.of());
+        when(getInvoicesUseCase.executePage(null, null, null, null, null,
+                null, null, null, null, null, 0, 100, "createdAt", "desc",
+                null)).thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<InvoiceListResponse>> result = invoiceController
+        ResponseEntity<PageResponse<InvoiceListResponse>> result = invoiceController
                 .getAll(null, null, null, null, null, null, null, "createdAt",
                         "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, null, null, null, "createdAt", "desc");
+        assertTrue(result.getBody().empty());
+        verify(getInvoicesUseCase).executePage(null, null, null, null, null,
+                null, null, null, null, null, 0, 100, "createdAt", "desc",
+                null);
     }
 
     @Test
@@ -291,8 +295,9 @@ class InvoiceControllerTest {
                 .andExpect(
                         org.springframework.test.web.servlet.result.MockMvcResultMatchers
                                 .status().isOk());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, "CASH", null, null, "createdAt", "desc");
+        verify(getInvoicesUseCase).executePage(null, null, null, null, null,
+                null, null, "CASH", null, null, 0, 10, "createdAt", "desc",
+                null);
     }
 
     @Test
@@ -305,8 +310,8 @@ class InvoiceControllerTest {
                 .andExpect(
                         org.springframework.test.web.servlet.result.MockMvcResultMatchers
                                 .status().isOk());
-        verify(getInvoicesUseCase).execute(null, null, null, null, null, null,
-                null, null, null, null, "createdAt", "desc",
+        verify(getInvoicesUseCase).executePage(null, null, null, null, null,
+                null, null, null, null, null, 0, 10, "createdAt", "desc",
                 com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction.EDIT);
     }
 

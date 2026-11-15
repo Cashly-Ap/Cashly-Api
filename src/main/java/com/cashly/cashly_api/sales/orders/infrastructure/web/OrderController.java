@@ -16,6 +16,7 @@ import com.cashly.cashly_api.sales.orders.application.get.use_case.GetOrderByIdU
 import com.cashly.cashly_api.sales.orders.application.list.use_case.GetOrdersUseCase;
 import com.cashly.cashly_api.sales.orders.application.update.use_case.UpdateOrderUseCase;
 import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -72,7 +73,7 @@ public class OrderController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SALES_ORDERS_VIEW_LIST')")
-    public ResponseEntity<List<OrderListResponse>> getAll(
+    public ResponseEntity<PageResponse<OrderListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) UUID customerId,
@@ -80,19 +81,14 @@ public class OrderController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
-        List<OrderListResponse> orders = action == null
-                ? getOrdersUseCase.execute(fromDate, toDate, customerId, status,
-                        productId, categoryId, orderBy, orderDir)
-                : getOrdersUseCase.execute(fromDate, toDate, customerId, status,
-                        productId, categoryId, orderBy, orderDir, action);
-        return ResponseEntity
-                .ok(orders.stream()
-                        .filter(order -> matchesSearch(search,
-                                order.orderNumber(), order.customerName()))
-                        .toList());
+        return ResponseEntity.ok(getOrdersUseCase.executePage(fromDate, toDate,
+                customerId, status, productId, categoryId, search, page,
+                normalizeSize(size), orderBy, orderDir, action));
     }
 
     private boolean matchesSearch(String search, String... values) {
@@ -104,11 +100,16 @@ public class OrderController {
                 .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
-    public ResponseEntity<List<OrderListResponse>> getAll(LocalDate fromDate,
-            LocalDate toDate, UUID customerId, String status, UUID productId,
-            UUID categoryId, String orderBy, String orderDir) {
+    public ResponseEntity<PageResponse<OrderListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID customerId,
+            String status, UUID productId, UUID categoryId, String orderBy,
+            String orderDir) {
         return getAll(fromDate, toDate, customerId, status, productId,
-                categoryId, null, orderBy, orderDir, null);
+                categoryId, null, 0, 100, orderBy, orderDir, null);
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

@@ -2,6 +2,7 @@ package com.cashly.cashly_api.sales.invoices.invoices.domain.repository;
 
 import com.cashly.cashly_api.sales.invoices.invoices.domain.entity.Invoice;
 import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.InvoiceId;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -17,6 +18,12 @@ public interface InvoiceRepository {
             UUID customerId, List<String> statuses, List<String> returnStatus,
             String dueStatus, UUID productId, UUID categoryId, String orderBy,
             String orderDir);
+
+    PageResponse<Invoice> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, List<String> statuses,
+            String search, List<String> returnStatus, String dueStatus,
+            String paymentType, UUID productId, UUID categoryId, int page,
+            int size, String orderBy, String orderDir);
 
     default List<Invoice> findAllWithFilters(LocalDate dateFrom,
             LocalDate dateTo, UUID customerId, List<String> statuses,

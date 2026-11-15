@@ -9,6 +9,10 @@ import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.Invoice
 import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceEntity;
 import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.entities.InvoiceNumberSequenceEntity;
 import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.mappers.InvoiceJpaMapper;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -16,8 +20,12 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 public class InvoiceRepositoryAdapter implements InvoiceRepository {
@@ -81,6 +89,61 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
         List<InvoiceEntity> entities = jpaRepository.findAllWithFilters(from,
                 to, customerId, statuses, returnStatus, productId, categoryId);
         return sortAndMap(entities, orderBy, orderDir);
+    }
+
+    @Override
+    public PageResponse<Invoice> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, List<String> statuses,
+            String search, List<String> returnStatus, String dueStatus,
+            String paymentType, UUID productId, UUID categoryId, int page,
+            int size, String orderBy, String orderDir) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        Page<InvoiceEntity> result = jpaRepository.findPageWithFilters(from,
+                to, customerId, statuses, returnStatus, dueStatus, paymentType,
+                productId, categoryId, searchPattern(search),
+                PageRequest.of(page, size, sort(orderBy, orderDir)));
+        if (result.isEmpty()) {
+            return new PageResponse<>(List.of(), result.getTotalElements(),
+                    result.getTotalPages(), result.getSize(),
+                    result.getNumber(), result.isFirst(), result.isLast(),
+                    true);
+        }
+        List<UUID> orderedIds = result.getContent().stream()
+                .map(InvoiceEntity::getId).toList();
+        Map<UUID, InvoiceEntity> entities = jpaRepository
+                .findAllWithLinesByIds(orderedIds).stream()
+                .collect(Collectors.toMap(InvoiceEntity::getId,
+                        Function.identity()));
+        List<Invoice> content = orderedIds.stream().map(entities::get)
+                .filter(Objects::nonNull).map(InvoiceJpaMapper::toDomain)
+                .toList();
+        return new PageResponse<>(content, result.getTotalElements(),
+                result.getTotalPages(), result.getSize(), result.getNumber(),
+                result.isFirst(), result.isLast(), content.isEmpty());
+    }
+
+    private static String searchPattern(String search) {
+        if (search == null || search.isBlank()) {
+            return "";
+        }
+        return "%" + search.trim().toLowerCase() + "%";
+    }
+
+    private static Sort sort(String orderBy, String orderDir) {
+        String property = switch (orderBy == null ? "" : orderBy) {
+            case "invoiceNumber" -> "invoiceNumber";
+            case "customerName" -> "customerName";
+            case "status" -> "status";
+            case "subtotal" -> "subtotal";
+            case "total" -> "subtotal";
+            case "paymentType" -> "paymentType";
+            default -> "createdAt";
+        };
+        Sort.Direction direction = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        return Sort.by(direction, property);
     }
 
     private List<Invoice> sortAndMap(List<InvoiceEntity> entities,

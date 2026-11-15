@@ -4,11 +4,14 @@ import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.Qu
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteLineJpaEntity;
 import com.cashly.cashly_api.sales.quotes.infrastructure.persistence.entities.QuoteNumberSequenceJpaEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,6 +74,56 @@ public interface QuoteJpaRepository
             @Param("status") String status, @Param("productId") UUID productId,
             @Param("categoryId") UUID categoryId,
             @Param("currentCategoryProductIds") java.util.Set<UUID> currentCategoryProductIds);
+
+    @Query(value = """
+            SELECT q FROM QuoteJpaEntity q
+            WHERE (:dateFrom IS NULL OR q.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR q.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR q.customerId = :customerId)
+            AND (:status = 'ALL' OR q.status = :status OR (:status IS NULL AND q.status = 'DRAFT'))
+            AND (:productId IS NULL OR EXISTS (
+                SELECT 1 FROM QuoteLineJpaEntity ql WHERE ql.quote = q AND ql.productId = :productId
+            ))
+            AND (:categoryId IS NULL OR EXISTS (
+                SELECT 1 FROM QuoteLineJpaEntity ql2 LEFT JOIN ql2.categorySnapshot categorySnapshot
+                WHERE ql2.quote = q AND
+                (categorySnapshot.categoryId = :categoryId OR ql2.productId IN :currentCategoryProductIds)
+            ))
+            AND (:search IS NULL OR :search = '' OR LOWER(q.quoteNumber) LIKE :search
+                OR LOWER(q.customerName) LIKE :search OR LOWER(q.customerRif) LIKE :search)
+            """, countQuery = """
+            SELECT COUNT(q) FROM QuoteJpaEntity q
+            WHERE (:dateFrom IS NULL OR q.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR q.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR q.customerId = :customerId)
+            AND (:status = 'ALL' OR q.status = :status OR (:status IS NULL AND q.status = 'DRAFT'))
+            AND (:productId IS NULL OR EXISTS (
+                SELECT 1 FROM QuoteLineJpaEntity ql WHERE ql.quote = q AND ql.productId = :productId
+            ))
+            AND (:categoryId IS NULL OR EXISTS (
+                SELECT 1 FROM QuoteLineJpaEntity ql2 LEFT JOIN ql2.categorySnapshot categorySnapshot
+                WHERE ql2.quote = q AND
+                (categorySnapshot.categoryId = :categoryId OR ql2.productId IN :currentCategoryProductIds)
+            ))
+            AND (:search IS NULL OR :search = '' OR LOWER(q.quoteNumber) LIKE :search
+                OR LOWER(q.customerName) LIKE :search OR LOWER(q.customerRif) LIKE :search)
+            """)
+    Page<QuoteJpaEntity> findPageWithFilters(
+            @Param("dateFrom") Instant dateFrom,
+            @Param("dateTo") Instant dateTo,
+            @Param("customerId") UUID customerId,
+            @Param("status") String status, @Param("productId") UUID productId,
+            @Param("categoryId") UUID categoryId,
+            @Param("currentCategoryProductIds") java.util.Set<UUID> currentCategoryProductIds,
+            @Param("search") String search, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT q FROM QuoteJpaEntity q
+            LEFT JOIN FETCH q.lines l LEFT JOIN FETCH l.categorySnapshot
+            WHERE q.id IN :ids
+            """)
+    List<QuoteJpaEntity> findAllWithLinesByIds(
+            @Param("ids") Collection<UUID> ids);
 
     @Query("""
             SELECT DISTINCT q FROM QuoteJpaEntity q

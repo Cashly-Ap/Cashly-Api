@@ -9,6 +9,8 @@ import com.cashly.cashly_api.sales.invoices.invoices.domain.repository.InvoiceRe
 import org.springframework.stereotype.Service;
 
 import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import com.cashly.cashly_api.sales.invoices.invoices.domain.valueobjects.InvoiceStatus;
 
 import java.math.BigDecimal;
@@ -120,6 +122,39 @@ public class GetInvoicesUseCase {
         return execute(dateFrom, dateTo, customerId, effectiveStatuses, search,
                 returnStatus, dueStatus, paymentType, productId, categoryId,
                 orderBy, orderDir);
+    }
+
+    public PageResponse<InvoiceListResponse> executePage(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, List<String> statuses,
+            String search, List<String> returnStatus, String dueStatus,
+            String paymentType, UUID productId, UUID categoryId, int page,
+            int size, String orderBy, String orderDir,
+            DocumentAction action) {
+        if (action != null) {
+            return PageResponses.page(execute(dateFrom, dateTo, customerId,
+                    statuses, search, returnStatus, dueStatus, paymentType,
+                    productId, categoryId, orderBy, orderDir, action), page,
+                    size);
+        }
+        List<String> effectiveStatuses = effectiveStatuses(statuses);
+        PageResponse<Invoice> invoices = invoiceRepository.findPageWithFilters(
+                dateFrom, dateTo, customerId, effectiveStatuses, search,
+                returnStatus, dueStatus, paymentType, productId, categoryId,
+                page, size, orderBy, orderDir);
+        List<UUID> invoiceIds = invoices.content().stream()
+                .map(invoice -> invoice.getId().value()).toList();
+        Map<UUID, BigDecimal> paid = invoiceIds.isEmpty()
+                ? Map.of()
+                : paymentTotals.sumByInvoiceIds(invoiceIds);
+        Map<UUID, BigDecimal> debits = noteDetails.sumDebitNotes(invoiceIds);
+        Map<UUID, BigDecimal> credits = noteDetails.sumCreditNotes(invoiceIds);
+        List<InvoiceListResponse> content = invoices.content().stream()
+                .map(invoice -> InvoiceMapper.toListResponse(invoice, paid,
+                        debits, credits))
+                .toList();
+        return new PageResponse<>(content, invoices.totalElements(),
+                invoices.totalPages(), invoices.size(), invoices.number(),
+                invoices.first(), invoices.last(), content.isEmpty());
     }
 
     private List<String> effectiveStatuses(List<String> statuses) {

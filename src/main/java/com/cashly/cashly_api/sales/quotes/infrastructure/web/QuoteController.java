@@ -19,6 +19,7 @@ import com.cashly.cashly_api.sales.quotes.application.list.use_case.GetQuotesUse
 import com.cashly.cashly_api.sales.quotes.application.warehouses.use_case.GetWarehousesForQuoteUseCase;
 import com.cashly.cashly_api.sales.quotes.application.update.use_case.UpdateQuoteUseCase;
 import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -78,7 +79,7 @@ public class QuoteController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SALES_QUOTES_VIEW_LIST')")
-    public ResponseEntity<List<QuoteListResponse>> list(
+    public ResponseEntity<PageResponse<QuoteListResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
@@ -86,18 +87,14 @@ public class QuoteController {
             @RequestParam(required = false) UUID productId,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir,
             @RequestParam(required = false) DocumentAction action) {
-        List<QuoteListResponse> quotes = action == null
-                ? getQuotesUseCase.execute(dateFrom, dateTo, customerId, status,
-                        productId, categoryId, orderBy, orderDir)
-                : getQuotesUseCase.execute(dateFrom, dateTo, customerId, status,
-                        productId, categoryId, orderBy, orderDir, action);
-        return ResponseEntity.ok(quotes.stream()
-                .filter(quote -> matchesSearch(search, quote.quoteNumber(),
-                        quote.customerName(), quote.customerRif()))
-                .toList());
+        return ResponseEntity.ok(getQuotesUseCase.executePage(dateFrom, dateTo,
+                customerId, status, productId, categoryId, search, page,
+                normalizeSize(size), orderBy, orderDir, action));
     }
 
     private boolean matchesSearch(String search, String... values) {
@@ -109,11 +106,16 @@ public class QuoteController {
                 .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
-    public ResponseEntity<List<QuoteListResponse>> list(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, String status, UUID productId,
-            UUID categoryId, String orderBy, String orderDir) {
+    public ResponseEntity<PageResponse<QuoteListResponse>> list(
+            LocalDate dateFrom, LocalDate dateTo, UUID customerId,
+            String status, UUID productId, UUID categoryId, String orderBy,
+            String orderDir) {
         return list(dateFrom, dateTo, customerId, status, productId, categoryId,
-                null, orderBy, orderDir, null);
+                null, 0, 100, orderBy, orderDir, null);
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

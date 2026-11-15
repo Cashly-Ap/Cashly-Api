@@ -2,9 +2,12 @@ package com.cashly.cashly_api.procurement.purchases.application.list.use_case;
 
 import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseListResponse;
 import com.cashly.cashly_api.procurement.purchases.application.mappers.PurchaseMapper;
+import com.cashly.cashly_api.procurement.purchases.domain.entity.Purchase;
 import com.cashly.cashly_api.procurement.purchases.domain.repository.PurchaseRepository;
 
 import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -51,6 +54,40 @@ public class ListPurchasesUseCase {
         }
         return query(fromDate, toDate, supplierId, eligibleStatuses, productId,
                 categoryId, orderBy, orderDir);
+    }
+
+    public PageResponse<PurchaseListResponse> executePage(LocalDate fromDate,
+            LocalDate toDate, UUID supplierId, String status, UUID productId,
+            UUID categoryId, String search, int page, int size, String orderBy,
+            String orderDir, DocumentAction action) {
+        if (action != null) {
+            List<PurchaseListResponse> all = execute(fromDate, toDate,
+                    supplierId, status, productId, categoryId, orderBy,
+                    orderDir, action).stream()
+                    .filter(purchase -> matchesSearch(search,
+                            purchase.purchaseNumber(),
+                            purchase.supplierName()))
+                    .toList();
+            return PageResponses.page(all, page, size);
+        }
+        PageResponse<Purchase> purchases = purchaseRepository
+                .findPageWithFilters(fromDate, toDate, supplierId,
+                        statuses(status), search, productId, categoryId, page,
+                        size, orderBy, orderDir);
+        List<PurchaseListResponse> content = purchases.content().stream()
+                .map(PurchaseMapper::toListResponse).toList();
+        return new PageResponse<>(content, purchases.totalElements(),
+                purchases.totalPages(), purchases.size(), purchases.number(),
+                purchases.first(), purchases.last(), content.isEmpty());
+    }
+
+    private static boolean matchesSearch(String search, String... values) {
+        if (search == null || search.isBlank())
+            return true;
+        String term = search.trim().toLowerCase();
+        return java.util.Arrays.stream(values)
+                .filter(java.util.Objects::nonNull)
+                .anyMatch(value -> value.toLowerCase().contains(term));
     }
 
     private List<PurchaseListResponse> query(LocalDate fromDate,
