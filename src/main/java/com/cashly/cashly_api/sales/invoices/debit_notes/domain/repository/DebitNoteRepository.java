@@ -17,8 +17,8 @@ public interface DebitNoteRepository {
     List<DebitNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
             UUID customerId);
     PageResponse<DebitNote> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, int page, int size,
-            String orderBy, String orderDir);
+            LocalDate dateTo, UUID customerId, String search, int page,
+            int size, String orderBy, String orderDir);
     List<DebitNote> findByInvoiceId(UUID invoiceId);
     Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds);
     int getNextSequenceForYear(int year);

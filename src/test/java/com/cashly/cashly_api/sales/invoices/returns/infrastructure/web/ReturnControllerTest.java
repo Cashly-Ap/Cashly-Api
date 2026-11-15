@@ -100,18 +100,18 @@ class ReturnControllerTest {
                 "AUTOMATIC", "Producto defectuoso", BigDecimal.TEN, 1,
                 LocalDateTime.now());
 
-        when(getAllReturnsUseCase.executePage(null, null, null, null, 0, 100,
+        when(getAllReturnsUseCase.executePage(null, null, null, null, null, null, 0, 100,
                 "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(returnItem), 0, 100));
 
         ResponseEntity<PageResponse<ReturnListResponse>> result = returnController
-                .getAll(null, null, null, null, 0, 100, "createdAt", "desc");
+                .getAll(null, null, null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
         assertEquals("RET-2026-0001",
                 result.getBody().content().get(0).returnNumber());
-        verify(getAllReturnsUseCase).executePage(null, null, null, null, 0, 100,
+        verify(getAllReturnsUseCase).executePage(null, null, null, null, null, null, 0, 100,
                 "createdAt", "desc");
     }
 
@@ -124,17 +124,17 @@ class ReturnControllerTest {
         UUID invoiceId = UUID.randomUUID();
 
         when(getAllReturnsUseCase.executePage(dateFrom, dateTo, customerId,
-                invoiceId, 0, 100, "createdAt", "desc"))
+                invoiceId, null, null, 0, 100, "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(), 0, 100));
 
         ResponseEntity<PageResponse<ReturnListResponse>> result = returnController
-                .getAll(dateFrom, dateTo, customerId, invoiceId, 0, 100,
+                .getAll(dateFrom, dateTo, customerId, invoiceId, null, null, 0, 100,
                         "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().empty());
         verify(getAllReturnsUseCase).executePage(dateFrom, dateTo, customerId,
-                invoiceId, 0, 100, "createdAt", "desc");
+                invoiceId, null, null, 0, 100, "createdAt", "desc");
     }
 
     @Test
@@ -208,12 +208,12 @@ class ReturnControllerTest {
     @Test
     @DisplayName("should return empty list when no returns exist")
     void shouldReturnEmptyListWhenNoReturns() {
-        when(getAllReturnsUseCase.executePage(null, null, null, null, 0, 100,
+        when(getAllReturnsUseCase.executePage(null, null, null, null, null, null, 0, 100,
                 "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(), 0, 100));
 
         ResponseEntity<PageResponse<ReturnListResponse>> result = returnController
-                .getAll(null, null, null, null, 0, 100, "createdAt", "desc");
+                .getAll(null, null, null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().empty());

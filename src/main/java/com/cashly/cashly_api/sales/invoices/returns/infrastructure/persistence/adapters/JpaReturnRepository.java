@@ -101,8 +101,9 @@ public class JpaReturnRepository implements ReturnRepository {
 
     @Override
     public PageResponse<Return> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, UUID invoiceId, int page,
-            int size, String orderBy, String orderDir) {
+            LocalDate dateTo, UUID customerId, UUID invoiceId, String search,
+            String returnType, int page, int size, String orderBy,
+            String orderDir) {
         StringBuilder where = new StringBuilder(" WHERE 1=1");
         if (dateFrom != null) {
             where.append(" AND r.createdAt >= :dateFrom");
@@ -116,10 +117,28 @@ public class JpaReturnRepository implements ReturnRepository {
         if (invoiceId != null) {
             where.append(" AND r.invoiceId = :invoiceId");
         }
+        if (returnType != null && !returnType.isBlank()) {
+            where.append(" AND r.returnType = :returnType");
+        }
+        boolean hasSearch = search != null && !search.isBlank();
+        if (hasSearch) {
+            where.append("""
+                     AND (LOWER(r.returnNumber) LIKE :search
+                        OR LOWER(r.reason) LIKE :search
+                        OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = r.invoiceId
+                            AND (LOWER(i.invoiceNumber) LIKE :search
+                                OR LOWER(i.customerName) LIKE :search
+                                OR LOWER(i.customerRif) LIKE :search)))
+                    """);
+        }
+        String searchPattern = hasSearch
+                ? "%" + search.trim().toLowerCase() + "%"
+                : "";
 
         TypedQuery<Long> countQuery = entityManager.createQuery(
                 "SELECT COUNT(r) FROM ReturnEntity r" + where, Long.class);
-        bindFilters(countQuery, dateFrom, dateTo, customerId, invoiceId);
+        bindFilters(countQuery, dateFrom, dateTo, customerId, invoiceId,
+                returnType, searchPattern, hasSearch);
         long totalElements = countQuery.getSingleResult();
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
@@ -135,7 +154,8 @@ public class JpaReturnRepository implements ReturnRepository {
         TypedQuery<ReturnEntity> query = entityManager.createQuery(
                 "SELECT r FROM ReturnEntity r" + where + order,
                 ReturnEntity.class);
-        bindFilters(query, dateFrom, dateTo, customerId, invoiceId);
+        bindFilters(query, dateFrom, dateTo, customerId, invoiceId, returnType,
+                searchPattern, hasSearch);
         query.setFirstResult(page * size);
         query.setMaxResults(size);
 
@@ -165,7 +185,8 @@ public class JpaReturnRepository implements ReturnRepository {
     }
 
     private static void bindFilters(TypedQuery<?> query, LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, UUID invoiceId) {
+            LocalDate dateTo, UUID customerId, UUID invoiceId, String returnType,
+            String searchPattern, boolean hasSearch) {
         if (dateFrom != null) {
             query.setParameter("dateFrom", dateFrom.atStartOfDay());
         }
@@ -177,6 +198,12 @@ public class JpaReturnRepository implements ReturnRepository {
         }
         if (invoiceId != null) {
             query.setParameter("invoiceId", invoiceId);
+        }
+        if (returnType != null && !returnType.isBlank()) {
+            query.setParameter("returnType", returnType);
+        }
+        if (hasSearch) {
+            query.setParameter("search", searchPattern);
         }
     }
 

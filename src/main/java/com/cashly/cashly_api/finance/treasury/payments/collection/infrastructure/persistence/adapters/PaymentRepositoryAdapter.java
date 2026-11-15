@@ -51,16 +51,23 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public PageResponse<Payment> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, String status, int page,
-            int size, String orderBy, String orderDir) {
+            LocalDate dateTo, UUID customerId, String status, String search,
+            int page, int size, String orderBy, String orderDir) {
         Page<PaymentEntity> result = jpaRepository.findPageWithFilters(dateFrom,
-                dateTo, customerId, status, PageRequest.of(page, size,
-                        sort(orderBy, orderDir)));
+                dateTo, customerId, status, searchPattern(search),
+                PageRequest.of(page, size, sort(orderBy, orderDir)));
         List<Payment> content = result.getContent().stream()
                 .map(PaymentJpaMapper::toDomain).toList();
         return new PageResponse<>(content, result.getTotalElements(),
                 result.getTotalPages(), result.getSize(), result.getNumber(),
                 result.isFirst(), result.isLast(), content.isEmpty());
+    }
+
+    private static String searchPattern(String search) {
+        if (search == null || search.isBlank()) {
+            return "";
+        }
+        return "%" + search.trim().toLowerCase() + "%";
     }
 
     private static Sort sort(String orderBy, String orderDir) {

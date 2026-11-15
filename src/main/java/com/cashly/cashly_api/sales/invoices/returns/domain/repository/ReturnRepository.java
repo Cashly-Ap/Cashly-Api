@@ -19,8 +19,9 @@ public interface ReturnRepository {
             UUID customerId, UUID invoiceId);
 
     PageResponse<Return> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, UUID invoiceId, int page,
-            int size, String orderBy, String orderDir);
+            LocalDate dateTo, UUID customerId, UUID invoiceId, String search,
+            String returnType, int page, int size, String orderBy,
+            String orderDir);
 
     void delete(ReturnId id);
 

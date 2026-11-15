@@ -51,16 +51,23 @@ public class SupplierPaymentRepositoryAdapter
 
     @Override
     public PageResponse<SupplierPayment> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID supplierId, String status, int page,
-            int size, String orderBy, String orderDir) {
+            LocalDate dateTo, UUID supplierId, String status, String search,
+            int page, int size, String orderBy, String orderDir) {
         Page<SupplierPaymentEntity> result = jpaRepository.findPageWithFilters(
-                dateFrom, dateTo, supplierId, status, PageRequest.of(page,
-                        size, sort(orderBy, orderDir)));
+                dateFrom, dateTo, supplierId, status, searchPattern(search),
+                PageRequest.of(page, size, sort(orderBy, orderDir)));
         List<SupplierPayment> content = result.getContent().stream()
                 .map(SupplierPaymentJpaMapper::toDomain).toList();
         return new PageResponse<>(content, result.getTotalElements(),
                 result.getTotalPages(), result.getSize(), result.getNumber(),
                 result.isFirst(), result.isLast(), content.isEmpty());
+    }
+
+    private static String searchPattern(String search) {
+        if (search == null || search.isBlank()) {
+            return "";
+        }
+        return "%" + search.trim().toLowerCase() + "%";
     }
 
     private static Sort sort(String orderBy, String orderDir) {

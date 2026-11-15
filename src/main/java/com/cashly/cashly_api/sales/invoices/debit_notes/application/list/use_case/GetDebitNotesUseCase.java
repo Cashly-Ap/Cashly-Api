@@ -49,11 +49,11 @@ public class GetDebitNotesUseCase {
     }
 
     public PageResponse<DebitNoteResponse> executePage(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, int page, int size,
-            String orderBy, String orderDir) {
+            LocalDate dateTo, UUID customerId, String search, int page,
+            int size, String orderBy, String orderDir) {
         PageResponse<DebitNote> debitNotes = debitNoteRepository
-                .findPageWithFilters(dateFrom, dateTo, customerId, page, size,
-                        orderBy, orderDir);
+                .findPageWithFilters(dateFrom, dateTo, customerId, search, page,
+                        size, orderBy, orderDir);
         Set<UUID> invoiceIds = debitNotes.content().stream()
                 .map(DebitNote::getInvoiceId).distinct()
                 .collect(Collectors.toSet());

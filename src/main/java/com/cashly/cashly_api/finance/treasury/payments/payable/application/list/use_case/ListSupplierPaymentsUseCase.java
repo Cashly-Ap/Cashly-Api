@@ -25,11 +25,11 @@ public class ListSupplierPaymentsUseCase {
 
     public PageResponse<SupplierPaymentResponse> executePage(
             LocalDate dateFrom, LocalDate dateTo, UUID supplierId,
-            String status, int page, int size, String orderBy,
+            String status, String search, int page, int size, String orderBy,
             String orderDir) {
         PageResponse<com.cashly.cashly_api.finance.treasury.payments.payable.domain.entity.SupplierPayment> result = payments
-                .findPageWithFilters(dateFrom, dateTo, supplierId, status, page,
-                        size, orderBy, orderDir);
+                .findPageWithFilters(dateFrom, dateTo, supplierId, status,
+                        search, page, size, orderBy, orderDir);
         List<SupplierPaymentResponse> content = result.content().stream()
                 .map(SupplierPaymentMapper::toResponse).toList();
         return new PageResponse<>(content, result.totalElements(),

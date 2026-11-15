@@ -50,11 +50,11 @@ public class GetCreditNotesUseCase {
     }
 
     public PageResponse<CreditNoteResponse> executePage(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, int page, int size,
-            String orderBy, String orderDir) {
+            LocalDate dateTo, UUID customerId, String search, int page,
+            int size, String orderBy, String orderDir) {
         PageResponse<CreditNote> creditNotes = creditNoteRepository
-                .findPageWithFilters(dateFrom, dateTo, customerId, page, size,
-                        orderBy, orderDir);
+                .findPageWithFilters(dateFrom, dateTo, customerId, search, page,
+                        size, orderBy, orderDir);
         Set<UUID> invoiceIds = creditNotes.content().stream()
                 .map(CreditNote::getInvoiceId).distinct()
                 .collect(Collectors.toSet());

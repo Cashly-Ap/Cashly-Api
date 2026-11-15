@@ -16,8 +16,8 @@ public interface PaymentRepository {
     List<Payment> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
             UUID customerId, String status);
     PageResponse<Payment> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, String status, int page,
-            int size, String orderBy, String orderDir);
+            LocalDate dateTo, UUID customerId, String status, String search,
+            int page, int size, String orderBy, String orderDir);
     BigDecimal getRefundableAmountByCustomerId(UUID customerId);
     void deleteById(PaymentId id);
     int getNextSequenceForYear(int year);

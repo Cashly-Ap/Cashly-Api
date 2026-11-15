@@ -89,21 +89,22 @@ public class PaymentController {
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) GetAllPaymentsUseCase.ListAction action,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
         return ResponseEntity.ok(getAllPaymentsUseCase.executePage(dateFrom,
-                dateTo, customerId, type, status, action, page,
+                dateTo, customerId, type, status, search, action, page,
                 normalizeSize(size), orderBy, orderDir));
     }
 
     public ResponseEntity<PageResponse<PaymentListResponse>> getAll(
             LocalDate dateFrom, LocalDate dateTo, UUID customerId, String type,
             String status) {
-        return getAll(dateFrom, dateTo, customerId, type, status, null, 0,
-                100, "createdAt", "desc");
+        return getAll(dateFrom, dateTo, customerId, type, status, null, null,
+                0, 100, "createdAt", "desc");
     }
 
     private static int normalizeSize(int size) {

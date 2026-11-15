@@ -15,8 +15,8 @@ public interface SupplierPaymentRepository {
     List<SupplierPayment> findAllWithFilters(LocalDate dateFrom,
             LocalDate dateTo, UUID supplierId, String status);
     PageResponse<SupplierPayment> findPageWithFilters(LocalDate dateFrom,
-            LocalDate dateTo, UUID supplierId, String status, int page,
-            int size, String orderBy, String orderDir);
+            LocalDate dateTo, UUID supplierId, String status, String search,
+            int page, int size, String orderBy, String orderDir);
     void deleteById(SupplierPaymentId id);
     int getNextSequenceForYear(int year);
 }

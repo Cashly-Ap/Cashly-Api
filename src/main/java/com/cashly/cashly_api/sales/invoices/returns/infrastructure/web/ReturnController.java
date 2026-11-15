@@ -57,13 +57,15 @@ public class ReturnController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID invoiceId,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String returnType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
         return ResponseEntity.ok(getAllReturnsUseCase.executePage(dateFrom,
-                dateTo, customerId, invoiceId, page, normalizeSize(size),
-                orderBy, orderDir));
+                dateTo, customerId, invoiceId, search, returnType, page,
+                normalizeSize(size), orderBy, orderDir));
     }
 
     private static int normalizeSize(int size) {

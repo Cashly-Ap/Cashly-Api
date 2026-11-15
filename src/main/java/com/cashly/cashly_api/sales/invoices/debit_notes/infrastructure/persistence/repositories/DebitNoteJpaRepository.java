@@ -33,16 +33,29 @@ public interface DebitNoteJpaRepository
             WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
             AND (:customerId IS NULL OR d.customerId = :customerId)
+            AND (:search IS NULL OR :search = '' OR LOWER(d.noteNumber) LIKE :search
+                OR LOWER(d.reason) LIKE :search
+                OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = d.invoiceId
+                    AND (LOWER(i.invoiceNumber) LIKE :search
+                        OR LOWER(i.customerName) LIKE :search
+                        OR LOWER(i.customerRif) LIKE :search)))
             """, countQuery = """
             SELECT COUNT(d) FROM DebitNoteEntity d
             WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
             AND (:customerId IS NULL OR d.customerId = :customerId)
+            AND (:search IS NULL OR :search = '' OR LOWER(d.noteNumber) LIKE :search
+                OR LOWER(d.reason) LIKE :search
+                OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = d.invoiceId
+                    AND (LOWER(i.invoiceNumber) LIKE :search
+                        OR LOWER(i.customerName) LIKE :search
+                        OR LOWER(i.customerRif) LIKE :search)))
             """)
     Page<DebitNoteEntity> findPageWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
-            @Param("customerId") UUID customerId, Pageable pageable);
+            @Param("customerId") UUID customerId,
+            @Param("search") String search, Pageable pageable);
 
     List<DebitNoteEntity> findByInvoiceId(UUID invoiceId);
 

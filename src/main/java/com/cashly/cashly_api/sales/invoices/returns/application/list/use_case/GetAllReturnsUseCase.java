@@ -28,11 +28,12 @@ public class GetAllReturnsUseCase {
     }
 
     public PageResponse<ReturnListResponse> executePage(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, UUID invoiceId, int page,
-            int size, String orderBy, String orderDir) {
+            LocalDate dateTo, UUID customerId, UUID invoiceId, String search,
+            String returnType, int page, int size, String orderBy,
+            String orderDir) {
         PageResponse<com.cashly.cashly_api.sales.invoices.returns.domain.entity.Return> returns = returnRepository
                 .findPageWithFilters(dateFrom, dateTo, customerId, invoiceId,
-                        page, size, orderBy, orderDir);
+                        search, returnType, page, size, orderBy, orderDir);
         List<ReturnListResponse> content = returns.content().stream()
                 .map(responses::toListResponse).toList();
         return new PageResponse<>(content, returns.totalElements(),

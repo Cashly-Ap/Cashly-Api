@@ -33,16 +33,29 @@ public interface CreditNoteJpaRepository
             WHERE (:dateFrom IS NULL OR c.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR c.createdAt <= :dateTo)
             AND (:customerId IS NULL OR c.customerId = :customerId)
+            AND (:search IS NULL OR :search = '' OR LOWER(c.noteNumber) LIKE :search
+                OR LOWER(c.reason) LIKE :search
+                OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = c.invoiceId
+                    AND (LOWER(i.invoiceNumber) LIKE :search
+                        OR LOWER(i.customerName) LIKE :search
+                        OR LOWER(i.customerRif) LIKE :search)))
             """, countQuery = """
             SELECT COUNT(c) FROM CreditNoteEntity c
             WHERE (:dateFrom IS NULL OR c.createdAt >= :dateFrom)
             AND (:dateTo IS NULL OR c.createdAt <= :dateTo)
             AND (:customerId IS NULL OR c.customerId = :customerId)
+            AND (:search IS NULL OR :search = '' OR LOWER(c.noteNumber) LIKE :search
+                OR LOWER(c.reason) LIKE :search
+                OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = c.invoiceId
+                    AND (LOWER(i.invoiceNumber) LIKE :search
+                        OR LOWER(i.customerName) LIKE :search
+                        OR LOWER(i.customerRif) LIKE :search)))
             """)
     Page<CreditNoteEntity> findPageWithFilters(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
-            @Param("customerId") UUID customerId, Pageable pageable);
+            @Param("customerId") UUID customerId,
+            @Param("search") String search, Pageable pageable);
 
     List<CreditNoteEntity> findByInvoiceId(UUID invoiceId);
 

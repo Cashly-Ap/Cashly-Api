@@ -87,32 +87,32 @@ class DebitNoteControllerTest {
                 UUID.randomUUID(), "User", LocalDateTime.now(),
                 LocalDateTime.now());
 
-        when(getDebitNotesUseCase.executePage(null, null, null, 0, 100,
+        when(getDebitNotesUseCase.executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(response), 0, 100));
 
         ResponseEntity<PageResponse<DebitNoteResponse>> result = debitNoteController
-                .list(null, null, null, 0, 100, "createdAt", "desc");
+                .list(null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(getDebitNotesUseCase).executePage(null, null, null, 0, 100,
+        verify(getDebitNotesUseCase).executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no debit notes")
     void should_return_empty_list_when_no_debit_notes() {
-        when(getDebitNotesUseCase.executePage(null, null, null, 0, 100,
+        when(getDebitNotesUseCase.executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(), 0, 100));
 
         ResponseEntity<PageResponse<DebitNoteResponse>> result = debitNoteController
-                .list(null, null, null, 0, 100, "createdAt", "desc");
+                .list(null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().empty());
-        verify(getDebitNotesUseCase).executePage(null, null, null, 0, 100,
+        verify(getDebitNotesUseCase).executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc");
     }
 

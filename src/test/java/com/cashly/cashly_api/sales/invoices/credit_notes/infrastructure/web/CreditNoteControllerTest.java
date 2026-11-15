@@ -88,32 +88,32 @@ class CreditNoteControllerTest {
                 UUID.randomUUID(), "User", LocalDateTime.now(),
                 LocalDateTime.now());
 
-        when(getCreditNotesUseCase.executePage(null, null, null, 0, 100,
+        when(getCreditNotesUseCase.executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(response), 0, 100));
 
         ResponseEntity<PageResponse<CreditNoteResponse>> result = creditNoteController
-                .list(null, null, null, 0, 100, "createdAt", "desc");
+                .list(null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().content().size());
-        verify(getCreditNotesUseCase).executePage(null, null, null, 0, 100,
+        verify(getCreditNotesUseCase).executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no credit notes")
     void should_return_empty_list_when_no_credit_notes() {
-        when(getCreditNotesUseCase.executePage(null, null, null, 0, 100,
+        when(getCreditNotesUseCase.executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(), 0, 100));
 
         ResponseEntity<PageResponse<CreditNoteResponse>> result = creditNoteController
-                .list(null, null, null, 0, 100, "createdAt", "desc");
+                .list(null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().empty());
-        verify(getCreditNotesUseCase).executePage(null, null, null, 0, 100,
+        verify(getCreditNotesUseCase).executePage(null, null, null, null, 0, 100,
                 "createdAt", "desc");
     }
 

@@ -40,14 +40,15 @@ public class GetAllPaymentsUseCase {
 
     public PageResponse<PaymentListResponse> executePage(LocalDate dateFrom,
             LocalDate dateTo, UUID customerId, String type, String status,
-            ListAction action, int page, int size, String orderBy,
-            String orderDir) {
+            String search, ListAction action, int page, int size,
+            String orderBy, String orderDir) {
         String effectiveStatus = action != null
                 ? "PENDING"
                 : (type != null && status == null) ? type : status;
         PageResponse<com.cashly.cashly_api.finance.treasury.payments.collection.domain.entity.Payment> payments = paymentRepository
                 .findPageWithFilters(dateFrom, dateTo, customerId,
-                        effectiveStatus, page, size, orderBy, orderDir);
+                        effectiveStatus, search, page, size, orderBy,
+                        orderDir);
         List<PaymentListResponse> content = payments.content().stream()
                 .map(PaymentMapper::toListResponse).toList();
         return new PageResponse<>(content, payments.totalElements(),

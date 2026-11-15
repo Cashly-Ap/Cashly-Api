@@ -116,12 +116,14 @@ public class SupplierPaymentController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID supplierId,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String orderBy,
             @RequestParam(defaultValue = "desc") String orderDir) {
         return ResponseEntity.ok(list.executePage(dateFrom, dateTo, supplierId,
-                status, page, normalizeSize(size), orderBy, orderDir));
+                status, search, page, normalizeSize(size), orderBy,
+                orderDir));
     }
 
     private static int normalizeSize(int size) {

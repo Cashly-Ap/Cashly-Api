@@ -118,7 +118,7 @@ class PaymentControllerTest {
                 BigDecimal.ZERO, LocalDateTime.now());
 
         when(getAllPaymentsUseCase.executePage(null, null, null, null, null,
-                null, 0, 100, "createdAt", "desc"))
+                null, null, 0, 100, "createdAt", "desc"))
                 .thenReturn(PageResponses.page(List.of(payment), 0, 100));
 
         ResponseEntity<PageResponse<PaymentListResponse>> result = paymentController
@@ -129,14 +129,15 @@ class PaymentControllerTest {
         assertEquals("PAY-2026-00001",
                 result.getBody().content().get(0).paymentNumber());
         verify(getAllPaymentsUseCase).executePage(null, null, null, null, null,
-                null, 0, 100, "createdAt", "desc");
+                null, null, 0, 100, "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should list payments with filters and return 200")
     void shouldListPaymentsWithFilters() {
         when(getAllPaymentsUseCase.executePage(any(), any(), any(), any(),
-                any(), any(), eq(0), eq(100), eq("createdAt"), eq("desc")))
+                any(), any(), any(), eq(0), eq(100), eq("createdAt"),
+                eq("desc")))
                 .thenReturn(PageResponses.page(List.of(), 0, 100));
 
         ResponseEntity<PageResponse<PaymentListResponse>> result = paymentController

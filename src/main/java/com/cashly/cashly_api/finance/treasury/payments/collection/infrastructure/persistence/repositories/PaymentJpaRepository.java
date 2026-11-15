@@ -35,18 +35,23 @@ public interface PaymentJpaRepository
             AND (:dateTo IS NULL OR p.paymentDate <= :dateTo)
             AND (:customerId IS NULL OR p.customerId = :customerId)
             AND (:status IS NULL OR p.status = :status)
+            AND (:search IS NULL OR :search = '' OR LOWER(p.paymentNumber) LIKE :search
+                OR LOWER(p.referenceNumber) LIKE :search)
             """, countQuery = """
             SELECT COUNT(p) FROM PaymentEntity p
             WHERE (:dateFrom IS NULL OR p.paymentDate >= :dateFrom)
             AND (:dateTo IS NULL OR p.paymentDate <= :dateTo)
             AND (:customerId IS NULL OR p.customerId = :customerId)
             AND (:status IS NULL OR p.status = :status)
+            AND (:search IS NULL OR :search = '' OR LOWER(p.paymentNumber) LIKE :search
+                OR LOWER(p.referenceNumber) LIKE :search)
             """)
     Page<PaymentEntity> findPageWithFilters(
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo,
             @Param("customerId") UUID customerId,
-            @Param("status") String status, Pageable pageable);
+            @Param("status") String status,
+            @Param("search") String search, Pageable pageable);
 
     @Query("""
             SELECT COALESCE(SUM(p.amount), 0)
